@@ -5,9 +5,9 @@ import { NostrEvent, kinds } from "nostr-tools";
 
 import { ThreadIcon } from "../../components/icons";
 import UserLink from "../../components/user/user-link";
-import RequireCurrentAccount from "../../components/router/require-current-account";
+import RequireActiveAccount from "../../components/router/require-active-account";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
-import useCurrentAccount from "../../hooks/use-current-account";
+import { useActiveAccount } from "applesauce-react/hooks";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import TimelineActionAndStatus from "../../components/timeline/timeline-action-and-status";
@@ -46,7 +46,7 @@ const ChatLog = memo(({ messages }: { messages: NostrEvent[] }) => {
 });
 
 function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
-  const account = useCurrentAccount()!;
+  const account = useActiveAccount()!;
   const { autoDecryptDMs } = useAppSettings();
   const navigate = useNavigate();
   const location = useLocation();
@@ -156,8 +156,8 @@ export default function DirectMessageChatView() {
   const { pubkey } = useParamsProfilePointer();
 
   return (
-    <RequireCurrentAccount>
+    <RequireActiveAccount>
       <DirectMessageChatPage pubkey={pubkey} />
-    </RequireCurrentAccount>
+    </RequireActiveAccount>
   );
 }

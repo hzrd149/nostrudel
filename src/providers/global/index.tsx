@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { ChakraProvider, localStorageManager } from "@chakra-ui/react";
-import { QueryStoreProvider } from "applesauce-react/providers";
+import { AccountsProvider, QueryStoreProvider } from "applesauce-react/providers";
 
 import { SigningProvider } from "./signing-provider";
 import buildTheme from "../../theme";
@@ -13,6 +13,7 @@ import PublishProvider from "./publish-provider";
 import WebOfTrustProvider from "./web-of-trust-provider";
 import { queryStore } from "../../services/event-store";
 import EventFactoryProvider from "./event-factory-provider";
+import accounts from "../../services/accounts";
 
 function ThemeProviders({ children }: { children: React.ReactNode }) {
   const { theme: themeName, primaryColor } = useAppSettings();
@@ -29,21 +30,23 @@ function ThemeProviders({ children }: { children: React.ReactNode }) {
 export const GlobalProviders = ({ children }: { children: React.ReactNode }) => {
   return (
     <QueryStoreProvider queryStore={queryStore}>
-      <ThemeProviders>
-        <SigningProvider>
-          <PublishProvider>
-            <NotificationsProvider>
-              <DMTimelineProvider>
-                <UserEmojiProvider>
-                  <EventFactoryProvider>
-                    <WebOfTrustProvider>{children}</WebOfTrustProvider>
-                  </EventFactoryProvider>
-                </UserEmojiProvider>
-              </DMTimelineProvider>
-            </NotificationsProvider>
-          </PublishProvider>
-        </SigningProvider>
-      </ThemeProviders>
+      <AccountsProvider manager={accounts}>
+        <ThemeProviders>
+          <SigningProvider>
+            <PublishProvider>
+              <NotificationsProvider>
+                <DMTimelineProvider>
+                  <UserEmojiProvider>
+                    <EventFactoryProvider>
+                      <WebOfTrustProvider>{children}</WebOfTrustProvider>
+                    </EventFactoryProvider>
+                  </UserEmojiProvider>
+                </DMTimelineProvider>
+              </NotificationsProvider>
+            </PublishProvider>
+          </SigningProvider>
+        </ThemeProviders>
+      </AccountsProvider>
     </QueryStoreProvider>
   );
 };

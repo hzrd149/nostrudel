@@ -1,9 +1,8 @@
 import { useAsync } from "react-use";
-import { Box, Button, ButtonGroup, Card, CardProps, Heading, IconButton, Link, Spinner, Text } from "@chakra-ui/react";
+import { Box, ButtonGroup, Card, CardProps, Heading, IconButton, Link, Spinner, Text } from "@chakra-ui/react";
 import { Token, getEncodedToken, CheckStateEnum } from "@cashu/cashu-ts";
 
 import { CopyIconButton } from "../copy-icon-button";
-import useCurrentAccount from "../../hooks/use-current-account";
 import { ECashIcon, WalletIcon } from "../icons";
 import CurrencyDollar from "../icons/currency-dollar";
 import CurrencyEthereum from "../icons/currency-ethereum";

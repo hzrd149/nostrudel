@@ -1,5 +1,6 @@
 import { ChangeEventHandler, ClipboardEventHandler, MutableRefObject, useCallback, useState } from "react";
 import { useToast } from "@chakra-ui/react";
+import { useActiveAccount } from "applesauce-react/hooks";
 
 import { nostrBuildUploadImage } from "../helpers/media-upload/nostr-build";
 import { RefType } from "../components/magic-textarea";
@@ -8,7 +9,6 @@ import { UseFormGetValues, UseFormSetValue } from "react-hook-form";
 import useAppSettings from "./use-user-app-settings";
 import useUsersMediaServers from "./use-user-media-servers";
 import { simpleMultiServerUpload } from "../helpers/media-upload/blossom";
-import useCurrentAccount from "./use-current-account";
 import { stripSensitiveMetadataOnFile } from "../helpers/image";
 import insertTextIntoMagicTextarea from "../helpers/magic-textarea";
 
@@ -42,7 +42,7 @@ export function useTextAreaInsertTextWithForm(
 
 export default function useTextAreaUploadFile(insertText: (url: string) => void) {
   const toast = useToast();
-  const account = useCurrentAccount();
+  const account = useActiveAccount();
   const { mediaUploadService } = useAppSettings();
   const { servers: mediaServers } = useUsersMediaServers(account?.pubkey);
   const { requestSignature } = useSigningContext();

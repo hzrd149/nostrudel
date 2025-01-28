@@ -8,8 +8,8 @@ import { kinds } from "nostr-tools";
 import { useStoreQuery } from "applesauce-react/hooks";
 import { TimelineQuery } from "applesauce-core/queries";
 
-import useCurrentAccount from "../../hooks/use-current-account";
-import RequireCurrentAccount from "../../components/router/require-current-account";
+import { useActiveAccount } from "applesauce-react/hooks";
+import RequireActiveAccount from "../../components/router/require-active-account";
 import { getPubkeysFromList, isPubkeyInList } from "../../helpers/nostr/lists";
 import useUserContactList from "../../hooks/use-user-contact-list";
 import useUserProfile from "../../hooks/use-user-profile";
@@ -29,7 +29,7 @@ type NodeType = { id: string; image?: string; name?: string };
 
 function NetworkGraphPage() {
   const navigate = useNavigate();
-  const account = useCurrentAccount()!;
+  const account = useActiveAccount()!;
 
   const selfMetadata = useUserProfile(account.pubkey);
   const contacts = useUserContactList(account.pubkey);
@@ -123,8 +123,8 @@ function NetworkGraphPage() {
 
 export default function NetworkMuteGraphView() {
   return (
-    <RequireCurrentAccount>
+    <RequireActiveAccount>
       <NetworkGraphPage />
-    </RequireCurrentAccount>
+    </RequireActiveAccount>
   );
 }

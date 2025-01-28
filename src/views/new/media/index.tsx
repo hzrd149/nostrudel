@@ -17,7 +17,7 @@ import { useForm } from "react-hook-form";
 import VerticalPageLayout from "../../../components/vertical-page-layout";
 import BackButton from "../../../components/router/back-button";
 import useCacheForm from "../../../hooks/use-cache-form";
-import useCurrentAccount from "../../../hooks/use-current-account";
+import { useActiveAccount } from "applesauce-react/hooks";
 import { useEventFactory } from "applesauce-react/hooks";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
 import MagicTextArea from "../../../components/magic-textarea";
@@ -38,7 +38,7 @@ const setOptions = { shouldDirty: true, shouldTouch: true };
 
 export default function NewMediaPostView() {
   const toast = useToast();
-  const account = useCurrentAccount()!;
+  const account = useActiveAccount()!;
   const factory = useEventFactory();
   const publish = usePublishEvent();
 

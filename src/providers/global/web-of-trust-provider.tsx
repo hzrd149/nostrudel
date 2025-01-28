@@ -1,9 +1,9 @@
 import { PropsWithChildren, createContext, useContext, useEffect, useMemo } from "react";
 import { NostrEvent, kinds } from "nostr-tools";
+import { useActiveAccount } from "applesauce-react/hooks";
 import _throttle from "lodash.throttle";
 
 import { getPubkeysFromList } from "../../helpers/nostr/lists";
-import useCurrentAccount from "../../hooks/use-current-account";
 import { PubkeyGraph } from "../../classes/pubkey-graph";
 import replaceableEventLoader from "../../services/replaceable-loader";
 import { COMMON_CONTACT_RELAYS } from "../../const";
@@ -63,7 +63,7 @@ export function useWebOfTrust() {
 }
 
 export default function WebOfTrustProvider({ pubkey, children }: PropsWithChildren<{ pubkey?: string }>) {
-  const account = useCurrentAccount();
+  const account = useActiveAccount();
   if (account && !pubkey) pubkey = account.pubkey;
 
   const graph = useMemo(() => {

@@ -1,9 +1,9 @@
 import { EventTemplate, getEventHash, NostrEvent, UnsignedEvent } from "nostr-tools";
 import Handlebars from "handlebars";
+import { InputProps } from "@chakra-ui/react";
+import { IAccount } from "applesauce-accounts";
 
 import { processDateString } from "../event-console/process";
-import { Account } from "../../../classes/accounts/account";
-import { InputProps } from "@chakra-ui/react";
 
 type BaseVariable<T, V> = {
   type: T;
@@ -66,7 +66,7 @@ export function getVariables(draft?: LooseEventTemplate) {
   return variables;
 }
 
-export function processEvent(draft: LooseEventTemplate, variables: Variable[], account: Account): UnsignedEvent {
+export function processEvent(draft: LooseEventTemplate, variables: Variable[], account: IAccount): UnsignedEvent {
   const event = { ...draft } as UnsignedEvent;
 
   const vars: Record<string, string> = variables.reduce((dir, v) => ({ ...dir, [v.name]: v.value }), {});

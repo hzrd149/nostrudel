@@ -16,7 +16,7 @@ import {
 } from "@chakra-ui/react";
 import { CloseIcon } from "@chakra-ui/icons";
 import { Link as RouterLink } from "react-router-dom";
-import { useObservable } from "applesauce-react/hooks";
+import { useActiveAccount, useObservable } from "applesauce-react/hooks";
 import { NostrEvent } from "nostr-tools";
 
 import { useReadRelays, useWriteRelays } from "../../hooks/use-client-relays";
@@ -27,7 +27,6 @@ import RelaySet from "../../classes/relay-set";
 import UploadCloud01 from "../icons/upload-cloud-01";
 import { RelayFavicon } from "../relay-favicon";
 import useUserRelaySets from "../../hooks/use-user-relay-sets";
-import useCurrentAccount from "../../hooks/use-current-account";
 import { getListName } from "../../helpers/nostr/lists";
 import { getEventCoordinate } from "../../helpers/nostr/event";
 import AddRelayForm from "../../views/relays/app/add-relay-form";
@@ -98,7 +97,7 @@ function SelectRelaySet({
 }
 
 export default function RelayManagementDrawer({ isOpen, onClose, ...props }: Omit<DrawerProps, "children">) {
-  const account = useCurrentAccount();
+  const account = useActiveAccount();
   const readRelays = useReadRelays();
   const writeRelays = useWriteRelays();
 

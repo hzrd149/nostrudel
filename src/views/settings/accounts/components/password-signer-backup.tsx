@@ -13,7 +13,7 @@ import {
 import { useForm } from "react-hook-form";
 import { PasswordSigner } from "applesauce-signers";
 
-import useCurrentAccount from "../../../../hooks/use-current-account";
+import { useActiveAccount } from "applesauce-react/hooks";
 import EyeOff from "../../../../components/icons/eye-off";
 import Eye from "../../../../components/icons/eye";
 import { CopyIconButton } from "../../../../components/copy-icon-button";
@@ -22,7 +22,7 @@ const fake = Array(48).fill("x");
 
 export default function PasswordSignerBackup() {
   const toast = useToast();
-  const account = useCurrentAccount()!;
+  const account = useActiveAccount()!;
   const signer = account.signer;
   if (!(signer instanceof PasswordSigner)) return null;
 

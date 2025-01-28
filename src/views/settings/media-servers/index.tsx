@@ -26,8 +26,8 @@ import {
 } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 
-import RequireCurrentAccount from "../../../components/router/require-current-account";
-import useCurrentAccount from "../../../hooks/use-current-account";
+import RequireActiveAccount from "../../../components/router/require-active-account";
+import { useActiveAccount } from "applesauce-react/hooks";
 import MediaServerFavicon from "../../../components/media-server/media-server-favicon";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
 import BackButton from "../../../components/router/back-button";
@@ -43,7 +43,7 @@ import { CloseIcon } from "@chakra-ui/icons";
 
 function MediaServersPage() {
   const toast = useToast();
-  const account = useCurrentAccount()!;
+  const account = useActiveAccount()!;
   const publish = usePublishEvent();
   const { mediaUploadService, updateSettings } = useAppSettings();
   const { event, servers } = useUsersMediaServers(account.pubkey, undefined, true);
@@ -234,8 +234,8 @@ function MediaServersPage() {
 
 export default function MediaServersView() {
   return (
-    <RequireCurrentAccount>
+    <RequireActiveAccount>
       <MediaServersPage />
-    </RequireCurrentAccount>
+    </RequireActiveAccount>
   );
 }

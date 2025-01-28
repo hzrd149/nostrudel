@@ -1,7 +1,7 @@
 import { Select } from "@chakra-ui/react";
 import { NostrEvent } from "nostr-tools";
 
-import useCurrentAccount from "../../../hooks/use-current-account";
+import { useActiveAccount } from "applesauce-react/hooks";
 import useUserRelaySets from "../../../hooks/use-user-relay-sets";
 import { getEventCoordinate } from "../../../helpers/nostr/event";
 import { getListName } from "../../../helpers/nostr/lists";
@@ -15,7 +15,7 @@ export default function SelectRelaySet({
   onChange: (cord: string, set?: NostrEvent) => void;
   pubkey?: string;
 }) {
-  const account = useCurrentAccount();
+  const account = useActiveAccount();
   const relaySets = useUserRelaySets(pubkey || account?.pubkey) ?? [];
 
   return (

@@ -34,7 +34,7 @@ import ZapBubbles from "../../components/note/timeline-note/components/zap-bubbl
 import EventQuoteButton from "../../components/note/event-quote-button";
 import WikiPageMenu from "./components/wiki-page-menu";
 import EventVoteButtons from "../../components/reactions/event-vote-buttions";
-import useCurrentAccount from "../../hooks/use-current-account";
+import { useActiveAccount } from "applesauce-react/hooks";
 import dictionaryService from "../../services/dictionary";
 import { useReadRelays } from "../../hooks/use-client-relays";
 import { useWebOfTrust } from "../../providers/global/web-of-trust-provider";
@@ -88,7 +88,7 @@ function DeferAlert({ page, address }: { page: NostrEvent; address: nip19.Addres
 }
 
 export function WikiPagePage({ page }: { page: NostrEvent }) {
-  const account = useCurrentAccount();
+  const account = useActiveAccount();
 
   const { address } = getPageForks(page);
   const defer = getPageDefer(page);

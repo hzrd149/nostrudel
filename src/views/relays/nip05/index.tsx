@@ -1,6 +1,6 @@
 import { Code, Flex, Heading, Link, Text } from "@chakra-ui/react";
 import BackButton from "../../../components/router/back-button";
-import useCurrentAccount from "../../../hooks/use-current-account";
+import { useActiveAccount } from "applesauce-react/hooks";
 import { useUserDNSIdentity } from "../../../hooks/use-user-dns-identity";
 import { Link as RouterLink } from "react-router-dom";
 
@@ -19,7 +19,7 @@ function RelayItem({ url }: { url: string }) {
 }
 
 export default function NIP05RelaysView() {
-  const account = useCurrentAccount();
+  const account = useActiveAccount();
   const nip05 = useUserDNSIdentity(account?.pubkey);
 
   return (

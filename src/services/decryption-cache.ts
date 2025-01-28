@@ -3,8 +3,9 @@ import { BehaviorSubject } from "rxjs";
 
 import createDefer, { Deferred } from "../classes/deferred";
 import signingService from "./signing";
-import accountService from "./account";
+import accountService from "./accounts";
 import { logger } from "../helpers/debug";
+import accounts from "./accounts";
 
 type EncryptionType = "nip04" | "nip44";
 
@@ -43,7 +44,7 @@ class DecryptionCache {
   }
 
   private async decryptContainer(container: DecryptionContainer) {
-    const account = accountService.current.value;
+    const account = accounts.active;
     if (!account) throw new Error("Missing account");
 
     switch (container.type) {

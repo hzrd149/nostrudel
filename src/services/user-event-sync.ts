@@ -1,21 +1,21 @@
 import { kinds } from "nostr-tools";
+import { IAccount } from "applesauce-accounts";
 import { combineLatest, distinct, filter } from "rxjs";
 import { USER_BLOSSOM_SERVER_LIST_KIND } from "blossom-client-sdk";
 
 import { COMMON_CONTACT_RELAYS } from "../const";
 import { logger } from "../helpers/debug";
-import accountService from "./account";
 import clientRelaysService from "./client-relays";
 import { offlineMode } from "./offline-mode";
 import replaceableEventLoader from "./replaceable-loader";
 import { eventStore, queryStore } from "./event-store";
-import { Account } from "../classes/accounts/account";
 import { MultiSubscription } from "applesauce-net/subscription";
 import relayPoolService from "./relay-pool";
 import { APP_SETTING_IDENTIFIER, APP_SETTINGS_KIND } from "../helpers/app-settings";
+import accounts from "./accounts";
 
 const log = logger.extend("UserEventSync");
-function downloadEvents(account: Account) {
+function downloadEvents(account: IAccount) {
   const relays = clientRelaysService.readRelays.value;
 
   const cleanup: (() => void)[] = [];
@@ -63,7 +63,7 @@ function downloadEvents(account: Account) {
 
 combineLatest([
   // listen for account changes
-  accountService.current.pipe(
+  accounts.active$.pipe(
     filter((a) => !!a),
     distinct((a) => a.pubkey),
   ),

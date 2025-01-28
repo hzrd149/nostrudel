@@ -4,7 +4,7 @@ import { Button, ButtonGroup, Divider, Flex, Heading } from "@chakra-ui/react";
 import { NostrEvent } from "nostr-tools";
 import dayjs from "dayjs";
 
-import useCurrentAccount from "../../../hooks/use-current-account";
+import { useActiveAccount } from "applesauce-react/hooks";
 import useStreamChatTimeline from "../stream/stream-chat/use-stream-chat-timeline";
 import UserAvatar from "../../../components/user/user-avatar";
 import UserLink from "../../../components/user/user-link";
@@ -56,7 +56,7 @@ function UserCard({ pubkey }: { pubkey: string }) {
 }
 
 function UsersCard({ stream }: { stream: NostrEvent }) {
-  const account = useCurrentAccount()!;
+  const account = useActiveAccount()!;
   const { loader, timeline: chatEvents } = useStreamChatTimeline(stream);
 
   const muteList = useUserMuteList(account.pubkey);

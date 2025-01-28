@@ -14,7 +14,7 @@ import {
 import { Link as RouterLink } from "react-router-dom";
 import { nip19 } from "nostr-tools";
 
-import useCurrentAccount from "../../../hooks/use-current-account";
+import { useActiveAccount } from "applesauce-react/hooks";
 import useUserContactList from "../../../hooks/use-user-contact-list";
 import { useWebOfTrust } from "../../../providers/global/web-of-trust-provider";
 import UserAvatar from "../../../components/user/user-avatar";
@@ -38,7 +38,7 @@ const UserCard = memo(({ pubkey, blindspot }: { pubkey: string; blindspot: strin
 });
 
 export default function BlindspotHomeView() {
-  const account = useCurrentAccount()!;
+  const account = useActiveAccount()!;
   const [sort, setSort] = useState("quality"); // follows, quality
 
   const contacts = useUserContactList(account.pubkey);

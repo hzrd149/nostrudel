@@ -2,7 +2,7 @@ import { forwardRef } from "react";
 import { AvatarGroup, Flex, Text } from "@chakra-ui/react";
 import { kinds, nip25 } from "nostr-tools";
 
-import useCurrentAccount from "../../../hooks/use-current-account";
+import { useActiveAccount } from "applesauce-react/hooks";
 import { NostrEvent } from "../../../types/nostr-event";
 import { EmbedEventPointer } from "../../../components/embed-event";
 import Heart from "../../../components/icons/heart";
@@ -13,7 +13,7 @@ import ReactionIcon from "../../../components/event-reactions/reaction-icon";
 
 const ReactionNotification = forwardRef<HTMLDivElement, { event: NostrEvent; onClick?: () => void }>(
   ({ event, onClick }, ref) => {
-    const account = useCurrentAccount();
+    const account = useActiveAccount();
     const pointer = nip25.getReactedEventPointer(event);
     if (!pointer || (account?.pubkey && pointer.author !== account.pubkey)) return null;
 

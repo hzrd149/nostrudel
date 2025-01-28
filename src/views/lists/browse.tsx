@@ -1,7 +1,7 @@
 import { useCallback, useState } from "react";
 import { Flex, Select, SimpleGrid, Switch, useDisclosure } from "@chakra-ui/react";
 import { kinds } from "nostr-tools";
-import { getEventPointersFromList } from "applesauce-lists/helpers";
+import { getEventPointersFromList } from "applesauce-core/helpers";
 
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
 import VerticalPageLayout from "../../components/vertical-page-layout";

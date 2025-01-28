@@ -28,7 +28,7 @@ import { useEventFactory, useObservable } from "applesauce-react/hooks";
 import { Emoji } from "applesauce-core/helpers";
 
 import { PublishLogEntry, useFinalizeDraft, usePublishEvent } from "../../../providers/global/publish-provider";
-import useCurrentAccount from "../../../hooks/use-current-account";
+import { useActiveAccount } from "applesauce-react/hooks";
 import useAppSettings from "../../../hooks/use-user-app-settings";
 import localSettings from "../../../services/local-settings";
 import useLocalStorageDisclosure from "../../../hooks/use-localstorage-disclosure";
@@ -66,7 +66,7 @@ export default function ShortTextNoteForm({
 }: Omit<FlexProps, "children"> & ShortTextNoteFormProps) {
   const publish = usePublishEvent();
   const finalizeDraft = useFinalizeDraft();
-  const account = useCurrentAccount()!;
+  const account = useActiveAccount()!;
   const { noteDifficulty } = useAppSettings();
   const addClientTag = useObservable(localSettings.addClientTag);
   const promptAddClientTag = useLocalStorageDisclosure("prompt-add-client-tag", true);

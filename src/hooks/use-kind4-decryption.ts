@@ -1,13 +1,12 @@
 import { useCallback, useMemo } from "react";
 import { NostrEvent } from "nostr-tools";
-import { useObservable } from "applesauce-react/hooks";
+import { useActiveAccount, useObservable } from "applesauce-react/hooks";
 
 import decryptionCacheService from "../services/decryption-cache";
-import useCurrentAccount from "./use-current-account";
 import { getDMRecipient, getDMSender } from "../helpers/nostr/dms";
 
 export function useKind4Decrypt(event: NostrEvent, pubkey?: string) {
-  const account = useCurrentAccount()!;
+  const account = useActiveAccount()!;
 
   pubkey = pubkey || event.pubkey === account.pubkey ? getDMRecipient(event) : getDMSender(event);
 

@@ -30,7 +30,7 @@ import UserName from "../../../components/user/user-name";
 import QrCodeSvg from "../../../components/qr-code/qr-code-svg";
 import { QrCodeIcon } from "../../../components/icons";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
-import useCurrentAccount from "../../../hooks/use-current-account";
+import { useActiveAccount } from "applesauce-react/hooks";
 import useUserProfile from "../../../hooks/use-user-profile";
 import useForceUpdate from "../../../hooks/use-force-update";
 import SimpleView from "../../../components/layout/presets/simple-view";
@@ -83,7 +83,7 @@ export default function WebRtcPairView() {
     };
   }, [update]);
 
-  const account = useCurrentAccount();
+  const account = useActiveAccount();
   const showQrCode = useDisclosure();
 
   const identity = useObservable(localSettings.webRtcLocalIdentity);

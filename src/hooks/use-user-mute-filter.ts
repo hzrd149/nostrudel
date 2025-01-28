@@ -1,14 +1,14 @@
 import { useCallback, useMemo } from "react";
 import { kinds } from "nostr-tools";
+import { useActiveAccount } from "applesauce-react/hooks";
 
-import useCurrentAccount from "./use-current-account";
 import useUserMuteList from "./use-user-mute-list";
 import { getPubkeysFromList } from "../helpers/nostr/lists";
 import { NostrEvent } from "../types/nostr-event";
 import { getStreamHost } from "../helpers/nostr/stream";
 
 export default function useUserMuteFilter(pubkey?: string, additionalRelays?: string[], force?: boolean) {
-  const account = useCurrentAccount();
+  const account = useActiveAccount();
   const muteList = useUserMuteList(pubkey || account?.pubkey, additionalRelays, force);
   const pubkeys = useMemo(() => (muteList ? getPubkeysFromList(muteList).map((p) => p.pubkey) : []), [muteList]);
 

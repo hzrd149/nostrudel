@@ -1,16 +1,16 @@
 import { Button, IconButton, useDisclosure } from "@chakra-ui/react";
 import { kinds } from "nostr-tools";
+import { useActiveAccount } from "applesauce-react/hooks";
 
 import { NostrEvent } from "../../../../types/nostr-event";
 import { RepostIcon } from "../../../icons";
 import useEventCount from "../../../../hooks/use-event-count";
-import useCurrentAccount from "../../../../hooks/use-current-account";
 import ShareModal from "./share-modal";
 
 export default function EventShareButton({ event, title = "Share Event" }: { event: NostrEvent; title?: string }) {
   const { isOpen, onClose, onOpen } = useDisclosure();
 
-  const account = useCurrentAccount();
+  const account = useActiveAccount();
   const hasShared = useEventCount(
     account ? { "#e": [event.id], kinds: [kinds.Repost, kinds.GenericRepost], authors: [account.pubkey] } : undefined,
   );

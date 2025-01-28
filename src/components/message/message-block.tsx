@@ -1,7 +1,7 @@
 import { CardProps, Flex } from "@chakra-ui/react";
 import { NostrEvent } from "nostr-tools";
+import { useActiveAccount } from "applesauce-react/hooks";
 
-import useCurrentAccount from "../../hooks/use-current-account";
 import MessageBubble, { MessageBubbleProps } from "./message-bubble";
 import { useThreadsContext } from "../../providers/local/thread-provider";
 import ThreadButton from "./thread-button";
@@ -33,7 +33,7 @@ export default function MessageBlock({
   renderContent,
 }: MessageBlockProps) {
   const lastEvent = messages[messages.length - 1];
-  const account = useCurrentAccount()!;
+  const account = useActiveAccount()!;
   const isOwn = account.pubkey === lastEvent.pubkey;
 
   const avatar = <UserAvatarLink pubkey={lastEvent.pubkey} size="sm" my="1" />;

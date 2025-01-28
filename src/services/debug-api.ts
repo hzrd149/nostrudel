@@ -1,4 +1,4 @@
-import accountService from "./account";
+import accountService from "./accounts";
 import channelMetadataService from "./channel-metadata";
 import { eventStore, queryStore } from "./event-store";
 import localSettings from "./local-settings";

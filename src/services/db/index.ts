@@ -1,15 +1,26 @@
 import { openDB, deleteDB, IDBPDatabase, IDBPTransaction } from "idb";
 import { clearDB, deleteDB as nostrIDBDelete } from "nostr-idb";
 
-import { SchemaV1, SchemaV10, SchemaV2, SchemaV3, SchemaV4, SchemaV5, SchemaV6, SchemaV7, SchemaV9 } from "./schema";
+import {
+  SchemaV1,
+  SchemaV10,
+  SchemaV11,
+  SchemaV2,
+  SchemaV3,
+  SchemaV4,
+  SchemaV5,
+  SchemaV6,
+  SchemaV7,
+  SchemaV9,
+} from "./schema";
 import { logger } from "../../helpers/debug";
 import { localDatabase } from "../cache-relay";
 
 const log = logger.extend("Database");
 
 const dbName = "storage";
-const version = 10;
-const db = await openDB<SchemaV10>(dbName, version, {
+const version = 11;
+const db = await openDB<SchemaV11>(dbName, version, {
   upgrade(db, oldVersion, newVersion, transaction, event) {
     if (oldVersion < 1) {
       const v0 = db as unknown as IDBPDatabase<SchemaV1>;
@@ -182,6 +193,14 @@ const db = await openDB<SchemaV10>(dbName, version, {
     if (oldVersion < 10) {
       const v9 = db as unknown as IDBPDatabase<SchemaV9>;
       v9.deleteObjectStore("channelMetadata");
+    }
+
+    if (oldVersion < 11) {
+      const v10 = db as unknown as IDBPDatabase<SchemaV10>;
+
+      // recreate accounts table
+      v10.deleteObjectStore("accounts");
+      db.createObjectStore("accounts", { keyPath: "id" });
     }
   },
 });

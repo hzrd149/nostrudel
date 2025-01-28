@@ -1,11 +1,11 @@
 import { Link, LinkProps } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 import { nip19 } from "nostr-tools";
+import { useActiveAccount } from "applesauce-react/hooks";
 
 import { getDisplayName } from "../../helpers/nostr/profile";
 import useUserProfile from "../../hooks/use-user-profile";
 import useAppSettings from "../../hooks/use-user-app-settings";
-import useCurrentAccount from "../../hooks/use-current-account";
 
 export type UserLinkProps = LinkProps & {
   pubkey: string;
@@ -16,7 +16,7 @@ export type UserLinkProps = LinkProps & {
 
 export default function UserLink({ pubkey, showAt, tab, relays, ...props }: UserLinkProps) {
   const metadata = useUserProfile(pubkey, relays);
-  const account = useCurrentAccount();
+  const account = useActiveAccount();
   const { hideUsernames, removeEmojisInUsernames, showPubkeyColor } = useAppSettings();
   const color = "#" + pubkey.slice(0, 6);
 

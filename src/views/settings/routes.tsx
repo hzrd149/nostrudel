@@ -1,6 +1,6 @@
 import { lazy } from "react";
 import { Outlet, RouteObject } from "react-router-dom";
-import RequireCurrentAccount from "../../components/router/require-current-account";
+import RequireActiveAccount from "../../components/router/require-active-account";
 
 import SettingsView from ".";
 import DisplaySettings from "./display";
@@ -34,9 +34,9 @@ export default [
       {
         path: "accounts",
         element: (
-          <RequireCurrentAccount>
+          <RequireActiveAccount>
             <AccountSettings />
-          </RequireCurrentAccount>
+          </RequireActiveAccount>
         ),
       },
       { path: "mailboxes", Component: MailboxesView },

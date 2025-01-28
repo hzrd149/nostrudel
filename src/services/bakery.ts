@@ -4,9 +4,10 @@ import { logger } from "../helpers/debug";
 import BakeryRelay from "../classes/bakery/bakery-connection";
 import BakeryControlApi from "../classes/bakery/control-api";
 import signingService from "./signing";
-import accountService from "./account";
+import accountService from "./accounts";
 import relayPoolService from "./relay-pool";
 import localSettings from "./local-settings";
+import accounts from "./accounts";
 
 const log = logger.extend("bakery");
 
@@ -48,7 +49,7 @@ bakery$
     const bakery = bakery$.value;
     if (!bakery) return;
 
-    const account = accountService.current.value;
+    const account = accounts.active;
     if (!account) return;
 
     try {

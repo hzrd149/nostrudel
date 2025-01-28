@@ -1,6 +1,6 @@
 import { lazy } from "react";
 import { RouteObject } from "react-router-dom";
-import RequireCurrentAccount from "../../components/router/require-current-account";
+import RequireActiveAccount from "../../components/router/require-active-account";
 
 const PodcastsHomeView = lazy(() => import("."));
 const PodcastView = lazy(() => import("./podcast"));
@@ -10,9 +10,9 @@ export default [
   {
     index: true,
     element: (
-      <RequireCurrentAccount>
+      <RequireActiveAccount>
         <PodcastsHomeView />
-      </RequireCurrentAccount>
+      </RequireActiveAccount>
     ),
   },
   { path: ":guid", Component: PodcastView },

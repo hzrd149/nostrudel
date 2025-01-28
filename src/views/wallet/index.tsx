@@ -10,7 +10,7 @@ import {
 } from "applesauce-core/helpers";
 
 import { useReadRelays } from "../../hooks/use-client-relays";
-import useCurrentAccount from "../../hooks/use-current-account";
+import { useActiveAccount } from "applesauce-react/hooks";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import useAsyncErrorHandler from "../../hooks/use-async-error-handler";
 import { getWalletDescription, getWalletName } from "../../helpers/nostr/wallet";
@@ -21,7 +21,7 @@ import { eventStore } from "../../services/event-store";
 function Wallet({ wallet }: { wallet: NostrEvent }) {
   useEventUpdate(wallet.id);
 
-  const account = useCurrentAccount()!;
+  const account = useActiveAccount()!;
   const locked = hasHiddenTags(wallet) && isHiddenTagsLocked(wallet);
 
   const unlock = useAsyncErrorHandler(async () => {
@@ -53,7 +53,7 @@ function Wallet({ wallet }: { wallet: NostrEvent }) {
 }
 
 export default function WalletHomeView() {
-  const account = useCurrentAccount()!;
+  const account = useActiveAccount()!;
 
   const readRelays = useReadRelays();
   const { timeline } = useTimelineLoader("wallets", readRelays, { kinds: [37375], authors: [account.pubkey] });

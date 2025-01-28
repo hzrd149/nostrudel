@@ -16,16 +16,15 @@ import {
 } from "@chakra-ui/react";
 import { useObservable } from "applesauce-react/hooks";
 
-import useCurrentAccount from "../../../../hooks/use-current-account";
+import { useActiveAccount } from "applesauce-react/hooks";
 import { useSigningContext } from "../../../../providers/global/signing-provider";
 import { bakery$, setBakeryURL } from "../../../../services/bakery";
-import accountService from "../../../../services/account";
 import Panel from "../../../../components/dashboard/panel";
 
 export function BakeryAuthPage() {
   const toast = useToast();
   const navigate = useNavigate();
-  const account = useCurrentAccount();
+  const account = useActiveAccount();
   const { requestSignature } = useSigningContext();
   const [search] = useSearchParams();
   const remember = useDisclosure({ defaultIsOpen: true });
@@ -103,17 +102,6 @@ export function BakeryAuthPage() {
                   <Button type="button" onClick={authenticateWithNostr} colorScheme="purple" flex={1}>
                     Login with Nostr
                   </Button>
-                  {account && (
-                    <Button
-                      onClick={() => {
-                        // logout and navigate to nostr login view
-                        accountService.logout();
-                        navigate("/login", { state: { back: location } });
-                      }}
-                    >
-                      Change
-                    </Button>
-                  )}
                 </Flex>
               </>
             )}

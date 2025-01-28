@@ -7,14 +7,14 @@ import OpenInAppMenuItem from "../../../components/common-menu-items/open-in-app
 import ShareLinkMenuItem from "../../../components/common-menu-items/share-link";
 import CopyEmbedCodeMenuItem from "../../../components/common-menu-items/copy-embed-code";
 import DebugEventMenuItem from "../../../components/debug-modal/debug-event-menu-item";
-import useCurrentAccount from "../../../hooks/use-current-account";
+import { useActiveAccount } from "applesauce-react/hooks";
 import { EditIcon } from "../../../components/icons";
 import { getPageTopic } from "../../../helpers/nostr/wiki";
 import GitBranch02 from "../../../components/icons/git-branch-02";
 import useShareableEventAddress from "../../../hooks/use-shareable-event-address";
 
 export default function WikiPageMenu({ page, ...props }: { page: NostrEvent } & Omit<MenuIconButtonProps, "children">) {
-  const account = useCurrentAccount();
+  const account = useActiveAccount();
   const address = useShareableEventAddress(page);
 
   return (

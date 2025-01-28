@@ -1,9 +1,9 @@
 import { Code, Flex, FlexProps, LinkBox, Text } from "@chakra-ui/react";
 import { NostrEvent, kinds, nip19, nip25 } from "nostr-tools";
 import { Link as RouterLink } from "react-router-dom";
+import { useActiveAccount } from "applesauce-react/hooks";
 
 import { useReadRelays } from "../../../hooks/use-client-relays";
-import useCurrentAccount from "../../../hooks/use-current-account";
 import useTimelineLoader from "../../../hooks/use-timeline-loader";
 import TimelineActionAndStatus from "../../timeline/timeline-action-and-status";
 import IntersectionObserverProvider from "../../../providers/local/intersection-observer";
@@ -93,7 +93,7 @@ function TimelineItem({ event }: { event: NostrEvent }) {
 }
 
 export default function GhostTimeline({ ...props }: Omit<FlexProps, "children">) {
-  const account = useCurrentAccount()!;
+  const account = useActiveAccount()!;
   const readRelays = useReadRelays();
 
   const { loader, timeline: events } = useTimelineLoader(`${account.pubkey}-ghost`, readRelays, {

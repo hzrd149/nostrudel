@@ -20,6 +20,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { Event, kinds } from "nostr-tools";
+import { useActiveAccount } from "applesauce-react/hooks";
 import dayjs from "dayjs";
 
 import createDefer, { Deferred } from "../../classes/deferred";
@@ -31,7 +32,6 @@ import { EmbedEvent } from "../../components/embed-event";
 import { useWriteRelays } from "../../hooks/use-client-relays";
 import { usePublishEvent } from "../global/publish-provider";
 import { useUserOutbox } from "../../hooks/use-user-mailboxes";
-import useCurrentAccount from "../../hooks/use-current-account";
 import { eventStore } from "../../services/event-store";
 
 type DeleteEventContextType = {
@@ -49,7 +49,7 @@ export function useDeleteEventContext() {
 }
 
 export default function DeleteEventProvider({ children }: PropsWithChildren) {
-  const account = useCurrentAccount();
+  const account = useActiveAccount();
   const publish = usePublishEvent();
   const [isLoading, setLoading] = useState(false);
   const [event, setEvent] = useState<Event>();

@@ -14,15 +14,18 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { kinds } from "nostr-tools";
-import { getAddressPointersFromList, getEventPointersFromList } from "applesauce-lists/helpers";
-import { getReplaceableUID } from "applesauce-core/helpers";
+import {
+  getAddressPointersFromList,
+  getEventPointersFromList,
+  getProfilePointersFromList,
+  getReplaceableUID,
+} from "applesauce-core/helpers";
 
 import UserAvatarLink from "../../../components/user/user-avatar-link";
 import UserLink from "../../../components/user/user-link";
 import {
   getListDescription,
   getListName,
-  getPubkeysFromList,
   getReferencesFromList,
   isSpecialListKind,
 } from "../../../helpers/nostr/lists";
@@ -41,7 +44,7 @@ import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
 import { getSharableEventAddress } from "../../../services/relay-hints";
 
 export function ListCardContent({ list }: { list: NostrEvent }) {
-  const people = getPubkeysFromList(list);
+  const people = getProfilePointersFromList(list);
   const notes = getEventPointersFromList(list);
   const coordinates = getAddressPointersFromList(list);
   const articles = coordinates.filter((cord) => cord.kind === kinds.LongFormArticle);

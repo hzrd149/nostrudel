@@ -1,16 +1,16 @@
 import { Avatar, Flex, IconButton, useDisclosure } from "@chakra-ui/react";
+import { useActiveAccount } from "applesauce-react/hooks";
 import { Link as RouterLink } from "react-router-dom";
 
 import { DirectMessagesIcon, NotesIcon, NotificationsIcon, PlusCircleIcon, SearchIcon } from "../../icons";
 import useRootPadding from "../../../hooks/use-root-padding";
 import Rocket02 from "../../icons/rocket-02";
 import UserAvatar from "../../user/user-avatar";
-import useCurrentAccount from "../../../hooks/use-current-account";
 import NavDrawer from "./nav-drawer";
 
 export default function MobileBottomNav() {
   useRootPadding({ bottom: "var(--chakra-sizes-14)" });
-  const account = useCurrentAccount();
+  const account = useActiveAccount();
   const drawer = useDisclosure();
 
   return (

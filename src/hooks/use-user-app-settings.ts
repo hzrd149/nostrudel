@@ -1,11 +1,10 @@
 import { useCallback, useMemo } from "react";
-import { useStoreQuery } from "applesauce-react/hooks";
+import { useActiveAccount, useStoreQuery } from "applesauce-react/hooks";
 import { EventTemplate } from "nostr-tools";
+import { ReadonlyAccount } from "applesauce-accounts/accounts";
 import dayjs from "dayjs";
 
 import { APP_SETTING_IDENTIFIER, APP_SETTINGS_KIND, AppSettings, defaultSettings } from "../helpers/app-settings";
-import useCurrentAccount from "./use-current-account";
-import accountService from "../services/account";
 import { usePublishEvent } from "../providers/global/publish-provider";
 import AppSettingsQuery from "../queries/app-settings";
 import useReplaceableEvent from "./use-replaceable-event";
@@ -25,7 +24,7 @@ export function useUserAppSettings(pubkey: string) {
 }
 
 export default function useAppSettings() {
-  const account = useCurrentAccount();
+  const account = useActiveAccount();
   const publish = usePublishEvent();
 
   // load synced settings
@@ -33,7 +32,7 @@ export default function useAppSettings() {
     account?.pubkey && { kind: APP_SETTINGS_KIND, pubkey: account.pubkey, identifier: APP_SETTING_IDENTIFIER },
   );
 
-  const localSettings = account?.localSettings;
+  const localSettings = account?.metadata?.settings;
   const syncedSettings = useStoreQuery(AppSettingsQuery, account && [account.pubkey]);
 
   const updateSettings = useCallback(
@@ -41,8 +40,9 @@ export default function useAppSettings() {
       if (!account) return;
       const updated: Partial<AppSettings> = { ...syncedSettings, ...newSettings };
 
-      accountService.updateAccountLocalSettings(account.pubkey, updated);
-      if (!account.readonly) {
+      account.metadata = { ...account.metadata, settings: updated };
+
+      if (!(account instanceof ReadonlyAccount)) {
         const draft = buildAppSettingsEvent(updated);
         await publish("Update Settings", draft);
       }

@@ -1,9 +1,9 @@
 import { Button, ButtonProps, IconButton, useDisclosure } from "@chakra-ui/react";
 import { getZapSender } from "applesauce-core/helpers";
+import { useActiveAccount } from "applesauce-react/hooks";
 
 import { humanReadableSats } from "../../helpers/lightning";
 import { totalZaps } from "../../helpers/nostr/zaps";
-import useCurrentAccount from "../../hooks/use-current-account";
 import useEventZaps from "../../hooks/use-event-zaps";
 import eventZapsService from "../../services/event-zaps";
 import { NostrEvent } from "../../types/nostr-event";
@@ -20,7 +20,7 @@ export type NoteZapButtonProps = Omit<ButtonProps, "children"> & {
 };
 
 export default function EventZapButton({ event, allowComment, showEventPreview, ...props }: NoteZapButtonProps) {
-  const account = useCurrentAccount();
+  const account = useActiveAccount();
   const { metadata } = useUserLNURLMetadata(event.pubkey);
   const zaps = useEventZaps(getEventUID(event)) ?? [];
   const { isOpen, onOpen, onClose } = useDisclosure();

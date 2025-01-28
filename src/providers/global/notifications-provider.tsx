@@ -1,8 +1,8 @@
 import { PropsWithChildren, createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { kinds } from "nostr-tools";
+import { useActiveAccount } from "applesauce-react/hooks";
 
 import { useReadRelays } from "../../hooks/use-client-relays";
-import useCurrentAccount from "../../hooks/use-current-account";
 import TimelineLoader from "../../classes/timeline-loader";
 import { NostrEvent } from "../../types/nostr-event";
 import useClientSideMuteFilter from "../../hooks/use-client-side-mute-filter";
@@ -25,7 +25,7 @@ export function useNotifications() {
 }
 
 export default function NotificationsProvider({ children }: PropsWithChildren) {
-  const account = useCurrentAccount();
+  const account = useActiveAccount();
   const inbox = useUserInbox(account?.pubkey);
   const readRelays = useReadRelays(inbox);
 

@@ -1,17 +1,18 @@
 import { CloseIcon } from "@chakra-ui/icons";
 import { Box, IconButton, Text } from "@chakra-ui/react";
+import { useAccountManager } from "applesauce-react/hooks";
+import { IAccount } from "applesauce-accounts";
 
 import { getDisplayName } from "../../../helpers/nostr/profile";
 import useUserProfile from "../../../hooks/use-user-profile";
-import accountService from "../../../services/account";
 import UserAvatar from "../../../components/user/user-avatar";
 import AccountTypeBadge from "../../../components/accounts/account-info-badge";
-import { Account } from "../../../classes/accounts/account";
 
-export default function AccountCard({ account }: { account: Account }) {
+export default function AccountCard({ account }: { account: IAccount }) {
   const pubkey = account.pubkey;
   // this wont load unless the data is cached since there are no relay connections yet
   const metadata = useUserProfile(pubkey, []);
+  const manager = useAccountManager();
 
   return (
     <Box
@@ -23,7 +24,7 @@ export default function AccountCard({ account }: { account: Account }) {
       overflow="hidden"
       padding="2"
       cursor="pointer"
-      onClick={() => accountService.switchAccount(pubkey)}
+      onClick={() => manager.setActive(account)}
     >
       <UserAvatar pubkey={pubkey} size="md" noProxy />
       <Box flex={1}>
@@ -37,7 +38,7 @@ export default function AccountCard({ account }: { account: Account }) {
         aria-label="Remove Account"
         onClick={(e) => {
           e.stopPropagation();
-          accountService.removeAccount(pubkey);
+          manager.removeAccount(account);
         }}
         size="md"
         variant="ghost"

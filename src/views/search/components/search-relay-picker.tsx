@@ -15,7 +15,7 @@ export function useSearchRelay(relay?: string) {
   else return relayPoolService.requestRelay(relay);
 }
 
-const SearchRelayPicker = forwardRef<any, Omit<SelectProps, "children">>(({ value, onChange, ...props }) => {
+const SearchRelayPicker = forwardRef<any, Omit<SelectProps, "children">>(({ value, onChange, ...props }, ref) => {
   const searchRelays = useSearchRelays();
   const cacheRelay = useCacheRelay();
 
@@ -25,7 +25,7 @@ const SearchRelayPicker = forwardRef<any, Omit<SelectProps, "children">>(({ valu
     (cacheRelay instanceof AbstractRelay && !!cacheRelayInfo?.supported_nips?.includes(50));
 
   return (
-    <Select w="auto" value={value} onChange={onChange} {...props}>
+    <Select ref={ref} w="auto" value={value} onChange={onChange} {...props}>
       {localSearchSupported && <option value="local">Local Relay</option>}
       {searchRelays.map((url) => (
         <option key={url} value={url}>

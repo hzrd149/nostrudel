@@ -2,22 +2,23 @@ import { useState } from "react";
 import { Button, Card, CardProps, Flex, FormControl, FormLabel, Image, Input, Text, useToast } from "@chakra-ui/react";
 import { useNavigate, Link as RouterLink } from "react-router-dom";
 import { NostrConnectSigner } from "applesauce-signers/signers/nostr-connect-signer";
+import { useAccountManager } from "applesauce-react/hooks";
+import { NostrConnectAccount, ReadonlyAccount } from "applesauce-accounts/accounts";
+import { ReadonlySigner } from "applesauce-signers";
 import { useDebounce } from "react-use";
 
 import dnsIdentityService, { DnsIdentity } from "../../../services/dns-identity";
 import { CheckIcon } from "../../../components/icons";
-import accountService from "../../../services/account";
 import { NOSTR_CONNECT_PERMISSIONS } from "../../../const";
 import { safeRelayUrls } from "../../../helpers/relay";
 import { getMatchSimpleEmail } from "../../../helpers/regexp";
 import QRCodeScannerButton from "../../../components/qr-code/qr-code-scanner-button";
-import NostrConnectAccount from "../../../classes/accounts/nostr-connect-account";
-import PubkeyAccount from "../../../classes/accounts/pubkey-account";
 import { createNostrConnectConnection } from "../../../classes/nostr-connect-connection";
 
 export default function LoginNostrAddressView() {
   const navigate = useNavigate();
   const toast = useToast();
+  const manager = useAccountManager();
 
   const [address, setAddress] = useState("");
 
@@ -56,11 +57,12 @@ export default function LoginNostrAddressView() {
 
         const pubkey = await signer.getPublicKey();
         const account = new NostrConnectAccount(pubkey, signer);
-        accountService.addAccount(account);
-        accountService.switchAccount(pubkey);
+        manager.addAccount(account);
+        manager.setActive(account);
       } else if (nip05.pubkey) {
-        accountService.addAccount(new PubkeyAccount(nip05.pubkey));
-        accountService.switchAccount(nip05.pubkey);
+        const account = new ReadonlyAccount(nip05.pubkey, new ReadonlySigner(nip05.pubkey));
+        manager.addAccount(account);
+        manager.setActive(nip05.pubkey);
       } else throw Error("Cant find address");
     } catch (e) {
       if (e instanceof Error) toast({ status: "error", description: e.message });

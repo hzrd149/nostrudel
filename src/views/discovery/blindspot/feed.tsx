@@ -6,7 +6,7 @@ import { kinds, NostrEvent } from "nostr-tools";
 import VerticalPageLayout from "../../../components/vertical-page-layout";
 import useParamsProfilePointer from "../../../hooks/use-params-pubkey-pointer";
 import useTimelineLoader from "../../../hooks/use-timeline-loader";
-import useCurrentAccount from "../../../hooks/use-current-account";
+import { useActiveAccount } from "applesauce-react/hooks";
 import useUserContactList from "../../../hooks/use-user-contact-list";
 import { getPubkeysFromList } from "../../../helpers/nostr/lists";
 import { useReadRelays } from "../../../hooks/use-client-relays";
@@ -22,7 +22,7 @@ import useClientSideMuteFilter from "../../../hooks/use-client-side-mute-filter"
 import { isReply, isRepost } from "../../../helpers/nostr/event";
 
 function BlindspotFeedPage({ pubkey }: { pubkey: string }) {
-  const account = useCurrentAccount()!;
+  const account = useActiveAccount()!;
   const contacts = useUserContactList(account.pubkey);
   const otherContacts = useUserContactList(pubkey);
   const readRelays = useReadRelays();

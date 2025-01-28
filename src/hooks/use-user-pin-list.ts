@@ -1,11 +1,11 @@
 import { kinds } from "nostr-tools";
 import { getAddressPointerFromATag, getEventPointerFromETag, isATag, isETag } from "applesauce-core/helpers";
+import { useActiveAccount } from "applesauce-react/hooks";
 
-import useCurrentAccount from "./use-current-account";
 import useReplaceableEvent from "./use-replaceable-event";
 
 export default function useUserPinList(pubkey?: string, relays: string[] = [], force?: boolean) {
-  const account = useCurrentAccount();
+  const account = useActiveAccount();
   const key = pubkey ?? account?.pubkey;
 
   const list = useReplaceableEvent(key ? { kind: kinds.Pinlist, pubkey: key } : undefined, relays, force);

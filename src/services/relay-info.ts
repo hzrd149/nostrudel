@@ -6,18 +6,22 @@ import { logger } from "../helpers/debug";
 
 const log = logger.extend("Nip11Registry");
 
-const tx = db.transaction("relayInfo", "readonly");
-let loaded = 0;
-let cursor = await tx.objectStore("relayInfo").openCursor();
-while (cursor) {
-  try {
-    Nip11Registry.set(cursor.key, cursor.value);
-    loaded++;
-  } catch (error) {}
-  cursor = await cursor.continue();
-}
+db.transaction("relayInfo", "readonly")
+  .objectStore("relayInfo")
+  .openCursor()
+  .then(async (cursor) => {
+    let loaded = 0;
 
-log(`Loaded ${loaded} relay info`);
+    while (cursor) {
+      try {
+        Nip11Registry.set(cursor.key as string, cursor.value);
+        loaded++;
+      } catch (error) {}
+      cursor = await cursor.continue();
+    }
+
+    log(`Loaded ${loaded} relay info`);
+  });
 
 async function getInfo(relay: string | AbstractRelay, alwaysFetch = false) {
   relay = typeof relay === "string" ? relay : relay.url;

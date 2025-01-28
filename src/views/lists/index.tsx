@@ -3,7 +3,7 @@ import { useNavigate, Link as RouterLink, Navigate } from "react-router-dom";
 import { getEventUID } from "applesauce-core/helpers";
 import { kinds } from "nostr-tools";
 
-import useCurrentAccount from "../../hooks/use-current-account";
+import { useActiveAccount } from "applesauce-react/hooks";
 import ListCard from "./components/list-card";
 import useUserSets from "../../hooks/use-user-lists";
 import NewSetModal from "./components/new-set-modal";
@@ -13,7 +13,7 @@ import { getSharableEventAddress } from "../../services/relay-hints";
 import Plus from "../../components/icons/plus";
 
 function ListsHomePage() {
-  const account = useCurrentAccount()!;
+  const account = useActiveAccount()!;
   const sets = useUserSets(account.pubkey, undefined, true);
   const { lists: favoriteLists } = useFavoriteLists();
   const newList = useDisclosure();
@@ -108,6 +108,6 @@ function ListsHomePage() {
 }
 
 export default function ListsHomeView() {
-  const account = useCurrentAccount();
+  const account = useActiveAccount();
   return account ? <ListsHomePage /> : <Navigate to="/lists/browse" />;
 }

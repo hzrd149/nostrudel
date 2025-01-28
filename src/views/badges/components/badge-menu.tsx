@@ -2,7 +2,7 @@ import { MenuItem } from "@chakra-ui/react";
 
 import { NostrEvent } from "../../../types/nostr-event";
 import { DotsMenuButton, MenuIconButtonProps } from "../../../components/dots-menu-button";
-import useCurrentAccount from "../../../hooks/use-current-account";
+import { useActiveAccount } from "applesauce-react/hooks";
 import { TrashIcon } from "../../../components/icons";
 import { useDeleteEventContext } from "../../../providers/route/delete-event-provider";
 import OpenInAppMenuItem from "../../../components/common-menu-items/open-in-app";
@@ -10,7 +10,7 @@ import CopyEmbedCodeMenuItem from "../../../components/common-menu-items/copy-em
 import DebugEventMenuItem from "../../../components/debug-modal/debug-event-menu-item";
 
 export default function BadgeMenu({ badge, ...props }: { badge: NostrEvent } & Omit<MenuIconButtonProps, "children">) {
-  const account = useCurrentAccount();
+  const account = useActiveAccount();
 
   const { deleteEvent } = useDeleteEventContext();
 

@@ -17,13 +17,13 @@ import {
 import { useObservable } from "applesauce-react/hooks";
 
 import useUsersMediaServers from "../../../hooks/use-user-media-servers";
-import useCurrentAccount from "../../../hooks/use-current-account";
+import { useActiveAccount } from "applesauce-react/hooks";
 import useSettingsForm from "../use-settings-form";
 import localSettings from "../../../services/local-settings";
 import SimpleView from "../../../components/layout/presets/simple-view";
 
 export default function PostSettings() {
-  const account = useCurrentAccount();
+  const account = useActiveAccount();
   const { register, getValues, watch, submit, formState } = useSettingsForm();
   const { servers: mediaServers } = useUsersMediaServers(account?.pubkey);
 

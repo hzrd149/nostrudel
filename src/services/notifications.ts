@@ -4,10 +4,10 @@ import { kinds, NostrEvent } from "nostr-tools";
 
 import singleEventLoader from "./single-event-loader";
 import clientRelaysService from "./client-relays";
-import { combineLatest, filter, from, map, mergeMap, shareReplay, tap } from "rxjs";
-import accountService from "./account";
+import { combineLatest, mergeMap, tap } from "rxjs";
 import { queryStore } from "./event-store";
 import { TORRENT_COMMENT_KIND } from "../helpers/nostr/torrents";
+import accounts from "./accounts";
 
 async function handleTextNote(event: NostrEvent) {
   // request quotes
@@ -43,7 +43,7 @@ async function handleShare(event: NostrEvent) {
   }
 }
 
-const notifications = combineLatest([accountService.current]).pipe(
+const notifications = combineLatest([accounts.active$]).pipe(
   mergeMap(([account]) => {
     if (account)
       return queryStore.createQuery(TimelineQuery, {

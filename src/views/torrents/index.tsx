@@ -1,6 +1,8 @@
 import { ChangeEventHandler, useCallback, useMemo, useState } from "react";
 import { Alert, Button, Flex, Spacer, Table, TableContainer, Tbody, Th, Thead, Tr, useToast } from "@chakra-ui/react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
+import { SimpleAccount } from "applesauce-accounts/accounts";
+import { generateSecretKey } from "nostr-tools";
 
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
 import VerticalPageLayout from "../../components/vertical-page-layout";
@@ -12,26 +14,26 @@ import { TORRENT_KIND, validateTorrent } from "../../helpers/nostr/torrents";
 import TorrentTableRow from "./components/torrent-table-row";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
-import useCurrentAccount from "../../hooks/use-current-account";
+import { useAccountManager, useActiveAccount } from "applesauce-react/hooks";
 import useUserProfile from "../../hooks/use-user-profile";
-import accountService from "../../services/account";
 import CategorySelect from "./components/category-select";
 import useRouteSearchValue from "../../hooks/use-route-search-value";
 import { useReadRelays } from "../../hooks/use-client-relays";
-import NsecAccount from "../../classes/accounts/nsec-account";
 
 function Warning() {
   const navigate = useNavigate();
   const toast = useToast();
-  const account = useCurrentAccount()!;
+  const account = useActiveAccount()!;
   const metadata = useUserProfile(account.pubkey);
   const [loading, setLoading] = useState(false);
+
+  const manager = useAccountManager();
   const createAnonAccount = async () => {
     setLoading(true);
     try {
-      const account = NsecAccount.newKey();
-      accountService.addAccount(account);
-      accountService.switchAccount(account.pubkey);
+      const account = SimpleAccount.fromKey(generateSecretKey());
+      manager.addAccount(account);
+      manager.setActive(account);
       navigate("/relays");
     } catch (e) {
       if (e instanceof Error) toast({ description: e.message, status: "error" });
@@ -86,7 +88,7 @@ function TorrentsPage() {
   });
   const callback = useTimelineCurserIntersectionCallback(loader);
 
-  const account = useCurrentAccount();
+  const account = useActiveAccount();
 
   return (
     <VerticalPageLayout>

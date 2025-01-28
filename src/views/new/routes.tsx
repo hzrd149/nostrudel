@@ -1,5 +1,5 @@
 import { Outlet, RouteObject } from "react-router-dom";
-import RequireCurrentAccount from "../../components/router/require-current-account";
+import RequireActiveAccount from "../../components/router/require-active-account";
 
 import NewView from ".";
 import NewNoteView from "./note";
@@ -8,9 +8,9 @@ import NewMediaPostView from "./media";
 export default [
   {
     element: (
-      <RequireCurrentAccount>
+      <RequireActiveAccount>
         <Outlet />
-      </RequireCurrentAccount>
+      </RequireActiveAccount>
     ),
     children: [
       { index: true, element: <NewView /> },

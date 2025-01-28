@@ -1,7 +1,7 @@
 import { Container } from "@chakra-ui/react";
 
 import VerticalPageLayout from "../../components/vertical-page-layout";
-import RequireCurrentAccount from "../../components/router/require-current-account";
+import RequireActiveAccount from "../../components/router/require-active-account";
 import { ErrorBoundary } from "../../components/error-boundary";
 import FeedsCard from "./components/feeds-card";
 import SearchForm from "./components/search-form";
@@ -36,7 +36,7 @@ function LaunchpadPage() {
 
 export default function LaunchpadView() {
   return (
-    <RequireCurrentAccount>
+    <RequireActiveAccount>
       <Container
         // set base to "md" so that when layout switches to column it is full width
         size={{ base: "md", md: "md", lg: "lg", xl: "xl", "2xl": "2xl" }}
@@ -52,6 +52,6 @@ export default function LaunchpadView() {
           <LaunchpadPage />
         </ErrorBoundary>
       </Container>
-    </RequireCurrentAccount>
+    </RequireActiveAccount>
   );
 }

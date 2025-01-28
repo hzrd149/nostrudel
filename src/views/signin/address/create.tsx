@@ -19,6 +19,8 @@ import { useNavigate } from "react-router-dom";
 import { NostrEvent } from "nostr-tools";
 import { NostrConnectSigner } from "applesauce-signers/signers/nostr-connect-signer";
 import { ProfileContent, safeParse } from "applesauce-core/helpers";
+import { useAccountManager } from "applesauce-react/hooks";
+import { NostrConnectAccount } from "applesauce-accounts/accounts";
 
 import useNip05Providers from "../../../hooks/use-nip05-providers";
 import HoverLinkOverlay from "../../../components/hover-link-overlay";
@@ -27,10 +29,8 @@ import { MetadataAvatar } from "../../../components/user/user-avatar";
 import { ErrorBoundary } from "../../../components/error-boundary";
 import dnsIdentityService from "../../../services/dns-identity";
 import useUserProfile from "../../../hooks/use-user-profile";
-import accountService from "../../../services/account";
 import { safeRelayUrls } from "../../../helpers/relay";
 import { NOSTR_CONNECT_PERMISSIONS } from "../../../const";
-import NostrConnectAccount from "../../../classes/accounts/nostr-connect-account";
 import { createNostrConnectConnection } from "../../../classes/nostr-connect-connection";
 
 function ProviderCard({ onClick, provider }: { onClick: () => void; provider: NostrEvent }) {
@@ -67,6 +67,7 @@ export default function LoginNostrAddressCreate() {
   const navigate = useNavigate();
   const toast = useToast();
 
+  const manager = useAccountManager();
   const [loading, setLoading] = useState<string>();
   const [name, setName] = useState("");
   const providers = useNip05Providers();
@@ -105,8 +106,8 @@ export default function LoginNostrAddressCreate() {
       const pubkey = await signer.getPublicKey();
       const account = new NostrConnectAccount(pubkey, signer);
 
-      accountService.addAccount(account);
-      accountService.switchAccount(account.pubkey);
+      manager.addAccount(account);
+      manager.setActive(account);
     } catch (e) {
       if (e instanceof Error) toast({ description: e.message, status: "error" });
     }

@@ -1,20 +1,19 @@
 import { Box, Button, ButtonGroup, Divider, Flex, Heading, Text } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import { PasswordSigner, SerialPortSigner, SimpleSigner } from "applesauce-signers";
-import { useObservable } from "applesauce-react/hooks";
+import { useAccountManager, useAccounts, useObservable } from "applesauce-react/hooks";
 
-import useCurrentAccount from "../../../hooks/use-current-account";
+import { useActiveAccount } from "applesauce-react/hooks";
 import UserAvatar from "../../../components/user/user-avatar";
 import UserName from "../../../components/user/user-name";
 import UserDnsIdentity from "../../../components/user/user-dns-identity";
-import accountService from "../../../services/account";
 import AccountTypeBadge from "../../../components/accounts/account-info-badge";
 import SimpleSignerBackup from "./components/simple-signer-backup";
 import MigrateAccountToDevice from "./components/migrate-to-device";
 import SimpleView from "../../../components/layout/presets/simple-view";
 
 function AccountBackup() {
-  const account = useCurrentAccount()!;
+  const account = useActiveAccount()!;
 
   return (
     <>
@@ -27,8 +26,9 @@ function AccountBackup() {
 }
 
 export default function AccountSettings() {
-  const account = useCurrentAccount()!;
-  const accounts = useObservable(accountService.accounts);
+  const account = useActiveAccount()!;
+  const accounts = useAccounts();
+  const manager = useAccountManager();
   const navigate = useNavigate();
 
   return (
@@ -41,7 +41,7 @@ export default function AccountSettings() {
           ml="auto"
           size="sm"
           onClick={() => {
-            accountService.logout(false);
+            manager.clearActive();
             navigate("/signin", { state: { from: location.pathname } });
           }}
         >
@@ -59,7 +59,7 @@ export default function AccountSettings() {
         </Box>
         <AccountTypeBadge account={account} ml="4" />
 
-        <Button onClick={() => accountService.logout()} ml="auto">
+        <Button onClick={() => manager.clearActive()} ml="auto">
           Logout
         </Button>
       </Flex>
@@ -88,13 +88,10 @@ export default function AccountSettings() {
             <AccountTypeBadge account={account} ml="4" />
 
             <ButtonGroup size="sm" ml="auto">
-              <Button onClick={() => accountService.switchAccount(account.pubkey)} variant="ghost">
+              <Button onClick={() => manager.setActive(account)} variant="ghost">
                 Switch
               </Button>
-              <Button
-                onClick={() => confirm("Remove account?") && accountService.removeAccount(account)}
-                colorScheme="red"
-              >
+              <Button onClick={() => confirm("Remove account?") && manager.removeAccount(account)} colorScheme="red">
                 Remove
               </Button>
             </ButtonGroup>

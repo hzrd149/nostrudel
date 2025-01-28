@@ -4,9 +4,9 @@ import { CloseIcon } from "@chakra-ui/icons";
 import { Link as RouterLink } from "react-router-dom";
 import { kinds } from "nostr-tools";
 
-import RequireCurrentAccount from "../../../components/router/require-current-account";
+import RequireActiveAccount from "../../../components/router/require-active-account";
 import useUserMailboxes from "../../../hooks/use-user-mailboxes";
-import useCurrentAccount from "../../../hooks/use-current-account";
+import { useActiveAccount } from "applesauce-react/hooks";
 import { InboxIcon, OutboxIcon } from "../../../components/icons";
 import MediaServerFavicon from "../../../components/media-server/media-server-favicon";
 import { RelayMode } from "../../../classes/relay";
@@ -47,7 +47,7 @@ function RelayLine({ relay, mode, list }: { relay: string; mode: RelayMode; list
 }
 
 function MailboxesPage() {
-  const account = useCurrentAccount()!;
+  const account = useActiveAccount()!;
   const publish = usePublishEvent();
   const mailboxes = useUserMailboxes(account.pubkey, undefined, true);
   const event = useReplaceableEvent({ kind: kinds.RelayList, pubkey: account.pubkey });
@@ -107,8 +107,8 @@ function MailboxesPage() {
 
 export default function MailboxesView() {
   return (
-    <RequireCurrentAccount>
+    <RequireActiveAccount>
       <MailboxesPage />
-    </RequireCurrentAccount>
+    </RequireActiveAccount>
   );
 }

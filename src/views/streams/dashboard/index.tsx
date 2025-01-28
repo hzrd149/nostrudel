@@ -9,8 +9,8 @@ import "./styles.css";
 import "react-mosaic-component/react-mosaic-component.css";
 
 import useTimelineLoader from "../../../hooks/use-timeline-loader";
-import RequireCurrentAccount from "../../../components/router/require-current-account";
-import useCurrentAccount from "../../../hooks/use-current-account";
+import RequireActiveAccount from "../../../components/router/require-active-account";
+import { useActiveAccount } from "applesauce-react/hooks";
 import { getEventCoordinate } from "../../../helpers/nostr/event";
 import { useReadRelays } from "../../../hooks/use-client-relays";
 import { ChevronLeftIcon } from "../../../components/icons";
@@ -69,7 +69,7 @@ function StreamModerationDashboard({ stream }: { stream: NostrEvent }) {
 
 function StreamModerationPage() {
   const navigate = useNavigate();
-  const account = useCurrentAccount()!;
+  const account = useActiveAccount()!;
   const readRelays = useReadRelays();
 
   const { loader, timeline: streams } = useTimelineLoader(account.pubkey + "-streams", readRelays, [
@@ -112,8 +112,8 @@ function StreamModerationPage() {
 
 export default function StreamModerationView() {
   return (
-    <RequireCurrentAccount>
+    <RequireActiveAccount>
       <StreamModerationPage />
-    </RequireCurrentAccount>
+    </RequireActiveAccount>
   );
 }

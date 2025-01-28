@@ -23,7 +23,7 @@ export default defineConfig({
       // strategies: "injectManifest",
       // srcDir: "src",
       // filename: "worker.ts",
-      registerType: "autoUpdate",
+      registerType: "prompt",
       // injectRegister: null,
       injectManifest: {
         minify: false,

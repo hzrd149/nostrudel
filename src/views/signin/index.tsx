@@ -1,9 +1,9 @@
 import { Avatar, Flex, Heading } from "@chakra-ui/react";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
-import useCurrentAccount from "../../hooks/use-current-account";
+import { useActiveAccount } from "applesauce-react/hooks";
 
 export default function LoginView() {
-  const current = useCurrentAccount();
+  const current = useActiveAccount();
   const location = useLocation();
 
   if (current) return <Navigate to={location.state?.from ?? "/"} replace />;

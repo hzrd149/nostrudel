@@ -14,12 +14,11 @@ import {
   SimpleGrid,
   useDisclosure,
 } from "@chakra-ui/react";
-import { useObservable } from "applesauce-react/hooks";
+import { useActiveAccount, useObservable } from "applesauce-react/hooks";
 import { kinds } from "nostr-tools";
 
 import { usePeopleListContext } from "../../providers/local/people-list-provider";
 import useUserSets from "../../hooks/use-user-lists";
-import useCurrentAccount from "../../hooks/use-current-account";
 import { getListName, getPubkeysFromList } from "../../helpers/nostr/lists";
 import { getEventCoordinate, getEventUID } from "../../helpers/nostr/event";
 import useFavoriteLists from "../../hooks/use-favorite-lists";
@@ -58,7 +57,7 @@ export default function PeopleListSelection({
   hideGlobalOption?: boolean;
 } & Omit<ButtonProps, "children">) {
   const modal = useDisclosure();
-  const account = useCurrentAccount();
+  const account = useActiveAccount();
   const lists = useUserSets(account?.pubkey).filter((list) => list.kind === kinds.Followsets);
   const { lists: favoriteLists } = useFavoriteLists();
   const { selected, setSelected, listEvent } = usePeopleListContext();

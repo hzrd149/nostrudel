@@ -20,7 +20,7 @@ import { CloseIcon } from "@chakra-ui/icons";
 
 import BackButton from "../../../components/router/back-button";
 import useUserSearchRelayList from "../../../hooks/use-user-search-relay-list";
-import useCurrentAccount from "../../../hooks/use-current-account";
+import { useActiveAccount } from "applesauce-react/hooks";
 import { cloneList, getRelaysFromList, listAddRelay, listRemoveRelay } from "../../../helpers/nostr/lists";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
 import { RelayFavicon } from "../../../components/relay-favicon";
@@ -91,7 +91,7 @@ function emptySearchRelayList(): EventTemplate {
 export default function SearchRelaysView() {
   const toast = useToast();
   const publish = usePublishEvent();
-  const account = useCurrentAccount();
+  const account = useActiveAccount();
   const searchRelayList = useUserSearchRelayList(account?.pubkey);
 
   const searchRelays = searchRelayList ? getRelaysFromList(searchRelayList) : [];

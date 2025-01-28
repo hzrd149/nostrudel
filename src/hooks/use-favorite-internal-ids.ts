@@ -1,10 +1,10 @@
 import { kinds } from "nostr-tools";
+import { useActiveAccount } from "applesauce-react/hooks";
 
 import useReplaceableEvent from "./use-replaceable-event";
-import useCurrentAccount from "./use-current-account";
 
 export default function useFavoriteInternalIds(identifier: string, tagName = "id", pubkey?: string) {
-  const account = useCurrentAccount();
+  const account = useActiveAccount();
   pubkey = pubkey || account?.pubkey;
 
   const favorites = useReplaceableEvent(

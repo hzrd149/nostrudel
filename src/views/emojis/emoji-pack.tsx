@@ -23,7 +23,7 @@ import { kinds } from "nostr-tools";
 
 import UserLink from "../../components/user/user-link";
 import { ChevronLeftIcon } from "../../components/icons";
-import useCurrentAccount from "../../hooks/use-current-account";
+import { useActiveAccount } from "applesauce-react/hooks";
 import { useDeleteEventContext } from "../../providers/route/delete-event-provider";
 import useReplaceableEvent from "../../hooks/use-replaceable-event";
 import EmojiPackMenu from "./components/emoji-pack-menu";
@@ -95,7 +95,7 @@ function EmojiTag({ name, url, onRemove, scale }: { name: string; url: string; o
 
 function EmojiPackPage({ pack }: { pack: NostrEvent }) {
   const navigate = useNavigate();
-  const account = useCurrentAccount();
+  const account = useActiveAccount();
   const publish = usePublishEvent();
   const { deleteEvent } = useDeleteEventContext();
   const [scale, setScale] = useState(10);

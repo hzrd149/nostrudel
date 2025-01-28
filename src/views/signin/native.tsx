@@ -1,22 +1,23 @@
 import { useCallback, useState } from "react";
 import { Button, Image, useToast } from "@chakra-ui/react";
 import { AppInfo } from "nostr-signer-capacitor-plugin";
+import { useAccountManager } from "applesauce-react/hooks";
 import { useAsync } from "react-use";
 
-import accountService from "../../services/account";
 import AndroidSignerAccount from "../../classes/accounts/android-signer-account";
 import AndroidNativeSigner from "../../classes/signers/android-native-signer";
 
 function AndroidNativeSignerButton({ app }: { app: AppInfo }) {
   const toast = useToast();
+  const manager = useAccountManager();
   const [connecting, setConnecting] = useState(false);
   const connect = useCallback(async () => {
     setConnecting(true);
 
     try {
       const account = await AndroidSignerAccount.fromApp(app);
-      accountService.addAccount(account);
-      accountService.switchAccount(account.pubkey);
+      manager.addAccount(account);
+      manager.setActive(account);
     } catch (error) {
       if (error instanceof Error) toast({ status: "error", description: error.message });
     }
@@ -32,7 +33,7 @@ function AndroidNativeSignerButton({ app }: { app: AppInfo }) {
   );
 }
 
-export function AndroidNativeSigners() {
+export default function AndroidNativeSigners() {
   const { value: apps } = useAsync(() => AndroidNativeSigner.getSignerApps());
 
   if (!apps) return null;

@@ -49,6 +49,7 @@
     "@uiw/react-codemirror": "^4.23.7",
     "@webscopeio/react-textarea-autocomplete": "^4.9.2",
     "ansi-to-html": "^0.7.2",
+    "applesauce-accounts": "next",
     "applesauce-content": "next",
     "applesauce-core": "next",
     "applesauce-factory": "next",

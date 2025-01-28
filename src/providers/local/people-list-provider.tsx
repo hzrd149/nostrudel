@@ -1,7 +1,7 @@
 import { PropsWithChildren, createContext, useCallback, useContext, useMemo } from "react";
 import { Filter, kinds } from "nostr-tools";
+import { useActiveAccount } from "applesauce-react/hooks";
 
-import useCurrentAccount from "../../hooks/use-current-account";
 import { getPubkeysFromList } from "../../helpers/nostr/lists";
 import useReplaceableEvent from "../../hooks/use-replaceable-event";
 import { NostrEvent } from "../../types/nostr-event";
@@ -30,7 +30,7 @@ export function usePeopleListContext() {
 }
 
 function useListCoordinate(listId: ListId) {
-  const account = useCurrentAccount();
+  const account = useActiveAccount();
 
   return useMemo(() => {
     if (listId === "following") return account ? `${kinds.Contacts}:${account.pubkey}` : undefined;
@@ -41,7 +41,7 @@ function useListCoordinate(listId: ListId) {
 }
 
 export function usePeopleListSelect(selected: ListId, onChange: (list: ListId) => void): PeopleListContextType {
-  const account = useCurrentAccount();
+  const account = useActiveAccount();
 
   const listId = useListCoordinate(selected);
   const listEvent = useReplaceableEvent(listId, [], true);
@@ -72,7 +72,7 @@ export type PeopleListProviderProps = PropsWithChildren & {
   initList?: ListId;
 };
 export default function PeopleListProvider({ children, initList }: PeopleListProviderProps) {
-  const account = useCurrentAccount();
+  const account = useActiveAccount();
   const peopleParam = useRouteSearchValue("people");
 
   const selected = peopleParam.value || (initList as ListId) || (account ? "following" : "global");

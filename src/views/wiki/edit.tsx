@@ -17,7 +17,7 @@ import { NostrEvent } from "nostr-tools";
 import { WIKI_RELAYS } from "../../const";
 import useCacheForm from "../../hooks/use-cache-form";
 import useReplaceableEvent from "../../hooks/use-replaceable-event";
-import useCurrentAccount from "../../hooks/use-current-account";
+import { useActiveAccount } from "applesauce-react/hooks";
 import { WIKI_PAGE_KIND, getPageSummary, getPageTitle, getPageTopic } from "../../helpers/nostr/wiki";
 import { usePublishEvent } from "../../providers/global/publish-provider";
 import VerticalPageLayout from "../../components/vertical-page-layout";
@@ -104,7 +104,7 @@ function EditWikiPagePage({ page }: { page: NostrEvent }) {
 }
 
 export default function EditWikiPageView() {
-  const account = useCurrentAccount();
+  const account = useActiveAccount();
   if (!account) return <Navigate to="/" />;
 
   const topic = useParams().topic;

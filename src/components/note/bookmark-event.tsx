@@ -12,9 +12,9 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { kinds } from "nostr-tools";
-import { getEventPointersFromList } from "applesauce-lists/helpers";
+import { getEventPointersFromList } from "applesauce-core/helpers/lists";
+import { useActiveAccount } from "applesauce-react/hooks";
 
-import useCurrentAccount from "../../hooks/use-current-account";
 import useUserSets from "../../hooks/use-user-lists";
 import { listAddEvent, listRemoveEvent, getListName } from "../../helpers/nostr/lists";
 import { NostrEvent } from "../../types/nostr-event";
@@ -23,6 +23,7 @@ import { BookmarkIcon, BookmarkedIcon, PlusCircleIcon } from "../icons";
 import NewSetModal from "../../views/lists/components/new-set-modal";
 import useEventBookmarkActions from "../../hooks/use-event-bookmark-actions";
 import { usePublishEvent } from "../../providers/global/publish-provider";
+import { ReadonlyAccount } from "applesauce-accounts/accounts";
 
 export default function BookmarkEventButton({
   event,
@@ -30,7 +31,7 @@ export default function BookmarkEventButton({
 }: { event: NostrEvent } & Omit<IconButtonProps, "icon">) {
   const publish = usePublishEvent();
   const newSetModal = useDisclosure();
-  const account = useCurrentAccount();
+  const account = useActiveAccount();
   const [isLoading, setLoading] = useState(false);
 
   const { isLoading: loadingBookmark, toggleBookmark, isBookmarked } = useEventBookmarkActions(event);
@@ -62,19 +63,21 @@ export default function BookmarkEventButton({
     [bookmarkSets, event.id, publish],
   );
 
+  const readonly = account ? account instanceof ReadonlyAccount : undefined;
+
   return (
     <>
       <Menu isLazy closeOnSelect={false}>
         <MenuButton
           as={IconButton}
           icon={inSets.length > 0 || isBookmarked ? <BookmarkedIcon /> : <BookmarkIcon />}
-          isDisabled={account?.readonly ?? true}
+          isDisabled={readonly ?? true}
           {...props}
         />
         <MenuList minWidth="240px">
           <MenuItem
             icon={isBookmarked ? <BookmarkedIcon /> : <BookmarkIcon />}
-            isDisabled={account?.readonly || loadingBookmark}
+            isDisabled={readonly || loadingBookmark}
             onClick={toggleBookmark}
           >
             Bookmark
@@ -90,7 +93,7 @@ export default function BookmarkEventButton({
                 <MenuItemOption
                   key={getEventCoordinate(set)}
                   value={getEventCoordinate(set)}
-                  isDisabled={account?.readonly || isLoading}
+                  isDisabled={readonly || isLoading}
                   isTruncated
                   maxW="90vw"
                 >

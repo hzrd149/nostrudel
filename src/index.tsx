@@ -50,10 +50,10 @@ createRoot(root).render(
   </GlobalProviders>,
 );
 
-// // if web, register service worker
-// // NOTE: this should happen after the app renders so it does not stop the app from rendering
-// if (CAP_IS_WEB) {
-//   logger("Loading service worker");
-//   const { registerServiceWorker } = await import("./services/worker");
-//   await registerServiceWorker();
-// }
+// if web, register service worker
+import { registerServiceWorker } from "./services/worker";
+if (CAP_IS_WEB) {
+  logger("Loading service worker");
+  // const { registerServiceWorker } = await import("./services/worker");
+  registerServiceWorker();
+}

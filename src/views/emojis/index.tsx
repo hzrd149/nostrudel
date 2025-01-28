@@ -1,9 +1,9 @@
 import { Button, Flex, Heading, Link, SimpleGrid, useDisclosure } from "@chakra-ui/react";
-import { getAddressPointersFromList } from "applesauce-lists/helpers";
 import { Link as RouterLink } from "react-router-dom";
 import { kinds } from "nostr-tools";
+import { getAddressPointersFromList } from "applesauce-core/helpers";
 
-import useCurrentAccount from "../../hooks/use-current-account";
+import { useActiveAccount } from "applesauce-react/hooks";
 import { ExternalLinkIcon } from "../../components/icons";
 import { getEventCoordinate, getEventUID } from "../../helpers/nostr/event";
 import { useReadRelays } from "../../hooks/use-client-relays";
@@ -15,7 +15,7 @@ import EmojiPackCreateModal from "./components/create-modal";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 
 function UserEmojiPackMangerPage() {
-  const account = useCurrentAccount()!;
+  const account = useActiveAccount()!;
 
   const favoritePacks = useFavoriteEmojiPacks(account.pubkey);
   const readRelays = useReadRelays();
@@ -67,7 +67,7 @@ function UserEmojiPackMangerPage() {
 }
 
 export default function EmojisHomeView() {
-  const account = useCurrentAccount();
+  const account = useActiveAccount();
   const createModal = useDisclosure();
 
   return (

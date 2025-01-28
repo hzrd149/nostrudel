@@ -23,16 +23,17 @@ import { decrypt } from "nostr-tools/nip49";
 import { isHexKey } from "applesauce-core/helpers";
 
 import { safeDecode } from "../../helpers/nip19";
-import accountService from "../../services/account";
-import NsecAccount from "../../classes/accounts/nsec-account";
 import QRCodeScannerButton from "../../components/qr-code/qr-code-scanner-button";
-import { Account } from "../../classes/accounts/account";
-import PasswordAccount from "../../classes/accounts/password-account";
 import Eye from "../../components/icons/eye";
 import EyeOff from "../../components/icons/eye-off";
+import { useAccountManager } from "applesauce-react/hooks";
+import { PasswordAccount, SimpleAccount } from "applesauce-accounts/accounts";
+import { IAccount } from "applesauce-accounts";
+import { PasswordSigner } from "applesauce-signers";
 
 export default function LoginNsecView() {
   const navigate = useNavigate();
+  const manager = useAccountManager();
 
   const [show, setShow] = useState(false);
 
@@ -45,16 +46,17 @@ export default function LoginNsecView() {
   }, [setValue, setShow]);
 
   const submit = handleSubmit(async ({ value }) => {
-    let account: Account;
+    let account: IAccount;
+
     if (isHexKey(value)) {
-      account = NsecAccount.fromKey(hexToBytes(value));
+      account = SimpleAccount.fromKey(hexToBytes(value));
     } else if (value.startsWith("ncryptsec")) {
       const password = window.prompt("Decryption password");
       if (password === null) throw new Error("Password required");
 
       const key = decrypt(value, password);
       const passwordAccount = PasswordAccount.fromNcryptsec(getPublicKey(key), value);
-      passwordAccount.signer.unlock(password);
+      await passwordAccount.signer.unlock(password);
       account = passwordAccount;
     } else if (value.startsWith("nsec")) {
       const decode = safeDecode(value);
@@ -63,17 +65,18 @@ export default function LoginNsecView() {
       const key = decode.data;
       const password = window.prompt("Local encryption password. This password is used to keep your secret key safe");
       if (password) {
-        const a = new PasswordAccount(getPublicKey(key));
-        a.signer.key = key;
-        a.signer.setPassword(password);
-        account = a;
+        const signer = new PasswordSigner();
+        signer.key = key;
+        await signer.setPassword(password);
+
+        account = new PasswordAccount(getPublicKey(key), signer);
       } else {
-        account = NsecAccount.fromKey(decode.data);
+        account = SimpleAccount.fromKey(decode.data);
       }
     } else throw new Error("Invalid key");
 
-    accountService.addAccount(account);
-    accountService.switchAccount(account.pubkey);
+    manager.addAccount(account);
+    manager.setActive(account);
   });
 
   return (

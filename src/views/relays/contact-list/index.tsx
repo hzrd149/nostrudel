@@ -1,20 +1,19 @@
 import { Button, Flex, Heading, Link, Spinner, Text } from "@chakra-ui/react";
-import BackButton from "../../../components/router/back-button";
-import useCurrentAccount from "../../../hooks/use-current-account";
+import { useActiveAccount } from "applesauce-react/hooks";
 import { Link as RouterLink } from "react-router-dom";
+import { EventTemplate } from "nostr-tools";
+import dayjs from "dayjs";
 
 import { RelayFavicon } from "../../../components/relay-favicon";
 import useUserContactRelays from "../../../hooks/use-user-contact-relays";
 import { CheckIcon } from "../../../components/icons";
 import { useCallback, useState } from "react";
 import useUserContactList from "../../../hooks/use-user-contact-list";
-import { EventTemplate } from "nostr-tools";
-import dayjs from "dayjs";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
 import SimpleView from "../../../components/layout/presets/simple-view";
 
 export default function ContactListRelaysView() {
-  const account = useCurrentAccount();
+  const account = useActiveAccount();
   const contacts = useUserContactList(account?.pubkey);
   const relays = useUserContactRelays(account?.pubkey);
   const publish = usePublishEvent();
@@ -43,14 +42,7 @@ export default function ContactListRelaysView() {
       title="Contact list relays"
       actions={
         relays && (
-          <Button
-            colorScheme="red"
-            onClick={clearRelays}
-            isLoading={loading}
-            ml="auto"
-            size="sm"
-            isDisabled={account?.readonly}
-          >
+          <Button colorScheme="red" onClick={clearRelays} isLoading={loading} ml="auto" size="sm">
             Clear Relays
           </Button>
         )

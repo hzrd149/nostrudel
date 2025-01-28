@@ -17,8 +17,8 @@ import {
   TextureLoader,
 } from "three";
 
-import useCurrentAccount from "../../hooks/use-current-account";
-import RequireCurrentAccount from "../../components/router/require-current-account";
+import { useActiveAccount } from "applesauce-react/hooks";
+import RequireActiveAccount from "../../components/router/require-active-account";
 import { getPubkeysFromList } from "../../helpers/nostr/lists";
 import useUserContactList from "../../hooks/use-user-contact-list";
 import useUserProfile from "../../hooks/use-user-profile";
@@ -36,7 +36,7 @@ type NodeType = { id: string; image?: string; name?: string };
 
 function NetworkDMGraphPage() {
   const navigate = useNavigate();
-  const account = useCurrentAccount()!;
+  const account = useActiveAccount()!;
   const relays = useReadRelays();
 
   const contacts = useUserContactList(account.pubkey);
@@ -174,8 +174,8 @@ function NetworkDMGraphPage() {
 
 export default function NetworkDMGraphView() {
   return (
-    <RequireCurrentAccount>
+    <RequireActiveAccount>
       <NetworkDMGraphPage />
-    </RequireCurrentAccount>
+    </RequireActiveAccount>
   );
 }

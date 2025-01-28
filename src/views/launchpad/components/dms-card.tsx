@@ -5,7 +5,7 @@ import { useObservable } from "applesauce-react/hooks";
 import { nip19 } from "nostr-tools";
 
 import KeyboardShortcut from "../../../components/keyboard-shortcut";
-import useCurrentAccount from "../../../hooks/use-current-account";
+import { useActiveAccount } from "applesauce-react/hooks";
 import { useDMTimeline } from "../../../providers/global/dms-provider";
 import {
   KnownConversation,
@@ -50,7 +50,7 @@ function Conversation({ conversation }: { conversation: KnownConversation }) {
 
 export default function DMsCard({ ...props }: Omit<CardProps, "children">) {
   const navigate = useNavigate();
-  const account = useCurrentAccount()!;
+  const account = useActiveAccount()!;
 
   const timeline = useDMTimeline();
 

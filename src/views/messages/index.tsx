@@ -5,11 +5,11 @@ import { useObservable } from "applesauce-react/hooks";
 import { nip19 } from "nostr-tools";
 
 import UserAvatar from "../../components/user/user-avatar";
-import RequireCurrentAccount from "../../components/router/require-current-account";
+import RequireActiveAccount from "../../components/router/require-active-account";
 import Timestamp from "../../components/timestamp";
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
 import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
-import useCurrentAccount from "../../hooks/use-current-account";
+import { useActiveAccount } from "applesauce-react/hooks";
 import { KnownConversation, groupIntoConversations, hasResponded, identifyConversation } from "../../helpers/nostr/dms";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
@@ -63,7 +63,7 @@ function ConversationCard({ conversation }: { conversation: KnownConversation })
 function MessagesHomePage() {
   const { people } = usePeopleListContext();
 
-  const account = useCurrentAccount()!;
+  const account = useActiveAccount()!;
   const timeline = useDMTimeline();
 
   const messages = useObservable(timeline.timeline) ?? [];
@@ -95,10 +95,10 @@ function MessagesHomePage() {
 
 export default function MessagesHomeView() {
   return (
-    <RequireCurrentAccount>
+    <RequireActiveAccount>
       <PeopleListProvider initList="global">
         <MessagesHomePage />
       </PeopleListProvider>
-    </RequireCurrentAccount>
+    </RequireActiveAccount>
   );
 }

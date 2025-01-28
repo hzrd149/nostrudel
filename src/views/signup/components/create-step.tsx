@@ -6,11 +6,11 @@ import { ProfileContent, unixNow } from "applesauce-core/helpers";
 
 import { containerProps } from "./common";
 import { nostrBuildUploadImage } from "../../../helpers/media-upload/nostr-build";
-import accountService from "../../../services/account";
 import { COMMON_CONTACT_RELAYS } from "../../../const";
 import { DraftNostrEvent } from "../../../types/nostr-event";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
-import NsecAccount from "../../../classes/accounts/nsec-account";
+import { SimpleAccount } from "applesauce-accounts/accounts";
+import { useAccountManager } from "applesauce-react/hooks";
 
 export default function CreateStep({
   metadata,
@@ -27,6 +27,7 @@ export default function CreateStep({
 }) {
   const publish = usePublishEvent();
   const toast = useToast();
+  const manager = useAccountManager();
 
   const [preview, setPreview] = useState("");
   useEffect(() => {
@@ -41,10 +42,10 @@ export default function CreateStep({
   const createProfile = async () => {
     setLoading(true);
     try {
-      const hex = generateSecretKey();
+      const key = generateSecretKey();
 
       const uploaded = profileImage
-        ? await nostrBuildUploadImage(profileImage, async (draft) => finalizeEvent(draft, hex))
+        ? await nostrBuildUploadImage(profileImage, async (draft) => finalizeEvent(draft, key))
         : undefined;
 
       // create profile
@@ -55,15 +56,15 @@ export default function CreateStep({
           kind: kinds.Metadata,
           tags: [],
         },
-        hex,
+        key,
       );
 
       await publish("Create Profile", kind0, [...relays, ...COMMON_CONTACT_RELAYS]);
 
       // login
-      const account = NsecAccount.newKey();
-      accountService.addAccount(account);
-      accountService.switchAccount(account.pubkey);
+      const account = SimpleAccount.fromKey(key);
+      manager.addAccount(account);
+      manager.setActive(account);
 
       // set relays
       const draft: DraftNostrEvent = {
@@ -72,10 +73,10 @@ export default function CreateStep({
         tags: relays.map((url) => ["r", url]),
         created_at: unixNow(),
       };
-      const signed = finalizeEvent(draft, hex);
+      const signed = finalizeEvent(draft, key);
       await publish("Set Mailbox Relays", signed, relays);
 
-      onSubmit(bytesToHex(hex));
+      onSubmit(bytesToHex(key));
     } catch (e) {
       if (e instanceof Error) toast({ description: e.message, status: "error" });
     }

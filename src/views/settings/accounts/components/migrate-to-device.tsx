@@ -3,26 +3,27 @@ import { PasswordSigner, SerialPortSigner, SimpleSigner } from "applesauce-signe
 import { useState } from "react";
 
 import useAsyncErrorHandler from "../../../../hooks/use-async-error-handler";
-import useCurrentAccount from "../../../../hooks/use-current-account";
-import SerialPortAccount from "../../../../classes/accounts/serial-port-account";
-import accountService from "../../../../services/account";
+import { useAccountManager, useActiveAccount } from "applesauce-react/hooks";
+import accountService from "../../../../services/accounts";
+import { SerialPortAccount } from "applesauce-accounts/accounts";
 
 export default function MigrateAccountToDevice() {
   if (!SerialPortSigner.SUPPORTED) return null;
 
   const toast = useToast();
-  const current = useCurrentAccount();
+  const current = useActiveAccount();
   const [loading, setLoading] = useState(false);
+  const manager = useAccountManager();
 
   const migrate = useAsyncErrorHandler(async () => {
     try {
       setLoading(true);
       if (!current?.signer) throw new Error("Account missing signer");
-      const device = new SerialPortSigner();
+      const signer = new SerialPortSigner();
 
       if (current.signer instanceof SimpleSigner) {
         // send key to device
-        await device.restore(current.signer.key);
+        await signer.restore(current.signer.key);
       } else if (current.signer instanceof PasswordSigner) {
         // unlock the signer first
         if (!current.signer.unlocked) {
@@ -31,13 +32,13 @@ export default function MigrateAccountToDevice() {
           await current.signer.unlock(password);
         }
 
-        await device.restore(current.signer.key!);
+        await signer.restore(current.signer.key!);
       } else throw new Error("Unsupported signer type");
 
       // replace existing account
-      const deviceAccount = new SerialPortAccount(current.pubkey);
-      accountService.replaceAccount(current.pubkey, deviceAccount);
-      accountService.switchAccount(deviceAccount.pubkey);
+      const deviceAccount = new SerialPortAccount(current.pubkey, signer);
+      manager.replaceAccount(current.pubkey, deviceAccount);
+      manager.setActive(deviceAccount);
     } catch (error) {
       if (error instanceof Error) toast({ description: error.message, status: "error" });
     }

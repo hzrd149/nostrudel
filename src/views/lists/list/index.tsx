@@ -2,17 +2,20 @@ import { useNavigate } from "react-router-dom";
 import { kinds, nip19, NostrEvent } from "nostr-tools";
 import type { DecodeResult } from "nostr-tools/nip19";
 import { Box, Button, Flex, Heading, SimpleGrid, Spacer, Spinner, Text } from "@chakra-ui/react";
-import { encodeDecodeResult } from "applesauce-core/helpers";
-import { getAddressPointersFromList, getEventPointersFromList } from "applesauce-lists/helpers";
+import {
+  encodeDecodeResult,
+  getAddressPointersFromList,
+  getEventPointersFromList,
+  getProfilePointersFromList,
+} from "applesauce-core/helpers";
 
 import UserLink from "../../../components/user/user-link";
 import { ChevronLeftIcon } from "../../../components/icons";
-import useCurrentAccount from "../../../hooks/use-current-account";
+import { useActiveAccount } from "applesauce-react/hooks";
 import { useDeleteEventContext } from "../../../providers/route/delete-event-provider";
 import {
   getListDescription,
   getListName,
-  getPubkeysFromList,
   getReferencesFromList,
   isSpecialListKind,
 } from "../../../helpers/nostr/lists";
@@ -38,11 +41,11 @@ function BookmarkedEvent({ id, relays }: { id: string; relays?: string[] }) {
 function ListPage({ list }: { list: NostrEvent }) {
   const navigate = useNavigate();
   const { deleteEvent } = useDeleteEventContext();
-  const account = useCurrentAccount();
+  const account = useActiveAccount();
 
   const description = getListDescription(list);
   const isAuthor = account?.pubkey === list.pubkey;
-  const people = getPubkeysFromList(list);
+  const people = getProfilePointersFromList(list);
   const notes = getEventPointersFromList(list);
   const coordinates = getAddressPointersFromList(list);
   const communities = coordinates.filter((cord) => cord.kind === kinds.CommunityDefinition);
@@ -84,8 +87,8 @@ function ListPage({ list }: { list: NostrEvent }) {
           <>
             <Heading size="lg">People</Heading>
             <SimpleGrid columns={{ base: 1, lg: 2, xl: 3 }} spacing="2">
-              {people.map(({ pubkey, relay }) => (
-                <UserCard key={pubkey} pubkey={pubkey} relay={relay} list={list} />
+              {people.map(({ pubkey, relays }) => (
+                <UserCard key={pubkey} pubkey={pubkey} relay={relays?.[0]} list={list} />
               ))}
             </SimpleGrid>
           </>

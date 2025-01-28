@@ -2,13 +2,12 @@ import { useCallback, useMemo, useState } from "react";
 import { Flex, FlexProps, IconButton, IconButtonProps, Text } from "@chakra-ui/react";
 
 import { ChevronDownIcon, ChevronUpIcon, DislikeIcon, LikeIcon } from "../icons";
-import useCurrentAccount from "../../hooks/use-current-account";
 import useEventReactions from "../../hooks/use-event-reactions";
 import { getEventReactionScore, groupReactions } from "../../helpers/nostr/reactions";
 import { NostrEvent } from "../../types/nostr-event";
 import { useAdditionalRelayContext } from "../../providers/local/additional-relay-context";
 import { usePublishEvent } from "../../providers/global/publish-provider";
-import { useEventFactory } from "applesauce-react/hooks";
+import { useActiveAccount, useEventFactory } from "applesauce-react/hooks";
 
 export default function EventVoteButtons({
   event,
@@ -22,7 +21,7 @@ export default function EventVoteButtons({
   inline?: boolean;
   variant?: IconButtonProps["variant"];
 }) {
-  const account = useCurrentAccount();
+  const account = useActiveAccount();
   const publish = usePublishEvent();
   const reactions = useEventReactions(event);
   const additionalRelays = useAdditionalRelayContext();

@@ -4,7 +4,7 @@ import { nanoid } from "nanoid";
 import { kinds, NostrEvent } from "nostr-tools";
 import { useObservable } from "applesauce-react/hooks";
 
-import useCurrentAccount from "../../../../hooks/use-current-account";
+import { useActiveAccount } from "applesauce-react/hooks";
 import { bakery$, controlApi$ } from "../../../../services/bakery";
 import localSettings from "../../../../services/local-settings";
 import useNotificationChannelsReport from "../../../../hooks/reports/use-notification-channels";
@@ -14,7 +14,7 @@ import { ExternalLinkIcon } from "../../../../components/icons";
 export default function NtfyNotificationSettings() {
   const bakery = useObservable(bakery$);
   const controlApi = useObservable(controlApi$);
-  const account = useCurrentAccount();
+  const account = useActiveAccount();
 
   const device = useObservable(localSettings.deviceId);
   const topic = useObservable(localSettings.ntfyTopic);

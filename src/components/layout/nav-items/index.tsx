@@ -1,8 +1,9 @@
 import { useMemo } from "react";
 import { Divider, Spacer } from "@chakra-ui/react";
+import { useActiveAccount } from "applesauce-react/hooks";
+import { ReadonlyAccount } from "applesauce-accounts/accounts";
 
 import { LightningIcon, SettingsIcon } from "../../icons";
-import useCurrentAccount from "../../../hooks/use-current-account";
 import Package from "../../icons/package";
 import useRecentIds from "../../../hooks/use-recent-ids";
 import { defaultFavoriteApps, internalApps, internalTools } from "../../navigation/apps";
@@ -12,7 +13,7 @@ import Plus from "../../icons/plus";
 import useFavoriteInternalIds from "../../../hooks/use-favorite-internal-ids";
 
 export default function NavItems() {
-  const account = useCurrentAccount();
+  const account = useActiveAccount();
 
   const { ids: favorites = defaultFavoriteApps } = useFavoriteInternalIds("apps", "app");
   const { recent } = useRecentIds("apps", 3);
@@ -32,7 +33,7 @@ export default function NavItems() {
 
   return (
     <>
-      {account && !account.readonly && (
+      {account && !(account instanceof ReadonlyAccount) && (
         <NavItem icon={Plus} label="Create new" colorScheme="primary" to="/new" variant="solid" />
       )}
       {favoriteApps.map((app) => (

@@ -29,6 +29,8 @@ export async function checkNostrRelayTray() {
 }
 
 const log = logger.extend(`cache-relay`);
+
+log("Creating nostr-idb database");
 export const localDatabase = await openDB();
 
 // Setup relay

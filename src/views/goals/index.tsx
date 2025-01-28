@@ -3,7 +3,7 @@ import { Navigate, Link as RouterLink } from "react-router-dom";
 import { getEventUID } from "applesauce-core/helpers";
 import { kinds } from "nostr-tools";
 
-import useCurrentAccount from "../../hooks/use-current-account";
+import { useActiveAccount } from "applesauce-react/hooks";
 import { ExternalLinkIcon } from "../../components/icons";
 import { useReadRelays } from "../../hooks/use-client-relays";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
@@ -11,7 +11,7 @@ import GoalCard from "./components/goal-card";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 
 function UserGoalsManagerPage() {
-  const account = useCurrentAccount()!;
+  const account = useActiveAccount()!;
 
   const readRelays = useReadRelays();
   const { loader, timeline: goals } = useTimelineLoader(
@@ -60,7 +60,7 @@ function UserGoalsManagerPage() {
 }
 
 export default function GoalsHomeView() {
-  const account = useCurrentAccount();
+  const account = useActiveAccount();
 
   return (
     <VerticalPageLayout>

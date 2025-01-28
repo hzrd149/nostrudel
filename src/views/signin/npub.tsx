@@ -1,16 +1,18 @@
 import { useState } from "react";
 import { Button, Flex, FormControl, FormHelperText, FormLabel, Input, Link, useToast } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
+import { useAccountManager } from "applesauce-react/hooks";
+import { ReadonlyAccount } from "applesauce-accounts/accounts";
+import { ReadonlySigner } from "applesauce-signers";
 
 import { normalizeToHexPubkey } from "../../helpers/nip19";
-import accountService from "../../services/account";
 import QRCodeScannerButton from "../../components/qr-code/qr-code-scanner-button";
-import PubkeyAccount from "../../classes/accounts/pubkey-account";
 
 export default function LoginNpubView() {
   const navigate = useNavigate();
   const toast = useToast();
   const [npub, setNpub] = useState("");
+  const manager = useAccountManager();
   // const [relayUrl, setRelayUrl] = useState(COMMON_CONTACT_RELAY);
 
   const handleSubmit: React.FormEventHandler<HTMLDivElement> = (e) => {
@@ -19,8 +21,9 @@ export default function LoginNpubView() {
     const pubkey = normalizeToHexPubkey(npub);
     if (!pubkey) return toast({ status: "error", title: "Invalid npub" });
 
-    accountService.addAccount(new PubkeyAccount(pubkey));
-    accountService.switchAccount(pubkey);
+    const account = new ReadonlyAccount(pubkey, new ReadonlySigner(pubkey));
+    manager.addAccount(account);
+    manager.setActive(account);
   };
 
   return (

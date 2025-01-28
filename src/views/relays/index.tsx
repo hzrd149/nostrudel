@@ -1,4 +1,4 @@
-import useCurrentAccount from "../../hooks/use-current-account";
+import { useActiveAccount } from "applesauce-react/hooks";
 import Database01 from "../../components/icons/database-01";
 import { AtIcon, RelayIcon, SearchIcon } from "../../components/icons";
 import Mail02 from "../../components/icons/mail-02";
@@ -10,7 +10,7 @@ import SimpleNavItem from "../../components/layout/presets/simple-nav-item";
 import SimpleParentView from "../../components/layout/presets/simple-parent-view";
 
 export default function RelaysView() {
-  const account = useCurrentAccount();
+  const account = useActiveAccount();
   const nip05 = useUserDNSIdentity(account?.pubkey);
 
   return (

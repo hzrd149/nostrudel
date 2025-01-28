@@ -12,9 +12,9 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { kinds } from "nostr-tools";
-import { isProfilePointerInList } from "applesauce-lists/helpers";
+import { isProfilePointerInList } from "applesauce-core/helpers/lists";
+import { useActiveAccount } from "applesauce-react/hooks";
 
-import useCurrentAccount from "../../hooks/use-current-account";
 import { ChevronDownIcon, FollowIcon, MuteIcon, PlusCircleIcon, UnfollowIcon, UnmuteIcon } from "../icons";
 import useUserSets from "../../hooks/use-user-lists";
 import {
@@ -35,7 +35,7 @@ import { usePublishEvent } from "../../providers/global/publish-provider";
 
 function UsersLists({ pubkey }: { pubkey: string }) {
   const publish = usePublishEvent();
-  const account = useCurrentAccount()!;
+  const account = useActiveAccount()!;
   const { requestSignature } = useSigningContext();
   const [isLoading, setLoading] = useState(false);
   const newListModal = useDisclosure();
@@ -76,13 +76,7 @@ function UsersLists({ pubkey }: { pubkey: string }) {
           onChange={handleChange}
         >
           {lists.map((list) => (
-            <MenuItemOption
-              key={getEventCoordinate(list)}
-              value={getEventCoordinate(list)}
-              isDisabled={account.readonly && isLoading}
-              isTruncated
-              maxW="90vw"
-            >
+            <MenuItemOption key={getEventCoordinate(list)} value={getEventCoordinate(list)} isTruncated maxW="90vw">
               {getListName(list)}
             </MenuItemOption>
           ))}
@@ -105,14 +99,13 @@ export type UserFollowButtonProps = { pubkey: string; showLists?: boolean } & Om
 
 export function UserFollowButton({ pubkey, showLists, ...props }: UserFollowButtonProps) {
   const publish = usePublishEvent();
-  const account = useCurrentAccount()!;
+  const account = useActiveAccount()!;
   const { requestSignature } = useSigningContext();
   const contacts = useUserContactList(account?.pubkey, undefined, true);
   const { isMuted, unmute } = useUserMuteActions(pubkey);
   const { openModal } = useMuteModalContext();
 
   const isFollowing = !!contacts && isProfilePointerInList(contacts, pubkey);
-  const isDisabled = account?.readonly ?? true;
 
   const [loading, setLoading] = useState(false);
   const handleFollow = useAsyncErrorHandler(async () => {
@@ -133,22 +126,16 @@ export function UserFollowButton({ pubkey, showLists, ...props }: UserFollowButt
   if (showLists) {
     return (
       <Menu closeOnSelect={false}>
-        <MenuButton
-          as={Button}
-          colorScheme="primary"
-          {...props}
-          rightIcon={<ChevronDownIcon />}
-          isDisabled={isDisabled}
-        >
+        <MenuButton as={Button} colorScheme="primary" {...props} rightIcon={<ChevronDownIcon />}>
           {isFollowing ? "Unfollow" : "Follow"}
         </MenuButton>
         <MenuList>
           {isFollowing ? (
-            <MenuItem onClick={handleUnfollow} icon={<UnfollowIcon />} isDisabled={isDisabled || loading}>
+            <MenuItem onClick={handleUnfollow} icon={<UnfollowIcon />} isDisabled={loading}>
               Unfollow
             </MenuItem>
           ) : (
-            <MenuItem onClick={handleFollow} icon={<FollowIcon />} isDisabled={isDisabled || loading}>
+            <MenuItem onClick={handleFollow} icon={<FollowIcon />} isDisabled={loading}>
               Follow
             </MenuItem>
           )}
@@ -157,7 +144,6 @@ export function UserFollowButton({ pubkey, showLists, ...props }: UserFollowButt
               onClick={isMuted ? unmute : () => openModal(pubkey)}
               icon={isMuted ? <UnmuteIcon /> : <MuteIcon />}
               color="red.500"
-              isDisabled={isDisabled}
             >
               {isMuted ? "Unmute" : "Mute"}
             </MenuItem>
@@ -173,27 +159,13 @@ export function UserFollowButton({ pubkey, showLists, ...props }: UserFollowButt
     );
   } else if (isFollowing) {
     return (
-      <Button
-        onClick={handleUnfollow}
-        colorScheme="primary"
-        icon={<UnfollowIcon />}
-        isDisabled={isDisabled}
-        isLoading={loading}
-        {...props}
-      >
+      <Button onClick={handleUnfollow} colorScheme="primary" icon={<UnfollowIcon />} isLoading={loading} {...props}>
         Unfollow
       </Button>
     );
   } else {
     return (
-      <Button
-        onClick={handleFollow}
-        colorScheme="primary"
-        icon={<FollowIcon />}
-        isDisabled={isDisabled}
-        isLoading={loading}
-        {...props}
-      >
+      <Button onClick={handleFollow} colorScheme="primary" icon={<FollowIcon />} isLoading={loading} {...props}>
         Follow
       </Button>
     );

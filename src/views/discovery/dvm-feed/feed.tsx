@@ -37,8 +37,8 @@ import { DraftNostrEvent } from "../../../types/nostr-event";
 import VerticalPageLayout from "../../../components/vertical-page-layout";
 import useTimelineLoader from "../../../hooks/use-timeline-loader";
 import { useReadRelays } from "../../../hooks/use-client-relays";
-import useCurrentAccount from "../../../hooks/use-current-account";
-import RequireCurrentAccount from "../../../components/router/require-current-account";
+import { useActiveAccount } from "applesauce-react/hooks";
+import RequireActiveAccount from "../../../components/router/require-active-account";
 import { CodeIcon } from "../../../components/icons";
 import DebugChains from "./components/debug-chains";
 import Feed from "./components/feed";
@@ -54,7 +54,7 @@ function DVMFeedPage({ pointer }: { pointer: AddressPointer }) {
   const [since] = useState(() => dayjs().subtract(1, "day").unix());
   const publish = usePublishEvent();
   const navigate = useNavigate();
-  const account = useCurrentAccount()!;
+  const account = useActiveAccount()!;
   const debugModal = useDisclosure();
 
   const dvmRelays = useUserOutbox(pointer.pubkey);
@@ -178,8 +178,8 @@ export default function DVMFeedView() {
   const pointer = useParamsAddressPointer("addr");
 
   return (
-    <RequireCurrentAccount>
+    <RequireActiveAccount>
       <DVMFeedPage pointer={pointer} />
-    </RequireCurrentAccount>
+    </RequireActiveAccount>
   );
 }

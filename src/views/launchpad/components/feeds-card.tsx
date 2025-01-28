@@ -17,7 +17,7 @@ import useUserSets from "../../../hooks/use-user-lists";
 import { NostrEvent } from "../../../types/nostr-event";
 import { getListName, getPubkeysFromList } from "../../../helpers/nostr/lists";
 import UserAvatar from "../../../components/user/user-avatar";
-import useCurrentAccount from "../../../hooks/use-current-account";
+import { useActiveAccount } from "applesauce-react/hooks";
 import HoverLinkOverlay from "../../../components/hover-link-overlay";
 import { getEventCoordinate, getEventUID } from "../../../helpers/nostr/event";
 import Plus from "../../../components/icons/plus";
@@ -47,7 +47,7 @@ function Feed({ list, ...props }: { list: NostrEvent } & Omit<CardProps, "childr
 }
 
 export default function FeedsCard({ ...props }: Omit<CardProps, "children">) {
-  const account = useCurrentAccount();
+  const account = useActiveAccount();
   const contacts = useUserContactList(account?.pubkey);
   const myLists = useUserSets(account?.pubkey).filter((list) => list.kind === kinds.Followsets);
   const { lists: favoriteLists } = useFavoriteLists(account?.pubkey);

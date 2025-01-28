@@ -1,5 +1,6 @@
 import { NostrEvent } from "../../types/nostr-event";
 import { AppSettings } from "../../helpers/app-settings";
+import { SerializedAccount } from "applesauce-accounts";
 
 export interface SchemaV1 {
   userMetadata: {
@@ -116,7 +117,7 @@ export interface SchemaV6 extends SchemaV5 {
   };
 }
 
-type Account = {
+type AccountV7 = {
   type: string;
   pubkey: string;
   relays?: string[];
@@ -133,7 +134,7 @@ type Account = {
 export interface SchemaV7 extends Omit<SchemaV6, "accounts"> {
   accounts: {
     key: string;
-    value: Account;
+    value: AccountV7;
   };
 }
 
@@ -152,3 +153,10 @@ export interface SchemaV9 extends SchemaV8 {
 }
 
 export interface SchemaV10 extends Omit<SchemaV9, "channelMetadata"> {}
+
+export interface SchemaV11 extends Omit<SchemaV10, "accounts"> {
+  accounts: {
+    key: string;
+    value: SerializedAccount<any, { settings?: AppSettings }>;
+  };
+}

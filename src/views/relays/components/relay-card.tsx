@@ -70,7 +70,7 @@ export function RelayMetadata({ url, extended }: { url: string; extended?: boole
 }
 
 // export function RelayJoinAction({ url, ...props }: { url: string } & Omit<ButtonProps, "children" | "onClick">) {
-//   const account = useCurrentAccount();
+//   const account = useActiveAccount();
 //   const clientRelays = useClientRelays();
 //   const relayConfig = clientRelays.find((r) => r.url === url);
 

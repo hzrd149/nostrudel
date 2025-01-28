@@ -1,11 +1,11 @@
 import { useMemo } from "react";
 import { Emoji, getEmojis, getEventUID, getPackName } from "applesauce-core/helpers";
-import { getAddressPointersFromList } from "applesauce-lists/helpers";
+import { getAddressPointersFromList } from "applesauce-core/helpers/lists";
+import { useActiveAccount } from "applesauce-react/hooks";
 
 import EmojiPicker, { defaultCategories, NativeEmoji } from "./emoji-picker";
 import useFavoriteEmojiPacks from "../../hooks/use-favorite-emoji-packs";
 import useReplaceableEvents from "../../hooks/use-replaceable-events";
-import useCurrentAccount from "../../hooks/use-current-account";
 
 export default function ReactionPicker({
   autoFocus,
@@ -14,7 +14,7 @@ export default function ReactionPicker({
   autoFocus?: boolean;
   onSelect?: (emoji: string | Emoji) => void;
 }) {
-  const account = useCurrentAccount();
+  const account = useActiveAccount();
   const favoritePacks = useFavoriteEmojiPacks(account?.pubkey);
   const packs = useReplaceableEvents(favoritePacks ? getAddressPointersFromList(favoritePacks) : []);
   const custom = useMemo(

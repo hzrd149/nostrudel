@@ -2,10 +2,10 @@ import { PropsWithChildren } from "react";
 import { useObservable } from "applesauce-react/hooks";
 import { FactoryProvider } from "applesauce-react/providers";
 
-import eventFactoryService from "../../services/event-factory";
+import factory$ from "../../services/event-factory";
 
 export default function EventFactoryProvider({ children }: PropsWithChildren) {
-  const factory = useObservable(eventFactoryService.subject);
+  const factory = useObservable(factory$);
 
-  return <FactoryProvider factory={factory ?? undefined}>{children}</FactoryProvider>;
+  return <FactoryProvider factory={factory}>{children}</FactoryProvider>;
 }

@@ -4,7 +4,7 @@ import { useParams } from "react-router-dom";
 import { NostrEvent } from "nostr-tools";
 import { getAddressPointerFromATag, getEventPointerFromETag, isATag, isETag } from "applesauce-core/helpers";
 
-import useCurrentAccount from "../../hooks/use-current-account";
+import { useActiveAccount } from "applesauce-react/hooks";
 import TimelineItem from "../../components/timeline-page/generic-note-timeline/timeline-item";
 import useSingleEvent from "../../hooks/use-single-event";
 import userUserBookmarksList from "../../hooks/use-user-bookmarks-list";
@@ -98,7 +98,7 @@ function BookmarksViewKeyInParams() {
 }
 export default function BookmarksView() {
   const params = useParams();
-  const account = useCurrentAccount();
+  const account = useActiveAccount();
 
   if (params.pubkey) return <BookmarksViewKeyInParams />;
   else if (account?.pubkey) return <BookmarksPage pubkey={account.pubkey} />;

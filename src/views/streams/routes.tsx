@@ -1,8 +1,8 @@
 import { lazy } from "react";
 import { RouteObject } from "react-router-dom";
 
-import StreamHomeView from ".";
-import StreamView from "./stream";
+const StreamHomeView = lazy(() => import("."));
+const StreamView = lazy(() => import("./stream"));
 const StreamModerationView = lazy(() => import("./dashboard"));
 
 export default [

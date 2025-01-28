@@ -4,7 +4,7 @@ import { kinds } from "nostr-tools";
 import { Button, ButtonProps } from "@chakra-ui/react";
 
 import { DraftNostrEvent, NostrEvent } from "../../../types/nostr-event";
-import useCurrentAccount from "../../../hooks/use-current-account";
+import { useActiveAccount } from "applesauce-react/hooks";
 import { listAddEvent, listRemoveEvent } from "../../../helpers/nostr/lists";
 import useUserChannelsList from "../../../hooks/use-user-channels-list";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
@@ -14,7 +14,7 @@ export default function ChannelJoinButton({
   ...props
 }: Omit<ButtonProps, "children"> & { channel: NostrEvent }) {
   const publish = usePublishEvent();
-  const account = useCurrentAccount();
+  const account = useActiveAccount();
   const { list, pointers } = useUserChannelsList(account?.pubkey);
 
   const isSubscribed = pointers.find((e) => e.id === channel.id);

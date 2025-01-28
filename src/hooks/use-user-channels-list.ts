@@ -1,11 +1,11 @@
-import { getEventPointersFromList } from "applesauce-lists/helpers";
 import { kinds } from "nostr-tools";
+import { getEventPointersFromList } from "applesauce-core/helpers/lists";
+import { useActiveAccount } from "applesauce-react/hooks";
 
-import useCurrentAccount from "./use-current-account";
 import useReplaceableEvent from "./use-replaceable-event";
 
 export default function useUserChannelsList(pubkey?: string, relays: string[] = [], force?: boolean) {
-  const account = useCurrentAccount();
+  const account = useActiveAccount();
   const key = pubkey ?? account?.pubkey;
 
   const list = useReplaceableEvent(key ? { kind: kinds.PublicChatsList, pubkey: key } : undefined, relays, force);

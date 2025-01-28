@@ -22,11 +22,11 @@ import { EmbedProps } from "../embed-event";
 import InputStep from "./input-step";
 import lnurlMetadataService from "../../services/lnurl-metadata";
 import signingService from "../../services/signing";
-import accountService from "../../services/account";
 import PayStep from "./pay-step";
 import UserLink from "../user/user-link";
 import { getEventRelayHints } from "../../services/relay-hints";
 import { eventStore, queryStore } from "../../services/event-store";
+import accounts from "../../services/accounts";
 
 export type PayRequest = { invoice?: string; pubkey: string; error?: any };
 
@@ -71,7 +71,7 @@ export async function getPayRequestForPubkey(
     return { invoice, pubkey };
   }
 
-  const account = accountService.current.value;
+  const account = accounts.active;
 
   const mailboxes = eventStore.getReplaceable(kinds.RelayList, pubkey);
   const userInbox = mailboxes ? getInboxes(mailboxes).slice(0, 4) : [];

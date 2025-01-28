@@ -16,7 +16,7 @@ import { ProfileContent, unixNow } from "applesauce-core/helpers";
 import { ExternalLinkIcon } from "../../components/icons";
 import { isLNURL } from "../../helpers/lnurl";
 import { useReadRelays } from "../../hooks/use-client-relays";
-import useCurrentAccount from "../../hooks/use-current-account";
+import { useActiveAccount } from "applesauce-react/hooks";
 import useUserProfile from "../../hooks/use-user-profile";
 import dnsIdentityService from "../../services/dns-identity";
 import { DraftNostrEvent } from "../../types/nostr-event";
@@ -49,7 +49,7 @@ type MetadataFormProps = {
 };
 
 const MetadataForm = ({ defaultValues, onSubmit }: MetadataFormProps) => {
-  const account = useCurrentAccount()!;
+  const account = useActiveAccount()!;
   const {
     register,
     reset,
@@ -215,7 +215,7 @@ const MetadataForm = ({ defaultValues, onSubmit }: MetadataFormProps) => {
 export const ProfileEditView = () => {
   const publish = usePublishEvent();
   const readRelays = useReadRelays();
-  const account = useCurrentAccount()!;
+  const account = useActiveAccount()!;
   const metadata = useUserProfile(account.pubkey, readRelays, true);
 
   const defaultValues = useMemo<FormData>(

@@ -3,12 +3,12 @@ import { Avatar, AvatarProps } from "@chakra-ui/react";
 import { useAsync } from "react-use";
 import styled from "@emotion/styled";
 import { ProfileContent } from "applesauce-core/helpers";
+import { useActiveAccount } from "applesauce-react/hooks";
 
 import { getIdenticon } from "../../helpers/identicon";
 import { safeUrl } from "../../helpers/parse";
 import { getDisplayName } from "../../helpers/nostr/profile";
 import useAppSettings from "../../hooks/use-user-app-settings";
-import useCurrentAccount from "../../hooks/use-current-account";
 import { buildImageProxyURL } from "../../helpers/image";
 import UserDnsIdentityIcon from "./user-dns-identity-icon";
 import useUserMuteList from "../../hooks/use-user-mute-list";
@@ -35,7 +35,7 @@ export type UserAvatarProps = Omit<MetadataAvatarProps, "pubkey" | "metadata"> &
 export const UserAvatar = forwardRef<HTMLDivElement, UserAvatarProps>(
   ({ pubkey, noProxy, relay, size, ...props }, ref) => {
     const profile = useUserProfile(pubkey, relay ? [relay] : undefined);
-    const account = useCurrentAccount();
+    const account = useActiveAccount();
     const muteList = useUserMuteList(account?.pubkey);
 
     const muted = muteList?.tags.some((t) => t[0] === "p" && t[1] === pubkey);
@@ -88,7 +88,7 @@ export type MetadataAvatarProps = Omit<AvatarProps, "src"> & {
 export const MetadataAvatar = forwardRef<HTMLDivElement, MetadataAvatarProps>(
   ({ pubkey, metadata, noProxy, children, square = true, ...props }, ref) => {
     const { imageProxy, proxyUserMedia, hideUsernames, showPubkeyColor } = useAppSettings();
-    const account = useCurrentAccount();
+    const account = useActiveAccount();
     const picture = useMemo(() => {
       if (hideUsernames && pubkey && pubkey !== account?.pubkey) return undefined;
       if (metadata?.picture) {

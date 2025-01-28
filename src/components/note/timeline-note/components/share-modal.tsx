@@ -16,17 +16,16 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { NostrEvent } from "nostr-tools";
-import { useEventFactory } from "applesauce-react/hooks";
+import { useActiveAccount, useEventFactory } from "applesauce-react/hooks";
 import { getMediaAttachments } from "applesauce-core/helpers";
 import { getMediaAttachmentURLsFromContent } from "applesauce-content/helpers";
 import { BlossomClient } from "blossom-client-sdk";
 
+import { useSigningContext } from "../../../../providers/global/signing-provider";
 import { usePublishEvent } from "../../../../providers/global/publish-provider";
 import { EmbedEvent } from "../../../embed-event";
 import useAppSettings from "../../../../hooks/use-user-app-settings";
 import useUsersMediaServers from "../../../../hooks/use-user-media-servers";
-import useCurrentAccount from "../../../../hooks/use-current-account";
-import { useSigningContext } from "../../../../providers/global/signing-provider";
 
 export default function ShareModal({
   event,
@@ -35,7 +34,7 @@ export default function ShareModal({
   ...props
 }: Omit<ModalProps, "children"> & { event: NostrEvent }) {
   const { mirrorBlobsOnShare } = useAppSettings();
-  const account = useCurrentAccount();
+  const account = useActiveAccount();
   const publish = usePublishEvent();
   const factory = useEventFactory();
   const toast = useToast();

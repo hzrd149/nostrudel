@@ -1,14 +1,14 @@
 import { kinds } from "nostr-tools";
-import { getAddressPointersFromList } from "applesauce-lists/helpers/general";
+import { getAddressPointersFromList } from "applesauce-core/helpers/lists";
+import { useActiveAccount } from "applesauce-react/hooks";
 
 import useReplaceableEvent from "./use-replaceable-event";
-import useCurrentAccount from "./use-current-account";
 import useReplaceableEvents from "./use-replaceable-events";
 
 export const FAVORITE_LISTS_IDENTIFIER = "nostrudel-favorite-lists";
 
 export default function useFavoriteLists(pubkey?: string) {
-  const account = useCurrentAccount();
+  const account = useActiveAccount();
   const key = pubkey || account?.pubkey;
 
   const favoriteList = useReplaceableEvent(

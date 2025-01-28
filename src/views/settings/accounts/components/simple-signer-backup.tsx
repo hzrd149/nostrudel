@@ -14,24 +14,24 @@ import { nip19 } from "nostr-tools";
 import { encrypt } from "nostr-tools/nip49";
 import { useForm } from "react-hook-form";
 import { SimpleSigner } from "applesauce-signers";
+import { PasswordAccount } from "applesauce-accounts/accounts";
 
-import useCurrentAccount from "../../../../hooks/use-current-account";
+import { useAccountManager, useActiveAccount } from "applesauce-react/hooks";
 import EyeOff from "../../../../components/icons/eye-off";
 import Eye from "../../../../components/icons/eye";
 import { CopyIconButton } from "../../../../components/copy-icon-button";
-import accountService from "../../../../services/account";
-import PasswordAccount from "../../../../classes/accounts/password-account";
 
 const fake = Array(48).fill("x");
 
 export default function SimpleSignerBackup() {
   const toast = useToast();
-  const account = useCurrentAccount()!;
+  const account = useActiveAccount()!;
   const signer = account.signer;
   if (!(signer instanceof SimpleSigner)) return null;
 
   const [backup, setBackup] = useState("");
   const sensitive = useDisclosure();
+  const manager = useAccountManager();
 
   const showSecret = useCallback(async () => {
     const password = prompt("Its dangerous to export secret keys unprotected! do you want to add a password?");
@@ -51,7 +51,7 @@ export default function SimpleSignerBackup() {
       const newAccount = PasswordAccount.fromNcryptsec(account.pubkey, encrypt(signer.key, values.password));
       newAccount.pubkey = account.pubkey;
       await newAccount.signer.unlock(values.password);
-      accountService.replaceAccount(account.pubkey, newAccount, true);
+      manager.replaceAccount(account, newAccount);
       reset();
     } catch (error) {
       if (error instanceof Error) toast({ description: error.message, status: "error" });

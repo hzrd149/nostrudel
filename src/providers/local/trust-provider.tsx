@@ -1,6 +1,7 @@
 import React, { PropsWithChildren, useContext, useMemo, useState } from "react";
+import { useActiveAccount } from "applesauce-react/hooks";
+
 import { NostrEvent } from "../../types/nostr-event";
-import useCurrentAccount from "../../hooks/use-current-account";
 import useUserContactList from "../../hooks/use-user-contact-list";
 import { getPubkeysFromList } from "../../helpers/nostr/lists";
 
@@ -22,7 +23,7 @@ export function TrustProvider({
   const { trust: parentTrust } = useContext(TrustContext);
   const [override, setOverride] = useState<boolean>();
 
-  const account = useCurrentAccount();
+  const account = useActiveAccount();
   const contactList = useUserContactList(account?.pubkey);
   const following = contactList ? getPubkeysFromList(contactList).map((p) => p.pubkey) : [];
 

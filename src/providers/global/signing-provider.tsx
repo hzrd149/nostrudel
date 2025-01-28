@@ -1,9 +1,9 @@
 import React, { useCallback, useContext, useMemo } from "react";
 import { EventTemplate, UnsignedEvent, VerifiedEvent } from "nostr-tools";
+import { useActiveAccount } from "applesauce-react/hooks";
 import { useToast } from "@chakra-ui/react";
 
 import signingService from "../../services/signing";
-import useCurrentAccount from "../../hooks/use-current-account";
 
 export type SigningContextType = {
   finalizeDraft(draft: EventTemplate): Promise<UnsignedEvent>;
@@ -33,35 +33,35 @@ export function useSigningContext() {
 
 export function SigningProvider({ children }: { children: React.ReactNode }) {
   const toast = useToast();
-  const current = useCurrentAccount();
+  const account = useActiveAccount();
 
   const finalizeDraft = useCallback(
     async (draft: EventTemplate) => {
-      if (!current) throw new Error("No account");
-      return await signingService.finalizeDraft(draft, current);
+      if (!account) throw new Error("No account");
+      return await signingService.finalizeDraft(draft, account);
     },
-    [toast, current],
+    [toast, account],
   );
   const requestSignature = useCallback(
     async (draft: UnsignedEvent) => {
-      if (!current) throw new Error("No account");
-      return await signingService.requestSignature(draft, current);
+      if (!account) throw new Error("No account");
+      return await signingService.requestSignature(draft, account);
     },
-    [toast, current],
+    [toast, account],
   );
   const requestDecrypt = useCallback(
     async (data: string, pubkey: string) => {
-      if (!current) throw new Error("No account");
-      return await signingService.nip04Decrypt(data, pubkey, current);
+      if (!account) throw new Error("No account");
+      return await signingService.nip04Decrypt(data, pubkey, account);
     },
-    [toast, current],
+    [toast, account],
   );
   const requestEncrypt = useCallback(
     async (data: string, pubkey: string) => {
-      if (!current) throw new Error("No account");
-      return await signingService.nip04Encrypt(data, pubkey, current);
+      if (!account) throw new Error("No account");
+      return await signingService.nip04Encrypt(data, pubkey, account);
     },
-    [toast, current],
+    [toast, account],
   );
 
   const context = useMemo(

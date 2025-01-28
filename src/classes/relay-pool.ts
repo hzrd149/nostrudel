@@ -10,8 +10,8 @@ import verifyEventMethod from "../services/verify-event";
 import { offlineMode } from "../services/offline-mode";
 import processManager from "../services/process-manager";
 import signingService from "../services/signing";
-import accountService from "../services/account";
 import localSettings from "../services/local-settings";
+import accounts from "../services/accounts";
 
 export type Notice = {
   message: string;
@@ -214,7 +214,7 @@ export default class RelayPool implements IConnectionPool {
     const authMode = this.getRelayAuthMode(relay);
     // only automatically authenticate if auth mode is set to "always"
     if (authMode === "always") {
-      const account = accountService.current.value;
+      const account = accounts.active;
       if (!account) return;
 
       this.authenticate(relay, (draft) => {

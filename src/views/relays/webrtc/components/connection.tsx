@@ -8,7 +8,7 @@ import WebRtcRelayClient from "../../../../classes/webrtc/webrtc-relay-client";
 import WebRtcRelayServer from "../../../../classes/webrtc/webrtc-relay-server";
 import NostrWebRTCPeer from "../../../../classes/webrtc/nostr-webrtc-peer";
 import { cacheRelay$ } from "../../../../services/cache-relay";
-import useCurrentAccount from "../../../../hooks/use-current-account";
+import { useActiveAccount } from "applesauce-react/hooks";
 import useUserContactList from "../../../../hooks/use-user-contact-list";
 import { getPubkeysFromList } from "../../../../helpers/nostr/lists";
 import useForceUpdate from "../../../../hooks/use-force-update";
@@ -32,7 +32,7 @@ export default function Connection({
   // if(clientRelaysService.readRelays.value.has(client))
   // };
 
-  const account = useCurrentAccount();
+  const account = useActiveAccount();
   const contacts = useUserContactList(account?.pubkey);
 
   const [sending, setSending] = useState(false);

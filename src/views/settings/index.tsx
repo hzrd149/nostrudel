@@ -11,7 +11,7 @@ import {
   SearchIcon,
   SpyIcon,
 } from "../../components/icons";
-import useCurrentAccount from "../../hooks/use-current-account";
+import { useActiveAccount } from "applesauce-react/hooks";
 import Image01 from "../../components/icons/image-01";
 import UserAvatar from "../../components/user/user-avatar";
 import VersionButton from "../../components/version-button";
@@ -36,7 +36,7 @@ function DividerHeader({ title }: { title: string }) {
 }
 
 export default function SettingsView() {
-  const account = useCurrentAccount();
+  const account = useActiveAccount();
   const bakery = useBakery();
 
   return (

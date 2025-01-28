@@ -1,3 +1,4 @@
+import { useActiveAccount } from "applesauce-react/hooks";
 import { isPubkeyInList } from "../helpers/nostr/lists";
 import {
   createEmptyMuteList,
@@ -8,11 +9,10 @@ import {
 } from "../helpers/nostr/mute-list";
 import { usePublishEvent } from "../providers/global/publish-provider";
 import useAsyncErrorHandler from "./use-async-error-handler";
-import useCurrentAccount from "./use-current-account";
 import useUserMuteList from "./use-user-mute-list";
 
 export default function useUserMuteActions(pubkey: string) {
-  const account = useCurrentAccount()!;
+  const account = useActiveAccount()!;
   const publish = usePublishEvent();
   const muteList = useUserMuteList(account?.pubkey, undefined, true);
 

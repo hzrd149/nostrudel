@@ -15,8 +15,7 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
-import { useObservable } from "applesauce-react/hooks";
-import styled from "@emotion/styled";
+import { useActiveAccount, useObservable } from "applesauce-react/hooks";
 
 import { NostrEvent } from "../../../types/nostr-event";
 import UserAvatarLink from "../../user/user-avatar-link";
@@ -30,7 +29,6 @@ import { ReplyIcon } from "../../icons";
 import NoteContentWithWarning from "./note-content-with-warning";
 import { TrustProvider } from "../../../providers/local/trust-provider";
 import BookmarkEventButton from "../bookmark-event";
-import useCurrentAccount from "../../../hooks/use-current-account";
 import NoteReactions from "./components/note-reactions";
 import ReplyForm from "../../../views/thread/components/reply-form";
 import { getThreadReferences } from "../../../helpers/nostr/event";
@@ -68,7 +66,7 @@ export function TimelineNote({
   clickable = true,
   ...props
 }: TimelineNoteProps) {
-  const account = useCurrentAccount();
+  const account = useActiveAccount();
   const { showReactions } = useAppSettings();
   const hideZapBubbles = useObservable(localSettings.hideZapBubbles);
   const replyForm = useDisclosure();
@@ -113,7 +111,7 @@ export function TimelineNote({
             {!hideZapBubbles && <ZapBubbles event={event} w="full" />}
             {showReactionsOnNewLine && reactionButtons}
             <Flex gap="2" w="full" alignItems="center">
-              <ButtonGroup size="sm" variant="ghost" isDisabled={account?.readonly ?? true} zIndex={1}>
+              <ButtonGroup size="sm" variant="ghost" zIndex={1}>
                 {showReplyButton && (
                   <IconButton icon={<ReplyIcon />} aria-label="Reply" title="Reply" onClick={replyForm.onOpen} />
                 )}

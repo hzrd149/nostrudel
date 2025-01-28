@@ -7,7 +7,7 @@ import { useStoreQuery } from "applesauce-react/hooks";
 import { getEventUID, unixNow } from "applesauce-core/helpers";
 
 import { useUserInbox } from "../../../../../hooks/use-user-mailboxes";
-import useCurrentAccount from "../../../../../hooks/use-current-account";
+import { useActiveAccount } from "applesauce-react/hooks";
 import { usePublishEvent } from "../../../../../providers/global/publish-provider";
 import relayPoolService from "../../../../../services/relay-pool";
 import { eventStore } from "../../../../../services/event-store";
@@ -37,7 +37,7 @@ export default function EventSummarizePage({ event }: { event: NostrEvent }) {
   const [request, setRequest] = useState<NostrEvent>();
 
   const publish = usePublishEvent();
-  const account = useCurrentAccount();
+  const account = useActiveAccount();
   const inbox = useUserInbox(account?.pubkey);
 
   const newRequest = async (prompt: string) => {

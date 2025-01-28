@@ -6,7 +6,7 @@ import { getEventUID } from "nostr-idb";
 import { BehaviorSubject } from "rxjs";
 import { useObservable } from "applesauce-react/hooks";
 
-import RequireCurrentAccount from "../../components/router/require-current-account";
+import RequireActiveAccount from "../../components/router/require-active-account";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import { useNotifications } from "../../providers/global/notifications-provider";
@@ -208,10 +208,10 @@ function NotificationsPage() {
 
 export default function NotificationsView() {
   return (
-    <RequireCurrentAccount>
+    <RequireActiveAccount>
       <PeopleListProvider initList="global">
         <NotificationsPage />
       </PeopleListProvider>
-    </RequireCurrentAccount>
+    </RequireActiveAccount>
   );
 }

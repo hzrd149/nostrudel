@@ -1,7 +1,6 @@
 import {
   Box,
   Flex,
-  IconButton,
   Stat,
   StatLabel,
   StatNumber,
@@ -25,13 +24,11 @@ import IntersectionObserverProvider from "../../../providers/local/intersection-
 import UserAvatarLink from "../../../components/user/user-avatar-link";
 import UserLink from "../../../components/user/user-link";
 import Timestamp from "../../../components/timestamp";
-import useCurrentAccount from "../../../hooks/use-current-account";
-import { GhostIcon } from "../../../components/icons";
-import accountService from "../../../services/account";
+import { useActiveAccount } from "applesauce-react/hooks";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
 
 function UserRow({ event, settings }: { event: NostrEvent; settings: Partial<AppSettings> }) {
-  const account = useCurrentAccount();
+  const account = useActiveAccount();
   const isSelf = event.pubkey === account?.pubkey;
   const ref = useEventIntersectionRef<HTMLTableRowElement>(event);
 
@@ -47,17 +44,7 @@ function UserRow({ event, settings }: { event: NostrEvent; settings: Partial<App
       <Td isNumeric>
         <Timestamp timestamp={event.created_at} />
       </Td>
-      <Td isNumeric>
-        {!isSelf && (
-          <IconButton
-            icon={<GhostIcon />}
-            size="sm"
-            aria-label="ghost user"
-            title="ghost user"
-            onClick={() => accountService.startGhost(event.pubkey)}
-          />
-        )}
-      </Td>
+      <Td isNumeric></Td>
     </Tr>
   );
 }

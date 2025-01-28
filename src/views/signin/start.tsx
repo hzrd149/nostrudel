@@ -1,38 +1,38 @@
-import { useState } from "react";
+import { lazy, useState } from "react";
 import { Button, ButtonGroup, Divider, Flex, IconButton, Link, Spinner, Text, useToast } from "@chakra-ui/react";
 import { Link as RouterLink, useLocation } from "react-router-dom";
-import { AmberClipboardSigner, SerialPortSigner } from "applesauce-signers";
+import { AmberClipboardAccount, ExtensionAccount, SerialPortAccount } from "applesauce-accounts/accounts";
+import { AmberClipboardSigner, ExtensionSigner, SerialPortSigner } from "applesauce-signers";
+import { useAccountManager } from "applesauce-react/hooks";
 
 import Key01 from "../../components/icons/key-01";
 import Diamond01 from "../../components/icons/diamond-01";
 import UsbFlashDrive from "../../components/icons/usb-flash-drive";
 import HelpCircle from "../../components/icons/help-circle";
 
-import accountService from "../../services/account";
+import { CAP_IS_ANDROID, CAP_IS_WEB } from "../../env";
 import { AtIcon } from "../../components/icons";
 import Package from "../../components/icons/package";
 import Eye from "../../components/icons/eye";
-import ExtensionAccount from "../../classes/accounts/extension-account";
-import SerialPortAccount from "../../classes/accounts/serial-port-account";
-import AmberAccount from "../../classes/accounts/amber-account";
-import { AndroidNativeSigners } from "./native";
-import { CAP_IS_ANDROID, CAP_IS_WEB } from "../../env";
+const AndroidNativeSigners = lazy(() => import("./native"));
 
 export default function LoginStartView() {
   const location = useLocation();
   const toast = useToast();
   const [loading, setLoading] = useState(false);
+  const manager = useAccountManager();
 
   const signinWithExtension = async () => {
     if (window.nostr) {
       try {
         setLoading(true);
 
-        const pubkey = await window.nostr.getPublicKey();
+        const signer = new ExtensionSigner();
+        const pubkey = await signer.getPublicKey();
 
-        const account = new ExtensionAccount(pubkey);
-        accountService.addAccount(account);
-        accountService.switchAccount(pubkey);
+        const account = new ExtensionAccount(pubkey, signer);
+        manager.addAccount(account);
+        manager.setActive(account);
       } catch (e) {
         if (e instanceof Error) toast({ description: e.message, status: "error" });
       }
@@ -49,8 +49,9 @@ export default function LoginStartView() {
 
         const signer = new SerialPortSigner();
         const pubkey = await signer.getPublicKey();
-        accountService.addAccount(new SerialPortAccount(pubkey));
-        accountService.switchAccount(pubkey);
+        const account = new SerialPortAccount(pubkey, signer);
+        manager.addAccount(account);
+        manager.setActive(account);
       } catch (e) {
         if (e instanceof Error) toast({ description: e.message, status: "error" });
       }
@@ -64,8 +65,9 @@ export default function LoginStartView() {
     try {
       const signer = new AmberClipboardSigner();
       const pubkey = await signer.getPublicKey();
-      accountService.addAccount(new AmberAccount(pubkey));
-      accountService.switchAccount(pubkey);
+      const account = new AmberClipboardAccount(pubkey, signer);
+      manager.addAccount(account);
+      manager.setActive(account);
     } catch (e) {
       if (e instanceof Error) toast({ description: e.message, status: "error" });
     }
@@ -80,7 +82,14 @@ export default function LoginStartView() {
           Sign in with extension
         </Button>
       )}
-      <Button as={RouterLink} to="./address" state={location.state} w="full" colorScheme="blue" leftIcon={<AtIcon />}>
+      <Button
+        as={RouterLink}
+        to="./address"
+        state={location.state}
+        w="full"
+        colorScheme="blue"
+        leftIcon={<AtIcon boxSize={6} />}
+      >
         Nostr Address
       </Button>
       {SerialPortSigner.SUPPORTED && (

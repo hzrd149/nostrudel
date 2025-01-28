@@ -2,6 +2,7 @@ import { PropsWithChildren, createContext, useCallback, useContext, useMemo, use
 import { useToast } from "@chakra-ui/react";
 import { EventTemplate, NostrEvent, UnsignedEvent, kinds } from "nostr-tools";
 import { addSeenRelay } from "applesauce-core/helpers";
+import { useActiveAccount } from "applesauce-react/hooks";
 import { OkPacketAgainstEvent } from "rx-nostr";
 import { BehaviorSubject } from "rxjs";
 import { nanoid } from "nanoid";
@@ -14,7 +15,6 @@ import { getAllRelayHints } from "../../helpers/nostr/event";
 import { getCacheRelay } from "../../services/cache-relay";
 import deleteEventService from "../../services/delete-events";
 import { eventStore } from "../../services/event-store";
-import useCurrentAccount from "../../hooks/use-current-account";
 import { useUserOutbox } from "../../hooks/use-user-mailboxes";
 import rxNostr from "../../services/rx-nostr";
 
@@ -99,7 +99,7 @@ export default function PublishProvider({ children }: PropsWithChildren) {
   const toast = useToast();
   const [log, setLog] = useState<PublishLogEntry[]>([]);
   const { requestSignature, finalizeDraft: signerFinalize } = useSigningContext();
-  const account = useCurrentAccount();
+  const account = useActiveAccount();
   const outBoxes = useUserOutbox(account?.pubkey);
 
   const finalizeDraft = useCallback<PublishContextType["finalizeDraft"]>(

@@ -8,7 +8,7 @@ import UserDnsIdentity from "../../../components/user/user-dns-identity";
 import { NostrEvent } from "../../../types/nostr-event";
 import useAsyncErrorHandler from "../../../hooks/use-async-error-handler";
 import { listRemovePerson } from "../../../helpers/nostr/lists";
-import useCurrentAccount from "../../../hooks/use-current-account";
+import { useActiveAccount } from "applesauce-react/hooks";
 import { UserFollowButton } from "../../../components/user/user-follow-button";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
 import UserName from "../../../components/user/user-name";
@@ -16,7 +16,7 @@ import UserName from "../../../components/user/user-name";
 export type UserCardProps = { pubkey: string; relay?: string; list: NostrEvent } & Omit<CardProps, "children">;
 
 export default function UserCard({ pubkey, relay, list, ...props }: UserCardProps) {
-  const account = useCurrentAccount();
+  const account = useActiveAccount();
   const publish = usePublishEvent();
   const metadata = useUserProfile(pubkey, relay ? [relay] : []);
 

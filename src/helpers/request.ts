@@ -1,13 +1,14 @@
+import { Subscription } from "rxjs";
 import AppSettingsQuery from "../queries/app-settings";
-import accountService from "../services/account";
+import accounts from "../services/accounts";
 import { queryStore } from "../services/event-store";
 import { AppSettings } from "./app-settings";
 import { convertToUrl } from "./url";
 
 // hack to get app settings
 let settings: AppSettings | undefined;
-let sub: ZenObservable.Subscription;
-accountService.current.subscribe((account) => {
+let sub: Subscription;
+accounts.active$.subscribe((account) => {
   if (sub) sub.unsubscribe();
   if (!account) return;
   sub = queryStore.createQuery(AppSettingsQuery, account.pubkey).subscribe((v) => (settings = v));

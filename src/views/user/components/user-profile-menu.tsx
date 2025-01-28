@@ -1,6 +1,9 @@
+import { useContext } from "react";
 import { MenuItem, useDisclosure, useToast } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 import { nip19 } from "nostr-tools";
+import { ReadonlyAccount } from "applesauce-accounts/accounts";
+import { ReadonlySigner } from "applesauce-signers";
 
 import { DotsMenuButton, MenuIconButtonProps } from "../../../components/dots-menu-button";
 import {
@@ -14,14 +17,11 @@ import {
   UnmuteIcon,
   ShareIcon,
 } from "../../../components/icons";
-import accountService from "../../../services/account";
 import UserDebugModal from "../../../components/debug-modal/user-debug-modal";
 import { useSharableProfileId } from "../../../hooks/use-shareable-profile-id";
 import useUserMuteActions from "../../../hooks/use-user-mute-actions";
-import useCurrentAccount from "../../../hooks/use-current-account";
-import { useContext } from "react";
+import { useAccountManager, useActiveAccount } from "applesauce-react/hooks";
 import { AppHandlerContext } from "../../../providers/route/app-handler-provider";
-import PubkeyAccount from "../../../classes/accounts/pubkey-account";
 import Telescope from "../../../components/icons/telescope";
 
 export const UserProfileMenu = ({
@@ -30,15 +30,22 @@ export const UserProfileMenu = ({
   ...props
 }: { pubkey: string; showRelaySelectionModal?: () => void } & Omit<MenuIconButtonProps, "children">) => {
   const toast = useToast();
-  const account = useCurrentAccount();
+  const account = useActiveAccount();
   const infoModal = useDisclosure();
   const sharableId = useSharableProfileId(pubkey);
   const { isMuted, mute, unmute } = useUserMuteActions(pubkey);
   const { openAddress } = useContext(AppHandlerContext);
+  const manager = useAccountManager();
 
   const loginAsUser = () => {
-    if (!accountService.hasAccount(pubkey)) accountService.addAccount(new PubkeyAccount(pubkey));
-    accountService.switchAccount(pubkey);
+    const existing = manager.getAccountForPubkey(pubkey);
+    if (existing) {
+      manager.setActive(existing);
+    } else {
+      const account = new ReadonlyAccount(pubkey, new ReadonlySigner(pubkey));
+      manager.addAccount(account);
+      manager.setActive(account);
+    }
   };
 
   return (

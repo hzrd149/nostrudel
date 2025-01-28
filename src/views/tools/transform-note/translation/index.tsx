@@ -26,12 +26,12 @@ import {
   DVM_TRANSLATE_RESULT_KIND,
   groupEventsIntoJobs,
 } from "../../../../helpers/nostr/dvm";
-import useCurrentAccount from "../../../../hooks/use-current-account";
+import { useActiveAccount } from "applesauce-react/hooks";
 import TranslationJob from "./translation-job";
 import { usePublishEvent } from "../../../../providers/global/publish-provider";
 
 export function NoteTranslationsPage({ note }: { note: NostrEvent }) {
-  const account = useCurrentAccount();
+  const account = useActiveAccount();
   const publish = usePublishEvent();
 
   const [lang, setLang] = useState(navigator.language.split("-")[0] ?? "en");

@@ -15,13 +15,13 @@ import {
 } from "../../../../helpers/nostr/dvm";
 import { DraftNostrEvent, NostrEvent } from "../../../../types/nostr-event";
 import relayScoreboardService from "../../../../services/relay-scoreboard";
-import useCurrentAccount from "../../../../hooks/use-current-account";
+import { useActiveAccount } from "applesauce-react/hooks";
 import TextToSpeechJob from "./tts-job";
 import { usePublishEvent } from "../../../../providers/global/publish-provider";
 
 export default function NoteTextToSpeechPage({ note }: { note: NostrEvent }) {
   const publish = usePublishEvent();
-  const account = useCurrentAccount();
+  const account = useActiveAccount();
 
   const [lang, setLang] = useState(navigator.language.split("-")[0] ?? "en");
   const readRelays = useReadRelays();
