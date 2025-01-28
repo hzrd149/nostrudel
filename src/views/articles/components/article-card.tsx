@@ -55,7 +55,7 @@ const ArticleCard = memo(({ article }: { article: NostrEvent }) => {
           {title}
         </HoverLinkOverlay>
       </Heading>
-      <Text>{summary}</Text>
+      <Text noOfLines={5}>{summary}</Text>
 
       <ArticleTags article={article} />
 
