@@ -11,7 +11,7 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
-import { PasswordSigner } from "applesauce-signer";
+import { PasswordSigner } from "applesauce-signers";
 
 import useCurrentAccount from "../../../../hooks/use-current-account";
 import EyeOff from "../../../../components/icons/eye-off";

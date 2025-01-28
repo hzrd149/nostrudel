@@ -1,4 +1,4 @@
-import { NostrConnectSigner, SimpleSigner } from "applesauce-signer/signers";
+import { NostrConnectSigner, SimpleSigner } from "applesauce-signers/signers";
 import { bytesToHex, hexToBytes } from "@noble/hashes/utils";
 
 import { DEFAULT_NOSTR_CONNECT_RELAYS } from "../../const";

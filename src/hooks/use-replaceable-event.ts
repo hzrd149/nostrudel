@@ -3,7 +3,7 @@ import { useStoreQuery } from "applesauce-react/hooks";
 import { ReplaceableQuery } from "applesauce-core/queries";
 
 import { useReadRelays } from "./use-client-relays";
-import replaceableEventLoader from "../services/replaceable-event-loader";
+import replaceableEventLoader from "../services/replaceable-loader";
 import { CustomAddressPointer, parseCoordinate } from "../helpers/nostr/event";
 
 export default function useReplaceableEvent(

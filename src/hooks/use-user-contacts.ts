@@ -1,6 +1,6 @@
 import { kinds } from "nostr-tools";
 import { useStoreQuery } from "applesauce-react/hooks";
-import { UserContactsQuery } from "applesauce-lists/queries";
+import { UserContactsQuery } from "applesauce-core/queries";
 
 import useReplaceableEvent from "./use-replaceable-event";
 

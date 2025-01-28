@@ -17,7 +17,7 @@ import {
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import { NostrEvent } from "nostr-tools";
-import { NostrConnectSigner } from "applesauce-signer/signers/nostr-connect-signer";
+import { NostrConnectSigner } from "applesauce-signers/signers/nostr-connect-signer";
 import { ProfileContent, safeParse } from "applesauce-core/helpers";
 
 import useNip05Providers from "../../../hooks/use-nip05-providers";

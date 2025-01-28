@@ -5,7 +5,7 @@ import localSettings from "./local-settings";
 import readStatusService from "./read-status";
 import relayInfoService from "./relay-info";
 import relayPoolService from "./relay-pool";
-import replaceableEventLoader from "./replaceable-event-loader";
+import replaceableEventLoader from "./replaceable-loader";
 import signingService from "./signing";
 import timelineCacheService from "./timeline-cache";
 import { userSearchDirectory } from "./username-search";

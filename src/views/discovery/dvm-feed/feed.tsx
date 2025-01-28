@@ -47,7 +47,7 @@ import useParamsAddressPointer from "../../../hooks/use-params-address-pointer";
 import DVMParams from "./components/dvm-params";
 import { useUserOutbox } from "../../../hooks/use-user-mailboxes";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
-import { getHumanReadableCoordinate } from "../../../services/replaceable-event-loader";
+import { getHumanReadableCoordinate } from "../../../services/replaceable-loader";
 import Timestamp from "../../../components/timestamp";
 
 function DVMFeedPage({ pointer }: { pointer: AddressPointer }) {

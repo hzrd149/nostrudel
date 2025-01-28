@@ -12,7 +12,7 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
-import { NostrConnectSigner } from "applesauce-signer/signers/nostr-connect-signer";
+import { NostrConnectSigner } from "applesauce-signers/signers/nostr-connect-signer";
 
 import accountService from "../../services/account";
 import QRCodeScannerButton from "../../components/qr-code/qr-code-scanner-button";

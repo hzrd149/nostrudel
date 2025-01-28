@@ -1,4 +1,4 @@
-import { SerialPortSigner } from "applesauce-signer/signers/serial-port-signer";
+import { SerialPortSigner } from "applesauce-signers/signers/serial-port-signer";
 import { Account } from "./account";
 
 export default class SerialPortAccount extends Account {

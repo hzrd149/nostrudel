@@ -1,4 +1,4 @@
-import { Nip07Interface } from "applesauce-signer";
+import { Nip07Interface } from "applesauce-signers";
 import { Account } from "./account";
 
 export default class ExtensionAccount extends Account {

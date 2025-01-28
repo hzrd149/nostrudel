@@ -2,7 +2,6 @@ import dayjs from "dayjs";
 import { Debugger } from "debug";
 import _throttle from "lodash.throttle";
 import { Filter, kinds } from "nostr-tools";
-import { getChannelPointer } from "applesauce-channel/helpers";
 
 import SuperMap from "../classes/super-map";
 import { NostrEvent } from "../types/nostr-event";
@@ -10,7 +9,7 @@ import { logger } from "../helpers/debug";
 import { eventStore } from "./event-store";
 import relayPoolService from "./relay-pool";
 import PersistentSubscription from "../classes/persistent-subscription";
-import { markFromCache } from "applesauce-core/helpers";
+import { getChannelPointer, markFromCache } from "applesauce-core/helpers";
 import { AbstractRelay } from "nostr-tools/abstract-relay";
 import { cacheRelay$, getCacheRelay } from "./cache-relay";
 

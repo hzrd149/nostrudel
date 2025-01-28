@@ -7,7 +7,7 @@ import { logger } from "../helpers/debug";
 import accountService from "./account";
 import clientRelaysService from "./client-relays";
 import { offlineMode } from "./offline-mode";
-import replaceableEventLoader from "./replaceable-event-loader";
+import replaceableEventLoader from "./replaceable-loader";
 import { eventStore, queryStore } from "./event-store";
 import { Account } from "../classes/accounts/account";
 import { MultiSubscription } from "applesauce-net/subscription";

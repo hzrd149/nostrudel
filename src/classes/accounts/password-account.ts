@@ -1,4 +1,4 @@
-import { PasswordSigner } from "applesauce-signer";
+import { PasswordSigner } from "applesauce-signers";
 import { Account } from "./account";
 
 export default class PasswordAccount extends Account {

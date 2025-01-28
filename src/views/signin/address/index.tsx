@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button, Card, CardProps, Flex, FormControl, FormLabel, Image, Input, Text, useToast } from "@chakra-ui/react";
 import { useNavigate, Link as RouterLink } from "react-router-dom";
-import { NostrConnectSigner } from "applesauce-signer/signers/nostr-connect-signer";
+import { NostrConnectSigner } from "applesauce-signers/signers/nostr-connect-signer";
 import { useDebounce } from "react-use";
 
 import dnsIdentityService, { DnsIdentity } from "../../../services/dns-identity";

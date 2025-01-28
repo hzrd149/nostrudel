@@ -1,6 +1,6 @@
 import { NostrEvent, SimplePool } from "nostr-tools";
 import { AbstractRelay } from "nostr-tools/abstract-relay";
-import { SimpleSigner } from "applesauce-signer";
+import { SimpleSigner } from "applesauce-signers";
 
 import { logger } from "../helpers/debug";
 import NostrWebRtcBroker from "../classes/webrtc/nostr-webrtc-broker";

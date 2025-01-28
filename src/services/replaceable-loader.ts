@@ -1,10 +1,10 @@
 import { Filter, NostrEvent } from "nostr-tools";
 import { ReplaceableLoader } from "applesauce-loaders/loaders";
+import { Observable } from "rxjs";
 
 import { truncateId } from "../helpers/string";
 import { eventStore } from "./event-store";
 import rxNostr from "./rx-nostr";
-import { Observable } from "rxjs";
 import { COMMON_CONTACT_RELAYS } from "../const";
 import { getCacheRelay } from "./cache-relay";
 

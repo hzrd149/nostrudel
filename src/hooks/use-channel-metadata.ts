@@ -1,6 +1,6 @@
 import { useMemo } from "react";
-import { ChannelMetadataQuery } from "applesauce-channel/queries";
 import { useStoreQuery } from "applesauce-react/hooks";
+import { ChannelMetadataQuery } from "applesauce-core/queries";
 
 import channelMetadataService from "../services/channel-metadata";
 import useSingleEvent from "./use-single-event";

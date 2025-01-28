@@ -3,7 +3,7 @@ import { SingleEventLoader } from "applesauce-loaders";
 
 import { eventStore } from "./event-store";
 import rxNostr from "./rx-nostr";
-import { cacheRequest } from "./replaceable-event-loader";
+import { cacheRequest } from "./replaceable-loader";
 
 const singleEventLoader = new SingleEventLoader(rxNostr, { cacheRequest });
 

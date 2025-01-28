@@ -1,4 +1,4 @@
-import { NostrConnectConnectionMethods } from "applesauce-signer";
+import { NostrConnectConnectionMethods } from "applesauce-signers";
 import { Filter, NostrEvent } from "nostr-tools";
 import { MultiSubscription } from "applesauce-net/subscription";
 

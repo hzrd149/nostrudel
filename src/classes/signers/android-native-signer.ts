@@ -1,5 +1,5 @@
 import { EventTemplate, getEventHash, nip19, NostrEvent, UnsignedEvent, verifyEvent } from "nostr-tools";
-import { Nip07Interface } from "applesauce-signer";
+import { Nip07Interface } from "applesauce-signers";
 import { NostrSignerPlugin } from "nostr-signer-capacitor-plugin";
 
 type Permission = {

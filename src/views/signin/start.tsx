@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button, ButtonGroup, Divider, Flex, IconButton, Link, Spinner, Text, useToast } from "@chakra-ui/react";
 import { Link as RouterLink, useLocation } from "react-router-dom";
-import { AmberClipboardSigner, SerialPortSigner } from "applesauce-signer";
+import { AmberClipboardSigner, SerialPortSigner } from "applesauce-signers";
 
 import Key01 from "../../components/icons/key-01";
 import Diamond01 from "../../components/icons/diamond-01";

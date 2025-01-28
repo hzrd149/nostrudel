@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { IconButton, IconButtonProps } from "@chakra-ui/react";
 import { kinds, NostrEvent } from "nostr-tools";
-import { modifyEventTags, unixNow } from "applesauce-core/helpers";
+import { unixNow } from "applesauce-core/helpers";
 import { Operations } from "applesauce-lists/helpers";
+import { useEventFactory } from "applesauce-react/hooks";
 
 import { StarEmptyIcon, StarFullIcon } from "../../../components/icons";
 import { getEventCoordinate } from "../../../helpers/nostr/event";
@@ -16,6 +17,7 @@ export default function StreamFavoriteButton({
   ...props
 }: { stream: NostrEvent } & Omit<IconButtonProps, "children" | "aria-label" | "isLoading" | "onClick">) {
   const publish = usePublishEvent();
+  const factory = useEventFactory();
   const { finalizeDraft } = useSigningContext();
   const { favorites } = useFavoriteStreams();
   const coordinate = getEventCoordinate(stream);
@@ -33,9 +35,10 @@ export default function StreamFavoriteButton({
       }));
 
     setLoading(true);
-    const draft = await modifyEventTags(prev, {
-      public: isFavorite ? Operations.removeCoordinateTag(coordinate) : Operations.addCoordinateTag(coordinate),
-    });
+    const draft = await factory.modifyList(
+      prev,
+      isFavorite ? Operations.removeCoordinateTag(coordinate) : Operations.addCoordinateTag(coordinate),
+    );
     await publish(isFavorite ? "Unfavorite stream" : "Favorite stream", draft);
     setLoading(false);
   };

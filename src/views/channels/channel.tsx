@@ -1,15 +1,14 @@
 import { memo, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button, ButtonGroup, Flex, Heading, Spacer, Spinner, useDisclosure } from "@chakra-ui/react";
+import { Button, ButtonGroup, Flex, Spinner, useDisclosure } from "@chakra-ui/react";
 import { kinds } from "nostr-tools";
-import { ChannelHiddenQuery, ChannelMessagesQuery, ChannelMutedQuery } from "applesauce-channel/queries";
 import { useStoreQuery } from "applesauce-react/hooks";
+import { ChannelHiddenQuery, ChannelMessagesQuery, ChannelMutedQuery } from "applesauce-core/queries";
 
 import useSingleEvent from "../../hooks/use-single-event";
 import { ErrorBoundary } from "../../components/error-boundary";
 import { NostrEvent } from "../../types/nostr-event";
 import useChannelMetadata from "../../hooks/use-channel-metadata";
-import { ChevronLeftIcon } from "../../components/icons";
 import ChannelMetadataDrawer from "./components/channel-metadata-drawer";
 import ChannelJoinButton from "./components/channel-join-button";
 import ChannelMenu from "./components/channel-menu";
@@ -26,7 +25,6 @@ import ChannelMessageForm from "./components/send-message-form";
 import useParamsEventPointer from "../../hooks/use-params-event-pointer";
 import { useReadRelays } from "../../hooks/use-client-relays";
 import { truncateId } from "../../helpers/string";
-import SimpleView from "../../components/layout/presets/simple-view";
 import ContainedSimpleView from "../../components/layout/presets/contained-simple-view";
 import ChannelImage from "./components/channel-image";
 

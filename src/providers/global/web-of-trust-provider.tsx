@@ -5,7 +5,7 @@ import _throttle from "lodash.throttle";
 import { getPubkeysFromList } from "../../helpers/nostr/lists";
 import useCurrentAccount from "../../hooks/use-current-account";
 import { PubkeyGraph } from "../../classes/pubkey-graph";
-import replaceableEventLoader from "../../services/replaceable-event-loader";
+import replaceableEventLoader from "../../services/replaceable-loader";
 import { COMMON_CONTACT_RELAYS } from "../../const";
 import { eventStore } from "../../services/event-store";
 

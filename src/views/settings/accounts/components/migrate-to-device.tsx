@@ -1,5 +1,5 @@
 import { Button, Flex, Heading, Link, useToast } from "@chakra-ui/react";
-import { PasswordSigner, SerialPortSigner, SimpleSigner } from "applesauce-signer";
+import { PasswordSigner, SerialPortSigner, SimpleSigner } from "applesauce-signers";
 import { useState } from "react";
 
 import useAsyncErrorHandler from "../../../../hooks/use-async-error-handler";
