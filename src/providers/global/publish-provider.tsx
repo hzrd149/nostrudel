@@ -13,7 +13,6 @@ import clientRelaysService from "../../services/client-relays";
 import RelaySet from "../../classes/relay-set";
 import { getAllRelayHints } from "../../helpers/nostr/event";
 import { getCacheRelay } from "../../services/cache-relay";
-import deleteEventService from "../../services/delete-events";
 import { eventStore } from "../../services/event-store";
 import { useUserOutbox } from "../../hooks/use-user-mailboxes";
 import rxNostr from "../../services/rx-nostr";
@@ -34,7 +33,11 @@ export class PublishLogEntry extends BehaviorSubject<PublishResults> {
   ) {
     super({ packets: [], relays: {} });
 
-    rxNostr.send(event, { on: { relays: [...relays] } }).subscribe({
+    const defaultWriteRelays = Array.from(Object.entries(rxNostr.getDefaultRelays()))
+      .filter(([_, config]) => config.write)
+      .map(([relay]) => relay);
+
+    rxNostr.send(event, { on: { relays: [...defaultWriteRelays, ...relays] } }).subscribe({
       next: (packet) => {
         if (packet.ok) {
           addSeenRelay(event, packet.from);
@@ -142,9 +145,8 @@ export default function PublishProvider({ children }: PropsWithChildren) {
         const cacheRelay = getCacheRelay();
         if (cacheRelay) cacheRelay.publish(signed);
 
-        // pass it to other services
+        // add it to the event store
         eventStore.add(signed);
-        if (signed.kind === kinds.EventDeletion) deleteEventService.handleEvent(signed);
 
         return entry;
       } catch (e) {

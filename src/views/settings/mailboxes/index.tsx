@@ -14,7 +14,7 @@ import { NostrEvent } from "../../../types/nostr-event";
 import useAsyncErrorHandler from "../../../hooks/use-async-error-handler";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
 import { addRelayModeToMailbox, removeRelayModeFromMailbox } from "../../../helpers/nostr/mailbox";
-import AddRelayForm from "../app/add-relay-form";
+import AddRelayForm from "../relays/add-relay-form";
 import DebugEventButton from "../../../components/debug-modal/debug-event-button";
 import useReplaceableEvent from "../../../hooks/use-replaceable-event";
 import { COMMON_CONTACT_RELAYS } from "../../../const";

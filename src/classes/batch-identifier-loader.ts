@@ -4,12 +4,12 @@ import _throttle from "lodash.throttle";
 import debug, { Debugger } from "debug";
 import { EventStore } from "applesauce-core";
 import { getEventUID } from "applesauce-core/helpers";
+import { createDefer, Deferred } from "applesauce-core/promise";
 import { Subject } from "rxjs";
 
 import PersistentSubscription from "./persistent-subscription";
 import Process from "./process";
 import processManager from "../services/process-manager";
-import createDefer, { Deferred } from "./deferred";
 import Dataflow04 from "../components/icons/dataflow-04";
 import SuperMap from "./super-map";
 

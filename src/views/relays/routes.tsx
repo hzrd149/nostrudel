@@ -1,12 +1,12 @@
 import { lazy } from "react";
 import { RouteObject } from "react-router-dom";
 import RelaysView from ".";
-import AppRelaysView from "./app";
-import CacheRelayView from "./cache";
-import DatabaseView from "./cache/database";
-import MailboxesView from "./mailboxes";
-import SearchRelaysView from "./search";
+import AppRelaysView from "../settings/relays";
+import CacheRelayView from "../settings/cache";
+import DatabaseView from "../settings/cache/database";
+import MailboxesView from "../settings/mailboxes";
 import MediaServersView from "../settings/media-servers";
+import SearchRelaysView from "../settings/search";
 import NIP05RelaysView from "./nip05";
 import ContactListRelaysView from "./contact-list";
 const WebRtcRelaysView = lazy(() => import("./webrtc"));

@@ -21,10 +21,9 @@ import {
 } from "@chakra-ui/react";
 import { Event, kinds } from "nostr-tools";
 import { useActiveAccount } from "applesauce-react/hooks";
-import dayjs from "dayjs";
+import { createDefer, Deferred } from "applesauce-core/promise";
 
-import createDefer, { Deferred } from "../../classes/deferred";
-import { RelayFavicon } from "../../components/relay-favicon";
+import RelayFavicon from "../../components/relay-favicon";
 import { ExternalLinkIcon } from "../../components/icons";
 import { getEventCoordinate, isReplaceable } from "../../helpers/nostr/event";
 import { Tag } from "../../types/nostr-event";
@@ -33,6 +32,7 @@ import { useWriteRelays } from "../../hooks/use-client-relays";
 import { usePublishEvent } from "../global/publish-provider";
 import { useUserOutbox } from "../../hooks/use-user-mailboxes";
 import { eventStore } from "../../services/event-store";
+import { unixNow } from "applesauce-core/helpers";
 
 type DeleteEventContextType = {
   isLoading: boolean;
@@ -80,7 +80,7 @@ export default function DeleteEventProvider({ children }: PropsWithChildren) {
         kind: kinds.EventDeletion,
         tags,
         content: reason,
-        created_at: dayjs().unix(),
+        created_at: unixNow(),
       };
       const pub = await publish("Delete", draft, undefined, false);
       eventStore.add(pub.event);

@@ -3,12 +3,14 @@ import { bytesToHex, hexToBytes } from "@noble/hashes/utils";
 
 import { DEFAULT_SIGNAL_RELAYS } from "../const";
 import {
+  ArrayLocalStorageEntry,
   BooleanLocalStorageEntry,
   NullableNumberLocalStorageEntry,
   NumberLocalStorageEntry,
 } from "../classes/local-settings/types";
 import { LocalStorageEntry } from "../classes/local-settings/entry";
 import { nanoid } from "nanoid";
+import { RelayAuthMode } from "./authentication-signer";
 
 // local relay
 const idbMaxEvents = new NumberLocalStorageEntry("nostr-idb-max-events", 10_000);
@@ -45,9 +47,12 @@ const verifyEventMethod = new LocalStorageEntry("verify-event-method", "wasm"); 
 const enableKeyboardShortcuts = new BooleanLocalStorageEntry("enable-keyboard-shortcuts", true);
 
 // privacy
-const defaultAuthenticationMode = new LocalStorageEntry("default-relay-auth-mode", "ask"); // ask, always, never
-const proactivelyAuthenticate = new BooleanLocalStorageEntry("proactively-authenticate", false);
 const debugApi = new BooleanLocalStorageEntry("debug-api", false);
+
+// relay authentication
+const defaultAuthenticationMode = new LocalStorageEntry<RelayAuthMode>("default-authentication-mode", "ask");
+const proactivelyAuthenticate = new BooleanLocalStorageEntry("proactively-authenticate", false);
+const relayAuthenticationMode = new ArrayLocalStorageEntry<{relay: string,mode: RelayAuthMode}>("relay-authentication-mode", []);
 
 // notifications
 const deviceId = new LocalStorageEntry("device-id", nanoid());
@@ -73,6 +78,7 @@ const localSettings = {
   enableKeyboardShortcuts,
   defaultAuthenticationMode,
   proactivelyAuthenticate,
+  relayAuthenticationMode,
   debugApi,
   deviceId,
   ntfyTopic,

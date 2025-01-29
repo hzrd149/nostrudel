@@ -1,6 +1,8 @@
+import { ThemeTypings } from "@chakra-ui/react";
 import { Filter } from "nostr-tools";
 import { SubCloser, SubscribeManyParams } from "nostr-tools/abstract-pool";
 import { AbstractRelay, Subscription } from "nostr-tools/abstract-relay";
+import { ConnectionState } from "rx-nostr";
 
 // NOTE: only use this for equality checks and querying
 export function getRelayVariations(relay: string) {
@@ -171,4 +173,30 @@ export function subscribeMany(relays: string[], filters: Filter[], params: Subsc
       });
     },
   };
+}
+
+export function getConnectionStateColor(state: ConnectionState): ThemeTypings["colorSchemes"] {
+  switch (state) {
+    case "initialized":
+    case "connecting":
+      return "blue";
+
+    case "connected":
+      return "green";
+
+    case "rejected":
+    case "error":
+      return "red";
+
+    case "waiting-for-retrying":
+      return "orange";
+
+    case "retrying":
+      return "yellow";
+
+    default:
+    case "dormant":
+    case "terminated":
+      return "gray";
+  }
 }

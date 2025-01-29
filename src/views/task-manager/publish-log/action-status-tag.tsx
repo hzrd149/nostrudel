@@ -4,37 +4,44 @@ import { useObservable } from "applesauce-react/hooks";
 import { CheckIcon, ErrorIcon } from "../../../components/icons";
 import { PublishLogEntry } from "../../../providers/global/publish-provider";
 
+export function usePublishLogEntryStatus(entry: PublishLogEntry) {
+  const { relays } = useObservable(entry);
+
+  const total = entry.relays.length;
+  const successful = Object.values(relays).filter((p) => p.ok);
+  const failedWithNotice = Object.values(relays).filter((p) => !p.ok && !!p.notice);
+
+  let icon = <Spinner size="xs" />;
+  let color: TagProps["colorScheme"] = "blue";
+  if (Object.keys(relays).length !== entry.relays.length) {
+    color = "blue";
+    icon = <Spinner size="xs" />;
+  } else if (successful.length === 0) {
+    color = "red";
+    icon = <ErrorIcon />;
+  } else if (failedWithNotice.length > 0) {
+    color = "orange";
+    icon = <CheckIcon />;
+  } else {
+    color = "green";
+    icon = <CheckIcon />;
+  }
+
+  return { color, icon, successful, failedWithNotice, total };
+}
+
 export default function PublishActionStatusTag({
   entry,
   ...props
 }: { entry: PublishLogEntry } & Omit<TagProps, "children">) {
-  const { relays } = useObservable(entry);
-
-  const successful = Object.values(relays).filter((p) => p.ok);
-  const failedWithNotice = Object.values(relays).filter((p) => !p.ok && !!p.notice);
-
-  let statusIcon = <Spinner size="xs" />;
-  let statusColor: TagProps["colorScheme"] = "blue";
-  if (Object.keys(relays).length !== entry.relays.length) {
-    statusColor = "blue";
-    statusIcon = <Spinner size="xs" />;
-  } else if (successful.length === 0) {
-    statusColor = "red";
-    statusIcon = <ErrorIcon />;
-  } else if (failedWithNotice.length > 0) {
-    statusColor = "orange";
-    statusIcon = <CheckIcon />;
-  } else {
-    statusColor = "green";
-    statusIcon = <CheckIcon />;
-  }
+  const { icon, color, successful, total } = usePublishLogEntryStatus(entry);
 
   return (
-    <Tag colorScheme={statusColor} {...props}>
+    <Tag colorScheme={color} {...props}>
       <TagLabel mr="1">
-        {successful.length}/{entry.relays.length}
+        {successful.length}/{total}
       </TagLabel>
-      {statusIcon}
+      {icon}
     </Tag>
   );
 }

@@ -14,7 +14,7 @@ import {
 } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 
-import { RelayFavicon } from "./relay-favicon";
+import RelayFavicon from "./relay-favicon";
 import relayScoreboardService from "../services/relay-scoreboard";
 
 export type RelayIconStackProps = { relays: string[]; maxRelays?: number } & Omit<FlexProps, "children">;

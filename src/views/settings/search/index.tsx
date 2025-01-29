@@ -23,8 +23,8 @@ import useUserSearchRelayList from "../../../hooks/use-user-search-relay-list";
 import { useActiveAccount } from "applesauce-react/hooks";
 import { cloneList, getRelaysFromList, listAddRelay, listRemoveRelay } from "../../../helpers/nostr/lists";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
-import { RelayFavicon } from "../../../components/relay-favicon";
-import AddRelayForm from "../app/add-relay-form";
+import RelayFavicon from "../../../components/relay-favicon";
+import AddRelayForm from "../relays/add-relay-form";
 import { useRelayInfo } from "../../../hooks/use-relay-info";
 import SimpleView from "../../../components/layout/presets/simple-view";
 
@@ -125,7 +125,7 @@ export default function SearchRelaysView() {
   };
 
   return (
-    <SimpleView title="Search Relays" maxW="4xl">
+    <SimpleView title="Search Settings" maxW="4xl">
       <Text fontStyle="italic" px="2" mt="-2">
         These relays are used to search for users and content
       </Text>

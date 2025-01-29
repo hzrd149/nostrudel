@@ -17,7 +17,7 @@ import { NostrEvent } from "nostr-tools";
 import { getEventUID, getTagValue } from "../../../../helpers/nostr/event";
 import SupportedNIPs from "../../../relays/components/supported-nips";
 import { SelectedContext } from "../selected-context";
-import { RelayFavicon } from "../../../../components/relay-favicon";
+import RelayFavicon from "../../../../components/relay-favicon";
 import Timestamp from "../../../../components/timestamp";
 
 const IgnoreNips = [1, 2, 4, 11, 12, 15, 16];

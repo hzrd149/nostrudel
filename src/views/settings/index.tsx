@@ -22,6 +22,7 @@ import Database01 from "../../components/icons/database-01";
 import Mail02 from "../../components/icons/mail-02";
 import SimpleParentView from "../../components/layout/presets/simple-parent-view";
 import useBakery from "../../hooks/use-bakery";
+import CheckCircleBroken from "../../components/icons/check-circle-broken";
 
 function DividerHeader({ title }: { title: string }) {
   return (
@@ -53,7 +54,7 @@ export default function SettingsView() {
             Media Servers
           </SimpleNavItem>
           <SimpleNavItem to="/settings/search-relays" leftIcon={<SearchIcon boxSize={6} />}>
-            Search Relays
+            Search
           </SimpleNavItem>
         </>
       )}
@@ -64,6 +65,9 @@ export default function SettingsView() {
       </SimpleNavItem>
       <SimpleNavItem to="/settings/relays" leftIcon={<RelayIcon boxSize={5} />}>
         Relays
+      </SimpleNavItem>
+      <SimpleNavItem to="/settings/authentication" leftIcon={<CheckCircleBroken boxSize={5} />}>
+        Authentication
       </SimpleNavItem>
       <SimpleNavItem to="/settings/cache" leftIcon={<Database01 boxSize={5} />}>
         Cache

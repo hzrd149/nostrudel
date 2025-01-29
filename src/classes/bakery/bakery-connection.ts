@@ -1,8 +1,8 @@
 import { BehaviorSubject, Subject } from "rxjs";
 import { EventTemplate, Relay, VerifiedEvent } from "nostr-tools";
 import { ControlMessage, ControlResponse } from "@satellite-earth/core/types";
+import { createDefer, Deferred } from "applesauce-core/promise";
 
-import createDefer, { Deferred } from "../deferred";
 import { logger } from "../../helpers/debug";
 
 export default class BakeryRelay extends Relay {

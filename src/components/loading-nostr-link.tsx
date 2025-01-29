@@ -26,7 +26,7 @@ import UserLink from "./user/user-link";
 import relayPoolService from "../services/relay-pool";
 import { isValidRelayURL } from "../helpers/relay";
 import relayScoreboardService from "../services/relay-scoreboard";
-import { RelayFavicon } from "./relay-favicon";
+import RelayFavicon from "./relay-favicon";
 import singleEventLoader from "../services/single-event-loader";
 import replaceableEventLoader from "../services/replaceable-loader";
 import { AppHandlerContext } from "../providers/route/app-handler-provider";

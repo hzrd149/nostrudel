@@ -1,6 +1,7 @@
 import React, { useCallback, useContext, useState } from "react";
+import { createDefer, Deferred } from "applesauce-core/promise";
+
 import InvoiceModal from "../../components/invoice-modal";
-import createDefer, { Deferred } from "../../classes/deferred";
 import useAppSettings from "../../hooks/use-user-app-settings";
 
 export type InvoiceModalContext = {

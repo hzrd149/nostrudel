@@ -4,7 +4,7 @@ import { Link as RouterLink } from "react-router-dom";
 import { EventTemplate } from "nostr-tools";
 import dayjs from "dayjs";
 
-import { RelayFavicon } from "../../../components/relay-favicon";
+import RelayFavicon from "../../../components/relay-favicon";
 import useUserContactRelays from "../../../hooks/use-user-contact-relays";
 import { CheckIcon } from "../../../components/icons";
 import { useCallback, useState } from "react";

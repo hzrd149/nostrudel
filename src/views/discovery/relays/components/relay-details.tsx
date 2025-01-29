@@ -31,7 +31,7 @@ import { getPubkeysFromList } from "../../../../helpers/nostr/lists";
 import UserAvatarLink from "../../../../components/user/user-avatar-link";
 import UserName from "../../../../components/user/user-name";
 import UserDnsIdentity from "../../../../components/user/user-dns-identity";
-import { RelayFavicon } from "../../../../components/relay-favicon";
+import RelayFavicon from "../../../../components/relay-favicon";
 
 export default function RelayStatusDetails({ event, ...props }: Omit<FlexProps, "children"> & { event: NostrEvent }) {
   const selected = useContext(SelectedContext);

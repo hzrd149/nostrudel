@@ -5,15 +5,16 @@ import RequireActiveAccount from "../../components/router/require-active-account
 import SettingsView from ".";
 import DisplaySettings from "./display";
 import AccountSettings from "./accounts";
-import MailboxesView from "../relays/mailboxes";
+import MailboxesView from "./mailboxes";
 import MediaServersView from "./media-servers";
-import SearchRelaysView from "../relays/search";
-import AppRelaysView from "../relays/app";
-import CacheRelayView from "../relays/cache";
+import SearchRelaysView from "./search";
+import AppRelaysView from "./relays";
+import CacheRelayView from "./cache";
 import PostSettings from "./post";
 import PrivacySettings from "./privacy";
 import LightningSettings from "./lightning";
 import PerformanceSettings from "./performance";
+import AuthenticationSettingsView from "./authentication";
 
 // bakery settings
 const BakeryConnectView = lazy(() => import("./bakery/connect"));
@@ -40,6 +41,7 @@ export default [
         ),
       },
       { path: "mailboxes", Component: MailboxesView },
+      { path: "authentication", Component: AuthenticationSettingsView },
       { path: "media-servers", Component: MediaServersView },
       { path: "search-relays", Component: SearchRelaysView },
       { path: "relays", Component: AppRelaysView },

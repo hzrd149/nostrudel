@@ -1,11 +1,13 @@
 import { useState } from "react";
-import { Flex, FlexProps, IconButton } from "@chakra-ui/react";
+import { ButtonGroup, Flex, FlexProps, IconButton } from "@chakra-ui/react";
 
 import { ChevronLeftIcon, ChevronRightIcon } from "../../icons";
-import NavItems from "../nav-items";
+import NavItems from "../components";
 import useRootPadding from "../../../hooks/use-root-padding";
-import AccountSwitcher from "../nav-items/account-switcher";
+import AccountSwitcher from "../components/account-switcher";
 import { CollapsedContext } from "../context";
+import RelayConnectionButton from "../components/connections-button";
+import PublishLogButton from "../components/publish-log-button";
 
 export default function DesktopSideNav({ ...props }: Omit<FlexProps, "children">) {
   const [collapsed, setCollapsed] = useState(false);
@@ -36,14 +38,20 @@ export default function DesktopSideNav({ ...props }: Omit<FlexProps, "children">
       >
         <AccountSwitcher />
         <NavItems />
-        <IconButton
-          aria-label={collapsed ? "Open" : "Close"}
-          title={collapsed ? "Open" : "Close"}
-          size="sm"
-          variant="ghost"
-          onClick={() => setCollapsed(!collapsed)}
-          icon={collapsed ? <ChevronRightIcon boxSize={6} /> : <ChevronLeftIcon boxSize={6} />}
-        />
+        <ButtonGroup variant="ghost">
+          <IconButton
+            aria-label={collapsed ? "Open" : "Close"}
+            title={collapsed ? "Open" : "Close"}
+            onClick={() => setCollapsed(!collapsed)}
+            icon={collapsed ? <ChevronRightIcon boxSize={6} /> : <ChevronLeftIcon boxSize={6} />}
+          />
+          {!collapsed && (
+            <>
+              <RelayConnectionButton w="full" />
+              <PublishLogButton flexShrink={0} />
+            </>
+          )}
+        </ButtonGroup>
       </Flex>
     </CollapsedContext.Provider>
   );

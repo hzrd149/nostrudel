@@ -6,9 +6,7 @@ import InspectRelayView from "./relays/inspect-relay";
 import TaskManagerModal from "./modal";
 import TaskManagerLayout from "./layout";
 import TaskManagerRelays from "./relays";
-import TaskManagerDatabase from "./database";
 import PublishLogView from "./publish-log";
-import TaskManagerProcesses from "./processes";
 import useRouterMarker from "../../hooks/use-router-marker";
 
 type Router = ReturnType<typeof createMemoryRouter>;
@@ -31,21 +29,12 @@ const routes: RouteObject[] = [
     children: [
       {
         path: "relays",
-        element: <TaskManagerRelays />,
-      },
-      {
-        path: "r/:url",
-        element: <InspectRelayView />,
-      },
-      {
-        path: "processes",
-        element: <TaskManagerProcesses />,
+        children: [
+          { index: true, Component: TaskManagerRelays },
+          { path: ":relay", Component: InspectRelayView },
+        ],
       },
       { path: "publish-log", element: <PublishLogView /> },
-      {
-        path: "database",
-        element: <TaskManagerDatabase />,
-      },
     ],
   },
 ];

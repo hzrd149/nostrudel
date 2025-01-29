@@ -8,9 +8,7 @@ import { Subject } from "rxjs";
 
 import { logger } from "../helpers/debug";
 import EventStore from "./event-store";
-import deleteEventService from "../services/delete-events";
 import { mergeFilter } from "../helpers/nostr/filter";
-import { isATag, isETag } from "../types/nostr-event";
 import relayPoolService from "../services/relay-pool";
 import Process from "./process";
 import processManager from "../services/process-manager";
@@ -48,9 +46,6 @@ export default class ChunkedRequest {
 
     this.log = log || logger.extend(relay.url);
     this.events = new EventStore(relay.url);
-
-    // TODO: find a better place for this
-    this.subs.push(deleteEventService.stream.subscribe((e) => this.handleDeleteEvent(e)));
 
     processManager.registerProcess(this.process);
   }
@@ -116,14 +111,6 @@ export default class ChunkedRequest {
     event = eventStore.add(event, this.relay.url);
 
     return this.events.addEvent(event);
-  }
-
-  private handleDeleteEvent(deleteEvent: NostrEvent) {
-    const cord = deleteEvent.tags.find(isATag)?.[1];
-    const eventId = deleteEvent.tags.find(isETag)?.[1];
-
-    if (cord) this.events.deleteEvent(cord);
-    if (eventId) this.events.deleteEvent(eventId);
   }
 
   getFirstEvent(nth = 0, eventFilter?: EventFilter) {

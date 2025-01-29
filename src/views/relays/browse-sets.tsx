@@ -10,7 +10,7 @@ import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import { NostrEvent } from "../../types/nostr-event";
 import { getListName, getRelaysFromList } from "../../helpers/nostr/lists";
-import { RelayFavicon } from "../../components/relay-favicon";
+import RelayFavicon from "../../components/relay-favicon";
 import TimelineActionAndStatus from "../../components/timeline/timeline-action-and-status";
 import { useReadRelays } from "../../hooks/use-client-relays";
 

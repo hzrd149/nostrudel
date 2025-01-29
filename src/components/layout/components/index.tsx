@@ -2,13 +2,13 @@ import { useMemo } from "react";
 import { Divider, Spacer } from "@chakra-ui/react";
 import { useActiveAccount } from "applesauce-react/hooks";
 import { ReadonlyAccount } from "applesauce-accounts/accounts";
+import { QuestionIcon } from "@chakra-ui/icons";
 
 import { LightningIcon, SettingsIcon } from "../../icons";
 import Package from "../../icons/package";
 import useRecentIds from "../../../hooks/use-recent-ids";
 import { defaultFavoriteApps, internalApps, internalTools } from "../../navigation/apps";
 import NavItem from "./nav-item";
-import { QuestionIcon } from "@chakra-ui/icons";
 import Plus from "../../icons/plus";
 import useFavoriteInternalIds from "../../../hooks/use-favorite-internal-ids";
 
@@ -51,7 +51,6 @@ export default function NavItems() {
       <Spacer />
       <NavItem to="/support" icon={LightningIcon} label="Support" />
       <NavItem label="Settings" icon={SettingsIcon} to="/settings" />
-      {/* <TaskManagerButtons mt="auto" flexShrink={0} /> */}
     </>
   );
 }

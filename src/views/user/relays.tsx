@@ -5,7 +5,7 @@ import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { useReadRelays } from "../../hooks/use-client-relays";
 import { NostrEvent } from "../../types/nostr-event";
 import RelayReviewNote from "../relays/components/relay-review-note";
-import { RelayFavicon } from "../../components/relay-favicon";
+import RelayFavicon from "../../components/relay-favicon";
 import { RelayDebugButton, RelayMetadata } from "../relays/components/relay-card";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";

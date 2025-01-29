@@ -4,7 +4,6 @@ import { nanoid } from "nanoid";
 import { getEventUID, sortByDate } from "../helpers/nostr/event";
 import ControlledObservable from "./controlled-observable";
 import SuperMap from "./super-map";
-import deleteEventService from "../services/delete-events";
 
 export type EventFilter = (event: NostrEvent) => boolean;
 
@@ -19,17 +18,9 @@ export default class EventStore {
 
   customSort?: typeof sortByDate;
 
-  private deleteSub: ZenObservable.Subscription;
-
   constructor(name?: string, customSort?: typeof sortByDate) {
     this.name = name;
     this.customSort = customSort;
-
-    this.deleteSub = deleteEventService.stream.subscribe((event) => {
-      const uid = getEventUID(event);
-      this.deleteEvent(uid);
-      if (uid !== event.id) this.deleteEvent(event.id);
-    });
   }
 
   getSortedEvents() {
@@ -89,7 +80,6 @@ export default class EventStore {
       for (const sub of subs) sub.unsubscribe();
     }
     this.storeSubs.clear();
-    this.deleteSub.unsubscribe();
   }
 
   getFirstEvent(nth = 0, filter?: EventFilter) {

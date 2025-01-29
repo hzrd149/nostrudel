@@ -4,7 +4,7 @@ import { CacheRelay, clearDB } from "nostr-idb";
 import { Link as RouterLink } from "react-router-dom";
 
 import { localDatabase, setCacheRelayURL } from "../../../../services/cache-relay";
-import EnableWithDelete from "../components/enable-with-delete";
+import EnableWithDelete from "./enable-with-delete";
 import useCacheRelay from "../../../../hooks/use-cache-relay";
 
 export default function InternalRelayCard() {

@@ -4,17 +4,13 @@ import { CloseIcon } from "@chakra-ui/icons";
 import { useObservable } from "applesauce-react/hooks";
 
 import { Flex, IconButton, Link } from "@chakra-ui/react";
-import relayPoolService from "../../../services/relay-pool";
 import clientRelaysService from "../../../services/client-relays";
 import { RelayMode } from "../../../classes/relay";
-import { RelayFavicon } from "../../../components/relay-favicon";
+import RelayFavicon from "../../../components/relay-favicon";
 import UploadCloud01 from "../../../components/icons/upload-cloud-01";
 
 export default function RelayControl({ url }: { url: string }) {
-  const relay = useMemo(() => relayPoolService.requestRelay(url, false), [url]);
   const writeRelays = useObservable(clientRelaysService.writeRelays);
-
-  const color = relay.connected ? "green" : "red";
 
   const onChange = () => {
     if (writeRelays.has(url)) clientRelaysService.removeRelay(url, RelayMode.WRITE);
@@ -23,7 +19,7 @@ export default function RelayControl({ url }: { url: string }) {
 
   return (
     <Flex gap="2" alignItems="center" pl="2">
-      <RelayFavicon relay={url} size="xs" outline="2px solid" outlineColor={color} />
+      <RelayFavicon relay={url} size="sm" />
       <Link as={RouterLink} to={`/r/${encodeURIComponent(url)}`} isTruncated>
         {url}
       </Link>

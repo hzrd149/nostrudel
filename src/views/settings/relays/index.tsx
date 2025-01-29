@@ -1,5 +1,5 @@
 import { MouseEventHandler, useCallback, useMemo } from "react";
-import { Button, Card, CardBody, CardHeader, Flex, Heading, SimpleGrid, Switch, Text, Tooltip } from "@chakra-ui/react";
+import { Button, Card, CardBody, CardHeader, Flex, Heading, SimpleGrid, Text } from "@chakra-ui/react";
 import { kinds } from "nostr-tools";
 import { WarningIcon } from "@chakra-ui/icons";
 import { useObservable } from "applesauce-react/hooks";
@@ -21,9 +21,6 @@ import SelectRelaySet from "./select-relay-set";
 import { safeRelayUrls } from "../../../helpers/relay";
 import HoverLinkOverlay from "../../../components/hover-link-overlay";
 import useReplaceableEvent from "../../../hooks/use-replaceable-event";
-import localSettings from "../../../services/local-settings";
-import DefaultAuthModeSelect from "../../../components/settings/default-auth-mode-select";
-import HelpCircle from "../../../components/icons/help-circle";
 import SimpleView from "../../../components/layout/presets/simple-view";
 
 const JapaneseRelays = safeRelayUrls([
@@ -73,8 +70,6 @@ export default function AppRelaysView() {
 
   const sorted = useMemo(() => RelaySet.from(readRelays, writeRelays).urls.sort(), [readRelays, writeRelays]);
 
-  const proactivelyAuthenticate = useObservable(localSettings.proactivelyAuthenticate);
-
   return (
     <SimpleView
       title="App Relays"
@@ -108,30 +103,6 @@ export default function AppRelaysView() {
           <WarningIcon /> There are no write relays set, any note you create might not be saved
         </Text>
       )}
-
-      <Heading size="md" mt="2">
-        Authentication
-      </Heading>
-
-      <Flex gap="2" alignItems="center">
-        <Text as="label" htmlFor="defaultAuthenticationMode">
-          Default:
-        </Text>
-        <DefaultAuthModeSelect size="sm" rounded="md" w="auto" />
-
-        <Switch
-          ms="4"
-          id="proactivelyAuthenticate"
-          isChecked={proactivelyAuthenticate}
-          onChange={(e) => localSettings.proactivelyAuthenticate.next(e.currentTarget.checked)}
-        />
-        <Text as="label" htmlFor="proactivelyAuthenticate">
-          Proactively authenticate
-        </Text>
-        <Tooltip label="Authenticate to relays as soon as they send the authentication challenge">
-          <HelpCircle />
-        </Tooltip>
-      </Flex>
 
       <Heading size="md" mt="2">
         Set from

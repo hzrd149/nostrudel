@@ -23,7 +23,7 @@ import styled from "@emotion/styled";
 import { Link as RouterLink } from "react-router-dom";
 
 import { useRelayInfo } from "../../../hooks/use-relay-info";
-import { RelayFavicon } from "../../../components/relay-favicon";
+import RelayFavicon from "../../../components/relay-favicon";
 import { CodeIcon } from "../../../components/icons";
 import UserLink from "../../../components/user/user-link";
 import UserAvatar from "../../../components/user/user-avatar";

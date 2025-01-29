@@ -1,9 +1,8 @@
 import _throttle from "lodash.throttle";
 import { BehaviorSubject } from "rxjs";
+import { createDefer, Deferred } from "applesauce-core/promise";
 
-import createDefer, { Deferred } from "../classes/deferred";
 import signingService from "./signing";
-import accountService from "./accounts";
 import { logger } from "../helpers/debug";
 import accounts from "./accounts";
 
