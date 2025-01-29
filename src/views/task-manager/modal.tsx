@@ -19,7 +19,7 @@ export default function TaskManagerModal({
   onClose,
 }: { router: Router } & Omit<ModalProps, "children">) {
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size="6xl" scrollBehavior="inside">
+    <Modal isOpen={isOpen} onClose={onClose} size={{ base: "full", lg: "6xl" }} scrollBehavior="inside">
       <ModalOverlay />
       <ModalContent>
         <ModalBody display="flex" flexDirection="column" gap="2" p="0">
