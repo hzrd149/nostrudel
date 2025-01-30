@@ -4,8 +4,6 @@ import { logger } from "../helpers/debug";
 import BakeryRelay from "../classes/bakery/bakery-connection";
 import BakeryControlApi from "../classes/bakery/control-api";
 import signingService from "./signing";
-import accountService from "./accounts";
-import relayPoolService from "./relay-pool";
 import localSettings from "./local-settings";
 import accounts from "./accounts";
 
@@ -25,10 +23,6 @@ localSettings.bakeryURL.subscribe((url) => {
 
   try {
     const bakery = new BakeryRelay(localSettings.bakeryURL.value);
-
-    // add the bakery to the relay pool and connect
-    relayPoolService.relays.set(bakery.url, bakery);
-    relayPoolService.requestConnect(bakery);
 
     bakery$.next(bakery);
   } catch (err) {

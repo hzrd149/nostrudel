@@ -1,20 +1,21 @@
-import { useMemo } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import { CloseIcon } from "@chakra-ui/icons";
-import { useObservable } from "applesauce-react/hooks";
 
 import { Flex, IconButton, Link } from "@chakra-ui/react";
-import clientRelaysService from "../../../services/client-relays";
-import { RelayMode } from "../../../classes/relay";
 import RelayFavicon from "../../../components/relay-favicon";
 import UploadCloud01 from "../../../components/icons/upload-cloud-01";
+import { useWriteRelays } from "../../../hooks/use-client-relays";
+import localSettings from "../../../services/local-settings";
+import { removeAppRelay } from "../../../services/app-relays";
+import { RelayMode } from "../../../classes/relay";
 
 export default function RelayControl({ url }: { url: string }) {
-  const writeRelays = useObservable(clientRelaysService.writeRelays);
+  const writeRelays = useWriteRelays();
 
-  const onChange = () => {
-    if (writeRelays.has(url)) clientRelaysService.removeRelay(url, RelayMode.WRITE);
-    else clientRelaysService.addRelay(url, RelayMode.WRITE);
+  const toggleWrite = () => {
+    if (writeRelays.includes(url))
+      localSettings.writeRelays.next(localSettings.writeRelays.value.filter((r) => r !== url));
+    else localSettings.writeRelays.next([...localSettings.writeRelays.value, url]);
   };
 
   return (
@@ -28,9 +29,9 @@ export default function RelayControl({ url }: { url: string }) {
         aria-label="Toggle Write"
         icon={<UploadCloud01 />}
         size="sm"
-        variant={writeRelays.has(url) ? "solid" : "ghost"}
-        colorScheme={writeRelays.has(url) ? "green" : "gray"}
-        onClick={onChange}
+        variant={writeRelays.includes(url) ? "solid" : "ghost"}
+        colorScheme={writeRelays.includes(url) ? "green" : "gray"}
+        onClick={toggleWrite}
         title="Toggle Write"
       />
       <IconButton
@@ -38,7 +39,7 @@ export default function RelayControl({ url }: { url: string }) {
         icon={<CloseIcon />}
         size="sm"
         colorScheme="red"
-        onClick={() => clientRelaysService.removeRelay(url, RelayMode.ALL)}
+        onClick={() => removeAppRelay(url, RelayMode.BOTH)}
       />
     </Flex>
   );

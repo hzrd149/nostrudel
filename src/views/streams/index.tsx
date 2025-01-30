@@ -23,7 +23,7 @@ import { getStreamStatus, getStreamStreamingURLs } from "../../helpers/nostr/str
 
 function StreamsPage() {
   useAppTitle("Streams");
-  const relays = useReadRelays(useAdditionalRelayContext()).urls;
+  const relays = useReadRelays(useAdditionalRelayContext());
   const userMuteFilter = useClientSideMuteFilter();
   const showEnded = useRouteStateBoolean("ended", false);
 

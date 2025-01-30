@@ -13,7 +13,7 @@ export default function useSingleEvents(ids?: string[], additionalRelays?: Itera
     for (const id of ids) {
       singleEventLoader.next({ id, relays: [...readRelays] });
     }
-  }, [ids, readRelays.urls.join("|")]);
+  }, [ids, readRelays.join("|")]);
 
   return useStoreQuery(Queries.TimelineQuery, ids ? [{ ids }] : undefined) ?? [];
 }

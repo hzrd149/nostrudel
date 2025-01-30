@@ -4,7 +4,7 @@ import { AbstractRelay } from "nostr-tools/abstract-relay";
 import { SimpleRelay } from "nostr-idb";
 import _throttle from "lodash.throttle";
 import { nanoid } from "nanoid";
-import { Subject } from "rxjs";
+import { Subject, Subscription } from "rxjs";
 
 import { logger } from "../helpers/debug";
 import EventStore from "./event-store";
@@ -27,7 +27,7 @@ export default class ChunkedRequest {
   filters: Filter[];
   chunkSize = DEFAULT_CHUNK_SIZE;
   private log: Debugger;
-  private subs: ZenObservable.Subscription[] = [];
+  private subs: Subscription[] = [];
 
   loading = false;
   events: EventStore;

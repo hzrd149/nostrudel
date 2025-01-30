@@ -1,6 +1,7 @@
 import { nanoid } from "nanoid";
+import { Subscription as RxSubscription } from "rxjs";
 import { SimpleRelay, Subscription, SubscriptionOptions } from "nostr-idb";
-import { Filter, NostrEvent, matchFilters } from "nostr-tools";
+import { Filter, NostrEvent } from "nostr-tools";
 import { EventStore } from "applesauce-core";
 
 import { logger } from "../helpers/debug";
@@ -22,7 +23,7 @@ export default class MemoryRelay implements SimpleRelay {
   }
 
   subscribe(filters: Filter[], options: SubscriptionOptions) {
-    let stream: ZenObservable.Subscription | undefined = undefined;
+    let stream: RxSubscription | undefined = undefined;
     const sub: Subscription = {
       id: nanoid(8),
       filters,

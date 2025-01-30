@@ -22,6 +22,7 @@ import { ProfileContent, safeParse } from "applesauce-core/helpers";
 import { useAccountManager } from "applesauce-react/hooks";
 import { NostrConnectAccount } from "applesauce-accounts/accounts";
 
+import { NOSTR_CONNECT_PERMISSIONS } from "../../../const";
 import useNip05Providers from "../../../hooks/use-nip05-providers";
 import HoverLinkOverlay from "../../../components/hover-link-overlay";
 import { getEventCoordinate } from "../../../helpers/nostr/event";
@@ -30,7 +31,6 @@ import { ErrorBoundary } from "../../../components/error-boundary";
 import dnsIdentityService from "../../../services/dns-identity";
 import useUserProfile from "../../../hooks/use-user-profile";
 import { safeRelayUrls } from "../../../helpers/relay";
-import { NOSTR_CONNECT_PERMISSIONS } from "../../../const";
 import { createNostrConnectConnection } from "../../../classes/nostr-connect-connection";
 
 function ProviderCard({ onClick, provider }: { onClick: () => void; provider: NostrEvent }) {

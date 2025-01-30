@@ -1,8 +1,8 @@
 import { NostrEvent } from "nostr-tools";
+import { Subject, Subscription } from "rxjs";
 import { nanoid } from "nanoid";
 
 import { getEventUID, sortByDate } from "../helpers/nostr/event";
-import ControlledObservable from "./controlled-observable";
 import SuperMap from "./super-map";
 
 export type EventFilter = (event: NostrEvent) => boolean;
@@ -27,9 +27,9 @@ export default class EventStore {
     return Array.from(this.events.values()).sort(this.customSort || sortByDate);
   }
 
-  onEvent = new ControlledObservable<NostrEvent>();
-  onDelete = new ControlledObservable<string>();
-  onClear = new ControlledObservable();
+  onEvent = new Subject<NostrEvent>();
+  onDelete = new Subject<string>();
+  onClear = new Subject();
 
   private handleEvent(event: NostrEvent) {
     const uid = getEventUID(event);
@@ -58,7 +58,7 @@ export default class EventStore {
     this.onClear.next(undefined);
   }
 
-  private storeSubs = new SuperMap<EventStore, ZenObservable.Subscription[]>(() => []);
+  private storeSubs = new SuperMap<EventStore, Subscription[]>(() => []);
   connect(other: EventStore, fullSync = true) {
     const subs = this.storeSubs.get(other);
     subs.push(

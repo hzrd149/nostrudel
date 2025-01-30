@@ -1,18 +1,15 @@
 import { PropsWithChildren } from "react";
 import { Alert, AlertIcon, Button, Link, Spacer, Text } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
-import { useObservable } from "applesauce-react/hooks";
 import { useLocation } from "react-router-dom";
 
 import { useReadRelays } from "../../hooks/use-client-relays";
-import { offlineMode } from "../../services/offline-mode";
 
 export default function RequireReadRelays({ children }: PropsWithChildren) {
   const readRelays = useReadRelays();
-  const offline = useObservable(offlineMode);
   const location = useLocation();
 
-  if (readRelays.size === 0 && !offline && !location.pathname.startsWith("/relays"))
+  if (readRelays.length === 0 && !location.pathname.startsWith("/relays"))
     return (
       <>
         <Alert status="warning" whiteSpace="pre-wrap" flexWrap="wrap">

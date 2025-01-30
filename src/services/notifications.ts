@@ -1,10 +1,10 @@
 import { getEventPointerFromETag, getEventPointerFromQTag, processTags } from "applesauce-core/helpers";
+import { combineLatest, mergeMap, tap } from "rxjs";
 import { TimelineQuery } from "applesauce-core/queries";
 import { kinds, NostrEvent } from "nostr-tools";
 
+import localSettings from "./local-settings";
 import singleEventLoader from "./single-event-loader";
-import clientRelaysService from "./client-relays";
-import { combineLatest, mergeMap, tap } from "rxjs";
 import { queryStore } from "./event-store";
 import { TORRENT_COMMENT_KIND } from "../helpers/nostr/torrents";
 import accounts from "./accounts";
@@ -15,7 +15,7 @@ async function handleTextNote(event: NostrEvent) {
   for (const pointer of quotes) {
     singleEventLoader.next({
       id: pointer.id,
-      relays: [...clientRelaysService.readRelays.value, ...(pointer.relays ?? [])],
+      relays: [...localSettings.readRelays.value, ...(pointer.relays ?? [])],
     });
   }
 
@@ -28,7 +28,7 @@ async function handleTextNote(event: NostrEvent) {
   for (const pointer of pointers) {
     singleEventLoader.next({
       id: pointer.id,
-      relays: [...clientRelaysService.readRelays.value, ...(pointer.relays ?? [])],
+      relays: [...localSettings.readRelays.value, ...(pointer.relays ?? [])],
     });
   }
 }
@@ -38,7 +38,7 @@ async function handleShare(event: NostrEvent) {
   for (const pointer of pointers) {
     singleEventLoader.next({
       id: pointer.id,
-      relays: [...clientRelaysService.readRelays.value, ...(pointer.relays ?? [])],
+      relays: [...localSettings.readRelays.value, ...(pointer.relays ?? [])],
     });
   }
 }

@@ -33,6 +33,20 @@ export const DEFAULT_ICE_SERVERS: RTCIceServer[] = [
   },
 ];
 
+export const RECOMMENDED_READ_RELAYS = safeRelayUrls([
+  "wss://relay.damus.io/",
+  "wss://nostr.wine/",
+  "wss://relay.snort.social/",
+  "wss://nos.lol/",
+  "wss://purplerelay.com/",
+  "wss://nostr.land/",
+]);
+export const RECOMMENDED_WRITE_RELAYS = safeRelayUrls([
+  "wss://relay.damus.io/",
+  "wss://nos.lol/",
+  "wss://purplerelay.com/",
+]);
+
 export const NOSTR_CONNECT_PERMISSIONS = [
   "get_public_key",
   "nip04_encrypt",

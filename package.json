@@ -128,8 +128,7 @@
     "workbox-core": "7.0.0",
     "workbox-precaching": "7.0.0",
     "workbox-routing": "7.0.0",
-    "yet-another-react-lightbox": "^3.21.7",
-    "zen-observable": "^0.10.0"
+    "yet-another-react-lightbox": "^3.21.7"
   },
   "devDependencies": {
     "@capacitor-community/http": "^1.4.1",
@@ -158,7 +157,6 @@
     "@types/react-window": "^1.8.8",
     "@types/three": "^0.160.0",
     "@types/webscopeio__react-textarea-autocomplete": "^4.7.5",
-    "@types/zen-observable": "^0.8.7",
     "@vitejs/plugin-react": "^4.3.4",
     "camelcase": "^8.0.0",
     "cheerio": "^1.0.0",

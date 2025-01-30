@@ -3,7 +3,7 @@ import { Debugger } from "debug";
 import { Filter, NostrEvent } from "nostr-tools";
 import { AbstractRelay } from "nostr-tools/abstract-relay";
 import _throttle from "lodash.throttle";
-import { BehaviorSubject, Observable, map } from "rxjs";
+import { BehaviorSubject, Observable, Subscription, map } from "rxjs";
 import { isFilterEqual } from "applesauce-core/helpers";
 import { shareLatestValue } from "applesauce-core/observable";
 import { MultiSubscription } from "applesauce-net/subscription";
@@ -91,7 +91,7 @@ export default class TimelineLoader {
     this.updateComplete();
   }
 
-  private chunkLoaderSubs = new SuperMap<ChunkedRequest, ZenObservable.Subscription[]>(() => []);
+  private chunkLoaderSubs = new SuperMap<ChunkedRequest, Subscription[]>(() => []);
   private connectToChunkLoader(loader: ChunkedRequest) {
     this.process.addChild(loader.process);
 

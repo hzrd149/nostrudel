@@ -60,7 +60,7 @@ export default function RelayList({ events, ...props }: Omit<FlexProps, "childre
       <Flex direction="column" flex={1}>
         <AutoSizer>
           {({ height, width }) => (
-            <List itemCount={filtered.length} itemSize={200} itemData={filtered} width={width} height={height}>
+            <List itemCount={filtered.length} itemSize={150} itemData={filtered} width={width} height={height}>
               {Row}
             </List>
           )}

@@ -2,14 +2,12 @@ import { EventTemplate, kinds } from "nostr-tools";
 import { getEventUID } from "nostr-idb";
 import dayjs from "dayjs";
 import { nanoid } from "nanoid";
-import { getAddressPointerFromATag, getEventPointerFromETag, getNip10References } from "applesauce-core/helpers";
+import { getNip10References } from "applesauce-core/helpers";
 
-import { ATag, ETag, isDTag, isETag, isPTag, NostrEvent, Tag } from "../../types/nostr-event";
+import { ATag, ETag, isDTag, NostrEvent, Tag } from "../../types/nostr-event";
 import { getMatchNostrLink } from "../regexp";
 import { AddressPointer, DecodeResult, EventPointer } from "nostr-tools/nip19";
 import { safeDecode } from "../nip19";
-import { safeRelayUrl } from "../relay";
-import RelaySet from "../../classes/relay-set";
 import { truncateId } from "../string";
 import { createATagFromAddressPointer, createETagFromEventPointer } from "applesauce-factory/helpers";
 
@@ -182,17 +180,6 @@ export function replaceOrAddSimpleTag(draft: EventTemplate, tagName: string, val
   } else {
     draft.tags.push([tagName, value]);
   }
-}
-
-export function getAllRelayHints(draft: NostrEvent | EventTemplate) {
-  const hints = new RelaySet();
-  for (const tag of draft.tags) {
-    if ((isPTag(tag) || isETag(tag)) && tag[2]) {
-      const url = safeRelayUrl(tag[2]);
-      if (url) hints.add(url.toString());
-    }
-  }
-  return hints;
 }
 
 function groupByKind(events: NostrEvent[]) {

@@ -342,9 +342,6 @@ importers:
       yet-another-react-lightbox:
         specifier: ^3.21.7
         version: 3.21.7(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
-      zen-observable:
-        specifier: ^0.10.0
-        version: 0.10.0
     devDependencies:
       '@capacitor-community/http':
         specifier: ^1.4.1
@@ -424,9 +421,6 @@ importers:
       '@types/webscopeio__react-textarea-autocomplete':
         specifier: ^4.7.5
         version: 4.7.5
-      '@types/zen-observable':
-        specifier: ^0.8.7
-        version: 0.8.7
       '@vitejs/plugin-react':
         specifier: ^4.3.4
         version: 4.3.4(vite@5.4.14(@types/node@22.12.0)(terser@5.37.0))
@@ -2060,9 +2054,6 @@ packages:
 
   '@types/webxr@0.5.21':
     resolution: {integrity: sha512-geZIAtLzjGmgY2JUi6VxXdCrTb99A7yP49lxLr2Nm/uIK0PkkxcEi4OGhoGDO4pxCf3JwGz2GiJL2Ej4K2bKaA==}
-
-  '@types/zen-observable@0.8.7':
-    resolution: {integrity: sha512-LKzNTjj+2j09wAo/vvVjzgw5qckJJzhdGgWHW7j69QIGdq/KnZrMAMIHQiWGl3Ccflh5/CudBAntTPYdprPltA==}
 
   '@uiw/codemirror-extensions-basic-setup@4.23.7':
     resolution: {integrity: sha512-9/2EUa1Lck4kFKkR2BkxlZPpgD/EWuKHnOlysf1yHKZGraaZmZEaUw+utDK4QcuJc8Iz097vsLz4f4th5EU27g==}
@@ -6141,9 +6132,6 @@ packages:
     resolution: {integrity: sha512-Ux4ygGWsu2c7isFWe8Yu1YluJmqVhxqK2cLXNQA5AcC3QfbGNpM7fu0Y8b/z16pXLnFxZYvWhd3fhBY9DLmC6Q==}
     engines: {node: '>=6'}
 
-  zen-observable@0.10.0:
-    resolution: {integrity: sha512-iI3lT0iojZhKwT5DaFy2Ce42n3yFcLdFyOh01G7H0flMY60P8MJuVFEoJoNwXlmAyQ45GrjL6AcZmmlv8A5rbw==}
-
   zustand@4.5.6:
     resolution: {integrity: sha512-ibr/n1hBzLLj5Y+yUcU7dYw8p6WnIVzdJbnX+1YpaScvZVF2ziugqHs+LAmHw4lWO9c/zRj+K1ncgWDQuthEdQ==}
     engines: {node: '>=12.7.0'}
@@ -8294,8 +8282,6 @@ snapshots:
       '@types/react': 18.3.18
 
   '@types/webxr@0.5.21': {}
-
-  '@types/zen-observable@0.8.7': {}
 
   '@uiw/codemirror-extensions-basic-setup@4.23.7(@codemirror/autocomplete@6.18.4)(@codemirror/commands@6.8.0)(@codemirror/language@6.10.8)(@codemirror/lint@6.8.4)(@codemirror/search@6.5.8)(@codemirror/state@6.5.1)(@codemirror/view@6.36.2)':
     dependencies:
@@ -13085,8 +13071,6 @@ snapshots:
       react-dom: 19.0.0(react@19.0.0)
 
   yn@3.1.1: {}
-
-  zen-observable@0.10.0: {}
 
   zustand@4.5.6(@types/react@18.3.18)(react@19.0.0):
     dependencies:

@@ -1,13 +1,14 @@
 import { useObservable } from "applesauce-react/hooks";
-import clientRelaysService from "../services/client-relays";
+import localSettings from "../services/local-settings";
+import { unique } from "../helpers/array";
 
 export function useReadRelays(additional?: Iterable<string>) {
-  const readRelays = useObservable(clientRelaysService.readRelays);
-  if (additional) return readRelays.clone().merge(additional);
-  return readRelays;
+  const relays = useObservable(localSettings.readRelays);
+  if (additional) return unique([...relays, ...additional]);
+  else return relays;
 }
 export function useWriteRelays(additional?: Iterable<string>) {
-  const writeRelays = useObservable(clientRelaysService.writeRelays);
-  if (additional) return writeRelays.clone().merge(additional);
-  return writeRelays;
+  const relays = useObservable(localSettings.writeRelays);
+  if (additional) return unique([...relays, ...additional]);
+  else return relays;
 }

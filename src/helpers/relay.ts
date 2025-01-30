@@ -200,3 +200,31 @@ export function getConnectionStateColor(state: ConnectionState): ThemeTypings["c
       return "gray";
   }
 }
+
+const connectionStateSortOrder: ConnectionState[] = [
+  "connected",
+  "connecting",
+  "retrying",
+  "waiting-for-retrying",
+  "error",
+  "rejected",
+  "initialized",
+  "dormant",
+  "terminated",
+];
+export function getConnectionStateSort(state: ConnectionState) {
+  return connectionStateSortOrder.indexOf(state);
+}
+
+/** @deprecated use mergeRelaySets from applesauce-core */
+export function mergeRelaySets(...sources: (Iterable<string> | undefined)[]) {
+  const set = new Set<string>();
+  for (const src of sources) {
+    if (!src) continue;
+    for (const url of src) {
+      const safe = safeRelayUrl(url);
+      if (safe) set.add(safe);
+    }
+  }
+  return Array.from(set);
+}

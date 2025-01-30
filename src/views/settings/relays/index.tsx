@@ -1,29 +1,24 @@
 import { MouseEventHandler, useCallback, useMemo } from "react";
 import { Button, Card, CardBody, CardHeader, Flex, Heading, SimpleGrid, Text } from "@chakra-ui/react";
-import { kinds } from "nostr-tools";
 import { WarningIcon } from "@chakra-ui/icons";
-import { useObservable } from "applesauce-react/hooks";
 
-import { offlineMode } from "../../../services/offline-mode";
-import WifiOff from "../../../components/icons/wifi-off";
-import Wifi from "../../../components/icons/wifi";
+import { RECOMMENDED_READ_RELAYS, RECOMMENDED_WRITE_RELAYS } from "../../../const";
 import AddRelayForm from "./add-relay-form";
-import clientRelaysService, { recommendedReadRelays, recommendedWriteRelays } from "../../../services/client-relays";
 import { RelayMode } from "../../../classes/relay";
-import RelaySet from "../../../classes/relay-set";
 import { useReadRelays, useWriteRelays } from "../../../hooks/use-client-relays";
 import { useActiveAccount } from "applesauce-react/hooks";
 import RelayControl from "./relay-control";
 import { getRelaysFromExt } from "../../../helpers/nip07";
 import { useUserDNSIdentity } from "../../../hooks/use-user-dns-identity";
 import useUserContactRelays from "../../../hooks/use-user-contact-relays";
-import SelectRelaySet from "./select-relay-set";
-import { safeRelayUrls } from "../../../helpers/relay";
+import { mergeRelaySets, safeRelayUrls } from "../../../helpers/relay";
 import HoverLinkOverlay from "../../../components/hover-link-overlay";
-import useReplaceableEvent from "../../../hooks/use-replaceable-event";
 import SimpleView from "../../../components/layout/presets/simple-view";
+import localSettings from "../../../services/local-settings";
+import { addAppRelay } from "../../../services/app-relays";
+import useUserMailboxes from "../../../hooks/use-user-mailboxes";
 
-const JapaneseRelays = safeRelayUrls([
+const JAPANESE_RELAYS = safeRelayUrls([
   "wss://r.kojira.io",
   "wss://nrelay-jp.c-stellar.net",
   "wss://nostr.fediverse.jp",
@@ -34,9 +29,8 @@ const JapaneseRelays = safeRelayUrls([
 function RelaySetCard({ label, read, write }: { label: string; read: Iterable<string>; write: Iterable<string> }) {
   const handleClick = useCallback<MouseEventHandler>((e) => {
     e.preventDefault();
-    clientRelaysService.readRelays.next(RelaySet.from(read));
-    clientRelaysService.writeRelays.next(RelaySet.from(write));
-    clientRelaysService.saveRelays();
+    localSettings.readRelays.next(Array.from(read));
+    localSettings.writeRelays.next(Array.from(write));
   }, []);
 
   return (
@@ -49,7 +43,7 @@ function RelaySetCard({ label, read, write }: { label: string; read: Iterable<st
         </Heading>
       </CardHeader>
       <CardBody px="4" pt="0" pb="4">
-        {RelaySet.from(read, write).urls.map((url) => (
+        {mergeRelaySets(read, write).map((url) => (
           <Text key={url} whiteSpace="pre" isTruncated>
             {url}
           </Text>
@@ -63,28 +57,14 @@ export default function AppRelaysView() {
   const account = useActiveAccount();
   const readRelays = useReadRelays();
   const writeRelays = useWriteRelays();
-  const offline = useObservable(offlineMode);
-  const nip65 = useReplaceableEvent(account?.pubkey ? { kind: kinds.RelayList, pubkey: account?.pubkey } : undefined);
+  const mailboxes = useUserMailboxes(account?.pubkey);
   const nip05 = useUserDNSIdentity(account?.pubkey);
   const contactRelays = useUserContactRelays(account?.pubkey);
 
-  const sorted = useMemo(() => RelaySet.from(readRelays, writeRelays).urls.sort(), [readRelays, writeRelays]);
+  const sorted = useMemo(() => mergeRelaySets(readRelays, writeRelays).sort(), [readRelays, writeRelays]);
 
   return (
-    <SimpleView
-      title="App Relays"
-      maxW="6xl"
-      actions={
-        <Button
-          onClick={() => offlineMode.next(!offline)}
-          leftIcon={offline ? <WifiOff /> : <Wifi />}
-          ml="auto"
-          size="sm"
-        >
-          {offline ? "Offline" : "Online"}
-        </Button>
-      }
-    >
+    <SimpleView title="App Relays" maxW="6xl">
       <Text fontStyle="italic" px="2" mt="-2">
         These relays are stored locally and are used for everything in the app
       </Text>
@@ -94,11 +74,11 @@ export default function AppRelaysView() {
       ))}
       <AddRelayForm
         onSubmit={(url) => {
-          clientRelaysService.addRelay(url, RelayMode.ALL);
+          addAppRelay(url, RelayMode.BOTH);
         }}
       />
 
-      {writeRelays.size === 0 && (
+      {writeRelays.length === 0 && (
         <Text color="yellow.500">
           <WarningIcon /> There are no write relays set, any note you create might not be saved
         </Text>
@@ -112,29 +92,29 @@ export default function AppRelaysView() {
           <Button
             onClick={async () => {
               const { read, write } = await getRelaysFromExt();
-              clientRelaysService.readRelays.next(read);
-              clientRelaysService.writeRelays.next(write);
-              clientRelaysService.saveRelays();
+              localSettings.readRelays.next(Array.from(read));
+              localSettings.writeRelays.next(Array.from(write));
             }}
           >
             Extension
           </Button>
         )}
-        {nip65 && (
+        {mailboxes && (
           <Button
             onClick={() => {
-              clientRelaysService.setRelaysFromRelaySet(nip65);
+              localSettings.readRelays.next(mailboxes.inboxes);
+              localSettings.writeRelays.next(mailboxes.outboxes);
             }}
           >
             NIP-65 (Mailboxes)
           </Button>
         )}
-        {nip05 && (
+        {nip05?.relays && (
           <Button
             onClick={() => {
-              clientRelaysService.readRelays.next(RelaySet.from(nip05.relays));
-              clientRelaysService.writeRelays.next(RelaySet.from(nip05.relays));
-              clientRelaysService.saveRelays();
+              if (!nip05.relays) return;
+              localSettings.readRelays.next(Array.from(nip05.relays));
+              localSettings.writeRelays.next(Array.from(nip05.relays));
             }}
           >
             NIP-05
@@ -143,30 +123,21 @@ export default function AppRelaysView() {
         {contactRelays && (
           <Button
             onClick={() => {
-              clientRelaysService.readRelays.next(contactRelays.inbox);
-              clientRelaysService.writeRelays.next(contactRelays.outbox);
-              clientRelaysService.saveRelays();
+              localSettings.readRelays.next(contactRelays.inbox);
+              localSettings.writeRelays.next(contactRelays.outbox);
             }}
           >
             Contact List (Legacy)
           </Button>
         )}
       </Flex>
-      {account && (
-        <>
-          <Heading size="md" mt="2">
-            Use relay set
-          </Heading>
-          <SelectRelaySet onChange={(cord, set) => set && clientRelaysService.setRelaysFromRelaySet(set)} />
-        </>
-      )}
 
       <Heading size="md" mt="2">
         Presets
       </Heading>
       <SimpleGrid columns={{ base: 1, lg: 2, xl: 3 }} spacing="2">
-        <RelaySetCard label="Popular Relays" read={recommendedReadRelays} write={recommendedWriteRelays} />
-        <RelaySetCard label="Japanese relays" read={JapaneseRelays} write={JapaneseRelays} />
+        <RelaySetCard label="Popular Relays" read={RECOMMENDED_READ_RELAYS} write={RECOMMENDED_WRITE_RELAYS} />
+        <RelaySetCard label="Japanese relays" read={JAPANESE_RELAYS} write={JAPANESE_RELAYS} />
       </SimpleGrid>
     </SimpleView>
   );

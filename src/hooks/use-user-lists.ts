@@ -15,7 +15,7 @@ export default function useUserSets(pubkey?: string, additionalRelays?: Iterable
         userSetsLoader.next({ kind, pubkey, relays: [...readRelays], force });
       }
     }
-  }, [pubkey, readRelays.urls.join("|"), force]);
+  }, [pubkey, readRelays.join("|"), force]);
 
   return (
     useStoreQuery(

@@ -39,7 +39,7 @@ export default function useReplaceableEvents(
         force,
       });
     }
-  }, [pointers, readRelays.urls.join("|"), force]);
+  }, [pointers, readRelays.join("|"), force]);
 
   const events = useStoreQuery(ReplaceableSetQuery, pointers && [pointers]);
   return events ? Object.values(events) : [];

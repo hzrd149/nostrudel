@@ -1,20 +1,21 @@
 import { useEffect, useState } from "react";
-import { Flex, Select, useDisclosure } from "@chakra-ui/react";
-import { Filter, matchFilters, NostrEvent } from "nostr-tools";
+import { Flex, Select } from "@chakra-ui/react";
+import { Filter, NostrEvent } from "nostr-tools";
+import { getReplaceableIdentifier, matchFilter } from "applesauce-core/helpers";
 import { getEventUID } from "nostr-idb";
 import { useThrottle } from "react-use";
+import { createRxForwardReq } from "rx-nostr";
 
-import PersistentSubscription from "../../../classes/persistent-subscription";
 import BackButton from "../../../components/router/back-button";
-import relayPoolService from "../../../services/relay-pool";
 import RelayList from "./components/relay-list";
 import useRouteStateValue from "../../../hooks/use-route-state-value";
 import RelayMap from "./components/relay-map";
 import RelayStatusDetails from "./components/relay-details";
-import { getTagValue } from "../../../helpers/nostr/event";
 import { SelectedContext } from "./selected-context";
 import CountyPicker from "../../../components/county-picker";
 import { useBreakpointValue } from "../../../providers/global/breakpoint-provider";
+import rxNostr from "../../../services/rx-nostr";
+import ContainedSimpleView from "../../../components/layout/presets/contained-simple-view";
 
 export default function RelayDiscoveryView() {
   const showMap = useBreakpointValue({ base: false, lg: true });
@@ -27,25 +28,25 @@ export default function RelayDiscoveryView() {
   const selected = useRouteStateValue<string>("selected");
   const [events, setEvents] = useState<Record<string, NostrEvent>>({});
 
-  const [subscription, setSubscription] = useState<PersistentSubscription>();
+  const [request, setRequest] = useState<ReturnType<typeof createRxForwardReq>>();
 
   // recreate the subscription when the relay changes
   useEffect(() => {
-    if (subscription && !subscription.closed) subscription.close();
+    const req = createRxForwardReq();
 
-    const relay = relayPoolService.requestRelay(discoveryRelay);
-    const sub = new PersistentSubscription(relay, {
-      onevent: (event) => {
-        if (getTagValue(event, "d")) {
-          setEvents((arr) => ({ ...arr, [getEventUID(event)]: event }));
-        }
-      },
+    const sub = rxNostr.use(req, { on: { relays: [discoveryRelay] } }).subscribe((packet) => {
+      if (getReplaceableIdentifier(packet.event)) {
+        setEvents((arr) => ({ ...arr, [getEventUID(packet.event)]: packet.event }));
+      }
     });
-    setSubscription(sub);
+
+    setRequest(req);
+
+    return () => sub.unsubscribe();
   }, [discoveryRelay, setEvents]);
 
   useEffect(() => {
-    if (!subscription) return;
+    if (!request) return;
 
     const filter: Filter = {
       kinds: [30166],
@@ -64,45 +65,40 @@ export default function RelayDiscoveryView() {
       else filter["#l"] = [county];
     }
 
-    subscription.filters = [filter];
+    request.emit([filter]);
 
     // remove non matching events
     setEvents((dir) => {
       const newDir: typeof dir = {};
       for (const [uid, event] of Object.entries(dir)) {
-        if (matchFilters(subscription.filters, event)) newDir[uid] = event;
+        if (matchFilter(filter, event)) newDir[uid] = event;
       }
       return newDir;
     });
-
-    // update subscription
-    subscription.update();
-  }, [subscription, monitor, network, county, setEvents]);
+  }, [request, monitor, network, county, setEvents]);
 
   // throttle updates to map
   const eventsThrottle = useThrottle(Object.values(events), 250);
 
   return (
     <SelectedContext.Provider value={selected}>
-      <Flex direction="column" overflow="hidden" h="100vh" gap="2" p="2">
-        <Flex gap="2">
-          <BackButton />
-          <Select value={network} onChange={(e) => setNetwork(e.target.value)} w="auto">
-            <option value="">All</option>
-            <option value="clearnet">clearnet</option>
-            <option value="tor">Tor</option>
-            <option value="i2p">I2P</option>
-            <option value="hyper">Hyper</option>
-          </Select>
-          <CountyPicker value={county} onChange={(e) => setCounty(e.target.value)} w="auto" />
-
-          <Select value={monitor} onChange={(e) => setMonitor(e.target.value)} w="auto">
-            <option value="">Self Published</option>
-            <option value="9bbbb845e5b6c831c29789900769843ab43bb5047abe697870cb50b6fc9bf923">nostr.watch</option>
-          </Select>
-        </Flex>
-
-        <Flex gap="2" overflow="hidden" h="full">
+      <ContainedSimpleView
+        title="Relays"
+        flush
+        actions={
+          <>
+            <Select value={network} onChange={(e) => setNetwork(e.target.value)} w="auto">
+              <option value="">All</option>
+              <option value="clearnet">clearnet</option>
+              <option value="tor">Tor</option>
+              <option value="i2p">I2P</option>
+              <option value="hyper">Hyper</option>
+            </Select>
+            <CountyPicker value={county} onChange={(e) => setCounty(e.target.value)} w="auto" />
+          </>
+        }
+      >
+        <Flex gap="2" h="full" overflow="hidden" p="2">
           {selected.value && events[selected.value] ? (
             <RelayStatusDetails w={{ base: "full", lg: "lg" }} event={events[selected.value]} flexShrink={0} />
           ) : (
@@ -110,7 +106,7 @@ export default function RelayDiscoveryView() {
           )}
           {showMap && <RelayMap events={eventsThrottle} />}
         </Flex>
-      </Flex>
+      </ContainedSimpleView>
     </SelectedContext.Provider>
   );
 }

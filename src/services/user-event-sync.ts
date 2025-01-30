@@ -1,23 +1,20 @@
 import { kinds } from "nostr-tools";
 import { IAccount } from "applesauce-accounts";
-import { combineLatest, distinct, filter } from "rxjs";
+import { combineLatest, distinct } from "rxjs";
 import { USER_BLOSSOM_SERVER_LIST_KIND } from "blossom-client-sdk";
 
 import { COMMON_CONTACT_RELAYS } from "../const";
 import { logger } from "../helpers/debug";
-import clientRelaysService from "./client-relays";
-import { offlineMode } from "./offline-mode";
 import replaceableEventLoader from "./replaceable-loader";
 import { eventStore, queryStore } from "./event-store";
 import { MultiSubscription } from "applesauce-net/subscription";
 import relayPoolService from "./relay-pool";
 import { APP_SETTING_IDENTIFIER, APP_SETTINGS_KIND } from "../helpers/app-settings";
 import accounts from "./accounts";
+import localSettings from "./local-settings";
 
 const log = logger.extend("UserEventSync");
-function downloadEvents(account: IAccount) {
-  const relays = clientRelaysService.readRelays.value;
-
+function downloadEvents(account: IAccount, relays: string[]) {
   const cleanup: (() => void)[] = [];
 
   const requestReplaceable = (relays: Iterable<string>, kind: number, d?: string) => {
@@ -36,7 +33,7 @@ function downloadEvents(account: IAccount) {
 
     log("Loading contacts list");
     replaceableEventLoader.next({
-      relays: [...clientRelaysService.readRelays.value, ...COMMON_CONTACT_RELAYS],
+      relays: [...localSettings.readRelays.value, ...COMMON_CONTACT_RELAYS],
       kind: kinds.Contacts,
       pubkey: account.pubkey,
       force: true,
@@ -61,14 +58,9 @@ function downloadEvents(account: IAccount) {
   };
 }
 
-combineLatest([
-  // listen for account changes
-  accounts.active$.pipe(
-    filter((a) => !!a),
-    distinct((a) => a.pubkey),
-  ),
-  // listen for offline mode changes
-  offlineMode.pipe(distinct()),
-])
-  .pipe(filter(([_, offline]) => !offline))
-  .subscribe(([account]) => downloadEvents(account));
+// listen for account changes
+combineLatest([accounts.active$.pipe(distinct((a) => a?.pubkey)), localSettings.readRelays]).subscribe(
+  ([account, relays]) => {
+    if (!!account && relays.length > 0) downloadEvents(account, relays);
+  },
+);

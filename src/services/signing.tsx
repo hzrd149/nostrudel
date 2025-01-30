@@ -4,6 +4,7 @@ import { IAccount } from "applesauce-accounts";
 import verifyEvent from "./verify-event";
 import { PasswordAccount } from "applesauce-accounts/accounts";
 
+/** @deprecated */
 class SigningService {
   async unlockAccount(account: IAccount) {
     if (account instanceof PasswordAccount && !account.signer.unlocked) {

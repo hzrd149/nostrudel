@@ -1,28 +1,22 @@
 import { AccountManager } from "applesauce-accounts";
-import { registerCommonAccountTypes } from "applesauce-accounts/accounts";
+import { AmberClipboardAccount, NostrConnectAccount, registerCommonAccountTypes } from "applesauce-accounts/accounts";
+import { skip } from "rxjs";
 
 import db from "./db";
-import { AppSettings } from "../helpers/app-settings";
 import { CAP_IS_NATIVE } from "../env";
 import { logger } from "../helpers/debug";
 import AndroidSignerAccount from "../classes/accounts/android-signer-account";
+import { createNostrConnectConnection } from "../classes/nostr-connect-connection";
 
-type CommonAccount = {
-  pubkey: string;
-  relays?: string[];
-  localSettings?: AppSettings;
-};
-export type LocalAccount = CommonAccount & {
-  type: "local";
-  readonly: false;
-  secKey: ArrayBuffer;
-  iv: Uint8Array;
-};
+// Setup nostr connect signer
+NostrConnectAccount.createConnectionMethods = createNostrConnectConnection;
 
 const log = logger.extend("Accounts");
 
 const accounts = new AccountManager();
 registerCommonAccountTypes(accounts);
+accounts.registerType(AmberClipboardAccount);
+accounts.registerType(NostrConnectAccount);
 
 // add android signer if native
 if (CAP_IS_NATIVE) accounts.registerType(AndroidSignerAccount);
@@ -32,7 +26,7 @@ log("Loading accounts...");
 accounts.fromJSON(await db.getAll("accounts"), true);
 
 // save accounts to database when they change
-accounts.accounts$.subscribe(async () => {
+accounts.accounts$.pipe(skip(1)).subscribe(async () => {
   const json = accounts.toJSON();
   for (const account of json) await db.put("accounts", account);
 

@@ -5,11 +5,11 @@ import { getZapPayment } from "applesauce-core/helpers";
 
 import { getContentPointers, getThreadReferences, isReply, isRepost } from "../helpers/nostr/event";
 import singleEventLoader from "../services/single-event-loader";
-import clientRelaysService from "../services/client-relays";
 import { getPubkeysMentionedInContent } from "../helpers/nostr/post";
 import { TORRENT_COMMENT_KIND } from "../helpers/nostr/torrents";
 import { getPubkeysFromList } from "../helpers/nostr/lists";
 import { eventStore, queryStore } from "../services/event-store";
+import localSettings from "../services/local-settings";
 
 export const NotificationTypeSymbol = Symbol("notificationType");
 
@@ -95,7 +95,7 @@ export default class AccountNotifications {
     const e = this.categorizeEvent(event);
 
     const loadEvent = (eventId: string, relays?: string[]) => {
-      singleEventLoader.next({ id: eventId, relays: [...clientRelaysService.readRelays.value, ...(relays ?? [])] });
+      singleEventLoader.next({ id: eventId, relays: [...localSettings.readRelays.value, ...(relays ?? [])] });
     };
 
     // load event quotes

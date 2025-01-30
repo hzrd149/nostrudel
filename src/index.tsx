@@ -1,5 +1,6 @@
 import "./polyfill";
-import { createRoot } from "react-dom/client";
+import "./classes/nostr-connect-connection";
+
 import { GlobalProviders } from "./providers/global";
 
 import "./services/user-event-sync";
@@ -41,6 +42,9 @@ if (import.meta.env.PROD) {
     console.log(e);
   }
 }
+
+// mount react app
+import { createRoot } from "react-dom/client";
 
 logger("Rendering app");
 const root = document.getElementById("root")!;

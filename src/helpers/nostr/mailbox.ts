@@ -19,7 +19,7 @@ export function cleanRTags(tags: Tag[]) {
 
 export function parseRTag(tag: RTag): { url: string; mode: RelayMode } {
   const url = tag[1];
-  const mode = tag[2] === "write" ? RelayMode.WRITE : tag[2] === "read" ? RelayMode.READ : RelayMode.ALL;
+  const mode = tag[2] === "write" ? RelayMode.WRITE : tag[2] === "read" ? RelayMode.READ : RelayMode.BOTH;
   return { url, mode };
 }
 export function createRelayTag(url: string, mode: RelayMode) {
@@ -29,7 +29,7 @@ export function createRelayTag(url: string, mode: RelayMode) {
     case RelayMode.READ:
       return ["r", url, "read"];
     default:
-    case RelayMode.ALL:
+    case RelayMode.BOTH:
       return ["r", url];
   }
 }

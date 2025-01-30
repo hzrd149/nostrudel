@@ -18,15 +18,14 @@ import ThreadsProvider from "../../providers/local/thread-provider";
 import DirectMessageBlock from "./components/direct-message-block";
 import useParamsProfilePointer from "../../hooks/use-params-pubkey-pointer";
 import useUserMailboxes from "../../hooks/use-user-mailboxes";
-import RelaySet from "../../classes/relay-set";
 import useAppSettings from "../../hooks/use-user-app-settings";
 import { truncateId } from "../../helpers/string";
 import useRouterMarker from "../../hooks/use-router-marker";
 import decryptionCacheService from "../../services/decryption-cache";
 import UserDnsIdentityIcon from "../../components/user/user-dns-identity-icon";
-import SimpleHeader from "../../components/layout/presets/simple-header";
 import UserAvatarLink from "../../components/user/user-avatar-link";
 import ContainedSimpleView from "../../components/layout/presets/contained-simple-view";
+import { mergeRelaySets } from "../../helpers/relay";
 
 /** This is broken out from DirectMessageChatPage for performance reasons. Don't use outside of file */
 const ChatLog = memo(({ messages }: { messages: NostrEvent[] }) => {
@@ -86,7 +85,7 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
   const mailboxes = useUserMailboxes(account.pubkey);
   const { loader, timeline: messages } = useTimelineLoader(
     `${truncateId(pubkey)}-${truncateId(account.pubkey)}-messages`,
-    RelaySet.from(mailboxes?.inboxes, mailboxes?.outboxes, otherMailboxes?.inboxes, otherMailboxes?.outboxes),
+    mergeRelaySets(mailboxes?.inboxes, mailboxes?.outboxes, otherMailboxes?.inboxes, otherMailboxes?.outboxes),
     [
       {
         kinds: [kinds.EncryptedDirectMessage],

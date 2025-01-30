@@ -1,36 +1,21 @@
 import { NostrConnectConnectionMethods } from "applesauce-signers";
-import { Filter, NostrEvent } from "nostr-tools";
-import { MultiSubscription } from "applesauce-net/subscription";
+import { lastValueFrom, Subscription } from "rxjs";
+import { createRxForwardReq } from "rx-nostr";
 
-import relayPoolService from "../services/relay-pool";
+import rxNostr from "../services/rx-nostr";
 
 export function createNostrConnectConnection(): NostrConnectConnectionMethods {
-  const sub = new MultiSubscription(relayPoolService);
+  let sub: Subscription | undefined = undefined;
 
-  const onPublishEvent = async (event: NostrEvent, relays: string[]) => {
-    // publish event to each relay
-    await Promise.allSettled(
-      relays.map(async (url) => {
-        const relay = relayPoolService.requestRelay(url, true);
-        await relayPoolService.waitForOpen(relay);
-        await relay.publish(event);
-      }),
-    );
+  return {
+    onPublishEvent: async (event, relays) => {
+      await lastValueFrom(rxNostr.send(event, { on: { relays } }));
+    },
+    onSubOpen: async (filters, relays, onEvent) => {
+      const req = createRxForwardReq();
+      sub = rxNostr.use(req, { on: { relays } }).subscribe((packet) => onEvent(packet.event));
+      req.emit(filters);
+    },
+    onSubClose: async () => sub?.unsubscribe(),
   };
-
-  const onSubOpen = async (filters: Filter[], relays: string[], onEvent: (event: NostrEvent) => void) => {
-    sub.setFilters(filters);
-    sub.setRelays(relays);
-    sub.open();
-
-    sub.onEvent.subscribe(onEvent);
-
-    await sub.waitForAllConnection();
-  };
-
-  const onSubClose = async () => {
-    sub.close();
-  };
-
-  return { onSubClose, onPublishEvent, onSubOpen };
 }

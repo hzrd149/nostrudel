@@ -1,16 +1,17 @@
-import accountService from "./accounts";
+import rxNostr from "./rx-nostr";
+import accounts from "./accounts";
 import channelMetadataService from "./channel-metadata";
 import { eventStore, queryStore } from "./event-store";
 import localSettings from "./local-settings";
 import readStatusService from "./read-status";
 import relayInfoService from "./relay-info";
-import relayPoolService from "./relay-pool";
 import replaceableEventLoader from "./replaceable-loader";
-import signingService from "./signing";
 import timelineCacheService from "./timeline-cache";
 import { userSearchDirectory } from "./username-search";
 
 const noStrudel = {
+  rxNostr,
+
   /**
    * Internal applesauce EventStore
    * @see https://hzrd149.github.io/applesauce/classes/applesauce_core.EventStore.html
@@ -23,17 +24,13 @@ const noStrudel = {
   queryStore,
 
   /** Account management */
-  accountService,
-
-  /** Signing queue */
-  signingService,
+  accounts,
 
   // other internal services
   replaceableEventLoader,
   userSearchDirectory,
   readStatusService,
   relayInfoService,
-  relayPoolService,
   channelMetadataService,
   timelineCacheService,
   localSettings,

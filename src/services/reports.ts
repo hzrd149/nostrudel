@@ -1,4 +1,5 @@
 import { ReportArguments, ControlResponse } from "@satellite-earth/core/types";
+import { BehaviorSubject } from "rxjs";
 import _throttle from "lodash.throttle";
 
 import BakeryControlApi from "../classes/bakery/control-api";
@@ -7,7 +8,6 @@ import Report from "../classes/bakery/reports/report";
 import SuperMap from "../classes/super-map";
 import { logger } from "../helpers/debug";
 import { ReportClasses, ReportTypes } from "../classes/bakery/reports";
-import { BehaviorSubject } from "rxjs";
 
 class ReportManager {
   log = logger.extend("ReportManager");

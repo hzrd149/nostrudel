@@ -7,11 +7,8 @@ import { logger } from "../helpers/debug";
 import { safeRelayUrl, validateRelayURL } from "../helpers/relay";
 import SuperMap from "./super-map";
 import verifyEventMethod from "../services/verify-event";
-import { offlineMode } from "../services/offline-mode";
 import processManager from "../services/process-manager";
-import signingService from "../services/signing";
 import localSettings from "../services/local-settings";
-import accounts from "../services/accounts";
 
 export type Notice = {
   message: string;
@@ -126,7 +123,7 @@ export default class RelayPool implements IConnectionPool {
     const relay = this.getRelay(relayOrUrl);
     if (!relay) return;
 
-    if (!relay.connected && !offlineMode.value) {
+    if (!relay.connected) {
       this.connecting.get(relay).next(true);
       try {
         await relay.connect();
@@ -210,28 +207,9 @@ export default class RelayPool implements IConnectionPool {
     return this.authForSubscribe.get(relay).value !== false;
   }
 
-  private automaticallyAuthenticate(relay: AbstractRelay) {
-    const authMode = this.getRelayAuthMode(relay);
-    // only automatically authenticate if auth mode is set to "always"
-    if (authMode === "always") {
-      const account = accounts.active;
-      if (!account) return;
-
-      this.authenticate(relay, (draft) => {
-        return signingService.requestSignature(draft, account);
-      }).then(() => {
-        this.log(`Automatically authenticated to ${relay.url}`);
-      });
-    }
-  }
-
   private handleRelayChallenge(relay: AbstractRelay, challenge: string) {
     this.onRelayChallenge.next([relay, challenge]);
     this.challenges.get(relay).next(challenge);
-
-    if (localSettings.proactivelyAuthenticate.value) {
-      this.automaticallyAuthenticate(relay);
-    }
   }
 
   handleRelayNotice(relay: AbstractRelay, message: string) {
@@ -241,9 +219,6 @@ export default class RelayPool implements IConnectionPool {
     if (message.includes("auth-required")) {
       const authForSubscribe = this.authForSubscribe.get(relay);
       if (!authForSubscribe.value) authForSubscribe.next(true);
-
-      // try to authenticate
-      this.automaticallyAuthenticate(relay);
     }
   }
 

@@ -7,7 +7,6 @@ import BackButton from "../../../components/router/back-button";
 import processManager from "../../../services/process-manager";
 import { RelayAuthIconButton } from "../../../components/relays/relay-auth-icon-button";
 import RelayStatusBadge from "../../../components/relays/relay-status";
-import RelayConnectSwitch from "../../../components/relays/relay-connect-switch";
 import useRelayNotices from "../../../hooks/use-relay-notices";
 import Timestamp from "../../../components/timestamp";
 
@@ -26,7 +25,6 @@ export default function InspectRelayView() {
         <RelayStatusBadge relay={relay} />
         <Spacer />
         <RelayAuthIconButton relay={relay} size="sm" variant="ghost" />
-        <RelayConnectSwitch relay={relay} />
       </Flex>
 
       <Tabs position="relative" variant="unstyled">

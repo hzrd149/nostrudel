@@ -132,7 +132,7 @@ export default function DeleteEventProvider({ children }: PropsWithChildren) {
                   </AccordionButton>
                   <AccordionPanel>
                     <Flex wrap="wrap" gap="2" py="2">
-                      {writeRelays.urls.map((url) => (
+                      {writeRelays.map((url) => (
                         <Box alignItems="center" key={url} px="2" borderRadius="lg" display="flex" borderWidth="1px">
                           <RelayFavicon relay={url} size="2xs" mr="2" />
                           <Text isTruncated>{url}</Text>

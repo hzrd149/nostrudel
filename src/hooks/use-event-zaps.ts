@@ -11,7 +11,7 @@ export default function useEventZaps(uid: string, additionalRelays?: Iterable<st
 
   useEffect(() => {
     eventZapsService.requestZaps(uid, readRelays, alwaysRequest);
-  }, [uid, readRelays.urls.join("|"), alwaysRequest]);
+  }, [uid, readRelays.join("|"), alwaysRequest]);
 
   const pointer = useMemo(() => {
     if (uid.includes(":")) return parseCoordinate(uid, true);

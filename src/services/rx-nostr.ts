@@ -1,14 +1,14 @@
 import { ConnectionState, createRxNostr } from "rx-nostr";
 import { BehaviorSubject, combineLatest } from "rxjs";
+import { unixNow } from "applesauce-core/helpers";
 import { nanoid } from "nanoid";
 
-import verifyEvent from "./verify-event";
 import { logger } from "../helpers/debug";
-import clientRelaysService from "./client-relays";
-import RelaySet from "../classes/relay-set";
-import { unixNow } from "applesauce-core/helpers";
+import verifyEvent from "./verify-event";
 
 import authenticationSigner from "./authentication-signer";
+import localSettings from "./local-settings";
+import { unique } from "../helpers/array";
 
 const log = logger.extend("rx-nostr");
 
@@ -25,11 +25,11 @@ const rxNostr = createRxNostr({
 });
 
 // TODO: remove this when client relays are not longer needed
-combineLatest([clientRelaysService.readRelays, clientRelaysService.writeRelays]).subscribe(([read, write]) => {
-  const relays = RelaySet.from(read, write);
+combineLatest([localSettings.readRelays, localSettings.writeRelays]).subscribe(([read, write]) => {
+  const relays = unique([...read, ...write]);
 
   // update the default relays
-  rxNostr.setDefaultRelays(relays.urls.map((url) => ({ url, read: read.has(url), write: write.has(url) })));
+  rxNostr.setDefaultRelays(relays.map((url) => ({ url, read: read.includes(url), write: write.includes(url) })));
 });
 
 // keep track of all relay connection states

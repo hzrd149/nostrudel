@@ -16,7 +16,7 @@ export default function useSingleEvent(id?: string | EventPointer, additionalRel
         id: pointer.id,
         relays: [...(pointer.relays ?? []), ...readRelays, ...(additionalRelays ?? [])],
       });
-  }, [pointer, readRelays.urls.join("|")]);
+  }, [pointer, readRelays.join("|")]);
 
   return useStoreQuery(Queries.SingleEventQuery, pointer ? [pointer.id] : undefined);
 }

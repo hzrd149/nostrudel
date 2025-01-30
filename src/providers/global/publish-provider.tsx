@@ -9,13 +9,12 @@ import { nanoid } from "nanoid";
 
 import { useSigningContext } from "./signing-provider";
 import { DraftNostrEvent } from "../../types/nostr-event";
-import clientRelaysService from "../../services/client-relays";
-import RelaySet from "../../classes/relay-set";
-import { getAllRelayHints } from "../../helpers/nostr/event";
 import { getCacheRelay } from "../../services/cache-relay";
 import { eventStore } from "../../services/event-store";
 import { useUserOutbox } from "../../hooks/use-user-mailboxes";
 import rxNostr from "../../services/rx-nostr";
+import { useWriteRelays } from "../../hooks/use-client-relays";
+import { unique } from "../../helpers/array";
 
 export type PublishResults = { packets: OkPacketAgainstEvent[]; relays: Record<string, OkPacketAgainstEvent> };
 
@@ -104,6 +103,7 @@ export default function PublishProvider({ children }: PropsWithChildren) {
   const { requestSignature, finalizeDraft: signerFinalize } = useSigningContext();
   const account = useActiveAccount();
   const outBoxes = useUserOutbox(account?.pubkey);
+  const writeRelays = useWriteRelays();
 
   const finalizeDraft = useCallback<PublishContextType["finalizeDraft"]>(
     (event: EventTemplate | NostrEvent) => signerFinalize(event),
@@ -114,21 +114,16 @@ export default function PublishProvider({ children }: PropsWithChildren) {
     async (
       label: string,
       event: DraftNostrEvent | NostrEvent,
-      additionalRelays?: Iterable<string>,
+      additionalRelays?: string[],
       quite = true,
       onlyAdditionalRelays = false,
     ) => {
       try {
         let relays;
         if (onlyAdditionalRelays) {
-          relays = RelaySet.from(additionalRelays);
+          relays = unique(additionalRelays ?? []);
         } else {
-          relays = RelaySet.from(
-            clientRelaysService.writeRelays.value,
-            outBoxes,
-            additionalRelays,
-            getAllRelayHints(event),
-          );
+          relays = unique([...writeRelays, ...(outBoxes ?? []), ...(additionalRelays ?? [])]);
         }
 
         // add pubkey to event
@@ -154,7 +149,7 @@ export default function PublishProvider({ children }: PropsWithChildren) {
         if (!quite) throw e;
       }
     },
-    [toast, setLog, requestSignature, finalizeDraft, outBoxes],
+    [toast, setLog, requestSignature, finalizeDraft, outBoxes, writeRelays],
   ) as PublishContextType["publishEvent"];
 
   const context = useMemo<PublishContextType>(

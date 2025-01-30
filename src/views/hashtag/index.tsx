@@ -53,7 +53,7 @@ function HashTagPage() {
   const showReplies = useRouteStateBoolean("show-replies", true);
   const showReposts = useRouteStateBoolean("show-reposts", true);
 
-  const readRelays = useReadRelays().urls;
+  const readRelays = useReadRelays();
 
   const { listId, filter } = usePeopleListContext();
   const timelinePageEventFilter = useTimelinePageEventFilter();
