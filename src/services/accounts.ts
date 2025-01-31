@@ -16,7 +16,6 @@ const log = logger.extend("Accounts");
 const accounts = new AccountManager();
 registerCommonAccountTypes(accounts);
 accounts.registerType(AmberClipboardAccount);
-accounts.registerType(NostrConnectAccount);
 
 // add android signer if native
 if (CAP_IS_NATIVE) accounts.registerType(AndroidSignerAccount);
