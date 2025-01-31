@@ -24,7 +24,7 @@ function PublishResultRow({ packet }: { packet: OkPacketAgainstEvent }) {
       <AlertIcon />
       <Box>
         <AlertTitle>
-          <Link as={RouterLink} to={`/r/${encodeURIComponent(packet.from)}`}>
+          <Link as={RouterLink} to={`/relays/${encodeURIComponent(packet.from)}`}>
             {packet.from}
           </Link>
           <RelayPaidTag url={packet.from} />
@@ -50,7 +50,7 @@ export function PublishLogEntryDetails({ entry }: { entry: PublishLogEntry } & O
             <Spinner mr="2" />
             <Box>
               <AlertTitle>
-                <Link as={RouterLink} to={`/r/${encodeURIComponent(url)}`}>
+                <Link as={RouterLink} to={`/relays/${encodeURIComponent(url)}`}>
                   {url}
                 </Link>
                 <RelayPaidTag url={url} />

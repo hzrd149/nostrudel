@@ -29,7 +29,7 @@ export default function RelayAuthCard({ relay }: { relay: string }) {
     <Flex gap="2" p="2" alignItems="center" borderWidth={1} rounded="md">
       <RelayFavicon relay={relay} size="sm" mx="2" showStatus />
       <Flex direction="column" overflow="hidden" alignItems="flex-start">
-        <Link as={RouterLink} to={`/r/${encodeURIComponent(relay)}`} fontWeight="bold" isTruncated>
+        <Link as={RouterLink} to={`/relays/${encodeURIComponent(relay)}`} fontWeight="bold" isTruncated>
           {relay}
         </Link>
         <Badge colorScheme={badgeColor}>{state?.status}</Badge>

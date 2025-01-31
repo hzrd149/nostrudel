@@ -21,7 +21,7 @@ export default function RelayControl({ url }: { url: string }) {
   return (
     <Flex gap="2" alignItems="center" pl="2">
       <RelayFavicon relay={url} size="sm" />
-      <Link as={RouterLink} to={`/r/${encodeURIComponent(url)}`} isTruncated>
+      <Link as={RouterLink} to={`/relays/${encodeURIComponent(url)}`} isTruncated>
         {url}
       </Link>
       <IconButton

@@ -157,7 +157,7 @@ export default function RelayCard({ url, ...props }: { url: string } & Omit<Card
         <CardHeader display="flex" gap="2" alignItems="center" p="2">
           <RelayFavicon relay={url} size="sm" />
           <Heading size="md" isTruncated>
-            <RouterLink to={`/r/${encodeURIComponent(url)}`}>{url}</RouterLink>
+            <RouterLink to={`/relays/${encodeURIComponent(url)}`}>{url}</RouterLink>
             <RelayPaidTag url={url} />
           </Heading>
         </CardHeader>

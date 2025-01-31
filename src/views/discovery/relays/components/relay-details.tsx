@@ -23,7 +23,7 @@ import { SelectedContext } from "../selected-context";
 import { getTagValue } from "../../../../helpers/nostr/event";
 import DebugEventButton from "../../../../components/debug-modal/debug-event-button";
 import SupportedNIPs from "../../../relays/components/supported-nips";
-import RelayNotes from "../../../relays/relay/relay-notes";
+import RelayNotes from "../../../relays/relay-details/relay-notes";
 import { safeRelayUrl } from "../../../../helpers/relay";
 import { ExternalLinkIcon } from "../../../../components/icons";
 import PeopleListProvider from "../../../../providers/local/people-list-provider";
@@ -71,7 +71,7 @@ export default function RelayStatusDetails({ event, ...props }: Omit<FlexProps, 
             <IconButton
               icon={<ExternalLinkIcon />}
               as={RouterLink}
-              to={`/r/${encodeURIComponent(identity)}`}
+              to={`/relays/${encodeURIComponent(identity)}`}
               aria-label="Open"
             />
           )}

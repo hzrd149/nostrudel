@@ -31,7 +31,7 @@ export default function RelayReviewNote({ event, hideUrl }: { event: NostrEvent;
       <CardBody p="2">
         {!hideUrl && url && (
           <Metadata name="URL">
-            <Link as={RouterLink} to={`/r/${encodeURIComponent(url)}`}>
+            <Link as={RouterLink} to={`/relays/${encodeURIComponent(url)}`}>
               {url}
             </Link>
           </Metadata>

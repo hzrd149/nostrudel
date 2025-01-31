@@ -30,7 +30,7 @@ function RelayLine({ relay, mode, list }: { relay: string; mode: RelayMode; list
   return (
     <Flex key={relay} gap="2" alignItems="center" overflow="hidden">
       <MediaServerFavicon server={relay} size="xs" />
-      <Link as={RouterLink} to={`/r/${encodeURIComponent(relay)}`} isTruncated>
+      <Link as={RouterLink} to={`/relays/${encodeURIComponent(relay)}`} isTruncated>
         {relay}
       </Link>
       <IconButton

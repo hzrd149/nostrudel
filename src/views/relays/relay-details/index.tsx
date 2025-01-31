@@ -104,7 +104,7 @@ function RelayPage({ relay }: { relay: string }) {
   );
 }
 
-export default function RelayView() {
+export default function RelayDetailsView() {
   const { relay } = useParams<string>();
   if (!relay) return <>No relay url</>;
 

@@ -53,7 +53,7 @@ export function RelayIconStack({ relays, maxRelays, ...props }: RelayIconStackPr
                   p="2"
                   fontWeight="bold"
                   fontSize="md"
-                  to={`/r/${encodeURIComponent(url)}`}
+                  to={`/relays/${encodeURIComponent(url)}`}
                 >
                   <RelayFavicon relay={url} size="xs" mr="2" />
                   {url}

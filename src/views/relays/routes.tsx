@@ -14,6 +14,7 @@ const WebRtcConnectView = lazy(() => import("./webrtc/connect"));
 const WebRtcPairView = lazy(() => import("./webrtc/pair"));
 import BrowseRelaySetsView from "./browse-sets";
 import RelaySetView from "./relay-set";
+const RelayDetailsView = lazy(() => import("./relay-details"));
 
 export default [
   {
@@ -42,7 +43,7 @@ export default [
         ],
       },
       { path: "sets", element: <BrowseRelaySetsView /> },
-      { path: ":id", element: <RelaySetView /> },
+      { path: ":relay", element: <RelayDetailsView /> },
     ],
   },
 ] satisfies RouteObject[];

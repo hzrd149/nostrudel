@@ -69,7 +69,7 @@ export default function ContactListRelaysView() {
           {relays.inbox.map((relay) => (
             <Flex key={relay} gap="2" alignItems="center" overflow="hidden">
               <RelayFavicon relay={relay} size="xs" />
-              <Link as={RouterLink} to={`/r/${encodeURIComponent(relay)}`} isTruncated>
+              <Link as={RouterLink} to={`/relays/${encodeURIComponent(relay)}`} isTruncated>
                 {relay}
               </Link>
             </Flex>
@@ -81,7 +81,7 @@ export default function ContactListRelaysView() {
           {relays.outbox.map((relay) => (
             <Flex key={relay} gap="2" alignItems="center" overflow="hidden">
               <RelayFavicon relay={relay} size="xs" />
-              <Link as={RouterLink} to={`/r/${encodeURIComponent(relay)}`} isTruncated>
+              <Link as={RouterLink} to={`/relays/${encodeURIComponent(relay)}`} isTruncated>
                 {relay}
               </Link>
             </Flex>

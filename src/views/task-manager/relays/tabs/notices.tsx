@@ -13,7 +13,7 @@ export default function NoticesTab() {
     <>
       {notices.map((notice) => (
         <LinkBox key={notice.timestamp + notice.message} px="2" py="1" fontFamily="monospace">
-          <HoverLinkOverlay as={RouterLink} to={`/r/${encodeURIComponent(notice.from)}`} fontWeight="bold">
+          <HoverLinkOverlay as={RouterLink} to={`/relays/${encodeURIComponent(notice.from)}`} fontWeight="bold">
             {notice.from}
           </HoverLinkOverlay>
           <Timestamp timestamp={notice.timestamp} ml={2} />

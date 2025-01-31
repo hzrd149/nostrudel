@@ -22,7 +22,6 @@ import LaunchpadView from "./views/launchpad";
 import NotificationsView from "./views/notifications";
 import OtherStuffView from "./views/other-stuff";
 
-const RelayView = lazy(() => import("./views/relays/relay"));
 const TracksView = lazy(() => import("./views/tracks"));
 const MapView = lazy(() => import("./views/map"));
 const HashTagView = lazy(() => import("./views/hashtag"));
@@ -105,7 +104,6 @@ const router = createBrowserRouter(
         { path: "other-stuff", Component: OtherStuffView },
         { path: "settings", children: settingsRoutes },
         { path: "relays", children: relaysRoutes },
-        { path: "r/:relay", Component: RelayView },
         { path: "notifications", Component: NotificationsView },
         { path: "media", children: mediaRoutes },
         { path: "streams", children: streamsRoutes },

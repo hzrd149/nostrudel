@@ -53,7 +53,7 @@ function RelayEntry({
     >
       <RelayFavicon relay={url} size="sm" outline="2px solid" />
       <Box overflow="hidden">
-        <Link as={RouterLink} to={`/r/${encodeURIComponent(url)}`} isTruncated>
+        <Link as={RouterLink} to={`/relays/${encodeURIComponent(url)}`} isTruncated>
           {url}
         </Link>
         {info?.supported_nips && !info?.supported_nips.includes(50) && <Text color="red">Search not supported</Text>}

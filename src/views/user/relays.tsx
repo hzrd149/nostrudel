@@ -24,7 +24,7 @@ function Relay({ url, reviews }: { url: string; reviews: NostrEvent[] }) {
       <Flex gap="2" alignItems="center">
         <RelayFavicon relay={url} size="xs" />
         <Heading size="md" isTruncated>
-          <RouterLink to={`/r/${encodeURIComponent(url)}`}>{url}</RouterLink>
+          <RouterLink to={`/relays/${encodeURIComponent(url)}`}>{url}</RouterLink>
           {info?.payments_url && (
             <Tag as="a" variant="solid" colorScheme="green" size="sm" ml="2" target="_blank" href={info.payments_url}>
               Paid
