@@ -49,7 +49,7 @@ export default function UserFollowersTab() {
           <FollowerItem key={event.pubkey} event={event} />
         ))}
       </SimpleGrid>
-      <TimelineActionAndStatus timeline={loader} />
+      <TimelineActionAndStatus loader={loader} />
     </IntersectionObserverProvider>
   );
 }

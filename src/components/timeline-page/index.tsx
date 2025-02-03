@@ -2,18 +2,17 @@ import { useCallback } from "react";
 import { FlexProps } from "@chakra-ui/react";
 import { useSearchParams } from "react-router-dom";
 import { Expressions } from "applesauce-content/helpers";
+import { TimelineLoader } from "applesauce-loaders";
 
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import GenericNoteTimeline from "./generic-note-timeline";
 import MediaTimeline from "./media-timeline";
-import TimelineLoader from "../../classes/timeline-loader";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import TimelineActionAndStatus from "../timeline/timeline-action-and-status";
 import { NostrEvent } from "../../types/nostr-event";
 import TimelineHealth from "./timeline-health";
 import useRouteSearchValue from "../../hooks/use-route-search-value";
 import VerticalPageLayout from "../vertical-page-layout";
-import useAppSettings from "../../hooks/use-user-app-settings";
 import useMaxPageWidth from "../../hooks/use-max-page-width";
 
 export function useTimelinePageEventFilter() {
@@ -36,13 +35,12 @@ export default function TimelinePage({
   timeline,
   header,
   ...props
-}: { loader: TimelineLoader; timeline: NostrEvent[]; header?: React.ReactNode } & Omit<
+}: { loader?: TimelineLoader; timeline: NostrEvent[]; header?: React.ReactNode } & Omit<
   FlexProps,
   "children" | "direction" | "gap"
 >) {
   const callback = useTimelineCurserIntersectionCallback(loader);
 
-  const { maxPageWidth } = useAppSettings();
   const viewParam = useRouteSearchValue("view", "timeline");
   const mode = (viewParam.value as TimelineViewType) ?? "timeline";
 
@@ -67,7 +65,7 @@ export default function TimelinePage({
       <VerticalPageLayout maxW={maxWidth} mx="auto" {...props}>
         {header}
         {renderTimeline()}
-        <TimelineActionAndStatus timeline={loader} />
+        <TimelineActionAndStatus loader={loader} />
       </VerticalPageLayout>
     </IntersectionObserverProvider>
   );

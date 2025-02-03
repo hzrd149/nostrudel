@@ -71,7 +71,7 @@ export default function UserFilesTab() {
             </Tbody>
           </Table>
         </TableContainer>
-        <TimelineActionAndStatus timeline={loader} />
+        <TimelineActionAndStatus loader={loader} />
       </IntersectionObserverProvider>
     </SimpleView>
   );

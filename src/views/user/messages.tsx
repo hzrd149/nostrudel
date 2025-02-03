@@ -81,7 +81,7 @@ export default function UserMessagesTab() {
             </Tbody>
           </Table>
         </TableContainer>
-        <TimelineActionAndStatus timeline={loader} />
+        <TimelineActionAndStatus loader={loader} />
       </VerticalPageLayout>
     </IntersectionObserverProvider>
   );

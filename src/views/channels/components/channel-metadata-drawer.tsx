@@ -41,7 +41,7 @@ function UserCard({ pubkey }: { pubkey: string }) {
     </Card>
   );
 }
-function ChannelMembers({ channel, relays }: { channel: NostrEvent; relays: Iterable<string> }) {
+function ChannelMembers({ channel, relays }: { channel: NostrEvent; relays: string[] }) {
   const { loader, timeline: userLists } = useTimelineLoader(`${channel.id}-members`, relays, {
     kinds: [kinds.PublicChatsList],
     "#e": [channel.id],

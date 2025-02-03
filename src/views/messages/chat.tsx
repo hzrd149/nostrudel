@@ -112,7 +112,7 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
   const callback = useTimelineCurserIntersectionCallback(loader);
 
   return (
-    <ThreadsProvider timeline={loader}>
+    <ThreadsProvider messages={messages}>
       <IntersectionObserverProvider callback={callback}>
         <ContainedSimpleView
           reverse
@@ -141,7 +141,7 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
           bottom={<SendMessageForm flexShrink={0} pubkey={pubkey} p="2" />}
         >
           <ChatLog messages={messages} />
-          <TimelineActionAndStatus timeline={loader} />
+          <TimelineActionAndStatus loader={loader} />
           {location.state?.thread && (
             <ThreadDrawer isOpen onClose={closeDrawer} threadId={location.state.thread} pubkey={pubkey} />
           )}

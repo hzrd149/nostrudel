@@ -22,7 +22,7 @@ import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { useReadRelays } from "../../hooks/use-client-relays";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
-import SearchRelayPicker, { useSearchRelay } from "../../views/search/components/search-relay-picker";
+import SearchRelayPicker from "../../views/search/components/search-relay-picker";
 import useEventIntersectionRef from "../../hooks/use-event-intersection-ref";
 import { ListId, usePeopleListSelect } from "../../providers/local/people-list-provider";
 
@@ -57,7 +57,7 @@ export default function GifPickerModal({ onClose, isOpen, onSelect, ...props }: 
   const [list, setList] = useState<ListId>("global");
   const { selected, setSelected, filter, listId } = usePeopleListSelect(list, setList);
 
-  const searchRelay = useSearchRelay(searchRelayUrl);
+  // const searchRelay = useSearchRelay(searchRelayUrl);
 
   const [debounceSearch, setDebounceSearch] = useState<string>();
   useEffect(() => {
@@ -75,8 +75,8 @@ export default function GifPickerModal({ onClose, isOpen, onSelect, ...props }: 
 
   const readRelays = useReadRelays();
   const { loader, timeline } = useTimelineLoader(
-    [listId, "gifs", searchRelay?.url ?? "all", debounceSearch ?? "all"].join("-"),
-    searchRelay !== undefined ? [searchRelay] : readRelays,
+    [listId, "gifs", searchRelayUrl ?? "all", debounceSearch ?? "all"].join("-"),
+    searchRelayUrl !== undefined ? [searchRelayUrl] : readRelays,
     debounceSearch !== undefined ? { ...baseFilter, search: debounceSearch } : baseFilter,
   );
 

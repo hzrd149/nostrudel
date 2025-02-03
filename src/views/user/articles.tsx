@@ -31,7 +31,7 @@ export default function UserArticlesTab() {
             <ArticleCard article={article} />
           </ErrorBoundary>
         ))}
-        <TimelineActionAndStatus timeline={loader} />
+        <TimelineActionAndStatus loader={loader} />
       </IntersectionObserverProvider>
     </SimpleView>
   );

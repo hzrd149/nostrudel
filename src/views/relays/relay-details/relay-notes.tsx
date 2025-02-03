@@ -1,6 +1,7 @@
 import { useCallback } from "react";
 import { Flex, Spacer, useDisclosure } from "@chakra-ui/react";
 import { kinds } from "nostr-tools";
+import { getSeenRelays } from "applesauce-core/helpers";
 
 import { isReply, isRepost } from "../../../helpers/nostr/event";
 import { useAppTitle } from "../../../hooks/use-app-title";
@@ -12,7 +13,6 @@ import PeopleListSelection from "../../../components/people-list-selection/peopl
 import { usePeopleListContext } from "../../../providers/local/people-list-provider";
 import useClientSideMuteFilter from "../../../hooks/use-client-side-mute-filter";
 import NoteFilterTypeButtons from "../../../components/note-filter-type-buttons";
-import { getSeenRelays } from "applesauce-core/helpers";
 
 export default function RelayNotes({ relay }: { relay: string }) {
   useAppTitle(`${relay} - Notes`);
@@ -38,10 +38,7 @@ export default function RelayNotes({ relay }: { relay: string }) {
     `${relay}-notes`,
     [relay],
     filter ? { ...filter, kinds: k } : undefined,
-    {
-      eventFilter,
-      useCache: false,
-    },
+    { eventFilter },
   );
 
   const header = (
@@ -52,6 +49,8 @@ export default function RelayNotes({ relay }: { relay: string }) {
       <TimelineViewTypeButtons />
     </Flex>
   );
+
+  if (!loader) return null;
 
   return <TimelinePage loader={loader} timeline={timeline} header={header} />;
 }

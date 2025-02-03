@@ -13,8 +13,8 @@ importers:
   .:
     dependencies:
       '@cashu/cashu-ts':
-        specifier: ^2.1.0
-        version: 2.1.0
+        specifier: ^2.2.0
+        version: 2.2.0
       '@chakra-ui/anatomy':
         specifier: ^2.3.4
         version: 2.3.4
@@ -92,10 +92,10 @@ importers:
         version: 1.3.1
       '@uiw/codemirror-theme-github':
         specifier: ^4.23.7
-        version: 4.23.7(@codemirror/language@6.10.8)(@codemirror/state@6.5.1)(@codemirror/view@6.36.2)
+        version: 4.23.7(@codemirror/language@6.10.8)(@codemirror/state@6.5.2)(@codemirror/view@6.36.2)
       '@uiw/react-codemirror':
         specifier: ^4.23.7
-        version: 4.23.7(@babel/runtime@7.26.7)(@codemirror/autocomplete@6.18.4)(@codemirror/language@6.10.8)(@codemirror/lint@6.8.4)(@codemirror/search@6.5.8)(@codemirror/state@6.5.1)(@codemirror/theme-one-dark@6.1.2)(@codemirror/view@6.36.2)(codemirror@6.0.1)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+        version: 4.23.7(@babel/runtime@7.26.7)(@codemirror/autocomplete@6.18.4)(@codemirror/language@6.10.8)(@codemirror/lint@6.8.4)(@codemirror/search@6.5.8)(@codemirror/state@6.5.2)(@codemirror/theme-one-dark@6.1.2)(@codemirror/view@6.36.2)(codemirror@6.0.1)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@webscopeio/react-textarea-autocomplete':
         specifier: ^4.9.2
         version: 4.9.2(prop-types@15.8.1)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -104,28 +104,28 @@ importers:
         version: 0.7.2
       applesauce-accounts:
         specifier: next
-        version: 0.0.0-next-20250131214402(typescript@5.7.3)
+        version: 0.0.0-next-20250203180810(typescript@5.7.3)
       applesauce-content:
         specifier: next
-        version: 0.0.0-next-20250131214402(typescript@5.7.3)
+        version: 0.0.0-next-20250203180810(typescript@5.7.3)
       applesauce-core:
         specifier: next
-        version: 0.0.0-next-20250131214402(typescript@5.7.3)
+        version: 0.0.0-next-20250203180810(typescript@5.7.3)
       applesauce-factory:
         specifier: next
-        version: 0.0.0-next-20250131214402(typescript@5.7.3)
+        version: 0.0.0-next-20250203180810(typescript@5.7.3)
       applesauce-loaders:
         specifier: next
-        version: 0.0.0-next-20250131214402(typescript@5.7.3)
+        version: 0.0.0-next-20250203180810(typescript@5.7.3)
       applesauce-net:
         specifier: ^0.10.0
         version: 0.10.0(typescript@5.7.3)
       applesauce-react:
         specifier: next
-        version: 0.0.0-next-20250131214402(typescript@5.7.3)
+        version: 0.0.0-next-20250203180810(typescript@5.7.3)
       applesauce-signers:
         specifier: next
-        version: 0.0.0-next-20250131214402(typescript@5.7.3)
+        version: 0.0.0-next-20250203180810(typescript@5.7.3)
       bech32:
         specifier: ^2.0.0
         version: 2.0.0
@@ -149,7 +149,7 @@ importers:
         version: 6.0.1
       codemirror-json-schema:
         specifier: ^0.7.9
-        version: 0.7.9(@codemirror/language@6.10.8)(@codemirror/lint@6.8.4)(@codemirror/state@6.5.1)(@codemirror/view@6.36.2)(@lezer/common@1.2.3)
+        version: 0.7.9(@codemirror/language@6.10.8)(@codemirror/lint@6.8.4)(@codemirror/state@6.5.2)(@codemirror/view@6.36.2)(@lezer/common@1.2.3)
       dayjs:
         specifier: ^1.11.13
         version: 1.11.13
@@ -174,6 +174,9 @@ importers:
       handlebars:
         specifier: ^4.7.8
         version: 4.7.8
+      hash-sum:
+        specifier: ^2.0.0
+        version: 2.0.0
       hls.js:
         specifier: ^1.5.20
         version: 1.5.20
@@ -315,9 +318,6 @@ importers:
       three-stdlib:
         specifier: ^2.35.13
         version: 2.35.13(three@0.170.0)
-      tiny-lru:
-        specifier: ^11.2.11
-        version: 11.2.11
       unified:
         specifier: ^11.0.5
         version: 11.0.5
@@ -388,6 +388,9 @@ importers:
       '@types/file-saver':
         specifier: ^2.0.7
         version: 2.0.7
+      '@types/hash-sum':
+        specifier: ^1.0.2
+        version: 1.0.2
       '@types/identicon.js':
         specifier: ^2.3.5
         version: 2.3.5
@@ -1032,8 +1035,8 @@ packages:
   '@cashu/cashu-ts@2.0.0-rc1':
     resolution: {integrity: sha512-39459l7x/fUMEgOsCdGLLl6rMekO4nbv+wEuavmyElh8hgN8t66wcb29AJvdFTb6K3lPACKF2rs/jAlPYrN7Ng==}
 
-  '@cashu/cashu-ts@2.1.0':
-    resolution: {integrity: sha512-qFfFz1dx9keJxumjk5FyTvI1j0Yp/P5LXDy0cGO4Xlp3WYKOI1nykNOTPd+bTY9vSkvIM+xuXRer9BtQxqHtwA==}
+  '@cashu/cashu-ts@2.2.0':
+    resolution: {integrity: sha512-7b6pGyjjpm3uAJvmOL+ztpRxqp1qnmzGpydp+Pu30pOjxj93EhejPTJVrZMDJ0P35y6u5+5jIjHF4k0fpovvmg==}
 
   '@cashu/crypto@0.2.7':
     resolution: {integrity: sha512-1aaDfUjiHNXoJqg8nW+341TLWV9W28DsVNXJUKcHL0yAmwLs5+56SSnb8LLDJzPamLVoYL0U0bda91klAzptig==}
@@ -1241,8 +1244,8 @@ packages:
   '@codemirror/search@6.5.8':
     resolution: {integrity: sha512-PoWtZvo7c1XFeZWmmyaOp2G0XVbOnm+fJzvghqGAktBW3cufwJUWvSCcNG0ppXiBEM05mZu6RhMtXPv2hpllig==}
 
-  '@codemirror/state@6.5.1':
-    resolution: {integrity: sha512-3rA9lcwciEB47ZevqvD8qgbzhM9qMb8vCcQCNmDfVRPQG4JT9mSb0Jg8H7YjKGGQcFnLN323fj9jdnG59Kx6bg==}
+  '@codemirror/state@6.5.2':
+    resolution: {integrity: sha512-FVqsPqtPWKVVL3dPSxy8wEF/ymIEuVzF1PK3VbUgrxXpJUSHQWWZz4JMToquRxnkw+36LTamCZG2iua2Ptq0fA==}
 
   '@codemirror/theme-one-dark@6.1.2':
     resolution: {integrity: sha512-F+sH0X16j/qFLMAfbciKTxVOwkdAS336b7AXTKOZhy8BR3eH/RelsnLgLFINrpST63mmN2OuwUt0W2ndUgYwUA==}
@@ -1717,98 +1720,98 @@ packages:
       rollup:
         optional: true
 
-  '@rollup/rollup-android-arm-eabi@4.32.1':
-    resolution: {integrity: sha512-/pqA4DmqyCm8u5YIDzIdlLcEmuvxb0v8fZdFhVMszSpDTgbQKdw3/mB3eMUHIbubtJ6F9j+LtmyCnHTEqIHyzA==}
+  '@rollup/rollup-android-arm-eabi@4.34.1':
+    resolution: {integrity: sha512-kwctwVlswSEsr4ljpmxKrRKp1eG1v2NAhlzFzDf1x1OdYaMjBYjDCbHkzWm57ZXzTwqn8stMXgROrnMw8dJK3w==}
     cpu: [arm]
     os: [android]
 
-  '@rollup/rollup-android-arm64@4.32.1':
-    resolution: {integrity: sha512-If3PDskT77q7zgqVqYuj7WG3WC08G1kwXGVFi9Jr8nY6eHucREHkfpX79c0ACAjLj3QIWKPJR7w4i+f5EdLH5Q==}
+  '@rollup/rollup-android-arm64@4.34.1':
+    resolution: {integrity: sha512-4H5ZtZitBPlbPsTv6HBB8zh1g5d0T8TzCmpndQdqq20Ugle/nroOyDMf9p7f88Gsu8vBLU78/cuh8FYHZqdXxw==}
     cpu: [arm64]
     os: [android]
 
-  '@rollup/rollup-darwin-arm64@4.32.1':
-    resolution: {integrity: sha512-zCpKHioQ9KgZToFp5Wvz6zaWbMzYQ2LJHQ+QixDKq52KKrF65ueu6Af4hLlLWHjX1Wf/0G5kSJM9PySW9IrvHA==}
+  '@rollup/rollup-darwin-arm64@4.34.1':
+    resolution: {integrity: sha512-f2AJ7Qwx9z25hikXvg+asco8Sfuc5NCLg8rmqQBIOUoWys5sb/ZX9RkMZDPdnnDevXAMJA5AWLnRBmgdXGEUiA==}
     cpu: [arm64]
     os: [darwin]
 
-  '@rollup/rollup-darwin-x64@4.32.1':
-    resolution: {integrity: sha512-sFvF+t2+TyUo/ZQqUcifrJIgznx58oFZbdHS9TvHq3xhPVL9nOp+yZ6LKrO9GWTP+6DbFtoyLDbjTpR62Mbr3Q==}
+  '@rollup/rollup-darwin-x64@4.34.1':
+    resolution: {integrity: sha512-+/2JBrRfISCsWE4aEFXxd+7k9nWGXA8+wh7ZUHn/u8UDXOU9LN+QYKKhd57sIn6WRcorOnlqPMYFIwie/OHXWw==}
     cpu: [x64]
     os: [darwin]
 
-  '@rollup/rollup-freebsd-arm64@4.32.1':
-    resolution: {integrity: sha512-NbOa+7InvMWRcY9RG+B6kKIMD/FsnQPH0MWUvDlQB1iXnF/UcKSudCXZtv4lW+C276g3w5AxPbfry5rSYvyeYA==}
+  '@rollup/rollup-freebsd-arm64@4.34.1':
+    resolution: {integrity: sha512-SUeB0pYjIXwT2vfAMQ7E4ERPq9VGRrPR7Z+S4AMssah5EHIilYqjWQoTn5dkDtuIJUSTs8H+C9dwoEcg3b0sCA==}
     cpu: [arm64]
     os: [freebsd]
 
-  '@rollup/rollup-freebsd-x64@4.32.1':
-    resolution: {integrity: sha512-JRBRmwvHPXR881j2xjry8HZ86wIPK2CcDw0EXchE1UgU0ubWp9nvlT7cZYKc6bkypBt745b4bglf3+xJ7hXWWw==}
+  '@rollup/rollup-freebsd-x64@4.34.1':
+    resolution: {integrity: sha512-L3T66wAZiB/ooiPbxz0s6JEX6Sr2+HfgPSK+LMuZkaGZFAFCQAHiP3dbyqovYdNaiUXcl9TlgnIbcsIicAnOZg==}
     cpu: [x64]
     os: [freebsd]
 
-  '@rollup/rollup-linux-arm-gnueabihf@4.32.1':
-    resolution: {integrity: sha512-PKvszb+9o/vVdUzCCjL0sKHukEQV39tD3fepXxYrHE3sTKrRdCydI7uldRLbjLmDA3TFDmh418XH19NOsDRH8g==}
+  '@rollup/rollup-linux-arm-gnueabihf@4.34.1':
+    resolution: {integrity: sha512-UBXdQ4+ATARuFgsFrQ+tAsKvBi/Hly99aSVdeCUiHV9dRTTpMU7OrM3WXGys1l40wKVNiOl0QYY6cZQJ2xhKlQ==}
     cpu: [arm]
     os: [linux]
 
-  '@rollup/rollup-linux-arm-musleabihf@4.32.1':
-    resolution: {integrity: sha512-9WHEMV6Y89eL606ReYowXuGF1Yb2vwfKWKdD1A5h+OYnPZSJvxbEjxTRKPgi7tkP2DSnW0YLab1ooy+i/FQp/Q==}
+  '@rollup/rollup-linux-arm-musleabihf@4.34.1':
+    resolution: {integrity: sha512-m/yfZ25HGdcCSwmopEJm00GP7xAUyVcBPjttGLRAqZ60X/bB4Qn6gP7XTwCIU6bITeKmIhhwZ4AMh2XLro+4+w==}
     cpu: [arm]
     os: [linux]
 
-  '@rollup/rollup-linux-arm64-gnu@4.32.1':
-    resolution: {integrity: sha512-tZWc9iEt5fGJ1CL2LRPw8OttkCBDs+D8D3oEM8mH8S1ICZCtFJhD7DZ3XMGM8kpqHvhGUTvNUYVDnmkj4BDXnw==}
+  '@rollup/rollup-linux-arm64-gnu@4.34.1':
+    resolution: {integrity: sha512-Wy+cUmFuvziNL9qWRRzboNprqSQ/n38orbjRvd6byYWridp5TJ3CD+0+HUsbcWVSNz9bxkDUkyASGP0zS7GAvg==}
     cpu: [arm64]
     os: [linux]
 
-  '@rollup/rollup-linux-arm64-musl@4.32.1':
-    resolution: {integrity: sha512-FTYc2YoTWUsBz5GTTgGkRYYJ5NGJIi/rCY4oK/I8aKowx1ToXeoVVbIE4LGAjsauvlhjfl0MYacxClLld1VrOw==}
+  '@rollup/rollup-linux-arm64-musl@4.34.1':
+    resolution: {integrity: sha512-CQ3MAGgiFmQW5XJX5W3wnxOBxKwFlUAgSXFA2SwgVRjrIiVt5LHfcQLeNSHKq5OEZwv+VCBwlD1+YKCjDG8cpg==}
     cpu: [arm64]
     os: [linux]
 
-  '@rollup/rollup-linux-loongarch64-gnu@4.32.1':
-    resolution: {integrity: sha512-F51qLdOtpS6P1zJVRzYM0v6MrBNypyPEN1GfMiz0gPu9jN8ScGaEFIZQwteSsGKg799oR5EaP7+B2jHgL+d+Kw==}
+  '@rollup/rollup-linux-loongarch64-gnu@4.34.1':
+    resolution: {integrity: sha512-rSzb1TsY4lSwH811cYC3OC2O2mzNMhM13vcnA7/0T6Mtreqr3/qs6WMDriMRs8yvHDI54qxHgOk8EV5YRAHFbw==}
     cpu: [loong64]
     os: [linux]
 
-  '@rollup/rollup-linux-powerpc64le-gnu@4.32.1':
-    resolution: {integrity: sha512-wO0WkfSppfX4YFm5KhdCCpnpGbtgQNj/tgvYzrVYFKDpven8w2N6Gg5nB6w+wAMO3AIfSTWeTjfVe+uZ23zAlg==}
+  '@rollup/rollup-linux-powerpc64le-gnu@4.34.1':
+    resolution: {integrity: sha512-fwr0n6NS0pG3QxxlqVYpfiY64Fd1Dqd8Cecje4ILAV01ROMp4aEdCj5ssHjRY3UwU7RJmeWd5fi89DBqMaTawg==}
     cpu: [ppc64]
     os: [linux]
 
-  '@rollup/rollup-linux-riscv64-gnu@4.32.1':
-    resolution: {integrity: sha512-iWswS9cIXfJO1MFYtI/4jjlrGb/V58oMu4dYJIKnR5UIwbkzR0PJ09O0PDZT0oJ3LYWXBSWahNf/Mjo6i1E5/g==}
+  '@rollup/rollup-linux-riscv64-gnu@4.34.1':
+    resolution: {integrity: sha512-4uJb9qz7+Z/yUp5RPxDGGGUcoh0PnKF33QyWgEZ3X/GocpWb6Mb+skDh59FEt5d8+Skxqs9mng6Swa6B2AmQZg==}
     cpu: [riscv64]
     os: [linux]
 
-  '@rollup/rollup-linux-s390x-gnu@4.32.1':
-    resolution: {integrity: sha512-RKt8NI9tebzmEthMnfVgG3i/XeECkMPS+ibVZjZ6mNekpbbUmkNWuIN2yHsb/mBPyZke4nlI4YqIdFPgKuoyQQ==}
+  '@rollup/rollup-linux-s390x-gnu@4.34.1':
+    resolution: {integrity: sha512-QlIo8ndocWBEnfmkYqj8vVtIUpIqJjfqKggjy7IdUncnt8BGixte1wDON7NJEvLg3Kzvqxtbo8tk+U1acYEBlw==}
     cpu: [s390x]
     os: [linux]
 
-  '@rollup/rollup-linux-x64-gnu@4.32.1':
-    resolution: {integrity: sha512-WQFLZ9c42ECqEjwg/GHHsouij3pzLXkFdz0UxHa/0OM12LzvX7DzedlY0SIEly2v18YZLRhCRoHZDxbBSWoGYg==}
+  '@rollup/rollup-linux-x64-gnu@4.34.1':
+    resolution: {integrity: sha512-hzpleiKtq14GWjz3ahWvJXgU1DQC9DteiwcsY4HgqUJUGxZThlL66MotdUEK9zEo0PK/2ADeZGM9LIondE302A==}
     cpu: [x64]
     os: [linux]
 
-  '@rollup/rollup-linux-x64-musl@4.32.1':
-    resolution: {integrity: sha512-BLoiyHDOWoS3uccNSADMza6V6vCNiphi94tQlVIL5de+r6r/CCQuNnerf+1g2mnk2b6edp5dk0nhdZ7aEjOBsA==}
+  '@rollup/rollup-linux-x64-musl@4.34.1':
+    resolution: {integrity: sha512-jqtKrO715hDlvUcEsPn55tZt2TEiBvBtCMkUuU0R6fO/WPT7lO9AONjPbd8II7/asSiNVQHCMn4OLGigSuxVQA==}
     cpu: [x64]
     os: [linux]
 
-  '@rollup/rollup-win32-arm64-msvc@4.32.1':
-    resolution: {integrity: sha512-w2l3UnlgYTNNU+Z6wOR8YdaioqfEnwPjIsJ66KxKAf0p+AuL2FHeTX6qvM+p/Ue3XPBVNyVSfCrfZiQh7vZHLQ==}
+  '@rollup/rollup-win32-arm64-msvc@4.34.1':
+    resolution: {integrity: sha512-RnHy7yFf2Wz8Jj1+h8klB93N0NHNHXFhNwAmiy9zJdpY7DE01VbEVtPdrK1kkILeIbHGRJjvfBDBhnxBr8kD4g==}
     cpu: [arm64]
     os: [win32]
 
-  '@rollup/rollup-win32-ia32-msvc@4.32.1':
-    resolution: {integrity: sha512-Am9H+TGLomPGkBnaPWie4F3x+yQ2rr4Bk2jpwy+iV+Gel9jLAu/KqT8k3X4jxFPW6Zf8OMnehyutsd+eHoq1WQ==}
+  '@rollup/rollup-win32-ia32-msvc@4.34.1':
+    resolution: {integrity: sha512-i7aT5HdiZIcd7quhzvwQ2oAuX7zPYrYfkrd1QFfs28Po/i0q6kas/oRrzGlDhAEyug+1UfUtkWdmoVlLJj5x9Q==}
     cpu: [ia32]
     os: [win32]
 
-  '@rollup/rollup-win32-x64-msvc@4.32.1':
-    resolution: {integrity: sha512-ar80GhdZb4DgmW3myIS9nRFYcpJRSME8iqWgzH2i44u+IdrzmiXVxeFnExQ5v4JYUSpg94bWjevMG8JHf1Da5Q==}
+  '@rollup/rollup-win32-x64-msvc@4.34.1':
+    resolution: {integrity: sha512-k3MVFD9Oq+laHkw2N2v7ILgoa9017ZMF/inTtHzyTVZjYs9cSH18sdyAf6spBAJIGwJ5UaC7et2ZH1WCdlhkMw==}
     cpu: [x64]
     os: [win32]
 
@@ -1950,6 +1953,9 @@ packages:
 
   '@types/geojson@7946.0.16':
     resolution: {integrity: sha512-6C8nqWur3j98U6+lXDfTUWIfgvZU+EumvpHKcYjujKH7woYyLj2sUmff0tRhrqM7BohUw7Pz3ZB1jj2gW9Fvmg==}
+
+  '@types/hash-sum@1.0.2':
+    resolution: {integrity: sha512-UP28RddqY8xcU0SCEp9YKutQICXpaAq9N8U2klqF5hegGha7KzTOL8EdhIIV3bOSGBzjEpN9bU/d+nNZBdJYVw==}
 
   '@types/hast@3.0.4':
     resolution: {integrity: sha512-WPs+bbQw5aCj+x6laNGWLH3wviHtoCv/P3+otBhbOhJgG8qtpdAMlTCxLtsTWA7LH1Oh/bFCHsBn0TPS5m30EQ==}
@@ -2186,32 +2192,32 @@ packages:
     engines: {node: '>=8.0.0'}
     hasBin: true
 
-  applesauce-accounts@0.0.0-next-20250131214402:
-    resolution: {integrity: sha512-5BUtFswVFg82Oq9MG6VdkEa5VeOAuvoPMi7Fr/I4IxqJwpZDSFIU/rkuDOMtHcj+V6TCEYeTO670f2p7B4/yMg==}
+  applesauce-accounts@0.0.0-next-20250203180810:
+    resolution: {integrity: sha512-yymm0dQgBJGgf3nlv1DC+AyxK+cvHLZczmRLyYW4k4MCNM7mO7qwnFGbMJJftDmVw5l8f9xBu0T/8r3IWsOxJw==}
 
-  applesauce-content@0.0.0-next-20250131214402:
-    resolution: {integrity: sha512-+cDqt4IRIjQ0Ncht0WLCcMueDaZRtsuAXBw3k4/ND37qUHsnt5Qj+VfnWr5Dfmhpk0HD3ghMqbMXZBwkybN6NA==}
+  applesauce-content@0.0.0-next-20250203180810:
+    resolution: {integrity: sha512-7TpIqocvhn5g4M/Biua7AP3pWo4YtDa1C21uci/ElkbuqMNhVT37ASwttGM8GPcfLTxQ7uBkpPjOBTXm74D8Rw==}
 
-  applesauce-core@0.0.0-next-20250131214402:
-    resolution: {integrity: sha512-5+KRKnV2d+6z9QFzSHUGKHxbtoByRkx0MQpjOePNBcl/DCbVmC7Zf4Bo3VrouNeBG5deiCMIy5PGp0A4uuGXRg==}
+  applesauce-core@0.0.0-next-20250203180810:
+    resolution: {integrity: sha512-BNXzw8ydbp4KiPfn7X5iCMaeaNlAW5tr3o6dWz9UwV7ItWieQLd17ySh0KPLdVbE+e42msBN7ByE7iNC0ItJOQ==}
 
   applesauce-core@0.10.0:
     resolution: {integrity: sha512-QMhUh4FIARcqY5soCB4Z8DIu+py0rYb28IgWT4gP9DLBGpDrY8lStXk7W1/46TLjEH97y0hbiXFK7kMCZ31oOQ==}
 
-  applesauce-factory@0.0.0-next-20250131214402:
-    resolution: {integrity: sha512-94yTHDr+N+/IyDD88ruHzToG4craEyJ/u5nfU2TP85o6snR8Ngw5qmX5d8sD6RHJm9UjMpzfTcFjxU9ZCnbwjg==}
+  applesauce-factory@0.0.0-next-20250203180810:
+    resolution: {integrity: sha512-O4xMkwaOTX7t6JYaS78WTKzIRekCipCBnDeZpyYmLK+h4rQ+8aKd21VonV4hfh9A8dTeS28QNFsdDabbH+22Nw==}
 
-  applesauce-loaders@0.0.0-next-20250131214402:
-    resolution: {integrity: sha512-ycKuHqqT951jwRpvMNjrhQq1YRhFHLYh57NIFJJTZFHOHzfi3OJjpagueJr5H7brFGOFdYtaOgJew3sxptucKw==}
+  applesauce-loaders@0.0.0-next-20250203180810:
+    resolution: {integrity: sha512-ZWU23UtUQPQdM26NFLUralB8M8IuxrJqYqCwA5j5pozi5EG49OxxdPaZuXn3u37VRX8mibQYRVQqR+rhPWEC6g==}
 
   applesauce-net@0.10.0:
     resolution: {integrity: sha512-ZsAs/MkeGHiPZ2/a8lwP8lx/Eh+5Dot0qG4BLTAqjg4emP/RsiqW+hyc6v6QcVbdvuR0+hP1gka3+wWtiy/cTA==}
 
-  applesauce-react@0.0.0-next-20250131214402:
-    resolution: {integrity: sha512-wqlVTecq3Aj+YY5gi71VOqKWNMwsK4nUFYuoY9ZFh1ueJG0anKqYLwZSrMvswsbt3JyhG4xtLrPc7FGdIsdmqQ==}
+  applesauce-react@0.0.0-next-20250203180810:
+    resolution: {integrity: sha512-/LloC27jD9BieXmoTZs59SVbHw/vzjh/mh1jt98TQT8NcSh9zoPD1quR4a4BNFXUmeDDAxOi4VcrTOCVXAvweA==}
 
-  applesauce-signers@0.0.0-next-20250131214402:
-    resolution: {integrity: sha512-rWlDZrPPGmt2MWQ02WWRfUtApTDNJhu7Sze0hNZ4qaVSwIezq7l2f1N4vdB34A3gsagi9aXhhoipF72PtkbFHg==}
+  applesauce-signers@0.0.0-next-20250203180810:
+    resolution: {integrity: sha512-PJBPVmLW+lDYQ2TYflJGr/ddmvDu0v19l6I9XBhHfmlS1ypAej9kk4c4X56gRzROeq2zgIs/SSi1+Jm454AqRw==}
 
   arg@4.1.3:
     resolution: {integrity: sha512-58S9QDqG0Xx27YwPSt9fJxivjYl432YCwfDMfZ+71RAqUrZef7LrKQZ3LHLOwCS4FLNBplP533Zx895SeOCHvA==}
@@ -2312,8 +2318,8 @@ packages:
   bare-path@3.0.0:
     resolution: {integrity: sha512-tyfW2cQcB5NN8Saijrhqn0Zh7AnFNsnczRcuWODH0eYAXBsJ5gVxAUuNr7tsHSC6IZ77cA0SitzT+s47kot8Mw==}
 
-  bare-stream@2.6.4:
-    resolution: {integrity: sha512-G6i3A74FjNq4nVrrSTUz5h3vgXzBJnjmWAVlBWaZETkgu+LgKd7AiyOml3EDJY1AHlIbBHKDXE+TUT53Ff8OaA==}
+  bare-stream@2.6.5:
+    resolution: {integrity: sha512-jSmxKJNJmHySi6hC42zlZnq00rga4jjxcgNZjY9N5WlOe/iOoGRtdwGsHzQv2RlH2KOYMwGUXhf2zXd32BA9RA==}
     peerDependencies:
       bare-buffer: '*'
       bare-events: '*'
@@ -3575,8 +3581,8 @@ packages:
   immutability-helper@3.1.1:
     resolution: {integrity: sha512-Q0QaXjPjwIju/28TsugCHNEASwoCcJSyJV3uO1sOIQGI0jKgm9f41Lvz0DZj3n46cNCyAZTsEYoY4C2bVRUzyQ==}
 
-  import-fresh@3.3.0:
-    resolution: {integrity: sha512-veYYhQa+D1QBKznvhUHxb8faxlrwUnxseDAbAp457E0wLNio2bOSKnjYDhMj+YiAq61xrMGhQk9iXVk5FzgQMw==}
+  import-fresh@3.3.1:
+    resolution: {integrity: sha512-TR3KfrTZTYLPB6jUjfx6MF9WcWrHL9su5TObK4ZkYgBdWKPOFoSoQIdEuTuR82pmtxH2spWG9h6etwfr1pLBqQ==}
     engines: {node: '>=6'}
 
   indent-string@4.0.0:
@@ -5129,8 +5135,8 @@ packages:
     engines: {node: '>=10.0.0'}
     hasBin: true
 
-  rollup@4.32.1:
-    resolution: {integrity: sha512-z+aeEsOeEa3mEbS1Tjl6sAZ8NE3+AalQz1RJGj81M+fizusbdDMoEJwdJNHfaB40Scr4qNu+welOfes7maKonA==}
+  rollup@4.34.1:
+    resolution: {integrity: sha512-iYZ/+PcdLYSGfH3S+dGahlW/RWmsqDhLgj1BT9DH/xXJ0ggZN7xkdP9wipPNjjNLczI+fmMLmTB9pye+d2r4GQ==}
     engines: {node: '>=18.0.0', npm: '>=8.0.0'}
     hasBin: true
 
@@ -5556,10 +5562,6 @@ packages:
 
   tiny-invariant@1.3.3:
     resolution: {integrity: sha512-+FbBPE1o9QAYvviau/qC5SE3caw21q3xkvWKBtja5vgqOWIHHJ3ioaq1VPfn/Szqctz2bU/oYeKd9/z5BL+PVg==}
-
-  tiny-lru@11.2.11:
-    resolution: {integrity: sha512-27BIW0dIWTYYoWNnqSmoNMKe5WIbkXsc0xaCQHd3/3xT2XMuMJrzHdrO9QBFR14emBz1Bu0dOAs2sCBBrvgPQA==}
-    engines: {node: '>=12'}
 
   tinycolor2@1.6.0:
     resolution: {integrity: sha512-XPaBkWQJdsf3pLKJV9p4qN/S+fm2Oj8AIPo1BTUhg5oxkvm9+SVEGFdhyOz7tTdUTfvxMiAs4sp6/eZO2Ew+pw==}
@@ -6946,12 +6948,11 @@ snapshots:
       '@scure/bip32': 1.6.2
       buffer: 6.0.3
 
-  '@cashu/cashu-ts@2.1.0':
+  '@cashu/cashu-ts@2.2.0':
     dependencies:
       '@cashu/crypto': 0.3.4
       '@noble/curves': 1.8.1
       '@noble/hashes': 1.7.1
-      '@scure/bip32': 1.6.2
       buffer: 6.0.3
 
   '@cashu/crypto@0.2.7':
@@ -7291,14 +7292,14 @@ snapshots:
   '@codemirror/autocomplete@6.18.4':
     dependencies:
       '@codemirror/language': 6.10.8
-      '@codemirror/state': 6.5.1
+      '@codemirror/state': 6.5.2
       '@codemirror/view': 6.36.2
       '@lezer/common': 1.2.3
 
   '@codemirror/commands@6.8.0':
     dependencies:
       '@codemirror/language': 6.10.8
-      '@codemirror/state': 6.5.1
+      '@codemirror/state': 6.5.2
       '@codemirror/view': 6.36.2
       '@lezer/common': 1.2.3
 
@@ -7311,7 +7312,7 @@ snapshots:
     dependencies:
       '@codemirror/autocomplete': 6.18.4
       '@codemirror/language': 6.10.8
-      '@codemirror/state': 6.5.1
+      '@codemirror/state': 6.5.2
       '@lezer/common': 1.2.3
       '@lezer/highlight': 1.2.1
       '@lezer/lr': 1.4.2
@@ -7320,7 +7321,7 @@ snapshots:
 
   '@codemirror/language@6.10.8':
     dependencies:
-      '@codemirror/state': 6.5.1
+      '@codemirror/state': 6.5.2
       '@codemirror/view': 6.36.2
       '@lezer/common': 1.2.3
       '@lezer/highlight': 1.2.1
@@ -7329,30 +7330,30 @@ snapshots:
 
   '@codemirror/lint@6.8.4':
     dependencies:
-      '@codemirror/state': 6.5.1
+      '@codemirror/state': 6.5.2
       '@codemirror/view': 6.36.2
       crelt: 1.0.6
 
   '@codemirror/search@6.5.8':
     dependencies:
-      '@codemirror/state': 6.5.1
+      '@codemirror/state': 6.5.2
       '@codemirror/view': 6.36.2
       crelt: 1.0.6
 
-  '@codemirror/state@6.5.1':
+  '@codemirror/state@6.5.2':
     dependencies:
       '@marijn/find-cluster-break': 1.0.2
 
   '@codemirror/theme-one-dark@6.1.2':
     dependencies:
       '@codemirror/language': 6.10.8
-      '@codemirror/state': 6.5.1
+      '@codemirror/state': 6.5.2
       '@codemirror/view': 6.36.2
       '@lezer/highlight': 1.2.1
 
   '@codemirror/view@6.36.2':
     dependencies:
-      '@codemirror/state': 6.5.1
+      '@codemirror/state': 6.5.2
       style-mod: 4.1.2
       w3c-keyname: 2.2.8
 
@@ -7906,61 +7907,61 @@ snapshots:
     optionalDependencies:
       rollup: 2.79.2
 
-  '@rollup/rollup-android-arm-eabi@4.32.1':
+  '@rollup/rollup-android-arm-eabi@4.34.1':
     optional: true
 
-  '@rollup/rollup-android-arm64@4.32.1':
+  '@rollup/rollup-android-arm64@4.34.1':
     optional: true
 
-  '@rollup/rollup-darwin-arm64@4.32.1':
+  '@rollup/rollup-darwin-arm64@4.34.1':
     optional: true
 
-  '@rollup/rollup-darwin-x64@4.32.1':
+  '@rollup/rollup-darwin-x64@4.34.1':
     optional: true
 
-  '@rollup/rollup-freebsd-arm64@4.32.1':
+  '@rollup/rollup-freebsd-arm64@4.34.1':
     optional: true
 
-  '@rollup/rollup-freebsd-x64@4.32.1':
+  '@rollup/rollup-freebsd-x64@4.34.1':
     optional: true
 
-  '@rollup/rollup-linux-arm-gnueabihf@4.32.1':
+  '@rollup/rollup-linux-arm-gnueabihf@4.34.1':
     optional: true
 
-  '@rollup/rollup-linux-arm-musleabihf@4.32.1':
+  '@rollup/rollup-linux-arm-musleabihf@4.34.1':
     optional: true
 
-  '@rollup/rollup-linux-arm64-gnu@4.32.1':
+  '@rollup/rollup-linux-arm64-gnu@4.34.1':
     optional: true
 
-  '@rollup/rollup-linux-arm64-musl@4.32.1':
+  '@rollup/rollup-linux-arm64-musl@4.34.1':
     optional: true
 
-  '@rollup/rollup-linux-loongarch64-gnu@4.32.1':
+  '@rollup/rollup-linux-loongarch64-gnu@4.34.1':
     optional: true
 
-  '@rollup/rollup-linux-powerpc64le-gnu@4.32.1':
+  '@rollup/rollup-linux-powerpc64le-gnu@4.34.1':
     optional: true
 
-  '@rollup/rollup-linux-riscv64-gnu@4.32.1':
+  '@rollup/rollup-linux-riscv64-gnu@4.34.1':
     optional: true
 
-  '@rollup/rollup-linux-s390x-gnu@4.32.1':
+  '@rollup/rollup-linux-s390x-gnu@4.34.1':
     optional: true
 
-  '@rollup/rollup-linux-x64-gnu@4.32.1':
+  '@rollup/rollup-linux-x64-gnu@4.34.1':
     optional: true
 
-  '@rollup/rollup-linux-x64-musl@4.32.1':
+  '@rollup/rollup-linux-x64-musl@4.34.1':
     optional: true
 
-  '@rollup/rollup-win32-arm64-msvc@4.32.1':
+  '@rollup/rollup-win32-arm64-msvc@4.34.1':
     optional: true
 
-  '@rollup/rollup-win32-ia32-msvc@4.32.1':
+  '@rollup/rollup-win32-ia32-msvc@4.34.1':
     optional: true
 
-  '@rollup/rollup-win32-x64-msvc@4.32.1':
+  '@rollup/rollup-win32-x64-msvc@4.34.1':
     optional: true
 
   '@sagold/json-pointer@5.1.2': {}
@@ -8183,6 +8184,8 @@ snapshots:
 
   '@types/geojson@7946.0.16': {}
 
+  '@types/hash-sum@1.0.2': {}
+
   '@types/hast@3.0.4':
     dependencies:
       '@types/unist': 3.0.3
@@ -8283,38 +8286,38 @@ snapshots:
 
   '@types/webxr@0.5.21': {}
 
-  '@uiw/codemirror-extensions-basic-setup@4.23.7(@codemirror/autocomplete@6.18.4)(@codemirror/commands@6.8.0)(@codemirror/language@6.10.8)(@codemirror/lint@6.8.4)(@codemirror/search@6.5.8)(@codemirror/state@6.5.1)(@codemirror/view@6.36.2)':
+  '@uiw/codemirror-extensions-basic-setup@4.23.7(@codemirror/autocomplete@6.18.4)(@codemirror/commands@6.8.0)(@codemirror/language@6.10.8)(@codemirror/lint@6.8.4)(@codemirror/search@6.5.8)(@codemirror/state@6.5.2)(@codemirror/view@6.36.2)':
     dependencies:
       '@codemirror/autocomplete': 6.18.4
       '@codemirror/commands': 6.8.0
       '@codemirror/language': 6.10.8
       '@codemirror/lint': 6.8.4
       '@codemirror/search': 6.5.8
-      '@codemirror/state': 6.5.1
+      '@codemirror/state': 6.5.2
       '@codemirror/view': 6.36.2
 
-  '@uiw/codemirror-theme-github@4.23.7(@codemirror/language@6.10.8)(@codemirror/state@6.5.1)(@codemirror/view@6.36.2)':
+  '@uiw/codemirror-theme-github@4.23.7(@codemirror/language@6.10.8)(@codemirror/state@6.5.2)(@codemirror/view@6.36.2)':
     dependencies:
-      '@uiw/codemirror-themes': 4.23.7(@codemirror/language@6.10.8)(@codemirror/state@6.5.1)(@codemirror/view@6.36.2)
+      '@uiw/codemirror-themes': 4.23.7(@codemirror/language@6.10.8)(@codemirror/state@6.5.2)(@codemirror/view@6.36.2)
     transitivePeerDependencies:
       - '@codemirror/language'
       - '@codemirror/state'
       - '@codemirror/view'
 
-  '@uiw/codemirror-themes@4.23.7(@codemirror/language@6.10.8)(@codemirror/state@6.5.1)(@codemirror/view@6.36.2)':
+  '@uiw/codemirror-themes@4.23.7(@codemirror/language@6.10.8)(@codemirror/state@6.5.2)(@codemirror/view@6.36.2)':
     dependencies:
       '@codemirror/language': 6.10.8
-      '@codemirror/state': 6.5.1
+      '@codemirror/state': 6.5.2
       '@codemirror/view': 6.36.2
 
-  '@uiw/react-codemirror@4.23.7(@babel/runtime@7.26.7)(@codemirror/autocomplete@6.18.4)(@codemirror/language@6.10.8)(@codemirror/lint@6.8.4)(@codemirror/search@6.5.8)(@codemirror/state@6.5.1)(@codemirror/theme-one-dark@6.1.2)(@codemirror/view@6.36.2)(codemirror@6.0.1)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)':
+  '@uiw/react-codemirror@4.23.7(@babel/runtime@7.26.7)(@codemirror/autocomplete@6.18.4)(@codemirror/language@6.10.8)(@codemirror/lint@6.8.4)(@codemirror/search@6.5.8)(@codemirror/state@6.5.2)(@codemirror/theme-one-dark@6.1.2)(@codemirror/view@6.36.2)(codemirror@6.0.1)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)':
     dependencies:
       '@babel/runtime': 7.26.7
       '@codemirror/commands': 6.8.0
-      '@codemirror/state': 6.5.1
+      '@codemirror/state': 6.5.2
       '@codemirror/theme-one-dark': 6.1.2
       '@codemirror/view': 6.36.2
-      '@uiw/codemirror-extensions-basic-setup': 4.23.7(@codemirror/autocomplete@6.18.4)(@codemirror/commands@6.8.0)(@codemirror/language@6.10.8)(@codemirror/lint@6.8.4)(@codemirror/search@6.5.8)(@codemirror/state@6.5.1)(@codemirror/view@6.36.2)
+      '@uiw/codemirror-extensions-basic-setup': 4.23.7(@codemirror/autocomplete@6.18.4)(@codemirror/commands@6.8.0)(@codemirror/language@6.10.8)(@codemirror/lint@6.8.4)(@codemirror/search@6.5.8)(@codemirror/state@6.5.2)(@codemirror/view@6.36.2)
       codemirror: 6.0.1
       react: 19.0.0
       react-dom: 19.0.0(react@19.0.0)
@@ -8420,10 +8423,10 @@ snapshots:
     dependencies:
       entities: 2.2.0
 
-  applesauce-accounts@0.0.0-next-20250131214402(typescript@5.7.3):
+  applesauce-accounts@0.0.0-next-20250203180810(typescript@5.7.3):
     dependencies:
       '@noble/hashes': 1.7.1
-      applesauce-signers: 0.0.0-next-20250131214402(typescript@5.7.3)
+      applesauce-signers: 0.0.0-next-20250203180810(typescript@5.7.3)
       nanoid: 5.0.9
       nostr-tools: 2.10.4(typescript@5.7.3)
       rxjs: 7.8.1
@@ -8431,13 +8434,13 @@ snapshots:
       - supports-color
       - typescript
 
-  applesauce-content@0.0.0-next-20250131214402(typescript@5.7.3):
+  applesauce-content@0.0.0-next-20250203180810(typescript@5.7.3):
     dependencies:
       '@cashu/cashu-ts': 2.0.0-rc1
       '@types/hast': 3.0.4
       '@types/mdast': 4.0.4
       '@types/unist': 3.0.3
-      applesauce-core: 0.0.0-next-20250131214402(typescript@5.7.3)
+      applesauce-core: 0.0.0-next-20250203180810(typescript@5.7.3)
       mdast-util-find-and-replace: 3.0.2
       nostr-tools: 2.10.4(typescript@5.7.3)
       remark: 15.0.1
@@ -8448,7 +8451,7 @@ snapshots:
       - supports-color
       - typescript
 
-  applesauce-core@0.0.0-next-20250131214402(typescript@5.7.3):
+  applesauce-core@0.0.0-next-20250203180810(typescript@5.7.3):
     dependencies:
       '@scure/base': 1.2.4
       debug: 4.4.0
@@ -8476,19 +8479,19 @@ snapshots:
       - supports-color
       - typescript
 
-  applesauce-factory@0.0.0-next-20250131214402(typescript@5.7.3):
+  applesauce-factory@0.0.0-next-20250203180810(typescript@5.7.3):
     dependencies:
-      applesauce-content: 0.0.0-next-20250131214402(typescript@5.7.3)
-      applesauce-core: 0.0.0-next-20250131214402(typescript@5.7.3)
+      applesauce-content: 0.0.0-next-20250203180810(typescript@5.7.3)
+      applesauce-core: 0.0.0-next-20250203180810(typescript@5.7.3)
       nanoid: 5.0.9
       nostr-tools: 2.10.4(typescript@5.7.3)
     transitivePeerDependencies:
       - supports-color
       - typescript
 
-  applesauce-loaders@0.0.0-next-20250131214402(typescript@5.7.3):
+  applesauce-loaders@0.0.0-next-20250203180810(typescript@5.7.3):
     dependencies:
-      applesauce-core: 0.0.0-next-20250131214402(typescript@5.7.3)
+      applesauce-core: 0.0.0-next-20250203180810(typescript@5.7.3)
       nanoid: 5.0.9
       nostr-tools: 2.10.4(typescript@5.7.3)
       rx-nostr: 3.5.0
@@ -8507,12 +8510,12 @@ snapshots:
       - supports-color
       - typescript
 
-  applesauce-react@0.0.0-next-20250131214402(typescript@5.7.3):
+  applesauce-react@0.0.0-next-20250203180810(typescript@5.7.3):
     dependencies:
-      applesauce-accounts: 0.0.0-next-20250131214402(typescript@5.7.3)
-      applesauce-content: 0.0.0-next-20250131214402(typescript@5.7.3)
-      applesauce-core: 0.0.0-next-20250131214402(typescript@5.7.3)
-      applesauce-factory: 0.0.0-next-20250131214402(typescript@5.7.3)
+      applesauce-accounts: 0.0.0-next-20250203180810(typescript@5.7.3)
+      applesauce-content: 0.0.0-next-20250203180810(typescript@5.7.3)
+      applesauce-core: 0.0.0-next-20250203180810(typescript@5.7.3)
+      applesauce-factory: 0.0.0-next-20250203180810(typescript@5.7.3)
       nostr-tools: 2.10.4(typescript@5.7.3)
       react: 18.3.1
       rxjs: 7.8.1
@@ -8520,12 +8523,12 @@ snapshots:
       - supports-color
       - typescript
 
-  applesauce-signers@0.0.0-next-20250131214402(typescript@5.7.3):
+  applesauce-signers@0.0.0-next-20250203180810(typescript@5.7.3):
     dependencies:
       '@noble/hashes': 1.7.1
       '@noble/secp256k1': 1.7.1
       '@scure/base': 1.2.4
-      applesauce-core: 0.0.0-next-20250131214402(typescript@5.7.3)
+      applesauce-core: 0.0.0-next-20250203180810(typescript@5.7.3)
       debug: 4.4.0
       nanoid: 5.0.9
       nostr-tools: 2.10.4(typescript@5.7.3)
@@ -8625,7 +8628,7 @@ snapshots:
     dependencies:
       bare-events: 2.5.4
       bare-path: 3.0.0
-      bare-stream: 2.6.4(bare-events@2.5.4)
+      bare-stream: 2.6.5(bare-events@2.5.4)
     transitivePeerDependencies:
       - bare-buffer
     optional: true
@@ -8638,7 +8641,7 @@ snapshots:
       bare-os: 3.4.0
     optional: true
 
-  bare-stream@2.6.4(bare-events@2.5.4):
+  bare-stream@2.6.5(bare-events@2.5.4):
     dependencies:
       streamx: 2.22.0
     optionalDependencies:
@@ -8680,7 +8683,7 @@ snapshots:
 
   blossom-client-sdk@0.0.0-next-20250124155258:
     dependencies:
-      '@cashu/cashu-ts': 2.1.0
+      '@cashu/cashu-ts': 2.2.0
       '@noble/hashes': 1.7.1
 
   blossom-client-sdk@0.9.1:
@@ -8897,11 +8900,11 @@ snapshots:
       strip-ansi: 6.0.1
       wrap-ansi: 7.0.0
 
-  codemirror-json-schema@0.7.9(@codemirror/language@6.10.8)(@codemirror/lint@6.8.4)(@codemirror/state@6.5.1)(@codemirror/view@6.36.2)(@lezer/common@1.2.3):
+  codemirror-json-schema@0.7.9(@codemirror/language@6.10.8)(@codemirror/lint@6.8.4)(@codemirror/state@6.5.2)(@codemirror/view@6.36.2)(@lezer/common@1.2.3):
     dependencies:
       '@codemirror/language': 6.10.8
       '@codemirror/lint': 6.8.4
-      '@codemirror/state': 6.5.1
+      '@codemirror/state': 6.5.2
       '@codemirror/view': 6.36.2
       '@lezer/common': 1.2.3
       '@sagold/json-pointer': 5.1.2
@@ -8923,7 +8926,7 @@ snapshots:
   codemirror-json5@1.0.3:
     dependencies:
       '@codemirror/language': 6.10.8
-      '@codemirror/state': 6.5.1
+      '@codemirror/state': 6.5.2
       '@codemirror/view': 6.36.2
       '@lezer/common': 1.2.3
       '@lezer/highlight': 1.2.1
@@ -8944,7 +8947,7 @@ snapshots:
       '@codemirror/language': 6.10.8
       '@codemirror/lint': 6.8.4
       '@codemirror/search': 6.5.8
-      '@codemirror/state': 6.5.1
+      '@codemirror/state': 6.5.2
       '@codemirror/view': 6.36.2
 
   color-convert@1.9.3:
@@ -9119,7 +9122,7 @@ snapshots:
   cosmiconfig@7.1.0:
     dependencies:
       '@types/parse-json': 4.0.2
-      import-fresh: 3.3.0
+      import-fresh: 3.3.1
       parse-json: 5.2.0
       path-type: 4.0.0
       yaml: 1.10.2
@@ -10110,7 +10113,7 @@ snapshots:
 
   immutability-helper@3.1.1: {}
 
-  import-fresh@3.3.0:
+  import-fresh@3.3.1:
     dependencies:
       parent-module: 1.0.1
       resolve-from: 4.0.0
@@ -11908,29 +11911,29 @@ snapshots:
     optionalDependencies:
       fsevents: 2.3.3
 
-  rollup@4.32.1:
+  rollup@4.34.1:
     dependencies:
       '@types/estree': 1.0.6
     optionalDependencies:
-      '@rollup/rollup-android-arm-eabi': 4.32.1
-      '@rollup/rollup-android-arm64': 4.32.1
-      '@rollup/rollup-darwin-arm64': 4.32.1
-      '@rollup/rollup-darwin-x64': 4.32.1
-      '@rollup/rollup-freebsd-arm64': 4.32.1
-      '@rollup/rollup-freebsd-x64': 4.32.1
-      '@rollup/rollup-linux-arm-gnueabihf': 4.32.1
-      '@rollup/rollup-linux-arm-musleabihf': 4.32.1
-      '@rollup/rollup-linux-arm64-gnu': 4.32.1
-      '@rollup/rollup-linux-arm64-musl': 4.32.1
-      '@rollup/rollup-linux-loongarch64-gnu': 4.32.1
-      '@rollup/rollup-linux-powerpc64le-gnu': 4.32.1
-      '@rollup/rollup-linux-riscv64-gnu': 4.32.1
-      '@rollup/rollup-linux-s390x-gnu': 4.32.1
-      '@rollup/rollup-linux-x64-gnu': 4.32.1
-      '@rollup/rollup-linux-x64-musl': 4.32.1
-      '@rollup/rollup-win32-arm64-msvc': 4.32.1
-      '@rollup/rollup-win32-ia32-msvc': 4.32.1
-      '@rollup/rollup-win32-x64-msvc': 4.32.1
+      '@rollup/rollup-android-arm-eabi': 4.34.1
+      '@rollup/rollup-android-arm64': 4.34.1
+      '@rollup/rollup-darwin-arm64': 4.34.1
+      '@rollup/rollup-darwin-x64': 4.34.1
+      '@rollup/rollup-freebsd-arm64': 4.34.1
+      '@rollup/rollup-freebsd-x64': 4.34.1
+      '@rollup/rollup-linux-arm-gnueabihf': 4.34.1
+      '@rollup/rollup-linux-arm-musleabihf': 4.34.1
+      '@rollup/rollup-linux-arm64-gnu': 4.34.1
+      '@rollup/rollup-linux-arm64-musl': 4.34.1
+      '@rollup/rollup-linux-loongarch64-gnu': 4.34.1
+      '@rollup/rollup-linux-powerpc64le-gnu': 4.34.1
+      '@rollup/rollup-linux-riscv64-gnu': 4.34.1
+      '@rollup/rollup-linux-s390x-gnu': 4.34.1
+      '@rollup/rollup-linux-x64-gnu': 4.34.1
+      '@rollup/rollup-linux-x64-musl': 4.34.1
+      '@rollup/rollup-win32-arm64-msvc': 4.34.1
+      '@rollup/rollup-win32-ia32-msvc': 4.34.1
+      '@rollup/rollup-win32-x64-msvc': 4.34.1
       fsevents: 2.3.3
 
   rtl-css-js@1.16.1:
@@ -12458,8 +12461,6 @@ snapshots:
 
   tiny-invariant@1.3.3: {}
 
-  tiny-lru@11.2.11: {}
-
   tinycolor2@1.6.0: {}
 
   tinyglobby@0.2.10:
@@ -12747,7 +12748,7 @@ snapshots:
     dependencies:
       esbuild: 0.21.5
       postcss: 8.5.1
-      rollup: 4.32.1
+      rollup: 4.34.1
     optionalDependencies:
       '@types/node': 22.13.0
       fsevents: 2.3.3

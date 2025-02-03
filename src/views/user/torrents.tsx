@@ -48,7 +48,7 @@ export default function UserTorrentsTab() {
           </Table>
         </TableContainer>
 
-        <TimelineActionAndStatus timeline={loader} />
+        <TimelineActionAndStatus loader={loader} />
       </IntersectionObserverProvider>
     </SimpleView>
   );

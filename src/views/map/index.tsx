@@ -82,8 +82,7 @@ export default function MapView() {
     setFocused(event.id);
   }, []);
 
-  const events = useObservable(loader.timeline) ?? [];
-  useEventMarkers(events, map, handleMarkerClick);
+  useEventMarkers(timeline, map, handleMarkerClick);
 
   return (
     <Flex overflow={{ lg: "hidden" }} h={{ lg: "full" }} direction={{ base: "column-reverse", lg: "row" }}>
@@ -98,8 +97,8 @@ export default function MapView() {
         </Flex>
 
         <Flex overflowY="auto" overflowX="hidden" gap="2" direction="column" h="full">
-          <MapTimeline timeline={loader} focused={focused} />
-          {cells.length > 0 && <TimelineActionAndStatus timeline={loader} />}
+          <MapTimeline timeline={timeline} focused={focused} />
+          {cells.length > 0 && <TimelineActionAndStatus loader={loader} />}
         </Flex>
       </Flex>
 

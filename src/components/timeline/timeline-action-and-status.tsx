@@ -1,11 +1,10 @@
 import { Alert, AlertIcon, Button, Spinner } from "@chakra-ui/react";
+import { TimelineLoader } from "applesauce-loaders";
 import { useObservable } from "applesauce-react/hooks";
 
-import TimelineLoader from "../../classes/timeline-loader";
-
-export default function TimelineActionAndStatus({ timeline }: { timeline: TimelineLoader }) {
-  const loading = useObservable(timeline.loading);
-  const complete = useObservable(timeline.complete);
+export default function TimelineActionAndStatus({ loader }: { loader?: TimelineLoader }) {
+  const loading = useObservable(loader?.loading$);
+  const complete = false;
 
   if (complete) {
     return (
@@ -20,15 +19,10 @@ export default function TimelineActionAndStatus({ timeline }: { timeline: Timeli
     return <Spinner ml="auto" mr="auto" mt="8" mb="8" flexShrink={0} />;
   }
 
+  if (!loader) return null;
+
   return (
-    <Button
-      onClick={() => timeline.loadAllNextChunks()}
-      flexShrink={0}
-      size="lg"
-      mx="auto"
-      colorScheme="primary"
-      my="4"
-    >
+    <Button onClick={() => loader?.next(-Infinity)} flexShrink={0} size="lg" mx="auto" colorScheme="primary" my="4">
       Load More
     </Button>
   );

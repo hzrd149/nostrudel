@@ -1,9 +1,9 @@
 import { PropsWithChildren, createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { kinds } from "nostr-tools";
 import { useActiveAccount } from "applesauce-react/hooks";
+import { TimelineLoader } from "applesauce-loaders";
 
 import { useReadRelays } from "../../hooks/use-client-relays";
-import TimelineLoader from "../../classes/timeline-loader";
 import { NostrEvent } from "../../types/nostr-event";
 import useClientSideMuteFilter from "../../hooks/use-client-side-mute-filter";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
@@ -13,7 +13,7 @@ import AccountNotifications from "../../classes/notifications";
 import { truncateId } from "../../helpers/string";
 
 type NotificationTimelineContextType = {
-  timeline: TimelineLoader;
+  timeline?: TimelineLoader;
   notifications?: AccountNotifications;
 };
 const NotificationTimelineContext = createContext<NotificationTimelineContextType | null>(null);

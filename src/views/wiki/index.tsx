@@ -78,7 +78,7 @@ export default function WikiHomeView() {
             </LinkBox>
           ))}
       </SimpleGrid>
-      <TimelineActionAndStatus timeline={loader} />
+      <TimelineActionAndStatus loader={loader} />
     </VerticalPageLayout>
   );
 }

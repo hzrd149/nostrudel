@@ -58,7 +58,7 @@ export default function UserReactionsTab() {
         <VerticalPageLayout>
           {reactions?.map((event) => <Reaction key={event.id} reaction={event} />)}
 
-          <TimelineActionAndStatus timeline={loader} />
+          <TimelineActionAndStatus loader={loader} />
         </VerticalPageLayout>
       </TrustProvider>
     </IntersectionObserverProvider>

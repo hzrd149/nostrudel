@@ -1,8 +1,7 @@
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { Card, CardBody, Flex, LinkBox, LinkOverlay, Text } from "@chakra-ui/react";
 import { Link as RouterLink, useLocation } from "react-router-dom";
-import { useObservable } from "applesauce-react/hooks";
-import { nip19 } from "nostr-tools";
+import { kinds, nip19 } from "nostr-tools";
 
 import UserAvatar from "../../components/user/user-avatar";
 import RequireActiveAccount from "../../components/router/require-active-account";
@@ -14,7 +13,6 @@ import { KnownConversation, groupIntoConversations, hasResponded, identifyConver
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import TimelineActionAndStatus from "../../components/timeline/timeline-action-and-status";
-import { useDMTimeline } from "../../providers/global/dms-provider";
 import UserName from "../../components/user/user-name";
 import { NostrEvent } from "../../types/nostr-event";
 import { CheckIcon } from "../../components/icons";
@@ -22,6 +20,34 @@ import UserDnsIdentity from "../../components/user/user-dns-identity";
 import useEventIntersectionRef from "../../hooks/use-event-intersection-ref";
 import { useKind4Decrypt } from "../../hooks/use-kind4-decryption";
 import ContainedParentView from "../../components/layout/presets/contained-parent-view";
+import { truncateId } from "../../helpers/string";
+import useTimelineLoader from "../../hooks/use-timeline-loader";
+import useUserMailboxes from "../../hooks/use-user-mailboxes";
+import useClientSideMuteFilter from "../../hooks/use-client-side-mute-filter";
+
+export function useDirectMessagesTimeline(pubkey?: string) {
+  const userMuteFilter = useClientSideMuteFilter();
+  const eventFilter = useCallback(
+    (event: NostrEvent) => {
+      if (userMuteFilter(event)) return false;
+      return true;
+    },
+    [userMuteFilter],
+  );
+  const mailboxes = useUserMailboxes(pubkey);
+
+  return useTimelineLoader(
+    `${truncateId(pubkey ?? "anon")}-dms`,
+    mailboxes?.inboxes ?? [],
+    pubkey
+      ? [
+          { authors: [pubkey], kinds: [kinds.EncryptedDirectMessage] },
+          { "#p": [pubkey], kinds: [kinds.EncryptedDirectMessage] },
+        ]
+      : undefined,
+    { eventFilter },
+  );
+}
 
 function MessagePreview({ message, pubkey }: { message: NostrEvent; pubkey: string }) {
   const ref = useEventIntersectionRef(message);
@@ -64,9 +90,8 @@ function MessagesHomePage() {
   const { people } = usePeopleListContext();
 
   const account = useActiveAccount()!;
-  const timeline = useDMTimeline();
+  const { timeline: messages, loader } = useDirectMessagesTimeline(account.pubkey);
 
-  const messages = useObservable(timeline.timeline) ?? [];
   const conversations = useMemo(() => {
     const conversations = groupIntoConversations(messages).map((c) => identifyConversation(c, account.pubkey));
     const filtered = conversations.filter((conversation) =>
@@ -76,7 +101,7 @@ function MessagesHomePage() {
     return filtered.sort((a, b) => b.messages[0].created_at - a.messages[0].created_at);
   }, [messages, people, account.pubkey]);
 
-  const callback = useTimelineCurserIntersectionCallback(timeline);
+  const callback = useTimelineCurserIntersectionCallback(loader);
 
   return (
     <ContainedParentView path="/messages" width="md">
@@ -88,7 +113,7 @@ function MessagesHomePage() {
           <ConversationCard key={conversation.pubkeys.join("-")} conversation={conversation} />
         ))}
       </IntersectionObserverProvider>
-      <TimelineActionAndStatus timeline={timeline} />
+      <TimelineActionAndStatus loader={loader} />
     </ContainedParentView>
   );
 }

@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { LRU } from "tiny-lru";
+import { LRU } from "applesauce-core/helpers";
 
 const cache = new LRU<Map<string, number>>(10);
 

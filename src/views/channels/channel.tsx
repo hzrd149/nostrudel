@@ -1,5 +1,4 @@
 import { memo, useCallback, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
 import { Button, ButtonGroup, Flex, Spinner, useDisclosure } from "@chakra-ui/react";
 import { kinds } from "nostr-tools";
 import { useStoreQuery } from "applesauce-react/hooks";
@@ -17,7 +16,6 @@ import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import ThreadsProvider from "../../providers/local/thread-provider";
-import TimelineLoader from "../../classes/timeline-loader";
 import { groupMessages } from "../../helpers/nostr/dms";
 import ChannelMessageBlock from "./components/channel-message-block";
 import TimelineActionAndStatus from "../../components/timeline/timeline-action-and-status";
@@ -28,7 +26,7 @@ import { truncateId } from "../../helpers/string";
 import ContainedSimpleView from "../../components/layout/presets/contained-simple-view";
 import ChannelImage from "./components/channel-image";
 
-const ChannelChatLog = memo(({ timeline, channel }: { timeline: TimelineLoader; channel: NostrEvent }) => {
+const ChannelChatLog = memo(({ channel }: { channel: NostrEvent }) => {
   const messages = useStoreQuery(ChannelMessagesQuery, [channel]) ?? [];
   const mutes = useStoreQuery(ChannelMutedQuery, [channel]);
   const hidden = useStoreQuery(ChannelHiddenQuery, [channel]);
@@ -55,7 +53,6 @@ const ChannelChatLog = memo(({ timeline, channel }: { timeline: TimelineLoader; 
 });
 
 function ChannelPage({ channel }: { channel: NostrEvent }) {
-  const navigate = useNavigate();
   const relays = useReadRelays();
   const drawer = useDisclosure();
 
@@ -81,7 +78,7 @@ function ChannelPage({ channel }: { channel: NostrEvent }) {
   const callback = useTimelineCurserIntersectionCallback(loader);
 
   return (
-    <ThreadsProvider timeline={loader}>
+    <ThreadsProvider messages={timeline}>
       <IntersectionObserverProvider callback={callback}>
         <ContainedSimpleView
           reverse
@@ -100,8 +97,8 @@ function ChannelPage({ channel }: { channel: NostrEvent }) {
           }
           bottom={<ChannelMessageForm channel={channel} p="2" />}
         >
-          <ChannelChatLog timeline={loader} channel={channel} />
-          <TimelineActionAndStatus timeline={loader} />
+          <ChannelChatLog channel={channel} />
+          <TimelineActionAndStatus loader={loader} />
         </ContainedSimpleView>
         {drawer.isOpen && <ChannelMetadataDrawer isOpen onClose={drawer.onClose} channel={channel} size="lg" />}
       </IntersectionObserverProvider>

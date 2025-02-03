@@ -201,7 +201,7 @@ function NotificationsPage() {
         </FocusedContext.Provider>
       </IntersectionObserverProvider>
 
-      <TimelineActionAndStatus timeline={timeline} />
+      <TimelineActionAndStatus loader={timeline} />
     </VerticalPageLayout>
   );
 }

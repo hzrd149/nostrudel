@@ -53,7 +53,7 @@ function BrowseRelaySetsPage() {
       <IntersectionObserverProvider callback={callback}>
         {relaySets?.map((set) => <RelaySetCard key={getEventUID(set)} set={set} />)}
       </IntersectionObserverProvider>
-      <TimelineActionAndStatus timeline={loader} />
+      <TimelineActionAndStatus loader={loader} />
     </VerticalPageLayout>
   );
 }

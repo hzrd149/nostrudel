@@ -34,7 +34,7 @@ export default function UserStreamsTab() {
             <StreamCard key={getEventUID(stream)} stream={stream} />
           ))}
         </SimpleGrid>
-        <TimelineActionAndStatus timeline={loader} />
+        <TimelineActionAndStatus loader={loader} />
       </IntersectionObserverProvider>
     </SimpleView>
   );

@@ -132,7 +132,7 @@ const UserZapsTab = () => {
           </ErrorBoundary>
         ))}
 
-        <TimelineActionAndStatus timeline={loader} />
+        <TimelineActionAndStatus loader={loader} />
       </VerticalPageLayout>
     </IntersectionObserverProvider>
   );

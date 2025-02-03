@@ -39,7 +39,7 @@ function VideosPage() {
           ))}
         </SimpleGrid>
       </IntersectionObserverProvider>
-      <TimelineActionAndStatus timeline={loader} />
+      <TimelineActionAndStatus loader={loader} />
     </VerticalPageLayout>
   );
 }

@@ -1,34 +1,23 @@
-import TimelineLoader from "../classes/timeline-loader";
+import { LRU } from "applesauce-core/helpers";
+import { TimelessFilter, TimelineLoader } from "applesauce-loaders";
+
+import rxNostr from "./rx-nostr";
 import { logger } from "../helpers/debug";
 
 const MAX_CACHE = 30;
+const BATCH_LIMIT = 100;
 
 class TimelineCacheService {
-  private timelines = new Map<string, TimelineLoader>();
-  private cacheQueue: string[] = [];
-  private log = logger.extend("TimelineCacheService");
+  protected timelines = new LRU<TimelineLoader>(MAX_CACHE);
+  protected log = logger.extend("TimelineCacheService");
 
-  createTimeline(key: string) {
+  createTimeline(key: string, relays: string[], filters: TimelessFilter[]) {
     let timeline = this.timelines.get(key);
-    if (!timeline) {
+
+    if (!timeline && relays.length > 0 && filters.length > 0) {
       this.log(`Creating ${key}`);
-      timeline = new TimelineLoader(key);
+      timeline = new TimelineLoader(rxNostr, TimelineLoader.simpleFilterMap(relays, filters), { limit: BATCH_LIMIT });
       this.timelines.set(key, timeline);
-    }
-
-    // add or move the timelines key to the top of the queue
-    this.cacheQueue = this.cacheQueue.filter((p) => p !== key).concat(key);
-
-    // remove any timelines at the end of the queue
-    while (this.cacheQueue.length > MAX_CACHE) {
-      const deleteKey = this.cacheQueue.shift();
-      if (!deleteKey) break;
-      const deadTimeline = this.timelines.get(deleteKey);
-      if (deadTimeline) {
-        this.log(`Destroying ${deadTimeline.name}`);
-        this.timelines.delete(deleteKey);
-        deadTimeline.destroy();
-      }
     }
 
     return timeline;

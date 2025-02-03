@@ -1,8 +1,6 @@
 import { PropsWithChildren, createContext, useCallback, useContext, useMemo } from "react";
 import { NostrEvent } from "nostr-tools";
-import { useObservable } from "applesauce-react/hooks";
 
-import TimelineLoader from "../../classes/timeline-loader";
 import { eventStore } from "../../services/event-store";
 
 export type Thread = {
@@ -25,9 +23,7 @@ export function useThreadsContext() {
   return useContext(ThreadsContext);
 }
 
-export default function ThreadsProvider({ timeline, children }: { timeline: TimelineLoader } & PropsWithChildren) {
-  const messages = useObservable(timeline.timeline) ?? [];
-
+export default function ThreadsProvider({ messages, children }: { messages: NostrEvent[] } & PropsWithChildren) {
   const threads = useMemo(() => {
     const grouped: Record<string, Thread> = {};
     for (const message of messages) {

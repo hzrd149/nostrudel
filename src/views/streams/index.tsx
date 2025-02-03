@@ -7,7 +7,6 @@ import useTimelineLoader from "../../hooks/use-timeline-loader";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import StreamCard from "./components/stream-card";
-import useRelaysChanged from "../../hooks/use-relays-changed";
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
 import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
 import TimelineActionAndStatus from "../../components/timeline/timeline-action-and-status";
@@ -53,8 +52,6 @@ function StreamsPage() {
     eventFilter,
   });
   const callback = useTimelineCurserIntersectionCallback(loader);
-
-  useRelaysChanged(relays, () => loader.reset());
 
   const { streams: favorites } = useFavoriteStreams();
 
@@ -104,7 +101,7 @@ function StreamsPage() {
             </SimpleGrid>
           </>
         )}
-        <TimelineActionAndStatus timeline={loader} />
+        <TimelineActionAndStatus loader={loader} />
       </IntersectionObserverProvider>
     </VerticalPageLayout>
   );

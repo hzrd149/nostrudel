@@ -1,8 +1,8 @@
 import { kinds } from "nostr-tools";
-import { RelayMode } from "../../classes/relay";
 import { DraftNostrEvent, NostrEvent, RTag, Tag, isRTag } from "../../types/nostr-event";
 import { safeRelayUrl } from "../relay";
 import { cloneEvent } from "./event";
+import { RelayMode } from "../../services/app-relays";
 
 /** fixes or removes any bad r tags */
 export function cleanRTags(tags: Tag[]) {

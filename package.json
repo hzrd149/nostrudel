@@ -19,7 +19,7 @@
     "cap-sync-version": "pnpm dlx capacitor-set-version . -v $(jq -r .version package.json) -b 1"
   },
   "dependencies": {
-    "@cashu/cashu-ts": "^2.1.0",
+    "@cashu/cashu-ts": "^2.2.0",
     "@chakra-ui/anatomy": "^2.3.4",
     "@chakra-ui/breakpoint-utils": "^2.0.8",
     "@chakra-ui/icons": "^2.2.4",
@@ -73,6 +73,7 @@
     "framer-motion": "^10.18.0",
     "gif-picker-react": "^1.4.0",
     "handlebars": "^4.7.8",
+    "hash-sum": "^2.0.0",
     "hls.js": "^1.5.20",
     "i18n-iso-countries": "^7.13.0",
     "idb": "^8.0.2",
@@ -120,7 +121,6 @@
     "three": "^0.170.0",
     "three-spritetext": "^1.9.4",
     "three-stdlib": "^2.35.13",
-    "tiny-lru": "^11.2.11",
     "unified": "^11.0.5",
     "uuid": "^11.0.5",
     "vite-plugin-funding": "^0.1.0",
@@ -146,6 +146,7 @@
     "@types/debug": "^4.1.12",
     "@types/dom-serial": "^1.0.6",
     "@types/file-saver": "^2.0.7",
+    "@types/hash-sum": "^1.0.2",
     "@types/identicon.js": "^2.3.5",
     "@types/json-schema": "^7.0.15",
     "@types/leaflet": "^1.9.16",

@@ -61,7 +61,7 @@ function ArticlesHomePage() {
             <ArticleCard article={article} />
           </ErrorBoundary>
         ))}
-        <TimelineActionAndStatus timeline={loader} />
+        <TimelineActionAndStatus loader={loader} />
       </IntersectionObserverProvider>
     </VerticalPageLayout>
   );

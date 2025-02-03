@@ -113,7 +113,7 @@ function FilesHomePage() {
           </Table>
         </TableContainer>
       </IntersectionObserverProvider>
-      <TimelineActionAndStatus timeline={loader} />
+      <TimelineActionAndStatus loader={loader} />
     </VerticalPageLayout>
   );
 }

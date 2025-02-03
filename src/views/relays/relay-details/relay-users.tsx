@@ -55,7 +55,7 @@ export default function RelayUsersTab({ relay }: { relay: string }) {
           {lists?.map((list) => <UserCard key={getEventUID(list)} pubkey={list.pubkey} list={list} />)}
         </SimpleGrid>
       </IntersectionObserverProvider>
-      <TimelineActionAndStatus timeline={loader} />
+      <TimelineActionAndStatus loader={loader} />
     </Flex>
   );
 }

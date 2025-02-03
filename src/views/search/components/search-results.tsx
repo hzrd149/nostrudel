@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Filter, kinds, NostrEvent } from "nostr-tools";
 import { AbstractRelay, Subscription, SubscriptionParams } from "nostr-tools/abstract-relay";
 import { Alert, AlertDescription, AlertIcon, AlertTitle, Heading, Spinner, Text } from "@chakra-ui/react";
-import { LRU } from "tiny-lru";
+import { LRU } from "applesauce-core/helpers";
 
 import relayPoolService from "../../../services/relay-pool";
 import ProfileSearchResults from "./profile-results";
