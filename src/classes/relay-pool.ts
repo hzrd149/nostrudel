@@ -7,7 +7,6 @@ import { logger } from "../helpers/debug";
 import { safeRelayUrl, validateRelayURL } from "../helpers/relay";
 import SuperMap from "./super-map";
 import verifyEventMethod from "../services/verify-event";
-import processManager from "../services/process-manager";
 import localSettings from "../services/local-settings";
 
 export type Notice = {
@@ -229,13 +228,7 @@ export default class RelayPool implements IConnectionPool {
       // don't disconnect from authenticated relays
       if (this.authenticated.get(relay).value) continue;
 
-      let disconnect = true;
-      for (const process of processManager.processes) {
-        if (process.active && process.relays.has(relay)) {
-          disconnect = false;
-          break;
-        }
-      }
+      let disconnect = false;
 
       if (disconnect) {
         this.log(`No active processes using ${relay.url}, disconnecting`);

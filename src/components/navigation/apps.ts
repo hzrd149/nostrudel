@@ -260,6 +260,7 @@ export const externalTools: App[] = [
   },
 ];
 
-export const defaultFavoriteApps = ["launchpad", "notes", "discover", "notifications", "messages", "search"];
+export const defaultAnonFavoriteApps = ["notes", "discover", "search", "articles", "streams"];
+export const defaultUserFavoriteApps = ["launchpad", "notes", "discover", "notifications", "messages", "search"];
 
 export const allApps = [...internalApps, ...internalTools, ...externalTools];

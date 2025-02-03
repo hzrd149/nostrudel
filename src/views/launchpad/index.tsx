@@ -5,7 +5,7 @@ import RequireActiveAccount from "../../components/router/require-active-account
 import { ErrorBoundary } from "../../components/error-boundary";
 import FeedsCard from "./components/feeds-card";
 import SearchForm from "./components/search-form";
-import DMsCard from "./components/dms-card";
+import DMsCard from "./components/messages-card";
 import NotificationsCard from "./components/notifications-card";
 import ToolsCard from "./components/tools-card";
 import StreamsCard from "./components/streams-card";

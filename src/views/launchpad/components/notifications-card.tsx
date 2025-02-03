@@ -1,22 +1,44 @@
 import { useCallback } from "react";
 import { Button, Card, CardBody, CardHeader, CardProps, Heading, Link } from "@chakra-ui/react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
-import { useObservable } from "applesauce-react/hooks";
-import { NostrEvent } from "nostr-tools";
-import { getEventUID } from "nostr-idb";
+import { useActiveAccount, useObservable } from "applesauce-react/hooks";
+import { getEventUID } from "applesauce-core/helpers";
+import { kinds, NostrEvent } from "nostr-tools";
 
 import KeyboardShortcut from "../../../components/keyboard-shortcut";
-import { useNotifications } from "../../../providers/global/notifications-provider";
-import { NotificationType, NotificationTypeSymbol } from "../../../classes/notifications";
 import NotificationItem from "../../notifications/components/notification-item";
 import { ErrorBoundary } from "../../../components/error-boundary";
+import notifications$, { NotificationType, NotificationTypeSymbol } from "../../../services/notifications";
+import useForwardSubscription from "../../../hooks/use-forward-subscription";
+import useUserMailboxes from "../../../hooks/use-user-mailboxes";
+import { useReadRelays } from "../../../hooks/use-client-relays";
 
 export default function NotificationsCard({ ...props }: Omit<CardProps, "children">) {
   const navigate = useNavigate();
-  const { notifications } = useNotifications();
+
+  const account = useActiveAccount();
+  const mailboxes = useUserMailboxes(account?.pubkey);
+  const readRelays = useReadRelays(mailboxes?.inboxes);
+  useForwardSubscription(
+    readRelays,
+    account
+      ? {
+          "#p": [account.pubkey],
+          kinds: [
+            kinds.ShortTextNote,
+            kinds.Repost,
+            kinds.GenericRepost,
+            kinds.Reaction,
+            kinds.Zap,
+            kinds.LongFormArticle,
+            kinds.EncryptedDirectMessage,
+          ],
+        }
+      : undefined,
+  );
 
   const events =
-    useObservable(notifications?.timeline)?.filter(
+    useObservable(notifications$)?.filter(
       (event) =>
         event[NotificationTypeSymbol] === NotificationType.Mention ||
         event[NotificationTypeSymbol] === NotificationType.Reply ||

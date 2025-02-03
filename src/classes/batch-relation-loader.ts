@@ -6,9 +6,6 @@ import { createDefer, Deferred } from "applesauce-core/promise";
 import { Subject } from "rxjs";
 
 import PersistentSubscription from "./persistent-subscription";
-import Process from "./process";
-import processManager from "../services/process-manager";
-import Dataflow04 from "../components/icons/dataflow-04";
 import SuperMap from "./super-map";
 import { eventStore } from "../services/event-store";
 
@@ -16,7 +13,6 @@ import { eventStore } from "../services/event-store";
 export default class BatchRelationLoader {
   kinds: number[];
   relay: AbstractRelay;
-  process: Process;
 
   requested = new Set<string>();
   /** event id / coordinate -> event id -> event */
@@ -34,19 +30,16 @@ export default class BatchRelationLoader {
 
   log: Debugger;
 
+  active = false;
   constructor(relay: AbstractRelay, kinds: number[], log?: Debugger) {
     this.relay = relay;
     this.kinds = kinds;
     this.log = log || debug("BatchRelationLoader");
-    this.process = new Process("BatchRelationLoader", this, [relay]);
-    this.process.icon = Dataflow04;
-    processManager.registerProcess(this.process);
 
     this.subscription = new PersistentSubscription(this.relay, {
       onevent: (event) => this.handleEvent(event),
       oneose: () => this.handleEOSE(),
     });
-    this.process.addChild(this.subscription.process);
   }
 
   requestEvents(uid: string): Promise<Map<string, NostrEvent>> {
@@ -70,9 +63,9 @@ export default class BatchRelationLoader {
   requestUpdate = _throttle(
     () => {
       // don't do anything if the subscription is already running
-      if (this.process.active) return;
+      if (this.active) return;
 
-      this.process.active = true;
+      this.active = true;
       this.update();
     },
     500,
@@ -106,7 +99,7 @@ export default class BatchRelationLoader {
 
     // reset
     this.pending.clear();
-    this.process.active = false;
+    this.active = false;
 
     // do next request or close the subscription
     if (this.next.size > 0) this.requestUpdate();
@@ -132,7 +125,7 @@ export default class BatchRelationLoader {
       }
 
       try {
-        this.process.active = true;
+        this.active = true;
         this.subscription.filters = [];
         if (ids.length > 0) this.subscription.filters.push({ "#e": ids, kinds: this.kinds });
         if (cords.length > 0) this.subscription.filters.push({ "#a": cords, kinds: this.kinds });
@@ -140,18 +133,16 @@ export default class BatchRelationLoader {
         await this.subscription.update();
       } catch (error) {
         if (error instanceof Error) this.log(`Failed to update subscription`, error.message);
-        this.process.active = false;
+        this.active = false;
       }
     } else {
       this.log("Closing");
       this.subscription.close();
-      this.process.active = false;
+      this.active = false;
     }
   }
 
   destroy() {
     this.subscription.destroy();
-    this.process.remove();
-    processManager.unregisterProcess(this.process);
   }
 }

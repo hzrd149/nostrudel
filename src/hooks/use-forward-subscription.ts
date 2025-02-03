@@ -12,14 +12,6 @@ export default function useForwardSubscription(relays: string[], filters?: Filte
   const id = useMemo(() => nanoid(10), []);
   const rxReq = useMemo(() => createRxForwardReq(id), [id]);
 
-  // load from cache
-  // useEffect(() => {
-  //   const sub = cacheRequest(Array.isArray(filters) ? filters : [filters]).subscribe({
-  //     next: (e) => eventStore.add(e),
-  //     complete: () => sub.unsubscribe(),
-  //   });
-  // }, [hash(filters)]);
-
   // attach to rxNostr
   const observable = useMemo(() => rxNostr.use(rxReq, { on: { relays } }), [rxReq, relays.join(",")]);
 

@@ -4,7 +4,6 @@ import { Navigate, useParams } from "react-router-dom";
 import VerticalPageLayout from "../../../components/vertical-page-layout";
 import BackButton from "../../../components/router/back-button";
 
-import processManager from "../../../services/process-manager";
 import { RelayAuthIconButton } from "../../../components/relays/relay-auth-icon-button";
 import RelayStatusBadge from "../../../components/relays/relay-status";
 import useRelayNotices from "../../../hooks/use-relay-notices";
@@ -14,7 +13,6 @@ export default function InspectRelayView() {
   const { relay } = useParams();
   if (!relay) return <Navigate to="/" />;
 
-  const rootProcesses = processManager.getRootProcessesForRelay(relay);
   const notices = useRelayNotices(relay);
 
   return (

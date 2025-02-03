@@ -3,14 +3,11 @@ import { BehaviorSubject, combineLatest } from "rxjs";
 import { unixNow } from "applesauce-core/helpers";
 import { nanoid } from "nanoid";
 
-import { logger } from "../helpers/debug";
 import verifyEvent from "./verify-event";
 
 import authenticationSigner from "./authentication-signer";
 import localSettings from "./local-settings";
 import { unique } from "../helpers/array";
-
-const log = logger.extend("rx-nostr");
 
 const rxNostr = createRxNostr({
   verifier: async (event) => {
@@ -40,7 +37,6 @@ rxNostr.createConnectionStateObservable().subscribe((packet) => {
 
   const url = new URL(packet.from).toString();
   connections$.next({ ...connections$.value, [url]: packet.state });
-  if (import.meta.env.DEV) log(packet.state, url);
 });
 
 // capture all notices sent from relays

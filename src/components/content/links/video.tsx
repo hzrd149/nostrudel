@@ -38,7 +38,7 @@ export function renderVideoUrl(match: URL) {
   if (!isVideoURL(match)) return null;
 
   return (
-    <ExpandableEmbed label="Video" url={match} hideOnDefaultOpen>
+    <ExpandableEmbed label="Video" url={match}>
       <TrustVideo src={match.toString()} maxH="lg" w="auto" />
     </ExpandableEmbed>
   );
@@ -48,7 +48,7 @@ export function renderStreamUrl(match: URL) {
   if (!isStreamURL(match)) return null;
 
   return (
-    <ExpandableEmbed label="Video" url={match} hideOnDefaultOpen>
+    <ExpandableEmbed label="Video" url={match}>
       <LiveVideoPlayer stream={match.toString()} maxH="lg" w="auto" />
     </ExpandableEmbed>
   );

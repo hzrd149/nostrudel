@@ -1,22 +1,21 @@
 import { memo, ReactNode, useCallback, useMemo } from "react";
-import { Button, ButtonGroup, Divider, Flex, Text } from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router-dom";
+import { Button, Divider, Flex, Text } from "@chakra-ui/react";
 import dayjs, { Dayjs } from "dayjs";
 import { getEventUID } from "nostr-idb";
 import { BehaviorSubject } from "rxjs";
-import { useObservable } from "applesauce-react/hooks";
+import { useActiveAccount, useObservable } from "applesauce-react/hooks";
+import { COMMENT_KIND } from "applesauce-core/helpers";
+import { kinds } from "nostr-tools";
 
 import RequireActiveAccount from "../../components/router/require-active-account";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
-import { useNotifications } from "../../providers/global/notifications-provider";
 import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import NotificationItem from "./components/notification-item";
 import NotificationTypeToggles from "./notification-type-toggles";
 import useLocalStorageDisclosure from "../../hooks/use-localstorage-disclosure";
-import { CategorizedEvent, NotificationType, NotificationTypeSymbol } from "../../classes/notifications";
 import TimelineActionAndStatus from "../../components/timeline/timeline-action-and-status";
 import FocusedContext from "./focused-context";
 import readStatusService from "../../services/read-status";
@@ -25,6 +24,15 @@ import useNumberCache from "../../hooks/timeline/use-number-cache";
 import { useTimelineDates } from "../../hooks/timeline/use-timeline-dates";
 import useCacheEntryHeight from "../../hooks/timeline/use-cache-entry-height";
 import useVimNavigation from "./use-vim-navigation";
+import useTimelineLoader from "../../hooks/use-timeline-loader";
+import { truncateId } from "../../helpers/string";
+import { useReadRelays } from "../../hooks/use-client-relays";
+import useUserMailboxes from "../../hooks/use-user-mailboxes";
+import notifications$, {
+  CategorizedEvent,
+  NotificationType,
+  NotificationTypeSymbol,
+} from "../../services/notifications";
 
 function TimeMarker({ date, ids }: { date: Dayjs; ids: string[] }) {
   const readAll = useCallback(() => {
@@ -59,23 +67,22 @@ const NotificationsTimeline = memo(
     showReactions: boolean;
     showUnknown: boolean;
   }) => {
-    const { notifications } = useNotifications();
     const { people } = usePeopleListContext();
     const peoplePubkeys = useMemo(() => people?.map((p) => p.pubkey), [people]);
 
-    const events = useObservable(notifications?.timeline) ?? [];
+    const timeline = useObservable(notifications$) ?? [];
 
     const cacheKey = useTimelineLocationCacheKey();
     const numberCache = useNumberCache(cacheKey);
 
     const minItems = Math.round(window.innerHeight / 48) * 2;
-    const dates = useTimelineDates(events, numberCache, minItems / 2, minItems);
+    const dates = useTimelineDates(timeline, numberCache, minItems / 2, minItems);
 
     // measure and cache the hight of every entry
     useCacheEntryHeight(numberCache.set);
 
     const filtered: CategorizedEvent[] = [];
-    for (const event of events) {
+    for (const event of timeline) {
       if (event.created_at < dates.cursor && filtered.length > minItems) continue;
 
       const type = event[NotificationTypeSymbol];
@@ -153,7 +160,28 @@ const NotificationsTimeline = memo(
 const cachedFocus = new BehaviorSubject("");
 
 function NotificationsPage() {
-  const { timeline } = useNotifications();
+  const account = useActiveAccount();
+
+  const mailboxes = useUserMailboxes(account?.pubkey);
+  const readRelays = useReadRelays(mailboxes?.inboxes);
+  const { loader } = useTimelineLoader(
+    `${truncateId(account?.pubkey ?? "anon")}-notification`,
+    readRelays,
+    account?.pubkey
+      ? {
+          "#p": [account.pubkey],
+          kinds: [
+            kinds.ShortTextNote,
+            kinds.Repost,
+            kinds.GenericRepost,
+            kinds.Reaction,
+            kinds.Zap,
+            kinds.LongFormArticle,
+            COMMENT_KIND,
+          ],
+        }
+      : undefined,
+  );
 
   // const { value: focused, setValue: setFocused } = useRouteStateValue("focused", "");
   // const [focused, setFocused] = useState("");
@@ -168,7 +196,7 @@ function NotificationsPage() {
   const showReactions = useLocalStorageDisclosure("notifications-show-reactions", false);
   const showUnknown = useLocalStorageDisclosure("notifications-show-unknown", false);
 
-  const callback = useTimelineCurserIntersectionCallback(timeline);
+  const callback = useTimelineCurserIntersectionCallback(loader);
 
   return (
     <VerticalPageLayout>
@@ -201,7 +229,7 @@ function NotificationsPage() {
         </FocusedContext.Provider>
       </IntersectionObserverProvider>
 
-      <TimelineActionAndStatus loader={timeline} />
+      <TimelineActionAndStatus loader={loader} />
     </VerticalPageLayout>
   );
 }

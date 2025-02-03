@@ -3,6 +3,7 @@ import { TimelessFilter, TimelineLoader } from "applesauce-loaders";
 
 import rxNostr from "./rx-nostr";
 import { logger } from "../helpers/debug";
+import { cacheRequest } from "./cache-relay";
 
 const MAX_CACHE = 30;
 const BATCH_LIMIT = 100;
@@ -16,7 +17,10 @@ class TimelineCacheService {
 
     if (!timeline && relays.length > 0 && filters.length > 0) {
       this.log(`Creating ${key}`);
-      timeline = new TimelineLoader(rxNostr, TimelineLoader.simpleFilterMap(relays, filters), { limit: BATCH_LIMIT });
+      timeline = new TimelineLoader(rxNostr, TimelineLoader.simpleFilterMap(relays, filters), {
+        limit: BATCH_LIMIT,
+        cacheRequest,
+      });
       this.timelines.set(key, timeline);
     }
 

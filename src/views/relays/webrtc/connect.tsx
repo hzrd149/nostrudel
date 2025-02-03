@@ -3,7 +3,6 @@ import { Alert, AlertIcon, Button, CloseButton, Flex, Heading, Input, Text, useI
 import { useForm } from "react-hook-form";
 import { useObservable } from "applesauce-react/hooks";
 
-import BackButton from "../../../components/router/back-button";
 import webRtcRelaysService from "../../../services/webrtc-relays";
 import NostrWebRtcBroker from "../../../classes/webrtc/nostr-webrtc-broker";
 import QRCodeScannerButton from "../../../components/qr-code/qr-code-scanner-button";

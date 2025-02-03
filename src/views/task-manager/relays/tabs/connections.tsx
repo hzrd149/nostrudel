@@ -29,7 +29,7 @@ export default function RelayConnectionsTab() {
     <Flex direction="column">
       <SimpleGrid spacing="2" columns={{ base: 1, md: 2 }} p="2">
         {Object.entries(connections)
-          .sort((a, b) => getConnectionStateSort(a[1]) - getConnectionStateSort(b[1]))
+          .sort((a, b) => getConnectionStateSort(a[1]) - getConnectionStateSort(b[1]) || a[0].localeCompare(b[0]))
           .map(([relay]) => (
             <RelayCard key={relay} relay={relay} />
           ))}

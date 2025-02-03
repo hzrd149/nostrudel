@@ -4,7 +4,7 @@ import { kinds } from "nostr-tools";
 import { useEventFactory } from "applesauce-react/hooks";
 import { removeNameValueTag, addNameValueTag } from "applesauce-factory/operations";
 
-import { App, defaultFavoriteApps } from "./apps";
+import { App, defaultUserFavoriteApps } from "./apps";
 import useFavoriteInternalIds from "../../hooks/use-favorite-internal-ids";
 import { usePublishEvent } from "../../providers/global/publish-provider";
 import { StarEmptyIcon, StarFullIcon } from "../icons";
@@ -22,7 +22,7 @@ export default function AppFavoriteButton({
   const handleClick = async () => {
     const prev = favorites || {
       kind: kinds.Application,
-      tags: [["d", "nostrudel-favorite-apps"], ...defaultFavoriteApps.map((id) => ["app", id])],
+      tags: [["d", "nostrudel-favorite-apps"], ...defaultUserFavoriteApps.map((id) => ["app", id])],
     };
 
     setLoading(true);

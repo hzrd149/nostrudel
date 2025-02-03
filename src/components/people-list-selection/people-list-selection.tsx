@@ -59,7 +59,7 @@ export default function PeopleListSelection({
   const modal = useDisclosure();
   const account = useActiveAccount();
   const lists = useUserSets(account?.pubkey).filter((list) => list.kind === kinds.Followsets);
-  const { lists: favoriteLists } = useFavoriteLists();
+  const { lists: favoriteLists } = useFavoriteLists(account?.pubkey);
   const { selected, setSelected, listEvent } = usePeopleListContext();
 
   const searchDirectory = useObservable(userSearchDirectory);

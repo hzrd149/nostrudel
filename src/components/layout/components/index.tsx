@@ -7,7 +7,7 @@ import { QuestionIcon } from "@chakra-ui/icons";
 import { LightningIcon, SettingsIcon } from "../../icons";
 import Package from "../../icons/package";
 import useRecentIds from "../../../hooks/use-recent-ids";
-import { defaultFavoriteApps, internalApps, internalTools } from "../../navigation/apps";
+import { defaultAnonFavoriteApps, defaultUserFavoriteApps, internalApps, internalTools } from "../../navigation/apps";
 import NavItem from "./nav-item";
 import Plus from "../../icons/plus";
 import useFavoriteInternalIds from "../../../hooks/use-favorite-internal-ids";
@@ -15,7 +15,8 @@ import useFavoriteInternalIds from "../../../hooks/use-favorite-internal-ids";
 export default function NavItems() {
   const account = useActiveAccount();
 
-  const { ids: favorites = defaultFavoriteApps } = useFavoriteInternalIds("apps", "app");
+  const defaultApps = account ? defaultUserFavoriteApps : defaultAnonFavoriteApps;
+  const { ids: favorites = defaultApps } = useFavoriteInternalIds("apps", "app");
   const { recent } = useRecentIds("apps", 3);
 
   const favoriteApps = useMemo(() => {

@@ -1,4 +1,4 @@
-import { BehaviorSubject, distinctUntilChanged, pairwise } from "rxjs";
+import { BehaviorSubject, distinctUntilChanged, Observable, pairwise } from "rxjs";
 import { CacheRelay, openDB } from "nostr-idb";
 import { AbstractRelay } from "nostr-tools/abstract-relay";
 import { fakeVerifyEvent, isFromCache } from "applesauce-core/helpers";
@@ -10,6 +10,7 @@ import WasmRelay from "./wasm-relay";
 import MemoryRelay from "../classes/memory-relay";
 import localSettings from "./local-settings";
 import { eventStore } from "./event-store";
+import { Filter, NostrEvent } from "nostr-tools";
 
 export const NOSTR_RELAY_TRAY_URL = "ws://localhost:4869/";
 export async function checkNostrRelayTray() {
@@ -113,6 +114,23 @@ cacheRelay$.pipe(pairwise()).subscribe(([prev, current]) => {
     prev.close();
   }
 });
+
+// load events from cache relay
+export function cacheRequest(filters: Filter[]) {
+  return new Observable<NostrEvent>((observer) => {
+    const relay = getCacheRelay();
+    if (!relay) return observer.complete();
+
+    const sub = relay.subscribe(filters, {
+      onevent: (event) => observer.next(event),
+      oneose: () => {
+        sub.close();
+        observer.complete();
+      },
+      onclose: () => observer.complete(),
+    });
+  });
+}
 
 /** set the cache relay URL and waits for it to connect */
 export async function setCacheRelayURL(url: string) {

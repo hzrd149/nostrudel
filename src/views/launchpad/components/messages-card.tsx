@@ -90,7 +90,7 @@ export default function DMsCard({ ...props }: Omit<CardProps, "children">) {
     <Card variant="outline" {...props}>
       <CardHeader display="flex" justifyContent="space-between" alignItems="center">
         <Heading size="lg">
-          <Link as={RouterLink} to="/dm">
+          <Link as={RouterLink} to="/messages">
             Messages
           </Link>
         </Heading>
@@ -103,7 +103,7 @@ export default function DMsCard({ ...props }: Omit<CardProps, "children">) {
         {conversations.slice(0, 4).map((conversation) => (
           <Conversation key={conversation.pubkeys.join("-")} conversation={conversation} />
         ))}
-        <Button as={RouterLink} to="/dm" flexShrink={0} variant="link" size="lg" py="4">
+        <Button as={RouterLink} to="/messages" flexShrink={0} variant="link" size="lg" py="4">
           View More
         </Button>
       </CardBody>

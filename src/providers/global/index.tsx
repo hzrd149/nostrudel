@@ -5,7 +5,6 @@ import { AccountsProvider, QueryStoreProvider } from "applesauce-react/providers
 import { SigningProvider } from "./signing-provider";
 import buildTheme from "../../theme";
 import useAppSettings from "../../hooks/use-user-app-settings";
-import NotificationsProvider from "./notifications-provider";
 import { UserEmojiProvider } from "./emoji-provider";
 import BreakpointProvider from "./breakpoint-provider";
 import PublishProvider from "./publish-provider";
@@ -33,13 +32,11 @@ export const GlobalProviders = ({ children }: { children: React.ReactNode }) => 
         <ThemeProviders>
           <SigningProvider>
             <PublishProvider>
-              <NotificationsProvider>
-                <UserEmojiProvider>
-                  <EventFactoryProvider>
-                    <WebOfTrustProvider>{children}</WebOfTrustProvider>
-                  </EventFactoryProvider>
-                </UserEmojiProvider>
-              </NotificationsProvider>
+              <UserEmojiProvider>
+                <EventFactoryProvider>
+                  <WebOfTrustProvider>{children}</WebOfTrustProvider>
+                </EventFactoryProvider>
+              </UserEmojiProvider>
             </PublishProvider>
           </SigningProvider>
         </ThemeProviders>

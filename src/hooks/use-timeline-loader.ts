@@ -3,6 +3,7 @@ import { useStoreQuery } from "applesauce-react/hooks";
 import { useEventStore } from "applesauce-react/hooks/use-event-store";
 import { Queries } from "applesauce-core";
 import { Filter, NostrEvent } from "nostr-tools";
+import { useThrottle } from "react-use";
 import sum from "hash-sum";
 
 import timelineCacheService from "../services/timeline-cache";
@@ -35,16 +36,17 @@ export default function useTimelineLoader(
     return () => sub?.unsubscribe();
   }, [eventStore, loader]);
 
-  let timeline = useStoreQuery(Queries.TimelineQuery, filters && [filters]) ?? [];
+  const timeline = useStoreQuery(Queries.TimelineQuery, filters && [filters]) ?? [];
+  let throttled = useThrottle(timeline, 50);
 
   // set event filter
   if (opts?.eventFilter)
-    timeline = timeline.filter((e) => {
+    throttled = throttled.filter((e) => {
       try {
         return opts.eventFilter && opts.eventFilter(e);
       } catch (error) {}
       return false;
     });
 
-  return { loader, timeline };
+  return { loader, timeline: throttled };
 }

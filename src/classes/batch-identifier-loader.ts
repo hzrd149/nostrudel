@@ -8,9 +8,6 @@ import { createDefer, Deferred } from "applesauce-core/promise";
 import { Subject } from "rxjs";
 
 import PersistentSubscription from "./persistent-subscription";
-import Process from "./process";
-import processManager from "../services/process-manager";
-import Dataflow04 from "../components/icons/dataflow-04";
 import SuperMap from "./super-map";
 
 /** Batches requests for events with #d tags from a single relay */
@@ -18,7 +15,6 @@ export default class BatchIdentifierLoader {
   store: EventStore;
   kinds: number[];
   relay: AbstractRelay;
-  process: Process;
 
   /** list of identifiers that have been loaded */
   requested = new Set<string>();
@@ -37,20 +33,17 @@ export default class BatchIdentifierLoader {
 
   log: Debugger;
 
+  active = false;
   constructor(store: EventStore, relay: AbstractRelay, kinds: number[], log?: Debugger) {
     this.store = store;
     this.relay = relay;
     this.kinds = kinds;
     this.log = log || debug("BatchIdentifierLoader");
-    this.process = new Process("BatchIdentifierLoader", this, [relay]);
-    this.process.icon = Dataflow04;
-    processManager.registerProcess(this.process);
 
     this.subscription = new PersistentSubscription(this.relay, {
       onevent: (event) => this.handleEvent(event),
       oneose: () => this.handleEOSE(),
     });
-    this.process.addChild(this.subscription.process);
   }
 
   requestEvents(identifier: string): Promise<Map<string, NostrEvent>> {
@@ -74,9 +67,9 @@ export default class BatchIdentifierLoader {
   requestUpdate = _throttle(
     () => {
       // don't do anything if the subscription is already running
-      if (this.process.active) return;
+      if (this.active) return;
 
-      this.process.active = true;
+      this.active = true;
       this.update();
     },
     500,
@@ -106,7 +99,7 @@ export default class BatchIdentifierLoader {
 
     // reset
     this.pending.clear();
-    this.process.active = false;
+    this.active = false;
 
     for (const identifier of this.changedIdentifiers) {
       this.onIdentifierUpdate.next(identifier);
@@ -133,25 +126,23 @@ export default class BatchIdentifierLoader {
       }
 
       try {
-        this.process.active = true;
+        this.active = true;
         this.subscription.filters = [];
         if (dTags.length > 0) this.subscription.filters.push({ "#d": dTags, kinds: this.kinds });
 
         await this.subscription.update();
       } catch (error) {
         if (error instanceof Error) this.log(`Failed to update subscription`, error.message);
-        this.process.active = false;
+        this.active = false;
       }
     } else {
       this.log("Closing");
       this.subscription.close();
-      this.process.active = false;
+      this.active = false;
     }
   }
 
   destroy() {
     this.subscription.destroy();
-    this.process.remove();
-    processManager.unregisterProcess(this.process);
   }
 }
