@@ -1,5 +1,6 @@
 import { lazy } from "react";
 import { RouteObject } from "react-router-dom";
+
 import RelaysView from ".";
 import AppRelaysView from "../settings/relays";
 import CacheRelayView from "../settings/cache";
@@ -13,10 +14,10 @@ const WebRtcRelaysView = lazy(() => import("./webrtc"));
 const WebRtcConnectView = lazy(() => import("./webrtc/connect"));
 const WebRtcPairView = lazy(() => import("./webrtc/pair"));
 import BrowseRelaySetsView from "./browse-sets";
-import RelaySetView from "./relay-set";
 const RelayDetailsView = lazy(() => import("./relay-details"));
 
 export default [
+  { path: ":relay", element: <RelayDetailsView /> },
   {
     element: <RelaysView />,
     children: [
@@ -43,7 +44,6 @@ export default [
         ],
       },
       { path: "sets", element: <BrowseRelaySetsView /> },
-      { path: ":relay", element: <RelayDetailsView /> },
     ],
   },
 ] satisfies RouteObject[];

@@ -23,13 +23,12 @@ import { encodeDecodeResult } from "applesauce-core/helpers";
 import { ExternalLinkIcon, SearchIcon } from "./icons";
 import UserLink from "./user/user-link";
 
-import relayPoolService from "../services/relay-pool";
-import { isValidRelayURL } from "../helpers/relay";
-import relayScoreboardService from "../services/relay-scoreboard";
 import RelayFavicon from "./relay-favicon";
 import singleEventLoader from "../services/single-event-loader";
 import replaceableEventLoader from "../services/replaceable-loader";
 import { AppHandlerContext } from "../providers/route/app-handler-provider";
+import { useObservable } from "applesauce-react/hooks";
+import { connections$ } from "../services/rx-nostr";
 
 function SearchOnRelaysModal({
   isOpen,
@@ -39,11 +38,9 @@ function SearchOnRelaysModal({
   const [loading, setLoading] = useState(false);
   const [filter, setFilter] = useState("");
 
-  const discoveredRelays = relayScoreboardService.getRankedRelays(
-    relayPoolService
-      .getRelays()
-      .map((r) => r.url)
-      .filter(isValidRelayURL),
+  const discoveredRelays = Object.entries(useObservable(connections$)).reduce<string[]>(
+    (arr, [relay, status]) => (status !== "error" ? [...arr, relay] : arr),
+    [],
   );
   const [relays, actions] = useSet<string>(new Set(discoveredRelays.slice(0, 4)));
 

@@ -1,4 +1,4 @@
-import { Button, Card, Flex, Heading, Text, useToast } from "@chakra-ui/react";
+import { Button, Card, Flex, Heading, Text } from "@chakra-ui/react";
 
 import {
   Chart as ChartJS,
@@ -13,19 +13,20 @@ import {
   LinearScale,
   CategoryScale,
 } from "chart.js";
-import { Filter } from "nostr-tools";
 
 import { useAppTitle } from "../../../hooks/use-app-title";
 import VerticalPageLayout from "../../../components/vertical-page-layout";
 import { NostrEvent } from "../../../types/nostr-event";
 import { groupByTime } from "../../../helpers/notification";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import { getSortedKinds } from "../../../helpers/nostr/event";
-import relayPoolService from "../../../services/relay-pool";
 import EventKindsPieChart from "../../../components/charts/event-kinds-pie-chart";
 import EventKindsTable from "../../../components/charts/event-kinds-table";
 import { unixNow } from "applesauce-core/helpers";
 import { eventStore } from "../../../services/event-store";
+import { RelayTimelineLoader } from "applesauce-loaders";
+import rxNostr from "../../../services/rx-nostr";
+import { useObservable } from "applesauce-react/hooks";
 
 ChartJS.register(
   ArcElement,
@@ -95,35 +96,33 @@ function buildLineChartData(events: NostrEvent[], timeBlock = 60 * 60): ChartDat
 }
 
 export default function RelayDetailsTab({ relay }: { relay: string }) {
-  const toast = useToast();
   useAppTitle(`${relay} - Details`);
 
   const last = useRef(unixNow());
   const events = useRef(new Map());
-  const [_, update] = useState<object>();
 
-  const [loading, setLoading] = useState(false);
-  const loadMore = useCallback(() => {
-    setLoading(true);
-    const query: Filter = { limit: 500 };
-    if (last.current) query.until = last.current;
+  const loader = useMemo(() => new RelayTimelineLoader(rxNostr, relay, [{}], { limit: 500 }), [relay]);
 
-    const sub = relayPoolService.requestRelay(relay).subscribe([query], {
-      onevent: (event) => {
-        events.current.set(event.id, event);
-        last.current = event.created_at;
-        eventStore.add(event, relay);
-      },
-      oneose: () => sub.close(),
-      onclose: (reason) => {
-        if (reason !== "closed by caller") toast({ status: "error", description: reason });
-        setLoading(false);
-      },
+  // start the loader
+  useEffect(() => {
+    const sub = loader.subscribe((packet) => {
+      events.current.set(packet.event.id, packet.event);
+      last.current = packet.event.created_at;
+
+      eventStore.add(packet.event, packet.from);
     });
-  }, [relay, update]);
 
-  useEffect(() => loadMore(), [relay, loadMore]);
+    return () => sub.unsubscribe();
+  }, [loader]);
 
+  // load first batch when mounted
+  useEffect(() => loader.next(), [loader]);
+
+  const loadMore = useCallback(() => {
+    loader.next(-Infinity);
+  }, [loader]);
+
+  const loading = useObservable(loader.loading$);
   const kinds = getSortedKinds(Array.from(events.current.values()));
 
   return (

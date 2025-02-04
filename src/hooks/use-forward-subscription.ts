@@ -7,13 +7,13 @@ import hash from "hash-sum";
 import rxNostr from "../services/rx-nostr";
 import { useEventStore } from "applesauce-react/hooks/use-event-store";
 
-export default function useForwardSubscription(relays: string[], filters?: Filter | Filter[]) {
+export default function useForwardSubscription(relays?: string[], filters?: Filter | Filter[]) {
   const eventStore = useEventStore();
   const id = useMemo(() => nanoid(10), []);
   const rxReq = useMemo(() => createRxForwardReq(id), [id]);
 
   // attach to rxNostr
-  const observable = useMemo(() => rxNostr.use(rxReq, { on: { relays } }), [rxReq, relays.join(",")]);
+  const observable = useMemo(() => rxNostr.use(rxReq, { on: { relays } }), [rxReq, relays?.join(",")]);
 
   // subscribe
   // NOTE: have to subscribe before emitting filter

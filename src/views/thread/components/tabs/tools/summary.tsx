@@ -1,18 +1,15 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Button, Flex, Spinner, Text, Textarea, useToast } from "@chakra-ui/react";
 import { EventTemplate, NostrEvent } from "nostr-tools";
-import { MultiSubscription } from "applesauce-net/subscription";
 import { useStoreQuery } from "applesauce-react/hooks";
 import { getEventUID, unixNow } from "applesauce-core/helpers";
 
-import { useUserInbox } from "../../../../../hooks/use-user-mailboxes";
-import { useActiveAccount } from "applesauce-react/hooks";
 import { usePublishEvent } from "../../../../../providers/global/publish-provider";
-import relayPoolService from "../../../../../services/relay-pool";
-import { eventStore } from "../../../../../services/event-store";
 import DVMResponsesQuery from "../../../../../queries/dvm-responses";
 import { DVMStatusCard } from "../../../../discovery/dvm-feed/components/feed-status";
+import useForwardSubscription from "../../../../../hooks/use-forward-subscription";
+import { useReadRelays } from "../../../../../hooks/use-client-relays";
 
 function PromptForm({ onSubmit }: { onSubmit: (prompt: string) => void | Promise<void> }) {
   const { register, handleSubmit } = useForm({ defaultValues: { prompt: "" } });
@@ -37,18 +34,17 @@ export default function EventSummarizePage({ event }: { event: NostrEvent }) {
   const [request, setRequest] = useState<NostrEvent>();
 
   const publish = usePublishEvent();
-  const account = useActiveAccount();
-  const inbox = useUserInbox(account?.pubkey);
+  const relays = useReadRelays();
 
   const newRequest = async (prompt: string) => {
     try {
-      if (!inbox) throw new Error("Missing user inbox relays");
+      if (relays.length) throw new Error("Missing relays");
 
       const draft: EventTemplate = {
         kind: 5001,
         content: "",
         tags: [
-          ["relays", ...inbox],
+          ["relays", ...relays],
           ["i", event.id, "event"],
           ["output", "text/plain"],
         ],
@@ -66,18 +62,8 @@ export default function EventSummarizePage({ event }: { event: NostrEvent }) {
     }
   };
 
-  useEffect(() => {
-    if (!inbox || !request) return;
-
-    const sub = new MultiSubscription(relayPoolService);
-    sub.onEvent.subscribe((e) => eventStore.add(e));
-
-    sub.setFilters([{ kinds: [7000, 6001], "#e": [request.id] }]);
-    sub.setRelays(inbox);
-    sub.open();
-
-    return () => sub.close();
-  }, [request]);
+  // subscribe to dvm responses
+  useForwardSubscription(relays, request ? { kinds: [7000, 6001], "#e": [request.id] } : undefined);
 
   const responses = useStoreQuery(DVMResponsesQuery, request ? [request] : undefined);
 

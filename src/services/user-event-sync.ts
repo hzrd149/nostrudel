@@ -2,16 +2,16 @@ import { kinds } from "nostr-tools";
 import { IAccount } from "applesauce-accounts";
 import { combineLatest, distinct } from "rxjs";
 import { USER_BLOSSOM_SERVER_LIST_KIND } from "blossom-client-sdk";
+import { createRxOneshotReq } from "rx-nostr";
 
 import { COMMON_CONTACT_RELAYS } from "../const";
 import { logger } from "../helpers/debug";
 import replaceableEventLoader from "./replaceable-loader";
 import { eventStore, queryStore } from "./event-store";
-import { MultiSubscription } from "applesauce-net/subscription";
-import relayPoolService from "./relay-pool";
 import { APP_SETTING_IDENTIFIER, APP_SETTINGS_KIND } from "../helpers/app-settings";
 import accounts from "./accounts";
 import localSettings from "./local-settings";
+import rxNostr from "./rx-nostr";
 
 const log = logger.extend("UserEventSync");
 function downloadEvents(account: IAccount, relays: string[]) {
@@ -41,14 +41,15 @@ function downloadEvents(account: IAccount, relays: string[]) {
 
     if (mailboxes?.outboxes && mailboxes.outboxes.length > 0) {
       log(`Loading delete events`);
-      const sub = new MultiSubscription(relayPoolService);
-      sub.setRelays(mailboxes.outboxes);
-      sub.setFilters([{ kinds: [kinds.EventDeletion], authors: [account.pubkey] }]);
+      const req = createRxOneshotReq({
+        filters: [{ kinds: [kinds.EventDeletion], authors: [account.pubkey] }],
+        rxReqId: "delete-events",
+      });
+      const sub = rxNostr.use(req, { on: { relays: mailboxes.outboxes } }).subscribe((packet) => {
+        eventStore.add(packet.event, packet.from);
+      });
 
-      sub.open();
-      sub.onEvent.subscribe((e) => eventStore.add(e));
-
-      cleanup.push(() => sub.close());
+      cleanup.push(() => sub.unsubscribe());
     }
   });
 

@@ -1,6 +1,6 @@
 import _throttle from "lodash.throttle";
 import { Filter } from "nostr-tools";
-import { BehaviorSubject, mergeMap } from "rxjs";
+import { BehaviorSubject } from "rxjs";
 
 import SuperMap from "../classes/super-map";
 import { NostrEvent } from "../types/nostr-event";
