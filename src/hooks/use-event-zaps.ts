@@ -2,16 +2,16 @@ import { useEffect, useMemo } from "react";
 import { useStoreQuery } from "applesauce-react/hooks";
 import { parseCoordinate } from "applesauce-core/helpers";
 import { EventZapsQuery } from "applesauce-core/queries";
+import { requestZaps } from "../services/event-zaps-loader";
 
-import eventZapsService from "../services/event-zaps";
 import { useReadRelays } from "./use-client-relays";
 
-export default function useEventZaps(uid: string, additionalRelays?: Iterable<string>, alwaysRequest = false) {
-  const readRelays = useReadRelays(additionalRelays);
+export default function useEventZaps(uid: string, additionalRelays?: Iterable<string>, force?: boolean) {
+  const relay = useReadRelays(additionalRelays);
 
   useEffect(() => {
-    eventZapsService.requestZaps(uid, readRelays, alwaysRequest);
-  }, [uid, readRelays.join("|"), alwaysRequest]);
+    requestZaps(uid, relay, force);
+  }, [uid, relay.join("|"), force]);
 
   const pointer = useMemo(() => {
     if (uid.includes(":")) return parseCoordinate(uid, true);

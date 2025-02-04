@@ -2,13 +2,13 @@ import { IconButton, IconButtonProps, useDisclosure } from "@chakra-ui/react";
 import { useActiveAccount } from "applesauce-react/hooks";
 
 import useEventZaps from "../../hooks/use-event-zaps";
-import eventZapsService from "../../services/event-zaps";
 import { NostrEvent } from "../../types/nostr-event";
 import { LightningIcon } from "../icons";
 import ZapModal from "../event-zap-modal";
 import useUserLNURLMetadata from "../../hooks/use-user-lnurl-metadata";
 import { getEventUID } from "../../helpers/nostr/event";
 import { useReadRelays } from "../../hooks/use-client-relays";
+import { requestZaps } from "../../services/event-zaps-loader";
 
 export default function EventZapIconButton({
   event,
@@ -22,7 +22,7 @@ export default function EventZapIconButton({
   const readRelays = useReadRelays();
   const onZapped = () => {
     onClose();
-    eventZapsService.requestZaps(getEventUID(event), readRelays, true);
+    requestZaps(getEventUID(event), readRelays, true);
   };
 
   const canZap = !!metadata?.allowsNostr || event.tags.some((t) => t[0] === "zap");

@@ -1,11 +1,8 @@
 import { Button, Flex, Heading, Link } from "@chakra-ui/react";
 import { Navigate, useParams, Link as RouterLink } from "react-router-dom";
-import { useObservable } from "applesauce-react/hooks";
 import { NostrEvent } from "nostr-tools";
 
 import VerticalPageLayout from "../../components/vertical-page-layout";
-import { useMemo } from "react";
-import dictionaryService from "../../services/dictionary";
 import { useReadRelays } from "../../hooks/use-client-relays";
 import WikiPageHeader from "./components/wiki-page-header";
 import UserAvatar from "../../components/user/user-avatar";
@@ -14,6 +11,7 @@ import { WikiPagePage } from "./page";
 import { useWebOfTrust } from "../../providers/global/web-of-trust-provider";
 import useRouteSearchValue from "../../hooks/use-route-search-value";
 import { getPageDefer } from "../../helpers/nostr/wiki";
+import useWikiPages from "../../hooks/use-wiki-pages";
 
 export default function WikiTopicView() {
   const { topic } = useParams();
@@ -21,9 +19,7 @@ export default function WikiTopicView() {
 
   const webOfTrust = useWebOfTrust();
   const readRelays = useReadRelays();
-  const subject = useMemo(() => dictionaryService.requestTopic(topic, readRelays, true), [topic, readRelays]);
-
-  const pages = useObservable(subject);
+  const pages = useWikiPages(topic, readRelays, true);
 
   let sorted = pages ? Array.from(pages.values()) : [];
   if (webOfTrust) sorted = webOfTrust.sortByDistanceAndConnections(sorted, (p) => p.pubkey);

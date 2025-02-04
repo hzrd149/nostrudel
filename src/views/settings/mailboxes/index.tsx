@@ -9,7 +9,6 @@ import useUserMailboxes from "../../../hooks/use-user-mailboxes";
 import { useActiveAccount } from "applesauce-react/hooks";
 import { InboxIcon, OutboxIcon } from "../../../components/icons";
 import MediaServerFavicon from "../../../components/media-server/media-server-favicon";
-import { RelayMode } from "../../../classes/relay";
 import { NostrEvent } from "../../../types/nostr-event";
 import useAsyncErrorHandler from "../../../hooks/use-async-error-handler";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
@@ -19,6 +18,7 @@ import DebugEventButton from "../../../components/debug-modal/debug-event-button
 import useReplaceableEvent from "../../../hooks/use-replaceable-event";
 import { COMMON_CONTACT_RELAYS } from "../../../const";
 import SimpleView from "../../../components/layout/presets/simple-view";
+import { RelayMode } from "../../../services/app-relays";
 
 function RelayLine({ relay, mode, list }: { relay: string; mode: RelayMode; list?: NostrEvent }) {
   const publish = usePublishEvent();

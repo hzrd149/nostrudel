@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import { NostrEvent, nip19 } from "nostr-tools";
 import {
   Alert,
@@ -14,7 +13,6 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
-import { useObservable } from "applesauce-react/hooks";
 
 import useParamsAddressPointer from "../../hooks/use-params-address-pointer";
 import useReplaceableEvent from "../../hooks/use-replaceable-event";
@@ -35,10 +33,10 @@ import EventQuoteButton from "../../components/note/event-quote-button";
 import WikiPageMenu from "./components/wiki-page-menu";
 import EventVoteButtons from "../../components/reactions/event-vote-buttions";
 import { useActiveAccount } from "applesauce-react/hooks";
-import dictionaryService from "../../services/dictionary";
 import { useReadRelays } from "../../hooks/use-client-relays";
 import { useWebOfTrust } from "../../providers/global/web-of-trust-provider";
 import { getSharableEventAddress } from "../../services/relay-hints";
+import useWikiPages from "../../hooks/use-wiki-pages";
 
 function ForkAlert({ page, address }: { page: NostrEvent; address: nip19.AddressPointer }) {
   const topic = getPageTopic(page);
@@ -141,8 +139,7 @@ function WikiPageFooter({ page }: { page: NostrEvent }) {
   const topic = getPageTopic(page);
 
   const readRelays = useReadRelays();
-  const subject = useMemo(() => dictionaryService.requestTopic(topic, readRelays), [topic, readRelays]);
-  const pages = useObservable(subject);
+  const pages = useWikiPages(topic, readRelays, true);
 
   let forks = pages ? Array.from(pages.values()).filter((p) => getPageForks(p).address?.pubkey === page.pubkey) : [];
   if (webOfTrust) forks = webOfTrust.sortByDistanceAndConnections(forks, (p) => p.pubkey);

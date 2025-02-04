@@ -4,19 +4,15 @@ import { getEventUID } from "applesauce-core/helpers";
 import { useStoreQuery } from "applesauce-react/hooks";
 import { ReactionsQuery } from "applesauce-core/queries";
 
-import eventReactionsService from "../services/event-reactions";
 import { useReadRelays } from "./use-client-relays";
+import { requestReactions } from "../services/event-reactions-loader";
 
-export default function useEventReactions(
-  event: NostrEvent,
-  additionalRelays?: Iterable<string>,
-  alwaysRequest = true,
-) {
+export default function useEventReactions(event: NostrEvent, additionalRelays?: string[], force?: boolean) {
   const relays = useReadRelays(additionalRelays);
 
   useEffect(() => {
-    eventReactionsService.requestReactions(getEventUID(event), relays, alwaysRequest);
-  }, [event, relays, alwaysRequest]);
+    requestReactions(getEventUID(event), relays, force);
+  }, [event, relays.join(","), force]);
 
   return useStoreQuery(ReactionsQuery, [event]);
 }

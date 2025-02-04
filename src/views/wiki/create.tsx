@@ -31,7 +31,6 @@ import { useReadRelays } from "../../hooks/use-client-relays";
 import UserName from "../../components/user/user-name";
 import { getEventCoordinate } from "../../helpers/nostr/event";
 import FormatButton from "./components/format-toolbar";
-import dictionaryService from "../../services/dictionary";
 import { getSharableEventAddress } from "../../services/relay-hints";
 
 export default function CreateWikiPageView() {
@@ -109,7 +108,6 @@ export default function CreateWikiPageView() {
       }
 
       const pub = await publish("Publish Page", draft, WIKI_RELAYS, false);
-      dictionaryService.handleEvent(pub.event);
       clearFormCache();
       navigate(`/wiki/page/${getSharableEventAddress(pub.event)}`, { replace: true });
     } catch (error) {

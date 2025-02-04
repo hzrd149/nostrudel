@@ -6,8 +6,7 @@ import RelayFavicon from "../../../components/relay-favicon";
 import UploadCloud01 from "../../../components/icons/upload-cloud-01";
 import { useWriteRelays } from "../../../hooks/use-client-relays";
 import localSettings from "../../../services/local-settings";
-import { removeAppRelay } from "../../../services/app-relays";
-import { RelayMode } from "../../../classes/relay";
+import { RelayMode, removeAppRelay } from "../../../services/app-relays";
 
 export default function RelayControl({ url }: { url: string }) {
   const writeRelays = useWriteRelays();

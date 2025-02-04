@@ -13,9 +13,10 @@ import { DEFAULT_SEARCH_RELAYS, WIKI_RELAYS } from "../../const";
 import { WIKI_PAGE_KIND } from "../../helpers/nostr/wiki";
 import { cacheRelay$ } from "../../services/cache-relay";
 import WikiPageResult from "./components/wiki-page-result";
-import dictionaryService from "../../services/dictionary";
 import { useWebOfTrust } from "../../providers/global/web-of-trust-provider";
 import { useObservable } from "applesauce-react/hooks";
+import { eventStore } from "../../services/event-store";
+import { ErrorBoundary } from "../../components/error-boundary";
 
 export default function WikiSearchView() {
   const cacheRelay = useObservable(cacheRelay$);
@@ -37,7 +38,8 @@ export default function WikiSearchView() {
 
     const seen = new Set<string>();
     const handleEvent = (event: NostrEvent) => {
-      dictionaryService.handleEvent(event);
+      eventStore.add(event);
+
       if (seen.has(getEventUID(event))) return;
       setResults((arr) => arr.concat(event));
       seen.add(getEventUID(event));
@@ -82,7 +84,9 @@ export default function WikiSearchView() {
         </Flex>
       </Flex>
       {sorted.map((page) => (
-        <WikiPageResult key={page.id} page={page} />
+        <ErrorBoundary key={page.id}>
+          <WikiPageResult page={page} />
+        </ErrorBoundary>
       ))}
     </VerticalPageLayout>
   );

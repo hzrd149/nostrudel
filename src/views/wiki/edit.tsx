@@ -25,7 +25,6 @@ import MarkdownEditor from "./components/markdown-editor";
 import { ErrorBoundary } from "../../components/error-boundary";
 import { cloneEvent, replaceOrAddSimpleTag } from "../../helpers/nostr/event";
 import FormatButton from "./components/format-toolbar";
-import dictionaryService from "../../services/dictionary";
 import { getSharableEventAddress } from "../../services/relay-hints";
 
 function EditWikiPagePage({ page }: { page: NostrEvent }) {
@@ -62,7 +61,6 @@ function EditWikiPagePage({ page }: { page: NostrEvent }) {
       replaceOrAddSimpleTag(draft, "summary", values.summary);
 
       const pub = await publish("Publish Page", draft, WIKI_RELAYS, false);
-      dictionaryService.handleEvent(pub.event);
       clearFormCache();
       navigate(`/wiki/page/${getSharableEventAddress(pub.event)}`, { replace: true });
     } catch (error) {

@@ -4,7 +4,6 @@ import { WarningIcon } from "@chakra-ui/icons";
 
 import { RECOMMENDED_READ_RELAYS, RECOMMENDED_WRITE_RELAYS } from "../../../const";
 import AddRelayForm from "./add-relay-form";
-import { RelayMode } from "../../../classes/relay";
 import { useReadRelays, useWriteRelays } from "../../../hooks/use-client-relays";
 import { useActiveAccount } from "applesauce-react/hooks";
 import RelayControl from "./relay-control";
@@ -15,7 +14,7 @@ import { mergeRelaySets, safeRelayUrls } from "../../../helpers/relay";
 import HoverLinkOverlay from "../../../components/hover-link-overlay";
 import SimpleView from "../../../components/layout/presets/simple-view";
 import localSettings from "../../../services/local-settings";
-import { addAppRelay } from "../../../services/app-relays";
+import { addAppRelay, RelayMode } from "../../../services/app-relays";
 import useUserMailboxes from "../../../hooks/use-user-mailboxes";
 
 const JAPANESE_RELAYS = safeRelayUrls([

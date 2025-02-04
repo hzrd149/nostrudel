@@ -1,6 +1,6 @@
 import rxNostr from "./rx-nostr";
 import accounts from "./accounts";
-import channelMetadataService from "./channel-metadata";
+import channelMetadataService from "./channel-metadata-loader";
 import { eventStore, queryStore } from "./event-store";
 import localSettings from "./local-settings";
 import readStatusService from "./read-status";

@@ -23,8 +23,8 @@ import { useObservable } from "applesauce-react/hooks";
 import { useReadRelays } from "../../hooks/use-client-relays";
 import { getPageDefer, getPageSummary } from "../../helpers/nostr/wiki";
 import UserName from "../user/user-name";
-import dictionaryService from "../../services/dictionary";
 import { useWebOfTrust } from "../../providers/global/web-of-trust-provider";
+import useWikiPages from "../../hooks/use-wiki-pages";
 
 export default function WikiLink({
   children,
@@ -43,11 +43,10 @@ export default function WikiLink({
     topic = properties.href.replace(/^#\/page\//, "");
   }
 
-  const subject = useMemo(
-    () => (topic ? dictionaryService.requestTopic(topic, readRelays) : undefined),
-    [topic, readRelays],
-  );
-  const events = useObservable(subject);
+  // TODO: if topic cant be found, render something else
+  if (!topic) return null;
+
+  const events = useWikiPages(topic, readRelays);
 
   const sorted = useMemo(() => {
     if (!events) return [];
@@ -97,7 +96,7 @@ export default function WikiLink({
                 <UserName pubkey={page.pubkey} />: {getPageSummary(page)}
               </Text>
             ))}
-            {events?.size === 0 && <Text fontStyle="italic">There is no entry for this topic</Text>}
+            {events?.length === 0 && <Text fontStyle="italic">There is no entry for this topic</Text>}
           </PopoverBody>
         </PopoverContent>
       </Portal>

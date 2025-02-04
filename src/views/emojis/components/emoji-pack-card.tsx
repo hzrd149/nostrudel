@@ -52,11 +52,11 @@ export default function EmojiPackCard({ pack, ...props }: Omit<CardProps, "child
         )}
       </CardBody>
       <CardFooter p="2" display="flex" pt="0">
-        <ButtonGroup size="sm" variant="ghost">
+        <ButtonGroup size="sm" variant="ghost" zIndex={1}>
           <EventZapButton event={pack} />
           <EmojiPackFavoriteButton pack={pack} />
         </ButtonGroup>
-        <ButtonGroup size="sm" ml="auto" variant="ghost">
+        <ButtonGroup size="sm" ml="auto" variant="ghost" zIndex={1}>
           <EmojiPackMenu pack={pack} aria-label="emoji pack menu" />
         </ButtonGroup>
       </CardFooter>

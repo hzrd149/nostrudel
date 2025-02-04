@@ -1,21 +1,20 @@
-import { AvatarGroup, Link, Button, Flex, Heading, LinkBox, SimpleGrid, useInterval } from "@chakra-ui/react";
+import { AvatarGroup, Link, Button, Flex, Heading, LinkBox, SimpleGrid } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
+import { useStoreQuery } from "applesauce-react/hooks";
 import { NostrEvent } from "nostr-tools";
 
+import { WIKI_RELAYS } from "../../const";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import WikiSearchForm from "./components/wiki-search-form";
 import { WIKI_PAGE_KIND, validatePage } from "../../helpers/nostr/wiki";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { useReadRelays } from "../../hooks/use-client-relays";
 import TimelineActionAndStatus from "../../components/timeline/timeline-action-and-status";
-import { WIKI_RELAYS } from "../../const";
 import { ExternalLinkIcon } from "../../components/icons";
 import WikiLink from "../../components/markdown/wiki-link";
-import { useEffect } from "react";
-import dictionaryService from "../../services/dictionary";
 import UserAvatar from "../../components/user/user-avatar";
 import HoverLinkOverlay from "../../components/hover-link-overlay";
-import useForceUpdate from "../../hooks/use-force-update";
+import { WikiTopicsQuery } from "../../queries/wiki-topics";
 
 function eventFilter(event: NostrEvent) {
   if (!validatePage(event)) return false;
@@ -28,16 +27,7 @@ export default function WikiHomeView() {
     eventFilter,
   });
 
-  useEffect(() => {
-    if (pages) {
-      for (const page of pages) {
-        dictionaryService.handleEvent(page);
-      }
-    }
-  }, [pages]);
-
-  const update = useForceUpdate();
-  useInterval(update, 1000);
+  const topics = useStoreQuery(WikiTopicsQuery, []);
 
   return (
     <VerticalPageLayout>
@@ -60,23 +50,23 @@ export default function WikiHomeView() {
         Recent Updates:
       </Heading>
       <SimpleGrid spacing="2" columns={{ base: 1, lg: 2, xl: 3 }}>
-        {Array.from(dictionaryService.topics)
-          .filter(([_, sub]) => !!sub.value && sub.value.size > 0)
-          .sort((a, b) => b[1].value!.size - a[1].value!.size)
-          .map(([topic, sub]) => (
-            <LinkBox key={topic} p="2">
-              <Heading size="md">
-                <HoverLinkOverlay as={RouterLink} to={`/wiki/topic/${topic}`}>
-                  {topic}
-                </HoverLinkOverlay>
-              </Heading>
-              <AvatarGroup size="sm">
-                {Array.from(sub.value!.values()).map((page) => (
-                  <UserAvatar pubkey={page.pubkey} />
-                ))}
-              </AvatarGroup>
-            </LinkBox>
-          ))}
+        {topics &&
+          Object.entries(topics)
+            .sort((a, b) => b[1].length - a[1].length)
+            .map(([topic, events]) => (
+              <LinkBox key={topic} p="2">
+                <Heading size="md">
+                  <HoverLinkOverlay as={RouterLink} to={`/wiki/topic/${topic}`}>
+                    {topic}
+                  </HoverLinkOverlay>
+                </Heading>
+                <AvatarGroup size="sm">
+                  {events.map((page) => (
+                    <UserAvatar pubkey={page.pubkey} />
+                  ))}
+                </AvatarGroup>
+              </LinkBox>
+            ))}
       </SimpleGrid>
       <TimelineActionAndStatus loader={loader} />
     </VerticalPageLayout>
