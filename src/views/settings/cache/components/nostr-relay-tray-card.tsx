@@ -1,9 +1,9 @@
+import { useState } from "react";
 import { useAsync } from "react-use";
 import { Button, Card, CardBody, CardHeader, Heading, Link, Text } from "@chakra-ui/react";
 
 import { NOSTR_RELAY_TRAY_URL, checkNostrRelayTray, setCacheRelayURL } from "../../../../services/cache-relay";
 import useCacheRelay from "../../../../hooks/use-cache-relay";
-import { useState } from "react";
 
 export default function NostrRelayTrayCard() {
   const cacheRelay = useCacheRelay();

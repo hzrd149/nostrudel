@@ -1,4 +1,3 @@
-import { useState } from "react";
 import {
   Alert,
   AlertDescription,
@@ -12,13 +11,6 @@ import {
   IconButton,
   Input,
   Link,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
   Text,
   useToast,
 } from "@chakra-ui/react";
@@ -37,7 +29,6 @@ import useAsyncErrorHandler from "../../../hooks/use-async-error-handler";
 import { isServerTag } from "../../../helpers/nostr/blossom";
 import { USER_BLOSSOM_SERVER_LIST_KIND, areServersEqual } from "blossom-client-sdk";
 import SimpleView from "../../../components/layout/presets/simple-view";
-import OpenGraphCard from "../../../components/open-graph/open-graph-card";
 
 function MediaServersPage() {
   const toast = useToast();
