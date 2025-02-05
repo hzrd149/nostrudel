@@ -1,8 +1,8 @@
 import { Select, SelectProps } from "@chakra-ui/react";
 import { useObservable } from "applesauce-react/hooks";
 
-import { RelayAuthMode } from "../../classes/relay-pool";
 import localSettings from "../../services/local-settings";
+import { RelayAuthMode } from "../../services/authentication-signer";
 
 export default function RelayAuthModeSelect({
   relay,

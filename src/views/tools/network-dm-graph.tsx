@@ -1,11 +1,13 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Box, Button, Flex, Input, Text } from "@chakra-ui/react";
 import AutoSizer from "react-virtualized-auto-sizer";
 import ForceGraph, { LinkObject, NodeObject } from "react-force-graph-3d";
 import { Filter, kinds } from "nostr-tools";
-import dayjs from "dayjs";
+import { getProfileContent } from "applesauce-core/helpers";
+import { useStoreQuery } from "applesauce-react/hooks";
+import { TimelineQuery } from "applesauce-core/queries";
 import { useNavigate } from "react-router-dom";
-import { useDebounce } from "react-use";
+import { useThrottle } from "react-use";
 import {
   Group,
   Mesh,
@@ -16,6 +18,7 @@ import {
   SpriteMaterial,
   TextureLoader,
 } from "three";
+import dayjs from "dayjs";
 
 import { useActiveAccount } from "applesauce-react/hooks";
 import RequireActiveAccount from "../../components/router/require-active-account";
@@ -25,12 +28,9 @@ import useUserProfile from "../../hooks/use-user-profile";
 import { isPTag } from "../../types/nostr-event";
 import { ChevronLeftIcon } from "../../components/icons";
 import { useReadRelays } from "../../hooks/use-client-relays";
-import { subscribeMany } from "../../helpers/relay";
 import useUserProfiles from "../../hooks/use-user-profiles";
 import { eventStore } from "../../services/event-store";
-import { getProfileContent } from "applesauce-core/helpers";
-import { useStoreQuery } from "applesauce-react/hooks";
-import { TimelineQuery } from "applesauce-core/queries";
+import useForwardSubscription from "../../hooks/use-forward-subscription";
 
 type NodeType = { id: string; image?: string; name?: string };
 
@@ -48,27 +48,20 @@ function NetworkDMGraphPage() {
   const [until, setUntil] = useState(dayjs().unix());
   const [since, setSince] = useState(dayjs().subtract(1, "week").unix());
 
-  const [fetchData] = useDebounce(
-    () => {
-      if (!contacts) return;
-
-      const filter: Filter = {
+  const filters = useMemo<Filter[]>(
+    () => [
+      {
         authors: contactsPubkeys,
         kinds: [kinds.EncryptedDirectMessage],
         since,
         until,
-      };
-      const sub = subscribeMany(Array.from(relays), [filter], {
-        onevent: (event) => eventStore.add(event),
-        oneose: () => sub.close(),
-      });
-    },
-    2 * 1000,
-    [relays, contactsPubkeys, since, until],
+      },
+    ],
+    [contactsPubkeys, since, until],
   );
-  useEffect(() => {
-    fetchData();
-  }, [relays, contactsPubkeys, since, until]);
+
+  const throttledFilter = useThrottle(filters, 2 * 1000);
+  useForwardSubscription(relays, throttledFilter);
 
   const selfMetadata = useUserProfile(account.pubkey);
   const userProfiles = useUserProfiles(contactsPubkeys);

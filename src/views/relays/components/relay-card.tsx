@@ -45,7 +45,7 @@ export const Metadata = ({ name, children }: { name: string } & PropsWithChildre
 
 export function RelayMetadata({ url, extended }: { url: string; extended?: boolean }) {
   const { info } = useRelayInfo(url);
-  const { stats } = useRelayStats(url);
+  const stats = useRelayStats(url);
 
   return (
     <Box>

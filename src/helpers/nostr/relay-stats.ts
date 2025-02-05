@@ -1,15 +1,14 @@
+import { getReplaceableIdentifier, getTagValue } from "applesauce-core/helpers";
 import { NostrEvent, isDTag } from "../../types/nostr-event";
 
-export const SELF_REPORTED_KIND = 10066;
 export const MONITOR_METADATA_KIND = 10166;
-export const MONITOR_STATS_KIND = 30066;
+export const MONITOR_STATS_KIND = 30166;
 
 export function getRelayURL(stats: NostrEvent) {
-  if (stats.kind === SELF_REPORTED_KIND) return stats.tags.find((t) => t[0] === "r")?.[1];
-  return stats.tags.find(isDTag)?.[1];
+  return getReplaceableIdentifier(stats);
 }
 export function getNetwork(stats: NostrEvent) {
-  return stats.tags.find((t) => t[0] === "n")?.[1];
+  return getTagValue(stats, "n");
 }
 export function getSupportedNIPs(stats: NostrEvent) {
   return stats.tags.filter((t) => t[0] === "N" && t[1]).map((t) => t[1] && parseInt(t[1]));

@@ -1,50 +1,48 @@
 import { useEffect, useMemo, useState } from "react";
 import { Filter, kinds, NostrEvent } from "nostr-tools";
-import { AbstractRelay, Subscription, SubscriptionParams } from "nostr-tools/abstract-relay";
 import { Alert, AlertDescription, AlertIcon, AlertTitle, Heading, Spinner, Text } from "@chakra-ui/react";
+import { map, Observable } from "rxjs";
 import { LRU } from "applesauce-core/helpers";
 
-import relayPoolService from "../../../services/relay-pool";
 import ProfileSearchResults from "./profile-results";
 import NoteSearchResults from "./note-results";
 import ArticleSearchResults from "./article-results";
 import { eventStore } from "../../../services/event-store";
+import { createRxOneshotReq, EventPacket } from "rx-nostr";
+import rxNostr from "../../../services/rx-nostr";
+import { cacheRequest } from "../../../services/cache-relay";
 
-function createSearchAction(url: string | AbstractRelay) {
-  let sub: Subscription | undefined = undefined;
+export function createSearchAction(relays?: string[]): (filters: Filter[]) => Observable<EventPacket> {
+  return (filters: Filter[]) => {
+    // search local
+    if (!relays || relays.length === 0)
+      return cacheRequest(filters).pipe(
+        map(
+          (event) =>
+            ({
+              event,
+              from: "",
+              subId: "cache",
+              type: "EVENT",
+              message: ["EVENT", "cache", event],
+            }) as EventPacket,
+        ),
+      );
 
-  let running = true;
-  const search = async (filters: Filter[], params: Partial<SubscriptionParams>) => {
-    running = true;
-    const relay = typeof url === "string" ? await relayPoolService.requestRelay(url, false) : url;
-    await relayPoolService.requestConnect(relay);
-
-    sub = relay.subscribe(filters, {
-      onevent: (event) => running && params.onevent?.(event),
-      oneose: () => {
-        sub?.close();
-        params.oneose?.();
-      },
-      onclose: params.onclose,
-    });
+    // search remote
+    const req = createRxOneshotReq({ filters });
+    return rxNostr.use(req, { on: { relays } });
   };
-
-  const cancel = () => {
-    running = false;
-    if (sub) sub.close();
-  };
-
-  return { search, cancel, relay: url };
 }
 
 const searchCache = new LRU<NostrEvent[]>(10);
 
-export default function SearchResults({ query, relay }: { query: string; relay: string | AbstractRelay }) {
+export default function SearchResults({ query, relay }: { query: string; relay: string }) {
   const [results, setResults] = useState<NostrEvent[]>([]);
 
   const [searching, setSearching] = useState(false);
   const [error, setError] = useState<Error>();
-  const search = useMemo(() => createSearchAction(relay), [relay]);
+  const search = useMemo(() => createSearchAction(relay ? [relay] : []), [relay]);
 
   useEffect(() => {
     if (query.length < 3) return;
@@ -59,22 +57,20 @@ export default function SearchResults({ query, relay }: { query: string; relay: 
       // run a new search
       setResults([]);
       setSearching(true);
-      search
-        .search([{ search: query, kinds: [kinds.Metadata, kinds.ShortTextNote, kinds.LongFormArticle], limit: 200 }], {
-          onevent: (event) => {
-            event = eventStore.add(event, typeof search.relay === "string" ? search.relay : search.relay.url);
 
-            setResults((arr) => {
-              const newArr = [...arr, event];
-              searchCache.set(query + relay, newArr);
-              return newArr;
-            });
-          },
-          oneose: () => setSearching(false),
-        })
-        .catch((err) => setError(err));
+      const sub = search([
+        { search: query, kinds: [kinds.Metadata, kinds.ShortTextNote, kinds.LongFormArticle], limit: 200 },
+      ]).subscribe((packet) => {
+        const event = eventStore.add(packet.event, packet.from);
 
-      return () => search.cancel();
+        setResults((arr) => {
+          const newArr = [...arr, event];
+          searchCache.set(query + relay, newArr);
+          return newArr;
+        });
+      });
+
+      return () => sub.unsubscribe();
     }
   }, [query, search]);
 

@@ -2,6 +2,7 @@ import { NostrEvent } from "nostr-tools";
 import { Box, Button, Flex, Heading, Image, Spinner, Text, useDisclosure } from "@chakra-ui/react";
 import dayjs from "dayjs";
 
+import { ThreadIcon } from "../../components/icons";
 import useParamsAddressPointer from "../../hooks/use-params-address-pointer";
 import useReplaceableEvent from "../../hooks/use-replaceable-event";
 import VerticalPageLayout from "../../components/vertical-page-layout";
@@ -24,7 +25,6 @@ import BookmarkEventButton from "../../components/note/bookmark-event";
 import EventQuoteButton from "../../components/note/event-quote-button";
 import { GenericComments } from "../../components/comment/generic-comments";
 import GenericCommentForm from "../../components/comment/generic-comment-form";
-import { ThreadIcon } from "../../components/icons";
 
 function ArticlePage({ article }: { article: NostrEvent }) {
   const image = getArticleImage(article);

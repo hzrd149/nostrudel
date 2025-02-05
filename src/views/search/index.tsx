@@ -1,7 +1,6 @@
-import { useCallback, useEffect, useMemo } from "react";
-import { ButtonGroup, Flex, IconButton, Input, Select } from "@chakra-ui/react";
+import { useCallback, useEffect } from "react";
+import { ButtonGroup, Flex, IconButton, Input } from "@chakra-ui/react";
 import { useNavigate, useSearchParams, Link as RouterLink } from "react-router-dom";
-import { AbstractRelay } from "nostr-tools/abstract-relay";
 import { useForm } from "react-hook-form";
 
 import { safeDecode } from "../../helpers/nip19";
@@ -12,44 +11,32 @@ import PeopleListProvider from "../../providers/local/people-list-provider";
 import { useBreakpointValue } from "../../providers/global/breakpoint-provider";
 import QRCodeScannerButton from "../../components/qr-code/qr-code-scanner-button";
 import SearchResults from "./components/search-results";
-import useSearchRelays from "../../hooks/use-search-relays";
-import { useRelayInfo } from "../../hooks/use-relay-info";
-import WasmRelay from "../../services/wasm-relay";
-import relayPoolService from "../../services/relay-pool";
+import useSearchRelays, { useCacheRelaySupportsSearch } from "../../hooks/use-search-relays";
 import useCacheRelay from "../../hooks/use-cache-relay";
+import SearchRelayPicker from "./components/search-relay-picker";
 
 export function SearchPage() {
   const cacheRelay = useCacheRelay();
   const navigate = useNavigate();
   const searchRelays = useSearchRelays();
-  const { info: cacheRelayInfo } = useRelayInfo(cacheRelay instanceof AbstractRelay ? cacheRelay : undefined, true);
-  const localSearchSupported =
-    cacheRelay instanceof WasmRelay ||
-    (cacheRelay instanceof AbstractRelay && !!cacheRelayInfo?.supported_nips?.includes(50));
+  const localSearchSupported = useCacheRelaySupportsSearch();
 
   const autoFocusSearch = useBreakpointValue({ base: false, lg: true });
 
   const [params, setParams] = useSearchParams();
   const searchQuery = params.get("q") || "";
 
-  const relayURL = params.get("relay");
-  const searchRelay = useMemo(() => {
-    if (relayURL === "local") return cacheRelay;
-    else if (relayURL) return relayPoolService.requestRelay(relayURL);
-    else if (localSearchSupported) return cacheRelay;
-    else return relayPoolService.requestRelay(searchRelays[0]);
-  }, [relayURL, localSearchSupported, cacheRelay, searchRelays[0]]);
+  const relay = params.get("relay") ?? (localSearchSupported ? "" : undefined) ?? searchRelays[0] ?? "";
 
   const { register, handleSubmit, setValue } = useForm({
-    defaultValues: { query: searchQuery, relay: searchRelay === cacheRelay ? "local" : searchRelay?.url },
+    defaultValues: { query: searchQuery, relay },
     mode: "all",
   });
 
-  // reset the relay when the search relay changes
-  useEffect(
-    () => setValue("relay", searchRelay === cacheRelay ? "local" : searchRelay?.url),
-    [searchRelay, cacheRelay],
-  );
+  // when the relay changes update the form
+  useEffect(() => {
+    setValue("relay", relay);
+  }, [relay]);
 
   const handleSearchText = (text: string) => {
     const cleanText = text.trim();
@@ -78,11 +65,12 @@ export function SearchPage() {
       const newParams = new URLSearchParams(params);
       newParams.set("q", values.query);
       if (values.relay) newParams.set("relay", values.relay);
+      else newParams.delete("relay");
       setParams(newParams);
     }
   });
 
-  const shouldSearch = searchQuery && searchRelay;
+  const shouldSearch = !!searchQuery && (!!relay || (localSearchSupported && !!cacheRelay));
 
   return (
     <VerticalPageLayout>
@@ -106,14 +94,7 @@ export function SearchPage() {
           {...register("query", { required: true, minLength: 3 })}
           autoComplete="off"
         />
-        <Select w="auto" {...register("relay")}>
-          {localSearchSupported && <option value="local">Local Relay</option>}
-          {searchRelays.map((url) => (
-            <option key={url} value={url}>
-              {url}
-            </option>
-          ))}
-        </Select>
+        <SearchRelayPicker {...register("relay")} showLocal />
         <ButtonGroup>
           <IconButton type="submit" aria-label="Search" icon={<SearchIcon boxSize={5} />} colorScheme="primary" />
           <IconButton
@@ -127,7 +108,7 @@ export function SearchPage() {
       </Flex>
 
       <Flex direction="column" gap="2">
-        {shouldSearch ? <SearchResults relay={searchRelay as AbstractRelay} query={searchQuery} /> : null}
+        {shouldSearch ? <SearchResults relay={relay} query={searchQuery} /> : null}
       </Flex>
     </VerticalPageLayout>
   );

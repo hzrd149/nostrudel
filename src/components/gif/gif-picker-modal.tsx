@@ -52,12 +52,10 @@ type GifPickerProps = Omit<ModalProps, "children"> & { onSelect: (gif: NostrEven
 
 export default function GifPickerModal({ onClose, isOpen, onSelect, ...props }: GifPickerProps) {
   const [search, setSearch] = useState<string>();
-  const [searchRelayUrl, setSearchRelayUrl] = useState<string>();
+  const [searchRelay, setSearchRelay] = useState<string>("");
 
   const [list, setList] = useState<ListId>("global");
   const { selected, setSelected, filter, listId } = usePeopleListSelect(list, setList);
-
-  // const searchRelay = useSearchRelay(searchRelayUrl);
 
   const [debounceSearch, setDebounceSearch] = useState<string>();
   useEffect(() => {
@@ -75,8 +73,8 @@ export default function GifPickerModal({ onClose, isOpen, onSelect, ...props }: 
 
   const readRelays = useReadRelays();
   const { loader, timeline } = useTimelineLoader(
-    [listId, "gifs", searchRelayUrl ?? "all", debounceSearch ?? "all"].join("-"),
-    searchRelayUrl !== undefined ? [searchRelayUrl] : readRelays,
+    [listId, "gifs", searchRelay ?? "all", debounceSearch ?? "all"].join("-"),
+    !!searchRelay ? [searchRelay] : readRelays,
     debounceSearch !== undefined ? { ...baseFilter, search: debounceSearch } : baseFilter,
   );
 
@@ -96,7 +94,7 @@ export default function GifPickerModal({ onClose, isOpen, onSelect, ...props }: 
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
-              <SearchRelayPicker value={searchRelayUrl} onChange={(e) => setSearchRelayUrl(e.target.value)} />
+              <SearchRelayPicker value={searchRelay} onChange={(e) => setSearchRelay(e.target.value)} />
               <Button type="submit">Search</Button>
             </Flex>
             <ButtonGroup size="xs">
