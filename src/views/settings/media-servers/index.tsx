@@ -7,10 +7,8 @@ import {
   Box,
   Button,
   ButtonGroup,
-  CloseButton,
   Divider,
   Flex,
-  Heading,
   IconButton,
   Input,
   Link,
@@ -24,13 +22,13 @@ import {
   Text,
   useToast,
 } from "@chakra-ui/react";
+import { CloseIcon } from "@chakra-ui/icons";
 import { useForm } from "react-hook-form";
 
 import RequireActiveAccount from "../../../components/router/require-active-account";
 import { useActiveAccount } from "applesauce-react/hooks";
 import MediaServerFavicon from "../../../components/media-server/media-server-favicon";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
-import BackButton from "../../../components/router/back-button";
 import useUsersMediaServers from "../../../hooks/use-user-media-servers";
 import DebugEventButton from "../../../components/debug-modal/debug-event-button";
 import { cloneEvent } from "../../../helpers/nostr/event";
@@ -39,7 +37,7 @@ import useAsyncErrorHandler from "../../../hooks/use-async-error-handler";
 import { isServerTag } from "../../../helpers/nostr/blossom";
 import { USER_BLOSSOM_SERVER_LIST_KIND, areServersEqual } from "blossom-client-sdk";
 import SimpleView from "../../../components/layout/presets/simple-view";
-import { CloseIcon } from "@chakra-ui/icons";
+import OpenGraphCard from "../../../components/open-graph/open-graph-card";
 
 function MediaServersPage() {
   const toast = useToast();
@@ -79,9 +77,8 @@ function MediaServersPage() {
     await updateSettings({ mediaUploadService: "blossom" });
   }, [updateSettings]);
 
-  const { register, handleSubmit, reset } = useForm({ defaultValues: { server: "" } });
+  const { register, handleSubmit, reset, setValue } = useForm({ defaultValues: { server: "" } });
 
-  const [confirmServer, setConfirmServer] = useState("");
   const submit = handleSubmit(async (values) => {
     const url = new URL(values.server.startsWith("http") ? values.server : "https://" + values.server).toString();
 
@@ -91,21 +88,14 @@ function MediaServersPage() {
     try {
       // test server
       const res = await fetch(url);
+      if (!res.ok) throw new Error("Failed to connect to server");
 
-      setConfirmServer(url);
+      await addServer(url);
       reset();
     } catch (error) {
       toast({ status: "error", description: "Cant reach server" });
     }
   });
-
-  const [loading, setLoading] = useState(false);
-  const confirmAddServer = async () => {
-    setLoading(true);
-    await addServer(confirmServer);
-    setConfirmServer("");
-    setLoading(false);
-  };
 
   return (
     <SimpleView
@@ -155,7 +145,7 @@ function MediaServersPage() {
             You need to add at least one media server in order to upload images and videos
           </AlertDescription>
           <Divider maxW="96" w="full" my="2" />
-          <Button onClick={() => setConfirmServer("https://cdn.satellite.earth/")}>Add cdn.satellite.earth</Button>
+          <Button onClick={() => setValue("server", "https://nostr.download/")}>Add nostr.download</Button>
         </Alert>
       )}
 
@@ -199,34 +189,12 @@ function MediaServersPage() {
       {mediaUploadService === "blossom" && (
         <>
           <Flex as="form" onSubmit={submit} gap="2">
-            <Input {...register("server", { required: true })} required placeholder="https://cdn.satellite.earth" />
+            <Input {...register("server", { required: true })} required placeholder="https://nostr.download" />
             <Button type="submit" colorScheme="primary">
               Add
             </Button>
           </Flex>
         </>
-      )}
-
-      {confirmServer && (
-        <Modal isOpen onClose={() => setConfirmServer("")} size="6xl">
-          <ModalOverlay />
-          <ModalContent h="calc(100vh - var(--chakra-space-32))">
-            <ModalHeader p="4">Add media server</ModalHeader>
-            <ModalCloseButton />
-            <ModalBody p="0" display="flex" flexDirection="column">
-              <Box as="iframe" src={confirmServer} w="full" h="full" flex={1} />
-            </ModalBody>
-
-            <ModalFooter p="4">
-              <Button variant="ghost" mr={3} onClick={() => setConfirmServer("")}>
-                Cancel
-              </Button>
-              <Button colorScheme="primary" onClick={confirmAddServer} isLoading={loading}>
-                Add Server
-              </Button>
-            </ModalFooter>
-          </ModalContent>
-        </Modal>
       )}
     </SimpleView>
   );
