@@ -1,9 +1,10 @@
 import { NostrEvent, verifyEvent as internalVerifyEvent } from "nostr-tools";
 import { setNostrWasm, verifyEvent as wasmVerifyEvent } from "nostr-tools/wasm";
 import { fakeVerifyEvent } from "applesauce-core/helpers/event";
+import { distinctUntilChanged } from "rxjs";
+
 import { logger } from "../helpers/debug";
 import localSettings from "./local-settings";
-import { distinctUntilChanged } from "rxjs";
 
 const log = logger.extend("VerifyEvent");
 let verifyEventMethod: typeof internalVerifyEvent;

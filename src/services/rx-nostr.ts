@@ -1,21 +1,16 @@
-import { ConnectionState, createRxNostr } from "rx-nostr";
+import { ConnectionState, createRxNostr, noopVerifier } from "rx-nostr";
 import { BehaviorSubject, combineLatest } from "rxjs";
 import { unixNow } from "applesauce-core/helpers";
 import { nanoid } from "nanoid";
-
-import verifyEvent from "./verify-event";
 
 import authenticationSigner from "./authentication-signer";
 import localSettings from "./local-settings";
 import { unique } from "../helpers/array";
 
 const rxNostr = createRxNostr({
-  verifier: async (event) => {
-    try {
-      return verifyEvent(event);
-    } catch (error) {}
-    return false;
-  },
+  verifier: noopVerifier,
+  // don't verify the events at the rx-nostr level
+  skipVerify: true,
   authenticator: { signer: authenticationSigner },
   connectionStrategy: "lazy-keep",
   disconnectTimeout: 120_000,

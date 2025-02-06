@@ -42,8 +42,9 @@ const lastAccount = lastPubkey && accounts.getAccountForPubkey(lastPubkey);
 if (lastAccount) accounts.setActive(lastAccount);
 
 // save last active to localstorage
-accounts.active$.subscribe((account) => {
+accounts.active$.pipe(skip(1)).subscribe((account) => {
   if (account) localStorage.setItem("active-account", account.pubkey);
+  else localStorage.removeItem("active-account");
 });
 
 if (import.meta.env.DEV) {
