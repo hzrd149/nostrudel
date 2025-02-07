@@ -54,7 +54,6 @@
     "applesauce-core": "next",
     "applesauce-factory": "next",
     "applesauce-loaders": "next",
-    "applesauce-net": "^0.10.0",
     "applesauce-react": "next",
     "applesauce-signers": "next",
     "bech32": "^2.0.0",

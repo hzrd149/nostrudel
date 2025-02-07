@@ -16,7 +16,7 @@ const rxNostr = createRxNostr({
   disconnectTimeout: 120_000,
 });
 
-// TODO: remove this when client relays are not longer needed
+// Set the default relays based on local app settings
 combineLatest([localSettings.readRelays, localSettings.writeRelays]).subscribe(([read, write]) => {
   const relays = unique([...read, ...write]);
 

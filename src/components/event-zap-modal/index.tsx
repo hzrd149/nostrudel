@@ -10,7 +10,7 @@ import {
 } from "@chakra-ui/react";
 import dayjs from "dayjs";
 import { kinds } from "nostr-tools";
-import { getValue } from "applesauce-core/observable";
+import { getObservableValue } from "applesauce-core/observable";
 import { getInboxes, getInvoice, getOutboxes, safeRelayUrls } from "applesauce-core/helpers";
 import { getZapSplits } from "applesauce-core/helpers/zap";
 
@@ -48,7 +48,7 @@ export async function getPayRequestForPubkey(
   comment?: string,
   additionalRelays?: Iterable<string>,
 ): Promise<PayRequest> {
-  const metadata = await getValue(queryStore.profile(pubkey));
+  const metadata = await getObservableValue(queryStore.profile(pubkey));
   if (!metadata) throw new Error("Cant find user metadata");
   const address = metadata?.lud16 || metadata?.lud06;
   if (!address) throw new Error("User missing lightning address");

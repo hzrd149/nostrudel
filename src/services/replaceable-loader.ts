@@ -6,13 +6,6 @@ import rxNostr from "./rx-nostr";
 import { COMMON_CONTACT_RELAYS } from "../const";
 import { cacheRequest } from "./cache-relay";
 
-export type RequestOptions = {
-  /** Always request the event from the relays */
-  alwaysRequest?: boolean;
-  /** ignore the cache on initial load */
-  ignoreCache?: boolean;
-};
-
 export function getHumanReadableCoordinate(kind: number, pubkey: string, d?: string) {
   return `${kind}:${truncateId(pubkey)}${d ? ":" + d : ""}`;
 }
