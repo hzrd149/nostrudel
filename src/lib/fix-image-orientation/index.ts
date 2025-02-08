@@ -24,19 +24,15 @@ const createImage = (src: string) => {
 };
 
 async function createTransformed(file: Blob | File, orientation: number, type: string) {
-  const canvas = document.createElement("canvas");
-  const context = canvas.getContext("2d");
-
-  if (context == undefined) throw new Error("undefined context");
-
   const objectURL = URL.createObjectURL(file);
   const image = await createImage(objectURL);
 
+  const canvas = new OffscreenCanvas(image.width, image.height);
+  const context = canvas.getContext("2d");
+  if (context == undefined) throw new Error("undefined context");
+
   // NOTE: for some unknown reason firefox and chrome seem to be handling the orientation... so no need to transform
-  // if (noTransformOrientations.has(orientation)) {
-  canvas.width = image.width;
-  canvas.height = image.height;
-  // } else {
+  // if (!noTransformOrientations.has(orientation)) {
   //   if (reversedAspectRatioOrientations.has(orientation)) {
   //     canvas.width = image.height;
   //     canvas.height = image.width;
@@ -47,23 +43,19 @@ async function createTransformed(file: Blob | File, orientation: number, type: s
   //   transformsByOrientation[orientation](image, context);
   // }
   context.drawImage(image, 0, 0);
+  URL.revokeObjectURL(objectURL);
 
-  return new Promise<Blob | File>((res, rej) => {
-    canvas.toBlob((blob) => {
-      URL.revokeObjectURL(objectURL);
-      if (blob) {
-        if (file instanceof File) res(new File([blob], file.name, { type: file.type }));
-        else res(blob);
-      } else rej(new Error("Failed to export canvas"));
-    }, type);
-  });
+  const blob = await canvas.convertToBlob({ type });
+
+  if (file instanceof File) return new File([blob], file.name, { type: blob.type });
+  else return blob;
 }
 
 export async function fixOrientationAndStripMetadata(file: File | Blob) {
   const buffer = await readFileAsArrayBuffer(file);
   const exif = getOrientation(new DataView(buffer));
 
-  if (exif == undefined) return file;
+  if (exif === undefined) return file;
 
   return createTransformed(file, exif.orientation, file.type || exif.type);
 }

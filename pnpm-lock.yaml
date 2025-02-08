@@ -127,8 +127,8 @@ importers:
         specifier: ^2.0.0
         version: 2.0.0
       blossom-client-sdk:
-        specifier: next
-        version: 0.0.0-next-20250124155258
+        specifier: ^3.0.0
+        version: 3.0.0
       blurhash:
         specifier: ^2.0.5
         version: 2.0.5
@@ -2355,12 +2355,12 @@ packages:
   block-stream2@2.1.0:
     resolution: {integrity: sha512-suhjmLI57Ewpmq00qaygS8UgEq2ly2PCItenIyhMqVjo4t4pGzqMvfgJuX8iWTeSDdfSSqS6j38fL4ToNL7Pfg==}
 
-  blossom-client-sdk@0.0.0-next-20250124155258:
-    resolution: {integrity: sha512-OA1nLViB2BYecWacYk1/qACnr0ssOqFAuaSU/OSDCG2xBI4G13dwMd8PvO8imAeFbA3hflw3Wf/PKt7cFLoE4A==}
-    engines: {node: '>=18'}
-
   blossom-client-sdk@0.9.1:
     resolution: {integrity: sha512-lEZ4uNzM09rhp7mjzmgLDC3OEgFd76GkmR90fye/IT5HVCofIT6ldBfyqBY9DcuM1S+XNa1Cu14wFg95CyH8Ag==}
+
+  blossom-client-sdk@3.0.0:
+    resolution: {integrity: sha512-33sMdNGg3Nee3n86bepofN+aYe6eVpvrxlVYGlzf6uRiQUU/QKIhV52lRsApWlzuxxX3Vr77Qh8DxIWVraj5Rg==}
+    engines: {node: '>=18'}
 
   blossom-server-sdk@0.4.0:
     resolution: {integrity: sha512-sZDosyS2OVa+fM2ifdCOckziAcFwMpzlcxGG1JawwR8dWcQkWmsTJVETZKuZG8EUeUrl25oSyGBWHx7itA2ZOA==}
@@ -8654,17 +8654,17 @@ snapshots:
     dependencies:
       readable-stream: 3.6.2
 
-  blossom-client-sdk@0.0.0-next-20250124155258:
-    dependencies:
-      '@cashu/cashu-ts': 2.2.0
-      '@noble/hashes': 1.7.1
-
   blossom-client-sdk@0.9.1:
     dependencies:
       '@noble/hashes': 1.7.1
       cross-fetch: 4.1.0
     transitivePeerDependencies:
       - encoding
+
+  blossom-client-sdk@3.0.0:
+    dependencies:
+      '@cashu/cashu-ts': 2.2.0
+      '@noble/hashes': 1.7.1
 
   blossom-server-sdk@0.4.0:
     dependencies:

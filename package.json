@@ -57,7 +57,7 @@
     "applesauce-react": "next",
     "applesauce-signers": "next",
     "bech32": "^2.0.0",
-    "blossom-client-sdk": "next",
+    "blossom-client-sdk": "^3.0.0",
     "blurhash": "^2.0.5",
     "canvas-confetti": "^1.9.3",
     "chart.js": "^4.4.7",
