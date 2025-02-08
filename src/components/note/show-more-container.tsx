@@ -1,5 +1,6 @@
 import styled from "@emotion/styled";
 import { useEffect, useRef } from "react";
+import { debounce } from "../../helpers/function";
 
 const StyledOverflowContainer = styled.div`
   overflow: hidden;
@@ -30,7 +31,7 @@ export default function ShowMoreContainer({ children, ...props }: React.HTMLAttr
   const ref = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    const update = () => {
+    const update = debounce(() => {
       if (!ref.current) return;
 
       const innerHeight = Array.from(ref.current.children).reduce(
@@ -42,7 +43,7 @@ export default function ShowMoreContainer({ children, ...props }: React.HTMLAttr
       // add or remove the "overflow" class
       if (innerHeight > height && !ref.current.classList.contains("overflow")) ref.current.classList.add("overflow");
       else if (ref.current.classList.contains("overflow")) ref.current.classList.remove("overflow");
-    };
+    }, 1000 / 60);
 
     update();
 
