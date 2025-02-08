@@ -2,7 +2,7 @@ import { useCallback, useState } from "react";
 import { MenuItem } from "@chakra-ui/react";
 import { kinds } from "nostr-tools";
 import { useActiveAccount, useEventFactory } from "applesauce-react/hooks";
-import { removeEvent, addEventTag } from "applesauce-factory/operations/list/index";
+import { removeEventTag, addEventTag } from "applesauce-factory/operations/list/index";
 
 import useUserPinList from "../../hooks/use-user-pin-list";
 import { NostrEvent } from "../../types/nostr-event";
@@ -32,7 +32,7 @@ export default function PinEventMenuItem({ event }: { event: NostrEvent }) {
 
     const draft = await factory.modifyList(
       list || { kind: kinds.Pinlist },
-      isPinned ? removeEvent(event.id) : addEventTag(event.id),
+      isPinned ? removeEventTag(event.id) : addEventTag(event.id),
     );
 
     await publish(label, draft);

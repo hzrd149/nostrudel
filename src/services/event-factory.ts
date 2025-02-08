@@ -10,7 +10,7 @@ import accounts from "./accounts";
 const factory$ = new BehaviorSubject<EventFactory>(
   new EventFactory({
     signer: accounts.active ?? undefined,
-    getRelayHint: getEventRelayHint,
+    getEventRelayHint,
     getPubkeyRelayHint: getPubkeyRelayHint,
     client: localSettings.addClientTag.value ? NIP_89_CLIENT_APP : undefined,
   }),
@@ -21,7 +21,7 @@ combineLatest([accounts.active$, localSettings.addClientTag]).pipe(
   map(([current, client]) => {
     return new EventFactory({
       signer: current ? current.signer : undefined,
-      getRelayHint: getEventRelayHint,
+      getEventRelayHint,
       getPubkeyRelayHint: getPubkeyRelayHint,
       client: client ? NIP_89_CLIENT_APP : undefined,
     });

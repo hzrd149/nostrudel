@@ -42,7 +42,7 @@ export default function AppCard({
         <Text>{app.description}</Text>
       </Flex>
 
-      {canFavorite && <AppFavoriteButton app={app} variant="ghost" ms="auto" my="2" mr="2" />}
+      {canFavorite && <AppFavoriteButton app={app} variant="ghost" ms="auto" my="2" mr="2" zIndex={1} />}
     </Flex>
   );
 }

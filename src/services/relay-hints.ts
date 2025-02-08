@@ -59,8 +59,9 @@ export function getEventPointerRelayHint(pointerOrId: string | EventPointer): st
 }
 
 /** Returns a single relay hint for an event */
-export function getEventRelayHint(event: NostrEvent): string | undefined {
-  return getEventRelayHints(event, 1)[0];
+export function getEventRelayHint(id: string): string | undefined {
+  const event = eventStore.getEvent(id);
+  return event && getEventRelayHints(event, 1)[0];
 }
 
 /** Returns a relay hint for a single pubkey */
