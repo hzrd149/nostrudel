@@ -27,9 +27,6 @@ window.addEventListener("unload", () => {
 import dayjs from "dayjs";
 import relativeTimePlugin from "dayjs/plugin/relativeTime";
 import localizedFormat from "dayjs/plugin/localizedFormat";
-import { CAP_IS_WEB } from "./env";
-import { App } from "./app";
-import { logger } from "./helpers/debug";
 dayjs.extend(relativeTimePlugin);
 dayjs.extend(localizedFormat);
 
@@ -45,6 +42,8 @@ if (import.meta.env.PROD) {
 
 // mount react app
 import { createRoot } from "react-dom/client";
+import { logger } from "./helpers/debug";
+import { App } from "./app";
 
 logger("Rendering app");
 const root = document.getElementById("root")!;
@@ -55,6 +54,7 @@ createRoot(root).render(
 );
 
 // if web, register service worker
+import { CAP_IS_WEB } from "./env";
 import { registerServiceWorker } from "./services/worker";
 if (CAP_IS_WEB) {
   logger("Loading service worker");

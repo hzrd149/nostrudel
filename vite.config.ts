@@ -14,7 +14,6 @@ export default defineConfig({
   build: {
     target: ["chrome89", "edge89", "firefox89", "safari15"],
     sourcemap: true,
-    minify: false,
   },
   plugins: [
     react(),

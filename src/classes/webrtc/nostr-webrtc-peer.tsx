@@ -33,7 +33,7 @@ export default class NostrWebRTCPeer extends EventEmitter<EventMap> {
   signer: Signer;
   pool: Pool;
   peer?: string;
-  relays: string[] = [];
+  signalingRelays: string[] = [];
   iceServers: RTCIceServer[] = [];
 
   connection: RTCPeerConnection;
@@ -56,14 +56,14 @@ export default class NostrWebRTCPeer extends EventEmitter<EventMap> {
 
   private candidateQueue: RTCIceCandidateInit[] = [];
 
-  constructor(signer: Signer, pool: Pool, relays?: string[], iceServers?: RTCIceServer[]) {
+  constructor(signer: Signer, pool: Pool, signalingRelays?: string[], iceServers?: RTCIceServer[]) {
     super();
     this.log = logger.extend(`NostrWebRTCPeer`);
     this.signer = signer;
     this.pool = pool;
 
     if (iceServers) this.iceServers = iceServers;
-    if (relays) this.relays = relays;
+    if (signalingRelays) this.signalingRelays = signalingRelays;
 
     // create connection
     this.connection = new RTCPeerConnection({ iceServers: this.iceServers });
@@ -112,7 +112,7 @@ export default class NostrWebRTCPeer extends EventEmitter<EventMap> {
       });
 
       this.log(`Publishing ${this.candidateQueue.length} ICE candidates`);
-      await this.pool.publish(this.relays, iceEvent);
+      await this.pool.publish(this.signalingRelays, iceEvent);
       this.candidateQueue = [];
     }
   }
@@ -134,7 +134,7 @@ export default class NostrWebRTCPeer extends EventEmitter<EventMap> {
     const offerEvent = await this.signer.signEvent({
       kind: RTCDescriptionEventKind,
       content: cipherText,
-      tags: [["p", peer], ...this.relays.map((r) => ["relay", r])],
+      tags: [["p", peer], ...this.signalingRelays.map((r) => ["relay", r])],
       created_at: dayjs().unix(),
     });
 
@@ -142,7 +142,7 @@ export default class NostrWebRTCPeer extends EventEmitter<EventMap> {
 
     // listen for answers and ice events
     this.subscription = this.pool.subscribeMany(
-      this.relays,
+      this.signalingRelays,
       [
         {
           kinds: [RTCDescriptionEventKind, RTCICEEventKind],
@@ -177,7 +177,7 @@ export default class NostrWebRTCPeer extends EventEmitter<EventMap> {
     this.peer = peer;
 
     this.log("Publishing event", offerEvent.id);
-    await this.pool.publish(this.relays, offerEvent);
+    await this.pool.publish(this.signalingRelays, offerEvent);
     await pc.setLocalDescription(offer);
 
     this.offerEvent = offerEvent;
@@ -208,8 +208,8 @@ export default class NostrWebRTCPeer extends EventEmitter<EventMap> {
     const offer = JSON.parse(plaintext) as RTCSessionDescriptionInit;
     if (offer.type !== "offer") throw new Error("Unexpected rtc description type");
 
-    this.relays = event.tags.filter((t) => t[0] === "relay" && t[1]).map((t) => t[1]);
-    this.log(`Switching to callers signaling relays`, this.relays);
+    this.signalingRelays = event.tags.filter((t) => t[0] === "relay" && t[1]).map((t) => t[1]);
+    this.log(`Switching to callers signaling relays`, this.signalingRelays);
 
     await pc.setRemoteDescription(offer);
 
@@ -232,7 +232,7 @@ export default class NostrWebRTCPeer extends EventEmitter<EventMap> {
 
     // listen for ice events
     this.subscription = this.pool.subscribeMany(
-      this.relays,
+      this.signalingRelays,
       [{ kinds: [RTCICEEventKind], "#e": [event.id], authors: [event.pubkey] }],
       {
         onevent: async (event) => {
@@ -253,7 +253,7 @@ export default class NostrWebRTCPeer extends EventEmitter<EventMap> {
 
     this.log("Publishing event", answerEvent.id);
 
-    await this.pool.publish(this.relays, answerEvent);
+    await this.pool.publish(this.signalingRelays, answerEvent);
     await pc.setLocalDescription(answer);
     this.answerEvent = answerEvent;
 

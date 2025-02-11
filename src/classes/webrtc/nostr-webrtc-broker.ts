@@ -3,11 +3,11 @@ import EventEmitter from "eventemitter3";
 import { generateSecretKey, nip19, NostrEvent } from "nostr-tools";
 import { bytesToHex, hexToBytes } from "@noble/hashes/utils";
 import { SimpleSigner } from "applesauce-signers";
+import { isHex } from "applesauce-core/helpers";
 import dayjs from "dayjs";
 
 import NostrWebRTCPeer, { Pool, RTCDescriptionEventKind, Signer } from "./nostr-webrtc-peer";
 import { logger } from "../../helpers/debug";
-import { isHex } from "applesauce-core/helpers";
 
 type EventMap = {
   call: [NostrEvent];

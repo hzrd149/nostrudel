@@ -62,7 +62,7 @@ export default function LoginNostrAddressView() {
       } else if (nip05.pubkey) {
         const account = new ReadonlyAccount(nip05.pubkey, new ReadonlySigner(nip05.pubkey));
         manager.addAccount(account);
-        manager.setActive(nip05.pubkey);
+        manager.setActive(account);
       } else throw Error("Cant find address");
     } catch (e) {
       if (e instanceof Error) toast({ status: "error", description: e.message });
