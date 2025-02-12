@@ -40,8 +40,8 @@ importers:
         specifier: ^2.2.6
         version: 2.2.6(@chakra-ui/styled-system@2.12.0(react@19.0.0))(react@19.0.0)
       '@codemirror/autocomplete':
-        specifier: ^6.18.4
-        version: 6.18.4
+        specifier: ^6.18.5
+        version: 6.18.5
       '@codemirror/lang-json':
         specifier: ^6.0.1
         version: 6.0.1
@@ -95,7 +95,7 @@ importers:
         version: 4.23.8(@codemirror/language@6.10.8)(@codemirror/state@6.5.2)(@codemirror/view@6.36.2)
       '@uiw/react-codemirror':
         specifier: ^4.23.8
-        version: 4.23.8(@babel/runtime@7.26.7)(@codemirror/autocomplete@6.18.4)(@codemirror/language@6.10.8)(@codemirror/lint@6.8.4)(@codemirror/search@6.5.8)(@codemirror/state@6.5.2)(@codemirror/theme-one-dark@6.1.2)(@codemirror/view@6.36.2)(codemirror@6.0.1)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+        version: 4.23.8(@babel/runtime@7.26.7)(@codemirror/autocomplete@6.18.5)(@codemirror/language@6.10.8)(@codemirror/lint@6.8.4)(@codemirror/search@6.5.8)(@codemirror/state@6.5.2)(@codemirror/theme-one-dark@6.1.2)(@codemirror/view@6.36.2)(codemirror@6.0.1)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@webscopeio/react-textarea-autocomplete':
         specifier: ^4.9.2
         version: 4.9.2(prop-types@15.8.1)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -104,25 +104,25 @@ importers:
         version: 0.7.2
       applesauce-accounts:
         specifier: next
-        version: 0.0.0-next-20250211165042(typescript@5.7.3)
+        version: 0.0.0-next-20250212001252(typescript@5.7.3)
       applesauce-content:
         specifier: next
-        version: 0.0.0-next-20250211165042(typescript@5.7.3)
+        version: 0.0.0-next-20250212001252(typescript@5.7.3)
       applesauce-core:
         specifier: next
-        version: 0.0.0-next-20250211165042(typescript@5.7.3)
+        version: 0.0.0-next-20250212001252(typescript@5.7.3)
       applesauce-factory:
         specifier: next
-        version: 0.0.0-next-20250211165042(typescript@5.7.3)
+        version: 0.0.0-next-20250212001252(typescript@5.7.3)
       applesauce-loaders:
         specifier: next
-        version: 0.0.0-next-20250211165042(typescript@5.7.3)
+        version: 0.0.0-next-20250212001252(typescript@5.7.3)
       applesauce-react:
         specifier: next
-        version: 0.0.0-next-20250211165042(typescript@5.7.3)
+        version: 0.0.0-next-20250212001252(typescript@5.7.3)
       applesauce-signers:
         specifier: next
-        version: 0.0.0-next-20250211165042(typescript@5.7.3)
+        version: 0.0.0-next-20250212001252(typescript@5.7.3)
       bech32:
         specifier: ^2.0.0
         version: 2.0.0
@@ -1220,8 +1220,8 @@ packages:
   '@changesets/write@0.3.2':
     resolution: {integrity: sha512-kDxDrPNpUgsjDbWBvUo27PzKX4gqeKOlhibaOXDJA6kuBisGqNHv/HwGJrAu8U/dSf8ZEFIeHIPtvSlZI1kULw==}
 
-  '@codemirror/autocomplete@6.18.4':
-    resolution: {integrity: sha512-sFAphGQIqyQZfP2ZBsSHV7xQvo9Py0rV0dW7W3IMRdS+zDuNb2l3no78CvUaWKGfzFjI4FTrLdUSj86IGb2hRA==}
+  '@codemirror/autocomplete@6.18.5':
+    resolution: {integrity: sha512-1e0/GALpdgVEcM6jUIrFuhznnwaCzxJNbZ4yiOjVluS2dvz+D0r6k4nBjL+TJZeHRemnBpTUdnEnqd5f0/+D0w==}
 
   '@codemirror/commands@6.8.0':
     resolution: {integrity: sha512-q8VPEFaEP4ikSlt6ZxjB3zW72+7osfAYW9i8Zu943uqbKuz6utc1+F170hyLUCUltXORjQXRyYQNfkckzA/bPQ==}
@@ -2192,26 +2192,26 @@ packages:
     engines: {node: '>=8.0.0'}
     hasBin: true
 
-  applesauce-accounts@0.0.0-next-20250211165042:
-    resolution: {integrity: sha512-reAIy/HXbrHl48c/9AxEKKQHHesCoQwOWav9V7E8NrXZTGPfnKk9v+3ON7npEJN5vQHZ0eWOxTFNgkygL0XfPg==}
+  applesauce-accounts@0.0.0-next-20250212001252:
+    resolution: {integrity: sha512-yFbgY2HTQ4iEecYUjHJkZYS0Rjzm8DGZxc3iFURZY9mZtqQLthtwrL1zHm5UhEY0gnd3B67NxabbOpjKQr7CPA==}
 
-  applesauce-content@0.0.0-next-20250211165042:
-    resolution: {integrity: sha512-HSw0A5fMGsYV2qLFts7kzw0bT9U9yTN6V6iALn2RV2O7wEffCX4hHucdrqnpMgduMMRrQ8DYmRlkCm8oHAydYA==}
+  applesauce-content@0.0.0-next-20250212001252:
+    resolution: {integrity: sha512-ysAABUtkJSsr25Qnr/el+gNG8Ed/T4m+Bx1YIBXWNjaSvRCkNh22kMyQo3a6S40TQYALHSTY4pkIIshTv+HSMg==}
 
-  applesauce-core@0.0.0-next-20250211165042:
-    resolution: {integrity: sha512-xURibxH1WDQJak9KDh0QOKmW/Ze0KMrBP3J4u0DGDv37tInZKzKIrg91ewFkJlpeQIG+c7jh6YhHojPyLDRcvw==}
+  applesauce-core@0.0.0-next-20250212001252:
+    resolution: {integrity: sha512-Gv8qL2pH/k3gXJHumZDla5PQuKsvpTpZaoETTQwIHaEw5C/ZMaIExjhgb1nsPnVjOgHnnfhb3FGc4BIP4q/mXA==}
 
-  applesauce-factory@0.0.0-next-20250211165042:
-    resolution: {integrity: sha512-lrLUbvdLYUZUhWHc7Li528UNy7Eop8guQVjN2y111WYwAcKVKFAoyBzfyXzWWLQ7bKblrfBv1sDGTTpxnreUvg==}
+  applesauce-factory@0.0.0-next-20250212001252:
+    resolution: {integrity: sha512-J6ZXdMkyuJuWx8tHjNI1wTCZsKbs70EHR7pAzvVowc3RsFGl/yMp4tBlv5dg239MzWJv1lhkS4NP9DSaev65Gg==}
 
-  applesauce-loaders@0.0.0-next-20250211165042:
-    resolution: {integrity: sha512-Fdv3KGQecxBeiH1P0nPh0oYRhg5lhUmJoXvRhS4yLZAsF5NNBgMzrV/kOECAsUcW96IIbRx6+sbMcmJ3YrpyeQ==}
+  applesauce-loaders@0.0.0-next-20250212001252:
+    resolution: {integrity: sha512-OoMKYSb1UIXShYoQyXd7Zqg5TJdXZMRzhw4+Fm22WQe3UaouF5QjDuXSOTcWfejgltNuD+TuYFelcxZ2criD1A==}
 
-  applesauce-react@0.0.0-next-20250211165042:
-    resolution: {integrity: sha512-131PEGllc3uAykD3hM+pXjmAsG09NJ/BzJ8TghN117EGAzIsCCkPj8Oi+v5EaGNTVeFRM+O722mWdWqnMEf5vQ==}
+  applesauce-react@0.0.0-next-20250212001252:
+    resolution: {integrity: sha512-2BkTFiJWePOgiJzo0VU+2VdcVma2453OjndHOeX6WOOzLLhAvUhTgymQZJA3xcraj7bbVVVVyCtWXZByDF5EqA==}
 
-  applesauce-signers@0.0.0-next-20250211165042:
-    resolution: {integrity: sha512-QdwbcSCwmXv4nTa+0RrZL54jGiJVcix8PqeRYXDqUCcwNFixY6dahObdePccXOySjYVgScCg2WydhZCl94NZ5g==}
+  applesauce-signers@0.0.0-next-20250212001252:
+    resolution: {integrity: sha512-ZLH4PafDk6CbtFmxYt4qP9+y82wDxj5U/hrs+YikToHPTBvAB9pFwWyRwzhC3l9bDm90liqGzjlGj7QyBpIuMA==}
 
   arg@4.1.3:
     resolution: {integrity: sha512-58S9QDqG0Xx27YwPSt9fJxivjYl432YCwfDMfZ+71RAqUrZef7LrKQZ3LHLOwCS4FLNBplP533Zx895SeOCHvA==}
@@ -7284,7 +7284,7 @@ snapshots:
       human-id: 1.0.2
       prettier: 2.8.8
 
-  '@codemirror/autocomplete@6.18.4':
+  '@codemirror/autocomplete@6.18.5':
     dependencies:
       '@codemirror/language': 6.10.8
       '@codemirror/state': 6.5.2
@@ -7305,7 +7305,7 @@ snapshots:
 
   '@codemirror/lang-yaml@6.1.2':
     dependencies:
-      '@codemirror/autocomplete': 6.18.4
+      '@codemirror/autocomplete': 6.18.5
       '@codemirror/language': 6.10.8
       '@codemirror/state': 6.5.2
       '@lezer/common': 1.2.3
@@ -8283,9 +8283,9 @@ snapshots:
 
   '@types/webxr@0.5.21': {}
 
-  '@uiw/codemirror-extensions-basic-setup@4.23.8(@codemirror/autocomplete@6.18.4)(@codemirror/commands@6.8.0)(@codemirror/language@6.10.8)(@codemirror/lint@6.8.4)(@codemirror/search@6.5.8)(@codemirror/state@6.5.2)(@codemirror/view@6.36.2)':
+  '@uiw/codemirror-extensions-basic-setup@4.23.8(@codemirror/autocomplete@6.18.5)(@codemirror/commands@6.8.0)(@codemirror/language@6.10.8)(@codemirror/lint@6.8.4)(@codemirror/search@6.5.8)(@codemirror/state@6.5.2)(@codemirror/view@6.36.2)':
     dependencies:
-      '@codemirror/autocomplete': 6.18.4
+      '@codemirror/autocomplete': 6.18.5
       '@codemirror/commands': 6.8.0
       '@codemirror/language': 6.10.8
       '@codemirror/lint': 6.8.4
@@ -8307,14 +8307,14 @@ snapshots:
       '@codemirror/state': 6.5.2
       '@codemirror/view': 6.36.2
 
-  '@uiw/react-codemirror@4.23.8(@babel/runtime@7.26.7)(@codemirror/autocomplete@6.18.4)(@codemirror/language@6.10.8)(@codemirror/lint@6.8.4)(@codemirror/search@6.5.8)(@codemirror/state@6.5.2)(@codemirror/theme-one-dark@6.1.2)(@codemirror/view@6.36.2)(codemirror@6.0.1)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)':
+  '@uiw/react-codemirror@4.23.8(@babel/runtime@7.26.7)(@codemirror/autocomplete@6.18.5)(@codemirror/language@6.10.8)(@codemirror/lint@6.8.4)(@codemirror/search@6.5.8)(@codemirror/state@6.5.2)(@codemirror/theme-one-dark@6.1.2)(@codemirror/view@6.36.2)(codemirror@6.0.1)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)':
     dependencies:
       '@babel/runtime': 7.26.7
       '@codemirror/commands': 6.8.0
       '@codemirror/state': 6.5.2
       '@codemirror/theme-one-dark': 6.1.2
       '@codemirror/view': 6.36.2
-      '@uiw/codemirror-extensions-basic-setup': 4.23.8(@codemirror/autocomplete@6.18.4)(@codemirror/commands@6.8.0)(@codemirror/language@6.10.8)(@codemirror/lint@6.8.4)(@codemirror/search@6.5.8)(@codemirror/state@6.5.2)(@codemirror/view@6.36.2)
+      '@uiw/codemirror-extensions-basic-setup': 4.23.8(@codemirror/autocomplete@6.18.5)(@codemirror/commands@6.8.0)(@codemirror/language@6.10.8)(@codemirror/lint@6.8.4)(@codemirror/search@6.5.8)(@codemirror/state@6.5.2)(@codemirror/view@6.36.2)
       codemirror: 6.0.1
       react: 19.0.0
       react-dom: 19.0.0(react@19.0.0)
@@ -8420,10 +8420,10 @@ snapshots:
     dependencies:
       entities: 2.2.0
 
-  applesauce-accounts@0.0.0-next-20250211165042(typescript@5.7.3):
+  applesauce-accounts@0.0.0-next-20250212001252(typescript@5.7.3):
     dependencies:
       '@noble/hashes': 1.7.1
-      applesauce-signers: 0.0.0-next-20250211165042(typescript@5.7.3)
+      applesauce-signers: 0.0.0-next-20250212001252(typescript@5.7.3)
       nanoid: 5.0.9
       nostr-tools: 2.10.4(typescript@5.7.3)
       rxjs: 7.8.1
@@ -8431,13 +8431,13 @@ snapshots:
       - supports-color
       - typescript
 
-  applesauce-content@0.0.0-next-20250211165042(typescript@5.7.3):
+  applesauce-content@0.0.0-next-20250212001252(typescript@5.7.3):
     dependencies:
       '@cashu/cashu-ts': 2.0.0-rc1
       '@types/hast': 3.0.4
       '@types/mdast': 4.0.4
       '@types/unist': 3.0.3
-      applesauce-core: 0.0.0-next-20250211165042(typescript@5.7.3)
+      applesauce-core: 0.0.0-next-20250212001252(typescript@5.7.3)
       mdast-util-find-and-replace: 3.0.2
       nostr-tools: 2.10.4(typescript@5.7.3)
       remark: 15.0.1
@@ -8448,7 +8448,7 @@ snapshots:
       - supports-color
       - typescript
 
-  applesauce-core@0.0.0-next-20250211165042(typescript@5.7.3):
+  applesauce-core@0.0.0-next-20250212001252(typescript@5.7.3):
     dependencies:
       '@scure/base': 1.2.4
       debug: 4.4.0
@@ -8462,19 +8462,19 @@ snapshots:
       - supports-color
       - typescript
 
-  applesauce-factory@0.0.0-next-20250211165042(typescript@5.7.3):
+  applesauce-factory@0.0.0-next-20250212001252(typescript@5.7.3):
     dependencies:
-      applesauce-content: 0.0.0-next-20250211165042(typescript@5.7.3)
-      applesauce-core: 0.0.0-next-20250211165042(typescript@5.7.3)
+      applesauce-content: 0.0.0-next-20250212001252(typescript@5.7.3)
+      applesauce-core: 0.0.0-next-20250212001252(typescript@5.7.3)
       nanoid: 5.0.9
       nostr-tools: 2.10.4(typescript@5.7.3)
     transitivePeerDependencies:
       - supports-color
       - typescript
 
-  applesauce-loaders@0.0.0-next-20250211165042(typescript@5.7.3):
+  applesauce-loaders@0.0.0-next-20250212001252(typescript@5.7.3):
     dependencies:
-      applesauce-core: 0.0.0-next-20250211165042(typescript@5.7.3)
+      applesauce-core: 0.0.0-next-20250212001252(typescript@5.7.3)
       nanoid: 5.0.9
       nostr-tools: 2.10.4(typescript@5.7.3)
       rx-nostr: 3.5.0
@@ -8483,12 +8483,12 @@ snapshots:
       - supports-color
       - typescript
 
-  applesauce-react@0.0.0-next-20250211165042(typescript@5.7.3):
+  applesauce-react@0.0.0-next-20250212001252(typescript@5.7.3):
     dependencies:
-      applesauce-accounts: 0.0.0-next-20250211165042(typescript@5.7.3)
-      applesauce-content: 0.0.0-next-20250211165042(typescript@5.7.3)
-      applesauce-core: 0.0.0-next-20250211165042(typescript@5.7.3)
-      applesauce-factory: 0.0.0-next-20250211165042(typescript@5.7.3)
+      applesauce-accounts: 0.0.0-next-20250212001252(typescript@5.7.3)
+      applesauce-content: 0.0.0-next-20250212001252(typescript@5.7.3)
+      applesauce-core: 0.0.0-next-20250212001252(typescript@5.7.3)
+      applesauce-factory: 0.0.0-next-20250212001252(typescript@5.7.3)
       nostr-tools: 2.10.4(typescript@5.7.3)
       react: 18.3.1
       rxjs: 7.8.1
@@ -8496,12 +8496,12 @@ snapshots:
       - supports-color
       - typescript
 
-  applesauce-signers@0.0.0-next-20250211165042(typescript@5.7.3):
+  applesauce-signers@0.0.0-next-20250212001252(typescript@5.7.3):
     dependencies:
       '@noble/hashes': 1.7.1
       '@noble/secp256k1': 1.7.1
       '@scure/base': 1.2.4
-      applesauce-core: 0.0.0-next-20250211165042(typescript@5.7.3)
+      applesauce-core: 0.0.0-next-20250212001252(typescript@5.7.3)
       debug: 4.4.0
       nanoid: 5.0.9
       nostr-tools: 2.10.4(typescript@5.7.3)
@@ -8890,7 +8890,7 @@ snapshots:
       shiki: 1.29.2
       yaml: 2.7.0
     optionalDependencies:
-      '@codemirror/autocomplete': 6.18.4
+      '@codemirror/autocomplete': 6.18.5
       '@codemirror/lang-json': 6.0.1
       '@codemirror/lang-yaml': 6.1.2
       codemirror-json5: 1.0.3
@@ -8915,7 +8915,7 @@ snapshots:
 
   codemirror@6.0.1:
     dependencies:
-      '@codemirror/autocomplete': 6.18.4
+      '@codemirror/autocomplete': 6.18.5
       '@codemirror/commands': 6.8.0
       '@codemirror/language': 6.10.8
       '@codemirror/lint': 6.8.4

@@ -82,7 +82,7 @@ function filterEvents(events: CategorizedEvent[], pubkey: string, mute?: Mutes):
         if (!refs.reply?.e?.id) return false;
         if (refs.reply?.e?.author && refs.reply?.e?.author !== pubkey) return false;
         const parent = eventStore.getEvent(refs.reply.e.id);
-        if (!parent || parent.pubkey !== pubkey) return false;
+        if (parent?.pubkey !== pubkey) return false;
         break;
       case NotificationType.Mention:
         break;

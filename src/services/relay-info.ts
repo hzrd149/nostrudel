@@ -23,6 +23,19 @@ db.transaction("relayInfo", "readonly")
     log(`Loaded ${loaded} relay info`);
   });
 
+async function saveInfo() {
+  log("Saving relay info");
+  const cache = Reflect.get(Nip11Registry, "cache") as Map<string, any>;
+
+  const tx = db.transaction("relayInfo", "readwrite");
+  await Promise.all(
+    Array.from(cache.entries())
+      .filter(([url, info]) => Object.keys(info).length > 0)
+      .map(([url, info]) => tx.store.put(info, url)),
+  );
+  await tx.done;
+}
+
 async function getInfo(relay: string | AbstractRelay, alwaysFetch = false) {
   relay = typeof relay === "string" ? relay : relay.url;
 
@@ -34,6 +47,10 @@ async function getInfo(relay: string | AbstractRelay, alwaysFetch = false) {
   }
   return info;
 }
+
+setInterval(() => {
+  saveInfo();
+}, 10_000);
 
 export const relayInfoService = { getInfo };
 
