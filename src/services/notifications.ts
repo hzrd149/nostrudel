@@ -6,7 +6,7 @@ import {
   Mutes,
   processTags,
 } from "applesauce-core/helpers";
-import { combineLatest, map, mergeMap, Observable, share, tap } from "rxjs";
+import { combineLatest, filter, map, mergeMap, Observable, share, tap } from "rxjs";
 import { TimelineQuery, UserMuteQuery } from "applesauce-core/queries";
 import { kinds, nip18, nip25, NostrEvent } from "nostr-tools";
 
@@ -164,6 +164,7 @@ const notifications$: Observable<CategorizedEvent[]> = combineLatest([accounts.a
         ],
       })
       .pipe(
+        filter(t => t!== undefined),
         tap((timeline) => {
           // handle loading dependencies of each event
           for (const event of timeline) {
