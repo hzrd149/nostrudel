@@ -1,17 +1,16 @@
 import { Alert, AlertDescription, AlertIcon, AlertTitle, Button } from "@chakra-ui/react";
 
-import { ErrorBoundary } from "../../components/error-boundary";
-import ContainedParentView from "../../components/layout/presets/contained-parent-view";
 import RouterLink from "../../components/router-link";
 import useUserGroupsList from "../../hooks/use-user-groups-list";
 import { encodeGroupPointer } from "applesauce-core/helpers/groups";
 import SimpleNavItem from "../../components/layout/presets/simple-nav-item";
+import SimpleParentView from "../../components/layout/presets/simple-parent-view";
 
 export default function ChannelsHomeView() {
   const { pointers } = useUserGroupsList();
 
   return (
-    <ContainedParentView
+    <SimpleParentView
       title="Groups"
       path="/groups"
       width="sm"
@@ -46,6 +45,6 @@ export default function ChannelsHomeView() {
           </Button>
         </Alert>
       )}
-    </ContainedParentView>
+    </SimpleParentView>
   );
 }

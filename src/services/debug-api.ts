@@ -8,6 +8,8 @@ import relayInfoService from "./relay-info";
 import replaceableEventLoader from "./replaceable-loader";
 import timelineCacheService from "./timeline-cache";
 import { userSearchDirectory } from "./username-search";
+import singleEventLoader from "./single-event-loader";
+import userSetsLoader from "./user-sets-loader";
 
 const noStrudel = {
   rxNostr,
@@ -28,6 +30,8 @@ const noStrudel = {
 
   // other internal services
   replaceableEventLoader,
+  singleEventLoader,
+  userSetsLoader,
   userSearchDirectory,
   readStatusService,
   relayInfoService,

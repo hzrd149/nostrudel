@@ -68,7 +68,7 @@ export default function SupportView() {
   // close the pay request when new zap is received
   useEffect(() => {
     if (request) {
-      const sub = eventStore.stream([{ kinds: [kinds.Zap], since: unixNow() }]).subscribe((event) => {
+      const sub = eventStore.filters([{ kinds: [kinds.Zap], since: unixNow() }]).subscribe((event) => {
         try {
           const bont11 = getTagValue(event, "bolt11");
 

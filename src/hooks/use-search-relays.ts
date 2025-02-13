@@ -8,16 +8,16 @@ import { useRelayInfo } from "./use-relay-info";
 import { AbstractRelay } from "nostr-tools/abstract-relay";
 import WasmRelay from "../services/wasm-relay";
 
-export function useCacheRelaySupportsSearch() {
+export function useCacheRelaySupportsSearch(): boolean {
   const cacheRelay = useCacheRelay();
-  const { info: cacheRelayInfo } = useRelayInfo(cacheRelay instanceof AbstractRelay ? cacheRelay : undefined, true);
+  const { info: cacheRelayInfo } = useRelayInfo(cacheRelay instanceof AbstractRelay ? cacheRelay.url : undefined, true);
   return (
     cacheRelay instanceof WasmRelay ||
     (cacheRelay instanceof AbstractRelay && !!cacheRelayInfo?.supported_nips?.includes(50))
   );
 }
 
-export default function useSearchRelays() {
+export default function useSearchRelays(): string[] {
   const account = useActiveAccount();
   const searchRelayList = useUserSearchRelayList(account?.pubkey);
   const searchRelays = searchRelayList ? getRelaysFromList(searchRelayList) : DEFAULT_SEARCH_RELAYS;

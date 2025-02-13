@@ -43,7 +43,7 @@ function ShareEvent({ event }: { event: NostrEvent }) {
           </Heading>
           <UserDnsIdentity pubkey={event.pubkey} onlyIcon />
           <Text as="span">Shared</Text>
-          <NoteMenu event={event} size="sm" variant="link" aria-label="note options" ml="auto" />
+          <NoteMenu event={event} size="sm" variant="ghost" aria-label="note options" ml="auto" />
         </Flex>
         {!note ? (
           <LoadingNostrLink link={{ type: "nevent", data: pointer }} />

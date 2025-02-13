@@ -26,6 +26,7 @@ import UserDnsIdentityIcon from "../../components/user/user-dns-identity-icon";
 import UserAvatarLink from "../../components/user/user-avatar-link";
 import ContainedSimpleView from "../../components/layout/presets/contained-simple-view";
 import { mergeRelaySets } from "../../helpers/relay";
+import SimpleView from "../../components/layout/presets/simple-view";
 
 /** This is broken out from DirectMessageChatPage for performance reasons. Don't use outside of file */
 const ChatLog = memo(({ messages }: { messages: NostrEvent[] }) => {
@@ -114,8 +115,7 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
   return (
     <ThreadsProvider messages={messages}>
       <IntersectionObserverProvider callback={callback}>
-        <ContainedSimpleView
-          reverse
+        <SimpleView
           title={
             <Flex gap="2" alignItems="center">
               <UserAvatarLink pubkey={pubkey} size="sm" />
@@ -138,14 +138,20 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
               />
             </ButtonGroup>
           }
-          bottom={<SendMessageForm flexShrink={0} pubkey={pubkey} p="2" />}
+          scroll={false}
+          flush
         >
-          <ChatLog messages={messages} />
-          <TimelineActionAndStatus loader={loader} />
+          <Flex direction="column-reverse" p="2" gap="2" flexGrow={1} h={0} overflowX="hidden" overflowY="auto">
+            <ChatLog messages={messages} />
+            <TimelineActionAndStatus loader={loader} />
+          </Flex>
+
+          <SendMessageForm flexShrink={0} pubkey={pubkey} px="2" pb="2" />
+
           {location.state?.thread && (
             <ThreadDrawer isOpen onClose={closeDrawer} threadId={location.state.thread} pubkey={pubkey} />
           )}
-        </ContainedSimpleView>
+        </SimpleView>
       </IntersectionObserverProvider>
     </ThreadsProvider>
   );

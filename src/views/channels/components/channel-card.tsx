@@ -24,7 +24,7 @@ export default function ChannelCard({
   if (!channel || !metadata) return null;
 
   return (
-    <Card as={LinkBox} flexDirection="row" gap="2" overflow="hidden" alignItems="flex-start" ref={ref} {...props}>
+    <Card as={LinkBox} flexDirection="row" gap="2" alignItems="flex-start" ref={ref} {...props}>
       <ChannelImage channel={channel} w="5rem" flexShrink={0} />
       <Flex direction="column" flex={1} overflow="hidden" h="full">
         <CardHeader p="2" display="flex" gap="2" alignItems="center">

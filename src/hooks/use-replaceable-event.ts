@@ -24,7 +24,7 @@ export default function useReplaceableEvent(
       relays: [...readRelays, ...(parsed.relays ?? [])],
       force,
     });
-  }, [parsed, readRelays.join("|"), force]);
+  }, [parsed?.kind, parsed?.pubkey, parsed?.identifier, readRelays.join("|"), force]);
 
   return useStoreQuery(ReplaceableQuery, parsed ? [parsed.kind, parsed.pubkey, parsed.identifier] : undefined);
 }

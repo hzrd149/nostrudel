@@ -19,6 +19,7 @@ import { useReadRelays } from "../../hooks/use-client-relays";
 import { AdditionalRelayProvider, useAdditionalRelayContext } from "../../providers/local/additional-relay-context";
 import useFavoriteStreams from "../../hooks/use-favorite-streams";
 import { getStreamStatus, getStreamStreamingURLs } from "../../helpers/nostr/stream";
+import SimpleView from "../../components/layout/presets/simple-view";
 
 function StreamsPage() {
   useAppTitle("Streams");
@@ -61,13 +62,17 @@ function StreamsPage() {
   const columns = { base: 1, md: 2, lg: 3, xl: 4, "2xl": 5 };
 
   return (
-    <VerticalPageLayout>
-      <Flex gap="2" wrap="wrap" alignItems="center">
-        <PeopleListSelection />
-        <Switch isChecked={showEnded.isOpen} onChange={showEnded.onToggle}>
-          Show Ended
-        </Switch>
-      </Flex>
+    <SimpleView
+      title="Streams"
+      actions={
+        <Flex gap="2" wrap="wrap" alignItems="center">
+          <PeopleListSelection size="sm" />
+          <Switch isChecked={showEnded.isOpen} onChange={showEnded.onToggle}>
+            Show Ended
+          </Switch>
+        </Flex>
+      }
+    >
       <IntersectionObserverProvider callback={callback}>
         {favorites.length > 0 && (
           <>
@@ -103,7 +108,7 @@ function StreamsPage() {
         )}
         <TimelineActionAndStatus loader={loader} />
       </IntersectionObserverProvider>
-    </VerticalPageLayout>
+    </SimpleView>
   );
 }
 export default function StreamHomeView() {

@@ -1,6 +1,6 @@
 import { lazy, Suspense } from "react";
 import { Spinner } from "@chakra-ui/react";
-import { createBrowserRouter, Outlet, RouterProvider, ScrollRestoration, Location } from "react-router-dom";
+import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
 
 import GlobalStyles from "./styles";
 
@@ -60,7 +60,6 @@ const RootPage = () => {
 
   return (
     <RouteProviders>
-      <ScrollRestoration />
       <AppLayout />
     </RouteProviders>
   );
@@ -69,7 +68,6 @@ const RootPage = () => {
 const NoLayoutPage = () => {
   return (
     <RouteProviders>
-      <ScrollRestoration />
       <Outlet />
     </RouteProviders>
   );

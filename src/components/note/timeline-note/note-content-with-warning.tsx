@@ -16,6 +16,6 @@ export default function NoteContentWithWarning({ event }: { event: NostrEvent })
   return showContentWarning ? (
     <ContentWarning description={typeof warning === "string" ? warning : undefined} />
   ) : (
-    <TextNoteContents px="2" event={event} />
+    <TextNoteContents event={event} />
   );
 }

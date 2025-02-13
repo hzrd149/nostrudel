@@ -1,6 +1,6 @@
-import { PropsWithChildren, Suspense } from "react";
+import { PropsWithChildren, ReactNode, Suspense } from "react";
 import { Outlet, OutletProps, useMatch } from "react-router-dom";
-import { Box, Flex, Spinner } from "@chakra-ui/react";
+import { Flex, FlexProps, Spinner } from "@chakra-ui/react";
 
 import { useBreakpointValue } from "../../../providers/global/breakpoint-provider";
 import SimpleHeader from "./simple-header";
@@ -11,45 +11,53 @@ export default function SimpleParentView({
   path,
   title,
   width = "xs",
+  actions,
+  padding = true,
+  scroll = true,
+  gap = 2,
   context,
-}: PropsWithChildren<{ path: string; title?: string; width?: "xs" | "sm" | "md"; context?: OutletProps["context"] }>) {
+}: PropsWithChildren<{
+  path: string;
+  title?: string;
+  width?: "xs" | "sm" | "md";
+  actions?: ReactNode;
+  padding?: boolean;
+  scroll?: boolean;
+  gap?: FlexProps["gap"];
+  context?: OutletProps["context"];
+}>) {
   const match = useMatch(path);
   const isMobile = useBreakpointValue({ base: true, lg: false });
   const showMenu = !isMobile || !!match;
 
-  const floating = useBreakpointValue({ base: false, lg: true });
-
-  if (showMenu)
-    return (
-      <Flex data-type="parent-view" flex={1} direction={floating ? "row" : "column"}>
-        <Box w={floating ? width : 0} flexGrow={0} flexShrink={0} />
-        <Flex
-          w={{ base: "full", lg: width }}
-          direction="column"
-          position={floating ? "fixed" : "initial"}
-          top="var(--safe-top)"
-          bottom="var(--safe-bottom)"
-        >
-          {title && <SimpleHeader title={title} />}
-          <Flex direction="column" p="2" gap="2" overflowY="auto" overflowX="hidden">
-            {children}
-          </Flex>
+  return (
+    <Flex data-type="contained-view" h="full" overflow="hidden" direction={{ base: "column", lg: "row" }}>
+      {showMenu && (
+        <Flex w={{ base: "full", lg: width }} direction="column" overflow="hidden" h="full" flexShrink={0}>
+          {title && <SimpleHeader title={title}>{actions}</SimpleHeader>}
+          {scroll ? (
+            <Flex
+              direction="column"
+              p={padding ? "2" : undefined}
+              gap={gap}
+              overflowY={scroll ? "auto" : "hidden"}
+              overflowX="hidden"
+              flex={1}
+            >
+              {children}
+            </Flex>
+          ) : (
+            <>{children}</>
+          )}
         </Flex>
-        {!isMobile && (
-          <Suspense fallback={<Spinner />}>
-            <ErrorBoundary>
-              <Outlet context={context} />
-            </ErrorBoundary>
-          </Suspense>
-        )}
-      </Flex>
-    );
-  else
-    return (
-      <Suspense fallback={<Spinner />}>
-        <ErrorBoundary>
-          <Outlet context={context} />
-        </ErrorBoundary>
-      </Suspense>
-    );
+      )}
+      {(!isMobile || !showMenu) && (
+        <Suspense fallback={<Spinner />}>
+          <ErrorBoundary>
+            <Outlet context={context} />
+          </ErrorBoundary>
+        </Suspense>
+      )}
+    </Flex>
+  );
 }

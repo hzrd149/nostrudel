@@ -4,8 +4,8 @@ import { UserContactsQuery } from "applesauce-core/queries";
 
 import useReplaceableEvent from "./use-replaceable-event";
 
-export default function useUserContactList(pubkey?: string, additionalRelays?: Iterable<string>, force?: boolean) {
+export default function useUserContacts(pubkey?: string, additionalRelays?: Iterable<string>, force?: boolean) {
   useReplaceableEvent(pubkey && { kind: kinds.Contacts, pubkey }, additionalRelays, force);
 
-  return useStoreQuery(UserContactsQuery);
+  return useStoreQuery(UserContactsQuery, pubkey ? [pubkey] : undefined);
 }

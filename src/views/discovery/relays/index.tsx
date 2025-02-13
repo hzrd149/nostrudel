@@ -6,7 +6,6 @@ import { getEventUID } from "nostr-idb";
 import { useThrottle } from "react-use";
 import { createRxForwardReq } from "rx-nostr";
 
-import BackButton from "../../../components/router/back-button";
 import RelayList from "./components/relay-list";
 import useRouteStateValue from "../../../hooks/use-route-state-value";
 import RelayMap from "./components/relay-map";
@@ -15,7 +14,7 @@ import { SelectedContext } from "./selected-context";
 import CountyPicker from "../../../components/county-picker";
 import { useBreakpointValue } from "../../../providers/global/breakpoint-provider";
 import rxNostr from "../../../services/rx-nostr";
-import ContainedSimpleView from "../../../components/layout/presets/contained-simple-view";
+import SimpleView from "../../../components/layout/presets/simple-view";
 
 export default function RelayDiscoveryView() {
   const showMap = useBreakpointValue({ base: false, lg: true });
@@ -82,9 +81,10 @@ export default function RelayDiscoveryView() {
 
   return (
     <SelectedContext.Provider value={selected}>
-      <ContainedSimpleView
+      <SimpleView
         title="Relays"
         flush
+        scroll={false}
         actions={
           <>
             <Select value={network} onChange={(e) => setNetwork(e.target.value)} w="auto">
@@ -106,7 +106,7 @@ export default function RelayDiscoveryView() {
           )}
           {showMap && <RelayMap events={eventsThrottle} />}
         </Flex>
-      </ContainedSimpleView>
+      </SimpleView>
     </SelectedContext.Provider>
   );
 }

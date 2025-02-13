@@ -3,10 +3,10 @@ import { Alert, AlertDescription, AlertIcon, AlertTitle, Box, Button, Link } fro
 import { ErrorBoundary } from "../../components/error-boundary";
 import ChannelCard from "./components/channel-card";
 import { useReadRelays } from "../../hooks/use-client-relays";
-import ContainedParentView from "../../components/layout/presets/contained-parent-view";
 import useUserChannelsList from "../../hooks/use-user-channels-list";
 import useSingleEvents from "../../hooks/use-single-events";
 import RouterLink from "../../components/router-link";
+import SimpleParentView from "../../components/layout/presets/simple-parent-view";
 
 export default function ChannelsHomeView() {
   const relays = useReadRelays();
@@ -14,7 +14,7 @@ export default function ChannelsHomeView() {
   const channels = useSingleEvents(pointers.map((p) => p.id));
 
   return (
-    <ContainedParentView
+    <SimpleParentView
       title="Public channels"
       path="/channels"
       width="sm"
@@ -24,7 +24,7 @@ export default function ChannelsHomeView() {
         </Button>
       }
     >
-      <Alert status="info">
+      <Alert status="info" flexShrink={0}>
         <AlertIcon />
         <Box>
           <AlertTitle>Deprecated</AlertTitle>
@@ -60,6 +60,6 @@ export default function ChannelsHomeView() {
           </Button>
         </Alert>
       )}
-    </ContainedParentView>
+    </SimpleParentView>
   );
 }

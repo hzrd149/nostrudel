@@ -1,4 +1,3 @@
-import { AbstractRelay } from "nostr-tools/abstract-relay";
 import { Nip11Registry } from "rx-nostr";
 
 import db from "./db";
@@ -36,9 +35,7 @@ async function saveInfo() {
   await tx.done;
 }
 
-async function getInfo(relay: string | AbstractRelay, alwaysFetch = false) {
-  relay = typeof relay === "string" ? relay : relay.url;
-
+async function getInfo(relay: string, alwaysFetch = false) {
   let info = Nip11Registry.get(relay);
 
   if (!info || alwaysFetch) {

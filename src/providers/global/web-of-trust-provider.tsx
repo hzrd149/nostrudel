@@ -73,13 +73,7 @@ export default function WebOfTrustProvider({ pubkey, children }: PropsWithChildr
   // load the graph when it changes
   useEffect(() => {
     if (!graph) return;
-
-    if (import.meta.env.DEV) {
-      //@ts-expect-error debug
-      window.webOfTrust = graph;
-    }
-
-    loadSocialGraph(graph, kinds.Contacts, graph.root, undefined, 1);
+    // loadSocialGraph(graph, kinds.Contacts, graph.root, undefined, 1);
   }, [graph]);
 
   return <WebOfTrustContext.Provider value={graph}>{children}</WebOfTrustContext.Provider>;

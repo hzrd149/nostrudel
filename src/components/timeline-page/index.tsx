@@ -62,7 +62,7 @@ export default function TimelinePage({
   const maxWidth = useMaxPageWidth("6xl");
   return (
     <IntersectionObserverProvider callback={callback}>
-      <VerticalPageLayout maxW={maxWidth} mx="auto" {...props}>
+      <VerticalPageLayout maxW={maxWidth} mx="auto" gap="4" {...props}>
         {header}
         {renderTimeline()}
         <TimelineActionAndStatus loader={loader} />

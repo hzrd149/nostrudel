@@ -6,7 +6,7 @@ export default function DVMResponsesQuery(request: NostrEvent): Query<Record<str
   return {
     key: request.id,
     run: (events) =>
-      events.stream([{ kinds: [request.kind + 1000, 7000], "#e": [request.id] }]).pipe(
+      events.filters([{ kinds: [request.kind + 1000, 7000], "#e": [request.id] }]).pipe(
         scan(
           (byPubkey, event) => {
             if (byPubkey[event.pubkey] && byPubkey[event.pubkey].created_at > event.created_at) return byPubkey;

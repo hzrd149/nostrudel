@@ -134,15 +134,7 @@ function ThreadPost({ post, initShowReplies, focusId, level = -1 }: ThreadItemPr
 
   return (
     <>
-      <Flex
-        direction="column"
-        gap="2"
-        p="2"
-        borderRadius="md"
-        borderWidth=".1rem .1rem .1rem .35rem"
-        {...colorProps}
-        ref={ref}
-      >
+      <Flex direction="column" gap="2" px="2" py="0" borderWidth="0 1px 0 .35rem" {...colorProps} ref={ref}>
         {header}
         {expanded.isOpen && (
           <>

@@ -3,7 +3,7 @@ import { AbstractRelay } from "nostr-tools/abstract-relay";
 
 import relayInfoService from "../services/relay-info";
 
-export function useRelayInfo(relay?: string | AbstractRelay, alwaysFetch = false) {
+export function useRelayInfo(relay?: string, alwaysFetch = false) {
   const {
     value: info,
     loading,

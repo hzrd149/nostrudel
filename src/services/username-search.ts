@@ -20,7 +20,7 @@ const cache = db.getAll("userSearch").then((rows: { pubkey: string; names: strin
   return rows.reduce<UserDirectory>((dir, row) => ({ ...dir, [row.pubkey]: row.names }), {});
 });
 
-const updates = eventStore.stream([{ kinds: [kinds.Metadata] }]).pipe(
+const updates = eventStore.filters([{ kinds: [kinds.Metadata] }]).pipe(
   filter((event) => !isFromCache(event)),
   bufferTime(500),
   concatMap(async (events) => {

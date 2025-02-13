@@ -30,7 +30,7 @@ export default class MemoryRelay implements SimpleRelay {
       ...options,
       fire: () => {
         if (stream) stream.unsubscribe();
-        stream = this.store.stream(filters).subscribe((event) => sub.onevent?.(event));
+        stream = this.store.filters(filters).subscribe((event) => sub.onevent?.(event));
         if (sub.oneose) sub.oneose();
       },
       close: () => {
