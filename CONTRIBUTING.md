@@ -2,12 +2,12 @@
 
 Thank you for considering contributing to the project! I welcome contributions from everyone.
 
-**NOTE: If you are looking to open a PR, please fork off of the `next` branch since that has the latest changes**
+**NOTE: If you are looking to open a PR, please fork off of the `master` branch since that has the latest changes**
 
 ## How to contribute
 
 - Fork the repo
-- Checkout the `next` branch `git checkout next`
+- Checkout the `master` branch `git checkout master`
 - Create a new branch for your feature `git checkout -b new-feature`
 - Start making changes and fixing things
 - Open a pull request [here](https://github.com/hzrd149/nostrudel/pulls)
