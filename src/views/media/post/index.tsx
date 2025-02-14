@@ -1,28 +1,30 @@
 import { ButtonGroup, Flex, Heading, Spinner } from "@chakra-ui/react";
 import { NostrEvent } from "nostr-tools";
 
-import { useReadRelays } from "../../hooks/use-client-relays";
-import useParamsEventPointer from "../../hooks/use-params-event-pointer";
-import useSingleEvent from "../../hooks/use-single-event";
-import UserAvatarLink from "../../components/user/user-avatar-link";
-import UserLink from "../../components/user/user-link";
-import UserDnsIdentity from "../../components/user/user-dns-identity";
-import MediaPostSlides from "../../components/media-post/media-slides";
-import MediaPostContents from "../../components/media-post/media-post-content";
-import { TrustProvider } from "../../providers/local/trust-provider";
-import DebugEventButton from "../../components/debug-modal/debug-event-button";
-import EventShareButton from "../../components/note/timeline-note/components/event-share-button";
-import EventQuoteButton from "../../components/note/event-quote-button";
-import { useBreakpointValue } from "../../providers/global/breakpoint-provider";
-import EventZapIconButton from "../../components/zap/event-zap-icon-button";
-import AddReactionButton from "../../components/note/timeline-note/components/add-reaction-button";
-import EventReactionButtons from "../../components/event-reactions/event-reactions";
+import { useReadRelays } from "../../../hooks/use-client-relays";
+import useParamsEventPointer from "../../../hooks/use-params-event-pointer";
+import useSingleEvent from "../../../hooks/use-single-event";
+import UserAvatarLink from "../../../components/user/user-avatar-link";
+import UserLink from "../../../components/user/user-link";
+import UserDnsIdentity from "../../../components/user/user-dns-identity";
+import MediaPostSlides from "../../../components/media-post/media-slides";
+import MediaPostContents from "../../../components/media-post/media-post-content";
+import { TrustProvider } from "../../../providers/local/trust-provider";
+import DebugEventButton from "../../../components/debug-modal/debug-event-button";
+import EventShareButton from "../../../components/note/timeline-note/components/event-share-button";
+import EventQuoteButton from "../../../components/note/event-quote-button";
+import { useBreakpointValue } from "../../../providers/global/breakpoint-provider";
+import EventZapIconButton from "../../../components/zap/event-zap-icon-button";
+import AddReactionButton from "../../../components/note/timeline-note/components/add-reaction-button";
+import EventReactionButtons from "../../../components/event-reactions/event-reactions";
 import { MediaPostComments } from "./media-comments";
 import MediaPostCommentForm from "./media-post-comment-form";
+import BackButton from "../../../components/router/back-button";
 
 function Header({ post }: { post: NostrEvent }) {
   return (
     <Flex gap="2">
+      <BackButton />
       <UserAvatarLink pubkey={post.pubkey} />
       <Flex direction="column">
         <UserLink pubkey={post.pubkey} fontWeight="bold" />
@@ -76,10 +78,10 @@ function HorizontalLayout({ post }: { post: NostrEvent }) {
 
 function VerticalLayout({ post }: { post: NostrEvent }) {
   return (
-    <Flex direction="column" pt="2" pb="12" gap="2" px="2" w="full">
+    <Flex direction="column" pt="2" pb="12" gap="2" px="2" w="full" overflowY="auto" overflowX="hidden">
       <Header post={post} />
 
-      <MediaPostSlides post={post} h="full" overflow="hidden" />
+      <MediaPostSlides post={post} h="full" overflow="hidden" minH="50vh" />
       <MediaPostContents post={post} />
 
       <Actions post={post} />

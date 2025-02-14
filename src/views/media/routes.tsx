@@ -1,6 +1,6 @@
 import { RouteObject } from "react-router-dom";
 import MediaFeedView from ".";
-import MediaPostView from "./media-post";
+import MediaPostView from "./post";
 
 export default [
   { index: true, Component: MediaFeedView },

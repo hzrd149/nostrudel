@@ -4,14 +4,14 @@ import { COMMENT_KIND } from "applesauce-core/helpers";
 import { useStoreQuery } from "applesauce-react/hooks";
 import { CommentsQuery } from "applesauce-core/queries";
 
-import { useReadRelays } from "../../hooks/use-client-relays";
-import UserLink from "../../components/user/user-link";
-import DebugEventButton from "../../components/debug-modal/debug-event-button";
-import useTimelineLoader from "../../hooks/use-timeline-loader";
-import IntersectionObserverProvider from "../../providers/local/intersection-observer";
-import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
-import TextNoteContents from "../../components/note/timeline-note/text-note-contents";
-import Timestamp from "../../components/timestamp";
+import { useReadRelays } from "../../../hooks/use-client-relays";
+import UserLink from "../../../components/user/user-link";
+import DebugEventButton from "../../../components/debug-modal/debug-event-button";
+import useTimelineLoader from "../../../hooks/use-timeline-loader";
+import IntersectionObserverProvider from "../../../providers/local/intersection-observer";
+import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
+import TextNoteContents from "../../../components/note/timeline-note/text-note-contents";
+import Timestamp from "../../../components/timestamp";
 
 function Comment({ comment }: { comment: NostrEvent }) {
   return (
