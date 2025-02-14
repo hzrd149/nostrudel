@@ -1,6 +1,8 @@
+import { SerializedAccount } from "applesauce-accounts";
+import { Identity } from "applesauce-loaders/helpers/dns-identity";
+
 import { NostrEvent } from "../../types/nostr-event";
 import { AppSettings } from "../../helpers/app-settings";
-import { SerializedAccount } from "applesauce-accounts";
 
 export interface SchemaV1 {
   userMetadata: {
@@ -158,5 +160,11 @@ export interface SchemaV11 extends Omit<SchemaV10, "accounts"> {
   accounts: {
     key: string;
     value: SerializedAccount<any, { settings?: AppSettings }>;
+  };
+}
+export interface SchemaV12 extends Omit<SchemaV11, "dnsIdentifiers"> {
+  identities: {
+    key: string;
+    value: Identity;
   };
 }

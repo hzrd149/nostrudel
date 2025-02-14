@@ -15,20 +15,21 @@ import {
   VisuallyHiddenInput,
 } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
-import { ProfileContent, unixNow } from "applesauce-core/helpers";
+import { parseNIP05Address, ProfileContent, unixNow } from "applesauce-core/helpers";
 
 import { ExternalLinkIcon, OutboxIcon } from "../../components/icons";
 import { isLNURL } from "../../helpers/lnurl";
 import { useReadRelays } from "../../hooks/use-client-relays";
 import { useActiveAccount } from "applesauce-react/hooks";
 import useUserProfile from "../../hooks/use-user-profile";
-import dnsIdentityService from "../../services/dns-identity";
+import dnsIdentityLoader from "../../services/dns-identity-loader";
 import { DraftNostrEvent } from "../../types/nostr-event";
 import lnurlMetadataService from "../../services/lnurl-metadata";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import { COMMON_CONTACT_RELAYS } from "../../const";
 import { usePublishEvent } from "../../providers/global/publish-provider";
 import { useInputUploadFileWithForm } from "../../hooks/use-input-upload-file";
+import { IdentityStatus } from "applesauce-loaders/helpers/dns-identity";
 
 const isEmail =
   /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -195,13 +196,20 @@ const MetadataForm = ({ defaultValues, onSubmit }: MetadataFormProps) => {
             validate: async (address) => {
               if (!address) return true;
               if (!address.includes("@")) return "Invalid address";
-              try {
-                const id = await dnsIdentityService.fetchIdentity(address);
-                if (!id) return "Cant find NIP-05 ID";
-                if (id.pubkey !== account.pubkey) return "Pubkey does not match";
-              } catch (e) {
-                return "Failed to fetch ID";
+
+              const { name, domain } = parseNIP05Address(address) || {};
+              if (!name || !domain) return "Failed to parsed address";
+
+              const identity = await dnsIdentityLoader.fetchIdentity(name, domain);
+              switch (identity.status) {
+                case IdentityStatus.Error:
+                  return "Failed to connect to server";
+                case IdentityStatus.Missing:
+                  return "Identity missing from server";
+                case IdentityStatus.Found:
+                  if (identity.pubkey !== account.pubkey) return "Pubkey does not match";
               }
+
               return true;
             },
           })}

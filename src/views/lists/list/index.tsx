@@ -54,7 +54,7 @@ function ListPage({ list }: { list: NostrEvent }) {
 
   return (
     <TrustProvider trust>
-      <VerticalPageLayout overflow="hidden" h="full">
+      <VerticalPageLayout h="full">
         <Flex gap="2" alignItems="center">
           <Button onClick={() => navigate(-1)} leftIcon={<ChevronLeftIcon />}>
             Back

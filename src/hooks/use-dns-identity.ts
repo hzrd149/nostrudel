@@ -1,12 +1,16 @@
-import { useMemo } from "react";
-import { useObservable } from "applesauce-react/hooks";
+import { useAsync } from "react-use";
+import { parseNIP05Address } from "applesauce-core/helpers";
 
-import dnsIdentityService from "../services/dns-identity";
+import dnsIdentityLoader from "../services/dns-identity-loader";
+import SuperMap from "../classes/super-map";
+
+const parseCache = new SuperMap<string, { name: string; domain: string } | null>(parseNIP05Address);
 
 export default function useDnsIdentity(address: string | undefined) {
-  const subject = useMemo(() => {
-    if (address) return dnsIdentityService.getIdentity(address);
-  }, [address]);
+  const parsed = address ? parseCache.get(address) : null;
+  const { value: identity } = useAsync(async () => {
+    if (parsed) return await dnsIdentityLoader.requestIdentity(parsed.name, parsed.domain);
+  }, [parsed?.name, parsed?.domain]);
 
-  return useObservable(subject);
+  return identity;
 }

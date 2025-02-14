@@ -107,6 +107,11 @@ function MessagesHomePage() {
       case "muted":
         filtered = conversations.filter((c) => mutes?.pubkeys?.has(c.correspondent));
         break;
+      case "other":
+        filtered = conversations.filter(
+          (c) => !contacts?.includes(c.correspondent) && !mutes?.pubkeys.has(c.correspondent),
+        );
+        break;
     }
 
     return filtered.sort((a, b) => b.messages[0].created_at - a.messages[0].created_at);

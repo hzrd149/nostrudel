@@ -19,10 +19,9 @@ import {
 } from "@chakra-ui/react";
 import { nip19 } from "nostr-tools";
 import { ChatIcon } from "@chakra-ui/icons";
-import { parseLNURLOrAddress } from "applesauce-core/helpers";
+import { parseLNURLOrAddress, parseNIP05Address } from "applesauce-core/helpers";
 
 import { truncatedId } from "../../../helpers/nostr/event";
-import { parseAddress } from "../../../services/dns-identity";
 import { useAdditionalRelayContext } from "../../../providers/local/additional-relay-context";
 import useUserProfile from "../../../hooks/use-user-profile";
 import {
@@ -50,43 +49,46 @@ import UserName from "../../../components/user/user-name";
 import { useUserDNSIdentity } from "../../../hooks/use-user-dns-identity";
 import UserAboutContent from "../../../components/user/user-about-content";
 import UserRecentEvents from "./user-recent-events";
-import useAppSettings, { useUserAppSettings } from "../../../hooks/use-user-app-settings";
+import { useUserAppSettings } from "../../../hooks/use-user-app-settings";
 import UserJoinedGroups from "./user-joined-groups";
+import { IdentityStatus } from "applesauce-loaders/helpers/dns-identity";
 
 function DNSIdentityWarning({ pubkey }: { pubkey: string }) {
   const metadata = useUserProfile(pubkey);
-  const dnsIdentity = useUserDNSIdentity(pubkey);
-  const parsedNip05 = metadata?.nip05 ? parseAddress(metadata.nip05) : undefined;
-  const nip05URL = parsedNip05
-    ? `https://${parsedNip05.domain}/.well-known/nostr.json?name=${parsedNip05.name}`
-    : undefined;
+  const identity = useUserDNSIdentity(pubkey);
+  const parsed = metadata?.nip05 ? parseNIP05Address(metadata.nip05) : undefined;
 
-  if (dnsIdentity === undefined)
-    return (
-      <Text color="yellow.500">
-        Unable to check DNS identity due to CORS error{" "}
-        {nip05URL && (
-          <Link
-            color="blue.500"
-            href={`https://cors-test.codehappy.dev/?url=${encodeURIComponent(nip05URL)}&method=get`}
-            isExternal
-          >
-            Test
-            <ExternalLinkIcon ml="1" />
-          </Link>
-        )}
-      </Text>
-    );
-  else if (dnsIdentity.exists === false) return <Text color="red.500">Unable to find nostr.json file</Text>;
-  else if (dnsIdentity.pubkey === undefined)
-    return <Text color="red.500">Unable to find DNS Identity in nostr.json file</Text>;
-  else if (dnsIdentity.pubkey === pubkey) return null;
-  else
-    return (
-      <Text color="red.500" fontWeight="bold">
-        Invalid DNS Identity!
-      </Text>
-    );
+  const nip05URL = parsed ? `https://${parsed.domain}/.well-known/nostr.json?name=${parsed.name}` : undefined;
+
+  switch (identity?.status) {
+    case IdentityStatus.Missing:
+      return <Text color="red.500">Unable to find DNS Identity in nostr.json file</Text>;
+    case IdentityStatus.Error:
+      return (
+        <Text color="yellow.500">
+          Unable to check DNS identity due to CORS error{" "}
+          {nip05URL && (
+            <Link
+              color="blue.500"
+              href={`https://cors-test.codehappy.dev/?url=${encodeURIComponent(nip05URL)}&method=get`}
+              isExternal
+            >
+              Test
+              <ExternalLinkIcon ml="1" />
+            </Link>
+          )}
+        </Text>
+      );
+    case IdentityStatus.Found:
+      if (identity.pubkey !== pubkey)
+        return (
+          <Text color="red.500" fontWeight="bold">
+            Invalid DNS Identity!
+          </Text>
+        );
+    default:
+      return null;
+  }
 }
 
 export default function UserAboutTab() {
@@ -101,7 +103,7 @@ export default function UserAboutTab() {
   const pubkeyColor = "#" + pubkey.slice(0, 6);
   const settings = useUserAppSettings(pubkey);
 
-  const parsedNip05 = metadata?.nip05 ? parseAddress(metadata.nip05) : undefined;
+  const parsedNip05 = metadata?.nip05 ? parseNIP05Address(metadata.nip05) : undefined;
   const nip05URL = parsedNip05
     ? `https://${parsedNip05.domain}/.well-known/nostr.json?name=${parsedNip05.name}`
     : undefined;

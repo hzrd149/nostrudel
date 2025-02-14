@@ -2,13 +2,14 @@ import { Button, Flex, FormControl, FormHelperText, FormLabel, Heading, Input, u
 import { getPublicKey, nip19 } from "nostr-tools";
 import { useForm } from "react-hook-form";
 import { Navigate } from "react-router-dom";
-import { isHexKey } from "applesauce-core/helpers";
+import { isHexKey, parseNIP05Address } from "applesauce-core/helpers";
 import { useObservable } from "applesauce-react/hooks";
 
 import { bakery$, controlApi$, setBakeryURL } from "../../../../services/bakery";
 import useRouteSearchValue from "../../../../hooks/use-route-search-value";
-import dnsIdentityService from "../../../../services/dns-identity";
+import dnsIdentityLoader from "../../../../services/dns-identity-loader";
 import QRCodeScannerButton from "../../../../components/qr-code/qr-code-scanner-button";
+import { IdentityStatus } from "applesauce-loaders/helpers/dns-identity";
 
 export default function BakerySetupView() {
   const toast = useToast();
@@ -54,9 +55,11 @@ export default function BakerySetupView() {
 
       if (!pubkey && values.owner.includes("@")) {
         try {
-          const id = await dnsIdentityService.fetchIdentity(values.owner);
-          if (!id || !id.pubkey) throw new Error("Missing pubkey in NIP-05");
-          pubkey = id.pubkey;
+          const { name, domain } = parseNIP05Address(values.owner) || {};
+          if (!name || !domain) throw new Error("Invalid address");
+          const identity = await dnsIdentityLoader.fetchIdentity(name, domain);
+          if (identity.status !== IdentityStatus.Found) throw new Error("Missing pubkey in NIP-05");
+          pubkey = identity.pubkey;
         } catch (error) {
           throw new Error("Unable to find NIP-05 ID");
         }

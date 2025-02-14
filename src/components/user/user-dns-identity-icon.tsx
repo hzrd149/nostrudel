@@ -1,9 +1,10 @@
 import { forwardRef } from "react";
 import { IconProps } from "@chakra-ui/react";
+import { IdentityStatus } from "applesauce-loaders/helpers/dns-identity";
 
 import useDnsIdentity from "../../hooks/use-dns-identity";
 import useUserProfile from "../../hooks/use-user-profile";
-import { VerificationFailed, VerificationMissing, VerifiedIcon } from "../icons";
+import { ErrorIcon, VerificationFailed, VerificationMissing, VerifiedIcon } from "../icons";
 
 const UserDnsIdentityIcon = forwardRef<SVGSVGElement, { pubkey: string } & IconProps>(({ pubkey, ...props }, ref) => {
   const metadata = useUserProfile(pubkey);
@@ -11,14 +12,19 @@ const UserDnsIdentityIcon = forwardRef<SVGSVGElement, { pubkey: string } & IconP
 
   if (!metadata?.nip05) return null;
 
-  if (identity === undefined) {
-    return <VerificationFailed color="yellow.500" {...props} ref={ref} />;
-  } else if (identity.exists === false || identity.pubkey === undefined) {
-    return <VerificationMissing color="red.500" {...props} ref={ref} />;
-  } else if (pubkey === identity.pubkey) {
-    return <VerifiedIcon color="purple.500" {...props} ref={ref} />;
-  } else {
-    return <VerificationFailed color="red.500" {...props} ref={ref} />;
+  switch (identity?.status) {
+    case IdentityStatus.Missing:
+      return <VerificationMissing color="red.500" {...props} ref={ref} />;
+    case IdentityStatus.Error:
+      return <ErrorIcon color="yellow.500" {...props} ref={ref} />;
+    case IdentityStatus.Found:
+      return identity.pubkey === pubkey ? (
+        <VerifiedIcon color="purple.500" {...props} ref={ref} />
+      ) : (
+        <VerificationFailed color="red.500" {...props} ref={ref} />
+      );
+    default:
+      return <VerificationMissing color="blue.500" {...props} ref={ref} />;
   }
 });
 export default UserDnsIdentityIcon;

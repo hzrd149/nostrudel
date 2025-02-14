@@ -3,8 +3,6 @@ import { clearDB, deleteDB as nostrIDBDelete } from "nostr-idb";
 
 import {
   SchemaV1,
-  SchemaV10,
-  SchemaV11,
   SchemaV2,
   SchemaV3,
   SchemaV4,
@@ -12,6 +10,9 @@ import {
   SchemaV6,
   SchemaV7,
   SchemaV9,
+  SchemaV10,
+  SchemaV11,
+  SchemaV12,
 } from "./schema";
 import { logger } from "../../helpers/debug";
 import { localDatabase } from "../cache-relay";
@@ -19,8 +20,8 @@ import { localDatabase } from "../cache-relay";
 const log = logger.extend("Database");
 
 const dbName = "storage";
-const version = 11;
-const db = await openDB<SchemaV11>(dbName, version, {
+const version = 12;
+const db = await openDB<SchemaV12>(dbName, version, {
   upgrade(db, oldVersion, newVersion, transaction, event) {
     if (oldVersion < 1) {
       const v0 = db as unknown as IDBPDatabase<SchemaV1>;
@@ -201,6 +202,12 @@ const db = await openDB<SchemaV11>(dbName, version, {
       // recreate accounts table
       v10.deleteObjectStore("accounts");
       db.createObjectStore("accounts", { keyPath: "id" });
+    }
+
+    if (oldVersion < 12) {
+      const v11 = db as unknown as IDBPDatabase<SchemaV11>;
+      v11.deleteObjectStore("dnsIdentifiers");
+      db.createObjectStore("identities");
     }
   },
 });

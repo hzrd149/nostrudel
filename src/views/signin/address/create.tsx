@@ -18,7 +18,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { NostrEvent } from "nostr-tools";
 import { NostrConnectSigner } from "applesauce-signers/signers/nostr-connect-signer";
-import { ProfileContent, safeParse } from "applesauce-core/helpers";
+import { parseNIP05Address, ProfileContent, safeParse } from "applesauce-core/helpers";
 import { useAccountManager } from "applesauce-react/hooks";
 import { NostrConnectAccount } from "applesauce-accounts/accounts";
 
@@ -28,10 +28,11 @@ import HoverLinkOverlay from "../../../components/hover-link-overlay";
 import { getEventCoordinate } from "../../../helpers/nostr/event";
 import { MetadataAvatar } from "../../../components/user/user-avatar";
 import { ErrorBoundary } from "../../../components/error-boundary";
-import dnsIdentityService from "../../../services/dns-identity";
+import dnsIdentityLoader from "../../../services/dns-identity-loader";
 import useUserProfile from "../../../hooks/use-user-profile";
 import { safeRelayUrls } from "../../../helpers/relay";
 import { createNostrConnectConnection } from "../../../classes/nostr-connect-connection";
+import { IdentityStatus } from "applesauce-loaders/helpers/dns-identity";
 
 function ProviderCard({ onClick, provider }: { onClick: () => void; provider: NostrEvent }) {
   const metadata = JSON.parse(provider.content) as ProfileContent;
@@ -86,20 +87,25 @@ export default function LoginNostrAddressCreate() {
       setLoading("Creating...");
       const metadata: ProfileContent = { ...userMetadata, ...providerMetadata };
       if (!metadata.nip05) throw new Error("Provider missing nip05 address");
-      const nip05 = await dnsIdentityService.fetchIdentity(metadata.nip05);
-      if (!nip05 || nip05.pubkey !== selected.pubkey) throw new Error("Invalid provider");
-      if (nip05.name !== "_") throw new Error("Provider does not own the domain");
-      if (!nip05.hasNip46) throw new Error("Provider does not support NIP-46");
-      const relays = safeRelayUrls(nip05.nip46Relays || nip05.relays || []);
+      const { name, domain } = parseNIP05Address(metadata.nip05) || {};
+      if (!name || !domain) throw new Error("Invalid DNS identity");
+      const identity = await dnsIdentityLoader.requestIdentity(name, domain);
+      if (identity.status === IdentityStatus.Error) throw new Error("Failed to fetch identity");
+      if (identity.status === IdentityStatus.Missing) throw new Error("Cant find identity");
+      if (identity.pubkey !== selected.pubkey) throw new Error("Invalid provider");
+
+      if (identity.name !== "_") throw new Error("Provider does not own the domain");
+      if (!identity.hasNip46) throw new Error("Provider does not support NIP-46");
+      const relays = safeRelayUrls(identity.nip46Relays || identity.relays || []);
       if (relays.length === 0) throw new Error("Cant find providers relays");
 
       const signer = new NostrConnectSigner({
         relays,
-        remote: nip05.pubkey,
+        remote: identity.pubkey,
         ...createNostrConnectConnection(),
       });
 
-      const createPromise = signer.createAccount(name, nip05.domain, undefined, NOSTR_CONNECT_PERMISSIONS);
+      const createPromise = signer.createAccount(name, identity.domain, undefined, NOSTR_CONNECT_PERMISSIONS);
       await createPromise;
       await signer.connect(undefined, NOSTR_CONNECT_PERMISSIONS);
 
