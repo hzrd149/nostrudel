@@ -12,6 +12,7 @@ import useSetColorMode from "./hooks/use-set-color-mode";
 import TaskManagerProvider from "./views/task-manager/provider";
 
 // one off views
+import NoteFoundView from "./views/404";
 import NostrLinkView from "./views/link";
 import HomeView from "./views/home";
 import ThreadView from "./views/thread";
@@ -75,6 +76,7 @@ const NoLayoutPage = () => {
 
 const router = createBrowserRouter(
   [
+    { path: "*", Component: NoteFoundView },
     {
       path: "signin",
       Component: NoLayoutPage,
