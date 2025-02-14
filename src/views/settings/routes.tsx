@@ -15,6 +15,7 @@ import PrivacySettings from "./privacy";
 import LightningSettings from "./lightning";
 import PerformanceSettings from "./performance";
 import AuthenticationSettingsView from "./authentication";
+import DnsIdentityView from "./dns-identity";
 
 // bakery settings
 const BakeryConnectView = lazy(() => import("./bakery/connect"));
@@ -41,6 +42,7 @@ export default [
         ),
       },
       { path: "mailboxes", Component: MailboxesView },
+      { path: "identity", Component: DnsIdentityView },
       { path: "authentication", Component: AuthenticationSettingsView },
       { path: "media-servers", Component: MediaServersView },
       { path: "search-relays", Component: SearchRelaysView },

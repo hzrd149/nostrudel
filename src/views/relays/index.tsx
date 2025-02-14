@@ -1,4 +1,6 @@
 import { useActiveAccount } from "applesauce-react/hooks";
+import { IdentityStatus } from "applesauce-loaders/helpers/dns-identity";
+
 import Database01 from "../../components/icons/database-01";
 import { AtIcon, RelayIcon, SearchIcon } from "../../components/icons";
 import Mail02 from "../../components/icons/mail-02";
@@ -37,7 +39,7 @@ export default function RelaysView() {
       <SimpleNavItem to="/relays/webrtc" leftIcon={<Server05 boxSize={6} />}>
         WebRTC Relays
       </SimpleNavItem>
-      {nip05?.exists && (
+      {nip05?.status === IdentityStatus.Found && (
         <SimpleNavItem to="/relays/nip05" leftIcon={<AtIcon boxSize={6} />}>
           NIP-05 Relays
         </SimpleNavItem>

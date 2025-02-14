@@ -12,6 +12,7 @@ import { EditIcon } from "../../../components/icons";
 import { getPageTopic } from "../../../helpers/nostr/wiki";
 import GitBranch02 from "../../../components/icons/git-branch-02";
 import useShareableEventAddress from "../../../hooks/use-shareable-event-address";
+import DeleteEventMenuItem from "../../../components/common-menu-items/delete-event";
 
 export default function WikiPageMenu({ page, ...props }: { page: NostrEvent } & Omit<MenuIconButtonProps, "children">) {
   const account = useActiveAccount();
@@ -31,6 +32,8 @@ export default function WikiPageMenu({ page, ...props }: { page: NostrEvent } & 
             Fork Page
           </MenuItem>
         )}
+
+        <DeleteEventMenuItem event={page} label="Delete Page" />
 
         <ShareLinkMenuItem event={page} />
         <CopyEmbedCodeMenuItem event={page} />

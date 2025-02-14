@@ -1,6 +1,8 @@
 import { MouseEventHandler, useCallback, useMemo } from "react";
 import { Button, Card, CardBody, CardHeader, Flex, Heading, SimpleGrid, Text } from "@chakra-ui/react";
 import { WarningIcon } from "@chakra-ui/icons";
+import { IdentityStatus } from "applesauce-loaders/helpers/dns-identity";
+import { mergeRelaySets } from "applesauce-core/helpers";
 
 import { RECOMMENDED_READ_RELAYS, RECOMMENDED_WRITE_RELAYS } from "../../../const";
 import AddRelayForm from "./add-relay-form";
@@ -10,7 +12,7 @@ import RelayControl from "./relay-control";
 import { getRelaysFromExt } from "../../../helpers/nip07";
 import { useUserDNSIdentity } from "../../../hooks/use-user-dns-identity";
 import useUserContactRelays from "../../../hooks/use-user-contact-relays";
-import { mergeRelaySets, safeRelayUrls } from "../../../helpers/relay";
+import { safeRelayUrls } from "../../../helpers/relay";
 import HoverLinkOverlay from "../../../components/hover-link-overlay";
 import SimpleView from "../../../components/layout/presets/simple-view";
 import localSettings from "../../../services/local-settings";
@@ -108,7 +110,7 @@ export default function AppRelaysView() {
             NIP-65 (Mailboxes)
           </Button>
         )}
-        {nip05?.relays && (
+        {nip05?.status === IdentityStatus.Found && (
           <Button
             onClick={() => {
               if (!nip05.relays) return;

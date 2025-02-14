@@ -6,6 +6,7 @@ import { Link as RouterLink } from "react-router-dom";
 
 import RelayFavicon from "../../../components/relay-favicon";
 import SimpleView from "../../../components/layout/presets/simple-view";
+import { IdentityStatus } from "applesauce-loaders/helpers/dns-identity";
 
 function RelayItem({ url }: { url: string }) {
   return (
@@ -38,7 +39,7 @@ export default function NIP05RelaysView() {
         </Link>
       </Text>
 
-      {nip05?.relays?.map((url) => <RelayItem key={url} url={url} />)}
+      {nip05?.status === IdentityStatus.Found && nip05?.relays?.map((url) => <RelayItem key={url} url={url} />)}
     </SimpleView>
   );
 }

@@ -20,6 +20,7 @@ import {
 import { nip19 } from "nostr-tools";
 import { ChatIcon } from "@chakra-ui/icons";
 import { parseLNURLOrAddress, parseNIP05Address } from "applesauce-core/helpers";
+import { IdentityStatus } from "applesauce-loaders/helpers/dns-identity";
 
 import { truncatedId } from "../../../helpers/nostr/event";
 import { useAdditionalRelayContext } from "../../../providers/local/additional-relay-context";
@@ -51,45 +52,7 @@ import UserAboutContent from "../../../components/user/user-about-content";
 import UserRecentEvents from "./user-recent-events";
 import { useUserAppSettings } from "../../../hooks/use-user-app-settings";
 import UserJoinedGroups from "./user-joined-groups";
-import { IdentityStatus } from "applesauce-loaders/helpers/dns-identity";
-
-function DNSIdentityWarning({ pubkey }: { pubkey: string }) {
-  const metadata = useUserProfile(pubkey);
-  const identity = useUserDNSIdentity(pubkey);
-  const parsed = metadata?.nip05 ? parseNIP05Address(metadata.nip05) : undefined;
-
-  const nip05URL = parsed ? `https://${parsed.domain}/.well-known/nostr.json?name=${parsed.name}` : undefined;
-
-  switch (identity?.status) {
-    case IdentityStatus.Missing:
-      return <Text color="red.500">Unable to find DNS Identity in nostr.json file</Text>;
-    case IdentityStatus.Error:
-      return (
-        <Text color="yellow.500">
-          Unable to check DNS identity due to CORS error{" "}
-          {nip05URL && (
-            <Link
-              color="blue.500"
-              href={`https://cors-test.codehappy.dev/?url=${encodeURIComponent(nip05URL)}&method=get`}
-              isExternal
-            >
-              Test
-              <ExternalLinkIcon ml="1" />
-            </Link>
-          )}
-        </Text>
-      );
-    case IdentityStatus.Found:
-      if (identity.pubkey !== pubkey)
-        return (
-          <Text color="red.500" fontWeight="bold">
-            Invalid DNS Identity!
-          </Text>
-        );
-    default:
-      return null;
-  }
-}
+import DNSIdentityWarning from "../../settings/dns-identity/identity-warning";
 
 export default function UserAboutTab() {
   const expanded = useDisclosure();
@@ -107,6 +70,8 @@ export default function UserAboutTab() {
   const nip05URL = parsedNip05
     ? `https://${parsedNip05.domain}/.well-known/nostr.json?name=${parsedNip05.name}`
     : undefined;
+
+  const identity = useUserDNSIdentity(pubkey);
 
   return (
     <Flex
@@ -202,7 +167,7 @@ export default function UserAboutTab() {
                 <UserDnsIdentity pubkey={pubkey} />
               </Link>
             </Flex>
-            <DNSIdentityWarning pubkey={pubkey} />
+            {identity && <DNSIdentityWarning identity={identity} pubkey={pubkey} />}
           </Box>
         )}
         {metadata?.website && (
