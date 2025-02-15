@@ -1,9 +1,9 @@
 import { Button, Flex, FlexProps, useToast } from "@chakra-ui/react";
+import { isSafeRelayURL } from "applesauce-core/helpers/relays";
+import { normalizeURL } from "applesauce-core/helpers/url";
 import { useForm } from "react-hook-form";
 
 import { RelayUrlInput } from "../../../components/relay-url-input";
-import { isSafeRelayURL } from "../../../../../applesauce/packages/core/dist/helpers/relays";
-import { normalizeURL } from "applesauce-core/helpers";
 
 export default function AddRelayForm({
   onSubmit,

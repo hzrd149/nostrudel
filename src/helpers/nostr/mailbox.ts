@@ -1,9 +1,10 @@
 import { kinds } from "nostr-tools";
-import { DraftNostrEvent, NostrEvent, RTag, Tag, isRTag } from "../../types/nostr-event";
+import { isSafeRelayURL } from "applesauce-core/helpers/relays";
+import { normalizeURL } from "applesauce-core/helpers/url";
+
+import { DraftNostrEvent, NostrEvent, RTag, Tag } from "../../types/nostr-event";
 import { cloneEvent } from "./event";
 import { RelayMode } from "../../services/app-relays";
-import { isSafeRelayURL } from "../../../../applesauce/packages/core/dist/helpers/relays";
-import { normalizeURL } from "applesauce-core/helpers";
 
 /**
  * fixes or removes any bad r tags

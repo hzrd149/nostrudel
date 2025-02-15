@@ -203,11 +203,10 @@ const notifications$: Observable<CategorizedEvent[]> = combineLatest([accounts.a
     return combineLatest([timeline$, mute$]).pipe(
       // filter events out by mutes
       map(([timeline, mutes]) => filterEvents(timeline, account.pubkey, mutes)),
-      // keep the observable hot for 5 minutes after its unsubscribed
-      share({ connector: () => new ReplaySubject(1), resetOnComplete: () => timer(5 * 60_000) }),
     );
   }),
-  share(),
+  // keep the observable hot for 5 minutes after its unsubscribed
+  share({ connector: () => new ReplaySubject(1), resetOnComplete: () => timer(5 * 60_000) }),
 );
 
 export default notifications$;
