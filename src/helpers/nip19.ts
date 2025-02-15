@@ -1,13 +1,12 @@
 import { nip19 } from "nostr-tools";
 import { getPubkeyFromDecodeResult, isHexKey } from "applesauce-core/helpers";
-
-import { safeRelayUrls } from "./relay";
+import { isSafeRelayURL } from "applesauce-core/helpers/relays";
 
 export function safeDecode(str: string) {
   try {
     const result = nip19.decode(str);
     if ((result.type === "nevent" || result.type === "nprofile" || result.type === "naddr") && result.data.relays)
-      result.data.relays = safeRelayUrls(result.data.relays);
+      result.data.relays = result.data.relays.filter(isSafeRelayURL);
     return result;
   } catch (e) {}
 }

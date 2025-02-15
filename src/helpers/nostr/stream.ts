@@ -1,4 +1,4 @@
-import { getEventPointerFromETag, getTagValue, safeRelayUrl } from "applesauce-core/helpers";
+import { getEventPointerFromETag, getTagValue, isSafeRelayURL, normalizeURL } from "applesauce-core/helpers";
 
 import { NostrEvent, isPTag } from "../../types/nostr-event";
 import dayjs from "dayjs";
@@ -46,7 +46,9 @@ export function getStreamRelays(stream: NostrEvent) {
     if (tag[0] === "relays") {
       found = true;
       for (let i = 1; i < tag.length; i++) {
-        const relay = safeRelayUrl(tag[i]);
+        if (!isSafeRelayURL(tag[i])) continue;
+
+        const relay = normalizeURL(tag[i]);
         if (relay && !relays.includes(relay)) relays.push(relay);
       }
     }

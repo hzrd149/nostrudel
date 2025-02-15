@@ -5,13 +5,13 @@ import { NostrConnectSigner } from "applesauce-signers/signers/nostr-connect-sig
 import { useAccountManager } from "applesauce-react/hooks";
 import { NostrConnectAccount, ReadonlyAccount } from "applesauce-accounts/accounts";
 import { Identity, IdentityStatus } from "applesauce-loaders/helpers/dns-identity";
+import { mergeRelaySets } from "applesauce-core/helpers";
 import { ReadonlySigner } from "applesauce-signers";
 import { useDebounce } from "react-use";
 
 import dnsIdentityLoader from "../../../services/dns-identity-loader";
 import { CheckIcon } from "../../../components/icons";
 import { NOSTR_CONNECT_PERMISSIONS } from "../../../const";
-import { safeRelayUrls } from "../../../helpers/relay";
 import { getMatchSimpleEmail } from "../../../helpers/regexp";
 import QRCodeScannerButton from "../../../components/qr-code/qr-code-scanner-button";
 import { createNostrConnectConnection } from "../../../classes/nostr-connect-connection";
@@ -46,7 +46,7 @@ export default function LoginNostrAddressView() {
     try {
       if (nip05.hasNip46 && nip05.pubkey) {
         setLoading("Connecting...");
-        const relays = safeRelayUrls(nip05.nip46Relays || nip05.relays || []);
+        const relays = mergeRelaySets(nip05.nip46Relays || nip05.relays || []);
         const signer = new NostrConnectSigner({
           pubkey: nip05.pubkey,
           relays,

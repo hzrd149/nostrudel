@@ -4,7 +4,7 @@ import { WarningIcon } from "@chakra-ui/icons";
 import { IdentityStatus } from "applesauce-loaders/helpers/dns-identity";
 import { mergeRelaySets } from "applesauce-core/helpers";
 
-import { RECOMMENDED_READ_RELAYS, RECOMMENDED_WRITE_RELAYS } from "../../../const";
+import { JAPANESE_RELAYS, RECOMMENDED_READ_RELAYS, RECOMMENDED_WRITE_RELAYS } from "../../../const";
 import AddRelayForm from "./add-relay-form";
 import { useReadRelays, useWriteRelays } from "../../../hooks/use-client-relays";
 import { useActiveAccount } from "applesauce-react/hooks";
@@ -12,20 +12,11 @@ import RelayControl from "./relay-control";
 import { getRelaysFromExt } from "../../../helpers/nip07";
 import { useUserDNSIdentity } from "../../../hooks/use-user-dns-identity";
 import useUserContactRelays from "../../../hooks/use-user-contact-relays";
-import { safeRelayUrls } from "../../../helpers/relay";
 import HoverLinkOverlay from "../../../components/hover-link-overlay";
 import SimpleView from "../../../components/layout/presets/simple-view";
 import localSettings from "../../../services/local-settings";
 import { addAppRelay, RelayMode } from "../../../services/app-relays";
 import useUserMailboxes from "../../../hooks/use-user-mailboxes";
-
-const JAPANESE_RELAYS = safeRelayUrls([
-  "wss://r.kojira.io",
-  "wss://nrelay-jp.c-stellar.net",
-  "wss://nostr.fediverse.jp",
-  "wss://nostr.holybea.com",
-  "wss://relay-jp.nostr.wirednet.jp",
-]);
 
 function RelaySetCard({ label, read, write }: { label: string; read: Iterable<string>; write: Iterable<string> }) {
   const handleClick = useCallback<MouseEventHandler>((e) => {

@@ -1,16 +1,20 @@
 import { kinds } from "nostr-tools";
 import { DraftNostrEvent, NostrEvent, RTag, Tag, isRTag } from "../../types/nostr-event";
-import { safeRelayUrl } from "../relay";
 import { cloneEvent } from "./event";
 import { RelayMode } from "../../services/app-relays";
+import { isSafeRelayURL } from "../../../../applesauce/packages/core/dist/helpers/relays";
+import { normalizeURL } from "applesauce-core/helpers";
 
-/** fixes or removes any bad r tags */
+/**
+ * fixes or removes any bad r tags
+ * @deprecated
+ */
 export function cleanRTags(tags: Tag[]) {
   const newTags: Tag[] = [];
   for (const tag of tags) {
     if (tag[0] === "r") {
-      if (!tag[1]) continue;
-      const url = safeRelayUrl(tag[1]);
+      if (!tag[1] || !isSafeRelayURL(tag[1])) continue;
+      const url = normalizeURL(tag[1]);
       if (url) newTags.push(tag[2] ? ["r", url, tag[2]] : ["r", url]);
     } else newTags.push(tag);
   }
@@ -32,10 +36,6 @@ export function createRelayTag(url: string, mode: RelayMode) {
     case RelayMode.BOTH:
       return ["r", url];
   }
-}
-
-export function getRelaysFromMailbox(list: NostrEvent | DraftNostrEvent): { url: string; mode: RelayMode }[] {
-  return cleanRTags(list.tags).filter(isRTag).map(parseRTag);
 }
 
 export function addRelayModeToMailbox(list: NostrEvent | undefined, relay: string, mode: RelayMode): DraftNostrEvent {

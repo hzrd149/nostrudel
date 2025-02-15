@@ -1,8 +1,9 @@
 import { Button, Flex, FlexProps, useToast } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 
-import { safeRelayUrl } from "../../../helpers/relay";
 import { RelayUrlInput } from "../../../components/relay-url-input";
+import { isSafeRelayURL } from "../../../../../applesauce/packages/core/dist/helpers/relays";
+import { normalizeURL } from "applesauce-core/helpers";
 
 export default function AddRelayForm({
   onSubmit,
@@ -21,9 +22,8 @@ export default function AddRelayForm({
 
   const submit = handleSubmit(async (values) => {
     try {
-      const url = safeRelayUrl(values.url);
-      if (!url) return;
-      await onSubmit(url);
+      if (!isSafeRelayURL(values.url)) return;
+      await onSubmit(normalizeURL(values.url));
       reset();
     } catch (error) {
       if (error instanceof Error) toast({ status: "error", description: error.message });

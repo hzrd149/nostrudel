@@ -6,8 +6,20 @@ import {
   Mutes,
   processTags,
 } from "applesauce-core/helpers";
-import { combineLatest, filter, map, mergeMap, Observable, share, tap } from "rxjs";
+import {
+  combineLatest,
+  filter,
+  map,
+  Observable,
+  ReplaySubject,
+  share,
+  switchMap,
+  tap,
+  throttleTime,
+  timer,
+} from "rxjs";
 import { TimelineQuery, UserMuteQuery } from "applesauce-core/queries";
+import { getContentPointers } from "applesauce-factory/helpers";
 import { kinds, nip18, nip25, NostrEvent } from "nostr-tools";
 
 import localSettings from "./local-settings";
@@ -17,7 +29,6 @@ import { TORRENT_COMMENT_KIND } from "../helpers/nostr/torrents";
 import accounts from "./accounts";
 import { getThreadReferences, isReply, isRepost } from "../helpers/nostr/event";
 import { getPubkeysMentionedInContent } from "../helpers/nostr/post";
-import { getContentPointers } from "applesauce-factory/helpers";
 
 export const NotificationTypeSymbol = Symbol("notificationType");
 
@@ -145,7 +156,7 @@ async function handleShare(event: NostrEvent) {
 }
 
 const notifications$: Observable<CategorizedEvent[]> = combineLatest([accounts.active$]).pipe(
-  mergeMap(([account]) => {
+  switchMap(([account]) => {
     if (!account) return [];
 
     const timeline$ = queryStore
@@ -164,7 +175,11 @@ const notifications$: Observable<CategorizedEvent[]> = combineLatest([accounts.a
         ],
       })
       .pipe(
-        filter(t => t!== undefined),
+        // filter out undefined
+        filter((t) => t !== undefined),
+        // update timeline at 30fps
+        throttleTime(1000 / 30),
+        // trigger logs of extra events
         tap((timeline) => {
           // handle loading dependencies of each event
           for (const event of timeline) {
@@ -179,13 +194,17 @@ const notifications$: Observable<CategorizedEvent[]> = combineLatest([accounts.a
             }
           }
         }),
+        // categorize events
         map((timeline) => timeline.map((e) => categorizeEvent(e, account.pubkey))),
       );
 
     const mute$ = queryStore.createQuery(UserMuteQuery, account.pubkey);
 
     return combineLatest([timeline$, mute$]).pipe(
+      // filter events out by mutes
       map(([timeline, mutes]) => filterEvents(timeline, account.pubkey, mutes)),
+      // keep the observable hot for 5 minutes after its unsubscribed
+      share({ connector: () => new ReplaySubject(1), resetOnComplete: () => timer(5 * 60_000) }),
     );
   }),
   share(),

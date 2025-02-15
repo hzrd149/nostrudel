@@ -13,6 +13,7 @@ import {
   Tag,
   useDisclosure,
 } from "@chakra-ui/react";
+import { isSafeRelayURL, normalizeURL } from "applesauce-core/helpers";
 
 import { useRelayInfo } from "../../../hooks/use-relay-info";
 import { RelayDebugButton, RelayMetadata } from "../components/relay-card";
@@ -23,7 +24,6 @@ import RelayNotes from "./relay-notes";
 import PeopleListProvider from "../../../providers/local/people-list-provider";
 import PeopleListSelection from "../../../components/people-list-selection/people-list-selection";
 import RelayFavicon from "../../../components/relay-favicon";
-import { safeRelayUrl } from "../../../helpers/relay";
 import RelayUsersTab from "./relay-users";
 const RelayDetailsTab = lazy(() => import("./relay-details"));
 
@@ -108,12 +108,11 @@ export default function RelayDetailsView() {
   const { relay } = useParams<string>();
   if (!relay) return <>No relay url</>;
 
-  const safeUrl = safeRelayUrl(relay);
-  if (!safeUrl) return <>Bad relay url</>;
+  if (!isSafeRelayURL(relay)) return <>Bad relay url</>;
 
   return (
     <PeopleListProvider initList="global">
-      <RelayPage relay={safeUrl} />
+      <RelayPage relay={normalizeURL(relay)} />
     </PeopleListProvider>
   );
 }

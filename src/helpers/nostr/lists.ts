@@ -1,10 +1,10 @@
 import dayjs from "dayjs";
 import { EventTemplate, NostrEvent, kinds } from "nostr-tools";
 import { isAddressPointerInList, isEventPointerInList, isProfilePointerInList } from "applesauce-core/helpers/lists";
+import { mergeRelaySets } from "applesauce-core/helpers";
 
 import { PTag, isDTag, isPTag, isRTag } from "../../types/nostr-event";
 import { getEventCoordinate, replaceOrAddSimpleTag } from "./event";
-import { safeRelayUrls } from "../relay";
 
 export const USER_GROUPS_LIST_KIND = 10009;
 
@@ -100,9 +100,9 @@ export function getReferencesFromList(event: NostrEvent | EventTemplate) {
 }
 
 /** @deprecated this should be moved to applesauce-core if its still needed */
-export function getRelaysFromList(event: NostrEvent | EventTemplate) {
-  if (event.kind === kinds.RelayList) return safeRelayUrls(event.tags.filter(isRTag).map((t) => t[1]));
-  else return safeRelayUrls(event.tags.filter((t) => t[0] === "relay" && t[1]).map((t) => t[1]) as string[]);
+export function getRelaysFromList(event: NostrEvent | EventTemplate): string[] {
+  if (event.kind === kinds.RelayList) return mergeRelaySets(event.tags.filter(isRTag).map((t) => t[1]));
+  else return mergeRelaySets(event.tags.filter((t) => t[0] === "relay" && t[1]).map((t) => t[1]));
 }
 
 /** @deprecated */

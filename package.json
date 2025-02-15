@@ -85,7 +85,7 @@
     "light-bolt11-decoder": "^3.2.0",
     "lodash.throttle": "^4.1.1",
     "match-sorter": "^8.0.0",
-    "nanoid": "^5.0.9",
+    "nanoid": "^5.1.0",
     "ngeohash": "^0.6.3",
     "nostr-idb": "^2.2.0",
     "nostr-signer-capacitor-plugin": "^0.0.3",

@@ -1,12 +1,12 @@
 import { CloseIcon } from "@chakra-ui/icons";
-import { Button, Code, Flex, Heading, IconButton, Input, Link, Select, Switch, Text } from "@chakra-ui/react";
+import { Button, Flex, Heading, IconButton, Input, Link, Select, Switch, Text } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
-import { safeRelayUrl } from "applesauce-core/helpers";
 import { useObservable } from "applesauce-react/hooks";
 
 import useAsyncErrorHandler from "../../../../hooks/use-async-error-handler";
 import { controlApi$ } from "../../../../services/bakery";
 import RelayFavicon from "../../../../components/relay-favicon";
+import { isSafeRelayURL, normalizeURL } from "applesauce-core/helpers";
 
 function BroadcastRelay({ relay }: { relay: string }) {
   const controlApi = useObservable(controlApi$);
@@ -44,8 +44,10 @@ function AddRelayForm() {
 
   const submit = handleSubmit((values) => {
     if (!config) return;
-    const url = safeRelayUrl(values.url);
-    if (url) controlApi?.setConfigField("gossipBroadcastRelays", [...config.gossipBroadcastRelays, url]);
+    if (!isSafeRelayURL(values.url)) return;
+
+    const url = normalizeURL(values.url);
+    controlApi?.setConfigField("gossipBroadcastRelays", [...config.gossipBroadcastRelays, url]);
 
     reset();
   });

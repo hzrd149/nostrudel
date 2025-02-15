@@ -1,11 +1,10 @@
 import { BehaviorSubject, distinctUntilChanged, Observable, pairwise } from "rxjs";
 import { CacheRelay, openDB } from "nostr-idb";
 import { AbstractRelay } from "nostr-tools/abstract-relay";
-import { fakeVerifyEvent, isFromCache } from "applesauce-core/helpers";
+import { fakeVerifyEvent, isFromCache, isSafeRelayURL } from "applesauce-core/helpers";
 import dayjs from "dayjs";
 
 import { logger } from "../helpers/debug";
-import { safeRelayUrl } from "../helpers/relay";
 import WasmRelay from "./wasm-relay";
 import MemoryRelay from "../classes/memory-relay";
 import localSettings from "./local-settings";
@@ -50,8 +49,8 @@ async function createRelay(url: string) {
       return new WasmRelay();
     } else if (url.startsWith("nostr-idb://")) {
       return createInternalRelay();
-    } else if (safeRelayUrl(url)) {
-      return new AbstractRelay(safeRelayUrl(url)!, { verifyEvent: fakeVerifyEvent });
+    } else if (isSafeRelayURL(url)) {
+      return new AbstractRelay(url, { verifyEvent: fakeVerifyEvent });
     }
   } else if (window.CACHE_RELAY_ENABLED) {
     const protocol = location.protocol === "https:" ? "wss:" : "ws:";

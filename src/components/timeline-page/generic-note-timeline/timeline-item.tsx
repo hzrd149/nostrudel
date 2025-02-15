@@ -5,7 +5,6 @@ import { Box, Spinner } from "@chakra-ui/react";
 import { ErrorBoundary } from "../../error-boundary";
 import ReplyNote from "./reply-note";
 import ShareEvent from "./share-event";
-import RelayRecommendation from "./relay-recommendation";
 import { isReply } from "../../../helpers/nostr/event";
 import { NostrEvent } from "../../../types/nostr-event";
 import { FLARE_VIDEO_KIND } from "../../../helpers/nostr/video";
@@ -35,9 +34,6 @@ function TimelineItem({ event, visible, minHeight }: { event: NostrEvent; visibl
       break;
     case kinds.LiveEvent:
       content = <StreamNote stream={event} />;
-      break;
-    case kinds.RecommendRelay:
-      content = <RelayRecommendation event={event} />;
       break;
     case kinds.BadgeAward:
       content = <BadgeAwardCard award={event} />;

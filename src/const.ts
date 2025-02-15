@@ -1,18 +1,23 @@
-import { safeRelayUrls } from "applesauce-core/helpers";
 import { EventFactoryClient } from "applesauce-factory";
+import { isSafeRelayURL } from "applesauce-core/helpers/relays";
+import { normalizeURL } from "applesauce-core/helpers";
 import { kinds } from "nostr-tools";
 
-export const DEFAULT_SEARCH_RELAYS = safeRelayUrls([
+function normalizeRelayURLs(relays: string[]) {
+  return relays.filter(isSafeRelayURL).map(normalizeURL);
+}
+
+export const DEFAULT_SEARCH_RELAYS = normalizeRelayURLs([
   "wss://relay.nostr.band",
   "wss://search.nos.today",
   "wss://relay.noswhere.com",
   "wss://filter.nostr.wine",
 ]);
-export const WIKI_RELAYS = safeRelayUrls(["wss://relay.wikifreedia.xyz/"]);
-export const COMMON_CONTACT_RELAYS = safeRelayUrls(["wss://purplepag.es/"]);
+export const WIKI_RELAYS = normalizeRelayURLs(["wss://relay.wikifreedia.xyz/"]);
+export const COMMON_CONTACT_RELAYS = normalizeRelayURLs(["wss://purplepag.es/"]);
 
-export const DEFAULT_SIGNAL_RELAYS = safeRelayUrls(["wss://nostrue.com/", "wss://relay.damus.io"]);
-export const DEFAULT_NOSTR_CONNECT_RELAYS = safeRelayUrls(["wss://relay.nsec.app/"]);
+export const DEFAULT_SIGNAL_RELAYS = normalizeRelayURLs(["wss://nostrue.com/", "wss://relay.damus.io"]);
+export const DEFAULT_NOSTR_CONNECT_RELAYS = normalizeRelayURLs(["wss://relay.nsec.app/"]);
 
 export const DEFAULT_ICE_SERVERS: RTCIceServer[] = [
   {
@@ -33,7 +38,7 @@ export const DEFAULT_ICE_SERVERS: RTCIceServer[] = [
   },
 ];
 
-export const RECOMMENDED_READ_RELAYS = safeRelayUrls([
+export const RECOMMENDED_READ_RELAYS = normalizeRelayURLs([
   "wss://relay.damus.io/",
   "wss://nostr.wine/",
   "wss://relay.snort.social/",
@@ -41,10 +46,18 @@ export const RECOMMENDED_READ_RELAYS = safeRelayUrls([
   "wss://purplerelay.com/",
   "wss://nostr.land/",
 ]);
-export const RECOMMENDED_WRITE_RELAYS = safeRelayUrls([
+export const RECOMMENDED_WRITE_RELAYS = normalizeRelayURLs([
   "wss://relay.damus.io/",
   "wss://nos.lol/",
   "wss://purplerelay.com/",
+]);
+
+export const JAPANESE_RELAYS = normalizeRelayURLs([
+  "wss://r.kojira.io",
+  "wss://nrelay-jp.c-stellar.net",
+  "wss://nostr.fediverse.jp",
+  "wss://nostr.holybea.com",
+  "wss://relay-jp.nostr.wirednet.jp",
 ]);
 
 export const NOSTR_CONNECT_PERMISSIONS = [

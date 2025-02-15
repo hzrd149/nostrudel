@@ -18,9 +18,10 @@ import {
 import { useNavigate } from "react-router-dom";
 import { NostrEvent } from "nostr-tools";
 import { NostrConnectSigner } from "applesauce-signers/signers/nostr-connect-signer";
-import { parseNIP05Address, ProfileContent, safeParse } from "applesauce-core/helpers";
+import { mergeRelaySets, parseNIP05Address, ProfileContent, safeParse } from "applesauce-core/helpers";
 import { useAccountManager } from "applesauce-react/hooks";
 import { NostrConnectAccount } from "applesauce-accounts/accounts";
+import { IdentityStatus } from "applesauce-loaders/helpers/dns-identity";
 
 import { NOSTR_CONNECT_PERMISSIONS } from "../../../const";
 import useNip05Providers from "../../../hooks/use-nip05-providers";
@@ -30,9 +31,7 @@ import { MetadataAvatar } from "../../../components/user/user-avatar";
 import { ErrorBoundary } from "../../../components/error-boundary";
 import dnsIdentityLoader from "../../../services/dns-identity-loader";
 import useUserProfile from "../../../hooks/use-user-profile";
-import { safeRelayUrls } from "../../../helpers/relay";
 import { createNostrConnectConnection } from "../../../classes/nostr-connect-connection";
-import { IdentityStatus } from "applesauce-loaders/helpers/dns-identity";
 
 function ProviderCard({ onClick, provider }: { onClick: () => void; provider: NostrEvent }) {
   const metadata = JSON.parse(provider.content) as ProfileContent;
@@ -96,7 +95,7 @@ export default function LoginNostrAddressCreate() {
 
       if (identity.name !== "_") throw new Error("Provider does not own the domain");
       if (!identity.hasNip46) throw new Error("Provider does not support NIP-46");
-      const relays = safeRelayUrls(identity.nip46Relays || identity.relays || []);
+      const relays = mergeRelaySets(identity.nip46Relays || identity.relays || []);
       if (relays.length === 0) throw new Error("Cant find providers relays");
 
       const signer = new NostrConnectSigner({

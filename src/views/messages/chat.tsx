@@ -1,6 +1,7 @@
 import { memo, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { Button, ButtonGroup, Flex, IconButton } from "@chakra-ui/react";
 import { UNSAFE_DataRouterContext, useLocation, useNavigate } from "react-router-dom";
+import { mergeRelaySets } from "applesauce-core/helpers";
 import { NostrEvent, kinds } from "nostr-tools";
 
 import { ThreadIcon } from "../../components/icons";
@@ -24,8 +25,6 @@ import useRouterMarker from "../../hooks/use-router-marker";
 import decryptionCacheService from "../../services/decryption-cache";
 import UserDnsIdentityIcon from "../../components/user/user-dns-identity-icon";
 import UserAvatarLink from "../../components/user/user-avatar-link";
-import ContainedSimpleView from "../../components/layout/presets/contained-simple-view";
-import { mergeRelaySets } from "../../helpers/relay";
 import SimpleView from "../../components/layout/presets/simple-view";
 
 /** This is broken out from DirectMessageChatPage for performance reasons. Don't use outside of file */

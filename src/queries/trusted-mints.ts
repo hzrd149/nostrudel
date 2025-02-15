@@ -1,5 +1,5 @@
 import { Query } from "applesauce-core";
-import { safeRelayUrl } from "applesauce-core/helpers";
+import { isSafeRelayURL } from "applesauce-core/helpers";
 import { map } from "rxjs/operators";
 
 type TrustedMints = {
@@ -27,9 +27,8 @@ export default function TrustedMintsQuery(pubkey: string): Query<TrustedMints | 
                 break;
 
               case "relay":
-                if (tag[1]) {
-                  const safe = safeRelayUrl(tag[1]);
-                  if (safe) mints.push(safe);
+                if (tag[1] && isSafeRelayURL(tag[1])) {
+                  mints.push(tag[1]);
                 }
                 break;
 

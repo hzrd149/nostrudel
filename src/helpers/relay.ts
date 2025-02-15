@@ -9,52 +9,6 @@ export function getRelayVariations(relay: string) {
   } else return [relay, relay + "/"];
 }
 
-export function validateRelayURL(relay: string | URL) {
-  if (typeof relay === "string" && relay.includes(",ws")) throw new Error("Can not have multiple relays in one string");
-  const url = typeof relay === "string" ? new URL(relay) : relay;
-  if (url.protocol !== "wss:" && url.protocol !== "ws:") throw new Error("Incorrect protocol");
-  return url;
-}
-export function isValidRelayURL(relay: string | URL) {
-  try {
-    validateRelayURL(relay);
-    return true;
-  } catch (e) {
-    return false;
-  }
-}
-
-/** @deprecated */
-export function normalizeRelayURL(relayUrl: string) {
-  const url = validateRelayURL(relayUrl);
-  url.pathname = url.pathname.replace(/\/+/g, "/");
-  if ((url.port === "80" && url.protocol === "ws:") || (url.port === "443" && url.protocol === "wss:")) url.port = "";
-  url.searchParams.sort();
-  url.hash = "";
-  return url.toString();
-}
-
-/** @deprecated */
-export function safeNormalizeRelayURL(relayUrl: string) {
-  try {
-    return normalizeRelayURL(relayUrl);
-  } catch (e) {
-    return null;
-  }
-}
-
-// TODO: move these to helpers/relay
-export function safeRelayUrl(relayUrl: string | URL) {
-  try {
-    return validateRelayURL(relayUrl).toString();
-  } catch (e) {
-    return null;
-  }
-}
-export function safeRelayUrls(urls: Iterable<string>): string[] {
-  return Array.from(urls).map(safeRelayUrl).filter(Boolean) as string[];
-}
-
 export function splitNostrFilterByPubkeys(
   filter: Filter | Filter[],
   relayPubkeyMap: Record<string, string[]>,
@@ -133,17 +87,4 @@ const connectionStateSortOrder: ConnectionState[] = [
 ];
 export function getConnectionStateSort(state: ConnectionState) {
   return connectionStateSortOrder.indexOf(state);
-}
-
-/** @deprecated use mergeRelaySets from applesauce-core */
-export function mergeRelaySets(...sources: (Iterable<string> | undefined)[]) {
-  const set = new Set<string>();
-  for (const src of sources) {
-    if (!src) continue;
-    for (const url of src) {
-      const safe = safeRelayUrl(url);
-      if (safe) set.add(safe);
-    }
-  }
-  return Array.from(set);
 }
