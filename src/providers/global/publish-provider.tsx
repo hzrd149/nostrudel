@@ -1,7 +1,7 @@
 import { PropsWithChildren, createContext, useCallback, useContext, useMemo, useState } from "react";
 import { useToast } from "@chakra-ui/react";
-import { EventTemplate, NostrEvent, UnsignedEvent, kinds } from "nostr-tools";
-import { addSeenRelay } from "applesauce-core/helpers";
+import { EventTemplate, NostrEvent, UnsignedEvent } from "nostr-tools";
+import { addSeenRelay, mergeRelaySets } from "applesauce-core/helpers";
 import { useActiveAccount } from "applesauce-react/hooks";
 import { OkPacketAgainstEvent } from "rx-nostr";
 import { BehaviorSubject } from "rxjs";
@@ -12,9 +12,8 @@ import { DraftNostrEvent } from "../../types/nostr-event";
 import { getCacheRelay } from "../../services/cache-relay";
 import { eventStore } from "../../services/event-store";
 import { useUserOutbox } from "../../hooks/use-user-mailboxes";
-import rxNostr from "../../services/rx-nostr";
 import { useWriteRelays } from "../../hooks/use-client-relays";
-import { unique } from "../../helpers/array";
+import rxNostr from "../../services/rx-nostr";
 
 export type PublishResults = { packets: OkPacketAgainstEvent[]; relays: Record<string, OkPacketAgainstEvent> };
 
@@ -36,7 +35,7 @@ export class PublishLogEntry extends BehaviorSubject<PublishResults> {
       .filter(([_, config]) => config.write)
       .map(([relay]) => relay);
 
-    rxNostr.send(event, { on: { relays: [...defaultWriteRelays, ...relays] } }).subscribe({
+    rxNostr.send(event, { on: { relays: mergeRelaySets(defaultWriteRelays, relays) } }).subscribe({
       next: (packet) => {
         if (packet.ok) {
           addSeenRelay(event, packet.from);
@@ -121,9 +120,9 @@ export default function PublishProvider({ children }: PropsWithChildren) {
       try {
         let relays;
         if (onlyAdditionalRelays) {
-          relays = unique(additionalRelays ?? []);
+          relays = mergeRelaySets(additionalRelays ?? []);
         } else {
-          relays = unique([...writeRelays, ...(outBoxes ?? []), ...(additionalRelays ?? [])]);
+          relays = mergeRelaySets(writeRelays, outBoxes, additionalRelays);
         }
 
         // add pubkey to event

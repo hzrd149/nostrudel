@@ -25,7 +25,7 @@ import { useForm } from "react-hook-form";
 import { UnsignedEvent } from "nostr-tools";
 import { useAsync, useThrottle } from "react-use";
 import { useEventFactory, useObservable } from "applesauce-react/hooks";
-import { Emoji } from "applesauce-core/helpers";
+import { Emoji, getEventPointerFromQTag, processTags } from "applesauce-core/helpers";
 
 import { PublishLogEntry, useFinalizeDraft, usePublishEvent } from "../../../providers/global/publish-provider";
 import { useActiveAccount } from "applesauce-react/hooks";
@@ -46,6 +46,7 @@ import ZapSplitCreator, { Split } from "./zap-split-creator";
 import MinePOW from "../../../components/pow/mine-pow";
 import { PublishLogEntryDetails } from "../../task-manager/publish-log/entry-details";
 import InsertReactionButton from "../../../components/reactions/insert-reaction-button";
+import { eventStore } from "../../../services/event-store";
 
 type FormValues = {
   content: string;
@@ -124,6 +125,11 @@ export default function ShortTextNoteForm({
   const publishPost = async (unsigned?: UnsignedEvent) => {
     unsigned = unsigned || draft || (await getDraft());
 
+    // mirror quoted events
+    const pointers = processTags(unsigned.tags, (t) => (t[0] === "q" ? getEventPointerFromQTag(t) : undefined));
+    const events = pointers.map((p) => eventStore.getEvent(p.id)).filter((t) => !!t);
+    for (const event of events) publish("Broadcast event", event);
+
     const pub = await publish("Post", unsigned);
     if (pub) setPublished(pub);
   };
@@ -131,8 +137,7 @@ export default function ShortTextNoteForm({
     if (values.difficulty > 0) {
       setMiningTarget(values.difficulty);
     } else {
-      const unsigned = await getDraft(values);
-      publishPost(unsigned);
+      publishPost(await getDraft(values));
     }
   });
 
