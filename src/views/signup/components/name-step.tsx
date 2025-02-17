@@ -9,14 +9,14 @@ export default function NameStep({ onSubmit }: { onSubmit: (metadata: ProfileCon
   const location = useLocation();
   const { register, handleSubmit, formState } = useForm({
     defaultValues: {
-      name: "",
+      shortcode: "",
       about: "",
     },
     mode: "all",
   });
   const submit = handleSubmit((values) => {
-    const displayName = values.name;
-    const username = values.name.toLocaleLowerCase().replaceAll(/(\p{Z}|\p{P}|\p{C}|\p{M})/gu, "_");
+    const displayName = values.shortcode;
+    const username = values.shortcode.toLocaleLowerCase().replaceAll(/(\p{Z}|\p{P}|\p{C}|\p{M})/gu, "_");
 
     onSubmit({
       name: username,
@@ -32,7 +32,7 @@ export default function NameStep({ onSubmit }: { onSubmit: (metadata: ProfileCon
         Sign up
       </Heading>
       <Text>What should we call you?</Text>
-      <Input placeholder="Jane" {...register("name", { required: true })} autoComplete="off" autoFocus />
+      <Input placeholder="Jane" {...register("shortcode", { required: true })} autoComplete="off" autoFocus />
       <Textarea placeholder="Short description about yourself." w="full" mb="2" {...register("about")} />
       <Button w="full" colorScheme="primary" mb="4" isDisabled={!formState.isValid} type="submit">
         Next

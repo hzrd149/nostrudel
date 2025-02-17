@@ -45,8 +45,8 @@ export default function EmojiPackCard({ pack, ...props }: Omit<CardProps, "child
       <CardBody p="2">
         {emojis.length > 0 && (
           <Flex mb="2" wrap="wrap" gap="2">
-            {emojis.map(({ name, url }) => (
-              <Image key={name + url} src={url} title={name} w={8} h={8} />
+            {emojis.map(({ shortcode, url }) => (
+              <Image key={shortcode + url} src={url} title={shortcode} w={8} h={8} />
             ))}
           </Flex>
         )}

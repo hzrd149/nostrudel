@@ -28,9 +28,9 @@ export default function ReactionPicker({
           id,
           name,
           emojis: emojis.map((e) => ({
-            id: e.name,
-            name: e.name,
-            keywords: [e.name, e.name.toUpperCase(), e.name.replaceAll("_", "")],
+            id: e.shortcode,
+            name: e.shortcode,
+            keywords: [e.shortcode, e.shortcode.toUpperCase(), e.shortcode.replaceAll("_", "")],
             skins: [{ src: e.url }],
           })),
         };
@@ -41,7 +41,7 @@ export default function ReactionPicker({
   const categories = useMemo(() => [...packs.map((p) => getEventUID(p)), ...defaultCategories], [packs]);
 
   const handleSelect = (emoji: NativeEmoji) => {
-    if (emoji.src) onSelect?.({ name: emoji.name, url: emoji.src });
+    if (emoji.src) onSelect?.({ shortcode: emoji.name, url: emoji.src });
     else if (emoji.id === "+1") onSelect?.("+");
     else if (emoji.id === "-1") onSelect?.("-");
     else if (emoji.native) onSelect?.(emoji.native);

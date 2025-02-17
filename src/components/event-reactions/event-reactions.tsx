@@ -32,7 +32,7 @@ export default function EventReactionButtons({ event, max }: { event: NostrEvent
           onClick={() => {
             setLoading(group.emoji);
             if (group.url) {
-              addReaction({ name: group.emoji, url: group.url }).finally(() => setLoading(undefined));
+              addReaction({ shortcode: group.emoji, url: group.url }).finally(() => setLoading(undefined));
             } else {
               addReaction(group.emoji).finally(() => setLoading(undefined));
             }

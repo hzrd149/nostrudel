@@ -43,7 +43,7 @@ import useTextAreaUploadFile, { useTextAreaInsertTextWithForm } from "../../hook
 import MinePOW from "../pow/mine-pow";
 import useAppSettings from "../../hooks/use-user-app-settings";
 import { ErrorBoundary } from "../error-boundary";
-import { PublishLogEntry, useFinalizeDraft, usePublishEvent } from "../../providers/global/publish-provider";
+import { PublishLogEntry, usePublishEvent } from "../../providers/global/publish-provider";
 import { TextNoteContents } from "../note/timeline-note/text-note-contents";
 import localSettings from "../../services/local-settings";
 import useLocalStorageDisclosure from "../../hooks/use-localstorage-disclosure";
@@ -70,7 +70,6 @@ export default function PostModal({
   initContent = "",
 }: Omit<ModalProps, "children"> & PostModalProps) {
   const publish = usePublishEvent();
-  const finalizeDraft = useFinalizeDraft();
   const account = useActiveAccount()!;
   const { noteDifficulty } = useAppSettings();
   const addClientTag = useObservable(localSettings.addClientTag);
@@ -112,8 +111,7 @@ export default function PostModal({
       splits: values.split,
     });
 
-    const unsigned = await finalizeDraft(draft);
-
+    const unsigned = await factory.stamp(draft);
     setDraft(unsigned);
     return unsigned;
   };

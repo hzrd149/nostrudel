@@ -73,11 +73,11 @@ function useEmojiTokens() {
       customEmojis.map(
         (emoji) =>
           ({
-            id: emoji.name,
-            name: emoji.name,
+            id: emoji.shortcode,
+            name: emoji.shortcode,
             url: emoji.url,
-            keywords: [emoji.name],
-            char: `:${emoji.name}:`,
+            keywords: [emoji.shortcode],
+            char: `:${emoji.shortcode}:`,
           }) satisfies EmojiToken,
       ),
     [customEmojis],

@@ -37,10 +37,10 @@ import { usePublishEvent } from "../../providers/global/publish-provider";
 import EventZapButton from "../../components/zap/event-zap-button";
 import EventQuoteButton from "../../components/note/event-quote-button";
 
-function AddEmojiForm({ onAdd }: { onAdd: (values: { name: string; url: string }) => void }) {
+function AddEmojiForm({ onAdd }: { onAdd: (values: { shortcode: string; url: string }) => void }) {
   const { register, handleSubmit, watch, getValues, reset } = useForm({
     defaultValues: {
-      name: "",
+      shortcode: "",
       url: "",
     },
   });
@@ -56,11 +56,11 @@ function AddEmojiForm({ onAdd }: { onAdd: (values: { name: string; url: string }
   return (
     <Flex as="form" gap="2" onSubmit={submit}>
       <Input
-        placeholder="name"
-        {...register("name", { required: true })}
+        placeholder="shortcode"
+        {...register("shortcode", { required: true })}
         pattern="^[a-zA-Z0-9_-]+$"
         autoComplete="off"
-        title="emoji name, can not contain spaces"
+        title="emoji shortcode, cannot contain spaces"
       />
       <Input placeholder="https://example.com/emoji.png" {...register("url", { required: true })} autoComplete="off" />
       {previewURL && <Image aspectRatio={1} h="10" src={previewURL} />}
@@ -71,14 +71,24 @@ function AddEmojiForm({ onAdd }: { onAdd: (values: { name: string; url: string }
   );
 }
 
-function EmojiTag({ name, url, onRemove, scale }: { name: string; url: string; onRemove?: () => void; scale: number }) {
+function EmojiTag({
+  shortcode,
+  url,
+  onRemove,
+  scale,
+}: {
+  shortcode: string;
+  url: string;
+  onRemove?: () => void;
+  scale: number;
+}) {
   return (
     <Tag>
       <Image
-        key={name + url}
+        key={shortcode + url}
         src={url}
-        title={name}
-        alt={`:${name}:`}
+        title={shortcode}
+        alt={`:${shortcode}:`}
         w={scale}
         h={scale}
         ml="-1"
@@ -87,7 +97,7 @@ function EmojiTag({ name, url, onRemove, scale }: { name: string; url: string; o
         borderRadius="md"
         overflow="hidden"
       />
-      <TagLabel flex={1}>{name}</TagLabel>
+      <TagLabel flex={1}>{shortcode}</TagLabel>
       {onRemove && <TagCloseButton onClick={onRemove} />}
     </Tag>
   );
@@ -110,11 +120,11 @@ function EmojiPackPage({ pack }: { pack: NostrEvent }) {
     setDraft(emojis);
     setEditing(true);
   };
-  const addEmoji = (emoji: { name: string; url: string }) => {
+  const addEmoji = (emoji: { shortcode: string; url: string }) => {
     setDraft((a) => a.concat(emoji));
   };
-  const removeEmoji = (name: string) => {
-    setDraft((a) => a.filter((e) => e.name !== name));
+  const removeEmoji = (shortcode: string) => {
+    setDraft((a) => a.filter((e) => e.shortcode !== shortcode));
   };
   const cancelEdit = () => {
     setDraft([]);
@@ -125,7 +135,10 @@ function EmojiPackPage({ pack }: { pack: NostrEvent }) {
       kind: kinds.Emojisets,
       content: pack.content || "",
       created_at: dayjs().unix(),
-      tags: [...pack.tags.filter((t) => t[0] !== "emoji"), ...draftEmojis.map(({ name, url }) => ["emoji", name, url])],
+      tags: [
+        ...pack.tags.filter((t) => t[0] !== "emoji"),
+        ...draftEmojis.map(({ shortcode, url }) => ["emoji", shortcode, url]),
+      ],
     };
 
     const pub = await publish("Update emoji pack", draft);
@@ -199,13 +212,13 @@ function EmojiPackPage({ pack }: { pack: NostrEvent }) {
             </Flex>
           )}
           <SimpleGrid columns={{ base: 2, sm: 3, md: 2, lg: 4, xl: 6 }} gap="2">
-            {(editing ? draftEmojis : emojis).map(({ name, url }) => (
+            {(editing ? draftEmojis : emojis).map(({ shortcode, url }) => (
               <EmojiTag
-                key={name + url}
+                key={shortcode + url}
                 scale={scale}
-                name={name}
+                shortcode={shortcode}
                 url={url}
-                onRemove={editing ? () => removeEmoji(name) : undefined}
+                onRemove={editing ? () => removeEmoji(shortcode) : undefined}
               />
             ))}
           </SimpleGrid>

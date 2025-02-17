@@ -14,7 +14,7 @@ export default function InsertReactionButton({
     (emoji: Emoji | string) => {
       if (!onSelect) return;
       if (typeof emoji === "string") onSelect(emoji, emoji);
-      else onSelect(`:${emoji.name}:`, emoji);
+      else onSelect(`:${emoji.shortcode}:`, emoji);
     },
     [onSelect],
   );

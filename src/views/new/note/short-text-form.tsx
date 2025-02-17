@@ -108,8 +108,7 @@ export default function ShortTextNoteForm({
       splits: values.split,
     });
 
-    const unsigned = await finalizeDraft(draft);
-
+    const unsigned = await factory.stamp(draft);
     setDraft(unsigned);
     return unsigned;
   };
