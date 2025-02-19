@@ -1,5 +1,5 @@
 import { useContext, useMemo } from "react";
-import { Box, Button, ButtonGroup, Card, CardBody, CardHeader, CardProps, Text } from "@chakra-ui/react";
+import { Box, Button, ButtonGroup, Card, CardBody, CardHeader, CardProps, IconButton, Text } from "@chakra-ui/react";
 
 import { NostrEvent } from "../../../types/nostr-event";
 import UserAvatarLink from "../../user/user-avatar-link";
@@ -11,6 +11,8 @@ import DebugEventButton from "../../debug-modal/debug-event-button";
 import DebugEventTags from "../../debug-modal/event-tags";
 import { AppHandlerContext } from "../../../providers/route/app-handler-provider";
 import { getSharableEventAddress } from "../../../services/relay-hints";
+import { QuestionIcon } from "@chakra-ui/icons";
+import RouterLink from "../../router-link";
 
 export default function EmbeddedUnknown({ event, ...props }: Omit<CardProps, "children"> & { event: NostrEvent }) {
   const address = useMemo(() => getSharableEventAddress(event), [event]);
@@ -27,13 +29,14 @@ export default function EmbeddedUnknown({ event, ...props }: Omit<CardProps, "ch
           <UserDnsIdentity pubkey={event.pubkey} onlyIcon />
           <Text>kind: {event.kind}</Text>
           <Timestamp timestamp={event.created_at} />
-          <ButtonGroup ml="auto">
+          <ButtonGroup ml="auto" size="sm">
             {address && (
-              <Button size="sm" leftIcon={<ExternalLinkIcon />} onClick={() => openAddress(address)}>
+              <Button leftIcon={<ExternalLinkIcon />} onClick={() => openAddress(address)}>
                 Open
               </Button>
             )}
-            <DebugEventButton event={event} size="sm" variant="outline" />
+            <IconButton icon={<QuestionIcon />} aria-label="Details" as={RouterLink} to={`/l/${address}`} />
+            <DebugEventButton event={event} variant="outline" />
           </ButtonGroup>
         </CardHeader>
         <CardBody p="2">

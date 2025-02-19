@@ -15,6 +15,7 @@ import InsertImageButton from "../../views/new/note/insert-image-button";
 import InsertGifButton from "../gif/insert-gif-button";
 import { TrustProvider } from "../../providers/local/trust-provider";
 import TextNoteContents from "../note/timeline-note/text-note-contents";
+import InsertReactionButton from "../reactions/insert-reaction-button";
 
 export default function GenericCommentForm({
   event,
@@ -79,8 +80,11 @@ export default function GenericCommentForm({
         }}
       />
       <Flex gap="2" alignItems="center">
-        <InsertImageButton onUploaded={insertText} size="sm" aria-label="Upload image" />
-        <InsertGifButton onSelectURL={insertText} aria-label="Add gif" size="sm" />
+        <ButtonGroup size="sm">
+          <InsertImageButton onUploaded={insertText} aria-label="Upload image" />
+          <InsertGifButton onSelectURL={insertText} aria-label="Add gif" />
+          <InsertReactionButton onSelect={insertText} aria-label="Add Emoji" />
+        </ButtonGroup>
         <ButtonGroup size="sm" ml="auto">
           {onCancel && <Button onClick={onCancel}>Cancel</Button>}
           <Button type="submit" colorScheme="primary" size="sm">

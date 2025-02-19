@@ -1,4 +1,4 @@
-import { Alert, AlertIcon, AlertTitle, Spinner } from "@chakra-ui/react";
+import { Alert, AlertIcon, AlertTitle, Button, Flex, Spinner, useDisclosure } from "@chakra-ui/react";
 import { Navigate, useParams } from "react-router-dom";
 import { NostrEvent, kinds, nip19 } from "nostr-tools";
 
@@ -10,6 +10,10 @@ import { EmbedEvent, EmbedEventPointer } from "../../components/embed-event";
 import useReplaceableEvent from "../../hooks/use-replaceable-event";
 import useSingleEvent from "../../hooks/use-single-event";
 import { MEDIA_POST_KIND } from "../../helpers/nostr/media";
+import SimpleView from "../../components/layout/presets/simple-view";
+import { GenericComments } from "../../components/comment/generic-comments";
+import GenericCommentForm from "../../components/comment/generic-comment-form";
+import { ThreadIcon } from "../../components/icons";
 
 function LoadUnknownAddress({ pointer, link }: { pointer: nip19.AddressPointer; link: string }) {
   const event = useReplaceableEvent(pointer, pointer.relays);
@@ -22,15 +26,27 @@ function LoadUnknownEvent({ pointer, link }: { pointer: nip19.EventPointer; link
   return <RenderRedirect event={event} link={link} />;
 }
 
-function Unknown({ pointer }: { pointer: nip19.DecodeResult }) {
+function UnknownView({ pointer, event }: { pointer: nip19.DecodeResult; event?: NostrEvent }) {
+  const comment = useDisclosure();
+
   return (
-    <>
-      <Alert status="warning">
-        <AlertIcon />
-        <AlertTitle>Unknown event kind</AlertTitle>
-      </Alert>
-      <EmbedEventPointer pointer={pointer} />
-    </>
+    <SimpleView title="Unknown event kind" maxW="4xl" center>
+      {event ? <EmbedEvent event={event} /> : <EmbedEventPointer pointer={pointer} />}
+
+      {event && (
+        <Flex mx="auto" maxW="4xl" w="full" gap="2" direction="column" mt="4">
+          {comment.isOpen ? (
+            <GenericCommentForm event={event} onCancel={comment.onClose} onSubmitted={comment.onClose} />
+          ) : (
+            <Button leftIcon={<ThreadIcon />} onClick={comment.onOpen} mr="auto">
+              Comment
+            </Button>
+          )}
+
+          <GenericComments event={event} />
+        </Flex>
+      )}
+    </SimpleView>
   );
 }
 
@@ -67,8 +83,7 @@ function RenderRedirect({ event, link }: { event?: NostrEvent; link: string }) {
     }
   }
 
-  if (event) return <EmbedEvent event={event} />;
-  return <Unknown pointer={decoded} />;
+  return <UnknownView pointer={decoded} event={event} />;
 }
 
 function NostrLinkPage() {

@@ -31,7 +31,7 @@ import { ChevronDownIcon, ChevronUpIcon, ReplyIcon } from "../icons";
 import EventZapButton from "../zap/event-zap-button";
 import GenericCommentForm from "./generic-comment-form";
 
-const Comment = memo(({ comment }: { comment: NostrEvent }) => {
+const Comment = memo(({ comment, level = 0 }: { comment: NostrEvent; level?: number }) => {
   const reply = useDisclosure();
   const replies = useStoreQuery(RepliesQuery, [comment]);
   const expand = useDisclosure({ defaultIsOpen: true });
@@ -85,7 +85,7 @@ const Comment = memo(({ comment }: { comment: NostrEvent }) => {
       {replies && replies.length > 0 && expand.isOpen && (
         <Flex pl="4" direction="column" gap="2" borderLeftWidth={1} position="relative">
           {(replies.length > 2 && !all.isOpen ? replies.slice(0, 2) : replies).map((reply) => (
-            <Comment key={comment.id} comment={reply} />
+            <Comment key={comment.id} comment={reply} level={level + 1} />
           ))}
         </Flex>
       )}
