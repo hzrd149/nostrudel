@@ -1,8 +1,8 @@
-import { ReactNode } from "react";
+import { ReactNode, useRef } from "react";
 import { Flex, FlexProps } from "@chakra-ui/react";
 
 import SimpleHeader from "./simple-header";
-import { UNSAFE_useScrollRestoration } from "react-router-dom";
+import useScrollRestoreRef from "../../../hooks/use-scroll-restore";
 
 export default function SimpleView({
   children,
@@ -22,6 +22,7 @@ export default function SimpleView({
   center?: boolean;
   scroll?: boolean;
 }) {
+  const ref = useScrollRestoreRef();
   const content = (
     <Flex
       direction="column"
@@ -38,14 +39,21 @@ export default function SimpleView({
     </Flex>
   );
 
-  UNSAFE_useScrollRestoration;
-
   return (
-    <Flex as={as} flex={1} direction="column" pr="var(--safe-right)" pl="var(--safe-left)" overflow="hidden" {...props}>
+    <Flex
+      data-type="simple-view"
+      as={as}
+      flex={1}
+      direction="column"
+      pr="var(--safe-right)"
+      pl="var(--safe-left)"
+      overflow="hidden"
+      {...props}
+    >
       <SimpleHeader title={title}>{actions}</SimpleHeader>
 
       {scroll ? (
-        <Flex flex={1} overflowY="auto" overflowX="hidden" direction="column">
+        <Flex flex={1} overflowY="auto" overflowX="hidden" direction="column" ref={ref}>
           {content}
         </Flex>
       ) : (

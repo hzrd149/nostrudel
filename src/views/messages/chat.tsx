@@ -1,4 +1,4 @@
-import { memo, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { memo, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { Button, ButtonGroup, Flex, IconButton } from "@chakra-ui/react";
 import { UNSAFE_DataRouterContext, useLocation, useNavigate } from "react-router-dom";
 import { mergeRelaySets } from "applesauce-core/helpers";
@@ -26,6 +26,7 @@ import decryptionCacheService from "../../services/decryption-cache";
 import UserDnsIdentityIcon from "../../components/user/user-dns-identity-icon";
 import UserAvatarLink from "../../components/user/user-avatar-link";
 import SimpleView from "../../components/layout/presets/simple-view";
+import useScrollRestoreRef from "../../hooks/use-scroll-restore";
 
 /** This is broken out from DirectMessageChatPage for performance reasons. Don't use outside of file */
 const ChatLog = memo(({ messages }: { messages: NostrEvent[] }) => {
@@ -111,6 +112,9 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
 
   const callback = useTimelineCurserIntersectionCallback(loader);
 
+  // restore scroll on navigation
+  const scroll = useScrollRestoreRef();
+
   return (
     <ThreadsProvider messages={messages}>
       <IntersectionObserverProvider callback={callback}>
@@ -140,7 +144,16 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
           scroll={false}
           flush
         >
-          <Flex direction="column-reverse" p="2" gap="2" flexGrow={1} h={0} overflowX="hidden" overflowY="auto">
+          <Flex
+            direction="column-reverse"
+            p="2"
+            gap="2"
+            flexGrow={1}
+            h={0}
+            overflowX="hidden"
+            overflowY="auto"
+            ref={scroll}
+          >
             <ChatLog messages={messages} />
             <TimelineActionAndStatus loader={loader} />
           </Flex>

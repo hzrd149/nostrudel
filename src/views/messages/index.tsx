@@ -24,6 +24,8 @@ import useUserMailboxes from "../../hooks/use-user-mailboxes";
 import useUserContacts from "../../hooks/use-user-contacts";
 import useUserMutes from "../../hooks/use-user-mutes";
 import SimpleParentView from "../../components/layout/presets/simple-parent-view";
+import useScrollRestoreRef from "../../hooks/use-scroll-restore";
+import useRouteStateValue from "../../hooks/use-route-state-value";
 
 export function useDirectMessagesTimeline(pubkey?: string) {
   const mailboxes = useUserMailboxes(pubkey);
@@ -78,7 +80,7 @@ function ConversationCard({ index, style, data }: ListChildComponentProps<KnownC
 }
 
 function MessagesHomePage() {
-  const [filter, setFilter] = useState<"contacts" | "other" | "muted">("contacts");
+  const { value: filter, setValue: setFilter } = useRouteStateValue<"contacts" | "other" | "muted">("tab", "contacts");
 
   const account = useActiveAccount()!;
   const contacts = useUserContacts(account?.pubkey, undefined, true)?.map((p) => p.pubkey);
@@ -108,6 +110,7 @@ function MessagesHomePage() {
   }, [messages, account.pubkey, contacts?.length, filter, mutes?.pubkeys.size]);
 
   const callback = useTimelineCurserIntersectionCallback(loader);
+  const scroll = useScrollRestoreRef("chats");
 
   return (
     <SimpleParentView path="/messages" width="md" title="Messages" scroll={false}>
@@ -133,6 +136,7 @@ function MessagesHomePage() {
                 itemCount={conversations?.length ?? 0}
                 itemKey={(i, data) => data[i].myself + data[i].correspondent}
                 itemSize={64}
+                innerRef={scroll}
               >
                 {ConversationCard}
               </FixedSizeList>
