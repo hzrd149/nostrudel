@@ -11,6 +11,7 @@ import TimelineActionAndStatus from "../../components/timeline/timeline-action-a
 import UserLink from "../../components/user/user-link";
 import UserAvatarLink from "../../components/user/user-avatar-link";
 import useEventIntersectionRef from "../../hooks/use-event-intersection-ref";
+import SimpleView from "../../components/layout/presets/simple-view";
 
 function FollowerItem({ event }: { event: Event }) {
   const ref = useEventIntersectionRef(event);
@@ -43,13 +44,15 @@ export default function UserFollowersTab() {
   }, [events]);
 
   return (
-    <IntersectionObserverProvider callback={callback}>
-      <SimpleGrid columns={{ base: 1, md: 2, lg: 3, xl: 4 }} spacing="2" p="2">
-        {followers.map((event) => (
-          <FollowerItem key={event.pubkey} event={event} />
-        ))}
-      </SimpleGrid>
-      <TimelineActionAndStatus loader={loader} />
-    </IntersectionObserverProvider>
+    <SimpleView title="Followers">
+      <IntersectionObserverProvider callback={callback}>
+        <SimpleGrid columns={{ base: 1, md: 2, lg: 3, xl: 4 }} spacing="2">
+          {followers.map((event) => (
+            <FollowerItem key={event.pubkey} event={event} />
+          ))}
+        </SimpleGrid>
+        <TimelineActionAndStatus loader={loader} />
+      </IntersectionObserverProvider>
+    </SimpleView>
   );
 }
