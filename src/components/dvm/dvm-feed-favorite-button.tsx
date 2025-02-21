@@ -4,7 +4,7 @@ import { kinds } from "nostr-tools";
 import { AddressPointer } from "nostr-tools/nip19";
 import { useEventFactory } from "applesauce-react/hooks";
 import { isAddressPointerInList } from "applesauce-core/helpers/lists";
-import { removeCoordinateTag, addCoordinateTag } from "applesauce-factory/operations";
+import { removeCoordinateTag, addCoordinateTag } from "applesauce-factory/operations/tag";
 
 import useFavoriteFeeds, { FAVORITE_FEEDS_IDENTIFIER } from "../../hooks/use-favorite-feeds";
 import { usePublishEvent } from "../../providers/global/publish-provider";
@@ -28,7 +28,7 @@ export default function DVMFeedFavoriteButton({
     };
 
     setLoading(true);
-    const draft = await factory.modifyList(prev, isFavorite ? removeCoordinateTag(pointer) : addCoordinateTag(pointer));
+    const draft = await factory.modifyTags(prev, isFavorite ? removeCoordinateTag(pointer) : addCoordinateTag(pointer));
     await publish(isFavorite ? "Unfavorite feed" : "Favorite feed", draft);
     setLoading(false);
   }, [factory, favorites, pointer, publish, setLoading]);

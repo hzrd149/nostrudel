@@ -3,7 +3,7 @@ import { IconButton, IconButtonProps } from "@chakra-ui/react";
 import { kinds, NostrEvent } from "nostr-tools";
 import { getReplaceableIdentifier, unixNow } from "applesauce-core/helpers";
 import { useEventFactory } from "applesauce-react/hooks";
-import { removeCoordinateTag, addCoordinateTag } from "applesauce-factory/operations";
+import { removeCoordinateTag, addCoordinateTag } from "applesauce-factory/operations/tag";
 
 import { StarEmptyIcon, StarFullIcon } from "../../../components/icons";
 import { isEventInList } from "../../../helpers/nostr/lists";
@@ -34,7 +34,7 @@ export default function StreamFavoriteButton({
       }));
 
     setLoading(true);
-    const draft = await factory.modifyList(
+    const draft = await factory.modifyTags(
       prev,
       isFavorite ? removeCoordinateTag(coordinate) : addCoordinateTag(coordinate),
     );
