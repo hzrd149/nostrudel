@@ -19,7 +19,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { NostrEvent, kinds, nip19 } from "nostr-tools";
-import { encodeDecodeResult, getProfileContent, ProfileContent } from "applesauce-core/helpers";
+import { encodeDecodeResult, getProfileContent } from "applesauce-core/helpers";
 
 import { ExternalLinkIcon } from "../icons";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
@@ -108,17 +108,27 @@ export default function AppHandlerModal({
   const autofocus = useBreakpointValue({ base: false, lg: true });
   const [search, setSearch] = useState("");
 
-  const filteredApps = apps.filter((app) => {
-    if (search.length > 1) {
+  const filteredApps = apps
+    .filter((app) => {
+      if (search.length > 1) {
+        try {
+          const parsed = getProfileContent(app);
+          if (getDisplayName(parsed, app.pubkey).toLowerCase().includes(search.toLowerCase())) {
+            return true;
+          }
+        } catch (error) {}
+        return false;
+      } else return true;
+    })
+    .filter((app) => {
+      // filter out bad profiles in content
       try {
-        const parsed = JSON.parse(app.content) as ProfileContent;
-        if (getDisplayName(parsed, app.pubkey).toLowerCase().includes(search.toLowerCase())) {
-          return true;
-        }
-      } catch (error) {}
-      return false;
-    } else return true;
-  });
+        getProfileContent(app);
+        return true;
+      } catch (error) {
+        return false;
+      }
+    });
   const callback = useTimelineCurserIntersectionCallback(loader);
 
   return (
