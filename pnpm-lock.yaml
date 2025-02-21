@@ -104,25 +104,25 @@ importers:
         version: 0.7.2
       applesauce-accounts:
         specifier: next
-        version: 0.0.0-next-20250219163923(typescript@5.7.3)
+        version: 0.0.0-next-20250221155809(typescript@5.7.3)
       applesauce-content:
         specifier: next
-        version: 0.0.0-next-20250219163923(typescript@5.7.3)
+        version: 0.0.0-next-20250221155809(typescript@5.7.3)
       applesauce-core:
         specifier: next
-        version: 0.0.0-next-20250219163923(typescript@5.7.3)
+        version: 0.0.0-next-20250221155809(typescript@5.7.3)
       applesauce-factory:
         specifier: next
-        version: 0.0.0-next-20250219163923(typescript@5.7.3)
+        version: 0.0.0-next-20250221155809(typescript@5.7.3)
       applesauce-loaders:
         specifier: next
-        version: 0.0.0-next-20250219163923(typescript@5.7.3)
+        version: 0.0.0-next-20250221155809(typescript@5.7.3)
       applesauce-react:
         specifier: next
-        version: 0.0.0-next-20250219163923(react-dom@19.0.0(react@19.0.0))(typescript@5.7.3)
+        version: 0.0.0-next-20250221155809(react-dom@19.0.0(react@19.0.0))(typescript@5.7.3)
       applesauce-signers:
         specifier: next
-        version: 0.0.0-next-20250219163923(typescript@5.7.3)
+        version: 0.0.0-next-20250221155809(typescript@5.7.3)
       bech32:
         specifier: ^2.0.0
         version: 2.0.0
@@ -262,8 +262,8 @@ importers:
         specifier: ^7.54.2
         version: 7.54.2(react@19.0.0)
       react-markdown:
-        specifier: ^9.0.3
-        version: 9.0.3(@types/react@18.3.18)(react@19.0.0)
+        specifier: ^9.1.0
+        version: 9.1.0(@types/react@18.3.18)(react@19.0.0)
       react-mosaic-component:
         specifier: ^6.1.1
         version: 6.1.1(@types/node@22.13.4)(@types/react@18.3.18)(dnd-core@16.0.1)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -313,8 +313,8 @@ importers:
         specifier: ^1.9.4
         version: 1.9.4(three@0.170.0)
       three-stdlib:
-        specifier: ^2.35.13
-        version: 2.35.13(three@0.170.0)
+        specifier: ^2.35.14
+        version: 2.35.14(three@0.170.0)
       unified:
         specifier: ^11.0.5
         version: 11.0.5
@@ -368,8 +368,8 @@ importers:
         specifier: ^6.0.3
         version: 6.0.3(@capacitor/core@6.2.0)
       '@changesets/cli':
-        specifier: ^2.28.0
-        version: 2.28.0
+        specifier: ^2.28.1
+        version: 2.28.1
       '@types/canvas-confetti':
         specifier: ^1.9.0
         version: 1.9.0
@@ -1165,8 +1165,8 @@ packages:
     peerDependencies:
       react: '>=16.8.0'
 
-  '@changesets/apply-release-plan@7.0.9':
-    resolution: {integrity: sha512-xB1shQP6WhflnAN+rV8eJ7j4oBgka/K62+pHuEv6jmUtSqlx2ZvJSnCGzyNfkiQmSfVsqXoI3pbAuyVpTbsKzA==}
+  '@changesets/apply-release-plan@7.0.10':
+    resolution: {integrity: sha512-wNyeIJ3yDsVspYvHnEz1xQDq18D9ifed3lI+wxRQRK4pArUcuHgCTrHv0QRnnwjhVCQACxZ+CBih3wgOct6UXw==}
 
   '@changesets/assemble-release-plan@6.0.6':
     resolution: {integrity: sha512-Frkj8hWJ1FRZiY3kzVCKzS0N5mMwWKwmv9vpam7vt8rZjLL1JMthdh6pSDVSPumHPshTTkKZ0VtNbE0cJHZZUg==}
@@ -1174,12 +1174,12 @@ packages:
   '@changesets/changelog-git@0.2.1':
     resolution: {integrity: sha512-x/xEleCFLH28c3bQeQIyeZf8lFXyDFVn1SgcBiR2Tw/r4IAWlk1fzxCEZ6NxQAjF2Nwtczoen3OA2qR+UawQ8Q==}
 
-  '@changesets/cli@2.28.0':
-    resolution: {integrity: sha512-of9/8Gzc+DP/Ol9Lak++Y0RsB1oO1CRzZoGIWTYcvHNREJQNqxW5tXm3YzqsA1Gx8ecZZw82FfahtiS+HkNqIw==}
+  '@changesets/cli@2.28.1':
+    resolution: {integrity: sha512-PiIyGRmSc6JddQJe/W1hRPjiN4VrMvb2VfQ6Uydy2punBioQrsxppyG5WafinKcW1mT0jOe/wU4k9Zy5ff21AA==}
     hasBin: true
 
-  '@changesets/config@3.1.0':
-    resolution: {integrity: sha512-UbZsPkRnv2SF8Ln72B8opmNLhsazv7/M0r6GSQSQzLY++/ZPr5dDSz3L+6G2fDZ+AN1ZjsEGDdBkpEna9eJtrA==}
+  '@changesets/config@3.1.1':
+    resolution: {integrity: sha512-bd+3Ap2TKXxljCggI0mKPfzCQKeV/TU4yO2h2C6vAihIo8tzseAn2e7klSuiyYYXvgu53zMN1OeYMIQkaQoWnA==}
 
   '@changesets/errors@0.2.0':
     resolution: {integrity: sha512-6BLOQUscTpZeGljvyQXlWOItQyU71kCdGz7Pi8H8zdw6BI0g3m43iL4xKUVPWtG+qrrL9DTjpdn8eYuCQSRpow==}
@@ -1187,8 +1187,8 @@ packages:
   '@changesets/get-dependents-graph@2.1.3':
     resolution: {integrity: sha512-gphr+v0mv2I3Oxt19VdWRRUxq3sseyUpX9DaHpTUmLj92Y10AGy+XOtV+kbM6L/fDcpx7/ISDFK6T8A/P3lOdQ==}
 
-  '@changesets/get-release-plan@4.0.7':
-    resolution: {integrity: sha512-FdXJ5B4ZcIWtTu+SEIAthnSScwF+mS+e657gagYUyprVLFSkAJKrA50MqoW3iOopbwQ/UhYaTESNyF9cpg1bQA==}
+  '@changesets/get-release-plan@4.0.8':
+    resolution: {integrity: sha512-MM4mq2+DQU1ZT7nqxnpveDMTkMBLnwNX44cX7NSxlXmr7f8hO6/S2MXNiXG54uf/0nYnefv0cfy4Czf/ZL/EKQ==}
 
   '@changesets/get-version-range-type@0.4.0':
     resolution: {integrity: sha512-hwawtob9DryoGTpixy1D3ZXbGgJu1Rhr+ySH2PvTLHvkZuQ7sRT4oQwMh0hbqZH1weAooedEjRsbrWcGLCeyVQ==}
@@ -2189,26 +2189,26 @@ packages:
     engines: {node: '>=8.0.0'}
     hasBin: true
 
-  applesauce-accounts@0.0.0-next-20250219163923:
-    resolution: {integrity: sha512-NfdlI0q3c2s6seWsMnCUzIp6MEy6QJ3VAk33jDA8obIQgJVDhrYx16zkvcQNKviawP39ZClVP6o9eDZajPkgRw==}
+  applesauce-accounts@0.0.0-next-20250221155809:
+    resolution: {integrity: sha512-EyKKhWrXZm3FnABtsFLQnDCeMEkSt6WVGQ9E3vQuCofQ7GGGz7DW4bIeMpWa2h2xfRtHrVi2rbp2Q8WevWJFuA==}
 
-  applesauce-content@0.0.0-next-20250219163923:
-    resolution: {integrity: sha512-cd353dh+D0VRrwtQKCetxXIgvBuDhYxPqNl03CtFkUHzrzVF8V+OITIuTfKcAtM4OGCUSOYqZSN0rJgpK3s6QA==}
+  applesauce-content@0.0.0-next-20250221155809:
+    resolution: {integrity: sha512-yPWSxeMbO6CEEEwIhnmWhs6cNUFIK0j7Jj8VbukteznTdxypvF7OSrFQrFbRFC07kxHZkz6sRjFebiRUGmW5Uw==}
 
-  applesauce-core@0.0.0-next-20250219163923:
-    resolution: {integrity: sha512-WJn3hrvNzz/dwEK2GV1FP8WNbrs3hz4yODHAZnkrpl32o6RFkk/0zIgirBjcAKmAhMzblqhrw+lxNceYFyo7hA==}
+  applesauce-core@0.0.0-next-20250221155809:
+    resolution: {integrity: sha512-IYokDnXjBvBx6XaR3fZKevgHico6jbJRzDBpwHUGarn+DgeHJIqV8Dacl45VCzzvmBfYlYWBPMSr9yD4d3q8gA==}
 
-  applesauce-factory@0.0.0-next-20250219163923:
-    resolution: {integrity: sha512-fxzcNHoR8SDPQsWTN3OkRPX+vTQJGLNDq2LcEpxYuNKmiacEVzoOd1YOHigERmEbge3CCY12+wzUUdWLhnQO0A==}
+  applesauce-factory@0.0.0-next-20250221155809:
+    resolution: {integrity: sha512-EhVM7I4ay/neaBHoygvAbmRH6nWqUAWT5iJXnra5/U2J+zLB+9JAwOtGzPdO53OMa3uqV9QTm27k6lSYHJqfdA==}
 
-  applesauce-loaders@0.0.0-next-20250219163923:
-    resolution: {integrity: sha512-nVTM18FsEN2lub2UXqsShI0i+9/RvlcHKRAP8pGWF2ADSImPAFTlBdGO0eqlJwToUISyMuSfJFrjHL+KprrLkA==}
+  applesauce-loaders@0.0.0-next-20250221155809:
+    resolution: {integrity: sha512-TcOiRQ04PPFVrN+kVcjcxzPyNBmZ4+0v8/iYelPs/SbhQaCBGPy+bmg6V/sWrT0ixQ7PEPAgIasIofGucVY/UA==}
 
-  applesauce-react@0.0.0-next-20250219163923:
-    resolution: {integrity: sha512-rXzRURwVHRwoFPLGRLbvhidhKMmp2fkj6SNnH27LKaHQUqG5RK46SSA9SWMQq9VXag3sYymvrFu0Sbcrnqi/4g==}
+  applesauce-react@0.0.0-next-20250221155809:
+    resolution: {integrity: sha512-sKHsJkhatrn6KRFhg13X0kCYaCGEmME6VcHQvOmSIZ04mEt16lG50OQoAMVaCbeqX/isHaGqYG/4c3u+5Ik44w==}
 
-  applesauce-signers@0.0.0-next-20250219163923:
-    resolution: {integrity: sha512-nTQz+qW1rZnHVVxnASrzqYOMIq/4VGAV43VtUcqydmMNUF20vrR5scCzKB4Eyf7NhIBcxlPY8RHpC5NdAzBfaw==}
+  applesauce-signers@0.0.0-next-20250221155809:
+    resolution: {integrity: sha512-9JsJNKzFwKRgCLkggM06v0Ofk+SR6xGZ9lcxeu9ZoiXPcSL4R+a9M+JMvpkuTPsZns0z7M2dGNAGtXTeZ/XElw==}
 
   arg@4.1.3:
     resolution: {integrity: sha512-58S9QDqG0Xx27YwPSt9fJxivjYl432YCwfDMfZ+71RAqUrZef7LrKQZ3LHLOwCS4FLNBplP533Zx895SeOCHvA==}
@@ -3202,8 +3202,8 @@ packages:
   fast-uri@3.0.6:
     resolution: {integrity: sha512-Atfo14OibSv5wAp4VWNsFYE1AchQRTv9cBGWET4pZWHzYshFSS9NQI6I57rdKn9croWVMbYFbLhJ+yJvmZIIHw==}
 
-  fast-xml-parser@4.5.2:
-    resolution: {integrity: sha512-xmnYV9o0StIz/0ArdzmWTxn9oDy0lH8Z80/8X/TD2EUQKXY4DHxoT9mYBqgGIG17DgddCJtH1M6DriMbalNsAA==}
+  fast-xml-parser@4.5.3:
+    resolution: {integrity: sha512-RKihhV+SHsIUGXObeVy9AXiBbFwkVk7Syp8XgwN5U3JV416+Gwp/GO9i0JYKmikykgz/UHRrrV4ROuZEo/T0ig==}
     hasBin: true
 
   fastest-stable-stringify@2.0.2:
@@ -4848,8 +4848,8 @@ packages:
     peerDependencies:
       react: '>=16.13.1'
 
-  react-markdown@9.0.3:
-    resolution: {integrity: sha512-Yk7Z94dbgYTOrdk41Z74GoKA7rThnsbbqBTRYuxoe08qvfQ9tJVhmAKw6BJS/ZORG7kTy/s1QvYzSuaoBA1qfw==}
+  react-markdown@9.1.0:
+    resolution: {integrity: sha512-xaijuJB0kzGiUdG7nc2MOMDUDBWPyGAjZtUrow9XxUeua8IqeP+VlIfAZ3bphpcLTnSZXz6z9jcVC/TCwbfgdw==}
     peerDependencies:
       '@types/react': ^18.2.22
       react: '>=18'
@@ -5445,8 +5445,8 @@ packages:
     resolution: {integrity: sha512-4gB8na07fecVVkOI6Rs4e7T6NOTki5EmL7TUduTs6bu3EdnSycntVJ4re8kgZA+wx9IueI2Y11bfbgwtzuE0KQ==}
     engines: {node: '>=0.10.0'}
 
-  strnum@1.0.5:
-    resolution: {integrity: sha512-J8bbNyKKXl5qYcR36TIO8W3mVGVHrmmxsd5PAItGkmyzwJvybiw2IVq5nqd0i4LSNSkB/sx9VHllbfFdr9k1JA==}
+  strnum@1.1.1:
+    resolution: {integrity: sha512-O7aCHfYCamLCctjAiaucmE+fHf2DYHkus2OKCn4Wv03sykfFtgeECn505X6K4mPl8CRNd/qurC9guq+ynoN4pw==}
 
   style-mod@4.1.2:
     resolution: {integrity: sha512-wnD1HyVqpJUI2+eKZ+eo1UwghftP6yuFheBqqe+bWCotBjC2K1YnteJILRMs3SM4V/0dLEW1SC27MWP5y+mwmw==}
@@ -5538,8 +5538,8 @@ packages:
     peerDependencies:
       three: '>=0.86.0'
 
-  three-stdlib@2.35.13:
-    resolution: {integrity: sha512-AbXVObkM0OFCKX0r4VmHguGTdebiUQA+Yl+4VNta1wC158gwY86tCkjp2LFfmABtjYJhdK6aP13wlLtxZyLMAA==}
+  three-stdlib@2.35.14:
+    resolution: {integrity: sha512-kpCaEg59M9usFTgHC+YZNKvx7nMoLI2zQxZBV8pjoNW6vNZmGyXpaLBL09A2oLCsS3KepgMFkOuk6lRoebTNvA==}
     peerDependencies:
       three: '>=0.128.0'
 
@@ -5565,8 +5565,8 @@ packages:
   tinycolor2@1.6.0:
     resolution: {integrity: sha512-XPaBkWQJdsf3pLKJV9p4qN/S+fm2Oj8AIPo1BTUhg5oxkvm9+SVEGFdhyOz7tTdUTfvxMiAs4sp6/eZO2Ew+pw==}
 
-  tinyglobby@0.2.11:
-    resolution: {integrity: sha512-32TmKeeKUahv0Go8WmQgiEp9Y21NuxjwjqiRC1nrUB51YacfSwuB44xgXD+HdIppmMRgjQNPdrHyA6vIybYZ+g==}
+  tinyglobby@0.2.12:
+    resolution: {integrity: sha512-qkf4trmKSIiMTs/E63cxH+ojC2unam7rJ0WrauAzpT3ECNTxGRMlaXxVbfxMUC/w0LaYk6jQ4y/nGR9uBO3tww==}
     engines: {node: '>=12.0.0'}
 
   tmp@0.0.33:
@@ -6026,8 +6026,8 @@ packages:
   wrappy@1.0.2:
     resolution: {integrity: sha512-l4Sp/DRseor9wL6EvV2+TuQn63dMkPjZ/sp9XkghTEbV9KlPS1xUsZ3u7/IQO4wxtcFB4bgpQPRcR3QCvezPcQ==}
 
-  ws@8.18.0:
-    resolution: {integrity: sha512-8VbfWfHLbbwu3+N6OKsOMpBdT4kXPDDB9cJk2bJ6mh9ucxdlnNvH1e+roYkKmN9Nxw2yjz7VzeO9oOz2zJ04Pw==}
+  ws@8.18.1:
+    resolution: {integrity: sha512-RKW2aJZMXeMxVpnZ6bck+RswznaxmzdULiBr6KY7XkTnW8uvt0iT9H5DkHUChXrc+uurzwa0rVI16n/Xzjdz1w==}
     engines: {node: '>=10.0.0'}
     peerDependencies:
       bufferutil: ^4.0.1
@@ -7146,9 +7146,9 @@ snapshots:
       lodash.mergewith: 4.6.2
       react: 19.0.0
 
-  '@changesets/apply-release-plan@7.0.9':
+  '@changesets/apply-release-plan@7.0.10':
     dependencies:
-      '@changesets/config': 3.1.0
+      '@changesets/config': 3.1.1
       '@changesets/get-version-range-type': 0.4.0
       '@changesets/git': 3.0.2
       '@changesets/should-skip-package': 0.1.2
@@ -7175,15 +7175,15 @@ snapshots:
     dependencies:
       '@changesets/types': 6.1.0
 
-  '@changesets/cli@2.28.0':
+  '@changesets/cli@2.28.1':
     dependencies:
-      '@changesets/apply-release-plan': 7.0.9
+      '@changesets/apply-release-plan': 7.0.10
       '@changesets/assemble-release-plan': 6.0.6
       '@changesets/changelog-git': 0.2.1
-      '@changesets/config': 3.1.0
+      '@changesets/config': 3.1.1
       '@changesets/errors': 0.2.0
       '@changesets/get-dependents-graph': 2.1.3
-      '@changesets/get-release-plan': 4.0.7
+      '@changesets/get-release-plan': 4.0.8
       '@changesets/git': 3.0.2
       '@changesets/logger': 0.1.1
       '@changesets/pre': 2.0.2
@@ -7206,7 +7206,7 @@ snapshots:
       spawndamnit: 3.0.1
       term-size: 2.2.1
 
-  '@changesets/config@3.1.0':
+  '@changesets/config@3.1.1':
     dependencies:
       '@changesets/errors': 0.2.0
       '@changesets/get-dependents-graph': 2.1.3
@@ -7227,10 +7227,10 @@ snapshots:
       picocolors: 1.1.1
       semver: 7.7.1
 
-  '@changesets/get-release-plan@4.0.7':
+  '@changesets/get-release-plan@4.0.8':
     dependencies:
       '@changesets/assemble-release-plan': 6.0.6
-      '@changesets/config': 3.1.0
+      '@changesets/config': 3.1.1
       '@changesets/pre': 2.0.2
       '@changesets/read': 0.6.3
       '@changesets/types': 6.1.0
@@ -7985,7 +7985,7 @@ snapshots:
       lowdb: 7.0.1
       mime: 4.0.6
       nostr-tools: 2.10.4(typescript@5.7.3)
-      ws: 8.18.0
+      ws: 8.18.1
     transitivePeerDependencies:
       - bufferutil
       - encoding
@@ -8422,10 +8422,10 @@ snapshots:
     dependencies:
       entities: 2.2.0
 
-  applesauce-accounts@0.0.0-next-20250219163923(typescript@5.7.3):
+  applesauce-accounts@0.0.0-next-20250221155809(typescript@5.7.3):
     dependencies:
       '@noble/hashes': 1.7.1
-      applesauce-signers: 0.0.0-next-20250219163923(typescript@5.7.3)
+      applesauce-signers: 0.0.0-next-20250221155809(typescript@5.7.3)
       nanoid: 5.1.0
       nostr-tools: 2.10.4(typescript@5.7.3)
       rxjs: 7.8.1
@@ -8433,13 +8433,13 @@ snapshots:
       - supports-color
       - typescript
 
-  applesauce-content@0.0.0-next-20250219163923(typescript@5.7.3):
+  applesauce-content@0.0.0-next-20250221155809(typescript@5.7.3):
     dependencies:
       '@cashu/cashu-ts': 2.0.0-rc1
       '@types/hast': 3.0.4
       '@types/mdast': 4.0.4
       '@types/unist': 3.0.3
-      applesauce-core: 0.0.0-next-20250219163923(typescript@5.7.3)
+      applesauce-core: 0.0.0-next-20250221155809(typescript@5.7.3)
       mdast-util-find-and-replace: 3.0.2
       nostr-tools: 2.10.4(typescript@5.7.3)
       remark: 15.0.1
@@ -8450,7 +8450,7 @@ snapshots:
       - supports-color
       - typescript
 
-  applesauce-core@0.0.0-next-20250219163923(typescript@5.7.3):
+  applesauce-core@0.0.0-next-20250221155809(typescript@5.7.3):
     dependencies:
       '@scure/base': 1.2.4
       debug: 4.4.0
@@ -8464,19 +8464,19 @@ snapshots:
       - supports-color
       - typescript
 
-  applesauce-factory@0.0.0-next-20250219163923(typescript@5.7.3):
+  applesauce-factory@0.0.0-next-20250221155809(typescript@5.7.3):
     dependencies:
-      applesauce-content: 0.0.0-next-20250219163923(typescript@5.7.3)
-      applesauce-core: 0.0.0-next-20250219163923(typescript@5.7.3)
+      applesauce-content: 0.0.0-next-20250221155809(typescript@5.7.3)
+      applesauce-core: 0.0.0-next-20250221155809(typescript@5.7.3)
       nanoid: 5.1.0
       nostr-tools: 2.10.4(typescript@5.7.3)
     transitivePeerDependencies:
       - supports-color
       - typescript
 
-  applesauce-loaders@0.0.0-next-20250219163923(typescript@5.7.3):
+  applesauce-loaders@0.0.0-next-20250221155809(typescript@5.7.3):
     dependencies:
-      applesauce-core: 0.0.0-next-20250219163923(typescript@5.7.3)
+      applesauce-core: 0.0.0-next-20250221155809(typescript@5.7.3)
       nanoid: 5.1.0
       nostr-tools: 2.10.4(typescript@5.7.3)
       rx-nostr: 3.5.0
@@ -8485,12 +8485,12 @@ snapshots:
       - supports-color
       - typescript
 
-  applesauce-react@0.0.0-next-20250219163923(react-dom@19.0.0(react@19.0.0))(typescript@5.7.3):
+  applesauce-react@0.0.0-next-20250221155809(react-dom@19.0.0(react@19.0.0))(typescript@5.7.3):
     dependencies:
-      applesauce-accounts: 0.0.0-next-20250219163923(typescript@5.7.3)
-      applesauce-content: 0.0.0-next-20250219163923(typescript@5.7.3)
-      applesauce-core: 0.0.0-next-20250219163923(typescript@5.7.3)
-      applesauce-factory: 0.0.0-next-20250219163923(typescript@5.7.3)
+      applesauce-accounts: 0.0.0-next-20250221155809(typescript@5.7.3)
+      applesauce-content: 0.0.0-next-20250221155809(typescript@5.7.3)
+      applesauce-core: 0.0.0-next-20250221155809(typescript@5.7.3)
+      applesauce-factory: 0.0.0-next-20250221155809(typescript@5.7.3)
       nostr-tools: 2.10.4(typescript@5.7.3)
       observable-hooks: 4.2.4(react-dom@19.0.0(react@19.0.0))(react@18.3.1)(rxjs@7.8.1)
       react: 18.3.1
@@ -8500,12 +8500,12 @@ snapshots:
       - supports-color
       - typescript
 
-  applesauce-signers@0.0.0-next-20250219163923(typescript@5.7.3):
+  applesauce-signers@0.0.0-next-20250221155809(typescript@5.7.3):
     dependencies:
       '@noble/hashes': 1.7.1
       '@noble/secp256k1': 1.7.1
       '@scure/base': 1.2.4
-      applesauce-core: 0.0.0-next-20250219163923(typescript@5.7.3)
+      applesauce-core: 0.0.0-next-20250221155809(typescript@5.7.3)
       debug: 4.4.0
       nanoid: 5.1.0
       nostr-tools: 2.10.4(typescript@5.7.3)
@@ -9672,9 +9672,9 @@ snapshots:
 
   fast-uri@3.0.6: {}
 
-  fast-xml-parser@4.5.2:
+  fast-xml-parser@4.5.3:
     dependencies:
-      strnum: 1.0.5
+      strnum: 1.1.1
 
   fastest-stable-stringify@2.0.2: {}
 
@@ -10942,7 +10942,7 @@ snapshots:
       block-stream2: 2.1.0
       browser-or-node: 2.1.1
       buffer-crc32: 0.2.13
-      fast-xml-parser: 4.5.2
+      fast-xml-parser: 4.5.3
       ipaddr.js: 2.2.0
       json-stream: 1.0.0
       lodash: 4.17.21
@@ -11535,9 +11535,10 @@ snapshots:
       jerrypick: 1.1.1
       react: 19.0.0
 
-  react-markdown@9.0.3(@types/react@18.3.18)(react@19.0.0):
+  react-markdown@9.1.0(@types/react@18.3.18)(react@19.0.0):
     dependencies:
       '@types/hast': 3.0.4
+      '@types/mdast': 4.0.4
       '@types/react': 18.3.18
       devlop: 1.1.0
       hast-util-to-jsx-runtime: 2.3.3
@@ -12294,7 +12295,7 @@ snapshots:
 
   strip-json-comments@2.0.1: {}
 
-  strnum@1.0.5: {}
+  strnum@1.1.1: {}
 
   style-mod@4.1.2: {}
 
@@ -12417,7 +12418,7 @@ snapshots:
     dependencies:
       three: 0.170.0
 
-  three-stdlib@2.35.13(three@0.170.0):
+  three-stdlib@2.35.14(three@0.170.0):
     dependencies:
       '@types/draco3d': 1.4.10
       '@types/offscreencanvas': 2019.7.3
@@ -12446,7 +12447,7 @@ snapshots:
 
   tinycolor2@1.6.0: {}
 
-  tinyglobby@0.2.11:
+  tinyglobby@0.2.12:
     dependencies:
       fdir: 6.4.3(picomatch@4.0.2)
       picomatch: 4.0.2
@@ -12709,7 +12710,7 @@ snapshots:
     dependencies:
       debug: 4.4.0
       pretty-bytes: 6.1.1
-      tinyglobby: 0.2.11
+      tinyglobby: 0.2.12
       vite: 5.4.14(@types/node@22.13.4)(terser@5.39.0)
       workbox-build: 7.3.0(@types/babel__core@7.20.5)
       workbox-window: 7.3.0
@@ -12961,7 +12962,7 @@ snapshots:
 
   wrappy@1.0.2: {}
 
-  ws@8.18.0: {}
+  ws@8.18.1: {}
 
   xcode@3.0.1:
     dependencies:
