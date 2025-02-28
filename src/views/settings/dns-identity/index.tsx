@@ -1,9 +1,11 @@
 import {
   ButtonGroup,
+  Code,
   Editable,
   EditableInput,
   EditablePreview,
   EditableProps,
+  Flex,
   Heading,
   IconButton,
   Input,
@@ -32,6 +34,8 @@ import useUserMailboxes from "../../../hooks/use-user-mailboxes";
 import { useWriteRelays } from "../../../hooks/use-client-relays";
 import { COMMON_CONTACT_RELAYS } from "../../../const";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
+import RelayFavicon from "../../../components/relay-favicon";
+import RouterLink from "../../../components/router-link";
 
 function EditableControls() {
   const { isEditing, getSubmitButtonProps, getCancelButtonProps, getEditButtonProps } = useEditableControls();
@@ -142,6 +146,26 @@ function IdentityDetails({ pubkey, profile }: { pubkey: string; profile: Profile
       {renderDetails()}
       {loading && <Spinner />}
       <RawValue heading="Your pubkey" value={pubkey} />
+
+      {identity?.status === IdentityStatus.Found && (
+        <>
+          <Heading size="md" mt="4">
+            Relays
+          </Heading>
+          <Text fontStyle="italic" mt="-2">
+            You have {identity.relays?.length ?? 0} relays set in your DNS identity
+          </Text>
+
+          {identity?.relays?.map((url) => (
+            <Flex gap="2" alignItems="center" key={url}>
+              <RelayFavicon relay={url} size="sm" />
+              <Link as={RouterLink} to={`/relays/${encodeURIComponent(url)}`} isTruncated>
+                {url}
+              </Link>
+            </Flex>
+          ))}
+        </>
+      )}
     </>
   );
 }
@@ -153,7 +177,19 @@ export default function DnsIdentityView() {
   const profile = useUserProfile(account.pubkey, undefined, true);
 
   return (
-    <SimpleView title="DNS Identity">
+    <SimpleView
+      title="DNS Identity"
+      actions={
+        <Link
+          href="https://nostr.how/en/guides/get-verified#self-hosted"
+          isExternal
+          color="blue.500"
+          fontStyle="initial"
+        >
+          What is this?
+        </Link>
+      }
+    >
       {profile?.nip05 ? (
         <IdentityDetails pubkey={account.pubkey} profile={profile} />
       ) : (
