@@ -1,9 +1,10 @@
 import { ReactNode } from "react";
-import { Card, Heading, Link, Spinner } from "@chakra-ui/react";
+import { Box, Heading, Link, LinkBox, Spinner, useDisclosure } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 import { Thread, ThreadQuery } from "applesauce-core/queries";
 import { useStoreQuery } from "applesauce-react/hooks";
-import { nip19 } from "nostr-tools";
+import { EventPointer } from "nostr-tools/nip19";
+import { nip19, NostrEvent } from "nostr-tools";
 
 import ThreadPost from "./components/thread-post";
 import VerticalPageLayout from "../../components/vertical-page-layout";
@@ -14,43 +15,77 @@ import useThreadTimelineLoader from "../../hooks/use-thread-timeline-loader";
 import useSingleEvent from "../../hooks/use-single-event";
 import useParamsEventPointer from "../../hooks/use-params-event-pointer";
 import LoadingNostrLink from "../../components/loading-nostr-link";
-import UserName from "../../components/user/user-name";
 import UserAvatarLink from "../../components/user/user-avatar-link";
-import { ReplyIcon } from "../../components/icons";
-import TimelineNote from "../../components/note/timeline-note";
 import { getSharableEventAddress } from "../../services/relay-hints";
 import useMaxPageWidth from "../../hooks/use-max-page-width";
+import { getNip10References } from "applesauce-core/helpers";
+import useEventIntersectionRef from "../../hooks/use-event-intersection-ref";
+import UserLink from "../../components/user/user-link";
+import { ExpandableToggleButton } from "../notifications/components/notification-item";
+import TextNoteContents from "../../components/note/timeline-note/text-note-contents";
+import { TrustProvider } from "../../providers/local/trust-provider";
+import UserDnsIdentityIcon from "../../components/user/user-dns-identity-icon";
+import Timestamp from "../../components/timestamp";
 
-function CollapsedReplies({
-  pointer,
-  thread,
-  root,
-}: {
-  pointer: nip19.EventPointer;
-  thread: Thread;
-  root: nip19.EventPointer;
-}) {
-  const post = thread.all.get(pointer.id);
-  if (!post) return <LoadingNostrLink link={{ type: "nevent", data: pointer }} />;
-
-  let reply: ReactNode = null;
-  if (post.refs.reply?.e && post.refs.reply.e.id !== root.id) {
-    reply = <CollapsedReplies pointer={post.refs.reply.e} thread={thread} root={root} />;
-  }
+function ParentNote({ note, level = 0 }: { note: NostrEvent; level?: number }) {
+  const ref = useEventIntersectionRef(note);
+  const more = useDisclosure({ defaultIsOpen: level < 2 });
 
   return (
-    <>
-      {reply}
-      <Card gap="2" overflow="hidden" px="2" display="flex" flexDirection="row" p="2" flexShrink={0}>
-        <UserAvatarLink pubkey={post.event.pubkey} size="xs" />
-        <UserName pubkey={post.event.pubkey} fontWeight="bold" />
-        {root.id !== pointer.id && <ReplyIcon />}
-        <Link as={RouterLink} to={`/n/${getSharableEventAddress(post.event)}`} isTruncated>
-          {post.event.content}
+    <LinkBox
+      gap="2"
+      overflow="hidden"
+      p="2"
+      flexShrink={0}
+      borderWidth="0 2px 0 2px"
+      rounded="none"
+      borderColor="var(--chakra-colors-chakra-border-color)"
+      ref={ref}
+    >
+      <ExpandableToggleButton toggle={more} aria-label="Show More" size="sm" float="right" />
+      <Box float="left" mr="2">
+        <UserAvatarLink pubkey={note.pubkey} size="xs" mr="2" />
+        <UserLink pubkey={note.pubkey} fontWeight="bold" mr="1" />
+        <UserDnsIdentityIcon pubkey={note.pubkey} mr="2" />
+        <Link as={RouterLink} to={`/n/${getSharableEventAddress(note)}`}>
+          <Timestamp timestamp={note.created_at} />
         </Link>
-      </Card>
-    </>
+      </Box>
+      {more.isOpen ? (
+        <TrustProvider trust>
+          <br />
+          <TextNoteContents event={note} />
+        </TrustProvider>
+      ) : (
+        <Link as={RouterLink} to={`/n/${getSharableEventAddress(note)}`} noOfLines={1} fontStyle="italic">
+          {note.content}
+        </Link>
+      )}
+    </LinkBox>
   );
+}
+
+function Parents({ pointer, thread }: { pointer: nip19.EventPointer; thread: Thread }) {
+  const posts: ReactNode[] = [];
+
+  let level = 0;
+  let cursor: EventPointer | undefined = pointer;
+  while (cursor) {
+    const post = thread.all.get(cursor.id);
+
+    if (post) {
+      posts.unshift(<ParentNote note={post.event} key={post.event.id} level={level} />);
+      // attempt to walk up the "e" reply tree
+      cursor = getNip10References(post.event).reply?.e;
+      level++;
+    } else {
+      // failed to find parent post, append loading and done
+      posts.unshift(<LoadingNostrLink link={{ type: "nevent", data: cursor }} key={cursor.id} />);
+      cursor = undefined;
+    }
+  }
+
+  return <>{posts}</>;
 }
 
 function ThreadPage({
@@ -82,19 +117,22 @@ function ThreadPage({
 
   const grandparentPointer = focusedPost.parent?.refs.reply?.e;
 
+  const parent = getNip10References(focusedPost.event).reply?.e;
+
   return (
     <>
-      {rootPointer && focusedPost.refs.reply?.e?.id !== rootPointer.id && (
-        <CollapsedReplies pointer={rootPointer} thread={thread} root={rootPointer} />
+      {parent && <Parents pointer={parent} thread={thread} />}
+      {/* {rootPointer && focusedPost.refs.reply?.e?.id !== rootPointer.id && (
+        <Parents pointer={rootPointer} thread={thread} root={rootPointer} />
       )}
       {grandparentPointer && grandparentPointer.id !== rootPointer.id && (
-        <CollapsedReplies pointer={grandparentPointer} thread={thread} root={rootPointer} />
+        <Parents pointer={grandparentPointer} thread={thread} root={rootPointer} />
       )}
       {focusedPost.parent ? (
         <TimelineNote event={focusedPost.parent.event} hideDrawerButton showReplyLine={false} />
       ) : (
         focusedPost.refs.reply?.e && <LoadingNostrLink link={{ type: "nevent", data: focusedPost.refs.reply.e }} />
-      )}
+      )} */}
       <ThreadPost post={focusedPost} initShowReplies focusId={focusId} />
     </>
   );
