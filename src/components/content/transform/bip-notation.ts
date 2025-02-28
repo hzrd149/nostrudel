@@ -1,41 +1,41 @@
 import { Transformer } from "unified";
 import { Root, findAndReplace, Node } from "applesauce-content/nast";
-import { NIP_NAMES } from "../../../const";
+import { BIP_NAMES } from "../../../const";
 
-export interface NIPToken extends Node {
-  type: "nip";
-  nip: string;
+export interface BIPToken extends Node {
+  type: "bip";
+  bip: number;
   name: string;
   value: string;
 }
 
 declare module "applesauce-content/nast" {
-  export interface NIPToken extends Node {
-    type: "nip";
-    nip: string;
+  export interface BIPToken extends Node {
+    type: "bip";
+    bip: number;
     name: string;
     value: string;
   }
 
   export interface ContentMap {
-    nip: NIPToken;
+    bip: BIPToken;
   }
 }
 
-export function nipDefinitions(): Transformer<Root> {
+export function bipDefinitions(): Transformer<Root> {
   return (tree) => {
     findAndReplace(tree, [
       [
-        /(?<=^|[^\p{L}])nip-?(\d{2,3})/giu,
+        /(?<=^|[^\p{L}])bip[-\s]?(\d{1,3})/giu,
         (match: string, $1: string) => {
           try {
-            const nip = $1;
-            const name = NIP_NAMES[nip];
+            const bip = parseInt($1);
+            const name = BIP_NAMES[bip];
             if (!name) return false;
 
             return {
-              type: "nip",
-              nip,
+              type: "bip",
+              bip,
               value: match,
               name,
             };

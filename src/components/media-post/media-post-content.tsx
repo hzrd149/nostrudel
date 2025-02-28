@@ -6,8 +6,9 @@ import { emojis, nostrMentions, links, hashtags } from "applesauce-content/text"
 import { components } from "../content";
 import { renderGenericUrl } from "../content/links";
 import { nipDefinitions } from "../content/transform/nip-notation";
+import { bipDefinitions } from "../content/transform/bip-notation";
 
-const transformers = [links, nostrMentions, emojis, hashtags, nipDefinitions];
+const transformers = [links, nostrMentions, emojis, hashtags, nipDefinitions, bipDefinitions];
 
 const linkRenderers = [renderGenericUrl];
 
