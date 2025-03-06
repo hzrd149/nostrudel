@@ -35,4 +35,20 @@ export const TEMPLATES: { name: string; variables: Variable[]; template: () => L
       ],
     }),
   },
+  {
+    name: "nsite file",
+    variables: [
+      { name: "path", type: "string", value: "/path/to/file" },
+      { name: "hash", type: "string", value: "299b798c4c72e90b28138b460097ab17e777b38acd7ec8572e1507cd10181198" },
+    ],
+    template: () => ({
+      content: "",
+      created_at: "now",
+      kind: 34128,
+      tags: [
+        ["d", "{{path}}"],
+        ["x", "{{hash}}"],
+      ],
+    }),
+  },
 ];
