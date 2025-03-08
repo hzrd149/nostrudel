@@ -1,10 +1,12 @@
 import { Alert, AlertIcon, Spinner } from "@chakra-ui/react";
 
-import useNetworkOverviewReport from "../../../../hooks/reports/use-network-status-report";
 import PanelItemString from "../../../../components/dashboard/panel-item-string";
+import useBakeryControl from "../../../../hooks/use-bakery-control";
+import { useObservable } from "applesauce-react/hooks";
 
 export default function TorInboundStatus() {
-  const status = useNetworkOverviewReport();
+  const control = useBakeryControl();
+  const status = useObservable(control?.network);
 
   if (status === undefined) return <Spinner />;
   else if (!status.tor.inbound.available) {

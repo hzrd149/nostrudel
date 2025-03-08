@@ -4,13 +4,12 @@ import { useObservable } from "applesauce-react/hooks";
 
 import I2POutboundStatus from "./i2p-outbound";
 import I2PInboundStatus from "./i2p-inbound";
-import { controlApi$ } from "../../../../services/bakery";
-import useNetworkOverviewReport from "../../../../hooks/reports/use-network-status-report";
+import useBakeryControl from "../../../../hooks/use-bakery-control";
 
 export default function I2PNetworkStatus() {
-  const controlApi = useObservable(controlApi$);
-  const config = useObservable(controlApi?.config);
-  const status = useNetworkOverviewReport();
+  const control = useBakeryControl();
+  const config = useObservable(control?.config);
+  const status = useObservable(control?.network);
 
   let content: ReactNode = null;
 

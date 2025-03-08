@@ -2,13 +2,12 @@ import { ReactNode } from "react";
 import { Alert, AlertIcon, FormControl, FormHelperText, Switch } from "@chakra-ui/react";
 import { useObservable } from "applesauce-react/hooks";
 
-import useNetworkOverviewReport from "../../../../hooks/reports/use-network-status-report";
-import { controlApi$ } from "../../../../services/bakery";
+import useBakeryControl from "../../../../hooks/use-bakery-control";
 
 export default function HyperOutboundStatus() {
-  const controlApi = useObservable(controlApi$);
-  const config = useObservable(controlApi?.config);
-  const status = useNetworkOverviewReport();
+  const control = useBakeryControl();
+  const config = useObservable(control?.config);
+  const status = useObservable(control?.network);
 
   let content: ReactNode = null;
   if (status === undefined) content = null;
@@ -40,9 +39,7 @@ export default function HyperOutboundStatus() {
       <FormControl>
         <Switch
           isChecked={config?.enableHyperConnections}
-          onChange={(e) =>
-            controlApi?.send(["CONTROL", "CONFIG", "SET", "enableHyperConnections", e.currentTarget.checked])
-          }
+          onChange={(e) => control?.setConfigField("enableHyperConnections", e.currentTarget.checked)}
         >
           Connect to hyper relays
         </Switch>

@@ -2,13 +2,12 @@ import { ReactNode } from "react";
 import { Alert, AlertIcon, FormControl, FormHelperText, Switch } from "@chakra-ui/react";
 import { useObservable } from "applesauce-react/hooks";
 
-import { controlApi$ } from "../../../../services/bakery";
-import useNetworkOverviewReport from "../../../../hooks/reports/use-network-status-report";
+import useBakeryControl from "../../../../hooks/use-bakery-control";
 
 export default function TorOutboundStatus() {
-  const controlApi = useObservable(controlApi$);
-  const config = useObservable(controlApi?.config);
-  const status = useNetworkOverviewReport();
+  const control = useBakeryControl();
+  const config = useObservable(control?.config);
+  const status = useObservable(control?.network);
 
   let content: ReactNode = null;
   if (status === undefined) content = null;
@@ -41,7 +40,7 @@ export default function TorOutboundStatus() {
         <FormControl>
           <Switch
             isChecked={config?.enableTorConnections}
-            onChange={(e) => controlApi?.setConfigField("enableTorConnections", e.currentTarget.checked)}
+            onChange={(e) => control?.setConfigField("enableTorConnections", e.currentTarget.checked)}
           >
             Connect to tor relays
           </Switch>
@@ -52,7 +51,7 @@ export default function TorOutboundStatus() {
         <FormControl>
           <Switch
             isChecked={config?.routeAllTrafficThroughTor}
-            onChange={(e) => controlApi?.setConfigField("routeAllTrafficThroughTor", e.currentTarget.checked)}
+            onChange={(e) => control?.setConfigField("routeAllTrafficThroughTor", e.currentTarget.checked)}
           >
             Route all traffic through tor proxy
           </Switch>

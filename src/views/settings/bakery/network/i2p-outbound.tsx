@@ -2,13 +2,12 @@ import { ReactNode } from "react";
 import { Alert, AlertIcon, FormControl, FormHelperText, Switch } from "@chakra-ui/react";
 import { useObservable } from "applesauce-react/hooks";
 
-import { controlApi$ } from "../../../../services/bakery";
-import useNetworkOverviewReport from "../../../../hooks/reports/use-network-status-report";
+import useBakeryControl from "../../../../hooks/use-bakery-control";
 
 export default function I2POutboundStatus() {
-  const controlApi = useObservable(controlApi$);
-  const config = useObservable(controlApi?.config);
-  const status = useNetworkOverviewReport();
+  const control = useBakeryControl();
+  const config = useObservable(control?.config);
+  const status = useObservable(control?.network);
 
   let content: ReactNode = null;
   if (status === undefined) content = null;
@@ -41,7 +40,7 @@ export default function I2POutboundStatus() {
         <FormControl>
           <Switch
             isChecked={config?.enableI2PConnections}
-            onChange={(e) => controlApi?.setConfigField("enableI2PConnections", e.currentTarget.checked)}
+            onChange={(e) => control?.setConfigField("enableI2PConnections", e.currentTarget.checked)}
           >
             Connect to i2p relays
           </Switch>

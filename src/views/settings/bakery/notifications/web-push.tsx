@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Alert, AlertIcon, Button, Code, Flex, Heading, Link, Text, useToast } from "@chakra-ui/react";
+import { Alert, AlertIcon, Button, Code, Flex, Heading, useToast } from "@chakra-ui/react";
 import { useObservable } from "applesauce-react/hooks";
 
 import { serviceWorkerRegistration } from "../../../../services/worker";
@@ -76,7 +76,7 @@ function WebPushNotificationStatus() {
 export default function WebPushNotificationSettings() {
   const controlApi = useObservable(controlApi$);
   useEffect(() => {
-    controlApi?.send(["CONTROL", "NOTIFICATIONS", "GET-VAPID-KEY"]);
+    // controlApi?.send(["CONTROL", "NOTIFICATIONS", "GET-VAPID-KEY"]);
   }, [controlApi]);
 
   return (

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Box,
   Button,
@@ -16,18 +16,17 @@ import {
 import Convert from "ansi-to-html";
 import { useObservable } from "applesauce-react/hooks";
 
-import useLogsReport from "../../../../hooks/reports/use-logs-report";
 import Timestamp from "../../../../components/timestamp";
 import SimpleView from "../../../../components/layout/presets/simple-view";
-import { controlApi$ } from "../../../../services/bakery";
 import ServicesTree from "./service-tree";
+import useBakeryControl from "../../../../hooks/use-bakery-control";
 
 const convert = new Convert();
 
 export default function BakeryServiceLogsView() {
-  const controlApi = useObservable(controlApi$);
+  const control = useBakeryControl();
   const [service, setService] = useState<string | undefined>(undefined);
-  const { report, logs } = useLogsReport(service);
+  const logs = useObservable(control?.logs({ service })) ?? [];
   const raw = useDisclosure();
   const drawer = useDisclosure();
 
@@ -54,16 +53,6 @@ export default function BakeryServiceLogsView() {
       <Flex gap="4" alignItems="center" flexShrink={0}>
         <Button onClick={drawer.onOpen} hideFrom="2xl">
           Select Service
-        </Button>
-        <Button
-          onClick={() => {
-            if (controlApi) {
-              controlApi?.send(service ? ["CONTROL", "LOGS", "CLEAR", service] : ["CONTROL", "LOGS", "CLEAR"]);
-              report?.clear();
-            }
-          }}
-        >
-          Clear
         </Button>
         <Spacer />
         <Switch isChecked={raw.isOpen} onChange={raw.onToggle}>

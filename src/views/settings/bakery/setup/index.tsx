@@ -66,11 +66,8 @@ export default function BakerySetupView() {
       }
 
       if (!pubkey) throw new Error("Unable to find nostr public key");
-      if (!authParam.value) throw new Error("Missing auth code");
 
-      await bakery.authenticate(authParam.value);
-
-      controlApi.send(["CONTROL", "CONFIG", "SET", "owner", pubkey]);
+      controlApi.setConfigField("owner", pubkey);
     } catch (error) {
       if (error instanceof Error) toast({ status: "error", description: error.message });
     }

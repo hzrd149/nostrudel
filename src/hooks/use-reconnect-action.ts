@@ -13,7 +13,7 @@ export default function useReconnectAction() {
 
   const connect = useCallback(async () => {
     try {
-      await bakery?.connect();
+      // await bakery?.connect();
     } catch (error) {
       if (error instanceof Error) setError(error);
       setCount(steps[Math.min(tries, steps.length - 1)]);

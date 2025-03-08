@@ -1,10 +1,9 @@
 import { ReactNode } from "react";
 import { Badge, Button, Flex, Heading, Text } from "@chakra-ui/react";
 import { NotificationChannel } from "@satellite-earth/core/types/control-api/notifications.js";
+import { useObservable } from "applesauce-react/hooks";
 
 import { controlApi$ } from "../../../../services/bakery";
-import useNotificationChannelsReport from "../../../../hooks/reports/use-notification-channels";
-import { useObservable } from "applesauce-react/hooks";
 
 function Channel({ channel }: { channel: NotificationChannel }) {
   const controlApi = useObservable(controlApi$);
@@ -30,7 +29,7 @@ function Channel({ channel }: { channel: NotificationChannel }) {
           ml="auto"
           size="xs"
           colorScheme="red"
-          onClick={() => controlApi?.send(["CONTROL", "NOTIFICATIONS", "UNREGISTER", channel.id])}
+          // onClick={() => controlApi?.send(["CONTROL", "NOTIFICATIONS", "UNREGISTER", channel.id])}
         >
           Remove
         </Button>
@@ -41,7 +40,7 @@ function Channel({ channel }: { channel: NotificationChannel }) {
 }
 
 export default function OtherSubscriptions() {
-  const { channels, report } = useNotificationChannelsReport();
+  const channels: Record<string, NotificationChannel> = {};
 
   if (!channels || Object.keys(channels).length === 0) return null;
 

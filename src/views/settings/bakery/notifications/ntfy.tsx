@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { Alert, Button, Code, Flex, Heading, Link, Spinner, Text } from "@chakra-ui/react";
 import { nanoid } from "nanoid";
-import { kinds, NostrEvent } from "nostr-tools";
+import { NostrEvent } from "nostr-tools";
 import { useObservable } from "applesauce-react/hooks";
+import { NotificationChannel } from "@satellite-earth/core/types/control-api/notifications.js";
 
 import { useActiveAccount } from "applesauce-react/hooks";
 import { bakery$, controlApi$ } from "../../../../services/bakery";
 import localSettings from "../../../../services/local-settings";
-import useNotificationChannelsReport from "../../../../hooks/reports/use-notification-channels";
 import { CopyIconButton } from "../../../../components/copy-icon-button";
 import { ExternalLinkIcon } from "../../../../components/icons";
 
@@ -19,7 +19,8 @@ export default function NtfyNotificationSettings() {
   const device = useObservable(localSettings.deviceId);
   const topic = useObservable(localSettings.ntfyTopic);
   const server = useObservable(localSettings.ntfyServer);
-  const { channels } = useNotificationChannelsReport();
+  // const { channels } = useNotificationChannelsReport();
+  const channels: Record<string, NotificationChannel> = {};
 
   const channel = Object.values(channels || {}).find((c) => c.device === device && c.type === "ntfy");
 
@@ -28,18 +29,18 @@ export default function NtfyNotificationSettings() {
     // generate a new random id
     localSettings.ntfyTopic.next(topic);
 
-    controlApi?.send([
-      "CONTROL",
-      "NOTIFICATIONS",
-      "REGISTER",
-      { id: `ntfy:${topic}`, server, topic, type: "ntfy", device },
-    ]);
+    // controlApi?.send([
+    //   "CONTROL",
+    //   "NOTIFICATIONS",
+    //   "REGISTER",
+    //   { id: `ntfy:${topic}`, server, topic, type: "ntfy", device },
+    // ]);
   };
 
   const disable = () => {
     if (!channel) return;
 
-    controlApi?.send(["CONTROL", "NOTIFICATIONS", "UNREGISTER", channel.id]);
+    // controlApi?.send(["CONTROL", "NOTIFICATIONS", "UNREGISTER", channel.id]);
   };
 
   const [testing, setTesting] = useState(false);
@@ -48,18 +49,18 @@ export default function NtfyNotificationSettings() {
     setTesting(true);
 
     const events: NostrEvent[] = [];
-    await new Promise<void>((res) => {
-      const sub = bakery?.subscribe([{ kinds: [kinds.EncryptedDirectMessage], limit: 10, "#p": [account.pubkey] }], {
-        onevent: (event) => {
-          events.push(event);
-        },
-        oneose: () => {
-          const random = events[Math.round((events.length - 1) * Math.random())];
-          controlApi?.send(["CONTROL", "NOTIFICATIONS", "NOTIFY", random.id]);
-          res();
-        },
-      });
-    });
+    // await new Promise<void>((res) => {
+    //   const sub = bakery?.subscribe([{ kinds: [kinds.EncryptedDirectMessage], limit: 10, "#p": [account.pubkey] }], {
+    //     onevent: (event) => {
+    //       events.push(event);
+    //     },
+    //     oneose: () => {
+    //       const random = events[Math.round((events.length - 1) * Math.random())];
+    //       controlApi?.send(["CONTROL", "NOTIFICATIONS", "NOTIFY", random.id]);
+    //       res();
+    //     },
+    //   });
+    // });
 
     setTesting(false);
   };

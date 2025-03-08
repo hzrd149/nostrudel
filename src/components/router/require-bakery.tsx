@@ -39,7 +39,6 @@ export default function RequireBakery({ children }: PropsWithChildren & { requir
   const location = useLocation();
   const bakery = useObservable(bakery$);
   const connected = useObservable(bakery?.connected$);
-  const isFirstConnection = useObservable(bakery?.isFirstConnection$);
 
   // if there is no node connection, setup a connection
   if (!bakery)
@@ -51,7 +50,7 @@ export default function RequireBakery({ children }: PropsWithChildren & { requir
       />
     );
 
-  if (bakery && isFirstConnection && connected === false) return <InitialConnectionOverlay />;
+  if (bakery && connected === false) return <InitialConnectionOverlay />;
 
   return <>{children}</>;
 }

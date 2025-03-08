@@ -1,6 +1,8 @@
 import { Button, ButtonGroup, Flex, FlexProps, IconButton, useDisclosure } from "@chakra-ui/react";
-import useServicesReport from "../../../../hooks/reports/use-services-report";
+import { useObservable } from "applesauce-react/hooks";
+
 import { ChevronDownIcon, ChevronRightIcon } from "../../../../components/icons";
+import useBakeryControl from "../../../../hooks/use-bakery-control";
 
 type Service = {
   id: string;
@@ -74,11 +76,12 @@ export default function ServicesTree({
   selected,
   ...props
 }: Omit<FlexProps, "children"> & { select: (service: string) => void; selected?: string }) {
-  const services = useServicesReport() ?? [];
+  const control = useBakeryControl();
+  const services = useObservable(control?.services) ?? [];
 
   const servicesById = new Map<string, Service>();
   for (const service of services) {
-    getOrCreate(servicesById, service.id.split(":"));
+    getOrCreate(servicesById, service.split(":"));
   }
 
   const rootServices = Array.from(servicesById.values()).filter((service) => !service.parent);

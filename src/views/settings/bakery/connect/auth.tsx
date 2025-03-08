@@ -39,8 +39,8 @@ export function BakeryAuthPage() {
     if (!bakery) return;
 
     try {
-      if (!bakery.connected) await bakery.connect();
-      await bakery.authenticate(auth);
+      // if (!bakery.connected) await bakery.connect();
+      // await bakery.authenticate(auth);
 
       navigate(location.state?.back || "/", { replace: true });
     } catch (error) {

@@ -2,15 +2,14 @@ import { ReactNode } from "react";
 import { Alert, Button, Code, Flex, Heading, Link, Spinner, Switch } from "@chakra-ui/react";
 import { useObservable } from "applesauce-react/hooks";
 
-import useNetworkOverviewReport from "../../../../hooks/reports/use-network-status-report";
 import HyperInboundStatus from "./hyper-inbound";
 import HyperOutboundStatus from "./hyper-outbound";
-import { controlApi$ } from "../../../../services/bakery";
+import useBakeryControl from "../../../../hooks/use-bakery-control";
 
 export default function HyperNetworkStatus() {
-  const controlApi = useObservable(controlApi$);
-  const config = useObservable(controlApi?.config);
-  const status = useNetworkOverviewReport();
+  const control = useBakeryControl();
+  const config = useObservable(control?.config);
+  const status = useObservable(control?.network);
 
   let content: ReactNode = null;
 
@@ -19,11 +18,7 @@ export default function HyperNetworkStatus() {
     content = (
       <Alert status="info" whiteSpace="pre-wrap">
         Enable HyperDHT in order to connect to <Code>.hyper</Code> relays
-        <Button
-          variant="ghost"
-          onClick={() => controlApi?.send(["CONTROL", "CONFIG", "SET", "hyperEnabled", true])}
-          ml="auto"
-        >
+        <Button variant="ghost" onClick={() => control?.setConfigField("hyperEnabled", true)} ml="auto">
           Enable
         </Button>
       </Alert>
@@ -43,7 +38,7 @@ export default function HyperNetworkStatus() {
         {config !== undefined && (
           <Switch
             isChecked={config?.hyperEnabled}
-            onChange={(e) => controlApi?.send(["CONTROL", "CONFIG", "SET", "hyperEnabled", e.currentTarget.checked])}
+            onChange={(e) => control?.setConfigField("hyperEnabled", e.currentTarget.checked)}
           >
             Enabled
           </Switch>

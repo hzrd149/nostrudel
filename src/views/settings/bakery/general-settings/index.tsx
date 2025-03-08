@@ -21,9 +21,11 @@ function BakeryGeneralSettingsPage() {
 
   const submit = handleSubmit(async (values) => {
     if (!controlApi) return;
-    await controlApi?.send(["CONTROL", "CONFIG", "SET", "name", values.name]);
-    await controlApi?.send(["CONTROL", "CONFIG", "SET", "description", values.description]);
-    await controlApi?.send(["CONTROL", "CONFIG", "SET", "hyperEnabled", values.hyperEnabled]);
+    await controlApi.setConfigFields({
+      name: values.name,
+      description: values.description,
+      hyperEnabled: values.hyperEnabled,
+    });
 
     // wait for control api to send config back
     await firstValueFrom(controlApi?.config);

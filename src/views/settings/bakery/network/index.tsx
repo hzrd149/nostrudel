@@ -1,4 +1,4 @@
-import { Box, Divider, Flex } from "@chakra-ui/react";
+import { Box, Divider } from "@chakra-ui/react";
 
 import HyperNetworkStatus from "./hyper";
 import TorNetworkStatus from "./tor";

@@ -9,10 +9,9 @@ import { bakery$ } from "../../services/bakery";
 export default function RequireBakeryAuth({ children }: PropsWithChildren) {
   const location = useLocation();
   const bakery = useObservable(bakery$);
-  const isFirstAuthentication = useObservable(bakery?.isFirstAuthentication$);
   const connected = useObservable(bakery?.connected$);
   const authenticated = useObservable(bakery?.authenticated$);
-  const challenge = useObservable(bakery?.onChallenge);
+  const challenge = useObservable(bakery?.challenge$);
   const { requestSignature } = useSigningContext();
   const navigate = useNavigate();
 
@@ -24,16 +23,16 @@ export default function RequireBakeryAuth({ children }: PropsWithChildren) {
     if (loading.current) return;
     loading.current = true;
 
-    bakery
-      .authenticate((draft) => requestSignature(draft))
-      ?.catch(() => {
-        navigate("/bakery/connect/auth", { state: { back: (location.state?.back ?? location) satisfies To } });
-      })
-      .finally(() => (loading.current = false));
+    // bakery
+    //   .authenticate((draft) => requestSignature(draft))
+    //   ?.catch(() => {
+    //     navigate("/bakery/connect/auth", { state: { back: (location.state?.back ?? location) satisfies To } });
+    //   })
+    //   .finally(() => (loading.current = false));
   }, [connected, authenticated, challenge, bakery]);
 
   // initial auth UI
-  if (!authenticated && isFirstAuthentication && connected)
+  if (!authenticated && connected)
     return (
       <Flex direction="column" gap="2" alignItems="center" justifyContent="center" h="full">
         <Flex gap="2" alignItems="center">

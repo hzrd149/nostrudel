@@ -1,9 +1,9 @@
-import { BehaviorSubject, filter, mergeMap } from "rxjs";
+import { BehaviorSubject, combineLatest, filter, lastValueFrom, map, of, shareReplay, switchMap } from "rxjs";
+import { nip42 } from "nostr-tools";
 
 import { logger } from "../helpers/debug";
-import BakeryRelay from "../classes/bakery/bakery-connection";
-import BakeryControlApi from "../classes/bakery/control-api";
-import signingService from "./signing";
+import BakeryRelay from "../classes/bakery/bakery-relay";
+import BakeryControlApi from "../classes/bakery/bakery-control";
 import localSettings from "./local-settings";
 import accounts from "./accounts";
 
@@ -18,13 +18,12 @@ export function clearBakeryURL() {
 
 export const bakery$ = new BehaviorSubject<BakeryRelay | null>(null);
 
+// connect to the bakery when the URL changes
 localSettings.bakeryURL.subscribe((url) => {
   if (!URL.canParse(url)) return bakery$.next(null);
 
   try {
-    const bakery = new BakeryRelay(localSettings.bakeryURL.value);
-
-    bakery$.next(bakery);
+    bakery$.next(new BakeryRelay(localSettings.bakeryURL.value));
   } catch (err) {
     log("Failed to create bakery connection, clearing storage");
     localSettings.bakeryURL.clear();
@@ -34,31 +33,32 @@ localSettings.bakeryURL.subscribe((url) => {
 // automatically authenticate with bakery
 bakery$
   .pipe(
-    filter((r) => r !== null),
-    mergeMap((r) => r.onChallenge),
+    // ignore when bakery is not created
+    filter((b) => b !== null),
+    // watch for auth challenge and account
+    switchMap((b) => combineLatest([of(b), b.challenge$, accounts.active$])),
   )
-  .subscribe(async (challenge) => {
-    if (!challenge) return;
-
-    const bakery = bakery$.value;
-    if (!bakery) return;
-
-    const account = accounts.active;
+  .subscribe(async ([bakery, challenge, account]) => {
     if (!account) return;
 
     try {
-      await bakery.authenticate((draft) => signingService.requestSignature(draft, account));
+      const draft = nip42.makeAuthEvent(bakery.url, challenge);
+      const result = await lastValueFrom(bakery.auth(await account.signEvent(draft)));
+      console.log("Authenticated to relay", result);
     } catch (err) {
       console.log("Failed to authenticate with bakery", err);
     }
   });
 
-export const controlApi$ = new BehaviorSubject<BakeryControlApi | null>(null);
+// create the bakery control api
+export const controlApi$ = bakery$.pipe(
+  filter((b) => !!b),
+  map((bakery) => new BakeryControlApi(bakery)),
+  shareReplay(1),
+);
 
-// create a control api for the bakery
-bakery$.subscribe((relay) => {
-  if (!relay) return controlApi$.next(null);
-  else controlApi$.next(new BakeryControlApi(relay));
+controlApi$.pipe(switchMap((api) => api.config)).subscribe((config) => {
+  console.log("config", config);
 });
 
 if (import.meta.env.DEV) {
@@ -66,11 +66,4 @@ if (import.meta.env.DEV) {
   window.bakery$ = bakery$;
   // @ts-expect-error
   window.controlApi$ = controlApi$;
-}
-
-export function getControlApi() {
-  return controlApi$.value;
-}
-export function getBakery() {
-  return bakery$.value;
 }

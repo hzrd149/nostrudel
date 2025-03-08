@@ -23,7 +23,7 @@ function EmailForm() {
   }, [config]);
 
   const submit = handleSubmit((values) => {
-    controlApi?.send(["CONTROL", "CONFIG", "SET", "notificationEmail", values.email]);
+    controlApi?.setConfigField("notificationEmail", values.email);
   });
 
   return (
