@@ -1,5 +1,0 @@
----
-"nostrudel": minor
----
-
-Linkify BIPs
