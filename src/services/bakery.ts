@@ -1,8 +1,8 @@
 import { BehaviorSubject, combineLatest, filter, lastValueFrom, map, of, shareReplay, switchMap } from "rxjs";
 import { nip42 } from "nostr-tools";
+import { Relay } from "applesauce-relay";
 
 import { logger } from "../helpers/debug";
-import BakeryRelay from "../classes/bakery/bakery-relay";
 import BakeryControlApi from "../classes/bakery/bakery-control";
 import localSettings from "./local-settings";
 import accounts from "./accounts";
@@ -16,14 +16,14 @@ export function clearBakeryURL() {
   localSettings.bakeryURL.clear();
 }
 
-export const bakery$ = new BehaviorSubject<BakeryRelay | null>(null);
+export const bakery$ = new BehaviorSubject<Relay | null>(null);
 
 // connect to the bakery when the URL changes
 localSettings.bakeryURL.subscribe((url) => {
   if (!URL.canParse(url)) return bakery$.next(null);
 
   try {
-    bakery$.next(new BakeryRelay(localSettings.bakeryURL.value));
+    bakery$.next(new Relay(localSettings.bakeryURL.value));
   } catch (err) {
     log("Failed to create bakery connection, clearing storage");
     localSettings.bakeryURL.clear();

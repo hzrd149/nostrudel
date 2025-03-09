@@ -1,68 +1,105 @@
-import { Badge, Button, Card, CardBody, CardFooter, CardHeader, Flex, Heading } from "@chakra-ui/react";
-import { NostrEvent } from "nostr-tools";
 import {
-  getEventUID,
-  getTagValue,
-  hasHiddenTags,
-  HiddenTagsSigner,
-  isHiddenTagsLocked,
-  unlockHiddenTags,
-} from "applesauce-core/helpers";
+  Alert,
+  AlertDescription,
+  AlertIcon,
+  AlertTitle,
+  Badge,
+  Button,
+  Card,
+  CardBody,
+  CardFooter,
+  CardHeader,
+  Flex,
+  Heading,
+  Spinner,
+} from "@chakra-ui/react";
+import { NostrEvent } from "nostr-tools";
+import { WalletQuery } from "applesauce-wallet/queries";
+import { getWalletMints, unlockWallet, WALLET_KIND } from "applesauce-wallet/helpers";
 
-import { useReadRelays } from "../../hooks/use-client-relays";
-import { useActiveAccount } from "applesauce-react/hooks";
-import useTimelineLoader from "../../hooks/use-timeline-loader";
+import { useActiveAccount, useStoreQuery } from "applesauce-react/hooks";
 import useAsyncErrorHandler from "../../hooks/use-async-error-handler";
-import { getWalletDescription, getWalletName } from "../../helpers/nostr/wallet";
 import DebugEventButton from "../../components/debug-modal/debug-event-button";
-import useEventUpdate from "../../hooks/use-event-update";
 import { eventStore } from "../../services/event-store";
+import useReplaceableEvent from "../../hooks/use-replaceable-event";
+import SimpleView from "../../components/layout/presets/simple-view";
 
 function Wallet({ wallet }: { wallet: NostrEvent }) {
-  useEventUpdate(wallet.id);
-
   const account = useActiveAccount()!;
-  const locked = hasHiddenTags(wallet) && isHiddenTagsLocked(wallet);
 
-  const unlock = useAsyncErrorHandler(async () => {
-    const signer = account.signer;
-    if (!signer || !signer.nip04) throw new Error("Missing signer");
-
-    await unlockHiddenTags(wallet, signer as HiddenTagsSigner, eventStore);
-  }, [wallet, account]);
+  const walletInfo = useStoreQuery(WalletQuery, [account.pubkey]);
 
   return (
     <Card>
       <CardHeader display="flex" gap="2" p="2" alignItems="center">
-        <Heading size="md">{getWalletName(wallet) || getTagValue(wallet, "d")}</Heading>
-        {locked && <Badge colorScheme="orange">Locked</Badge>}
-        <DebugEventButton event={wallet} variant="ghost" ml="auto" size="sm" />
+        <Heading size="md">Wallet</Heading>
+        {walletInfo?.locked && <Badge colorScheme="orange">Locked</Badge>}
+        {wallet && <DebugEventButton event={wallet} variant="ghost" ml="auto" size="sm" />}
       </CardHeader>
-      <CardBody px="2" py="0">
-        {getWalletDescription(wallet)}
-      </CardBody>
-      <CardFooter p="2">
-        {locked && (
-          <Button onClick={unlock} colorScheme="primary">
-            Unlock
-          </Button>
-        )}
-      </CardFooter>
+      {walletInfo?.locked === false && (
+        <CardBody px="2" py="0" whiteSpace="pre-line">
+          Key: {walletInfo.privateKey}
+          Mints: {walletInfo.mints.join(", ")}
+        </CardBody>
+      )}
     </Card>
   );
 }
 
 export default function WalletHomeView() {
   const account = useActiveAccount()!;
+  const wallet = useReplaceableEvent({ kind: WALLET_KIND, pubkey: account.pubkey });
 
-  const readRelays = useReadRelays();
-  const { timeline } = useTimelineLoader("wallets", readRelays, { kinds: [37375], authors: [account.pubkey] });
+  const unlock = useAsyncErrorHandler(async () => {
+    if (!wallet) throw new Error("Missing wallet");
+    await unlockWallet(wallet, account);
+    eventStore.update(wallet);
+  }, [wallet, account]);
+
+  const walletInfo = useStoreQuery(WalletQuery, [account.pubkey]);
 
   return (
-    <Flex direction="column" gap="2">
-      {timeline.map((wallet) => (
-        <Wallet key={getEventUID(wallet)} wallet={wallet} />
-      ))}
-    </Flex>
+    <SimpleView
+      title="Wallet"
+      actions={
+        walletInfo?.locked && (
+          <Button onClick={unlock} colorScheme="primary" ms="auto" size="sm">
+            Unlock
+          </Button>
+        )
+      }
+    >
+      {walletInfo?.locked && (
+        <Alert
+          status="info"
+          variant="subtle"
+          flexDirection="column"
+          alignItems="center"
+          justifyContent="center"
+          textAlign="center"
+          height="xs"
+          maxW="2xl"
+          mx="auto"
+        >
+          <AlertIcon boxSize="40px" mr={0} />
+          <AlertTitle mt={4} mb={1} fontSize="lg">
+            Wallet locked!
+          </AlertTitle>
+          <AlertDescription maxWidth="sm">
+            Your wallet is locked, you need to unlock it in order to use it
+          </AlertDescription>
+          <Button onClick={unlock} colorScheme="primary" mt="6">
+            Unlock
+          </Button>
+        </Alert>
+      )}
+      {walletInfo?.locked === false && (
+        <Card p="2" whiteSpace="pre-line">
+          Key: {walletInfo.privateKey}
+          <br />
+          Mints: {walletInfo.mints.join(", ")}
+        </Card>
+      )}
+    </SimpleView>
   );
 }

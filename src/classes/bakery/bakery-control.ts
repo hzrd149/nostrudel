@@ -12,9 +12,9 @@ import {
   timer,
 } from "rxjs";
 import { PrivateNodeConfig } from "@satellite-earth/core/types";
+import { Relay } from "applesauce-relay";
 import hash_sum from "hash-sum";
 
-import BakeryRelay from "./bakery-relay";
 import { LogEntry, NetworkStateResult } from "./types";
 import { scanToArray } from "../../helpers/observable";
 
@@ -25,7 +25,7 @@ export default class BakeryControlApi {
   network: Observable<NetworkStateResult>;
   services: Observable<string[]>;
 
-  constructor(public bakery: BakeryRelay) {
+  constructor(public bakery: Relay) {
     this.config = this.query<PrivateNodeConfig>("config", {}).pipe(shareReplay(1));
     this.network = this.query<NetworkStateResult>("network-status", {}).pipe(shareReplay(1));
     this.services = this.query<{ id: string }>("services", {}).pipe(
