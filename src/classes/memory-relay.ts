@@ -53,6 +53,6 @@ export default class MemoryRelay implements SimpleRelay {
       id?: string | null;
     },
   ) {
-    return this.store.database.getForFilters(filters).size;
+    return this.store.database.getEventsForFilters(filters).size;
   }
 }

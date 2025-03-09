@@ -57,6 +57,7 @@
     "applesauce-react": "next",
     "applesauce-relay": "next",
     "applesauce-signers": "next",
+    "applesauce-wallet": "next",
     "bech32": "^2.0.0",
     "blossom-client-sdk": "^3.0.1",
     "blurhash": "^2.0.5",

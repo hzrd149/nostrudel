@@ -15,7 +15,7 @@ import {
 } from "@chakra-ui/react";
 import { NostrEvent } from "nostr-tools";
 import { WalletQuery } from "applesauce-wallet/queries";
-import { getWalletMints, unlockWallet, WALLET_KIND } from "applesauce-wallet/helpers";
+import { unlockWallet, WALLET_KIND } from "applesauce-wallet/helpers";
 
 import { useActiveAccount, useStoreQuery } from "applesauce-react/hooks";
 import useAsyncErrorHandler from "../../hooks/use-async-error-handler";
