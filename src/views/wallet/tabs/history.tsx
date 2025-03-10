@@ -32,6 +32,8 @@ import useEventUpdate from "../../../hooks/use-event-update";
 import Timestamp from "../../../components/timestamp";
 import useSingleEvents from "../../../hooks/use-single-events";
 import UserAvatarLink from "../../../components/user/user-avatar-link";
+import CashuMintFavicon from "../../../components/cashu/cashu-mint-favicon";
+import CashuMintName from "../../../components/cashu/cashu-mint-name";
 
 function HistoryEntry({ entry }: { entry: NostrEvent }) {
   const account = useActiveAccount()!;
@@ -80,14 +82,29 @@ function HistoryEntry({ entry }: { entry: NostrEvent }) {
           />
         </ButtonGroup>
       </CardBody>
-      {redeemed.length > 0 && (
-        <CardFooter p="2">
-          <Text mr="2">Redeemed zaps from:</Text>
-          <AvatarGroup size="sm">
-            {redeemed.map((event) => (
-              <UserAvatarLink pubkey={event.pubkey} />
-            ))}
-          </AvatarGroup>
+      {details && (
+        <CardFooter px="2" pt="0" pb="2">
+          {details.mint && (
+            <>
+              <CashuMintFavicon mint={details.mint} size="xs" mr="2" />
+              <CashuMintName mint={details.mint} />
+            </>
+          )}
+          {redeemed.length > 0 && (
+            <>
+              <Text mr="2">Redeemed zaps from:</Text>
+              <AvatarGroup size="sm">
+                {redeemed.map((event) => (
+                  <UserAvatarLink pubkey={event.pubkey} />
+                ))}
+              </AvatarGroup>
+            </>
+          )}
+          {details.fee !== undefined && (
+            <Text fontStyle="italic" ms="auto">
+              fee: {details.fee}
+            </Text>
+          )}
         </CardFooter>
       )}
     </Card>
