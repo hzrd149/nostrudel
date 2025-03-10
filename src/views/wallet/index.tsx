@@ -1,46 +1,68 @@
-import {
-  Alert,
-  AlertDescription,
-  AlertIcon,
-  AlertTitle,
-  Badge,
-  Button,
-  Card,
-  CardBody,
-  CardFooter,
-  CardHeader,
-  Flex,
-  Heading,
-  Spinner,
-} from "@chakra-ui/react";
-import { NostrEvent } from "nostr-tools";
+import { Button, ButtonGroup, Card, CardBody, CardFooter, Flex, Text } from "@chakra-ui/react";
+import { kinds, NostrEvent } from "nostr-tools";
 import { WalletQuery } from "applesauce-wallet/queries";
-import { unlockWallet, WALLET_KIND } from "applesauce-wallet/helpers";
+import {
+  getTokenDetails,
+  isTokenDetailsLocked,
+  unlockTokenDetails,
+  unlockWallet,
+  WALLET_KIND,
+  WALLET_TOKEN_KIND,
+} from "applesauce-wallet/helpers";
 
-import { useActiveAccount, useStoreQuery } from "applesauce-react/hooks";
+import { useActiveAccount, useEventStore, useStoreQuery } from "applesauce-react/hooks";
 import useAsyncErrorHandler from "../../hooks/use-async-error-handler";
-import DebugEventButton from "../../components/debug-modal/debug-event-button";
 import { eventStore } from "../../services/event-store";
 import useReplaceableEvent from "../../hooks/use-replaceable-event";
 import SimpleView from "../../components/layout/presets/simple-view";
+import useTimelineLoader from "../../hooks/use-timeline-loader";
+import useUserMailboxes from "../../hooks/use-user-mailboxes";
+import { useReadRelays } from "../../hooks/use-client-relays";
+import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
+import IntersectionObserverProvider from "../../providers/local/intersection-observer";
+import useEventIntersectionRef from "../../hooks/use-event-intersection-ref";
+import useEventUpdate from "../../hooks/use-event-update";
+import DebugEventButton from "../../components/debug-modal/debug-event-button";
+import { ECashIcon } from "../../components/icons";
+import WalletBalanceCard from "./balance-card";
+import { useMemo } from "react";
 
-function Wallet({ wallet }: { wallet: NostrEvent }) {
-  const account = useActiveAccount()!;
+function TokenEvent({ token }: { token: NostrEvent }) {
+  const account = useActiveAccount();
+  const eventStore = useEventStore();
+  useEventUpdate(token.id);
+  const ref = useEventIntersectionRef(token);
 
-  const walletInfo = useStoreQuery(WalletQuery, [account.pubkey]);
+  const locked = isTokenDetailsLocked(token);
+  const details = !locked ? getTokenDetails(token) : undefined;
+  const amount = details?.proofs.reduce((t, p) => t + p.amount, 0);
+
+  const unlock = useAsyncErrorHandler(async () => {
+    if (!account) return;
+    await unlockTokenDetails(token, account);
+    eventStore.update(token);
+  }, [token, account, eventStore]);
 
   return (
-    <Card>
-      <CardHeader display="flex" gap="2" p="2" alignItems="center">
-        <Heading size="md">Wallet</Heading>
-        {walletInfo?.locked && <Badge colorScheme="orange">Locked</Badge>}
-        {wallet && <DebugEventButton event={wallet} variant="ghost" ml="auto" size="sm" />}
-      </CardHeader>
-      {walletInfo?.locked === false && (
-        <CardBody px="2" py="0" whiteSpace="pre-line">
-          Key: {walletInfo.privateKey}
-          Mints: {walletInfo.mints.join(", ")}
-        </CardBody>
+    <Card ref={ref} w="full">
+      <CardBody p="2" alignItems="center" flexDirection="row" display="flex" gap="2">
+        <ECashIcon color="green.400" boxSize={6} />
+        {amount && <Text>{amount}</Text>}
+        <ButtonGroup size="sm" ms="auto">
+          {locked && (
+            <Button onClick={unlock} variant="link" p="2">
+              Unlock
+            </Button>
+          )}
+          <DebugEventButton variant="ghost" event={token} />
+        </ButtonGroup>
+      </CardBody>
+      {details && (
+        <CardFooter px="2" pt="0" pb="0">
+          <Text fontSize="sm" fontStyle="italic">
+            {details.mint}
+          </Text>
+        </CardFooter>
       )}
     </Card>
   );
@@ -50,56 +72,61 @@ export default function WalletHomeView() {
   const account = useActiveAccount()!;
   const wallet = useReplaceableEvent({ kind: WALLET_KIND, pubkey: account.pubkey });
 
+  const mailboxes = useUserMailboxes(account.pubkey);
+  const readRelays = useReadRelays(mailboxes?.outboxes);
+  const { timeline: events, loader } = useTimelineLoader(`${account.pubkey}-wallet-tokens`, readRelays, [
+    {
+      kinds: [WALLET_TOKEN_KIND],
+      authors: [account.pubkey],
+    },
+    { kinds: [kinds.EventDeletion], "#k": [String(WALLET_TOKEN_KIND)], authors: [account.pubkey] },
+  ]);
+
+  const tokens = useMemo(() => events.filter((e) => e.kind === WALLET_TOKEN_KIND), [events]);
+
   const unlock = useAsyncErrorHandler(async () => {
     if (!wallet) throw new Error("Missing wallet");
     await unlockWallet(wallet, account);
     eventStore.update(wallet);
-  }, [wallet, account]);
+
+    // attempt to unlock all tokens
+    for (const token of tokens) {
+      await unlockTokenDetails(token, account);
+      eventStore.update(token);
+    }
+  }, [wallet, account, tokens]);
 
   const walletInfo = useStoreQuery(WalletQuery, [account.pubkey]);
 
+  const callback = useTimelineCurserIntersectionCallback(loader);
+
   return (
-    <SimpleView
-      title="Wallet"
-      actions={
-        walletInfo?.locked && (
-          <Button onClick={unlock} colorScheme="primary" ms="auto" size="sm">
-            Unlock
-          </Button>
-        )
-      }
-    >
-      {walletInfo?.locked && (
-        <Alert
-          status="info"
-          variant="subtle"
-          flexDirection="column"
-          alignItems="center"
-          justifyContent="center"
-          textAlign="center"
-          height="xs"
-          maxW="2xl"
-          mx="auto"
-        >
-          <AlertIcon boxSize="40px" mr={0} />
-          <AlertTitle mt={4} mb={1} fontSize="lg">
-            Wallet locked!
-          </AlertTitle>
-          <AlertDescription maxWidth="sm">
-            Your wallet is locked, you need to unlock it in order to use it
-          </AlertDescription>
-          <Button onClick={unlock} colorScheme="primary" mt="6">
-            Unlock
-          </Button>
-        </Alert>
-      )}
-      {walletInfo?.locked === false && (
-        <Card p="2" whiteSpace="pre-line">
-          Key: {walletInfo.privateKey}
-          <br />
-          Mints: {walletInfo.mints.join(", ")}
-        </Card>
-      )}
-    </SimpleView>
+    <IntersectionObserverProvider callback={callback}>
+      <SimpleView
+        title="Wallet"
+        actions={
+          walletInfo?.locked && (
+            <Button onClick={unlock} colorScheme="primary" ms="auto" size="sm">
+              Unlock
+            </Button>
+          )
+        }
+      >
+        <WalletBalanceCard pubkey={account.pubkey} w="full" maxW="2xl" mx="auto" />
+        {walletInfo?.locked === false && (
+          <Card p="2" whiteSpace="pre-line">
+            Key: {walletInfo.privateKey}
+            <br />
+            Mints: {walletInfo.mints.join(", ")}
+          </Card>
+        )}
+
+        <Flex direction="column" gap="2" w="full" maxW="lg" mx="auto">
+          {tokens.map((token) => (
+            <TokenEvent key={token.id} token={token} />
+          ))}
+        </Flex>
+      </SimpleView>
+    </IntersectionObserverProvider>
   );
 }
