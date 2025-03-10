@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   Button,
   ButtonGroup,
@@ -14,6 +15,7 @@ import { useActiveAccount, useEventStore, useStoreQuery } from "applesauce-react
 import { WalletTokensQuery } from "applesauce-wallet/queries";
 import { getTokenDetails, isTokenDetailsLocked, unlockTokenDetails } from "applesauce-wallet/helpers";
 import { NostrEvent } from "nostr-tools";
+import { ProofState } from "@cashu/cashu-ts";
 
 import useAsyncErrorHandler from "../../../hooks/use-async-error-handler";
 import useEventUpdate from "../../../hooks/use-event-update";
@@ -22,7 +24,6 @@ import { ECashIcon, TrashIcon } from "../../../components/icons";
 import DebugEventButton from "../../../components/debug-modal/debug-event-button";
 import { useDeleteEventContext } from "../../../providers/route/delete-event-provider";
 import Timestamp from "../../../components/timestamp";
-import { useState } from "react";
 import { getCashuWallet } from "../../../services/cashu-mints";
 
 function TokenEvent({ token }: { token: NostrEvent }) {
@@ -35,14 +36,14 @@ function TokenEvent({ token }: { token: NostrEvent }) {
   const details = !locked ? getTokenDetails(token) : undefined;
   const amount = details?.proofs.reduce((t, p) => t + p.amount, 0);
 
-  const [spent, setSpent] = useState<boolean>();
+  const [spentState, setSpentState] = useState<ProofState[]>();
   const check = useAsyncErrorHandler(async () => {
     if (!details) return;
     const wallet = await getCashuWallet(details.mint);
     const state = await wallet.checkProofsStates(details.proofs);
 
-    setSpent(!state.some((t) => t.state === "UNSPENT"));
-  }, [details, setSpent]);
+    setSpentState(state);
+  }, [details, setSpentState]);
 
   const { deleteEvent } = useDeleteEventContext();
 
@@ -78,10 +79,15 @@ function TokenEvent({ token }: { token: NostrEvent }) {
         <CardFooter px="2" pt="0" pb="0" gap="2" display="flex">
           <Button
             variant="link"
-            colorScheme={spent === undefined ? undefined : spent ? "red" : "green"}
+            colorScheme={
+              spentState === undefined ? undefined : spentState.some((s) => s.state === "UNSPENT") ? "green" : "red"
+            }
             onClick={check}
           >
-            {spent === undefined ? "Check" : spent ? "Spent" : "Unspent"}
+            {spentState === undefined
+              ? "Check"
+              : (spentState.some((s) => s.state === "UNSPENT") ? "Unspent" : "Spent") +
+                ` ${spentState.filter((s) => s.state === "UNSPENT").length}/${spentState.length}`}
           </Button>
           <Spacer />
           <Text fontSize="sm" fontStyle="italic">
