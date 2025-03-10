@@ -8,7 +8,7 @@ import RequireActiveAccount from "../../../components/router/require-active-acco
 import useUserMailboxes from "../../../hooks/use-user-mailboxes";
 import { useActiveAccount } from "applesauce-react/hooks";
 import { InboxIcon, OutboxIcon } from "../../../components/icons";
-import MediaServerFavicon from "../../../components/media-server/media-server-favicon";
+import MediaServerFavicon from "../../../components/favicon/media-server-favicon";
 import { NostrEvent } from "../../../types/nostr-event";
 import useAsyncErrorHandler from "../../../hooks/use-async-error-handler";
 import { usePublishEvent } from "../../../providers/global/publish-provider";

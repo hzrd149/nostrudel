@@ -1,5 +1,5 @@
 import { Suspense, lazy, useCallback } from "react";
-import { IconButton, useDisclosure, useToast } from "@chakra-ui/react";
+import { IconButton, IconButtonProps, useDisclosure, useToast } from "@chakra-ui/react";
 
 import { type QrScannerModalProps } from "./qr-scanner-modal";
 import { CAP_IS_NATIVE } from "../../env";
@@ -71,7 +71,10 @@ async function scanWithNative() {
   }
 }
 
-export default function QRCodeScannerButton({ onData }: { onData: QrScannerModalProps["onData"] }) {
+export default function QRCodeScannerButton({
+  onData,
+  ...props
+}: { onData: QrScannerModalProps["onData"] } & Omit<IconButtonProps, "icon" | "aria-label">) {
   const toast = useToast();
   const modal = useDisclosure();
 
@@ -91,7 +94,7 @@ export default function QRCodeScannerButton({ onData }: { onData: QrScannerModal
 
   return (
     <>
-      <IconButton onClick={handleClick} icon={<QrCodeIcon boxSize={6} />} aria-label="Qr Scanner" />
+      <IconButton onClick={handleClick} icon={<QrCodeIcon boxSize={6} />} aria-label="Qr Scanner" {...props} />
       {modal.isOpen && (
         <Suspense fallback={null}>
           <QrScannerModal isOpen={modal.isOpen} onClose={modal.onClose} onData={onData} />

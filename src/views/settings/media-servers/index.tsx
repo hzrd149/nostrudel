@@ -19,7 +19,7 @@ import { useForm } from "react-hook-form";
 
 import RequireActiveAccount from "../../../components/router/require-active-account";
 import { useActiveAccount } from "applesauce-react/hooks";
-import MediaServerFavicon from "../../../components/media-server/media-server-favicon";
+import MediaServerFavicon from "../../../components/favicon/media-server-favicon";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
 import useUsersMediaServers from "../../../hooks/use-user-media-servers";
 import DebugEventButton from "../../../components/debug-modal/debug-event-button";

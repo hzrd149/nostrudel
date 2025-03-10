@@ -19,7 +19,7 @@
     "cap-sync-version": "pnpm dlx capacitor-set-version . -v $(jq -r .version package.json) -b 1"
   },
   "dependencies": {
-    "@cashu/cashu-ts": "^2.2.1",
+    "@cashu/cashu-ts": "^2.2.2",
     "@chakra-ui/anatomy": "^2.3.4",
     "@chakra-ui/breakpoint-utils": "^2.0.8",
     "@chakra-ui/icons": "^2.2.4",
