@@ -12,10 +12,10 @@ import {
 } from "@chakra-ui/react";
 import { useActiveAccount, useEventStore, useStoreQuery } from "applesauce-react/hooks";
 import {
-  getHistoryDetails,
+  getHistoryContent,
   getHistoryRedeemed,
-  isHistoryDetailsLocked,
-  unlockHistoryDetails,
+  isHistoryContentLocked,
+  unlockHistoryContent,
 } from "applesauce-wallet/helpers";
 import { WalletHistoryQuery } from "applesauce-wallet/queries";
 import { NostrEvent } from "nostr-tools";
@@ -38,8 +38,8 @@ import CashuMintName from "../../../components/cashu/cashu-mint-name";
 function HistoryEntry({ entry }: { entry: NostrEvent }) {
   const account = useActiveAccount()!;
   const eventStore = useEventStore();
-  const locked = isHistoryDetailsLocked(entry);
-  const details = !locked ? getHistoryDetails(entry) : undefined;
+  const locked = isHistoryContentLocked(entry);
+  const details = !locked ? getHistoryContent(entry) : undefined;
   useEventUpdate(entry.id);
 
   const ref = useEventIntersectionRef(entry);
@@ -49,7 +49,7 @@ function HistoryEntry({ entry }: { entry: NostrEvent }) {
   const redeemed = useSingleEvents(redeemedIds);
 
   const unlock = useAsyncErrorHandler(async () => {
-    await unlockHistoryDetails(entry, account);
+    await unlockHistoryContent(entry, account);
     eventStore.update(entry);
   }, [entry, account, eventStore]);
 
@@ -120,8 +120,8 @@ export default function WalletHistoryTab() {
 
   const unlock = useAsyncErrorHandler(async () => {
     for (const entry of locked) {
-      if (!isHistoryDetailsLocked(entry)) continue;
-      await unlockHistoryDetails(entry, account);
+      if (!isHistoryContentLocked(entry)) continue;
+      await unlockHistoryContent(entry, account);
       eventStore.update(entry);
     }
   }, [locked, account, eventStore]);

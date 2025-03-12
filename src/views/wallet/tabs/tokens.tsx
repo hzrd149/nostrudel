@@ -13,7 +13,7 @@ import {
 } from "@chakra-ui/react";
 import { useActiveAccount, useEventStore, useStoreQuery } from "applesauce-react/hooks";
 import { WalletTokensQuery } from "applesauce-wallet/queries";
-import { getTokenDetails, isTokenDetailsLocked, unlockTokenDetails } from "applesauce-wallet/helpers";
+import { getTokenContent, isTokenContentLocked, unlockTokenContent } from "applesauce-wallet/helpers";
 import { NostrEvent } from "nostr-tools";
 import { ProofState } from "@cashu/cashu-ts";
 
@@ -32,8 +32,8 @@ function TokenEvent({ token }: { token: NostrEvent }) {
   useEventUpdate(token.id);
   const ref = useEventIntersectionRef(token);
 
-  const locked = isTokenDetailsLocked(token);
-  const details = !locked ? getTokenDetails(token) : undefined;
+  const locked = isTokenContentLocked(token);
+  const details = !locked ? getTokenContent(token) : undefined;
   const amount = details?.proofs.reduce((t, p) => t + p.amount, 0);
 
   const [spentState, setSpentState] = useState<ProofState[]>();
@@ -49,7 +49,7 @@ function TokenEvent({ token }: { token: NostrEvent }) {
 
   const unlock = useAsyncErrorHandler(async () => {
     if (!account) return;
-    await unlockTokenDetails(token, account);
+    await unlockTokenContent(token, account);
     eventStore.update(token);
   }, [token, account, eventStore]);
 
@@ -109,7 +109,7 @@ export default function WalletTokensTab({ ...props }: Omit<FlexProps, "children"
   const unlock = useAsyncErrorHandler(async () => {
     if (!locked) return;
     for (const token of locked) {
-      await unlockTokenDetails(token, account);
+      await unlockTokenContent(token, account);
       eventStore.update(token);
     }
   }, [locked, account, eventStore]);

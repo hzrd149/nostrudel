@@ -3,6 +3,7 @@ import RequireActiveAccount from "../../components/router/require-active-account
 import { lazy } from "react";
 
 const WalletHomeView = lazy(() => import("."));
+const WalletReceiveView = lazy(() => import("./receive"));
 
 export default [
   {
@@ -13,4 +14,5 @@ export default [
       </RequireActiveAccount>
     ),
   },
+  { path: "receive", Component: WalletReceiveView },
 ] satisfies RouteObject[];

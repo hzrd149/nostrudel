@@ -6,6 +6,7 @@ import useReplaceableEvent from "../../hooks/use-replaceable-event";
 import { WALLET_KIND } from "applesauce-wallet/helpers";
 import useEventUpdate from "../../hooks/use-event-update";
 import QRCodeScannerButton from "../../components/qr-code/qr-code-scanner-button";
+import RouterLink from "../../components/router-link";
 
 export default function WalletBalanceCard({ pubkey, ...props }: { pubkey: string } & Omit<CardProps, "children">) {
   const wallet = useReplaceableEvent({ kind: WALLET_KIND, pubkey });
@@ -27,7 +28,7 @@ export default function WalletBalanceCard({ pubkey, ...props }: { pubkey: string
             Send
           </Button>
           <QRCodeScannerButton onData={() => {}} isDisabled size="lg" />
-          <Button isDisabled w="full" size="lg">
+          <Button as={RouterLink} w="full" size="lg" to="/wallet/receive">
             Receive
           </Button>
         </Flex>
