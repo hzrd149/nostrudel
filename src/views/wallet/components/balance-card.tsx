@@ -8,8 +8,8 @@ import { WALLET_KIND } from "applesauce-wallet/helpers";
 import { ECashIcon } from "../../../components/icons";
 import useReplaceableEvent from "../../../hooks/use-replaceable-event";
 import useEventUpdate from "../../../hooks/use-event-update";
-import QRCodeScannerButton from "../../../components/qr-code/qr-code-scanner-button";
 import RouterLink from "../../../components/router-link";
+import AnimatedQRCodeScannerButton from "../../../components/qr-code/animated-qr-scanner-button";
 
 export default function WalletBalanceCard({ pubkey, ...props }: { pubkey: string } & Omit<CardProps, "children">) {
   const navigate = useNavigate();
@@ -39,7 +39,7 @@ export default function WalletBalanceCard({ pubkey, ...props }: { pubkey: string
           <Button as={RouterLink} w="full" size="lg" to="/wallet/send">
             Send
           </Button>
-          <QRCodeScannerButton onResult={handleScan} size="lg" />
+          <AnimatedQRCodeScannerButton onResult={handleScan} size="lg" />
           <Button as={RouterLink} w="full" size="lg" to="/wallet/receive">
             Receive
           </Button>

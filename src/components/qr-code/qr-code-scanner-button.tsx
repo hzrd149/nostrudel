@@ -1,5 +1,4 @@
-import { Suspense, lazy, useCallback, useEffect, useState } from "react";
-import { filter, map, merge, Observable, Subject } from "rxjs";
+import { Suspense, lazy, useState } from "react";
 import {
   Button,
   IconButton,
@@ -9,16 +8,14 @@ import {
   ModalContent,
   ModalFooter,
   ModalOverlay,
-  Progress,
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
-import { receiveAnimated } from "applesauce-wallet/helpers/animated-qr";
 
 import { CAP_IS_NATIVE } from "../../env";
 import { logger } from "../../helpers/debug";
 import { QrCodeIcon } from "../icons";
-import { getNativeScanner, getNativeScanStream } from "./native-scanner";
+import { installNativeScanner, scanSingle } from "./native-scanner";
 
 const BarcodeScannerComponent = lazy(() => import("react-qr-barcode-scanner"));
 const log = logger.extend("QRCodeScanner");
@@ -30,70 +27,35 @@ export default function QRCodeScannerButton({
   const toast = useToast();
   const modal = useDisclosure();
 
-  const [progress, setProgress] = useState<number>();
-  const [stream, setStream] = useState<Observable<string> | Subject<string>>();
-
-  const openModal = useCallback(() => {
-    setStream(new Subject());
-    modal.onOpen();
-  }, [modal.onOpen, setStream]);
-
   const [stopStream, setStopStream] = useState(false);
-  const closeModal = useCallback(() => {
+  const closeModal = (result?: string) => {
     // Stop the QR Reader stream (fixes issue where the browser freezes when closing the modal) and then dismiss the modal one tick later
     setStopStream(true);
-    setTimeout(() => modal.onClose(), 0);
-  }, [setStopStream, modal.onClose]);
+    setTimeout(() => {
+      modal.onClose();
+      if (result) onResult(result);
+    }, 0);
+  };
 
-  const openNative = useCallback(async () => {
-    const scanner = await getNativeScanner();
-    const stream = getNativeScanStream(scanner);
-    setStream(stream.pipe(map((barcode) => barcode.rawValue)));
-  }, [setStream]);
-
-  const handleClick = useCallback(async () => {
+  const handleClick = async () => {
     if (CAP_IS_NATIVE) {
       try {
-        await openNative();
+        await installNativeScanner();
+
+        try {
+          const result = await scanSingle();
+          onResult(result.barcodes[0].rawValue);
+        } catch (error) {
+          // user cancel
+        }
       } catch (error) {
         log(error);
         if (import.meta.env.DEV && error instanceof Error) toast({ status: "error", description: error.message });
 
-        openModal();
+        modal.onOpen();
       }
-    } else openModal();
-  }, [openModal, openNative]);
-
-  // listen to the scanning stream
-  useEffect(() => {
-    if (stream) {
-      setProgress(undefined);
-
-      const normal = stream.pipe(filter((part) => !part.startsWith("ur:bytes")));
-      const animated = stream.pipe(receiveAnimated);
-
-      const sub = merge(normal, animated).subscribe({
-        next: (part) => {
-          if (typeof part === "number") {
-            // progress
-            setProgress(part);
-          } else if (part) {
-            // close the javascript scanner
-            closeModal();
-            // wait for steam to be stopped before returning data
-            setTimeout(() => {
-              onResult(part);
-            }, 0);
-          }
-        },
-        error: (err) => {
-          if (err instanceof Error) toast({ status: "error", description: err.message });
-          closeModal();
-        },
-      });
-      return () => sub.unsubscribe();
-    }
-  }, [stream, closeModal, onResult, setProgress]);
+    } else modal.onOpen();
+  };
 
   return (
     <>
@@ -106,20 +68,14 @@ export default function QRCodeScannerButton({
               <ModalBody p="2">
                 <BarcodeScannerComponent
                   stopStream={stopStream}
-                  onUpdate={(err, result) => {
-                    if (stream instanceof Subject && result && result.getText()) stream.next(result.getText());
-                  }}
-                  onError={(err) => {
-                    if (!(stream instanceof Subject)) return;
-                    if (err instanceof Error) stream.error(err);
-                    else stream.error(new Error(err));
+                  onUpdate={(_err, result) => {
+                    if (result && result.getText()) closeModal(result.getText());
                   }}
                 />
               </ModalBody>
 
               <ModalFooter px="2" pb="2" pt="0" alignItems="center" gap="2">
-                {progress !== undefined && <Progress hasStripe value={progress * 100} w="full" />}
-                <Button onClick={closeModal}>Cancel</Button>
+                <Button onClick={() => closeModal()}>Cancel</Button>
               </ModalFooter>
             </ModalContent>
           </Modal>

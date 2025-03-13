@@ -1,12 +1,11 @@
-import { Barcode, BarcodeScannerPlugin } from "@capacitor-mlkit/barcode-scanning";
-import { from, Observable, switchMap } from "rxjs";
-import { PluginListenerHandle } from "@capacitor/core";
+import { ScanResult, type Barcode } from "@capacitor-mlkit/barcode-scanning";
+import { Observable, Subject } from "rxjs";
 
 import { logger } from "../../helpers/debug";
 
 const log = logger.extend("NativeQrCodeScanner");
 
-export async function getNativeScanner(): Promise<BarcodeScannerPlugin> {
+export async function installNativeScanner(): Promise<boolean> {
   const { BarcodeScanner, GoogleBarcodeScannerModuleInstallState } = await import("@capacitor-mlkit/barcode-scanning");
 
   const { available } = await BarcodeScanner.isGoogleBarcodeScannerModuleAvailable();
@@ -52,27 +51,38 @@ export async function getNativeScanner(): Promise<BarcodeScannerPlugin> {
   const granted = camera === "granted" || camera === "limited";
   if (!granted) throw new Error("Camera access denied");
 
-  return BarcodeScanner;
+  return true;
 }
 
-export function getNativeScanStream(scanner: BarcodeScannerPlugin): Observable<Barcode> {
-  return new Observable<Barcode>((observer) => {
-    const sub = scanner.addListener("barcodesScanned", (event) => {
-      for (const barcode of event.barcodes) {
-        observer.next(barcode);
-      }
-    });
+export async function getScanningStream(): Promise<Observable<Barcode>> {
+  const { BarcodeScanner } = await import("@capacitor-mlkit/barcode-scanning");
 
-    scanner.startScan();
-
-    let handle: PluginListenerHandle | undefined = undefined;
-    sub.then((e) => (handle = e));
-
-    return () => {
-      if (handle) handle.remove();
-      else sub.then((handle) => handle.remove);
-
-      scanner.stopScan();
-    };
+  const subject = new Subject<Barcode>();
+  await BarcodeScanner.addListener("barcodesScanned", (event) => {
+    for (const barcode of event.barcodes) {
+      subject.next(barcode);
+    }
   });
+
+  await BarcodeScanner.addListener("scanError", (event) => {
+    subject.error(new Error(event.message));
+  });
+
+  return subject;
+}
+
+export async function startScanning(): Promise<void> {
+  const { BarcodeScanner } = await import("@capacitor-mlkit/barcode-scanning");
+  await BarcodeScanner.startScan();
+}
+
+export async function stopScanning(): Promise<void> {
+  const { BarcodeScanner } = await import("@capacitor-mlkit/barcode-scanning");
+  await BarcodeScanner.removeAllListeners();
+  await BarcodeScanner.stopScan();
+}
+
+export async function scanSingle(): Promise<ScanResult> {
+  const { BarcodeScanner } = await import("@capacitor-mlkit/barcode-scanning");
+  return await BarcodeScanner.scan();
 }
