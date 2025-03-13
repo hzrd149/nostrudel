@@ -34,12 +34,15 @@ import useSingleEvents from "../../../hooks/use-single-events";
 import UserAvatarLink from "../../../components/user/user-avatar-link";
 import CashuMintFavicon from "../../../components/cashu/cashu-mint-favicon";
 import CashuMintName from "../../../components/cashu/cashu-mint-name";
+import { usePublishEvent } from "../../../providers/global/publish-provider";
+import factory from "../../../services/event-factory";
 
 function HistoryEntry({ entry }: { entry: NostrEvent }) {
   const account = useActiveAccount()!;
   const eventStore = useEventStore();
   const locked = isHistoryContentLocked(entry);
   const details = !locked ? getHistoryContent(entry) : undefined;
+  const publish = usePublishEvent();
   useEventUpdate(entry.id);
 
   const ref = useEventIntersectionRef(entry);
@@ -95,7 +98,7 @@ function HistoryEntry({ entry }: { entry: NostrEvent }) {
               <Text mr="2">Redeemed zaps from:</Text>
               <AvatarGroup size="sm">
                 {redeemed.map((event) => (
-                  <UserAvatarLink pubkey={event.pubkey} />
+                  <UserAvatarLink key={event.id} pubkey={event.pubkey} />
                 ))}
               </AvatarGroup>
             </>
@@ -114,6 +117,7 @@ function HistoryEntry({ entry }: { entry: NostrEvent }) {
 export default function WalletHistoryTab() {
   const account = useActiveAccount()!;
   const eventStore = useEventStore();
+  const publish = usePublishEvent();
 
   const history = useStoreQuery(WalletHistoryQuery, [account.pubkey]) ?? [];
   const locked = useStoreQuery(WalletHistoryQuery, [account.pubkey, true]) ?? [];
@@ -126,6 +130,12 @@ export default function WalletHistoryTab() {
     }
   }, [locked, account, eventStore]);
 
+  const clear = useAsyncErrorHandler(async () => {
+    if (confirm("Are you sure you want to clear history?") !== true) return;
+    const draft = await factory.delete(history);
+    await publish("Clear history", draft);
+  }, [factory, publish, history]);
+
   return (
     <Flex direction="column" gap="2" w="full">
       {locked && locked.length > 0 && (
@@ -134,6 +144,11 @@ export default function WalletHistoryTab() {
         </Button>
       )}
       {history?.map((entry) => <HistoryEntry key={entry.id} entry={entry} />)}
+      {history.length > 0 && (
+        <Button variant="link" onClick={clear} ms="auto">
+          Clear history
+        </Button>
+      )}
     </Flex>
   );
 }

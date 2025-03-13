@@ -1,22 +1,21 @@
-import { Button, Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/react";
+import { Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/react";
 import { kinds } from "nostr-tools";
 import { WalletBalanceQuery } from "applesauce-wallet/queries";
-import { UnlockWallet } from "applesauce-wallet/actions";
 import { WALLET_HISTORY_KIND, WALLET_TOKEN_KIND } from "applesauce-wallet/helpers";
 
-import { useActiveAccount, useStoreQuery, useActionHub } from "applesauce-react/hooks";
-import useAsyncErrorHandler from "../../hooks/use-async-error-handler";
+import { useActiveAccount, useStoreQuery } from "applesauce-react/hooks";
 import SimpleView from "../../components/layout/presets/simple-view";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import useUserMailboxes from "../../hooks/use-user-mailboxes";
 import { useReadRelays } from "../../hooks/use-client-relays";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
-import WalletBalanceCard from "./balance-card";
+import WalletBalanceCard from "./components/balance-card";
 import WalletTokensTab from "./tabs/tokens";
 import WalletHistoryTab from "./tabs/history";
 import WalletMintsTab from "./tabs/mints";
 import useUserWallet from "../../hooks/use-user-wallet";
+import WalletUnlockButton from "./components/wallet-unlock-button";
 
 export default function WalletHomeView() {
   const account = useActiveAccount()!;
@@ -33,34 +32,16 @@ export default function WalletHomeView() {
   ]);
   const balance = useStoreQuery(WalletBalanceQuery, [account.pubkey]);
 
-  const actions = useActionHub();
-  const unlock = useAsyncErrorHandler(async () => {
-    if (!wallet) throw new Error("Missing wallet");
-    if (wallet.locked === false) return;
-
-    await actions.run(UnlockWallet, { history: true, tokens: true });
-  }, [wallet, actions]);
-
   const callback = useTimelineCurserIntersectionCallback(loader);
 
   return (
     <IntersectionObserverProvider callback={callback}>
       <SimpleView
         title="Wallet"
-        actions={
-          wallet?.locked && (
-            <Button onClick={unlock} colorScheme="primary" ms="auto" size="sm">
-              Unlock
-            </Button>
-          )
-        }
+        actions={wallet?.locked && <WalletUnlockButton colorScheme="primary" ms="auto" size="sm" />}
       >
         <WalletBalanceCard pubkey={account.pubkey} w="full" maxW="2xl" mx="auto" />
-        {wallet?.locked && (
-          <Button onClick={unlock} colorScheme="primary" mx="auto" size="lg" w="sm">
-            Unlock
-          </Button>
-        )}
+        {wallet?.locked && <WalletUnlockButton colorScheme="primary" mx="auto" size="lg" w="sm" />}
 
         <Tabs isFitted maxW="2xl" mx="auto" w="full" isLazy>
           <TabList mb="1em">

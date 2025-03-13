@@ -151,7 +151,7 @@ export default function LoginNostrConnectView() {
                 onChange={(e) => setConnection(e.target.value)}
                 autoComplete="off"
               />
-              <QRCodeScannerButton onData={(v) => setConnection(v)} />
+              <QRCodeScannerButton onResult={(v) => setConnection(v)} />
             </Flex>
           </FormControl>
         )}

@@ -76,7 +76,7 @@ export function SearchPage() {
     <VerticalPageLayout>
       <Flex as="form" gap="2" wrap="wrap" onSubmit={submit}>
         <ButtonGroup>
-          <QRCodeScannerButton onData={handleSearchText} />
+          <QRCodeScannerButton onResult={handleSearchText} />
           {!!navigator.clipboard?.readText && (
             <IconButton
               onClick={readClipboard}

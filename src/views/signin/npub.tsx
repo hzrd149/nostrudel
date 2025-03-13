@@ -32,7 +32,7 @@ export default function LoginNpubView() {
         <FormLabel>Enter user npub</FormLabel>
         <Flex gap="2">
           <Input type="text" placeholder="npub1" isRequired value={npub} onChange={(e) => setNpub(e.target.value)} />
-          <QRCodeScannerButton onData={(v) => setNpub(v)} />
+          <QRCodeScannerButton onResult={(v) => setNpub(v)} />
         </Flex>
         <FormHelperText>
           Enter any npub you want.{" "}

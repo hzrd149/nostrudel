@@ -131,7 +131,7 @@ export default function LoginNostrAddressView() {
                 onChange={(e) => setAddress(e.target.value)}
                 autoComplete="off"
               />
-              <QRCodeScannerButton onData={(v) => setAddress(v)} />
+              <QRCodeScannerButton onResult={(v) => setAddress(v)} />
             </Flex>
           </FormControl>
           {renderStatus()}

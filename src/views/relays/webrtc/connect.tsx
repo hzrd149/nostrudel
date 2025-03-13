@@ -48,7 +48,7 @@ export default function WebRtcConnectView() {
 
       <Flex as="form" gap="2" onSubmit={connect}>
         <Input placeholder="webrtc+nostr:npub1..." {...register("uri")} autoComplete="off" />
-        <QRCodeScannerButton onData={(data) => setValue("uri", data)} />
+        <QRCodeScannerButton onResult={(data) => setValue("uri", data)} />
         <Button colorScheme="primary" type="submit" isLoading={formState.isSubmitting}>
           Connect
         </Button>

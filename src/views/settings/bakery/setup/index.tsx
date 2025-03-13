@@ -93,7 +93,7 @@ export default function BakerySetupView() {
           <FormLabel>Owner</FormLabel>
           <Flex gap="2">
             <Input {...register("owner", { required: true })} isRequired placeholder="john@example.com" />
-            <QRCodeScannerButton onData={(url) => setValue("owner", url)} />
+            <QRCodeScannerButton onResult={(url) => setValue("owner", url)} />
           </Flex>
           <FormHelperText>Enter the NIP-05, npub, or hex pubkey of the owner of this node</FormHelperText>
         </FormControl>

@@ -30,7 +30,7 @@
     "@chakra-ui/theme-tools": "^2.2.6",
     "@codemirror/autocomplete": "^6.18.6",
     "@codemirror/lang-json": "^6.0.1",
-    "@codemirror/language": "^6.10.8",
+    "@codemirror/language": "^6.11.0",
     "@codemirror/view": "^6.36.4",
     "@emoji-mart/data": "^1.2.1",
     "@emoji-mart/react": "^1.1.1",
@@ -130,7 +130,7 @@
     "workbox-core": "7.0.0",
     "workbox-precaching": "7.0.0",
     "workbox-routing": "7.0.0",
-    "yet-another-react-lightbox": "^3.21.7"
+    "yet-another-react-lightbox": "^3.21.8"
   },
   "devDependencies": {
     "@capacitor-community/http": "^1.4.1",
@@ -173,7 +173,8 @@
   },
   "resolutions": {
     "@types/react": "^18.2.22",
-    "@types/react-dom": "^18.2.7"
+    "@types/react-dom": "^18.2.7",
+    "three-render-objects": "1.39.0"
   },
   "funding": {
     "type": "lightning",

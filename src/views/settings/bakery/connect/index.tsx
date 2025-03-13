@@ -37,7 +37,7 @@ function ConnectForm() {
         <FormLabel>Bakery URL</FormLabel>
         <Flex gap="2">
           <Input type="text" {...register("url", { required: true })} isRequired placeholder="ws://localhost:2012" />
-          <QRCodeScannerButton onData={handleScanData} />
+          <QRCodeScannerButton onResult={handleScanData} />
         </Flex>
       </FormControl>
 

@@ -127,7 +127,7 @@ export default function LoginNsecView() {
               />
             </InputRightElement>
           </InputGroup>
-          <QRCodeScannerButton onData={(v) => setValue("value", v)} />
+          <QRCodeScannerButton onResult={(v) => setValue("value", v)} />
         </Flex>
       </FormControl>
 

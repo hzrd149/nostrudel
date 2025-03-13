@@ -4,6 +4,9 @@ import { lazy } from "react";
 
 const WalletHomeView = lazy(() => import("."));
 const WalletReceiveView = lazy(() => import("./receive"));
+const WalletSendView = lazy(() => import("./send/index"));
+const WalletSendCashuView = lazy(() => import("./send/cashu"));
+const WalletSendTokenView = lazy(() => import("./send/token"));
 
 export default [
   {
@@ -15,4 +18,12 @@ export default [
     ),
   },
   { path: "receive", Component: WalletReceiveView },
+  {
+    path: "send",
+    children: [
+      { index: true, Component: WalletSendView },
+      { path: "cashu", Component: WalletSendCashuView },
+      { path: "token", Component: WalletSendTokenView },
+    ],
+  },
 ] satisfies RouteObject[];
