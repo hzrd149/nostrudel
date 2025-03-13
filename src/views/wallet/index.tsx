@@ -1,5 +1,17 @@
 import { useState } from "react";
-import { Button, Tab, TabList, TabPanel, TabPanels, Tabs, useToast } from "@chakra-ui/react";
+import {
+  Alert,
+  AlertDescription,
+  AlertIcon,
+  AlertTitle,
+  Button,
+  Tab,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Tabs,
+  useToast,
+} from "@chakra-ui/react";
 import { kinds } from "nostr-tools";
 import { WalletBalanceQuery } from "applesauce-wallet/queries";
 import { CreateWallet } from "applesauce-wallet/actions";
@@ -56,6 +68,12 @@ export default function WalletHomeView() {
         title="Wallet"
         actions={wallet?.locked && <WalletUnlockButton colorScheme="primary" ms="auto" size="sm" />}
       >
+        <Alert status="error" mb="4">
+          <AlertIcon />
+          <AlertTitle>Work in progress!</AlertTitle>
+          <AlertDescription>Do not put money into this wallet. it has bugs that will loose your money</AlertDescription>
+        </Alert>
+
         {wallet ? (
           <WalletBalanceCard pubkey={account.pubkey} w="full" maxW="2xl" mx="auto" />
         ) : (
