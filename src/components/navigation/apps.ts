@@ -30,6 +30,7 @@ import FileAttachment01 from "../icons/file-attachment-01";
 import Rocket02 from "../icons/rocket-02";
 import PuzzlePiece01 from "../icons/puzzle-piece-01";
 import Users02 from "../icons/users-02";
+import Wallet02 from "../icons/wallet-02";
 
 export type App = {
   icon?: ComponentWithAs<"svg", IconProps>;
@@ -100,6 +101,7 @@ export const internalApps: App[] = [
   { title: "Videos", description: "Browse videos", icon: VideoIcon, id: "videos", to: "/videos" },
   { title: "Articles", description: "Browse articles", icon: ArticleIcon, id: "articles", to: "/articles" },
   { title: "Files", description: "Browse files", icon: FileAttachment01, id: "files", to: "/files" },
+  { title: "Wallet", description: "Receive and send cashu tokens", icon: Wallet02, id: "wallet", to: "/wallet" },
 ];
 
 export const internalTools: App[] = [
