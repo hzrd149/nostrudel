@@ -92,7 +92,7 @@
     "ngeohash": "^0.6.3",
     "nostr-idb": "^2.2.0",
     "nostr-signer-capacitor-plugin": "^0.0.3",
-    "nostr-tools": "^2.10.4",
+    "nostr-tools": "^2.11.0",
     "nostr-typedef": "^0.11.0",
     "nostr-wasm": "^0.1.0",
     "nuka-carousel": "^8.2.0",

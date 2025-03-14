@@ -6,7 +6,7 @@ import { eventStore } from "./event-store";
 import factory from "./event-factory";
 import rxNostr from "./rx-nostr";
 
-const actions = new ActionHub(eventStore, factory, async (label, event) => {
+const actions = new ActionHub(eventStore, factory, async (event) => {
   const mailboxes = eventStore.getReplaceable(kinds.RelayList, event.pubkey);
   const outboxes = mailboxes && getOutboxes(mailboxes);
 

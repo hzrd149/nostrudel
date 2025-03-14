@@ -1,27 +1,16 @@
-import { useState } from "react";
-import {
-  Button,
-  Flex,
-  Input,
-  NumberDecrementStepper,
-  NumberIncrementStepper,
-  NumberInput,
-  NumberInputField,
-  NumberInputStepper,
-  Select,
-} from "@chakra-ui/react";
+import { Button, Flex, Input, Select } from "@chakra-ui/react";
 import { WalletBalanceQuery, WalletQuery, WalletTokensQuery } from "applesauce-wallet/queries";
 import { useActionHub, useActiveAccount, useStoreQuery } from "applesauce-react/hooks";
 import { CompleteSpend } from "applesauce-wallet/actions";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
+import { getEncodedToken, Token } from "@cashu/cashu-ts";
+import { dumbTokenSelection } from "applesauce-wallet/helpers";
 
 import SimpleView from "../../../components/layout/presets/simple-view";
 import CashuMintName from "../../../components/cashu/cashu-mint-name";
 import WalletUnlockButton from "../components/wallet-unlock-button";
 import RouterLink from "../../../components/router-link";
-import { getEncodedToken, Proof, Token } from "@cashu/cashu-ts";
-import { dumbTokenSelection, getTokenContent } from "applesauce-wallet/helpers";
 import { getCashuWallet } from "../../../services/cashu-mints";
 
 export default function WalletSendCashuView() {
@@ -44,16 +33,11 @@ export default function WalletSendCashuView() {
     const selected = dumbTokenSelection(tokens, values.amount, values.mint);
     const wallet = await getCashuWallet(values.mint);
 
-    // get the proofs
-    const selectedProofs = selected
-      .map((t) => getTokenContent(t)!)
-      .reduce((arr, token) => [...arr, ...token.proofs], [] as Proof[]);
-
     // swap
-    const send = await wallet.send(values.amount, selectedProofs);
+    const send = await wallet.send(values.amount, selected.proofs);
 
     // save the change
-    await actions.run(CompleteSpend, selected, { proofs: send.keep, mint: values.mint });
+    await actions.run(CompleteSpend, selected.events, { proofs: send.keep, mint: values.mint });
 
     // redirect to the token view
     const token: Token = {
