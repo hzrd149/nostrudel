@@ -64,7 +64,7 @@ function MediaServersPage() {
     await publish("Remove media server", draft);
   };
 
-  const switchToBlossom = useAsyncErrorHandler(async () => {
+  const { run: switchToBlossom } = useAsyncErrorHandler(async () => {
     await updateSettings({ mediaUploadService: "blossom" });
   }, [updateSettings]);
 

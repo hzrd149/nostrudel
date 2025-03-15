@@ -21,7 +21,7 @@ export default function StreamOpenButton({
   const { openAddress } = useContext(AppHandlerContext);
   const address = useShareableEventAddress(stream);
 
-  const handleClick = useAsyncErrorHandler(async () => {
+  const { run: handleClick } = useAsyncErrorHandler(async () => {
     if (!address) throw new Error("Failed to get address");
     openAddress(address);
   }, [address]);

@@ -19,12 +19,12 @@ export default function useUserMuteActions(pubkey: string) {
   const isMuted = isPubkeyInList(muteList, pubkey);
   const expiration = muteList ? getPubkeyExpiration(muteList, pubkey) : 0;
 
-  const mute = useAsyncErrorHandler(async () => {
+  const { run: mute } = useAsyncErrorHandler(async () => {
     let draft = muteListAddPubkey(muteList || createEmptyMuteList(), pubkey);
     draft = pruneExpiredPubkeys(draft);
     await publish("Mute", draft, undefined, false);
   }, [publish, muteList]);
-  const unmute = useAsyncErrorHandler(async () => {
+  const { run: unmute } = useAsyncErrorHandler(async () => {
     let draft = muteListRemovePubkey(muteList || createEmptyMuteList(), pubkey);
     draft = pruneExpiredPubkeys(draft);
     await publish("Unmute", draft, undefined, false);

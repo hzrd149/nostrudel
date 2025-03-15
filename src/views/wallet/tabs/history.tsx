@@ -42,7 +42,6 @@ function HistoryEntry({ entry }: { entry: NostrEvent }) {
   const eventStore = useEventStore();
   const locked = isHistoryContentLocked(entry);
   const details = !locked ? getHistoryContent(entry) : undefined;
-  const publish = usePublishEvent();
   useEventUpdate(entry.id);
 
   const ref = useEventIntersectionRef(entry);
@@ -51,7 +50,7 @@ function HistoryEntry({ entry }: { entry: NostrEvent }) {
   const redeemedIds = getHistoryRedeemed(entry);
   const redeemed = useSingleEvents(redeemedIds);
 
-  const unlock = useAsyncErrorHandler(async () => {
+  const { run: unlock } = useAsyncErrorHandler(async () => {
     await unlockHistoryContent(entry, account);
     eventStore.update(entry);
   }, [entry, account, eventStore]);
@@ -122,7 +121,7 @@ export default function WalletHistoryTab() {
   const history = useStoreQuery(WalletHistoryQuery, [account.pubkey]) ?? [];
   const locked = useStoreQuery(WalletHistoryQuery, [account.pubkey, true]) ?? [];
 
-  const unlock = useAsyncErrorHandler(async () => {
+  const { run: unlock } = useAsyncErrorHandler(async () => {
     for (const entry of locked) {
       if (!isHistoryContentLocked(entry)) continue;
       await unlockHistoryContent(entry, account);
@@ -138,17 +137,16 @@ export default function WalletHistoryTab() {
 
   return (
     <Flex direction="column" gap="2" w="full">
-      {locked && locked.length > 0 && (
-        <Button onClick={unlock} size="sm" variant="link" p="2" ms="auto">
+      <ButtonGroup variant="link">
+        <Button onClick={clear.run} isLoading={clear.loading} isDisabled={history.length === 0}>
+          Clear History
+        </Button>
+        <Spacer />
+        <Button onClick={unlock} isDisabled={!locked || locked.length === 0}>
           Unlock all ({locked?.length})
         </Button>
-      )}
+      </ButtonGroup>
       {history?.map((entry) => <HistoryEntry key={entry.id} entry={entry} />)}
-      {history.length > 0 && (
-        <Button variant="link" onClick={clear} ms="auto">
-          Clear history
-        </Button>
-      )}
     </Flex>
   );
 }

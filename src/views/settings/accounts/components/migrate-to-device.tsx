@@ -15,7 +15,7 @@ export default function MigrateAccountToDevice() {
   const [loading, setLoading] = useState(false);
   const manager = useAccountManager();
 
-  const migrate = useAsyncErrorHandler(async () => {
+  const { run: migrate } = useAsyncErrorHandler(async () => {
     try {
       setLoading(true);
       if (!current?.signer) throw new Error("Account missing signer");

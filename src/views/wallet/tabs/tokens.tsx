@@ -25,6 +25,7 @@ import DebugEventButton from "../../../components/debug-modal/debug-event-button
 import { useDeleteEventContext } from "../../../providers/route/delete-event-provider";
 import Timestamp from "../../../components/timestamp";
 import { getCashuWallet } from "../../../services/cashu-mints";
+import ConsolidateTokensButton from "../components/consolidate-tokens-button";
 
 function TokenEvent({ token }: { token: NostrEvent }) {
   const account = useActiveAccount();
@@ -37,7 +38,7 @@ function TokenEvent({ token }: { token: NostrEvent }) {
   const amount = details?.proofs.reduce((t, p) => t + p.amount, 0);
 
   const [spentState, setSpentState] = useState<ProofState[]>();
-  const check = useAsyncErrorHandler(async () => {
+  const { run: check } = useAsyncErrorHandler(async () => {
     if (!details) return;
     const wallet = await getCashuWallet(details.mint);
     const state = await wallet.checkProofsStates(details.proofs);
@@ -47,7 +48,7 @@ function TokenEvent({ token }: { token: NostrEvent }) {
 
   const { deleteEvent } = useDeleteEventContext();
 
-  const unlock = useAsyncErrorHandler(async () => {
+  const { run: unlock } = useAsyncErrorHandler(async () => {
     if (!account) return;
     await unlockTokenContent(token, account);
     eventStore.update(token);
@@ -106,7 +107,7 @@ export default function WalletTokensTab({ ...props }: Omit<FlexProps, "children"
   const tokens = useStoreQuery(WalletTokensQuery, [account.pubkey]) ?? [];
   const locked = useStoreQuery(WalletTokensQuery, [account.pubkey, true]) ?? [];
 
-  const unlock = useAsyncErrorHandler(async () => {
+  const { run: unlock } = useAsyncErrorHandler(async () => {
     if (!locked) return;
     for (const token of locked) {
       await unlockTokenContent(token, account);
@@ -116,11 +117,13 @@ export default function WalletTokensTab({ ...props }: Omit<FlexProps, "children"
 
   return (
     <Flex direction="column" gap="2" {...props}>
-      {locked && locked.length > 0 && (
-        <Button onClick={unlock} size="sm" variant="link" p="2" ms="auto">
+      <ButtonGroup variant="link">
+        <ConsolidateTokensButton />
+        <Spacer />
+        <Button onClick={unlock} isDisabled={!locked || locked.length === 0}>
           Unlock all ({locked?.length})
         </Button>
-      )}
+      </ButtonGroup>
 
       {tokens.map((token) => (
         <TokenEvent key={token.id} token={token} />

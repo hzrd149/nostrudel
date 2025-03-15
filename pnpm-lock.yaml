@@ -24,13 +24,13 @@ importers:
         version: 2.0.8
       '@chakra-ui/icons':
         specifier: ^2.2.4
-        version: 2.2.4(@chakra-ui/react@2.10.6(@emotion/react@11.14.0(@types/react@18.3.18)(react@19.0.0))(@emotion/styled@11.14.0(@emotion/react@11.14.0(@types/react@18.3.18)(react@19.0.0))(@types/react@18.3.18)(react@19.0.0))(@types/react@18.3.18)(framer-motion@10.18.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0)
+        version: 2.2.4(@chakra-ui/react@2.10.7(@emotion/react@11.14.0(@types/react@18.3.18)(react@19.0.0))(@emotion/styled@11.14.0(@emotion/react@11.14.0(@types/react@18.3.18)(react@19.0.0))(@types/react@18.3.18)(react@19.0.0))(@types/react@18.3.18)(framer-motion@10.18.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0)
       '@chakra-ui/media-query':
         specifier: ^3.3.0
         version: 3.3.0(@chakra-ui/system@2.6.2(@emotion/react@11.14.0(@types/react@18.3.18)(react@19.0.0))(@emotion/styled@11.14.0(@emotion/react@11.14.0(@types/react@18.3.18)(react@19.0.0))(@types/react@18.3.18)(react@19.0.0))(react@19.0.0))(react@19.0.0)
       '@chakra-ui/react':
-        specifier: ^2.10.6
-        version: 2.10.6(@emotion/react@11.14.0(@types/react@18.3.18)(react@19.0.0))(@emotion/styled@11.14.0(@emotion/react@11.14.0(@types/react@18.3.18)(react@19.0.0))(@types/react@18.3.18)(react@19.0.0))(@types/react@18.3.18)(framer-motion@10.18.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+        specifier: ^2.10.7
+        version: 2.10.7(@emotion/react@11.14.0(@types/react@18.3.18)(react@19.0.0))(@emotion/styled@11.14.0(@emotion/react@11.14.0(@types/react@18.3.18)(react@19.0.0))(@types/react@18.3.18)(react@19.0.0))(@types/react@18.3.18)(framer-motion@10.18.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@chakra-ui/shared-utils':
         specifier: ^2.0.4
         version: 2.0.4
@@ -105,34 +105,34 @@ importers:
         version: 0.7.2
       applesauce-accounts:
         specifier: next
-        version: 0.0.0-next-20250314151125(typescript@5.8.2)
+        version: 0.0.0-next-20250315140539(typescript@5.8.2)
       applesauce-actions:
         specifier: next
-        version: 0.0.0-next-20250314151125(typescript@5.8.2)
+        version: 0.0.0-next-20250315140539(typescript@5.8.2)
       applesauce-content:
         specifier: next
-        version: 0.0.0-next-20250314151125(typescript@5.8.2)
+        version: 0.0.0-next-20250315140539(typescript@5.8.2)
       applesauce-core:
         specifier: next
-        version: 0.0.0-next-20250314151125(typescript@5.8.2)
+        version: 0.0.0-next-20250315140539(typescript@5.8.2)
       applesauce-factory:
         specifier: next
-        version: 0.0.0-next-20250314151125(typescript@5.8.2)
+        version: 0.0.0-next-20250315140539(typescript@5.8.2)
       applesauce-loaders:
         specifier: next
-        version: 0.0.0-next-20250314151125(typescript@5.8.2)
+        version: 0.0.0-next-20250315140539(typescript@5.8.2)
       applesauce-react:
         specifier: next
-        version: 0.0.0-next-20250314151125(react-dom@19.0.0(react@19.0.0))(typescript@5.8.2)
+        version: 0.0.0-next-20250315140539(react-dom@19.0.0(react@19.0.0))(typescript@5.8.2)
       applesauce-relay:
         specifier: next
-        version: 0.0.0-next-20250314151125(typescript@5.8.2)
+        version: 0.0.0-next-20250315140539(typescript@5.8.2)
       applesauce-signers:
         specifier: next
-        version: 0.0.0-next-20250314151125(typescript@5.8.2)
+        version: 0.0.0-next-20250315140539(typescript@5.8.2)
       applesauce-wallet:
         specifier: next
-        version: 0.0.0-next-20250314151125(typescript@5.8.2)
+        version: 0.0.0-next-20250315140539(typescript@5.8.2)
       bech32:
         specifier: ^2.0.0
         version: 2.0.0
@@ -417,10 +417,10 @@ importers:
         specifier: ^0.6.8
         version: 0.6.8
       '@types/react':
-        specifier: ^18.2.22
+        specifier: ^18.3.18
         version: 18.3.18
       '@types/react-dom':
-        specifier: ^18.2.7
+        specifier: ^18.3.5
         version: 18.3.5(@types/react@18.3.18)
       '@types/react-window':
         specifier: ^1.8.8
@@ -1106,8 +1106,8 @@ packages:
     peerDependencies:
       react: '>=18'
 
-  '@chakra-ui/react@2.10.6':
-    resolution: {integrity: sha512-9cdzcUR3LV3E2as0QhZhHAH5qjbyspV12kU1E1Ibcv6/uKUi6bIfPfMSC6R/Tw8Beqhn2ClJFPqjtXzL+C0knQ==}
+  '@chakra-ui/react@2.10.7':
+    resolution: {integrity: sha512-GX1dCmnvrxxyZEofDX9GMAtRakZJKnUqFM9k8qhaycPaeyfkiTNNTjhPNX917hgVx1yhC3kcJOs5IeC7yW56/g==}
     peerDependencies:
       '@emotion/react': '>=11'
       '@emotion/styled': '>=11'
@@ -2205,35 +2205,35 @@ packages:
     engines: {node: '>=8.0.0'}
     hasBin: true
 
-  applesauce-accounts@0.0.0-next-20250314151125:
-    resolution: {integrity: sha512-QEumvkVlZVsSkShOKtIjokf8Pg5PxWgNJIfmNRIp/fDqzyICNGAwrQ28n9vq2A+A0aQRqFc700vWjs1uSACsoQ==}
+  applesauce-accounts@0.0.0-next-20250315140539:
+    resolution: {integrity: sha512-icnfZejz1vP8TgO7eIqNdX3wHuwEGWGDHCmPaWuk4MVqbVYFTT5seHOM6HdWLs4daUczX96oPcYFNetSfAfe8A==}
 
-  applesauce-actions@0.0.0-next-20250314151125:
-    resolution: {integrity: sha512-SapbCJ4vxrXMbWTzVP6v3zSBx1EHSXxqW8MBIywCyR+GVcXcWteIm6pgJGWgMzZDDdWY+BaDSdXedmr2r7eXDQ==}
+  applesauce-actions@0.0.0-next-20250315140539:
+    resolution: {integrity: sha512-R0Iy2W10sfWOKme9EbOGEaKsvbSDo6z2hR9XlSq12/oOBtnRLVGUN1lW62nFWpSbNUZGGLooZJkjFl+aL3f7YA==}
 
-  applesauce-content@0.0.0-next-20250314151125:
-    resolution: {integrity: sha512-C1PUbK4q89y2M7DqOHZEcPzTTfxXphK8VRFgsQ2E6T8MJIJV3719z78traoVtrsf/DYR9SR5zQP24BQ8k1dF7g==}
+  applesauce-content@0.0.0-next-20250315140539:
+    resolution: {integrity: sha512-pNWKIMaagcLrPoqD8QubrRDgYcPV4cLDnXFCTGa/R3z+WQR9ElPMfGEewhn1EyKicf0o58rG1LJmUhw20+VfBQ==}
 
-  applesauce-core@0.0.0-next-20250314151125:
-    resolution: {integrity: sha512-5c0An4cH89MYANPJQaYArMoWbU86BIt48cYDNLh9bMXtrX+t8bjvJ829uFatwCbw9Lc/v8ZFCLhjltiFTp1P4w==}
+  applesauce-core@0.0.0-next-20250315140539:
+    resolution: {integrity: sha512-NF/CPVxtvq2zReKMRoBQ2s0lgNajeHjL8ws1WoDWbNJhQV0xBtb71ldHXQuEQcdf2Kj9IuK2Le9oJSAB6Gwz7w==}
 
-  applesauce-factory@0.0.0-next-20250314151125:
-    resolution: {integrity: sha512-m36/ys37RzZPPzpvYOEi6pRYfXrWC6JEt1LrBxADBoZaluKIgKGf8MKj1bvS9anwobcxNKKgVPNsJqYZu4Y0ug==}
+  applesauce-factory@0.0.0-next-20250315140539:
+    resolution: {integrity: sha512-nKBZT8HcfCWozwzNrCoVwjz+50+lJeKi6vOTCeEcHXRC/4rTDsAw8/IPB+SBj0WTEHvZdtmz4AB4WHLJQEhcBw==}
 
-  applesauce-loaders@0.0.0-next-20250314151125:
-    resolution: {integrity: sha512-CfxxvsVptHEmBSBA0ilqImHSUn7ff4fritslH9SWrXp1aH3P/JFR66eLYfRVNUUKEDDEe/iZEvCb2PzsAnecRw==}
+  applesauce-loaders@0.0.0-next-20250315140539:
+    resolution: {integrity: sha512-/wrungJ7T2MH8yTUXUvlQm4uSvqc77slx7WzfsfTU4efgeHqKbTaRjw3dIkX3mlZiAW5VJ6+epQ4g6qhCnyvzg==}
 
-  applesauce-react@0.0.0-next-20250314151125:
-    resolution: {integrity: sha512-7f501dlHxbmSuBsOHqxF376KXUluDBrlatirqN+yuJQAIRpfy5bIuNIDvgePoQqB4IDjhCgxzD5Q8YIPY9Rpyw==}
+  applesauce-react@0.0.0-next-20250315140539:
+    resolution: {integrity: sha512-m54/KA51LqUZDewLg5XqEJju3fh8pJazOcpU/QbuyM+NKATdphLn3dRW6/UcD6yJNi7fEbF42OeyrioNxcQLWw==}
 
-  applesauce-relay@0.0.0-next-20250314151125:
-    resolution: {integrity: sha512-YEzPQkud+uilxZeuR7LxZkFduRO1tPeq3ATLF3mGP9q88BJn59sPvQO4IEo4nCnbBPKcTaIMy6Bh6Xc5RFx9TA==}
+  applesauce-relay@0.0.0-next-20250315140539:
+    resolution: {integrity: sha512-UDif/VN31PMcxXJgarEySzveOrpv6O5nJj+/RgTs5ZnamSOc9jIaRIZpTPsfkHYBOZZeJb1cU9Wr+nBQEApvVw==}
 
-  applesauce-signers@0.0.0-next-20250314151125:
-    resolution: {integrity: sha512-I0hvuchdPXM1riOSxC+ezKvCF5e9CcqFYx8e7if784OgsnM3OmL/3esMTu3c3X7OgT8PjFhdL8WieSOl1Tj1IA==}
+  applesauce-signers@0.0.0-next-20250315140539:
+    resolution: {integrity: sha512-LZZxC6PD10iPFVXrpCJ7lLCXewRF3EsBJD6FQ47SpgH9AVGWn+lbAB9fX87tdd+V8Ks1Ym1tp/CdrvL2AV4PJg==}
 
-  applesauce-wallet@0.0.0-next-20250314151125:
-    resolution: {integrity: sha512-/IRVsQIORXSg7B1B2Xh6hMt3UAh7vK8QfBvpMyI9HWUmrQTdczznYhZCVdmQxJRk3MLYQdL7iIg78Y++3mPemg==}
+  applesauce-wallet@0.0.0-next-20250315140539:
+    resolution: {integrity: sha512-6WgKT3er92cefaQcgYAslY7oitrLsLiUYbtVCdQV4v0G3MMMYGhiTuOtLlSYKeJ+e4e5BH9/YZgePrXCQoBlCA==}
 
   arg@4.1.3:
     resolution: {integrity: sha512-58S9QDqG0Xx27YwPSt9fJxivjYl432YCwfDMfZ+71RAqUrZef7LrKQZ3LHLOwCS4FLNBplP533Zx895SeOCHvA==}
@@ -3059,8 +3059,8 @@ packages:
     engines: {node: '>=0.10.0'}
     hasBin: true
 
-  electron-to-chromium@1.5.118:
-    resolution: {integrity: sha512-yNDUus0iultYyVoEFLnQeei7LOQkL8wg8GQpkPCRrOlJXlcCwa6eGKZkxQ9ciHsqZyYbj8Jd94X1CTPzGm+uIA==}
+  electron-to-chromium@1.5.119:
+    resolution: {integrity: sha512-Ku4NMzUjz3e3Vweh7PhApPrZSS4fyiCIbcIrG9eKrriYVLmbMepETR/v6SU7xPm98QTqMSYiCwfO89QNjXLkbQ==}
 
   elementtree@0.1.7:
     resolution: {integrity: sha512-wkgGT6kugeQk/P6VZ/f4T+4HB41BVgNBq5CDIZVbQ02nvTVqAiVTbskxxu3eA/X96lMlfYOwnLQpN2v5E1zDEg==}
@@ -7042,9 +7042,9 @@ snapshots:
       framesync: 6.1.2
       react: 19.0.0
 
-  '@chakra-ui/icons@2.2.4(@chakra-ui/react@2.10.6(@emotion/react@11.14.0(@types/react@18.3.18)(react@19.0.0))(@emotion/styled@11.14.0(@emotion/react@11.14.0(@types/react@18.3.18)(react@19.0.0))(@types/react@18.3.18)(react@19.0.0))(@types/react@18.3.18)(framer-motion@10.18.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0)':
+  '@chakra-ui/icons@2.2.4(@chakra-ui/react@2.10.7(@emotion/react@11.14.0(@types/react@18.3.18)(react@19.0.0))(@emotion/styled@11.14.0(@emotion/react@11.14.0(@types/react@18.3.18)(react@19.0.0))(@types/react@18.3.18)(react@19.0.0))(@types/react@18.3.18)(framer-motion@10.18.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0)':
     dependencies:
-      '@chakra-ui/react': 2.10.6(@emotion/react@11.14.0(@types/react@18.3.18)(react@19.0.0))(@emotion/styled@11.14.0(@emotion/react@11.14.0(@types/react@18.3.18)(react@19.0.0))(@types/react@18.3.18)(react@19.0.0))(@types/react@18.3.18)(framer-motion@10.18.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      '@chakra-ui/react': 2.10.7(@emotion/react@11.14.0(@types/react@18.3.18)(react@19.0.0))(@emotion/styled@11.14.0(@emotion/react@11.14.0(@types/react@18.3.18)(react@19.0.0))(@types/react@18.3.18)(react@19.0.0))(@types/react@18.3.18)(framer-motion@10.18.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       react: 19.0.0
 
   '@chakra-ui/media-query@3.3.0(@chakra-ui/system@2.6.2(@emotion/react@11.14.0(@types/react@18.3.18)(react@19.0.0))(@emotion/styled@11.14.0(@emotion/react@11.14.0(@types/react@18.3.18)(react@19.0.0))(@types/react@18.3.18)(react@19.0.0))(react@19.0.0))(react@19.0.0)':
@@ -7071,7 +7071,7 @@ snapshots:
       '@chakra-ui/utils': 2.0.15
       react: 19.0.0
 
-  '@chakra-ui/react@2.10.6(@emotion/react@11.14.0(@types/react@18.3.18)(react@19.0.0))(@emotion/styled@11.14.0(@emotion/react@11.14.0(@types/react@18.3.18)(react@19.0.0))(@types/react@18.3.18)(react@19.0.0))(@types/react@18.3.18)(framer-motion@10.18.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)':
+  '@chakra-ui/react@2.10.7(@emotion/react@11.14.0(@types/react@18.3.18)(react@19.0.0))(@emotion/styled@11.14.0(@emotion/react@11.14.0(@types/react@18.3.18)(react@19.0.0))(@types/react@18.3.18)(react@19.0.0))(@types/react@18.3.18)(framer-motion@10.18.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)':
     dependencies:
       '@chakra-ui/hooks': 2.4.4(react@19.0.0)
       '@chakra-ui/styled-system': 2.12.2(react@19.0.0)
@@ -8480,10 +8480,10 @@ snapshots:
     dependencies:
       entities: 2.2.0
 
-  applesauce-accounts@0.0.0-next-20250314151125(typescript@5.8.2):
+  applesauce-accounts@0.0.0-next-20250315140539(typescript@5.8.2):
     dependencies:
       '@noble/hashes': 1.7.1
-      applesauce-signers: 0.0.0-next-20250314151125(typescript@5.8.2)
+      applesauce-signers: 0.0.0-next-20250315140539(typescript@5.8.2)
       nanoid: 5.1.3
       nostr-tools: 2.11.0(typescript@5.8.2)
       rxjs: 7.8.2
@@ -8491,23 +8491,23 @@ snapshots:
       - supports-color
       - typescript
 
-  applesauce-actions@0.0.0-next-20250314151125(typescript@5.8.2):
+  applesauce-actions@0.0.0-next-20250315140539(typescript@5.8.2):
     dependencies:
-      applesauce-core: 0.0.0-next-20250314151125(typescript@5.8.2)
-      applesauce-factory: 0.0.0-next-20250314151125(typescript@5.8.2)
+      applesauce-core: 0.0.0-next-20250315140539(typescript@5.8.2)
+      applesauce-factory: 0.0.0-next-20250315140539(typescript@5.8.2)
       nostr-tools: 2.11.0(typescript@5.8.2)
       rxjs: 7.8.2
     transitivePeerDependencies:
       - supports-color
       - typescript
 
-  applesauce-content@0.0.0-next-20250314151125(typescript@5.8.2):
+  applesauce-content@0.0.0-next-20250315140539(typescript@5.8.2):
     dependencies:
       '@cashu/cashu-ts': 2.0.0-rc1
       '@types/hast': 3.0.4
       '@types/mdast': 4.0.4
       '@types/unist': 3.0.3
-      applesauce-core: 0.0.0-next-20250314151125(typescript@5.8.2)
+      applesauce-core: 0.0.0-next-20250315140539(typescript@5.8.2)
       mdast-util-find-and-replace: 3.0.2
       nostr-tools: 2.11.0(typescript@5.8.2)
       remark: 15.0.1
@@ -8518,7 +8518,7 @@ snapshots:
       - supports-color
       - typescript
 
-  applesauce-core@0.0.0-next-20250314151125(typescript@5.8.2):
+  applesauce-core@0.0.0-next-20250315140539(typescript@5.8.2):
     dependencies:
       '@noble/hashes': 1.7.1
       '@scure/base': 1.2.4
@@ -8533,19 +8533,19 @@ snapshots:
       - supports-color
       - typescript
 
-  applesauce-factory@0.0.0-next-20250314151125(typescript@5.8.2):
+  applesauce-factory@0.0.0-next-20250315140539(typescript@5.8.2):
     dependencies:
-      applesauce-content: 0.0.0-next-20250314151125(typescript@5.8.2)
-      applesauce-core: 0.0.0-next-20250314151125(typescript@5.8.2)
+      applesauce-content: 0.0.0-next-20250315140539(typescript@5.8.2)
+      applesauce-core: 0.0.0-next-20250315140539(typescript@5.8.2)
       nanoid: 5.1.3
       nostr-tools: 2.11.0(typescript@5.8.2)
     transitivePeerDependencies:
       - supports-color
       - typescript
 
-  applesauce-loaders@0.0.0-next-20250314151125(typescript@5.8.2):
+  applesauce-loaders@0.0.0-next-20250315140539(typescript@5.8.2):
     dependencies:
-      applesauce-core: 0.0.0-next-20250314151125(typescript@5.8.2)
+      applesauce-core: 0.0.0-next-20250315140539(typescript@5.8.2)
       nanoid: 5.1.3
       nostr-tools: 2.11.0(typescript@5.8.2)
       rx-nostr: 3.5.0
@@ -8554,13 +8554,13 @@ snapshots:
       - supports-color
       - typescript
 
-  applesauce-react@0.0.0-next-20250314151125(react-dom@19.0.0(react@19.0.0))(typescript@5.8.2):
+  applesauce-react@0.0.0-next-20250315140539(react-dom@19.0.0(react@19.0.0))(typescript@5.8.2):
     dependencies:
-      applesauce-accounts: 0.0.0-next-20250314151125(typescript@5.8.2)
-      applesauce-actions: 0.0.0-next-20250314151125(typescript@5.8.2)
-      applesauce-content: 0.0.0-next-20250314151125(typescript@5.8.2)
-      applesauce-core: 0.0.0-next-20250314151125(typescript@5.8.2)
-      applesauce-factory: 0.0.0-next-20250314151125(typescript@5.8.2)
+      applesauce-accounts: 0.0.0-next-20250315140539(typescript@5.8.2)
+      applesauce-actions: 0.0.0-next-20250315140539(typescript@5.8.2)
+      applesauce-content: 0.0.0-next-20250315140539(typescript@5.8.2)
+      applesauce-core: 0.0.0-next-20250315140539(typescript@5.8.2)
+      applesauce-factory: 0.0.0-next-20250315140539(typescript@5.8.2)
       nostr-tools: 2.11.0(typescript@5.8.2)
       observable-hooks: 4.2.4(react-dom@19.0.0(react@19.0.0))(react@18.3.1)(rxjs@7.8.2)
       react: 18.3.1
@@ -8570,9 +8570,9 @@ snapshots:
       - supports-color
       - typescript
 
-  applesauce-relay@0.0.0-next-20250314151125(typescript@5.8.2):
+  applesauce-relay@0.0.0-next-20250315140539(typescript@5.8.2):
     dependencies:
-      applesauce-core: 0.0.0-next-20250314151125(typescript@5.8.2)
+      applesauce-core: 0.0.0-next-20250315140539(typescript@5.8.2)
       nanoid: 5.1.3
       nostr-tools: 2.11.0(typescript@5.8.2)
       rxjs: 7.8.2
@@ -8580,12 +8580,12 @@ snapshots:
       - supports-color
       - typescript
 
-  applesauce-signers@0.0.0-next-20250314151125(typescript@5.8.2):
+  applesauce-signers@0.0.0-next-20250315140539(typescript@5.8.2):
     dependencies:
       '@noble/hashes': 1.7.1
       '@noble/secp256k1': 1.7.1
       '@scure/base': 1.2.4
-      applesauce-core: 0.0.0-next-20250314151125(typescript@5.8.2)
+      applesauce-core: 0.0.0-next-20250315140539(typescript@5.8.2)
       debug: 4.4.0
       nanoid: 5.1.3
       nostr-tools: 2.11.0(typescript@5.8.2)
@@ -8593,14 +8593,14 @@ snapshots:
       - supports-color
       - typescript
 
-  applesauce-wallet@0.0.0-next-20250314151125(typescript@5.8.2):
+  applesauce-wallet@0.0.0-next-20250315140539(typescript@5.8.2):
     dependencies:
       '@cashu/cashu-ts': 2.0.0-rc1
       '@gandlaf21/bc-ur': 1.1.12
       '@noble/hashes': 1.7.1
-      applesauce-actions: 0.0.0-next-20250314151125(typescript@5.8.2)
-      applesauce-core: 0.0.0-next-20250314151125(typescript@5.8.2)
-      applesauce-factory: 0.0.0-next-20250314151125(typescript@5.8.2)
+      applesauce-actions: 0.0.0-next-20250315140539(typescript@5.8.2)
+      applesauce-core: 0.0.0-next-20250315140539(typescript@5.8.2)
+      applesauce-factory: 0.0.0-next-20250315140539(typescript@5.8.2)
       nostr-tools: 2.11.0(typescript@5.8.2)
       rxjs: 7.8.2
     transitivePeerDependencies:
@@ -8826,7 +8826,7 @@ snapshots:
   browserslist@4.24.4:
     dependencies:
       caniuse-lite: 1.0.30001704
-      electron-to-chromium: 1.5.118
+      electron-to-chromium: 1.5.119
       node-releases: 2.0.19
       update-browserslist-db: 1.1.3(browserslist@4.24.4)
 
@@ -9527,7 +9527,7 @@ snapshots:
     dependencies:
       jake: 10.9.2
 
-  electron-to-chromium@1.5.118: {}
+  electron-to-chromium@1.5.119: {}
 
   elementtree@0.1.7:
     dependencies:

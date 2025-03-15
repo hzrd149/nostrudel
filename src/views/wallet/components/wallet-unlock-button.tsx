@@ -18,7 +18,7 @@ export default function WalletUnlockButton({ children, ...props }: Omit<ButtonPr
   }, [wallet, actions]);
 
   return (
-    <Button onClick={unlock} {...props}>
+    <Button onClick={unlock.run} isLoading={unlock.loading} {...props}>
       {children || "Unlock"}
     </Button>
   );

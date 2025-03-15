@@ -1,14 +1,13 @@
 import { Button, Card, CardBody, CardProps, Flex, Heading, Link } from "@chakra-ui/react";
+import { removePubkeyTag } from "applesauce-factory/operations/tag";
 import { Link as RouterLink } from "react-router-dom";
 import { nip19 } from "nostr-tools";
 
-import useUserProfile from "../../../hooks/use-user-profile";
 import UserAvatar from "../../../components/user/user-avatar";
 import UserDnsIdentity from "../../../components/user/user-dns-identity";
 import { NostrEvent } from "../../../types/nostr-event";
 import useAsyncErrorHandler from "../../../hooks/use-async-error-handler";
-import { listRemovePerson } from "../../../helpers/nostr/lists";
-import { useActiveAccount } from "applesauce-react/hooks";
+import { useActiveAccount, useEventFactory } from "applesauce-react/hooks";
 import { UserFollowButton } from "../../../components/user/user-follow-button";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
 import UserName from "../../../components/user/user-name";
@@ -18,11 +17,12 @@ export type UserCardProps = { pubkey: string; relay?: string; list: NostrEvent }
 export default function UserCard({ pubkey, relay, list, ...props }: UserCardProps) {
   const account = useActiveAccount();
   const publish = usePublishEvent();
-  const metadata = useUserProfile(pubkey, relay ? [relay] : []);
+  const factory = useEventFactory();
 
-  const handleRemoveFromList = useAsyncErrorHandler(async () => {
-    const draft = listRemovePerson(list, pubkey);
-    publish("Remove from list", draft);
+  const remove = useAsyncErrorHandler(async () => {
+    const draft = await factory.modifyTags(list, removePubkeyTag(pubkey));
+    const signed = await factory.sign(draft);
+    await publish("Remove from list", signed);
   }, [list, publish]);
 
   return (
@@ -38,7 +38,7 @@ export default function UserCard({ pubkey, relay, list, ...props }: UserCardProp
           <UserDnsIdentity pubkey={pubkey} />
         </Flex>
         {account?.pubkey === list.pubkey ? (
-          <Button variant="outline" colorScheme="orange" onClick={handleRemoveFromList} size="sm">
+          <Button variant="outline" colorScheme="orange" onClick={remove.run} isLoading={remove.loading} size="sm">
             Remove
           </Button>
         ) : (

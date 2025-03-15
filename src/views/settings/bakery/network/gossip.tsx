@@ -31,7 +31,8 @@ function BroadcastRelay({ relay }: { relay: string }) {
         ml="auto"
         colorScheme="red"
         variant="ghost"
-        onClick={remove}
+        onClick={remove.run}
+        isLoading={remove.loading}
       />
     </Flex>
   );

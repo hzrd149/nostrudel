@@ -19,26 +19,23 @@ export default function DVMFeedFavoriteButton({
   const factory = useEventFactory();
   const { favorites } = useFavoriteFeeds();
   const isFavorite = !!favorites && isAddressPointerInList(favorites, pointer);
-  const [loading, setLoading] = useState(false);
 
-  const handleClick = useAsyncErrorHandler(async () => {
+  const toggle = useAsyncErrorHandler(async () => {
     const prev = favorites || {
       kind: kinds.Application,
       tags: [["d", FAVORITE_FEEDS_IDENTIFIER]],
     };
 
-    setLoading(true);
     const draft = await factory.modifyTags(prev, isFavorite ? removeCoordinateTag(pointer) : addCoordinateTag(pointer));
     await publish(isFavorite ? "Unfavorite feed" : "Favorite feed", draft);
-    setLoading(false);
-  }, [factory, favorites, pointer, publish, setLoading]);
+  }, [factory, favorites, pointer, publish]);
 
   return (
     <IconButton
       icon={isFavorite ? <StarFullIcon /> : <StarEmptyIcon />}
       aria-label={isFavorite ? "Favorite feed" : "Unfavorite feed"}
-      onClick={handleClick}
-      isLoading={loading}
+      onClick={toggle.run}
+      isLoading={toggle.loading}
       color={isFavorite ? "yellow.400" : undefined}
       {...props}
     />

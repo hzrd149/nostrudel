@@ -40,7 +40,8 @@ function RelayLine({ relay, mode, list }: { relay: string; mode: RelayMode; list
         ml="auto"
         colorScheme="red"
         variant="ghost"
-        onClick={remove}
+        onClick={remove.run}
+        isLoading={remove.loading}
       />
     </Flex>
   );
