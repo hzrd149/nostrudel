@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
   Button,
   ButtonGroup,
   Card,
+  CardBody,
   CardFooter,
   CardHeader,
   Flex,
@@ -10,24 +11,37 @@ import {
   IconButton,
   Spacer,
   Text,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { useActiveAccount, useEventStore, useStoreQuery } from "applesauce-react/hooks";
 import { WalletTokensQuery } from "applesauce-wallet/queries";
 import { getTokenContent, isTokenContentLocked, unlockTokenContent } from "applesauce-wallet/helpers";
 import { NostrEvent } from "nostr-tools";
-import { ProofState } from "@cashu/cashu-ts";
+import { getEncodedToken, ProofState } from "@cashu/cashu-ts";
 
 import useAsyncErrorHandler from "../../../hooks/use-async-error-handler";
 import useEventUpdate from "../../../hooks/use-event-update";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
-import { ECashIcon, TrashIcon } from "../../../components/icons";
+import {
+  ChevronDownIcon,
+  ChevronUpIcon,
+  ECashIcon,
+  ExternalLinkIcon,
+  QrCodeIcon,
+  TrashIcon,
+} from "../../../components/icons";
 import DebugEventButton from "../../../components/debug-modal/debug-event-button";
 import { useDeleteEventContext } from "../../../providers/route/delete-event-provider";
 import Timestamp from "../../../components/timestamp";
 import { getCashuWallet } from "../../../services/cashu-mints";
 import ConsolidateTokensButton from "../components/consolidate-tokens-button";
+import CashuMintFavicon from "../../../components/cashu/cashu-mint-favicon";
+import CashuMintName from "../../../components/cashu/cashu-mint-name";
+import { CopyIconButton } from "../../../components/copy-icon-button";
+import RouterLink from "../../../components/router-link";
 
 function TokenEvent({ token }: { token: NostrEvent }) {
+  const more = useDisclosure();
   const account = useActiveAccount();
   const eventStore = useEventStore();
   useEventUpdate(token.id);
@@ -54,6 +68,8 @@ function TokenEvent({ token }: { token: NostrEvent }) {
     eventStore.update(token);
   }, [token, account, eventStore]);
 
+  const encoded = useMemo(() => details && getEncodedToken(details), [details]);
+
   return (
     <Card ref={ref} w="full">
       <CardHeader p="2" alignItems="center" flexDirection="row" display="flex" gap="2">
@@ -66,34 +82,64 @@ function TokenEvent({ token }: { token: NostrEvent }) {
             </Button>
           )}
           <Timestamp timestamp={token.created_at} />
-          <DebugEventButton variant="ghost" event={token} />
-          <IconButton
-            icon={<TrashIcon boxSize={5} />}
-            aria-label="Delete entry"
-            onClick={() => deleteEvent(token)}
-            colorScheme="red"
-            variant="ghost"
-          />
         </ButtonGroup>
       </CardHeader>
-      {details && (
-        <CardFooter px="2" pt="0" pb="0" gap="2" display="flex">
-          <Button
-            variant="link"
-            colorScheme={
-              spentState === undefined ? undefined : spentState.some((s) => s.state === "UNSPENT") ? "green" : "red"
-            }
-            onClick={check}
-          >
-            {spentState === undefined
-              ? "Check"
-              : (spentState.some((s) => s.state === "UNSPENT") ? "Unspent" : "Spent") +
-                ` ${spentState.filter((s) => s.state === "UNSPENT").length}/${spentState.length}`}
-          </Button>
-          <Spacer />
-          <Text fontSize="sm" fontStyle="italic">
-            {details.mint}
-          </Text>
+      <CardBody display="flex" gap="2" px="2" pt="0" pb="2">
+        {details && (
+          <>
+            <CashuMintFavicon mint={details.mint} size="xs" />
+            <CashuMintName mint={details.mint} />
+          </>
+        )}
+        <Spacer />
+        <Button
+          variant="link"
+          onClick={more.onToggle}
+          rightIcon={more.isOpen ? <ChevronUpIcon boxSize={6} /> : <ChevronDownIcon boxSize={6} />}
+        >
+          Details
+        </Button>
+      </CardBody>
+      {more.isOpen && (
+        <CardFooter px="2" pt="0" pb="2" gap="2" display="flex">
+          <ButtonGroup size="sm">
+            <Button
+              variant="ghost"
+              colorScheme={
+                spentState === undefined ? undefined : spentState.some((s) => s.state === "UNSPENT") ? "green" : "red"
+              }
+              onClick={check}
+            >
+              {spentState === undefined
+                ? "Check"
+                : (spentState.some((s) => s.state === "UNSPENT") ? "Unspent" : "Spent") +
+                  ` ${spentState.filter((s) => s.state === "UNSPENT").length}/${spentState.length}`}
+            </Button>
+          </ButtonGroup>
+          <ButtonGroup ms="auto" size="sm">
+            {encoded && (
+              <>
+                <CopyIconButton value={encoded} aria-label="Copy token" variant="ghost" />
+                <IconButton
+                  as={RouterLink}
+                  to="/wallet/send/token"
+                  state={{ token: encoded }}
+                  icon={<ExternalLinkIcon />}
+                  aria-label="Show token"
+                  variant="ghost"
+                />
+              </>
+            )}
+            <DebugEventButton variant="ghost" event={token} />
+
+            <IconButton
+              aria-label="Delete entry"
+              onClick={() => deleteEvent(token)}
+              colorScheme="red"
+              variant="ghost"
+              icon={<TrashIcon />}
+            />
+          </ButtonGroup>
         </CardFooter>
       )}
     </Card>

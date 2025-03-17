@@ -5,10 +5,12 @@ import {
   Card,
   CardBody,
   CardFooter,
+  CardHeader,
   Flex,
   IconButton,
   Spacer,
   Text,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { useActiveAccount, useEventStore, useStoreQuery } from "applesauce-react/hooks";
 import {
@@ -27,7 +29,7 @@ import ArrowBlockDown from "../../../components/icons/arrow-block-down";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
 import useAsyncErrorHandler from "../../../hooks/use-async-error-handler";
 import { useDeleteEventContext } from "../../../providers/route/delete-event-provider";
-import { TrashIcon } from "../../../components/icons";
+import { ChevronDownIcon, ChevronUpIcon, TrashIcon } from "../../../components/icons";
 import useEventUpdate from "../../../hooks/use-event-update";
 import Timestamp from "../../../components/timestamp";
 import useSingleEvents from "../../../hooks/use-single-events";
@@ -38,6 +40,7 @@ import { usePublishEvent } from "../../../providers/global/publish-provider";
 import factory from "../../../services/event-factory";
 
 function HistoryEntry({ entry }: { entry: NostrEvent }) {
+  const more = useDisclosure();
   const account = useActiveAccount()!;
   const eventStore = useEventStore();
   const locked = isHistoryContentLocked(entry);
@@ -57,7 +60,7 @@ function HistoryEntry({ entry }: { entry: NostrEvent }) {
 
   return (
     <Card ref={ref}>
-      <CardBody p="2" display="flex" flexDirection="row" gap="2">
+      <CardHeader p="2" display="flex" flexDirection="row" gap="2" alignItems="center">
         {locked ? (
           <Lock01 boxSize={8} />
         ) : details?.direction === "in" ? (
@@ -66,6 +69,7 @@ function HistoryEntry({ entry }: { entry: NostrEvent }) {
           <ArrowBlockUp boxSize={8} color="orange.500" />
         )}
         <Text fontSize="xl">{details?.amount}</Text>
+        {details?.fee !== undefined && <Text>( fee {details.fee} )</Text>}
         <Spacer />
         <ButtonGroup size="sm" alignItems="center">
           {locked && (
@@ -74,18 +78,10 @@ function HistoryEntry({ entry }: { entry: NostrEvent }) {
             </Button>
           )}
           <Timestamp timestamp={entry.created_at} />
-          <DebugEventButton variant="ghost" event={entry} />
-          <IconButton
-            icon={<TrashIcon boxSize={5} />}
-            aria-label="Delete entry"
-            onClick={() => deleteEvent(entry)}
-            colorScheme="red"
-            variant="ghost"
-          />
         </ButtonGroup>
-      </CardBody>
+      </CardHeader>
       {details && (
-        <CardFooter px="2" pt="0" pb="2">
+        <CardBody px="2" pt="0" pb="2" display="flex">
           {details.mint && (
             <>
               <CashuMintFavicon mint={details.mint} size="xs" mr="2" />
@@ -102,11 +98,30 @@ function HistoryEntry({ entry }: { entry: NostrEvent }) {
               </AvatarGroup>
             </>
           )}
-          {details.fee !== undefined && (
-            <Text fontStyle="italic" ms="auto">
-              fee: {details.fee}
-            </Text>
-          )}
+
+          <Button
+            ms="auto"
+            size="sm"
+            variant="link"
+            onClick={more.onToggle}
+            rightIcon={more.isOpen ? <ChevronUpIcon boxSize={6} /> : <ChevronDownIcon boxSize={6} />}
+          >
+            Details
+          </Button>
+        </CardBody>
+      )}
+      {more.isOpen && (
+        <CardFooter pt="0" pb="2" px="2" gap="2" display="flex">
+          <ButtonGroup size="sm" ms="auto">
+            <DebugEventButton variant="ghost" event={entry} />
+            <IconButton
+              icon={<TrashIcon boxSize={5} />}
+              aria-label="Delete entry"
+              onClick={() => deleteEvent(entry)}
+              colorScheme="red"
+              variant="ghost"
+            />
+          </ButtonGroup>
         </CardFooter>
       )}
     </Card>

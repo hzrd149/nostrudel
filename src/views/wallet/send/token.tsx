@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
+import { filter, from, Observable, switchMap, take } from "rxjs";
 import { Button, ButtonGroup, Flex, Spacer, useToast } from "@chakra-ui/react";
-import { ANIMATED_QR_INTERVAL, sendAnimated } from "applesauce-wallet/helpers";
+import { ANIMATED_QR_INTERVAL, encodeTokenToEmoji, sendAnimated } from "applesauce-wallet/helpers";
 import { getDecodedToken, Proof, ProofState } from "@cashu/cashu-ts";
 import { ReceiveToken } from "applesauce-wallet/actions";
 import { useActionHub } from "applesauce-react/hooks";
@@ -10,7 +11,6 @@ import SimpleView from "../../../components/layout/presets/simple-view";
 import RouterLink from "../../../components/router-link";
 import { CopyIconButton } from "../../../components/copy-icon-button";
 import QrCodeSvg from "../../../components/qr-code/qr-code-svg";
-import { filter, from, Observable, switchMap, take } from "rxjs";
 import { getCashuWallet } from "../../../services/cashu-mints";
 
 export default function WalletSendTokenView() {
@@ -103,6 +103,7 @@ export default function WalletSendTokenView() {
 
       <Flex gap="2">
         <CopyIconButton value={token} aria-label="Copy token" />
+        <CopyIconButton value={encodeTokenToEmoji(token)} aria-label="Copy emoji" icon={<span>🥜</span>} />
         <Spacer />
         <Button onClick={cancel} isLoading={canceling}>
           Cancel

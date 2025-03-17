@@ -20,8 +20,10 @@ export default function WalletSendCashuView() {
   const balance = useStoreQuery(WalletBalanceQuery, [account.pubkey]);
   const tokens = useStoreQuery(WalletTokensQuery, [account.pubkey, false]);
 
+  const defaultMint = balance && Object.keys(balance).reduce((a, b) => (balance[a] > balance[b] ? a : b));
+
   const { register, getValues, watch, handleSubmit, formState } = useForm({
-    defaultValues: { amount: 0, mint: "" },
+    defaultValues: { amount: 0, mint: defaultMint ?? "" },
     mode: "all",
   });
 
@@ -33,7 +35,9 @@ export default function WalletSendCashuView() {
     const selected = dumbTokenSelection(tokens, values.amount, values.mint);
     const wallet = await getCashuWallet(values.mint);
 
-    // swap
+    await wallet.mint.getKeySets();
+
+    // swap tokens for send
     const send = await wallet.send(values.amount, selected.proofs);
 
     // save the change

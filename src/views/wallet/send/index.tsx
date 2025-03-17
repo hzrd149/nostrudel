@@ -10,7 +10,7 @@ export default function WalletSendView() {
     <SimpleView title="Send" maxW="xl" center>
       <Card as={LinkBox} p="4" gap="4" display="flex" flexDirection="row" alignItems="center">
         <ECashIcon boxSize={10} />
-        <HoverLinkOverlay as={RouterLink} to="/wallet/send/cashu">
+        <HoverLinkOverlay as={RouterLink} to="/wallet/send/cashu" replace>
           <Text fontWeight="bold" fontSize="xl">
             ECash
           </Text>
@@ -18,7 +18,7 @@ export default function WalletSendView() {
       </Card>
       <Card as={LinkBox} p="4" gap="4" display="flex" flexDirection="row" alignItems="center">
         <LightningIcon boxSize={10} color="yellow.400" />
-        <HoverLinkOverlay as={RouterLink} to="/wallet/pay/lightning">
+        <HoverLinkOverlay as={RouterLink} to="/wallet/pay/lightning" replace>
           <Text fontWeight="bold" fontSize="xl">
             Lightning
           </Text>
