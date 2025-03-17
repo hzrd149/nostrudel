@@ -6,6 +6,8 @@ import { getDecodedToken, Proof, ProofState } from "@cashu/cashu-ts";
 import { ReceiveToken } from "applesauce-wallet/actions";
 import { useActionHub } from "applesauce-react/hooks";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
+import { Share } from "@capacitor/share";
+import { useAsync } from "react-use";
 
 import SimpleView from "../../../components/layout/presets/simple-view";
 import RouterLink from "../../../components/router-link";
@@ -75,6 +77,8 @@ export default function WalletSendTokenView() {
     setCanceling(false);
   };
 
+  const { value: canShare } = useAsync(async () => Share.canShare());
+
   return (
     <SimpleView title="Cashu Token" maxW="xl" center>
       {data && <QrCodeSvg content={data} w="full" aspectRatio={1} />}
@@ -105,15 +109,21 @@ export default function WalletSendTokenView() {
       <Flex gap="2">
         <CopyIconButton value={token} aria-label="Copy token" />
         <CopyIconButton value={encodeTokenToEmoji(token)} aria-label="Copy emoji" icon={<span>🥜</span>} />
-        {navigator.share && (
+        {canShare?.value && (
           <IconButton
             aria-label="Share token"
             icon={<ShareIcon boxSize={5} />}
-            onClick={() =>
-              navigator.share({
-                text: token,
-              })
-            }
+            onClick={async () => {
+              try {
+                await Share.share({
+                  title: "Share Token",
+                  text: token,
+                  dialogTitle: "Share your token",
+                });
+              } catch (error) {
+                console.error("Error sharing", error);
+              }
+            }}
           />
         )}
         <Spacer />

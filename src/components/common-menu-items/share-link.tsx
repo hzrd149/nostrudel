@@ -1,6 +1,8 @@
 import { useCallback } from "react";
 import { MenuItem, useToast } from "@chakra-ui/react";
+import { Share } from "@capacitor/share";
 
+import { CAP_IS_NATIVE } from "../../env";
 import { NostrEvent } from "../../types/nostr-event";
 import { ShareIcon } from "../icons";
 import useUserProfile from "../../hooks/use-user-profile";
@@ -21,7 +23,13 @@ export default function ShareLinkMenuItem({ event }: { event: NostrEvent }) {
     if (event.content.length <= 256) data.text = event.content;
 
     try {
-      if (navigator.canShare?.(data)) {
+      if (CAP_IS_NATIVE) {
+        await Share.share({
+          title: data.title,
+          text: data.text,
+          url: data.url,
+        });
+      } else if (navigator.canShare?.(data)) {
         await navigator.share(data);
       } else {
         if (navigator.clipboard) {

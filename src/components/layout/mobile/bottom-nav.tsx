@@ -21,9 +21,8 @@ export default function MobileBottomNav() {
         borderTopWidth={1}
         hideFrom="md"
         bg="var(--chakra-colors-chakra-body-bg)"
-        mb="var(--safe-bottom)"
         position="fixed"
-        bottom="0"
+        bottom="var(--safe-bottom)"
         left="0"
         right="0"
         zIndex="modal"
