@@ -1,5 +1,30 @@
 # nostrudel
 
+## 0.43.0
+
+### Minor Changes
+
+- 697d4c6: Add "Migrate to signing device" option in account manager
+- 0b6e8e9: Remove "open in drawer" for notes
+- 1d04e20: Remove legacy relay connection pool
+- 1167dba: Use TimelineLoader from applesauce packages
+- 1045c26: Add option to favorite apps
+- 3d7a5bd: Update task manager to reflect rx-nostr relay connections and auth
+- ab394aa: Add option to mirror blobs when sharing notes
+- 747b7e2: Add default auth options to task manager and app relays views
+- e92d4b3: Add max height to timeline notes
+- ee7a5b3: Add simple file views and comments
+- 931ea61: Add tenor gif picker
+- b185b0a: Remove NIP-72 communities
+- 26b376e: Add nsfw option to reply form
+- bd6e21e: Linkify BIPs
+- 508b37d: Add 404 page
+- b5a7f76: Remove legacy satellite cdn view
+- 44def1d: Fix bug with uploading blank images
+- fc2063b: Add NIP-22 comments on articles
+- 931ea61: Add new emoji picker
+- 931ea61: Remove quick reactions from settings
+
 ## 0.42.0
 
 ### Minor Changes
