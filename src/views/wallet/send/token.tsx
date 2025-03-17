@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { filter, from, Observable, switchMap, take } from "rxjs";
-import { Button, ButtonGroup, Flex, Spacer, useToast } from "@chakra-ui/react";
+import { Button, ButtonGroup, Flex, IconButton, Spacer, useToast } from "@chakra-ui/react";
 import { ANIMATED_QR_INTERVAL, encodeTokenToEmoji, sendAnimated } from "applesauce-wallet/helpers";
 import { getDecodedToken, Proof, ProofState } from "@cashu/cashu-ts";
 import { ReceiveToken } from "applesauce-wallet/actions";
@@ -12,6 +12,7 @@ import RouterLink from "../../../components/router-link";
 import { CopyIconButton } from "../../../components/copy-icon-button";
 import QrCodeSvg from "../../../components/qr-code/qr-code-svg";
 import { getCashuWallet } from "../../../services/cashu-mints";
+import { ShareIcon } from "../../../components/icons";
 
 export default function WalletSendTokenView() {
   const toast = useToast();
@@ -104,6 +105,17 @@ export default function WalletSendTokenView() {
       <Flex gap="2">
         <CopyIconButton value={token} aria-label="Copy token" />
         <CopyIconButton value={encodeTokenToEmoji(token)} aria-label="Copy emoji" icon={<span>🥜</span>} />
+        {navigator.share && (
+          <IconButton
+            aria-label="Share token"
+            icon={<ShareIcon boxSize={5} />}
+            onClick={() =>
+              navigator.share({
+                text: token,
+              })
+            }
+          />
+        )}
         <Spacer />
         <Button onClick={cancel} isLoading={canceling}>
           Cancel
