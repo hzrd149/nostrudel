@@ -6,7 +6,7 @@ import { nip19 } from "nostr-tools";
 import UserAvatar from "../../../components/user/user-avatar";
 import UserDnsIdentity from "../../../components/user/user-dns-identity";
 import { NostrEvent } from "../../../types/nostr-event";
-import useAsyncAction from "../../../hooks/use-async-error-handler";
+import useAsyncAction from "../../../hooks/use-async-action";
 import { useActiveAccount, useEventFactory } from "applesauce-react/hooks";
 import { UserFollowButton } from "../../../components/user/user-follow-button";
 import { usePublishEvent } from "../../../providers/global/publish-provider";

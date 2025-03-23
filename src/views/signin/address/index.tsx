@@ -14,7 +14,6 @@ import { CheckIcon } from "../../../components/icons";
 import { NOSTR_CONNECT_PERMISSIONS } from "../../../const";
 import { getMatchSimpleEmail } from "../../../helpers/regexp";
 import QRCodeScannerButton from "../../../components/qr-code/qr-code-scanner-button";
-import { createNostrConnectConnection } from "../../../classes/nostr-connect-connection";
 
 export default function LoginNostrAddressView() {
   const navigate = useNavigate();
@@ -50,7 +49,6 @@ export default function LoginNostrAddressView() {
         const signer = new NostrConnectSigner({
           pubkey: nip05.pubkey,
           relays,
-          ...createNostrConnectConnection(),
         });
         await signer.connect(undefined, NOSTR_CONNECT_PERMISSIONS);
 

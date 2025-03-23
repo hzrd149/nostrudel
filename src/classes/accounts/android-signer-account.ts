@@ -1,6 +1,6 @@
 import { AppInfo, NostrSignerPlugin } from "nostr-signer-capacitor-plugin";
-import AndroidNativeSigner from "../signers/android-native-signer";
 import { BaseAccount, SerializedAccount } from "applesauce-accounts";
+import AndroidNativeSigner from "../signers/android-native-signer";
 
 type SignerData = {
   packageName: string;

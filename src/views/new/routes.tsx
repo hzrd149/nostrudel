@@ -3,7 +3,7 @@ import RequireActiveAccount from "../../components/router/require-active-account
 
 import NewView from ".";
 import NewNoteView from "./note";
-import NewMediaPostView from "./media";
+import NewMediaPostView from "./picture";
 
 export default [
   {

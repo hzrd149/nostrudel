@@ -1,6 +1,7 @@
 import { ReactNode, Suspense, lazy, memo } from "react";
 import { kinds } from "nostr-tools";
 import { Box, Spinner } from "@chakra-ui/react";
+import { PICTURE_POST_KIND } from "applesauce-core/helpers";
 
 import { ErrorBoundary } from "../../error-boundary";
 import ReplyNote from "./reply-note";
@@ -12,8 +13,7 @@ import { TimelineNote } from "../../note/timeline-note";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
 import ArticleCard from "../../../views/articles/components/article-card";
 import EmbeddedUnknown from "../../embed-event/event-types/embedded-unknown";
-import { MEDIA_POST_KIND } from "../../../helpers/nostr/media";
-import MediaPost from "../../media-post/media-post-card";
+import PicturePost from "../../picture-post/picture-post-card";
 
 // other stuff
 const StreamNote = lazy(() => import("./stream-note"));
@@ -44,8 +44,8 @@ function TimelineItem({ event, visible, minHeight }: { event: NostrEvent; visibl
     case kinds.LongFormArticle:
       content = <ArticleCard article={event} />;
       break;
-    case MEDIA_POST_KIND:
-      content = <MediaPost post={event} />;
+    case PICTURE_POST_KIND:
+      content = <PicturePost post={event} />;
       break;
     default:
       content = <EmbeddedUnknown event={event} />;

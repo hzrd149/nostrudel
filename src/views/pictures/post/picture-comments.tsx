@@ -29,7 +29,7 @@ function Comment({ comment }: { comment: NostrEvent }) {
   );
 }
 
-export function MediaPostComments({ post }: { post: NostrEvent }) {
+export function PicturePostComments({ post }: { post: NostrEvent }) {
   const readRelays = useReadRelays();
   const { loader } = useTimelineLoader(`${post.id}-comments`, readRelays, { kinds: [COMMENT_KIND], "#E": [post.id] });
 

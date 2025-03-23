@@ -3,7 +3,7 @@ import { useActionHub, useActiveAccount } from "applesauce-react/hooks";
 import { UnlockWallet } from "applesauce-wallet/actions";
 
 import useUserWallet from "../../../hooks/use-user-wallet";
-import useAsyncAction from "../../../hooks/use-async-error-handler";
+import useAsyncAction from "../../../hooks/use-async-action";
 
 export default function WalletUnlockButton({ children, ...props }: Omit<ButtonProps, "onClick" | "isLoading">) {
   const account = useActiveAccount()!;

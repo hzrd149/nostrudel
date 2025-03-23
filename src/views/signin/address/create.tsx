@@ -31,7 +31,6 @@ import { MetadataAvatar } from "../../../components/user/user-avatar";
 import { ErrorBoundary } from "../../../components/error-boundary";
 import dnsIdentityLoader from "../../../services/dns-identity-loader";
 import useUserProfile from "../../../hooks/use-user-profile";
-import { createNostrConnectConnection } from "../../../classes/nostr-connect-connection";
 
 function ProviderCard({ onClick, provider }: { onClick: () => void; provider: NostrEvent }) {
   const metadata = JSON.parse(provider.content) as ProfileContent;
@@ -98,11 +97,7 @@ export default function LoginNostrAddressCreate() {
       const relays = mergeRelaySets(identity.nip46Relays || identity.relays || []);
       if (relays.length === 0) throw new Error("Cant find providers relays");
 
-      const signer = new NostrConnectSigner({
-        relays,
-        remote: identity.pubkey,
-        ...createNostrConnectConnection(),
-      });
+      const signer = new NostrConnectSigner({ relays, remote: identity.pubkey });
 
       const createPromise = signer.createAccount(name, identity.domain, undefined, NOSTR_CONNECT_PERMISSIONS);
       await createPromise;

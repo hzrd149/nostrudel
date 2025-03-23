@@ -21,7 +21,6 @@ import QRCodeScannerButton from "../../components/qr-code/qr-code-scanner-button
 import { RelayUrlInput } from "../../components/relay-url-input";
 import QrCodeSvg from "../../components/qr-code/qr-code-svg";
 import { CopyIconButton } from "../../components/copy-icon-button";
-import { createNostrConnectConnection } from "../../classes/nostr-connect-connection";
 
 function ClientConnectForm() {
   const navigate = useNavigate();
@@ -45,7 +44,7 @@ function ClientConnectForm() {
   }, [relay, signer]);
 
   const create = useCallback(() => {
-    const tempSigner = new NostrConnectSigner({ relays: [relay], ...createNostrConnectConnection() });
+    const tempSigner = new NostrConnectSigner({ relays: [relay] });
     setSigner(tempSigner);
 
     tempSigner.waitForSigner().then(async () => {
@@ -117,7 +116,6 @@ export default function LoginNostrConnectView() {
     try {
       setLoading("Connecting...");
       const signer = await NostrConnectSigner.fromBunkerURI(connection, {
-        ...createNostrConnectConnection(),
         permissions: NOSTR_CONNECT_PERMISSIONS,
       });
       const pubkey = await signer.getPublicKey();

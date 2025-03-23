@@ -8,7 +8,7 @@ import SimpleView from "../../../components/layout/presets/simple-view";
 import RouterLink from "../../../components/router-link";
 import CashuMintFavicon from "../../../components/cashu/cashu-mint-favicon";
 import CashuMintName from "../../../components/cashu/cashu-mint-name";
-import useAsyncAction from "../../../hooks/use-async-error-handler";
+import useAsyncAction from "../../../hooks/use-async-action";
 import { getCashuWallet } from "../../../services/cashu-mints";
 
 export default function WalletReceiveTokenView() {

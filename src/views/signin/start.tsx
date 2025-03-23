@@ -26,7 +26,7 @@ import { CAP_IS_ANDROID, CAP_IS_WEB } from "../../env";
 import { AtIcon } from "../../components/icons";
 import Package from "../../components/icons/package";
 import Eye from "../../components/icons/eye";
-import useAsyncAction from "../../hooks/use-async-error-handler";
+import useAsyncAction from "../../hooks/use-async-action";
 import UserAvatar from "../../components/user/user-avatar";
 import UserName from "../../components/user/user-name";
 import UserDnsIdentity from "../../components/user/user-dns-identity";

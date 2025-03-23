@@ -19,7 +19,7 @@ import { getTokenContent, isTokenContentLocked, unlockTokenContent } from "apple
 import { NostrEvent } from "nostr-tools";
 import { getEncodedToken, ProofState } from "@cashu/cashu-ts";
 
-import useAsyncAction from "../../../hooks/use-async-error-handler";
+import useAsyncAction from "../../../hooks/use-async-action";
 import useEventUpdate from "../../../hooks/use-event-update";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
 import {

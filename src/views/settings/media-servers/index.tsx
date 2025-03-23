@@ -25,7 +25,7 @@ import useUsersMediaServers from "../../../hooks/use-user-media-servers";
 import DebugEventButton from "../../../components/debug-modal/debug-event-button";
 import { cloneEvent } from "../../../helpers/nostr/event";
 import useAppSettings from "../../../hooks/use-user-app-settings";
-import useAsyncAction from "../../../hooks/use-async-error-handler";
+import useAsyncAction from "../../../hooks/use-async-action";
 import { isServerTag } from "../../../helpers/nostr/blossom";
 import { USER_BLOSSOM_SERVER_LIST_KIND, areServersEqual } from "blossom-client-sdk";
 import SimpleView from "../../../components/layout/presets/simple-view";

@@ -11,14 +11,14 @@ import EventReactionButtons from "../event-reactions/event-reactions";
 import AddReactionButton from "../note/timeline-note/components/add-reaction-button";
 import EventShareButton from "../note/timeline-note/components/event-share-button";
 import EventQuoteButton from "../note/event-quote-button";
-import MediaPostSlides from "./media-slides";
-import MediaPostContents from "./media-post-content";
+import PicturePostSlides from "./picture-slides";
+import PicturePostContents from "./picture-post-content";
 import { getSharableEventAddress } from "../../services/relay-hints";
 import { ThreadIcon } from "../icons";
 import EventZapIconButton from "../zap/event-zap-icon-button";
 import Timestamp from "../timestamp";
 
-export default function MediaPost({ post }: { post: NostrEvent }) {
+export default function PicturePost({ post }: { post: NostrEvent }) {
   const nevent = getSharableEventAddress(post);
 
   return (
@@ -34,7 +34,7 @@ export default function MediaPost({ post }: { post: NostrEvent }) {
 
           <IconButton
             as={RouterLink}
-            to={`/media/${nevent}`}
+            to={`/pictures/${nevent}`}
             icon={<ThreadIcon boxSize={5} />}
             ml="auto"
             aria-label="Comments"
@@ -42,9 +42,9 @@ export default function MediaPost({ post }: { post: NostrEvent }) {
         </CardHeader>
 
         <CardBody p="0" position="relative" display="flex" flexDirection="column" gap="2" minH="md">
-          <MediaPostSlides post={post} />
+          <PicturePostSlides post={post} />
 
-          {post.content.length > 0 && <MediaPostContents post={post} px="2" />}
+          {post.content.length > 0 && <PicturePostContents post={post} px="2" />}
         </CardBody>
 
         <CardFooter p="2" display="flex" gap="2">

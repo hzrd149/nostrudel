@@ -4,7 +4,7 @@ import UserView from ".";
 import UserAboutTab from "./about";
 import UserNotesTab from "./notes";
 import UserArticlesTab from "./articles";
-import UserMediaPostsTab from "./media-posts";
+import UserPicturePostsTab from "./media-posts";
 
 // other stuff
 const UserStreamsTab = lazy(() => import("./streams"));
@@ -32,7 +32,7 @@ export default [
       { path: "about", Component: UserAboutTab },
       { path: "notes", Component: UserNotesTab },
       { path: "articles", Component: UserArticlesTab },
-      { path: "media", Component: UserMediaPostsTab },
+      { path: "media", Component: UserPicturePostsTab },
       { path: "streams", Component: UserStreamsTab },
       { path: "tracks", Component: UserTracksTab },
       { path: "videos", Component: UserVideosTab },

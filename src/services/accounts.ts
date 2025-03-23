@@ -1,15 +1,17 @@
 import { AccountManager } from "applesauce-accounts";
-import { AmberClipboardAccount, NostrConnectAccount, registerCommonAccountTypes } from "applesauce-accounts/accounts";
+import { AmberClipboardAccount, registerCommonAccountTypes } from "applesauce-accounts/accounts";
+import { NostrConnectSigner } from "applesauce-signers";
 import { skip } from "rxjs";
 
 import db from "./db";
 import { CAP_IS_NATIVE } from "../env";
 import { logger } from "../helpers/debug";
 import AndroidSignerAccount from "../classes/accounts/android-signer-account";
-import { createNostrConnectConnection } from "../classes/nostr-connect-connection";
+import { nostrConnectPublish, nostrConnectSubscription } from "../helpers/applesauce";
 
 // Setup nostr connect signer
-NostrConnectAccount.createConnectionMethods = createNostrConnectConnection;
+NostrConnectSigner.subscriptionMethod = nostrConnectSubscription;
+NostrConnectSigner.publishMethod = nostrConnectPublish;
 
 const log = logger.extend("Accounts");
 

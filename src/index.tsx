@@ -1,5 +1,4 @@
 import "./polyfill";
-import "./classes/nostr-connect-connection";
 
 import { GlobalProviders } from "./providers/global";
 

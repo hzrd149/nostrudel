@@ -27,7 +27,7 @@ import DebugEventButton from "../../../components/debug-modal/debug-event-button
 import ArrowBlockUp from "../../../components/icons/arrow-block-up";
 import ArrowBlockDown from "../../../components/icons/arrow-block-down";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
-import useAsyncAction from "../../../hooks/use-async-error-handler";
+import useAsyncAction from "../../../hooks/use-async-action";
 import { useDeleteEventContext } from "../../../providers/route/delete-event-provider";
 import { ChevronDownIcon, ChevronUpIcon, TrashIcon } from "../../../components/icons";
 import useEventUpdate from "../../../hooks/use-event-update";

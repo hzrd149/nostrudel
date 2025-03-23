@@ -8,7 +8,7 @@ import {
   pruneExpiredPubkeys,
 } from "../helpers/nostr/mute-list";
 import { usePublishEvent } from "../providers/global/publish-provider";
-import useAsyncAction from "./use-async-error-handler";
+import useAsyncAction from "./use-async-action";
 import useUserMuteList from "./use-user-mute-list";
 
 export default function useUserMuteActions(pubkey: string) {

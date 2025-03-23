@@ -16,6 +16,7 @@ export default function useAsyncAction<Args extends Array<any>, T = any>(
       return await ref.current(...args);
     } catch (e) {
       if (e instanceof Error) toast({ description: e.message, status: "error" });
+      console.log(e);
     }
     setLoading(false);
   }, deps);

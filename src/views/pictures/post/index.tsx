@@ -7,8 +7,8 @@ import useSingleEvent from "../../../hooks/use-single-event";
 import UserAvatarLink from "../../../components/user/user-avatar-link";
 import UserLink from "../../../components/user/user-link";
 import UserDnsIdentity from "../../../components/user/user-dns-identity";
-import MediaPostSlides from "../../../components/media-post/media-slides";
-import MediaPostContents from "../../../components/media-post/media-post-content";
+import PicturePostSlides from "../../../components/picture-post/picture-slides";
+import PicturePostContents from "../../../components/picture-post/picture-post-content";
 import { TrustProvider } from "../../../providers/local/trust-provider";
 import DebugEventButton from "../../../components/debug-modal/debug-event-button";
 import EventShareButton from "../../../components/note/timeline-note/components/event-share-button";
@@ -17,8 +17,8 @@ import { useBreakpointValue } from "../../../providers/global/breakpoint-provide
 import EventZapIconButton from "../../../components/zap/event-zap-icon-button";
 import AddReactionButton from "../../../components/note/timeline-note/components/add-reaction-button";
 import EventReactionButtons from "../../../components/event-reactions/event-reactions";
-import { MediaPostComments } from "./media-comments";
-import MediaPostCommentForm from "./media-post-comment-form";
+import { PicturePostComments } from "./picture-comments";
+import PicturePostCommentForm from "./media-post-comment-form";
 import BackButton from "../../../components/router/back-button";
 
 function Header({ post }: { post: NostrEvent }) {
@@ -57,19 +57,19 @@ function HorizontalLayout({ post }: { post: NostrEvent }) {
 
       <Flex direction="row" gap="2" overflow="hidden" h="full">
         <Flex overflow="hidden" w="full" h="full" direction="column" gap="2">
-          <MediaPostSlides post={post} maxH="full" overflow="hidden" />
+          <PicturePostSlides post={post} maxH="full" overflow="hidden" />
 
           <Actions post={post} />
         </Flex>
 
         <Flex direction="column" w="md" overflowY="auto" flexShrink={0}>
-          <MediaPostContents post={post} />
+          <PicturePostContents post={post} />
 
           <Heading size="sm" mt="2">
             Comments:
           </Heading>
-          <MediaPostCommentForm post={post} mb="2" />
-          <MediaPostComments post={post} />
+          <PicturePostCommentForm post={post} mb="2" />
+          <PicturePostComments post={post} />
         </Flex>
       </Flex>
     </Flex>
@@ -81,21 +81,21 @@ function VerticalLayout({ post }: { post: NostrEvent }) {
     <Flex direction="column" pt="2" pb="12" gap="2" px="2" w="full" overflowY="auto" overflowX="hidden">
       <Header post={post} />
 
-      <MediaPostSlides post={post} h="full" overflow="hidden" minH="50vh" />
-      <MediaPostContents post={post} />
+      <PicturePostSlides post={post} h="full" overflow="hidden" minH="50vh" />
+      <PicturePostContents post={post} />
 
       <Actions post={post} />
 
       <Heading size="sm" my="2">
         Comments:
       </Heading>
-      <MediaPostCommentForm post={post} mb="2" />
-      <MediaPostComments post={post} />
+      <PicturePostCommentForm post={post} mb="2" />
+      <PicturePostComments post={post} />
     </Flex>
   );
 }
 
-function MediaPostPage({ post }: { post: NostrEvent }) {
+function PicturePostPage({ post }: { post: NostrEvent }) {
   const Layout = useBreakpointValue({ base: VerticalLayout, xl: HorizontalLayout }) || VerticalLayout;
 
   return (
@@ -105,12 +105,12 @@ function MediaPostPage({ post }: { post: NostrEvent }) {
   );
 }
 
-export default function MediaPostView() {
+export default function PicturePostView() {
   const pointer = useParamsEventPointer("pointer");
   const readRelays = useReadRelays(pointer.relays);
 
   const post = useSingleEvent(pointer.id, readRelays);
 
-  if (post) return <MediaPostPage post={post} />;
+  if (post) return <PicturePostPage post={post} />;
   else return <Spinner />;
 }

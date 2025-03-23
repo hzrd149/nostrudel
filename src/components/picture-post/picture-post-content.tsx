@@ -12,13 +12,13 @@ const transformers = [links, nostrMentions, emojis, hashtags, nipDefinitions, bi
 
 const linkRenderers = [renderGenericUrl];
 
-const MediaPostContentSymbol = Symbol.for("media-post-content");
+const PicturePostContentSymbol = Symbol.for("picture-post-content");
 
-export default function MediaPostContents({ post, ...props }: { post: NostrEvent } & Omit<BoxProps, "children">) {
+export default function PicturePostContents({ post, ...props }: { post: NostrEvent } & Omit<BoxProps, "children">) {
   const content = useRenderedContent(post, components, {
     linkRenderers,
     transformers,
-    cacheKey: MediaPostContentSymbol,
+    cacheKey: PicturePostContentSymbol,
   });
 
   return (

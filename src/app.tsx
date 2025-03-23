@@ -35,7 +35,7 @@ import newRoutes from "./views/new/routes";
 import settingsRoutes from "./views/settings/routes";
 import relaysRoutes from "./views/relays/routes";
 import videosRoutes from "./views/videos/routes";
-import mediaRoutes from "./views/media/routes";
+import picturesRoutes from "./views/pictures/routes";
 import streamsRoutes from "./views/streams/routes";
 import toolsRoutes from "./views/tools/routes";
 import discoveryRoutes from "./views/discovery/routes";
@@ -105,7 +105,7 @@ const router = createBrowserRouter(
         { path: "settings", children: settingsRoutes },
         { path: "relays", children: relaysRoutes },
         { path: "notifications", Component: NotificationsView },
-        { path: "media", children: mediaRoutes },
+        { path: "pictures", children: picturesRoutes },
         { path: "streams", children: streamsRoutes },
         { path: "groups", children: groupsRoutes },
         { path: "tools", children: toolsRoutes },

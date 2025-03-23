@@ -12,7 +12,7 @@ import useTextAreaUploadFile, { useTextAreaInsertTextWithForm } from "../../../h
 import { useWriteRelays } from "../../../hooks/use-client-relays";
 import MessageSquare01 from "../../../components/icons/message-square-01";
 
-export default function MediaPostCommentForm({
+export default function PicturePostCommentForm({
   post,
   ...props
 }: { post: NostrEvent } & Omit<FlexProps, "children" | "as" | "onSubmit">) {
@@ -44,26 +44,24 @@ export default function MediaPostCommentForm({
   watch("content");
 
   return (
-    <>
-      <Flex as="form" onSubmit={sendMessage} gap="2" {...props}>
-        <MagicInput
-          instanceRef={(inst) => (textAreaRef.current = inst)}
-          placeholder="Comment"
-          autoComplete="off"
-          isRequired
-          value={getValues().content}
-          onChange={(e) => setValue("content", e.target.value, { shouldDirty: true })}
-          // @ts-expect-error
-          onPaste={onPaste}
-        />
-        <IconButton
-          colorScheme="primary"
-          type="submit"
-          isLoading={formState.isSubmitting}
-          icon={<MessageSquare01 />}
-          aria-label="Comment"
-        />
-      </Flex>
-    </>
+    <Flex as="form" onSubmit={sendMessage} gap="2" {...props}>
+      <MagicInput
+        instanceRef={(inst) => (textAreaRef.current = inst)}
+        placeholder="Comment"
+        autoComplete="off"
+        isRequired
+        value={getValues().content}
+        onChange={(e) => setValue("content", e.target.value, { shouldDirty: true })}
+        // @ts-expect-error
+        onPaste={onPaste}
+      />
+      <IconButton
+        colorScheme="primary"
+        type="submit"
+        isLoading={formState.isSubmitting}
+        icon={<MessageSquare01 />}
+        aria-label="Comment"
+      />
+    </Flex>
   );
 }

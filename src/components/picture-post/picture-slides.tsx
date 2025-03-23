@@ -64,7 +64,7 @@ function PageIndicators() {
   );
 }
 
-function MediaAttachmentSlide({ media }: { media: MediaAttachment }) {
+function PictureAttachmentSlide({ media }: { media: MediaAttachment }) {
   if (media.type?.startsWith("video/") || isVideoURL(media.url)) {
     return <TrustVideo src={media.url} poster={media.image} aria-description={media.alt} />;
   } else if (media.type?.startsWith("image/") || isImageURL(media.url)) {
@@ -100,7 +100,7 @@ const CustomCarousel = styled(Carousel)`
   }
 `;
 
-export default function MediaPostSlides({
+export default function PicturePostSlides({
   post,
   showZaps = true,
   ...props
@@ -111,7 +111,7 @@ export default function MediaPostSlides({
     return (
       <Flex gap="2" direction="column" {...props}>
         <Flex justifyContent="center" overflow="hidden" flexGrow={1} alignItems="flex-start">
-          <MediaAttachmentSlide media={attachments[0]} />
+          <PictureAttachmentSlide media={attachments[0]} />
         </Flex>
         {showZaps && <ZapBubbles event={post} px="2" />}
       </Flex>
@@ -133,7 +133,7 @@ export default function MediaPostSlides({
         }
       >
         {attachments.map((media) => (
-          <MediaAttachmentSlide key={media.sha256 || media.url} media={media} />
+          <PictureAttachmentSlide key={media.sha256 || media.url} media={media} />
         ))}
       </CustomCarousel>
     </Flex>

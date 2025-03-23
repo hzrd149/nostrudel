@@ -22,7 +22,7 @@ import { useReadRelays } from "../../../hooks/use-client-relays";
 import AlertTriangle from "../../../components/icons/alert-triangle";
 import MessageSquare02 from "../../../components/icons/message-square-02";
 import Camera01 from "../../../components/icons/camera-01";
-import { MEDIA_POST_KIND } from "../../../helpers/nostr/media";
+import { PICTURE_POST_KIND } from "applesauce-core/helpers";
 
 type KnownKind = {
   kind: number;
@@ -77,10 +77,10 @@ const KnownKinds: KnownKind[] = [
   },
 
   {
-    kind: MEDIA_POST_KIND,
-    name: "Media",
+    kind: PICTURE_POST_KIND,
+    name: "Pictures",
     icon: Camera01,
-    link: (_, p) => `/u/${npubEncode(p)}/media`,
+    link: (_, p) => `/u/${npubEncode(p)}/pictures`,
   },
 
   {

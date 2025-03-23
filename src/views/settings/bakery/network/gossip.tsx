@@ -3,7 +3,7 @@ import { Button, Flex, Heading, IconButton, Input, Link, Select, Switch, Text } 
 import { useForm } from "react-hook-form";
 import { useObservable } from "applesauce-react/hooks";
 
-import useAsyncAction from "../../../../hooks/use-async-error-handler";
+import useAsyncAction from "../../../../hooks/use-async-action";
 import { controlApi$ } from "../../../../services/bakery";
 import RelayFavicon from "../../../../components/relay-favicon";
 import { isSafeRelayURL, normalizeURL } from "applesauce-core/helpers";

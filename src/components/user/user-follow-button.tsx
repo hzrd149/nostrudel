@@ -21,7 +21,7 @@ import useUserSets from "../../hooks/use-user-lists";
 import { getListName } from "../../helpers/nostr/lists";
 import { getEventCoordinate } from "../../helpers/nostr/event";
 import useUserContactList from "../../hooks/use-user-contact-list";
-import useAsyncAction from "../../hooks/use-async-error-handler";
+import useAsyncAction from "../../hooks/use-async-action";
 import NewSetModal from "../../views/lists/components/new-set-modal";
 import useUserMuteActions from "../../hooks/use-user-mute-actions";
 import { useMuteModalContext } from "../../providers/route/mute-modal-provider";

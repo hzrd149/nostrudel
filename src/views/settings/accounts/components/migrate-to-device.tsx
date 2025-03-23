@@ -2,7 +2,7 @@ import { Button, Flex, Heading, Link, useToast } from "@chakra-ui/react";
 import { PasswordSigner, SerialPortSigner, SimpleSigner } from "applesauce-signers";
 import { useState } from "react";
 
-import useAsyncAction from "../../../../hooks/use-async-error-handler";
+import useAsyncAction from "../../../../hooks/use-async-action";
 import { useAccountManager, useActiveAccount } from "applesauce-react/hooks";
 import accountService from "../../../../services/accounts";
 import { SerialPortAccount } from "applesauce-accounts/accounts";
