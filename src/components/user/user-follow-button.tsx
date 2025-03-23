@@ -21,7 +21,7 @@ import useUserSets from "../../hooks/use-user-lists";
 import { getListName } from "../../helpers/nostr/lists";
 import { getEventCoordinate } from "../../helpers/nostr/event";
 import useUserContactList from "../../hooks/use-user-contact-list";
-import useAsyncErrorHandler from "../../hooks/use-async-error-handler";
+import useAsyncAction from "../../hooks/use-async-error-handler";
 import NewSetModal from "../../views/lists/components/new-set-modal";
 import useUserMuteActions from "../../hooks/use-user-mute-actions";
 import { useMuteModalContext } from "../../providers/route/mute-modal-provider";
@@ -37,7 +37,7 @@ function UsersLists({ pubkey }: { pubkey: string }) {
 
   const inLists = lists.filter((list) => isProfilePointerInList(list, { pubkey }));
 
-  const handleChange = useAsyncErrorHandler(
+  const handleChange = useAsyncAction(
     async (cords: string | string[]) => {
       if (!Array.isArray(cords)) return;
 
@@ -98,7 +98,7 @@ export function UserFollowButton({ pubkey, showLists, ...props }: UserFollowButt
 
   const isFollowing = !!contacts && isProfilePointerInList(contacts, pubkey);
 
-  const toggleFollow = useAsyncErrorHandler(async () => {
+  const toggleFollow = useAsyncAction(async () => {
     if (isFollowing) {
       await actions.exec(UnfollowUser, pubkey).forEach((e) => publish("Unfollow user", e));
     } else {

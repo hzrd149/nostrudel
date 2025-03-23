@@ -19,7 +19,7 @@ import { getTokenContent, isTokenContentLocked, unlockTokenContent } from "apple
 import { NostrEvent } from "nostr-tools";
 import { getEncodedToken, ProofState } from "@cashu/cashu-ts";
 
-import useAsyncErrorHandler from "../../../hooks/use-async-error-handler";
+import useAsyncAction from "../../../hooks/use-async-error-handler";
 import useEventUpdate from "../../../hooks/use-event-update";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
 import {
@@ -52,7 +52,7 @@ function TokenEvent({ token }: { token: NostrEvent }) {
   const amount = details?.proofs.reduce((t, p) => t + p.amount, 0);
 
   const [spentState, setSpentState] = useState<ProofState[]>();
-  const { run: check } = useAsyncErrorHandler(async () => {
+  const { run: check } = useAsyncAction(async () => {
     if (!details) return;
     const wallet = await getCashuWallet(details.mint);
     const state = await wallet.checkProofsStates(details.proofs);
@@ -62,7 +62,7 @@ function TokenEvent({ token }: { token: NostrEvent }) {
 
   const { deleteEvent } = useDeleteEventContext();
 
-  const { run: unlock } = useAsyncErrorHandler(async () => {
+  const { run: unlock } = useAsyncAction(async () => {
     if (!account) return;
     await unlockTokenContent(token, account);
     eventStore.update(token);
@@ -153,7 +153,7 @@ export default function WalletTokensTab({ ...props }: Omit<FlexProps, "children"
   const tokens = useStoreQuery(WalletTokensQuery, [account.pubkey]) ?? [];
   const locked = useStoreQuery(WalletTokensQuery, [account.pubkey, true]) ?? [];
 
-  const { run: unlock } = useAsyncErrorHandler(async () => {
+  const { run: unlock } = useAsyncAction(async () => {
     if (!locked) return;
     for (const token of locked) {
       await unlockTokenContent(token, account);

@@ -27,7 +27,7 @@ import DebugEventButton from "../../../components/debug-modal/debug-event-button
 import ArrowBlockUp from "../../../components/icons/arrow-block-up";
 import ArrowBlockDown from "../../../components/icons/arrow-block-down";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
-import useAsyncErrorHandler from "../../../hooks/use-async-error-handler";
+import useAsyncAction from "../../../hooks/use-async-error-handler";
 import { useDeleteEventContext } from "../../../providers/route/delete-event-provider";
 import { ChevronDownIcon, ChevronUpIcon, TrashIcon } from "../../../components/icons";
 import useEventUpdate from "../../../hooks/use-event-update";
@@ -53,7 +53,7 @@ function HistoryEntry({ entry }: { entry: NostrEvent }) {
   const redeemedIds = getHistoryRedeemed(entry);
   const redeemed = useSingleEvents(redeemedIds);
 
-  const { run: unlock } = useAsyncErrorHandler(async () => {
+  const { run: unlock } = useAsyncAction(async () => {
     await unlockHistoryContent(entry, account);
     eventStore.update(entry);
   }, [entry, account, eventStore]);
@@ -136,7 +136,7 @@ export default function WalletHistoryTab() {
   const history = useStoreQuery(WalletHistoryQuery, [account.pubkey]) ?? [];
   const locked = useStoreQuery(WalletHistoryQuery, [account.pubkey, true]) ?? [];
 
-  const { run: unlock } = useAsyncErrorHandler(async () => {
+  const { run: unlock } = useAsyncAction(async () => {
     for (const entry of locked) {
       if (!isHistoryContentLocked(entry)) continue;
       await unlockHistoryContent(entry, account);
@@ -144,7 +144,7 @@ export default function WalletHistoryTab() {
     }
   }, [locked, account, eventStore]);
 
-  const clear = useAsyncErrorHandler(async () => {
+  const clear = useAsyncAction(async () => {
     if (confirm("Are you sure you want to clear history?") !== true) return;
     const draft = await factory.delete(history);
     await publish("Clear history", draft);

@@ -6,7 +6,7 @@ import { nip19 } from "nostr-tools";
 import UserAvatar from "../../../components/user/user-avatar";
 import UserDnsIdentity from "../../../components/user/user-dns-identity";
 import { NostrEvent } from "../../../types/nostr-event";
-import useAsyncErrorHandler from "../../../hooks/use-async-error-handler";
+import useAsyncAction from "../../../hooks/use-async-error-handler";
 import { useActiveAccount, useEventFactory } from "applesauce-react/hooks";
 import { UserFollowButton } from "../../../components/user/user-follow-button";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
@@ -19,7 +19,7 @@ export default function UserCard({ pubkey, relay, list, ...props }: UserCardProp
   const publish = usePublishEvent();
   const factory = useEventFactory();
 
-  const remove = useAsyncErrorHandler(async () => {
+  const remove = useAsyncAction(async () => {
     const draft = await factory.modifyTags(list, removePubkeyTag(pubkey));
     const signed = await factory.sign(draft);
     await publish("Remove from list", signed);

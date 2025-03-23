@@ -5,7 +5,7 @@ import { NostrEvent } from "nostr-tools";
 import { ExternalLinkIcon } from "../../../components/icons";
 import useShareableEventAddress from "../../../hooks/use-shareable-event-address";
 import { AppHandlerContext } from "../../../providers/route/app-handler-provider";
-import useAsyncErrorHandler from "../../../hooks/use-async-error-handler";
+import useAsyncAction from "../../../hooks/use-async-error-handler";
 
 export type StreamOpenButtonProps = Omit<IconButtonProps, "onClick" | "aria-label"> & {
   stream: NostrEvent;
@@ -21,7 +21,7 @@ export default function StreamOpenButton({
   const { openAddress } = useContext(AppHandlerContext);
   const address = useShareableEventAddress(stream);
 
-  const { run: handleClick } = useAsyncErrorHandler(async () => {
+  const { run: handleClick } = useAsyncAction(async () => {
     if (!address) throw new Error("Failed to get address");
     openAddress(address);
   }, [address]);

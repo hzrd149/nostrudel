@@ -9,7 +9,7 @@ import { removeCoordinateTag, addCoordinateTag } from "applesauce-factory/operat
 import useFavoriteFeeds, { FAVORITE_FEEDS_IDENTIFIER } from "../../hooks/use-favorite-feeds";
 import { usePublishEvent } from "../../providers/global/publish-provider";
 import { StarEmptyIcon, StarFullIcon } from "../icons";
-import useAsyncErrorHandler from "../../hooks/use-async-error-handler";
+import useAsyncAction from "../../hooks/use-async-error-handler";
 
 export default function DVMFeedFavoriteButton({
   pointer,
@@ -20,7 +20,7 @@ export default function DVMFeedFavoriteButton({
   const { favorites } = useFavoriteFeeds();
   const isFavorite = !!favorites && isAddressPointerInList(favorites, pointer);
 
-  const toggle = useAsyncErrorHandler(async () => {
+  const toggle = useAsyncAction(async () => {
     const prev = favorites || {
       kind: kinds.Application,
       tags: [["d", FAVORITE_FEEDS_IDENTIFIER]],

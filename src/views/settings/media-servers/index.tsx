@@ -25,7 +25,7 @@ import useUsersMediaServers from "../../../hooks/use-user-media-servers";
 import DebugEventButton from "../../../components/debug-modal/debug-event-button";
 import { cloneEvent } from "../../../helpers/nostr/event";
 import useAppSettings from "../../../hooks/use-user-app-settings";
-import useAsyncErrorHandler from "../../../hooks/use-async-error-handler";
+import useAsyncAction from "../../../hooks/use-async-error-handler";
 import { isServerTag } from "../../../helpers/nostr/blossom";
 import { USER_BLOSSOM_SERVER_LIST_KIND, areServersEqual } from "blossom-client-sdk";
 import SimpleView from "../../../components/layout/presets/simple-view";
@@ -64,7 +64,7 @@ function MediaServersPage() {
     await publish("Remove media server", draft);
   };
 
-  const { run: switchToBlossom } = useAsyncErrorHandler(async () => {
+  const { run: switchToBlossom } = useAsyncAction(async () => {
     await updateSettings({ mediaUploadService: "blossom" });
   }, [updateSettings]);
 

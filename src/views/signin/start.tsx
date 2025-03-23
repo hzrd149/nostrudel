@@ -1,9 +1,21 @@
 import { lazy, useState } from "react";
-import { Button, ButtonGroup, Divider, Flex, IconButton, Link, Spinner, Text, useToast } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  ButtonGroup,
+  Card,
+  Divider,
+  Flex,
+  IconButton,
+  Link,
+  Spinner,
+  Text,
+  useToast,
+} from "@chakra-ui/react";
 import { Link as RouterLink, useLocation } from "react-router-dom";
 import { AmberClipboardAccount, ExtensionAccount, SerialPortAccount } from "applesauce-accounts/accounts";
 import { AmberClipboardSigner, ExtensionSigner, SerialPortSigner } from "applesauce-signers";
-import { useAccountManager } from "applesauce-react/hooks";
+import { useAccountManager, useAccounts } from "applesauce-react/hooks";
 
 import Key01 from "../../components/icons/key-01";
 import Diamond01 from "../../components/icons/diamond-01";
@@ -14,6 +26,12 @@ import { CAP_IS_ANDROID, CAP_IS_WEB } from "../../env";
 import { AtIcon } from "../../components/icons";
 import Package from "../../components/icons/package";
 import Eye from "../../components/icons/eye";
+import useAsyncAction from "../../hooks/use-async-error-handler";
+import UserAvatar from "../../components/user/user-avatar";
+import UserName from "../../components/user/user-name";
+import UserDnsIdentity from "../../components/user/user-dns-identity";
+import { CloseIcon } from "@chakra-ui/icons";
+import AccountTypeBadge from "../../components/accounts/account-info-badge";
 const AndroidNativeSigners = lazy(() => import("./native"));
 
 export default function LoginStartView() {
@@ -21,64 +39,47 @@ export default function LoginStartView() {
   const toast = useToast();
   const [loading, setLoading] = useState(false);
   const manager = useAccountManager();
+  const accounts = useAccounts();
 
-  const signinWithExtension = async () => {
-    if (window.nostr) {
-      try {
-        setLoading(true);
+  const extension = useAsyncAction(async () => {
+    if (!window.nostr) throw new Error("Missing NIP-07 signer extension");
 
-        const signer = new ExtensionSigner();
-        const pubkey = await signer.getPublicKey();
+    const signer = new ExtensionSigner();
+    const pubkey = await signer.getPublicKey();
 
-        const account = new ExtensionAccount(pubkey, signer);
-        manager.addAccount(account);
-        manager.setActive(account);
-      } catch (e) {
-        if (e instanceof Error) toast({ description: e.message, status: "error" });
-      }
-      setLoading(false);
-    } else {
-      toast({ status: "warning", title: "Cant find extension" });
-    }
-  };
+    const account = new ExtensionAccount(pubkey, signer);
+    manager.addAccount(account);
+    manager.setActive(account);
+  });
 
-  const signinWithSerial = async () => {
-    if (SerialPortSigner.SUPPORTED) {
-      try {
-        setLoading(true);
+  const serial = useAsyncAction(async () => {
+    if (!SerialPortSigner.SUPPORTED) throw new Error("Serial is not supported");
 
-        const signer = new SerialPortSigner();
-        const pubkey = await signer.getPublicKey();
-        const account = new SerialPortAccount(pubkey, signer);
-        manager.addAccount(account);
-        manager.setActive(account);
-      } catch (e) {
-        if (e instanceof Error) toast({ description: e.message, status: "error" });
-      }
-      setLoading(false);
-    } else {
-      toast({ status: "warning", title: "Serial is not supported" });
-    }
-  };
+    const signer = new SerialPortSigner();
+    const pubkey = await signer.getPublicKey();
+    const account = new SerialPortAccount(pubkey, signer);
+    manager.addAccount(account);
+    manager.setActive(account);
+  });
 
-  const signinWithAmber = async () => {
-    try {
-      const signer = new AmberClipboardSigner();
-      const pubkey = await signer.getPublicKey();
-      const account = new AmberClipboardAccount(pubkey, signer);
-      manager.addAccount(account);
-      manager.setActive(account);
-    } catch (e) {
-      if (e instanceof Error) toast({ description: e.message, status: "error" });
-    }
-  };
-
-  if (loading) return <Spinner />;
+  const amber = useAsyncAction(async () => {
+    const signer = new AmberClipboardSigner();
+    const pubkey = await signer.getPublicKey();
+    const account = new AmberClipboardAccount(pubkey, signer);
+    manager.addAccount(account);
+    manager.setActive(account);
+  });
 
   return (
     <>
       {window.nostr && (
-        <Button onClick={signinWithExtension} leftIcon={<Key01 boxSize={6} />} w="full" colorScheme="primary">
+        <Button
+          onClick={extension.run}
+          isLoading={extension.loading}
+          leftIcon={<Key01 boxSize={6} />}
+          w="full"
+          colorScheme="primary"
+        >
           Sign in with extension
         </Button>
       )}
@@ -94,7 +95,7 @@ export default function LoginStartView() {
       </Button>
       {SerialPortSigner.SUPPORTED && (
         <ButtonGroup colorScheme="purple">
-          <Button onClick={signinWithSerial} leftIcon={<UsbFlashDrive boxSize={6} />} w="xs">
+          <Button onClick={serial.run} isLoading={serial.loading} leftIcon={<UsbFlashDrive boxSize={6} />} w="xs">
             Use Signing Device
           </Button>
           <IconButton
@@ -109,7 +110,7 @@ export default function LoginStartView() {
       )}
       {CAP_IS_WEB && AmberClipboardSigner.SUPPORTED && (
         <ButtonGroup colorScheme="orange" w="full">
-          <Button onClick={signinWithAmber} leftIcon={<Diamond01 boxSize={6} />} flex={1}>
+          <Button onClick={amber.run} isLoading={amber.loading} leftIcon={<Diamond01 boxSize={6} />} flex={1}>
             Use Amber
           </Button>
           <IconButton
@@ -166,6 +167,37 @@ export default function LoginStartView() {
           Public key
         </Button>
       </Flex>
+      {accounts.length > 0 && (
+        <>
+          <Text fontWeight="bold" mt="4">
+            Existing accounts
+          </Text>
+
+          {accounts.map((account) => (
+            <Card key={account.id} p="2" display="flex" direction="row" gap="2" alignItems="center" w="full" maxW="md">
+              <UserAvatar pubkey={account.pubkey} size="md" />
+              <Box>
+                <UserName pubkey={account.pubkey} />
+                <br />
+                <AccountTypeBadge account={account} />
+              </Box>
+
+              <ButtonGroup ms="auto">
+                <Button variant="ghost" onClick={() => manager.setActive(account)}>
+                  Sign in
+                </Button>
+                <IconButton
+                  aria-label="Delete account"
+                  icon={<CloseIcon />}
+                  variant="ghost"
+                  colorScheme="red"
+                  onClick={() => manager.removeAccount(account)}
+                />
+              </ButtonGroup>
+            </Card>
+          ))}
+        </>
+      )}
       <Text fontWeight="bold" mt="4">
         Don't have an account?
       </Text>

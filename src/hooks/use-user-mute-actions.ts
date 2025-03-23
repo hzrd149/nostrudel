@@ -8,7 +8,7 @@ import {
   pruneExpiredPubkeys,
 } from "../helpers/nostr/mute-list";
 import { usePublishEvent } from "../providers/global/publish-provider";
-import useAsyncErrorHandler from "./use-async-error-handler";
+import useAsyncAction from "./use-async-error-handler";
 import useUserMuteList from "./use-user-mute-list";
 
 export default function useUserMuteActions(pubkey: string) {
@@ -19,12 +19,12 @@ export default function useUserMuteActions(pubkey: string) {
   const isMuted = isPubkeyInList(muteList, pubkey);
   const expiration = muteList ? getPubkeyExpiration(muteList, pubkey) : 0;
 
-  const { run: mute } = useAsyncErrorHandler(async () => {
+  const { run: mute } = useAsyncAction(async () => {
     let draft = muteListAddPubkey(muteList || createEmptyMuteList(), pubkey);
     draft = pruneExpiredPubkeys(draft);
     await publish("Mute", draft, undefined, false);
   }, [publish, muteList]);
-  const { run: unmute } = useAsyncErrorHandler(async () => {
+  const { run: unmute } = useAsyncAction(async () => {
     let draft = muteListRemovePubkey(muteList || createEmptyMuteList(), pubkey);
     draft = pruneExpiredPubkeys(draft);
     await publish("Unmute", draft, undefined, false);

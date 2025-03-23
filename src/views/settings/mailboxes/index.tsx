@@ -10,7 +10,7 @@ import { useActiveAccount } from "applesauce-react/hooks";
 import { InboxIcon, OutboxIcon } from "../../../components/icons";
 import MediaServerFavicon from "../../../components/favicon/media-server-favicon";
 import { NostrEvent } from "../../../types/nostr-event";
-import useAsyncErrorHandler from "../../../hooks/use-async-error-handler";
+import useAsyncAction from "../../../hooks/use-async-error-handler";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
 import { addRelayModeToMailbox, removeRelayModeFromMailbox } from "../../../helpers/nostr/mailbox";
 import AddRelayForm from "../relays/add-relay-form";
@@ -22,7 +22,7 @@ import { RelayMode } from "../../../services/app-relays";
 
 function RelayLine({ relay, mode, list }: { relay: string; mode: RelayMode; list?: NostrEvent }) {
   const publish = usePublishEvent();
-  const remove = useAsyncErrorHandler(async () => {
+  const remove = useAsyncAction(async () => {
     const draft = removeRelayModeFromMailbox(list, relay, mode);
     await publish("Remove relay", draft, COMMON_CONTACT_RELAYS);
   }, [relay, mode, list, publish]);

@@ -8,7 +8,7 @@ import SimpleView from "../../../components/layout/presets/simple-view";
 import RouterLink from "../../../components/router-link";
 import CashuMintFavicon from "../../../components/cashu/cashu-mint-favicon";
 import CashuMintName from "../../../components/cashu/cashu-mint-name";
-import useAsyncErrorHandler from "../../../hooks/use-async-error-handler";
+import useAsyncAction from "../../../hooks/use-async-error-handler";
 import { getCashuWallet } from "../../../services/cashu-mints";
 
 export default function WalletReceiveTokenView() {
@@ -24,7 +24,7 @@ export default function WalletReceiveTokenView() {
   const decoded = getDecodedToken(token);
   const originalAmount = decoded.proofs.reduce((t, p) => t + p.amount, 0);
 
-  const receive = useAsyncErrorHandler(async () => {
+  const receive = useAsyncAction(async () => {
     try {
       // swap tokens
       const wallet = await getCashuWallet(decoded.mint);
@@ -46,7 +46,7 @@ export default function WalletReceiveTokenView() {
     }
   }, [decoded, originalAmount, actions, navigate, toast]);
 
-  const swap = useAsyncErrorHandler(async () => {}, [decoded, originalAmount, actions, navigate, toast]);
+  const swap = useAsyncAction(async () => {}, [decoded, originalAmount, actions, navigate, toast]);
 
   return (
     <SimpleView title="Receive Token" maxW="xl" center>

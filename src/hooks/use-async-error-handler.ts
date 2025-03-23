@@ -1,17 +1,19 @@
 import { useToast } from "@chakra-ui/react";
-import { DependencyList, useCallback, useState } from "react";
+import { DependencyList, useCallback, useRef, useState } from "react";
 
-export default function useAsyncErrorHandler<Args extends Array<any>, T = any>(
+export default function useAsyncAction<Args extends Array<any>, T = any>(
   fn: (...args: Args) => Promise<T>,
-  deps: DependencyList,
+  deps: DependencyList = [],
 ): { loading: boolean; run: (...args: Args) => Promise<T | undefined> } {
-  const toast = useToast();
+  const ref = useRef(fn);
+  ref.current = fn;
 
+  const toast = useToast();
   const [loading, setLoading] = useState(false);
   const run = useCallback<(...args: Args) => Promise<T | undefined>>(async (...args: Args) => {
     setLoading(true);
     try {
-      return await fn(...args);
+      return await ref.current(...args);
     } catch (e) {
       if (e instanceof Error) toast({ description: e.message, status: "error" });
     }
