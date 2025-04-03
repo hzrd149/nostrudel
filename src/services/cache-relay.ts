@@ -2,6 +2,7 @@ import { BehaviorSubject, distinctUntilChanged, Observable, pairwise } from "rxj
 import { CacheRelay, openDB } from "nostr-idb";
 import { AbstractRelay } from "nostr-tools/abstract-relay";
 import { fakeVerifyEvent, isFromCache, isSafeRelayURL } from "applesauce-core/helpers";
+import { Filter, NostrEvent } from "nostr-tools";
 import dayjs from "dayjs";
 
 import { logger } from "../helpers/debug";
@@ -9,7 +10,6 @@ import WasmRelay from "./wasm-relay";
 import MemoryRelay from "../classes/memory-relay";
 import localSettings from "./local-settings";
 import { eventStore } from "./event-store";
-import { Filter, NostrEvent } from "nostr-tools";
 
 export const NOSTR_RELAY_TRAY_URL = "ws://localhost:4869/";
 export async function checkNostrRelayTray() {

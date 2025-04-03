@@ -4,7 +4,7 @@ import { getCoordinateFromAddressPointer, isAddressPointer, isEventPointer } fro
 
 import { cacheRequest } from "./cache-relay";
 import { TagValueLoader } from "applesauce-loaders";
-import rxNostr from "./rx-nostr";
+import { nostrRequest } from "./rx-nostr";
 import { eventStore } from "./event-store";
 
 export function requestReactions(id: string | EventPointer | AddressPointer, relays: string[], force?: boolean) {
@@ -18,21 +18,17 @@ export function requestReactions(id: string | EventPointer | AddressPointer, rel
   }
 }
 
-const replaceableEventsZapsLoader = new TagValueLoader(rxNostr, "a", {
+const replaceableEventsZapsLoader = new TagValueLoader(nostrRequest, "a", {
   name: "reactions",
   kinds: [kinds.Reaction],
   cacheRequest,
 });
-const singleEventsZapsLoader = new TagValueLoader(rxNostr, "e", {
+const singleEventsZapsLoader = new TagValueLoader(nostrRequest, "e", {
   name: "reactions",
   kinds: [kinds.Reaction],
   cacheRequest,
 });
 
 // start the loader and send all events to the event store
-replaceableEventsZapsLoader.subscribe((packet) => {
-  eventStore.add(packet.event, packet.from);
-});
-singleEventsZapsLoader.subscribe((packet) => {
-  eventStore.add(packet.event, packet.from);
-});
+replaceableEventsZapsLoader.subscribe((event) => eventStore.add(event));
+singleEventsZapsLoader.subscribe((event) => eventStore.add(event));

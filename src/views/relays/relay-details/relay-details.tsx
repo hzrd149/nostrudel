@@ -1,4 +1,7 @@
 import { Button, Card, Flex, Heading, Text } from "@chakra-ui/react";
+import { unixNow } from "applesauce-core/helpers";
+import { RelayTimelineLoader } from "applesauce-loaders";
+import { useObservable } from "applesauce-react/hooks";
 
 import {
   Chart as ChartJS,
@@ -22,11 +25,8 @@ import { useCallback, useEffect, useMemo, useRef } from "react";
 import { getSortedKinds } from "../../../helpers/nostr/event";
 import EventKindsPieChart from "../../../components/charts/event-kinds-pie-chart";
 import EventKindsTable from "../../../components/charts/event-kinds-table";
-import { unixNow } from "applesauce-core/helpers";
 import { eventStore } from "../../../services/event-store";
-import { RelayTimelineLoader } from "applesauce-loaders";
-import rxNostr from "../../../services/rx-nostr";
-import { useObservable } from "applesauce-react/hooks";
+import { nostrRequest } from "../../../services/rx-nostr";
 
 ChartJS.register(
   ArcElement,
@@ -101,15 +101,15 @@ export default function RelayDetailsTab({ relay }: { relay: string }) {
   const last = useRef(unixNow());
   const events = useRef(new Map());
 
-  const loader = useMemo(() => new RelayTimelineLoader(rxNostr, relay, [{}], { limit: 500 }), [relay]);
+  const loader = useMemo(() => new RelayTimelineLoader(nostrRequest, relay, [{}], { limit: 500 }), [relay]);
 
   // start the loader
   useEffect(() => {
-    const sub = loader.subscribe((packet) => {
-      events.current.set(packet.event.id, packet.event);
-      last.current = packet.event.created_at;
+    const sub = loader.subscribe((event) => {
+      events.current.set(event.id, event);
+      last.current = event.created_at;
 
-      eventStore.add(packet.event, packet.from);
+      eventStore.add(event);
     });
 
     return () => sub.unsubscribe();

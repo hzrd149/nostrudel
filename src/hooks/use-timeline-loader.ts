@@ -29,9 +29,7 @@ export default function useTimelineLoader(
 
   // start and stop loader
   useEffect(() => {
-    const sub = loader?.subscribe((packet) => {
-      eventStore.add(packet.event, packet.from);
-    });
+    const sub = loader?.subscribe((event) => eventStore.add(event));
 
     return () => sub?.unsubscribe();
   }, [eventStore, loader]);

@@ -2,7 +2,6 @@ import { BehaviorSubject } from "rxjs";
 import { registerSW } from "virtual:pwa-register";
 
 import { logger } from "../helpers/debug";
-import { CAP_IS_WEB } from "../env";
 
 const log = logger.extend("ServiceWorker");
 

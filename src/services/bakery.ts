@@ -39,7 +39,7 @@ bakery$
     switchMap((b) => combineLatest([of(b), b.challenge$, accounts.active$])),
   )
   .subscribe(async ([bakery, challenge, account]) => {
-    if (!account) return;
+    if (!account || !challenge) return;
 
     try {
       const draft = nip42.makeAuthEvent(bakery.url, challenge);

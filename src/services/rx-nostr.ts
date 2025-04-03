@@ -1,11 +1,12 @@
-import { ConnectionState, createRxNostr, noopVerifier } from "rx-nostr";
-import { BehaviorSubject, combineLatest } from "rxjs";
-import { unixNow } from "applesauce-core/helpers";
+import { ConnectionState, createRxNostr, createRxOneshotReq, noopVerifier } from "rx-nostr";
+import { BehaviorSubject, combineLatest, map, Observable } from "rxjs";
+import { unixNow, addSeenRelay } from "applesauce-core/helpers";
 import { nanoid } from "nanoid";
 
 import authenticationSigner from "./authentication-signer";
 import localSettings from "./local-settings";
 import { unique } from "../helpers/array";
+import { Filter, NostrEvent } from "nostr-tools";
 
 const rxNostr = createRxNostr({
   verifier: noopVerifier,
@@ -44,6 +45,17 @@ rxNostr.createAllMessageObservable().subscribe((packet) => {
     notices$.next([...notices$.value, notice]);
   }
 });
+
+// TODO: this should not use one off request, but there isn't a good way to use forward requests
+export function nostrRequest(relays: string[], filters: Filter[], id?: string): Observable<NostrEvent> {
+  const req = createRxOneshotReq({ filters, rxReqId: id });
+  return rxNostr.use(req, { on: { relays } }).pipe(
+    map((packet) => {
+      addSeenRelay(packet.event, packet.from);
+      return packet.event;
+    }),
+  );
+}
 
 if (import.meta.env.DEV) {
   // @ts-expect-error

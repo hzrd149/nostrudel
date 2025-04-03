@@ -1,16 +1,4 @@
-import {
-  firstValueFrom,
-  map,
-  MonoTypeOperatorFunction,
-  Observable,
-  ReplaySubject,
-  scan,
-  share,
-  shareReplay,
-  skip,
-  tap,
-  timer,
-} from "rxjs";
+import { firstValueFrom, map, Observable, scan, shareReplay, skip, tap } from "rxjs";
 import { PrivateNodeConfig } from "@satellite-earth/core/types";
 import { Relay } from "applesauce-relay";
 import hash_sum from "hash-sum";
@@ -49,14 +37,14 @@ export default class BakeryControlApi {
     const existing = this.queries.get(id);
     if (existing) return existing;
 
-    let query = this.bakery.socket$
+    let query = this.bakery
       .multiplex(
         () => ["QRY", "OPEN", type, id, args],
         () => ["QRY", "CLOSE", id],
         (m) => m[0] === "QRY" && (m[1] === "DATA" || m[1] === "ERR") && m[2] === id,
       )
       .pipe(
-        map((message) => {
+        map((message: any) => {
           // throw error
           if (message[1] === "ERR") throw new Error(message[2]);
           // return data
@@ -87,7 +75,7 @@ export default class BakeryControlApi {
   }
 
   async setConfigField<T extends keyof PrivateNodeConfig>(field: T, value: PrivateNodeConfig[T]) {
-    await this.bakery.socket$.next(["CONTROL", "CONFIG", "SET", field, value]);
+    await this.bakery.next(["CONTROL", "CONFIG", "SET", field, value]);
 
     // wait for the next change to config
     await firstValueFrom(this.config.pipe(skip(1)));
@@ -95,7 +83,7 @@ export default class BakeryControlApi {
 
   async setConfigFields(config: Partial<PrivateNodeConfig>) {
     for (const [field, value] of Object.entries(config)) {
-      await this.bakery.socket$.next(["CONTROL", "CONFIG", "SET", field, value]);
+      await this.bakery.next(["CONTROL", "CONFIG", "SET", field, value]);
     }
 
     // wait for the next change to config
