@@ -165,7 +165,7 @@
     "cheerio": "^1.0.0",
     "eventemitter3": "^5.0.1",
     "typescript": "^5.8.2",
-    "vite": "^5.4.16",
+    "vite": "^5.4.17",
     "vite-plugin-pwa": "^0.21.2",
     "vite-tsconfig-paths": "^5.1.4",
     "workbox-build": "^7.3.0",
