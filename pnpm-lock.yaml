@@ -69,10 +69,10 @@ importers:
         version: 11.14.0(@emotion/react@11.14.0(@types/react@18.3.20)(react@19.1.0))(@types/react@18.3.20)(react@19.1.0)
       '@getalby/bitcoin-connect':
         specifier: ^3.7.1
-        version: 3.7.1(@types/react@18.3.20)(react@19.1.0)(typescript@5.8.2)
+        version: 3.7.1(@types/react@18.3.20)(react@19.1.0)(typescript@5.8.3)
       '@getalby/bitcoin-connect-react':
         specifier: ^3.7.1
-        version: 3.7.1(@types/react@18.3.20)(react@19.1.0)(typescript@5.8.2)
+        version: 3.7.1(@types/react@18.3.20)(react@19.1.0)(typescript@5.8.3)
       '@noble/ciphers':
         specifier: ^1.2.1
         version: 1.2.1
@@ -87,7 +87,7 @@ importers:
         version: 1.7.1
       '@satellite-earth/core':
         specifier: ^0.5.0
-        version: 0.5.0(typescript@5.8.2)
+        version: 0.5.0(typescript@5.8.3)
       '@scure/base':
         specifier: ^1.2.4
         version: 1.2.4
@@ -108,34 +108,34 @@ importers:
         version: 0.7.2
       applesauce-accounts:
         specifier: next
-        version: 0.0.0-next-20250404095409(typescript@5.8.2)
+        version: 0.0.0-next-20250404095409(typescript@5.8.3)
       applesauce-actions:
         specifier: next
-        version: 0.0.0-next-20250404095409(typescript@5.8.2)
+        version: 0.0.0-next-20250404095409(typescript@5.8.3)
       applesauce-content:
         specifier: next
-        version: 0.0.0-next-20250404095409(typescript@5.8.2)
+        version: 0.0.0-next-20250404095409(typescript@5.8.3)
       applesauce-core:
         specifier: next
-        version: 0.0.0-next-20250404095409(typescript@5.8.2)
+        version: 0.0.0-next-20250404095409(typescript@5.8.3)
       applesauce-factory:
         specifier: next
-        version: 0.0.0-next-20250404095409(typescript@5.8.2)
+        version: 0.0.0-next-20250404095409(typescript@5.8.3)
       applesauce-loaders:
         specifier: next
-        version: 0.0.0-next-20250404095409(typescript@5.8.2)
+        version: 0.0.0-next-20250404095409(typescript@5.8.3)
       applesauce-react:
         specifier: next
-        version: 0.0.0-next-20250404095409(react-dom@19.1.0(react@19.1.0))(typescript@5.8.2)
+        version: 0.0.0-next-20250404095409(react-dom@19.1.0(react@19.1.0))(typescript@5.8.3)
       applesauce-relay:
         specifier: next
-        version: 0.0.0-next-20250404095409(typescript@5.8.2)
+        version: 0.0.0-next-20250404095409(typescript@5.8.3)
       applesauce-signers:
         specifier: next
-        version: 0.0.0-next-20250404095409(typescript@5.8.2)
+        version: 0.0.0-next-20250404095409(typescript@5.8.3)
       applesauce-wallet:
         specifier: next
-        version: 0.0.0-next-20250404095409(typescript@5.8.2)
+        version: 0.0.0-next-20250404095409(typescript@5.8.3)
       bech32:
         specifier: ^2.0.0
         version: 2.0.0
@@ -188,8 +188,8 @@ importers:
         specifier: ^2.0.0
         version: 2.0.0
       hls.js:
-        specifier: ^1.6.0
-        version: 1.6.0
+        specifier: ^1.6.1
+        version: 1.6.1
       i18n-iso-countries:
         specifier: ^7.14.0
         version: 7.14.0
@@ -231,13 +231,13 @@ importers:
         version: 0.6.3
       nostr-idb:
         specifier: ^2.2.0
-        version: 2.2.0(typescript@5.8.2)
+        version: 2.2.0(typescript@5.8.3)
       nostr-signer-capacitor-plugin:
         specifier: ^0.0.3
         version: 0.0.3(@capacitor/core@7.2.0)
       nostr-tools:
         specifier: ^2.12.0
-        version: 2.12.0(typescript@5.8.2)
+        version: 2.12.0(typescript@5.8.3)
       nostr-typedef:
         specifier: ^0.11.0
         version: 0.11.0
@@ -326,8 +326,8 @@ importers:
         specifier: ^1.9.5
         version: 1.9.5(three@0.170.0)
       three-stdlib:
-        specifier: ^2.35.14
-        version: 2.35.14(three@0.170.0)
+        specifier: ^2.35.15
+        version: 2.35.15(three@0.170.0)
       unified:
         specifier: ^11.0.5
         version: 11.0.5
@@ -364,7 +364,7 @@ importers:
         version: 7.0.1(@capacitor/core@7.2.0)
       '@capacitor/assets':
         specifier: ^3.0.5
-        version: 3.0.5(@types/node@22.14.0)(typescript@5.8.2)
+        version: 3.0.5(@types/node@22.14.0)(typescript@5.8.3)
       '@capacitor/cli':
         specifier: ^7.2.0
         version: 7.2.0
@@ -444,8 +444,8 @@ importers:
         specifier: ^5.0.1
         version: 5.0.1
       typescript:
-        specifier: ^5.8.2
-        version: 5.8.2
+        specifier: ^5.8.3
+        version: 5.8.3
       vite:
         specifier: ^5.4.17
         version: 5.4.17(@types/node@22.14.0)(terser@5.39.0)
@@ -454,7 +454,7 @@ importers:
         version: 0.21.2(vite@5.4.17(@types/node@22.14.0)(terser@5.39.0))(workbox-build@7.3.0(@types/babel__core@7.20.5))(workbox-window@7.3.0)
       vite-tsconfig-paths:
         specifier: ^5.1.4
-        version: 5.1.4(typescript@5.8.2)(vite@5.4.17(@types/node@22.14.0)(terser@5.39.0))
+        version: 5.1.4(typescript@5.8.3)(vite@5.4.17(@types/node@22.14.0)(terser@5.39.0))
       workbox-build:
         specifier: ^7.3.0
         version: 7.3.0(@types/babel__core@7.20.5)
@@ -2463,8 +2463,8 @@ packages:
     resolution: {integrity: sha512-8WB3Jcas3swSvjIeA2yvCJ+Miyz5l1ZmB6HFb9R1317dt9LCQoswg/BGrmAmkWVEszSrrg4RwmO46qIm2OEnSA==}
     engines: {node: '>=16'}
 
-  caniuse-lite@1.0.30001710:
-    resolution: {integrity: sha512-B5C0I0UmaGqHgo5FuqJ7hBd4L57A4dDD+Xi+XX1nXOoxGeDdY4Ko38qJYOyqznBVJEqON5p8P1x5zRR3+rsnxA==}
+  caniuse-lite@1.0.30001711:
+    resolution: {integrity: sha512-OpFA8GsKtoV3lCcsI3U5XBAV+oVrMu96OS8XafKqnhOaEAW2mveD1Mx81Sx/02chERwhDakuXs28zbyEc4QMKg==}
 
   canvas-color-tracker@1.3.2:
     resolution: {integrity: sha512-ryQkDX26yJ3CXzb3hxUVNlg1NKE4REc5crLBq661Nxzr8TNd236SaEf2ffYLXyI5tSABSeguHLqcVq4vf9L3Zg==}
@@ -3550,8 +3550,8 @@ packages:
     resolution: {integrity: sha512-qlspKUK7IlSQv2o+5I7yhUd7TxlOG2Vr5LTa3ve2XSNVKAL/n/u/7KLvKmFNimomDIKvZFXWHv0T12mv7rT8Aw==}
     engines: {node: '>=8'}
 
-  hls.js@1.6.0:
-    resolution: {integrity: sha512-AlW8ymcDKZuKtzXCUmEy4nOcHRkebnShH6t6hC2+QJQP0WXlTUSSO9Kp22uSEYdCgpwkXEJsfOhqxrgO2tDctQ==}
+  hls.js@1.6.1:
+    resolution: {integrity: sha512-7GOkcqn0Y9EqU2OJZlzkwxj9Uynuln7URvr7dRjgqNJNZ5UbbjL/v1BjAvQogy57Psdd/ek1u2s6IDEFYlabrA==}
 
   hoist-non-react-statics@3.3.2:
     resolution: {integrity: sha512-/gGivxi8JPKWNm/W0jSmzcMPpfpPLc3dY/6GxhX2hQ9iGj3aDfklV4ET7NjKpSinLpJ5vafa9iiGIEZg10SfBw==}
@@ -5623,8 +5623,8 @@ packages:
     peerDependencies:
       three: '>=0.86.0'
 
-  three-stdlib@2.35.14:
-    resolution: {integrity: sha512-kpCaEg59M9usFTgHC+YZNKvx7nMoLI2zQxZBV8pjoNW6vNZmGyXpaLBL09A2oLCsS3KepgMFkOuk6lRoebTNvA==}
+  three-stdlib@2.35.15:
+    resolution: {integrity: sha512-2XbhiOV7jVCchUoWxTmsj5dNhTe8eYb58Nyrfoa2F2yL+6h/+2VRaU2gENljRW1d/P1mk4/uwNzbdkKWV3hwzw==}
     peerDependencies:
       three: '>=0.128.0'
 
@@ -5772,8 +5772,8 @@ packages:
     resolution: {integrity: sha512-3KS2b+kL7fsuk/eJZ7EQdnEmQoaho/r6KUef7hxvltNA5DR8NAUM+8wJMbJyZ4G9/7i3v5zPBIMN5aybAh2/Jg==}
     engines: {node: '>= 0.4'}
 
-  typescript@5.8.2:
-    resolution: {integrity: sha512-aJn6wq13/afZp/jT9QZmwEjDqqvSGp1VT5GVg+f/t6/oVyrgXM6BY1h9BRh/O5p3PlUPAe+WuiEZOmb/49RqoQ==}
+  typescript@5.8.3:
+    resolution: {integrity: sha512-p1diW6TqL9L07nNxvRMM7hMMw4c5XOo/1ibL4aAIGmSAt9slTE1Xgw5KWuof2uTOvCg9BY7ZRi+GaF+7sfgPeQ==}
     engines: {node: '>=14.17'}
     hasBin: true
 
@@ -6939,12 +6939,12 @@ snapshots:
     dependencies:
       '@capacitor/core': 7.2.0
 
-  '@capacitor/assets@3.0.5(@types/node@22.14.0)(typescript@5.8.2)':
+  '@capacitor/assets@3.0.5(@types/node@22.14.0)(typescript@5.8.3)':
     dependencies:
       '@capacitor/cli': 5.7.8
       '@ionic/utils-array': 2.1.6
       '@ionic/utils-fs': 3.1.7
-      '@trapezedev/project': 7.1.3(@types/node@22.14.0)(typescript@5.8.2)
+      '@trapezedev/project': 7.1.3(@types/node@22.14.0)(typescript@5.8.3)
       commander: 8.3.0
       debug: 4.3.4
       fs-extra: 10.1.0
@@ -7630,19 +7630,19 @@ snapshots:
       cborg: 4.2.9
       jsbi: 3.1.5
 
-  '@getalby/bitcoin-connect-react@3.7.1(@types/react@18.3.20)(react@19.1.0)(typescript@5.8.2)':
+  '@getalby/bitcoin-connect-react@3.7.1(@types/react@18.3.20)(react@19.1.0)(typescript@5.8.3)':
     dependencies:
-      '@getalby/bitcoin-connect': 3.7.1(@types/react@18.3.20)(react@19.1.0)(typescript@5.8.2)
+      '@getalby/bitcoin-connect': 3.7.1(@types/react@18.3.20)(react@19.1.0)(typescript@5.8.3)
       react: 19.1.0
     transitivePeerDependencies:
       - '@types/react'
       - immer
       - typescript
 
-  '@getalby/bitcoin-connect@3.7.1(@types/react@18.3.20)(react@19.1.0)(typescript@5.8.2)':
+  '@getalby/bitcoin-connect@3.7.1(@types/react@18.3.20)(react@19.1.0)(typescript@5.8.3)':
     dependencies:
       '@getalby/lightning-tools': 5.1.2
-      '@getalby/sdk': 4.1.1(typescript@5.8.2)
+      '@getalby/sdk': 4.1.1(typescript@5.8.3)
       '@lightninglabs/lnc-web': 0.3.2-alpha
       qrcode-generator: 1.4.4
       zustand: 4.5.6(@types/react@18.3.20)(react@19.1.0)
@@ -7654,9 +7654,9 @@ snapshots:
 
   '@getalby/lightning-tools@5.1.2': {}
 
-  '@getalby/sdk@4.1.1(typescript@5.8.2)':
+  '@getalby/sdk@4.1.1(typescript@5.8.3)':
     dependencies:
-      nostr-tools: 2.9.4(typescript@5.8.2)
+      nostr-tools: 2.9.4(typescript@5.8.3)
     transitivePeerDependencies:
       - typescript
 
@@ -8037,7 +8037,7 @@ snapshots:
       '@sagold/json-pointer': 5.1.2
       ebnf: 1.9.1
 
-  '@satellite-earth/core@0.5.0(typescript@5.8.2)':
+  '@satellite-earth/core@0.5.0(typescript@5.8.3)':
     dependencies:
       better-sqlite3: 11.9.1
       blossom-client-sdk: 0.9.1
@@ -8051,7 +8051,7 @@ snapshots:
       http-errors: 2.0.0
       lowdb: 7.0.1
       mime: 4.0.7
-      nostr-tools: 2.12.0(typescript@5.8.2)
+      nostr-tools: 2.12.0(typescript@5.8.3)
       ws: 8.18.1
     transitivePeerDependencies:
       - bufferutil
@@ -8143,7 +8143,7 @@ snapshots:
 
   '@trapezedev/gradle-parse@7.1.3': {}
 
-  '@trapezedev/project@7.1.3(@types/node@22.14.0)(typescript@5.8.2)':
+  '@trapezedev/project@7.1.3(@types/node@22.14.0)(typescript@5.8.3)':
     dependencies:
       '@ionic/utils-fs': 3.1.7
       '@ionic/utils-subprocess': 2.1.14
@@ -8165,7 +8165,7 @@ snapshots:
       replace: 1.2.2
       tempy: 1.0.1
       tmp: 0.2.3
-      ts-node: 10.9.2(@types/node@22.14.0)(typescript@5.8.2)
+      ts-node: 10.9.2(@types/node@22.14.0)(typescript@5.8.3)
       xcode: 3.0.1
       xml-js: 1.6.11
       xpath: 0.0.32
@@ -8493,36 +8493,36 @@ snapshots:
     dependencies:
       entities: 2.2.0
 
-  applesauce-accounts@0.0.0-next-20250404095409(typescript@5.8.2):
+  applesauce-accounts@0.0.0-next-20250404095409(typescript@5.8.3):
     dependencies:
       '@noble/hashes': 1.7.1
-      applesauce-signers: 0.0.0-next-20250404095409(typescript@5.8.2)
+      applesauce-signers: 0.0.0-next-20250404095409(typescript@5.8.3)
       nanoid: 5.1.5
-      nostr-tools: 2.12.0(typescript@5.8.2)
+      nostr-tools: 2.12.0(typescript@5.8.3)
       rxjs: 7.8.2
     transitivePeerDependencies:
       - supports-color
       - typescript
 
-  applesauce-actions@0.0.0-next-20250404095409(typescript@5.8.2):
+  applesauce-actions@0.0.0-next-20250404095409(typescript@5.8.3):
     dependencies:
-      applesauce-core: 0.0.0-next-20250404095409(typescript@5.8.2)
-      applesauce-factory: 0.0.0-next-20250404095409(typescript@5.8.2)
-      nostr-tools: 2.12.0(typescript@5.8.2)
+      applesauce-core: 0.0.0-next-20250404095409(typescript@5.8.3)
+      applesauce-factory: 0.0.0-next-20250404095409(typescript@5.8.3)
+      nostr-tools: 2.12.0(typescript@5.8.3)
       rxjs: 7.8.2
     transitivePeerDependencies:
       - supports-color
       - typescript
 
-  applesauce-content@0.0.0-next-20250404095409(typescript@5.8.2):
+  applesauce-content@0.0.0-next-20250404095409(typescript@5.8.3):
     dependencies:
       '@cashu/cashu-ts': 2.0.0-rc1
       '@types/hast': 3.0.4
       '@types/mdast': 4.0.4
       '@types/unist': 3.0.3
-      applesauce-core: 0.0.0-next-20250404095409(typescript@5.8.2)
+      applesauce-core: 0.0.0-next-20250404095409(typescript@5.8.3)
       mdast-util-find-and-replace: 3.0.2
-      nostr-tools: 2.12.0(typescript@5.8.2)
+      nostr-tools: 2.12.0(typescript@5.8.3)
       remark: 15.0.1
       remark-parse: 11.0.0
       unified: 11.0.5
@@ -8531,7 +8531,7 @@ snapshots:
       - supports-color
       - typescript
 
-  applesauce-core@0.0.0-next-20250404095409(typescript@5.8.2):
+  applesauce-core@0.0.0-next-20250404095409(typescript@5.8.3):
     dependencies:
       '@noble/hashes': 1.7.1
       '@scure/base': 1.2.4
@@ -8540,40 +8540,40 @@ snapshots:
       hash-sum: 2.0.0
       light-bolt11-decoder: 3.2.0
       nanoid: 5.1.5
-      nostr-tools: 2.12.0(typescript@5.8.2)
+      nostr-tools: 2.12.0(typescript@5.8.3)
       rxjs: 7.8.2
     transitivePeerDependencies:
       - supports-color
       - typescript
 
-  applesauce-factory@0.0.0-next-20250404095409(typescript@5.8.2):
+  applesauce-factory@0.0.0-next-20250404095409(typescript@5.8.3):
     dependencies:
-      applesauce-content: 0.0.0-next-20250404095409(typescript@5.8.2)
-      applesauce-core: 0.0.0-next-20250404095409(typescript@5.8.2)
+      applesauce-content: 0.0.0-next-20250404095409(typescript@5.8.3)
+      applesauce-core: 0.0.0-next-20250404095409(typescript@5.8.3)
       nanoid: 5.1.5
-      nostr-tools: 2.12.0(typescript@5.8.2)
+      nostr-tools: 2.12.0(typescript@5.8.3)
     transitivePeerDependencies:
       - supports-color
       - typescript
 
-  applesauce-loaders@0.0.0-next-20250404095409(typescript@5.8.2):
+  applesauce-loaders@0.0.0-next-20250404095409(typescript@5.8.3):
     dependencies:
-      applesauce-core: 0.0.0-next-20250404095409(typescript@5.8.2)
+      applesauce-core: 0.0.0-next-20250404095409(typescript@5.8.3)
       nanoid: 5.1.5
-      nostr-tools: 2.12.0(typescript@5.8.2)
+      nostr-tools: 2.12.0(typescript@5.8.3)
       rxjs: 7.8.2
     transitivePeerDependencies:
       - supports-color
       - typescript
 
-  applesauce-react@0.0.0-next-20250404095409(react-dom@19.1.0(react@19.1.0))(typescript@5.8.2):
+  applesauce-react@0.0.0-next-20250404095409(react-dom@19.1.0(react@19.1.0))(typescript@5.8.3):
     dependencies:
-      applesauce-accounts: 0.0.0-next-20250404095409(typescript@5.8.2)
-      applesauce-actions: 0.0.0-next-20250404095409(typescript@5.8.2)
-      applesauce-content: 0.0.0-next-20250404095409(typescript@5.8.2)
-      applesauce-core: 0.0.0-next-20250404095409(typescript@5.8.2)
-      applesauce-factory: 0.0.0-next-20250404095409(typescript@5.8.2)
-      nostr-tools: 2.12.0(typescript@5.8.2)
+      applesauce-accounts: 0.0.0-next-20250404095409(typescript@5.8.3)
+      applesauce-actions: 0.0.0-next-20250404095409(typescript@5.8.3)
+      applesauce-content: 0.0.0-next-20250404095409(typescript@5.8.3)
+      applesauce-core: 0.0.0-next-20250404095409(typescript@5.8.3)
+      applesauce-factory: 0.0.0-next-20250404095409(typescript@5.8.3)
+      nostr-tools: 2.12.0(typescript@5.8.3)
       observable-hooks: 4.2.4(react-dom@19.1.0(react@19.1.0))(react@18.3.1)(rxjs@7.8.2)
       react: 18.3.1
       rxjs: 7.8.2
@@ -8582,39 +8582,39 @@ snapshots:
       - supports-color
       - typescript
 
-  applesauce-relay@0.0.0-next-20250404095409(typescript@5.8.2):
+  applesauce-relay@0.0.0-next-20250404095409(typescript@5.8.3):
     dependencies:
       '@noble/hashes': 1.7.1
-      applesauce-core: 0.0.0-next-20250404095409(typescript@5.8.2)
+      applesauce-core: 0.0.0-next-20250404095409(typescript@5.8.3)
       nanoid: 5.1.5
-      nostr-tools: 2.12.0(typescript@5.8.2)
+      nostr-tools: 2.12.0(typescript@5.8.3)
       rxjs: 7.8.2
     transitivePeerDependencies:
       - supports-color
       - typescript
 
-  applesauce-signers@0.0.0-next-20250404095409(typescript@5.8.2):
+  applesauce-signers@0.0.0-next-20250404095409(typescript@5.8.3):
     dependencies:
       '@noble/hashes': 1.7.1
       '@noble/secp256k1': 1.7.1
       '@scure/base': 1.2.4
-      applesauce-core: 0.0.0-next-20250404095409(typescript@5.8.2)
+      applesauce-core: 0.0.0-next-20250404095409(typescript@5.8.3)
       debug: 4.4.0
       nanoid: 5.1.5
-      nostr-tools: 2.12.0(typescript@5.8.2)
+      nostr-tools: 2.12.0(typescript@5.8.3)
     transitivePeerDependencies:
       - supports-color
       - typescript
 
-  applesauce-wallet@0.0.0-next-20250404095409(typescript@5.8.2):
+  applesauce-wallet@0.0.0-next-20250404095409(typescript@5.8.3):
     dependencies:
       '@cashu/cashu-ts': 2.0.0-rc1
       '@gandlaf21/bc-ur': 1.1.12
       '@noble/hashes': 1.7.1
-      applesauce-actions: 0.0.0-next-20250404095409(typescript@5.8.2)
-      applesauce-core: 0.0.0-next-20250404095409(typescript@5.8.2)
-      applesauce-factory: 0.0.0-next-20250404095409(typescript@5.8.2)
-      nostr-tools: 2.12.0(typescript@5.8.2)
+      applesauce-actions: 0.0.0-next-20250404095409(typescript@5.8.3)
+      applesauce-core: 0.0.0-next-20250404095409(typescript@5.8.3)
+      applesauce-factory: 0.0.0-next-20250404095409(typescript@5.8.3)
+      nostr-tools: 2.12.0(typescript@5.8.3)
       rxjs: 7.8.2
     transitivePeerDependencies:
       - supports-color
@@ -8836,7 +8836,7 @@ snapshots:
 
   browserslist@4.24.4:
     dependencies:
-      caniuse-lite: 1.0.30001710
+      caniuse-lite: 1.0.30001711
       electron-to-chromium: 1.5.132
       node-releases: 2.0.19
       update-browserslist-db: 1.1.3(browserslist@4.24.4)
@@ -8886,7 +8886,7 @@ snapshots:
 
   camelcase@8.0.0: {}
 
-  caniuse-lite@1.0.30001710: {}
+  caniuse-lite@1.0.30001711: {}
 
   canvas-color-tracker@1.3.2:
     dependencies:
@@ -10164,7 +10164,7 @@ snapshots:
 
   hexoid@2.0.0: {}
 
-  hls.js@1.6.0: {}
+  hls.js@1.6.1: {}
 
   hoist-non-react-statics@3.3.2:
     dependencies:
@@ -11226,11 +11226,11 @@ snapshots:
       semver: 7.7.1
       validate-npm-package-license: 3.0.4
 
-  nostr-idb@2.2.0(typescript@5.8.2):
+  nostr-idb@2.2.0(typescript@5.8.3):
     dependencies:
       debug: 4.4.0
       idb: 8.0.2
-      nostr-tools: 2.12.0(typescript@5.8.2)
+      nostr-tools: 2.12.0(typescript@5.8.3)
     transitivePeerDependencies:
       - supports-color
       - typescript
@@ -11239,7 +11239,7 @@ snapshots:
     dependencies:
       '@capacitor/core': 7.2.0
 
-  nostr-tools@2.12.0(typescript@5.8.2):
+  nostr-tools@2.12.0(typescript@5.8.3):
     dependencies:
       '@noble/ciphers': 0.5.3
       '@noble/curves': 1.2.0
@@ -11249,9 +11249,9 @@ snapshots:
       '@scure/bip39': 1.2.1
     optionalDependencies:
       nostr-wasm: 0.1.0
-      typescript: 5.8.2
+      typescript: 5.8.3
 
-  nostr-tools@2.9.4(typescript@5.8.2):
+  nostr-tools@2.9.4(typescript@5.8.3):
     dependencies:
       '@noble/ciphers': 0.5.3
       '@noble/curves': 1.2.0
@@ -11261,7 +11261,7 @@ snapshots:
       '@scure/bip39': 1.2.1
     optionalDependencies:
       nostr-wasm: 0.1.0
-      typescript: 5.8.2
+      typescript: 5.8.3
 
   nostr-typedef@0.11.0: {}
 
@@ -12596,7 +12596,7 @@ snapshots:
     dependencies:
       three: 0.170.0
 
-  three-stdlib@2.35.14(three@0.170.0):
+  three-stdlib@2.35.15(three@0.170.0):
     dependencies:
       '@types/draco3d': 1.4.10
       '@types/offscreencanvas': 2019.7.3
@@ -12662,7 +12662,7 @@ snapshots:
 
   ts-easing@0.2.0: {}
 
-  ts-node@10.9.2(@types/node@22.14.0)(typescript@5.8.2):
+  ts-node@10.9.2(@types/node@22.14.0)(typescript@5.8.3):
     dependencies:
       '@cspotcode/source-map-support': 0.8.1
       '@tsconfig/node10': 1.0.11
@@ -12676,13 +12676,13 @@ snapshots:
       create-require: 1.1.1
       diff: 4.0.2
       make-error: 1.3.6
-      typescript: 5.8.2
+      typescript: 5.8.3
       v8-compile-cache-lib: 3.0.1
       yn: 3.1.1
 
-  tsconfck@3.1.5(typescript@5.8.2):
+  tsconfck@3.1.5(typescript@5.8.3):
     optionalDependencies:
-      typescript: 5.8.2
+      typescript: 5.8.3
 
   tslib@2.4.0: {}
 
@@ -12740,7 +12740,7 @@ snapshots:
       possible-typed-array-names: 1.1.0
       reflect.getprototypeof: 1.0.10
 
-  typescript@5.8.2: {}
+  typescript@5.8.3: {}
 
   typo-js@1.2.5: {}
 
@@ -12895,11 +12895,11 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  vite-tsconfig-paths@5.1.4(typescript@5.8.2)(vite@5.4.17(@types/node@22.14.0)(terser@5.39.0)):
+  vite-tsconfig-paths@5.1.4(typescript@5.8.3)(vite@5.4.17(@types/node@22.14.0)(terser@5.39.0)):
     dependencies:
       debug: 4.4.0
       globrex: 0.1.2
-      tsconfck: 3.1.5(typescript@5.8.2)
+      tsconfck: 3.1.5(typescript@5.8.3)
     optionalDependencies:
       vite: 5.4.17(@types/node@22.14.0)(terser@5.39.0)
     transitivePeerDependencies:
