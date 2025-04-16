@@ -8,7 +8,6 @@ import {
   Code,
   Switch,
   Button,
-  Heading,
   FormLabel,
   Text,
 } from "@chakra-ui/react";
@@ -16,7 +15,6 @@ import { useObservable } from "applesauce-react/hooks";
 
 import { safeUrl } from "../../../helpers/parse";
 import { createRequestProxyUrl } from "../../../helpers/request";
-import VerticalPageLayout from "../../../components/vertical-page-layout";
 import useSettingsForm from "../use-settings-form";
 import localSettings from "../../../services/local-settings";
 import DefaultAuthModeSelect from "../../../components/settings/default-auth-mode-select";
@@ -38,6 +36,7 @@ async function validateRequestProxy(url?: string) {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 2000);
     const res = await fetch(createRequestProxyUrl("https://example.com", url), { signal: controller.signal });
+    clearTimeout(timeoutId);
     return res.ok || "Cant reach instance";
   } catch (e) {
     return "Cant reach instance";

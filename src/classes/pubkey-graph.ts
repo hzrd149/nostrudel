@@ -45,7 +45,7 @@ export class PubkeyGraph extends EventEmitter<EventMap> {
     }
 
     // sort keys
-    for (const [d, keys] of Object.entries(dist)) {
+    for (const [_d, keys] of Object.entries(dist)) {
       keys.sort((a, b) => (b[1] ?? 0) - (a[1] ?? 0));
     }
 

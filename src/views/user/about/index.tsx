@@ -20,7 +20,6 @@ import {
 import { nip19 } from "nostr-tools";
 import { ChatIcon } from "@chakra-ui/icons";
 import { parseLNURLOrAddress, parseNIP05Address } from "applesauce-core/helpers";
-import { IdentityStatus } from "applesauce-loaders/helpers/dns-identity";
 
 import { truncatedId } from "../../../helpers/nostr/event";
 import { useAdditionalRelayContext } from "../../../providers/local/additional-relay-context";

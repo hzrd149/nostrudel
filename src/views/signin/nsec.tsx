@@ -31,7 +31,7 @@ import { PasswordAccount, SimpleAccount } from "applesauce-accounts/accounts";
 import { IAccount } from "applesauce-accounts";
 import { PasswordSigner } from "applesauce-signers";
 
-export default function LoginNsecView() {
+export default function SigninPrivateKeyView() {
   const navigate = useNavigate();
   const manager = useAccountManager();
 
@@ -139,7 +139,7 @@ export default function LoginNsecView() {
           Generate New
         </Button>
         <Button colorScheme="primary" type="submit">
-          Login
+          Signin
         </Button>
       </Flex>
     </Flex>

@@ -1,4 +1,3 @@
-import { useCallback, useState } from "react";
 import {
   Button,
   Flex,
@@ -18,15 +17,15 @@ import {
   Spinner,
   Text,
 } from "@chakra-ui/react";
-import { useInterval } from "react-use";
 import { parseBolt11 } from "applesauce-core/helpers";
+import { useCallback, useState } from "react";
+import { useInterval } from "react-use";
 
+import { V4VStopIcon, V4VStreamIcon } from "../../../components/icons";
 import useUserLNURLMetadata from "../../../hooks/use-user-lnurl-metadata";
-import { V4VStreamIcon, V4VStopIcon } from "../../../components/icons";
 
 export default function StreamSatsPerMinute({ pubkey, ...props }: { pubkey: string } & FlexProps) {
   const [enabled, setEnabled] = useState(false);
-  const [paying, setPaying] = useState(false);
   const [amountStr, setAmountStr] = useState("4");
 
   const { metadata } = useUserLNURLMetadata(pubkey);
@@ -37,7 +36,6 @@ export default function StreamSatsPerMinute({ pubkey, ...props }: { pubkey: stri
   const sendSats = useCallback(async () => {
     if (isEnabled && window.webln) {
       try {
-        setPaying(true);
         if (!window.webln.enabled) await window.webln.enable();
 
         const amountMsats = parseInt(amountStr) * 1000;
@@ -57,9 +55,8 @@ export default function StreamSatsPerMinute({ pubkey, ...props }: { pubkey: stri
       } catch (e) {
         setEnabled(false);
       }
-      setPaying(false);
     }
-  }, [setPaying, metadata?.callback, enabled, isEnabled]);
+  }, [metadata?.callback, enabled, isEnabled]);
 
   useInterval(sendSats, 1000 * 60);
 

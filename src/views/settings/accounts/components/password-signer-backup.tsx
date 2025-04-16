@@ -18,8 +18,6 @@ import EyeOff from "../../../../components/icons/eye-off";
 import Eye from "../../../../components/icons/eye";
 import { CopyIconButton } from "../../../../components/copy-icon-button";
 
-const fake = Array(48).fill("x");
-
 export default function PasswordSignerBackup() {
   const toast = useToast();
   const account = useActiveAccount()!;

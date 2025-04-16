@@ -110,7 +110,7 @@ export default class WebRtcRelayServer extends EventEmitter<EventMap> {
   }
 
   handleDisconnect() {
-    for (const [id, sub] of this.subscriptions) sub.close();
+    for (const [_id, sub] of this.subscriptions) sub.close();
     this.subscriptions.clear();
   }
 

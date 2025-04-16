@@ -1,11 +1,10 @@
-import { Flex, Spacer, Button, Text, Card, CardBody, useToast, useDisclosure, ButtonGroup } from "@chakra-ui/react";
+import { Flex, Button, Text, Card, CardBody, useToast } from "@chakra-ui/react";
 import { useLocation, Navigate, useNavigate } from "react-router-dom";
 import { useActionHub } from "applesauce-react/hooks";
 import { getDecodedToken, Token } from "@cashu/cashu-ts";
 import { ReceiveToken } from "applesauce-wallet/actions";
 
 import SimpleView from "../../../components/layout/presets/simple-view";
-import RouterLink from "../../../components/router-link";
 import CashuMintFavicon from "../../../components/cashu/cashu-mint-favicon";
 import CashuMintName from "../../../components/cashu/cashu-mint-name";
 import useAsyncAction from "../../../hooks/use-async-action";
@@ -16,7 +15,6 @@ export default function WalletReceiveTokenView() {
   const toast = useToast();
   const actions = useActionHub();
   const location = useLocation();
-  const more = useDisclosure();
 
   const token: string = location.state?.token;
   if (!token) return <Navigate to="/wallet" />;
@@ -46,7 +44,7 @@ export default function WalletReceiveTokenView() {
     }
   }, [decoded, originalAmount, actions, navigate, toast]);
 
-  const swap = useAsyncAction(async () => {}, [decoded, originalAmount, actions, navigate, toast]);
+  // const swap = useAsyncAction(async () => {}, [decoded, originalAmount, actions, navigate, toast]);
 
   return (
     <SimpleView title="Receive Token" maxW="xl" center>

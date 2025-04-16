@@ -56,7 +56,7 @@ export default function NewMediaPostView() {
     formState,
   );
 
-  const [loading, setLoading] = useState("");
+  const [_loading, setLoading] = useState("");
   const submit = handleSubmit(async (values) => {
     try {
       const pictures: { url: string; alt?: string }[] = [];

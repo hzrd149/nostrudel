@@ -8,7 +8,6 @@ import {
   FormControl,
   FormLabel,
   Heading,
-  Input,
   NumberDecrementStepper,
   NumberIncrementStepper,
   NumberInput,

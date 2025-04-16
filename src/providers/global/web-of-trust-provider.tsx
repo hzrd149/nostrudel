@@ -1,13 +1,12 @@
-import { PropsWithChildren, createContext, useContext, useEffect, useMemo } from "react";
-import { NostrEvent, kinds } from "nostr-tools";
 import { useActiveAccount } from "applesauce-react/hooks";
-import _throttle from "lodash.throttle";
+import { NostrEvent } from "nostr-tools";
+import { PropsWithChildren, createContext, useContext, useEffect, useMemo } from "react";
 
-import { getPubkeysFromList } from "../../helpers/nostr/lists";
 import { PubkeyGraph } from "../../classes/pubkey-graph";
-import replaceableEventLoader from "../../services/replaceable-loader";
-import { COMMON_CONTACT_RELAYS } from "../../const";
+import { DEFAULT_LOOKUP_RELAYS } from "../../const";
+import { getPubkeysFromList } from "../../helpers/nostr/lists";
 import { eventStore } from "../../services/event-store";
+import replaceableEventLoader from "../../services/replaceable-loader";
 
 export function loadSocialGraph(
   graph: PubkeyGraph,
@@ -41,7 +40,7 @@ export function loadSocialGraph(
     handleEvent(contacts);
   } else {
     replaceableEventLoader.next({
-      relays: relay ? [relay, ...COMMON_CONTACT_RELAYS] : COMMON_CONTACT_RELAYS,
+      relays: relay ? [relay, ...DEFAULT_LOOKUP_RELAYS] : DEFAULT_LOOKUP_RELAYS,
       kind,
       pubkey,
     });

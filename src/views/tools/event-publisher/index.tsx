@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import {
   Button,
   ButtonGroup,
@@ -21,24 +20,23 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { NostrEvent, UnsignedEvent, verifyEvent } from "nostr-tools";
+import { useEffect, useState } from "react";
 
-import VerticalPageLayout from "../../../components/vertical-page-layout";
-import BackButton from "../../../components/router/back-button";
-import Play from "../../../components/icons/play";
-import EventJsonEditor from "./components/json-editor";
-import { getVariables, LooseEventTemplate, processEvent, Variable } from "./process";
-import { EditIcon, WritingIcon } from "../../../components/icons";
-import { useSigningContext } from "../../../providers/global/signing-provider";
-import { usePublishEvent } from "../../../providers/global/publish-provider";
 import { useActiveAccount } from "applesauce-react/hooks";
-import UserAvatar from "../../../components/user/user-avatar";
-import { RelayUrlInput } from "../../../components/relay-url-input";
-import { TEMPLATES } from "./templates";
-import RequireActiveAccount from "../../../components/router/require-active-account";
-import VariableEditor from "./components/variable-editor";
-import EventTemplateEditor from "./components/event-template-editor";
-import useRouteStateValue from "../../../hooks/use-route-state-value";
+import { EditIcon, WritingIcon } from "../../../components/icons";
+import Play from "../../../components/icons/play";
 import SimpleView from "../../../components/layout/presets/simple-view";
+import { RelayUrlInput } from "../../../components/relay-url-input";
+import RequireActiveAccount from "../../../components/router/require-active-account";
+import UserAvatar from "../../../components/user/user-avatar";
+import useRouteStateValue from "../../../hooks/use-route-state-value";
+import { usePublishEvent } from "../../../providers/global/publish-provider";
+import { useSigningContext } from "../../../providers/global/signing-provider";
+import EventTemplateEditor from "./components/event-template-editor";
+import EventJsonEditor from "./components/json-editor";
+import VariableEditor from "./components/variable-editor";
+import { getVariables, LooseEventTemplate, processEvent, Variable } from "./process";
+import { TEMPLATES } from "./templates";
 
 function EventPublisherPage({ initDraft }: { initDraft?: LooseEventTemplate }) {
   const toast = useToast();

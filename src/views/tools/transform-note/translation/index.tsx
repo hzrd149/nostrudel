@@ -53,7 +53,7 @@ export function NoteTranslationsPage({ note }: { note: NostrEvent }) {
     await publish("Request Translation", draft);
   }, [publish, note, readRelays, lang]);
 
-  const { loader, timeline: events } = useTimelineLoader(
+  const { timeline: events } = useTimelineLoader(
     `${getEventUID(note)}-translations`,
     readRelays,
     [

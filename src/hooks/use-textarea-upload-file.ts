@@ -1,7 +1,7 @@
-import { ChangeEventHandler, ClipboardEventHandler, MutableRefObject, useCallback, useState } from "react";
+import { ChangeEventHandler, ClipboardEventHandler, MutableRefObject, useCallback } from "react";
 
-import { RefType } from "../components/magic-textarea";
 import { UseFormGetValues, UseFormSetValue } from "react-hook-form";
+import { RefType } from "../components/magic-textarea";
 import insertTextIntoMagicTextarea from "../helpers/magic-textarea";
 import useUploadFile from "./use-upload-file";
 
@@ -36,12 +36,14 @@ export function useTextAreaInsertTextWithForm(
 export default function useTextAreaUploadFile(insertText: (url: string) => void) {
   const { uploadFile, uploading } = useUploadFile();
 
-  const privateUploadFile = useCallback(async (file: File) => {
-    const imageUrl = await uploadFile(file);
+  const privateUploadFile = useCallback(
+    async (file: File) => {
+      const imageUrl = await uploadFile(file);
 
-    if (imageUrl)
-      insertText(imageUrl);
-  }, [uploadFile])
+      if (imageUrl) insertText(imageUrl);
+    },
+    [uploadFile],
+  );
 
   const onFileInputChange = useCallback<ChangeEventHandler<HTMLInputElement>>(
     (e) => {

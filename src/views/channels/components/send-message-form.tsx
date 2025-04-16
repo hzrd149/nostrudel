@@ -25,7 +25,7 @@ export default function ChannelMessageForm({
   const factory = useEventFactory();
 
   const [loadingMessage, setLoadingMessage] = useState("");
-  const { getValues, setValue, watch, handleSubmit, formState, reset } = useForm({
+  const { getValues, setValue, watch, handleSubmit, reset } = useForm({
     defaultValues: {
       content: "",
     },

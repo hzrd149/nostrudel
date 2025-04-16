@@ -17,12 +17,9 @@ import Image01 from "../../components/icons/image-01";
 import UserAvatar from "../../components/user/user-avatar";
 import VersionButton from "../../components/version-button";
 import SimpleNavItem from "../../components/layout/presets/simple-nav-item";
-import Bell01 from "../../components/icons/bell-01";
-import Share07 from "../../components/icons/share-07";
 import Database01 from "../../components/icons/database-01";
 import Mail02 from "../../components/icons/mail-02";
 import SimpleParentView from "../../components/layout/presets/simple-parent-view";
-import useBakery from "../../hooks/use-bakery";
 import CheckCircleBroken from "../../components/icons/check-circle-broken";
 
 function DividerHeader({ title }: { title: string }) {
@@ -39,7 +36,6 @@ function DividerHeader({ title }: { title: string }) {
 
 export default function SettingsView() {
   const account = useActiveAccount();
-  const bakery = useBakery();
 
   return (
     <SimpleParentView title="Settings" path="/settings">
@@ -91,27 +87,6 @@ export default function SettingsView() {
       <SimpleNavItem to="/relays/cache/database" leftIcon={<DatabaseIcon boxSize={5} />}>
         Database Tools
       </SimpleNavItem>
-
-      {bakery ? (
-        <>
-          <DividerHeader title="Bakery" />
-          <SimpleNavItem to="/settings/bakery">General</SimpleNavItem>
-          <SimpleNavItem to="/settings/bakery/notifications" leftIcon={<Bell01 boxSize={5} />}>
-            Notifications
-          </SimpleNavItem>
-          <SimpleNavItem to="/settings/bakery/network" leftIcon={<Share07 boxSize={5} />}>
-            Network
-          </SimpleNavItem>
-          <SimpleNavItem to="/settings/bakery/logs" leftIcon={<Database01 />}>
-            Service Logs
-          </SimpleNavItem>
-        </>
-      ) : (
-        <>
-          {/* <DividerHeader title="bakery" />
-            <SimpleNavItem to="/settings/bakery/connect">Connect</SimpleNavItem> */}
-        </>
-      )}
 
       <Flex alignItems="center">
         <Link isExternal href="https://github.com/hzrd149/nostrudel">

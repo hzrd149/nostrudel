@@ -1,12 +1,10 @@
-import { useCallback } from "react";
 import { kinds } from "nostr-tools";
-import { useStoreQuery } from "applesauce-react/hooks";
-import { Queries } from "applesauce-core";
+import { useCallback } from "react";
 
+import { truncateId } from "../helpers/string";
+import { NostrEvent, isRTag } from "../types/nostr-event";
 import { useReadRelays } from "./use-client-relays";
 import useTimelineLoader from "./use-timeline-loader";
-import { NostrEvent, isRTag } from "../types/nostr-event";
-import { truncateId } from "../helpers/string";
 
 export default function useUserRelaySets(pubkey?: string, additionalRelays?: Iterable<string>) {
   const readRelays = useReadRelays(additionalRelays);

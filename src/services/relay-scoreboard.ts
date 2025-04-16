@@ -16,48 +16,6 @@ interface RelayMeasure {
   prune(cutOff: Date): this;
 }
 
-class IncidentMeasure implements RelayMeasure, PersistentMeasure {
-  relay: string;
-  private incidents: Date[] = [];
-
-  constructor(relay: string) {
-    this.relay = relay;
-  }
-
-  addIncident(date: Date = new Date()) {
-    this.incidents.unshift(date);
-  }
-  getCount(since?: Date) {
-    const points = since ? this.incidents.filter((d) => d > since) : this.incidents;
-    return points.length;
-  }
-
-  reset() {
-    this.incidents = [];
-    return this;
-  }
-  prune(cutOff: Date): this {
-    while (true) {
-      const last = this.incidents.pop();
-      if (!last) break;
-      if (last >= cutOff) {
-        this.incidents.push(last);
-        break;
-      }
-    }
-    return this;
-  }
-
-  load(data: any) {
-    if (!Array.isArray(data)) return this;
-    this.incidents = data.sort();
-    return this;
-  }
-  save() {
-    return this.incidents;
-  }
-}
-
 class TimeMeasure implements RelayMeasure, PersistentMeasure {
   relay: string;
   private measures: [number, Date][] = [];
@@ -125,15 +83,12 @@ class RelayScoreboardService {
   relayEjectTime = new SuperMap<string, TimeMeasure>((relay) => new TimeMeasure(relay));
   /** the time it takes to connect to the relay */
   relayConnectionTime = new SuperMap<string, TimeMeasure>((relay) => new TimeMeasure(relay));
-  /** the number of times the connection has timed out */
-  // relayTimeouts = new SuperMap<string, IncidentMeasure>((relay) => new IncidentMeasure(relay));
 
   prune() {
     const cutOff = dayjs().subtract(1, "week").toDate();
-    for (const [relay, measure] of this.relayResponseTimes) measure.prune(cutOff);
-    for (const [relay, measure] of this.relayEjectTime) measure.prune(cutOff);
-    for (const [relay, measure] of this.relayConnectionTime) measure.prune(cutOff);
-    // for (const [relay, measure] of this.relayTimeouts) measure.prune(cutOff);
+    for (const [_relay, measure] of this.relayResponseTimes) measure.prune(cutOff);
+    for (const [_relay, measure] of this.relayEjectTime) measure.prune(cutOff);
+    for (const [_relay, measure] of this.relayConnectionTime) measure.prune(cutOff);
   }
 
   getAverageResponseTime(relay: string) {
@@ -214,9 +169,9 @@ class RelayScoreboardService {
 
   private getRelays() {
     const relays = new Set<string>();
-    for (const [relay, measure] of this.relayResponseTimes) relays.add(relay);
-    for (const [relay, measure] of this.relayEjectTime) relays.add(relay);
-    for (const [relay, measure] of this.relayConnectionTime) relays.add(relay);
+    for (const [relay, _measure] of this.relayResponseTimes) relays.add(relay);
+    for (const [relay, _measure] of this.relayEjectTime) relays.add(relay);
+    for (const [relay, _measure] of this.relayConnectionTime) relays.add(relay);
     // for (const [relay, measure] of this.relayTimeouts) relays.add(relay);
     return Array.from(relays);
   }

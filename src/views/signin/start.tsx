@@ -1,43 +1,28 @@
-import { lazy, useState } from "react";
-import {
-  Box,
-  Button,
-  ButtonGroup,
-  Card,
-  Divider,
-  Flex,
-  IconButton,
-  Link,
-  Spinner,
-  Text,
-  useToast,
-} from "@chakra-ui/react";
+import { lazy } from "react";
+import { Box, Button, ButtonGroup, Card, Divider, Flex, IconButton, Link, Text } from "@chakra-ui/react";
 import { Link as RouterLink, useLocation } from "react-router-dom";
-import { AmberClipboardAccount, ExtensionAccount, SerialPortAccount } from "applesauce-accounts/accounts";
-import { AmberClipboardSigner, ExtensionSigner, SerialPortSigner } from "applesauce-signers";
+import { ExtensionAccount, SerialPortAccount } from "applesauce-accounts/accounts";
+import { ExtensionSigner, SerialPortSigner } from "applesauce-signers";
 import { useAccountManager, useAccounts } from "applesauce-react/hooks";
+import { CloseIcon } from "@chakra-ui/icons";
 
 import Key01 from "../../components/icons/key-01";
 import Diamond01 from "../../components/icons/diamond-01";
 import UsbFlashDrive from "../../components/icons/usb-flash-drive";
 import HelpCircle from "../../components/icons/help-circle";
 
-import { CAP_IS_ANDROID, CAP_IS_WEB } from "../../env";
+import { CAP_IS_ANDROID, IS_WEB_ANDROID } from "../../env";
 import { AtIcon } from "../../components/icons";
 import Package from "../../components/icons/package";
 import Eye from "../../components/icons/eye";
 import useAsyncAction from "../../hooks/use-async-action";
 import UserAvatar from "../../components/user/user-avatar";
 import UserName from "../../components/user/user-name";
-import UserDnsIdentity from "../../components/user/user-dns-identity";
-import { CloseIcon } from "@chakra-ui/icons";
 import AccountTypeBadge from "../../components/accounts/account-info-badge";
 const AndroidNativeSigners = lazy(() => import("./native"));
 
-export default function LoginStartView() {
+export default function SigninStartView() {
   const location = useLocation();
-  const toast = useToast();
-  const [loading, setLoading] = useState(false);
   const manager = useAccountManager();
   const accounts = useAccounts();
 
@@ -58,14 +43,6 @@ export default function LoginStartView() {
     const signer = new SerialPortSigner();
     const pubkey = await signer.getPublicKey();
     const account = new SerialPortAccount(pubkey, signer);
-    manager.addAccount(account);
-    manager.setActive(account);
-  });
-
-  const amber = useAsyncAction(async () => {
-    const signer = new AmberClipboardSigner();
-    const pubkey = await signer.getPublicKey();
-    const account = new AmberClipboardAccount(pubkey, signer);
     manager.addAccount(account);
     manager.setActive(account);
   });
@@ -108,9 +85,9 @@ export default function LoginStartView() {
           />
         </ButtonGroup>
       )}
-      {CAP_IS_WEB && AmberClipboardSigner.SUPPORTED && (
+      {IS_WEB_ANDROID && (
         <ButtonGroup colorScheme="orange" w="full">
-          <Button onClick={amber.run} isLoading={amber.loading} leftIcon={<Diamond01 boxSize={6} />} flex={1}>
+          <Button as={RouterLink} to="/signin/connect/signer" leftIcon={<Diamond01 boxSize={6} />} flex={1}>
             Use Amber
           </Button>
           <IconButton
@@ -135,7 +112,7 @@ export default function LoginStartView() {
           h="auto"
           p="4"
           as={RouterLink}
-          to="./nostr-connect"
+          to="./connect"
           state={location.state}
           variant="outline"
         >

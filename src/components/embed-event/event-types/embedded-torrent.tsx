@@ -1,4 +1,3 @@
-import { MouseEventHandler, useCallback } from "react";
 import {
   Button,
   Card,
@@ -14,19 +13,18 @@ import {
   Tag,
   Text,
 } from "@chakra-ui/react";
+import { MouseEventHandler, useCallback } from "react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
-import { useObservable } from "applesauce-react/hooks";
 
-import UserAvatarLink from "../../user/user-avatar-link";
-import UserLink from "../../user/user-link";
-import { NostrEvent } from "../../../types/nostr-event";
-import Timestamp from "../../timestamp";
-import Magnet from "../../icons/magnet";
 import { getTorrentMagnetLink, getTorrentSize, getTorrentTitle } from "../../../helpers/nostr/torrents";
 import { formatBytes } from "../../../helpers/number";
-import HoverLinkOverlay from "../../hover-link-overlay";
 import { getSharableEventAddress } from "../../../services/relay-hints";
-import localSettings from "../../../services/local-settings";
+import { NostrEvent } from "../../../types/nostr-event";
+import HoverLinkOverlay from "../../hover-link-overlay";
+import Magnet from "../../icons/magnet";
+import Timestamp from "../../timestamp";
+import UserAvatarLink from "../../user/user-avatar-link";
+import UserLink from "../../user/user-link";
 
 export default function EmbeddedTorrent({ torrent, ...props }: Omit<CardProps, "children"> & { torrent: NostrEvent }) {
   const navigate = useNavigate();

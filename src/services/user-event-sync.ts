@@ -4,7 +4,7 @@ import { combineLatest, distinct } from "rxjs";
 import { USER_BLOSSOM_SERVER_LIST_KIND } from "blossom-client-sdk";
 import { createRxOneshotReq } from "rx-nostr";
 
-import { COMMON_CONTACT_RELAYS } from "../const";
+import { DEFAULT_LOOKUP_RELAYS } from "../const";
 import { logger } from "../helpers/debug";
 import replaceableEventLoader from "./replaceable-loader";
 import { eventStore, queryStore } from "./event-store";
@@ -22,7 +22,7 @@ function downloadEvents(account: IAccount, relays: string[]) {
   };
 
   log("Loading outboxes");
-  requestReplaceable([...relays, ...COMMON_CONTACT_RELAYS], kinds.RelayList);
+  requestReplaceable([...relays, ...DEFAULT_LOOKUP_RELAYS], kinds.RelayList);
 
   const mailboxesSub = queryStore.mailboxes(account.pubkey).subscribe((mailboxes) => {
     log("Loading user information");
@@ -33,7 +33,7 @@ function downloadEvents(account: IAccount, relays: string[]) {
 
     log("Loading contacts list");
     replaceableEventLoader.next({
-      relays: [...localSettings.readRelays.value, ...COMMON_CONTACT_RELAYS],
+      relays: [...localSettings.readRelays.value, ...DEFAULT_LOOKUP_RELAYS],
       kind: kinds.Contacts,
       pubkey: account.pubkey,
       force: true,

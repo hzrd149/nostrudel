@@ -12,29 +12,28 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
-import { NostrEvent } from "nostr-tools";
 import { getTagValue } from "applesauce-core/helpers";
+import { NostrEvent } from "nostr-tools";
 
-import VerticalPageLayout from "../../../components/vertical-page-layout";
-import { ErrorBoundary } from "../../../components/error-boundary";
-import useSingleEvent from "../../../hooks/use-single-event";
-import useParamsEventPointer from "../../../hooks/use-params-event-pointer";
-import DebugEventButton from "../../../components/debug-modal/debug-event-button";
-import EventQuoteButton from "../../../components/note/event-quote-button";
-import BackButton from "../../../components/router/back-button";
-import FilePreview from "./preview";
-import { TrustProvider } from "../../../providers/local/trust-provider";
 import GenericCommentForm from "../../../components/comment/generic-comment-form";
 import { GenericComments } from "../../../components/comment/generic-comments";
+import { ErrorBoundary } from "../../../components/error-boundary";
 import { ThreadIcon } from "../../../components/icons";
 import Magnet from "../../../components/icons/magnet";
-import FileDownloadButton from "../components/download-button";
-import EventZapButton from "../../../components/zap/event-zap-button";
-import NoteReactions from "../../../components/note/timeline-note/components/note-reactions";
-import FileMenu from "../components/file-menu";
+import EventQuoteButton from "../../../components/note/event-quote-button";
 import EventShareButton from "../../../components/note/timeline-note/components/event-share-button";
+import NoteReactions from "../../../components/note/timeline-note/components/note-reactions";
+import BackButton from "../../../components/router/back-button";
+import VerticalPageLayout from "../../../components/vertical-page-layout";
+import EventZapButton from "../../../components/zap/event-zap-button";
 import { formatBytes } from "../../../helpers/number";
 import useMaxPageWidth from "../../../hooks/use-max-page-width";
+import useParamsEventPointer from "../../../hooks/use-params-event-pointer";
+import useSingleEvent from "../../../hooks/use-single-event";
+import { TrustProvider } from "../../../providers/local/trust-provider";
+import FileDownloadButton from "../components/download-button";
+import FileMenu from "../components/file-menu";
+import FilePreview from "./preview";
 
 function FileDetailsPage({ file }: { file: NostrEvent }) {
   const name = getTagValue(file, "name") || getTagValue(file, "x");

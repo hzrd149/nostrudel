@@ -1,22 +1,18 @@
 import { IconButton, IconButtonProps, useDisclosure } from "@chakra-ui/react";
-import { useActiveAccount } from "applesauce-react/hooks";
 
-import useEventZaps from "../../hooks/use-event-zaps";
-import { NostrEvent } from "../../types/nostr-event";
-import { LightningIcon } from "../icons";
-import ZapModal from "../event-zap-modal";
-import useUserLNURLMetadata from "../../hooks/use-user-lnurl-metadata";
 import { getEventUID } from "../../helpers/nostr/event";
 import { useReadRelays } from "../../hooks/use-client-relays";
+import useUserLNURLMetadata from "../../hooks/use-user-lnurl-metadata";
 import { requestZaps } from "../../services/event-zaps-loader";
+import { NostrEvent } from "../../types/nostr-event";
+import ZapModal from "../event-zap-modal";
+import { LightningIcon } from "../icons";
 
 export default function EventZapIconButton({
   event,
   ...props
 }: { event: NostrEvent } & Omit<IconButtonProps, "icon" | "onClick">) {
-  const account = useActiveAccount();
   const { metadata } = useUserLNURLMetadata(event.pubkey);
-  const zaps = useEventZaps(getEventUID(event)) ?? [];
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const readRelays = useReadRelays();

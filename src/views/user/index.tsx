@@ -1,21 +1,18 @@
-import useUserProfile from "../../hooks/use-user-profile";
+import { Flex, Heading } from "@chakra-ui/react";
+import SimpleNavItem from "../../components/layout/presets/simple-nav-item";
+import SimpleParentView from "../../components/layout/presets/simple-parent-view";
+import UserAvatar from "../../components/user/user-avatar";
+import UserDnsIdentity from "../../components/user/user-dns-identity";
+import UserName from "../../components/user/user-name";
+import { unique } from "../../helpers/array";
 import { getDisplayName } from "../../helpers/nostr/profile";
 import { useAppTitle } from "../../hooks/use-app-title";
 import { useReadRelays } from "../../hooks/use-client-relays";
-import relayScoreboardService from "../../services/relay-scoreboard";
-import { AdditionalRelayProvider } from "../../providers/local/additional-relay-context";
-import { unique } from "../../helpers/array";
 import useParamsProfilePointer from "../../hooks/use-params-pubkey-pointer";
 import useUserMailboxes from "../../hooks/use-user-mailboxes";
-import SimpleParentView from "../../components/layout/presets/simple-parent-view";
-import SimpleNavItem from "../../components/layout/presets/simple-nav-item";
-import { Box, Flex, Heading, IconButton } from "@chakra-ui/react";
-import UserAvatar from "../../components/user/user-avatar";
-import { DirectMessagesIcon } from "../../components/icons";
-import RouterLink from "../../components/router-link";
-import UserName from "../../components/user/user-name";
-import UserDnsIdentity from "../../components/user/user-dns-identity";
-import UserAboutContent from "../../components/user/user-about-content";
+import useUserProfile from "../../hooks/use-user-profile";
+import { AdditionalRelayProvider } from "../../providers/local/additional-relay-context";
+import relayScoreboardService from "../../services/relay-scoreboard";
 
 const tabs = [
   { label: "About", path: "about" },

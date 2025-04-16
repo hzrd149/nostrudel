@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import { useMount } from "react-use";
 import { Button, ButtonGroup, Flex, Heading, Progress, Text } from "@chakra-ui/react";
-import { EventTemplate, getEventHash, nip13, UnsignedEvent } from "nostr-tools";
+import { getEventHash, nip13, UnsignedEvent } from "nostr-tools";
 import CheckCircle from "../icons/check-circle";
 
 type MinerCleanup = () => void;

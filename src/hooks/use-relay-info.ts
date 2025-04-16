@@ -1,5 +1,4 @@
 import { useAsync } from "react-use";
-import { AbstractRelay } from "nostr-tools/abstract-relay";
 
 import relayInfoService from "../services/relay-info";
 

@@ -1,11 +1,10 @@
-import { memo, useEffect, useMemo } from "react";
 import { useColorMode } from "@chakra-ui/react";
-import ReactCodeMirror from "@uiw/react-codemirror";
-import { githubLight, githubDark } from "@uiw/codemirror-theme-github";
-import { jsonSchema } from "codemirror-json-schema";
-import { keymap } from "@codemirror/view";
-import _throttle from "lodash.throttle";
 import { jsonLanguage } from "@codemirror/lang-json";
+import { keymap } from "@codemirror/view";
+import { githubDark, githubLight } from "@uiw/codemirror-theme-github";
+import ReactCodeMirror from "@uiw/react-codemirror";
+import { jsonSchema } from "codemirror-json-schema";
+import { memo, useMemo } from "react";
 
 import { NostrFilterSchema } from "./schema";
 import { codeMirrorUserAutocomplete } from "./user-autocomplete";

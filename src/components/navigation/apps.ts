@@ -82,7 +82,6 @@ export const internalApps: App[] = [
     id: "pictures",
     to: "/pictures",
   },
-  // { title: "Podcasts", description: "Social podcasts", icon: Podcast, id: "podcasts", to: "/podcasts" },
   { title: "Wiki", description: "Browse wiki pages", icon: WikiIcon, id: "wiki", to: "/wiki" },
   {
     title: "Channels",

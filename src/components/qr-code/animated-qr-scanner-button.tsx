@@ -15,11 +15,9 @@ import {
 } from "@chakra-ui/react";
 import { receiveAnimated } from "applesauce-wallet/helpers/animated-qr";
 
-import { logger } from "../../helpers/debug";
 import { QrCodeIcon } from "../icons";
 
 const BarcodeScannerComponent = lazy(() => import("react-qr-barcode-scanner"));
-const log = logger.extend("QRCodeScanner");
 
 export default function AnimatedQRCodeScannerButton({
   onResult,

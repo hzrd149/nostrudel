@@ -2,7 +2,7 @@ import { Avatar, Flex, Heading } from "@chakra-ui/react";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useActiveAccount } from "applesauce-react/hooks";
 
-export default function LoginView() {
+export default function SigninView() {
   const current = useActiveAccount();
   const location = useLocation();
 

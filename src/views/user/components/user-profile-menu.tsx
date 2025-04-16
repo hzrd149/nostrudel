@@ -37,7 +37,7 @@ export const UserProfileMenu = ({
   const { openAddress } = useContext(AppHandlerContext);
   const manager = useAccountManager();
 
-  const loginAsUser = () => {
+  const signinAsUser = () => {
     const existing = manager.getAccountForPubkey(pubkey);
     if (existing) {
       manager.setActive(existing);
@@ -73,8 +73,8 @@ export const UserProfileMenu = ({
         >
           Blind spot
         </MenuItem>
-        <MenuItem icon={<SpyIcon fontSize="1.5em" />} onClick={() => loginAsUser()}>
-          Login as user
+        <MenuItem icon={<SpyIcon fontSize="1.5em" />} onClick={() => signinAsUser()}>
+          Signin as user
         </MenuItem>
         <MenuItem
           onClick={() => {

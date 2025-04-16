@@ -1,12 +1,12 @@
-import { useState } from "react";
 import { Heading, Input, SimpleGrid, Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/react";
+import { useState } from "react";
 
-import VerticalPageLayout from "../../components/vertical-page-layout";
-import AppCard from "./component/app-card";
-import useRouteSearchValue from "../../hooks/use-route-search-value";
-import useRecentIds from "../../hooks/use-recent-ids";
 import { allApps, App, externalTools, internalTools } from "../../components/navigation/apps";
+import VerticalPageLayout from "../../components/vertical-page-layout";
+import useRecentIds from "../../hooks/use-recent-ids";
+import useRouteSearchValue from "../../hooks/use-route-search-value";
 import { useBreakpointValue } from "../../providers/global/breakpoint-provider";
+import AppCard from "./component/app-card";
 
 const tabs = ["all", "tools", "3rd-party-tools"];
 
@@ -18,7 +18,6 @@ export default function OtherStuffView() {
 
   const columns = { base: 1, lg: 2, xl: 3, "2xl": 4 };
 
-  const sortByRecent = (a: App, b: App) => recentApps.indexOf(b.id) - recentApps.indexOf(a.id);
   const sortByName = (a: App, b: App) => {
     if (a.title === b.title) return 0;
     else if (a.title > b.title) return 1;

@@ -27,7 +27,7 @@ export default function WikiTopicView() {
   // remove defer versions
   sorted = sorted.filter((p) => !getPageDefer(p));
 
-  const { value: selected, setValue: setSelected, clearValue } = useRouteSearchValue("pubkey");
+  const { value: selected, setValue: setSelected } = useRouteSearchValue("pubkey");
   const selectedPage: NostrEvent | undefined = sorted.find((p) => p.pubkey === selected) || sorted[0];
 
   return (

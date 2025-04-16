@@ -1,12 +1,11 @@
-import { Code, Flex, Heading, Link, Text } from "@chakra-ui/react";
-import BackButton from "../../../components/router/back-button";
+import { Code, Flex, Link, Text } from "@chakra-ui/react";
+import { IdentityStatus } from "applesauce-loaders/helpers/dns-identity";
 import { useActiveAccount } from "applesauce-react/hooks";
-import { useUserDNSIdentity } from "../../../hooks/use-user-dns-identity";
 import { Link as RouterLink } from "react-router-dom";
 
-import RelayFavicon from "../../../components/relay-favicon";
 import SimpleView from "../../../components/layout/presets/simple-view";
-import { IdentityStatus } from "applesauce-loaders/helpers/dns-identity";
+import RelayFavicon from "../../../components/relay-favicon";
+import { useUserDNSIdentity } from "../../../hooks/use-user-dns-identity";
 
 function RelayItem({ url }: { url: string }) {
   return (

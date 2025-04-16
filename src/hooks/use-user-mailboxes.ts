@@ -2,13 +2,13 @@ import { useStoreQuery } from "applesauce-react/hooks";
 import { MailboxesQuery } from "applesauce-core/queries";
 import { kinds } from "nostr-tools";
 
-import { COMMON_CONTACT_RELAYS } from "../const";
+import { DEFAULT_LOOKUP_RELAYS } from "../const";
 import useReplaceableEvent from "./use-replaceable-event";
 
 export default function useUserMailboxes(pubkey?: string, additionalRelays?: Iterable<string>, force?: boolean) {
   useReplaceableEvent(
     pubkey && { kind: kinds.RelayList, pubkey },
-    additionalRelays ? [...additionalRelays, ...COMMON_CONTACT_RELAYS] : COMMON_CONTACT_RELAYS,
+    additionalRelays ? [...additionalRelays, ...DEFAULT_LOOKUP_RELAYS] : DEFAULT_LOOKUP_RELAYS,
     force,
   );
 

@@ -1,13 +1,12 @@
-import { decodeGroupPointer } from "applesauce-core/helpers/groups";
+import { Alert, AlertIcon, AlertTitle } from "@chakra-ui/react";
 import { Navigate, useParams } from "react-router-dom";
 import ContainedSimpleView from "../../components/layout/presets/contained-simple-view";
-import { Alert, AlertIcon, AlertTitle } from "@chakra-ui/react";
 
 export default function GroupView() {
   const { identifier } = useParams();
   if (!identifier) return <Navigate to="/groups" />;
 
-  const pointer = decodeGroupPointer(identifier);
+  // const pointer = decodeGroupPointer(identifier);
 
   return (
     <ContainedSimpleView title="Group">

@@ -1,5 +1,4 @@
 import { Button, Flex, Heading, Image, Text } from "@chakra-ui/react";
-import VerticalPageLayout from "../../components/vertical-page-layout";
 import styled from "@emotion/styled";
 import RouterLink from "../../components/router-link";
 

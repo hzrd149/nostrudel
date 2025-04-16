@@ -1,17 +1,16 @@
-import { useCallback } from "react";
 import { Table, TableContainer, Tbody, Th, Thead, Tr } from "@chakra-ui/react";
+import { useCallback } from "react";
 import { useOutletContext } from "react-router-dom";
 
+import SimpleView from "../../components/layout/presets/simple-view";
+import TimelineActionAndStatus from "../../components/timeline/timeline-action-and-status";
+import { TORRENT_KIND, validateTorrent } from "../../helpers/nostr/torrents";
+import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { useAdditionalRelayContext } from "../../providers/local/additional-relay-context";
-import TimelineActionAndStatus from "../../components/timeline/timeline-action-and-status";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
-import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
-import VerticalPageLayout from "../../components/vertical-page-layout";
-import { TORRENT_KIND, validateTorrent } from "../../helpers/nostr/torrents";
-import TorrentTableRow from "../torrents/components/torrent-table-row";
 import { NostrEvent } from "../../types/nostr-event";
-import SimpleView from "../../components/layout/presets/simple-view";
+import TorrentTableRow from "../torrents/components/torrent-table-row";
 
 export default function UserTorrentsTab() {
   const { pubkey } = useOutletContext() as { pubkey: string };

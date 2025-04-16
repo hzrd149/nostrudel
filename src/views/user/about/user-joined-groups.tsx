@@ -9,7 +9,7 @@ import RouterLink from "../../../components/router-link";
 
 export default function UserJoinedGroups({ pubkey }: { pubkey: string }) {
   const contextRelays = useAdditionalRelayContext();
-  const { list, pointers: groups } = useUserGroupsList(pubkey, contextRelays, true);
+  const { pointers: groups } = useUserGroupsList(pubkey, contextRelays, true);
   const columns = useBreakpointValue({ base: 1, lg: 2, xl: 3 }) ?? 1;
   const showAll = useDisclosure();
 

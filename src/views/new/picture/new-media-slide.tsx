@@ -1,5 +1,5 @@
 import { Flex, Text, VisuallyHiddenInput } from "@chakra-ui/react";
-import { ChangeEventHandler, useMemo, useRef } from "react";
+import { ChangeEventHandler, useRef } from "react";
 import Plus from "../../../components/icons/plus";
 
 export default function NewMediaSlide({ onSelect }: { onSelect: (files: File[]) => void }) {

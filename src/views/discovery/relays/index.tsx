@@ -19,8 +19,8 @@ import SimpleView from "../../../components/layout/presets/simple-view";
 export default function RelayDiscoveryView() {
   const showMap = useBreakpointValue({ base: false, lg: true });
 
-  const [discoveryRelay, setDiscoveryRelay] = useState("wss://relay.nostr.watch");
-  const [monitor, setMonitor] = useState("9bbbb845e5b6c831c29789900769843ab43bb5047abe697870cb50b6fc9bf923");
+  const [discoveryRelay, _setDiscoveryRelay] = useState("wss://relay.nostr.watch");
+  const [monitor, _setMonitor] = useState("9bbbb845e5b6c831c29789900769843ab43bb5047abe697870cb50b6fc9bf923");
   const [network, setNetwork] = useState("");
   const [county, setCounty] = useState("");
 

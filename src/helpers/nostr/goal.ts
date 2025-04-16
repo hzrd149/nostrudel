@@ -63,7 +63,7 @@ export function getGoalEventPointers(goal: NostrEvent) {
 }
 
 export function validateGoal(goal: NostrEvent) {
-  const amount = getGoalAmount(goal);
+  getGoalAmount(goal);
   const relays = getGoalRelays(goal);
   if (relays.length) throw new Error("zero relays");
   return true;

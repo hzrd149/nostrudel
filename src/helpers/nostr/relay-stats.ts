@@ -1,5 +1,5 @@
 import { getReplaceableIdentifier, getTagValue } from "applesauce-core/helpers";
-import { NostrEvent, isDTag } from "../../types/nostr-event";
+import { NostrEvent } from "../../types/nostr-event";
 
 export const MONITOR_METADATA_KIND = 10166;
 export const MONITOR_STATS_KIND = 30166;

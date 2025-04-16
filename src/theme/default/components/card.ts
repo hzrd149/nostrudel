@@ -4,11 +4,11 @@ import { createMultiStyleConfigHelpers, cssVar } from "@chakra-ui/styled-system"
 const { definePartsStyle, defineMultiStyleConfig } = createMultiStyleConfigHelpers(parts.keys);
 
 const $bg = cssVar("card-bg");
-const $padding = cssVar("card-padding");
-const $shadow = cssVar("card-shadow");
-const $radius = cssVar("card-radius");
-const $border = cssVar("card-border-width", "0");
-const $borderColor = cssVar("card-border-color");
+// const $padding = cssVar("card-padding");
+// const $shadow = cssVar("card-shadow");
+// const $radius = cssVar("card-radius");
+// const $border = cssVar("card-border-width", "0");
+// const $borderColor = cssVar("card-border-color");
 
 export const cardTheme = defineMultiStyleConfig({
   baseStyle: {},

@@ -16,13 +16,14 @@ import {
   SimpleGrid,
   useDisclosure,
 } from "@chakra-ui/react";
-import { PropsWithChildren, createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import dayjs from "dayjs";
-import { useInterval } from "react-use";
+import { PropsWithChildren, createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 
-import { getDisplayName } from "../../helpers/nostr/profile";
-import useUserProfile from "../../hooks/use-user-profile";
 import { useActiveAccount } from "applesauce-react/hooks";
+import { ChevronDownIcon } from "../../components/icons";
+import UserAvatar from "../../components/user/user-avatar";
+import UserLink from "../../components/user/user-link";
+import { cloneList } from "../../helpers/nostr/lists";
 import {
   createEmptyMuteList,
   getPubkeysExpiration,
@@ -30,13 +31,10 @@ import {
   muteListRemovePubkey,
   pruneExpiredPubkeys,
 } from "../../helpers/nostr/mute-list";
-import { cloneList } from "../../helpers/nostr/lists";
-import { useSigningContext } from "../global/signing-provider";
+import { getDisplayName } from "../../helpers/nostr/profile";
 import useUserMuteList from "../../hooks/use-user-mute-list";
+import useUserProfile from "../../hooks/use-user-profile";
 import { DraftNostrEvent } from "../../types/nostr-event";
-import UserAvatar from "../../components/user/user-avatar";
-import UserLink from "../../components/user/user-link";
-import { ChevronDownIcon } from "../../components/icons";
 import { usePublishEvent } from "../global/publish-provider";
 
 type MuteModalContextType = {

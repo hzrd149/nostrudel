@@ -1,4 +1,4 @@
-import { Box, Card, Flex, Link, Text } from "@chakra-ui/react";
+import { Card, Flex, Link, Text } from "@chakra-ui/react";
 import { useActiveAccount, useStoreQuery } from "applesauce-react/hooks";
 import { WalletBalanceQuery } from "applesauce-wallet/queries";
 import CashuMintFavicon from "../../../components/cashu/cashu-mint-favicon";

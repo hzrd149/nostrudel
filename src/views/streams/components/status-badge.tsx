@@ -2,7 +2,6 @@ import { Badge, BadgeProps } from "@chakra-ui/react";
 import { NostrEvent } from "nostr-tools";
 
 import { getStreamStatus } from "../../../helpers/nostr/stream";
-import { LiveStreamIcon } from "../../../components/icons";
 
 export default function StreamStatusBadge({ stream, ...props }: { stream: NostrEvent } & Omit<BadgeProps, "children">) {
   switch (getStreamStatus(stream)) {

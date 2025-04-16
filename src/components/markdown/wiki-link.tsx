@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import {
   Link,
   LinkProps,
@@ -14,17 +13,17 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
-import { NostrEvent } from "nostr-tools";
-import { ExtraProps } from "react-markdown";
 import { getEventUID } from "nostr-idb";
+import { NostrEvent } from "nostr-tools";
+import { useMemo } from "react";
+import { ExtraProps } from "react-markdown";
 import { Link as RouterLink } from "react-router-dom";
-import { useObservable } from "applesauce-react/hooks";
 
-import { useReadRelays } from "../../hooks/use-client-relays";
 import { getPageDefer, getPageSummary } from "../../helpers/nostr/wiki";
-import UserName from "../user/user-name";
-import { useWebOfTrust } from "../../providers/global/web-of-trust-provider";
+import { useReadRelays } from "../../hooks/use-client-relays";
 import useWikiPages from "../../hooks/use-wiki-pages";
+import { useWebOfTrust } from "../../providers/global/web-of-trust-provider";
+import UserName from "../user/user-name";
 
 export default function WikiLink({
   children,

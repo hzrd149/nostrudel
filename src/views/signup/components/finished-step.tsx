@@ -23,10 +23,7 @@ type TrendingApi = {
 };
 
 function About({ profile }: { profile: { content: string } }) {
-  const { value: metadata, error } = useAsync(
-    async () => JSON.parse(profile.content) as ProfileContent,
-    [profile.content],
-  );
+  const { value: metadata } = useAsync(async () => JSON.parse(profile.content) as ProfileContent, [profile.content]);
   return metadata ? <Text>{metadata.about}</Text> : null;
 }
 

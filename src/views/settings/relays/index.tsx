@@ -4,7 +4,7 @@ import { WarningIcon } from "@chakra-ui/icons";
 import { IdentityStatus } from "applesauce-loaders/helpers/dns-identity";
 import { mergeRelaySets } from "applesauce-core/helpers";
 
-import { JAPANESE_RELAYS, RECOMMENDED_READ_RELAYS, RECOMMENDED_WRITE_RELAYS } from "../../../const";
+import { RECOMMENDED_JAPANESE_RELAYS, RECOMMENDED_READ_RELAYS, RECOMMENDED_WRITE_RELAYS } from "../../../const";
 import AddRelayForm from "./add-relay-form";
 import { useReadRelays, useWriteRelays } from "../../../hooks/use-client-relays";
 import { useActiveAccount } from "applesauce-react/hooks";
@@ -129,7 +129,7 @@ export default function AppRelaysView() {
       </Heading>
       <SimpleGrid columns={{ base: 1, lg: 2, xl: 3 }} spacing="2">
         <RelaySetCard label="Popular Relays" read={RECOMMENDED_READ_RELAYS} write={RECOMMENDED_WRITE_RELAYS} />
-        <RelaySetCard label="Japanese relays" read={JAPANESE_RELAYS} write={JAPANESE_RELAYS} />
+        <RelaySetCard label="Japanese relays" read={RECOMMENDED_JAPANESE_RELAYS} write={RECOMMENDED_JAPANESE_RELAYS} />
       </SimpleGrid>
     </SimpleView>
   );

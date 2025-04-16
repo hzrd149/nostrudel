@@ -1,24 +1,22 @@
-import { useMemo } from "react";
 import { Box, ButtonGroup, Card, CardBody, CardHeader, CardProps, LinkBox, Text } from "@chakra-ui/react";
 import {
-  getPointerFromTag,
   getZapAddressPointer,
   getZapEventPointer,
   getZapPayment,
   getZapRecipient,
   getZapRequest,
-  getZapSender,
-  isAddressPointer,
+  getZapSender
 } from "applesauce-core/helpers";
 import { DecodeResult } from "nostr-tools/nip19";
+import { useMemo } from "react";
 
-import { NostrEvent } from "../../../types/nostr-event";
-import UserLink from "../../user/user-link";
-import Timestamp from "../../timestamp";
-import TextNoteContents from "../../note/timeline-note/text-note-contents";
-import UserAvatar from "../../user/user-avatar";
-import { LightningIcon } from "../../icons";
 import { humanReadableSats } from "../../../helpers/lightning";
+import { NostrEvent } from "../../../types/nostr-event";
+import { LightningIcon } from "../../icons";
+import TextNoteContents from "../../note/timeline-note/text-note-contents";
+import Timestamp from "../../timestamp";
+import UserAvatar from "../../user/user-avatar";
+import UserLink from "../../user/user-link";
 import ZapReceiptMenu from "../../zap/zap-receipt-menu";
 import { EmbedEventPointer } from "../index";
 

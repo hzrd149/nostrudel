@@ -41,7 +41,7 @@ export default function NoteTextToSpeechPage({ note }: { note: NostrEvent }) {
     await publish("Request Reading", draft);
   }, [publish, note, readRelays, lang]);
 
-  const { loader, timeline: events } = useTimelineLoader(
+  const { timeline: events } = useTimelineLoader(
     `${getEventUID(note)}-readings`,
     readRelays,
     [

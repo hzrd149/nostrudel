@@ -1,4 +1,4 @@
-import { Badge, Box, Flex, Link, Spacer } from "@chakra-ui/react";
+import { Badge, Flex, Link, Spacer } from "@chakra-ui/react";
 
 import useRelayAuthState from "../../hooks/use-relay-auth-state";
 import RelayFavicon from "../relay-favicon";

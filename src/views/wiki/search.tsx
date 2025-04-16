@@ -1,20 +1,19 @@
-import { useEffect, useMemo, useState } from "react";
-import { Navigate } from "react-router-dom";
 import { Button, Flex, Heading, Input, Link } from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router-dom";
-import { Filter, NostrEvent } from "nostr-tools";
-import { useForm } from "react-hook-form";
 import { getEventUID } from "nostr-idb";
+import { Filter, NostrEvent } from "nostr-tools";
+import { useEffect, useMemo, useState } from "react";
+import { useForm } from "react-hook-form";
+import { Navigate, Link as RouterLink } from "react-router-dom";
 
+import { ErrorBoundary } from "../../components/error-boundary";
 import VerticalPageLayout from "../../components/vertical-page-layout";
-import useRouteSearchValue from "../../hooks/use-route-search-value";
 import { DEFAULT_SEARCH_RELAYS, WIKI_RELAYS } from "../../const";
 import { WIKI_PAGE_KIND } from "../../helpers/nostr/wiki";
-import WikiPageResult from "./components/wiki-page-result";
+import useRouteSearchValue from "../../hooks/use-route-search-value";
 import { useWebOfTrust } from "../../providers/global/web-of-trust-provider";
 import { eventStore } from "../../services/event-store";
-import { ErrorBoundary } from "../../components/error-boundary";
 import { createSearchAction } from "../search/components/search-results";
+import WikiPageResult from "./components/wiki-page-result";
 
 export default function WikiSearchView() {
   const webOfTrust = useWebOfTrust();

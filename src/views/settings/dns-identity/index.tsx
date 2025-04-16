@@ -1,6 +1,5 @@
 import {
   ButtonGroup,
-  Code,
   Editable,
   EditableInput,
   EditablePreview,
@@ -32,7 +31,7 @@ import RawValue from "../../../components/debug-modal/raw-value";
 import { ExternalLinkIcon } from "../../../components/icons";
 import useUserMailboxes from "../../../hooks/use-user-mailboxes";
 import { useWriteRelays } from "../../../hooks/use-client-relays";
-import { COMMON_CONTACT_RELAYS } from "../../../const";
+import { DEFAULT_LOOKUP_RELAYS } from "../../../const";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
 import RelayFavicon from "../../../components/relay-favicon";
 import RouterLink from "../../../components/router-link";
@@ -72,7 +71,7 @@ function EditableIdentity() {
       const draft = await factory.modify(metadata, setContent(JSON.stringify(newProfile)));
       const signed = await account.signEvent(draft);
 
-      await publish("Update NIP-05", signed, mergeRelaySets(publishRelays, mailboxes?.outboxes, COMMON_CONTACT_RELAYS));
+      await publish("Update NIP-05", signed, mergeRelaySets(publishRelays, mailboxes?.outboxes, DEFAULT_LOOKUP_RELAYS));
     } catch (error) {
       if (error instanceof Error) toast({ status: "error", description: error.message });
     }

@@ -1,4 +1,4 @@
-import { Box, Code, Flex, Heading } from "@chakra-ui/react";
+import { Box, Code, Heading } from "@chakra-ui/react";
 
 export default function RawJson({ json, heading }: { heading: string; json: any }) {
   return (

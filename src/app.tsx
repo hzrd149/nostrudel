@@ -52,7 +52,6 @@ import goalsRoutes from "./views/goals/routes";
 import badgesRoutes from "./views/badges/routes";
 import emojisRoutes from "./views/emojis/routes";
 import walletRoutes from "./views/wallet/routes";
-import podcastsRoutes from "./views/podcasts/routes";
 
 // const getScrollKey = (location: Location) => location.pathname + location.search + location.hash;
 
@@ -129,7 +128,6 @@ const router = createBrowserRouter(
         { path: "badges", children: badgesRoutes },
         { path: "emojis", children: emojisRoutes },
         { path: "wallet", children: walletRoutes },
-        { path: "podcasts", children: podcastsRoutes },
       ],
     },
   ],

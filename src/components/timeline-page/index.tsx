@@ -16,7 +16,7 @@ import VerticalPageLayout from "../vertical-page-layout";
 import useMaxPageWidth from "../../hooks/use-max-page-width";
 
 export function useTimelinePageEventFilter() {
-  const [params, setParams] = useSearchParams();
+  const [params] = useSearchParams();
   const view = params.get("view");
 
   return useCallback(

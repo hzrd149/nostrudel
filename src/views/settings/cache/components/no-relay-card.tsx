@@ -1,7 +1,7 @@
-import { Button, Card, CardBody, CardHeader, Heading, Text } from "@chakra-ui/react";
-import useCacheRelay from "../../../../hooks/use-cache-relay";
-import localSettings from "../../../../services/local-settings";
 import { useState } from "react";
+import { Button, Card, CardBody, CardHeader, Heading, Text } from "@chakra-ui/react";
+
+import useCacheRelay from "../../../../hooks/use-cache-relay";
 import { setCacheRelayURL } from "../../../../services/cache-relay";
 
 export default function NoRelayCard() {

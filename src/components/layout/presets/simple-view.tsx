@@ -1,4 +1,4 @@
-import { ReactNode, useRef } from "react";
+import { ReactNode } from "react";
 import { Flex, FlexProps } from "@chakra-ui/react";
 
 import SimpleHeader from "./simple-header";

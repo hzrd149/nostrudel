@@ -1,4 +1,4 @@
-import { Box, Card, CardBody, CardProps, Flex, Heading, Image, LinkBox, Text, useToast } from "@chakra-ui/react";
+import { Box, Card, CardBody, CardProps, Flex, Heading, Image, LinkBox, Text } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 
 import {
@@ -7,13 +7,13 @@ import {
   getArticleSummary,
   getArticleTitle,
 } from "../../../helpers/nostr/long-form";
+import useShareableEventAddress from "../../../hooks/use-shareable-event-address";
 import { NostrEvent } from "../../../types/nostr-event";
-import UserAvatarLink from "../../user/user-avatar-link";
-import UserLink from "../../user/user-link";
-import Timestamp from "../../timestamp";
 import ArticleTags from "../../../views/articles/components/article-tags";
 import HoverLinkOverlay from "../../hover-link-overlay";
-import useShareableEventAddress from "../../../hooks/use-shareable-event-address";
+import Timestamp from "../../timestamp";
+import UserAvatarLink from "../../user/user-avatar-link";
+import UserLink from "../../user/user-link";
 
 export default function EmbeddedArticle({ article, ...props }: Omit<CardProps, "children"> & { article: NostrEvent }) {
   const title = getArticleTitle(article);

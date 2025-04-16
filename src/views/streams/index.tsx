@@ -1,25 +1,24 @@
-import { useCallback, useMemo } from "react";
 import { Flex, Heading, SimpleGrid, Switch } from "@chakra-ui/react";
 import { getEventUID, isStreamURL } from "applesauce-core/helpers";
 import { Filter, kinds } from "nostr-tools";
+import { useCallback, useMemo } from "react";
 
-import useTimelineLoader from "../../hooks/use-timeline-loader";
-import IntersectionObserverProvider from "../../providers/local/intersection-observer";
-import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
-import StreamCard from "./components/stream-card";
-import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
-import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
-import TimelineActionAndStatus from "../../components/timeline/timeline-action-and-status";
-import { useAppTitle } from "../../hooks/use-app-title";
-import { NostrEvent } from "../../types/nostr-event";
-import VerticalPageLayout from "../../components/vertical-page-layout";
-import useClientSideMuteFilter from "../../hooks/use-client-side-mute-filter";
-import { useRouteStateBoolean } from "../../hooks/use-route-state-value";
-import { useReadRelays } from "../../hooks/use-client-relays";
-import { AdditionalRelayProvider, useAdditionalRelayContext } from "../../providers/local/additional-relay-context";
-import useFavoriteStreams from "../../hooks/use-favorite-streams";
-import { getStreamStatus, getStreamStreamingURLs } from "../../helpers/nostr/stream";
 import SimpleView from "../../components/layout/presets/simple-view";
+import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
+import TimelineActionAndStatus from "../../components/timeline/timeline-action-and-status";
+import { getStreamStatus, getStreamStreamingURLs } from "../../helpers/nostr/stream";
+import { useAppTitle } from "../../hooks/use-app-title";
+import { useReadRelays } from "../../hooks/use-client-relays";
+import useClientSideMuteFilter from "../../hooks/use-client-side-mute-filter";
+import useFavoriteStreams from "../../hooks/use-favorite-streams";
+import { useRouteStateBoolean } from "../../hooks/use-route-state-value";
+import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
+import useTimelineLoader from "../../hooks/use-timeline-loader";
+import { AdditionalRelayProvider, useAdditionalRelayContext } from "../../providers/local/additional-relay-context";
+import IntersectionObserverProvider from "../../providers/local/intersection-observer";
+import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
+import { NostrEvent } from "../../types/nostr-event";
+import StreamCard from "./components/stream-card";
 
 function StreamsPage() {
   useAppTitle("Streams");

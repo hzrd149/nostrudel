@@ -1,16 +1,15 @@
-import { memo, useEffect, useMemo, useState } from "react";
 import { Text, useColorMode } from "@chakra-ui/react";
-import ReactCodeMirror from "@uiw/react-codemirror";
-import { EventTemplate } from "nostr-tools";
-import { githubLight, githubDark } from "@uiw/codemirror-theme-github";
-import { jsonSchema } from "codemirror-json-schema";
-import { keymap } from "@codemirror/view";
-import _throttle from "lodash.throttle";
 import { jsonLanguage } from "@codemirror/lang-json";
+import { keymap } from "@codemirror/view";
+import { githubDark, githubLight } from "@uiw/codemirror-theme-github";
+import ReactCodeMirror from "@uiw/react-codemirror";
+import { jsonSchema } from "codemirror-json-schema";
+import { EventTemplate } from "nostr-tools";
+import { memo, useMemo, useState } from "react";
 
-import { NostrEventSchema } from "./schema";
 import { codeMirrorUserAutocomplete } from "../../../event-console/user-autocomplete";
 import { LooseEventTemplate } from "../../process";
+import { NostrEventSchema } from "./schema";
 
 const EventJsonEditor = memo(
   ({

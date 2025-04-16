@@ -115,24 +115,11 @@ function ThreadPage({
     }
   }
 
-  const grandparentPointer = focusedPost.parent?.refs.reply?.e;
-
   const parent = getNip10References(focusedPost.event).reply?.e;
 
   return (
     <>
       {parent && <Parents pointer={parent} thread={thread} />}
-      {/* {rootPointer && focusedPost.refs.reply?.e?.id !== rootPointer.id && (
-        <Parents pointer={rootPointer} thread={thread} root={rootPointer} />
-      )}
-      {grandparentPointer && grandparentPointer.id !== rootPointer.id && (
-        <Parents pointer={grandparentPointer} thread={thread} root={rootPointer} />
-      )}
-      {focusedPost.parent ? (
-        <TimelineNote event={focusedPost.parent.event} hideDrawerButton showReplyLine={false} />
-      ) : (
-        focusedPost.refs.reply?.e && <LoadingNostrLink link={{ type: "nevent", data: focusedPost.refs.reply.e }} />
-      )} */}
       <ThreadPost post={focusedPost} initShowReplies focusId={focusId} />
     </>
   );

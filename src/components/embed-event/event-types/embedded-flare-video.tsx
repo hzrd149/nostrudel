@@ -1,20 +1,19 @@
-import { useMemo } from "react";
 import { Card, CardBody, CardProps, Flex, Heading, Image, Link, Text } from "@chakra-ui/react";
+import { useMemo } from "react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 
-import { NostrEvent } from "../../../types/nostr-event";
-import UserLink from "../../user/user-link";
-import UserAvatar from "../../user/user-avatar";
+import { getVideoImages, getVideoSummary, getVideoTitle } from "../../../helpers/nostr/video";
 import { useBreakpointValue } from "../../../providers/global/breakpoint-provider";
-import { getVideoDuration, getVideoImages, getVideoSummary, getVideoTitle } from "../../../helpers/nostr/video";
 import { getSharableEventAddress } from "../../../services/relay-hints";
+import { NostrEvent } from "../../../types/nostr-event";
+import UserAvatar from "../../user/user-avatar";
+import UserLink from "../../user/user-link";
 
 export default function EmbeddedFlareVideo({ video, ...props }: Omit<CardProps, "children"> & { video: NostrEvent }) {
   const navigate = useNavigate();
 
   const title = getVideoTitle(video);
   const { thumb } = getVideoImages(video);
-  const duration = getVideoDuration(video);
   const summary = getVideoSummary(video);
 
   const isVertical = useBreakpointValue({ base: true, md: false });

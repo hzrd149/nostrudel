@@ -1,45 +1,37 @@
-import { memo, useState } from "react";
 import {
   Flex,
-  Image,
   Link,
-  SimpleGrid,
-  Spacer,
   Table,
   TableContainer,
   Tbody,
   Td,
-  Text,
   Th,
   Thead,
-  Tr,
+  Tr
 } from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router-dom";
 import { getTagValue } from "applesauce-core/helpers";
+import { memo, useState } from "react";
+import { Link as RouterLink } from "react-router-dom";
 
-import useTimelineLoader from "../../hooks/use-timeline-loader";
-import { NostrEvent } from "../../types/nostr-event";
-import { FILE_KIND, IMAGE_TYPES, VIDEO_TYPES, getFileUrl, parseImageFile } from "../../helpers/nostr/files";
 import { ErrorBoundary } from "../../components/error-boundary";
-import useAppSettings from "../../hooks/use-user-app-settings";
-import { TrustProvider, useTrustContext } from "../../providers/local/trust-provider";
-import BlurredImage from "../../components/blured-image";
-import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
-import { UserAvatarLink } from "../../components/user/user-avatar-link";
-import UserLink from "../../components/user/user-link";
-import MimeTypePicker from "./mime-type-picker";
 import TimelineActionAndStatus from "../../components/timeline/timeline-action-and-status";
-import VerticalPageLayout from "../../components/vertical-page-layout";
 import Timestamp from "../../components/timestamp";
-import EventZapButton from "../../components/zap/event-zap-button";
-import IntersectionObserverProvider from "../../providers/local/intersection-observer";
-import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
+import { UserAvatarLink } from "../../components/user/user-avatar-link";
+import UserDnsIdentityIcon from "../../components/user/user-dns-identity-icon";
+import UserLink from "../../components/user/user-link";
+import VerticalPageLayout from "../../components/vertical-page-layout";
+import { FILE_KIND, IMAGE_TYPES } from "../../helpers/nostr/files";
+import { formatBytes } from "../../helpers/number";
 import { useReadRelays } from "../../hooks/use-client-relays";
 import useEventIntersectionRef from "../../hooks/use-event-intersection-ref";
-import { formatBytes } from "../../helpers/number";
-import UserDnsIdentityIcon from "../../components/user/user-dns-identity-icon";
 import useShareableEventAddress from "../../hooks/use-shareable-event-address";
+import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
+import useTimelineLoader from "../../hooks/use-timeline-loader";
+import IntersectionObserverProvider from "../../providers/local/intersection-observer";
+import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
+import { NostrEvent } from "../../types/nostr-event";
+import MimeTypePicker from "./mime-type-picker";
 
 const FileRow = memo(({ file }: { file: NostrEvent }) => {
   const ref = useEventIntersectionRef<HTMLTableRowElement>(file);

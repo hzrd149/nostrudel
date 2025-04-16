@@ -32,7 +32,7 @@ import LiveVideoPlayer from "../../components/live-video-player";
 
 function VideoRecommendations({ video }: { video: NostrEvent }) {
   const readRelays = useReadRelays();
-  const { loader, timeline: videos } = useTimelineLoader(video.pubkey + "-videos", readRelays, {
+  const { timeline: videos } = useTimelineLoader(video.pubkey + "-videos", readRelays, {
     authors: [video.pubkey],
     kinds: [FLARE_VIDEO_KIND],
   });

@@ -11,7 +11,6 @@ import EmojiPackCard from "../emojis/components/emoji-pack-card";
 import { getPackCordsFromFavorites } from "../../helpers/nostr/emoji-packs";
 import useFavoriteEmojiPacks from "../../hooks/use-favorite-emoji-packs";
 import useReplaceableEvents from "../../hooks/use-replaceable-events";
-import VerticalPageLayout from "../../components/vertical-page-layout";
 import SimpleView from "../../components/layout/presets/simple-view";
 
 export default function UserEmojiPacksTab() {

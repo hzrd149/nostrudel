@@ -22,14 +22,7 @@ import { getEncodedToken, ProofState } from "@cashu/cashu-ts";
 import useAsyncAction from "../../../hooks/use-async-action";
 import useEventUpdate from "../../../hooks/use-event-update";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
-import {
-  ChevronDownIcon,
-  ChevronUpIcon,
-  ECashIcon,
-  ExternalLinkIcon,
-  QrCodeIcon,
-  TrashIcon,
-} from "../../../components/icons";
+import { ChevronDownIcon, ChevronUpIcon, ECashIcon, ExternalLinkIcon, TrashIcon } from "../../../components/icons";
 import DebugEventButton from "../../../components/debug-modal/debug-event-button";
 import { useDeleteEventContext } from "../../../providers/route/delete-event-provider";
 import Timestamp from "../../../components/timestamp";

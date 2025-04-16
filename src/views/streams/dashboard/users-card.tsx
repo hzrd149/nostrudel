@@ -57,7 +57,7 @@ function UserCard({ pubkey }: { pubkey: string }) {
 
 function UsersCard({ stream }: { stream: NostrEvent }) {
   const account = useActiveAccount()!;
-  const { loader, timeline: chatEvents } = useStreamChatTimeline(stream);
+  const { timeline: chatEvents } = useStreamChatTimeline(stream);
 
   const muteList = useUserMuteList(account.pubkey);
   const pubkeysInChat = useMemo(() => {

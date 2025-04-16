@@ -1,4 +1,4 @@
-import { Box, Code, Flex, Heading, Switch, Text, useDisclosure } from "@chakra-ui/react";
+import { Box, Code, Flex, Switch, Text, useDisclosure } from "@chakra-ui/react";
 import { NostrEvent } from "nostr-tools";
 import ExpandButton from "./expand-button";
 import UserName from "../../../components/user/user-name";

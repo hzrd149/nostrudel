@@ -62,7 +62,7 @@ function ProviderCard({ onClick, provider }: { onClick: () => void; provider: No
   );
 }
 
-export default function LoginNostrAddressCreate() {
+export default function SigninNostrAddressCreate() {
   const navigate = useNavigate();
   const toast = useToast();
 

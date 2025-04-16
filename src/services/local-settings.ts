@@ -70,9 +70,6 @@ const ntfyServer = new LocalStorageEntry("ntfy-server", "https://ntfy.sh");
 // cache relay
 const cacheRelayURL = new LocalStorageEntry("cache-relay-url", "");
 
-// bakery
-const bakeryURL = new LocalStorageEntry<string>("bakery-url", "");
-
 const localSettings = {
   readRelays,
   writeRelays,
@@ -92,7 +89,6 @@ const localSettings = {
   deviceId,
   ntfyTopic,
   ntfyServer,
-  bakeryURL,
   cacheRelayURL,
 };
 

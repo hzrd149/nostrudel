@@ -34,7 +34,6 @@ export default function RelayStatusCard({
 
   const identity = getTagValue(event, "d");
   const network = getTagValue(event, "n");
-  const software = getTagValue(event, "s");
 
   const countryName = event.tags.find((t) => t[0] === "l" && t[2] === "countryName")?.[1];
   const host = event.tags.find((t) => t[0] === "l" && t[2] === "host.isp")?.[1];

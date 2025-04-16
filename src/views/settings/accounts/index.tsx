@@ -1,7 +1,7 @@
 import { Box, Button, ButtonGroup, Divider, Flex, Heading, Text } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import { PasswordSigner, SerialPortSigner, SimpleSigner } from "applesauce-signers";
-import { useAccountManager, useAccounts, useObservable } from "applesauce-react/hooks";
+import { useAccountManager, useAccounts } from "applesauce-react/hooks";
 
 import { useActiveAccount } from "applesauce-react/hooks";
 import UserAvatar from "../../../components/user/user-avatar";
@@ -31,6 +31,13 @@ export default function AccountSettings() {
   const manager = useAccountManager();
   const navigate = useNavigate();
 
+  const signout = () => {
+    if (manager.active) {
+      manager.removeAccount(manager.active);
+      manager.clearActive();
+    }
+  };
+
   return (
     <SimpleView
       title="Account settings"
@@ -59,8 +66,8 @@ export default function AccountSettings() {
         </Box>
         <AccountTypeBadge account={account} ml="4" />
 
-        <Button onClick={() => manager.clearActive()} ml="auto">
-          Logout
+        <Button onClick={signout} ml="auto">
+          Signout
         </Button>
       </Flex>
 

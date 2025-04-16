@@ -1,5 +1,3 @@
-import { PropsWithChildren, ReactNode, useRef } from "react";
-import { useForm } from "react-hook-form";
 import {
   Box,
   Button,
@@ -19,20 +17,21 @@ import {
   VisuallyHiddenInput,
   useRadio,
   useRadioGroup,
-  useToast,
 } from "@chakra-ui/react";
-import dayjs from "dayjs";
-import { bytesToHex } from "@noble/hashes/utils";
 import { sha1 } from "@noble/hashes/sha1";
+import { bytesToHex } from "@noble/hashes/utils";
+import dayjs from "dayjs";
+import { nip19 } from "nostr-tools";
+import { PropsWithChildren, ReactNode, useRef } from "react";
+import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 
-import { BencodeValue, decode, encode } from "../../lib/bencode";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import { Category, TORRENT_KIND, torrentCatagories } from "../../helpers/nostr/torrents";
+import { BencodeValue, decode, encode } from "../../lib/bencode";
 import { useBreakpointValue } from "../../providers/global/breakpoint-provider";
-import { DraftNostrEvent } from "../../types/nostr-event";
-import { useNavigate } from "react-router-dom";
-import { nip19 } from "nostr-tools";
 import { usePublishEvent } from "../../providers/global/publish-provider";
+import { DraftNostrEvent } from "../../types/nostr-event";
 
 function RadioCard(props: UseRadioProps & PropsWithChildren) {
   const { getInputProps, getRadioProps } = useRadio(props);

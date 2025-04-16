@@ -1,27 +1,29 @@
 import { RouteObject } from "react-router-dom";
-import LoginView from ".";
-import LoginStartView from "./start";
-import LoginNpubView from "./npub";
-import LoginNsecView from "./nsec";
-import LoginNostrAddressView from "./address";
-import LoginNostrAddressCreate from "./address/create";
-import LoginNostrConnectView from "./nostr-connect";
+import SigninView from ".";
+import SigninStartView from "./start";
+import SigninNpubView from "./npub";
+import SigninPrivateKeyView from "./nsec";
+import SigninNostrAddressView from "./address";
+import SigninNostrAddressCreate from "./address/create";
+import SigninConnectView from "./connect";
+import SigninNostrConnectSignerView from "./connect/signer";
 
 export default [
   {
-    element: <LoginView />,
+    element: <SigninView />,
     children: [
-      { path: "", element: <LoginStartView /> },
-      { path: "npub", element: <LoginNpubView /> },
-      { path: "nsec", element: <LoginNsecView /> },
+      { path: "", element: <SigninStartView /> },
+      { path: "npub", element: <SigninNpubView /> },
+      { path: "nsec", element: <SigninPrivateKeyView /> },
       {
         path: "address",
         children: [
-          { path: "", element: <LoginNostrAddressView /> },
-          { path: "create", element: <LoginNostrAddressCreate /> },
+          { path: "", element: <SigninNostrAddressView /> },
+          { path: "create", element: <SigninNostrAddressCreate /> },
         ],
       },
-      { path: "nostr-connect", element: <LoginNostrConnectView /> },
+      { path: "connect", element: <SigninConnectView /> },
+      { path: "connect/signer", element: <SigninNostrConnectSignerView /> },
     ],
   },
 ] satisfies RouteObject[];

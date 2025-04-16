@@ -14,7 +14,7 @@ function UserGoalsManagerPage() {
   const account = useActiveAccount()!;
 
   const readRelays = useReadRelays();
-  const { loader, timeline: goals } = useTimelineLoader(
+  const { timeline: goals } = useTimelineLoader(
     `${account.pubkey}-goals`,
     readRelays,
     account.pubkey

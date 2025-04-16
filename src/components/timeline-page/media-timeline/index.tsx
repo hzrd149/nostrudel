@@ -1,17 +1,17 @@
-import { useMemo } from "react";
-import { kinds } from "nostr-tools";
-import { Photo } from "react-photo-album";
 import { Expressions } from "applesauce-content/helpers";
+import { kinds } from "nostr-tools";
+import { useMemo } from "react";
+import { Photo } from "react-photo-album";
 
-import { LightboxProvider } from "../../lightbox-provider";
 import { isImageURL } from "../../../helpers/url";
-import { EmbeddedImageProps } from "../../content/links";
-import { TrustProvider } from "../../../providers/local/trust-provider";
-import PhotoGallery, { PhotoWithoutSize } from "../../photo-gallery";
-import { NostrEvent } from "../../../types/nostr-event";
-import { useBreakpointValue } from "../../../providers/global/breakpoint-provider";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
+import { useBreakpointValue } from "../../../providers/global/breakpoint-provider";
+import { TrustProvider } from "../../../providers/local/trust-provider";
+import { NostrEvent } from "../../../types/nostr-event";
 import { GalleryImage } from "../../content/components/gallery";
+import { EmbeddedImageProps } from "../../content/links";
+import { LightboxProvider } from "../../lightbox-provider";
+import PhotoGallery, { PhotoWithoutSize } from "../../photo-gallery";
 
 function CustomGalleryImage({ event, ...props }: EmbeddedImageProps & { event: NostrEvent }) {
   const ref = useEventIntersectionRef<HTMLImageElement>(event);
@@ -43,7 +43,6 @@ export default function MediaTimeline({ timeline }: { timeline: NostrEvent[] }) 
       if (event.kind === kinds.Repost || event.kind === kinds.GenericRepost) continue;
       const urls = event.content.matchAll(Expressions.link);
 
-      const i = 0;
       for (const match of urls) {
         if (isImageURL(match[0])) images.push({ event, src: match[0] });
       }

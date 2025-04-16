@@ -55,7 +55,7 @@ export default function useEventMarkers(events: NostrEvent[], map?: L.Map, onCli
     }
 
     return () => {
-      for (const [id, marker] of Object.entries(markers.current)) {
+      for (const [_id, marker] of Object.entries(markers.current)) {
         marker?.removeFrom(map);
       }
     };

@@ -1,15 +1,14 @@
-import { useState } from "react";
 import { IconButton, IconButtonProps } from "@chakra-ui/react";
+import { isAddressPointerInList } from "applesauce-core/helpers/lists";
+import { addCoordinateTag, removeCoordinateTag } from "applesauce-factory/operations/tag";
+import { useEventFactory } from "applesauce-react/hooks";
 import { kinds } from "nostr-tools";
 import { AddressPointer } from "nostr-tools/nip19";
-import { useEventFactory } from "applesauce-react/hooks";
-import { isAddressPointerInList } from "applesauce-core/helpers/lists";
-import { removeCoordinateTag, addCoordinateTag } from "applesauce-factory/operations/tag";
 
+import useAsyncAction from "../../hooks/use-async-action";
 import useFavoriteFeeds, { FAVORITE_FEEDS_IDENTIFIER } from "../../hooks/use-favorite-feeds";
 import { usePublishEvent } from "../../providers/global/publish-provider";
 import { StarEmptyIcon, StarFullIcon } from "../icons";
-import useAsyncAction from "../../hooks/use-async-action";
 
 export default function DVMFeedFavoriteButton({
   pointer,

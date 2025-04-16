@@ -7,7 +7,6 @@ import dayjs from "dayjs";
 
 import { logger } from "../helpers/debug";
 import WasmRelay from "./wasm-relay";
-import MemoryRelay from "../classes/memory-relay";
 import localSettings from "./local-settings";
 import { eventStore } from "./event-store";
 
@@ -43,9 +42,7 @@ async function createRelay(url: string) {
   if (url) {
     if (url === ":none:") return null;
 
-    if (url === ":memory:") {
-      return new MemoryRelay();
-    } else if (url === "nostr-idb://wasm-worker" && WasmRelay.SUPPORTED) {
+    if (url === "nostr-idb://wasm-worker" && WasmRelay.SUPPORTED) {
       return new WasmRelay();
     } else if (url.startsWith("nostr-idb://")) {
       return createInternalRelay();
@@ -83,9 +80,7 @@ async function connectRelay(url: string) {
   }
 }
 
-export const cacheRelay$ = new BehaviorSubject<
-  AbstractRelay | CacheRelay | WasmRelay | AbstractRelay | MemoryRelay | null
->(null);
+export const cacheRelay$ = new BehaviorSubject<AbstractRelay | CacheRelay | WasmRelay | AbstractRelay | null>(null);
 
 // create a new cache relay instance when the url changes
 localSettings.cacheRelayURL.pipe(distinctUntilChanged()).subscribe(async (url) => {

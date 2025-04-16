@@ -1,19 +1,18 @@
-import { useCallback } from "react";
+import { SimpleGrid } from "@chakra-ui/react";
 import { kinds } from "nostr-tools";
-import { ButtonGroup, Flex, SimpleGrid } from "@chakra-ui/react";
+import { useCallback } from "react";
 
-import useTimelineLoader from "../../hooks/use-timeline-loader";
-import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
-import IntersectionObserverProvider from "../../providers/local/intersection-observer";
-import { NostrEvent } from "../../types/nostr-event";
 import { ErrorBoundary } from "../../components/error-boundary";
-import useClientSideMuteFilter from "../../hooks/use-client-side-mute-filter";
-import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
-import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
-import ChannelCard from "./components/channel-card";
-import { useReadRelays } from "../../hooks/use-client-relays";
-import SimpleView from "../../components/layout/presets/simple-view";
 import ContainedSimpleView from "../../components/layout/presets/contained-simple-view";
+import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
+import { useReadRelays } from "../../hooks/use-client-relays";
+import useClientSideMuteFilter from "../../hooks/use-client-side-mute-filter";
+import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
+import useTimelineLoader from "../../hooks/use-timeline-loader";
+import IntersectionObserverProvider from "../../providers/local/intersection-observer";
+import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
+import { NostrEvent } from "../../types/nostr-event";
+import ChannelCard from "./components/channel-card";
 
 function ChannelsExplorePage() {
   const relays = useReadRelays();

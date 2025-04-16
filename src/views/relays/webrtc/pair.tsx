@@ -21,7 +21,6 @@ import dayjs from "dayjs";
 import { useAsync } from "react-use";
 import { useObservable } from "applesauce-react/hooks";
 
-import BackButton from "../../../components/router/back-button";
 import webRtcRelaysService from "../../../services/webrtc-relays";
 import localSettings from "../../../services/local-settings";
 import { CopyIconButton } from "../../../components/copy-icon-button";

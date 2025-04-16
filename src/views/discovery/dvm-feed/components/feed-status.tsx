@@ -14,24 +14,24 @@ import {
   Spinner,
   Text,
 } from "@chakra-ui/react";
+import { getTagValue } from "applesauce-core/helpers";
 import dayjs from "dayjs";
 import { NostrEvent } from "nostr-tools";
-import { getTagValue } from "applesauce-core/helpers";
 import { AddressPointer } from "nostr-tools/nip19";
 
-import { ChainedDVMJob, DVM_CONTENT_DISCOVERY_JOB_KIND, getResponseFromDVM } from "../../../../helpers/nostr/dvm";
-import { DraftNostrEvent } from "../../../../types/nostr-event";
-import { useReadRelays } from "../../../../hooks/use-client-relays";
-import { DVMAvatarLink } from "./dvm-avatar";
-import DVMLink from "./dvm-name";
-import useUserMailboxes from "../../../../hooks/use-user-mailboxes";
-import { usePublishEvent } from "../../../../providers/global/publish-provider";
+import DebugEventButton from "../../../../components/debug-modal/debug-event-button";
 import InlineInvoiceCard from "../../../../components/lightning/inline-invoice-card";
 import UserAvatar from "../../../../components/user/user-avatar";
-import UserLink from "../../../../components/user/user-link";
 import UserDnsIdentity from "../../../../components/user/user-dns-identity";
-import DebugEventButton from "../../../../components/debug-modal/debug-event-button";
+import UserLink from "../../../../components/user/user-link";
 import EventZapButton from "../../../../components/zap/event-zap-button";
+import { ChainedDVMJob, DVM_CONTENT_DISCOVERY_JOB_KIND, getResponseFromDVM } from "../../../../helpers/nostr/dvm";
+import { useReadRelays } from "../../../../hooks/use-client-relays";
+import useUserMailboxes from "../../../../hooks/use-user-mailboxes";
+import { usePublishEvent } from "../../../../providers/global/publish-provider";
+import { DraftNostrEvent } from "../../../../types/nostr-event";
+import { DVMAvatarLink } from "./dvm-avatar";
+import DVMLink from "./dvm-name";
 
 function NextPageButton({ chain, pointer }: { pointer: AddressPointer; chain: ChainedDVMJob[] }) {
   const publish = usePublishEvent();
@@ -109,8 +109,7 @@ export function DVMStatusCard({ status, pointer }: { status?: NostrEvent; pointe
   const statusType = getTagValue(status, "status");
   switch (statusType) {
     case "payment-required":
-      const [_, msats, invoice] = status.tags.find((t) => t[0] === "amount") ?? [];
-      const amount = parseInt(msats) / 1000;
+      const [_, _msats, invoice] = status.tags.find((t) => t[0] === "amount") ?? [];
 
       return (
         <Card {...cardProps}>

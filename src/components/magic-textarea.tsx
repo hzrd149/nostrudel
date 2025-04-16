@@ -1,23 +1,22 @@
-import React, { LegacyRef, forwardRef, useMemo } from "react";
+import { LegacyRef, forwardRef, useMemo } from "react";
 // NOTE: Do not remove Textarea or Input from the imports. they are used
-import { Image, InputProps, Textarea, Input, TextareaProps } from "@chakra-ui/react";
+import { Image, Input, InputProps, Textarea, TextareaProps } from "@chakra-ui/react";
+import { type EmojiMartData } from "@emoji-mart/data";
 import ReactTextareaAutocomplete, {
   ItemComponentProps,
-  TextareaProps as ReactTextareaAutocompleteProps,
-  TriggerType,
+  TriggerType
 } from "@webscopeio/react-textarea-autocomplete";
 import "@webscopeio/react-textarea-autocomplete/style.css";
-import { nip19 } from "nostr-tools";
-import { matchSorter } from "match-sorter";
 import { useObservable } from "applesauce-react/hooks";
-import { type EmojiMartData } from "@emoji-mart/data";
+import { matchSorter } from "match-sorter";
+import { nip19 } from "nostr-tools";
 import { useAsync, useLocalStorage } from "react-use";
 
 import { useContextEmojis } from "../providers/global/emoji-provider";
-import UserAvatar from "./user/user-avatar";
-import UserDnsIdentity from "./user/user-dns-identity";
 import { useWebOfTrust } from "../providers/global/web-of-trust-provider";
 import { userSearchDirectory } from "../services/username-search";
+import UserAvatar from "./user/user-avatar";
+import UserDnsIdentity from "./user/user-dns-identity";
 
 // Referencing Textarea and Input so they are not removed from the imports
 [Textarea, Input];
@@ -60,11 +59,6 @@ function output(token: Token) {
     return "nostr:" + nip19.npubEncode(token.pubkey) || "";
   } else return "";
 }
-
-const Loading: ReactTextareaAutocompleteProps<
-  Token,
-  React.TextareaHTMLAttributes<HTMLTextAreaElement>
->["loadingComponent"] = ({ data }) => <div>Loading</div>;
 
 function useEmojiTokens() {
   const customEmojis = useContextEmojis();

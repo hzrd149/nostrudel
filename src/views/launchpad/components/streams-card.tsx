@@ -54,7 +54,7 @@ function StreamsCardContent({ ...props }: Omit<CardProps, "children">) {
     ];
   }, [filter]);
 
-  const { loader, timeline } = useTimelineLoader(`${listId ?? "global"}-streams`, relays, query, { eventFilter });
+  const { timeline } = useTimelineLoader(`${listId ?? "global"}-streams`, relays, query, { eventFilter });
 
   const streams = timeline.filter((stream) => getStreamStatus(stream) !== "ended").slice(0, 6);
 

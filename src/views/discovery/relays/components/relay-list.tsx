@@ -1,31 +1,11 @@
+import { Box, Flex, FlexProps, Input, Text } from "@chakra-ui/react";
+import { NostrEvent } from "nostr-tools";
 import { useMemo, useState } from "react";
 import { useThrottle } from "react-use";
-import { NostrEvent } from "nostr-tools";
-import { Box, Flex, FlexProps, Input, Text } from "@chakra-ui/react";
-import { FixedSizeList as List, ListChildComponentProps } from "react-window";
 import AutoSizer from "react-virtualized-auto-sizer";
+import { FixedSizeList as List, ListChildComponentProps } from "react-window";
 
 import RelayStatusCard from "./relay-status-card";
-
-/** returns a map of nip -> percent supported */
-function computeCommonNips(events: NostrEvent[]) {
-  const common = new Map<number, number>();
-
-  for (const event of events) {
-    for (const tag of event.tags) {
-      if (tag[0] === "N" && tag[1]) {
-        const nip = parseInt(tag[1]);
-        if (Number.isFinite(nip)) common.set(nip, (common.get(nip) ?? 0) + 1);
-      }
-    }
-  }
-
-  for (const [nip, count] of common) {
-    common.set(nip, count / events.length);
-  }
-
-  return common;
-}
 
 function Row({ index, style, data }: ListChildComponentProps<NostrEvent[]>) {
   return (

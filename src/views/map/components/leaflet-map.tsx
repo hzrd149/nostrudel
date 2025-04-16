@@ -13,7 +13,7 @@ export type EventMapProps = Omit<BoxProps, "children"> & {
 
 export default function LeafletMap({ onMove, mapRef, onCreate, ...props }: EventMapProps) {
   const ref = useRef<HTMLDivElement | null>(null);
-  const [map, setMap] = useState<L.Map>();
+  const [_map, setMap] = useState<L.Map>();
 
   const onMoveRef = useRef(onMove);
   onMoveRef.current = onMove;

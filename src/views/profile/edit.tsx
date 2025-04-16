@@ -26,7 +26,7 @@ import dnsIdentityLoader from "../../services/dns-identity-loader";
 import { DraftNostrEvent } from "../../types/nostr-event";
 import lnurlMetadataService from "../../services/lnurl-metadata";
 import VerticalPageLayout from "../../components/vertical-page-layout";
-import { COMMON_CONTACT_RELAYS } from "../../const";
+import { DEFAULT_LOOKUP_RELAYS } from "../../const";
 import { usePublishEvent } from "../../providers/global/publish-provider";
 import { useInputUploadFileWithForm } from "../../hooks/use-input-upload-file";
 import { IdentityStatus } from "applesauce-loaders/helpers/dns-identity";
@@ -316,7 +316,7 @@ export const ProfileEditView = () => {
       tags: [],
     };
 
-    await publish("Update Profile", draft, COMMON_CONTACT_RELAYS);
+    await publish("Update Profile", draft, DEFAULT_LOOKUP_RELAYS);
   };
 
   return <MetadataForm defaultValues={defaultValues} onSubmit={handleSubmit} />;

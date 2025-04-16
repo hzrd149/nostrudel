@@ -59,7 +59,7 @@ function DVMFeedPage({ pointer }: { pointer: AddressPointer }) {
 
   const dvmRelays = useUserOutbox(pointer.pubkey);
   const readRelays = useReadRelays(dvmRelays);
-  const { loader, timeline } = useTimelineLoader(`${getCoordinateFromAddressPointer(pointer)}-jobs`, readRelays, {
+  const { timeline } = useTimelineLoader(`${getCoordinateFromAddressPointer(pointer)}-jobs`, readRelays, {
     authors: [account.pubkey, pointer.pubkey],
     "#p": [account.pubkey, pointer.pubkey],
     kinds: [DVM_CONTENT_DISCOVERY_JOB_KIND, DVM_CONTENT_DISCOVERY_RESULT_KIND, DVM_STATUS_KIND],

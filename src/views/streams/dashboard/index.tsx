@@ -72,7 +72,7 @@ function StreamModerationPage() {
   const account = useActiveAccount()!;
   const readRelays = useReadRelays();
 
-  const { loader, timeline: streams } = useTimelineLoader(account.pubkey + "-streams", readRelays, [
+  const { timeline: streams } = useTimelineLoader(account.pubkey + "-streams", readRelays, [
     {
       authors: [account.pubkey],
       kinds: [kinds.LiveEvent],

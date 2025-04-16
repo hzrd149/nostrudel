@@ -8,7 +8,7 @@ import { ReadonlySigner } from "applesauce-signers";
 import { normalizeToHexPubkey } from "../../helpers/nip19";
 import QRCodeScannerButton from "../../components/qr-code/qr-code-scanner-button";
 
-export default function LoginNpubView() {
+export default function SigninNpubView() {
   const navigate = useNavigate();
   const toast = useToast();
   const [npub, setNpub] = useState("");
@@ -41,22 +41,12 @@ export default function LoginNpubView() {
           </Link>
         </FormHelperText>
       </FormControl>
-      {/* <FormControl>
-        <FormLabel>Bootstrap relay</FormLabel>
-        <RelayUrlInput
-          placeholder="wss://nostr.example.com"
-          isRequired
-          value={relayUrl}
-          onChange={(e) => setRelayUrl(e.target.value)}
-        />
-        <FormHelperText>The first relay to connect to.</FormHelperText>
-      </FormControl> */}
       <Flex justifyContent="space-between" gap="2">
         <Button variant="link" onClick={() => navigate("../")}>
           Back
         </Button>
         <Button colorScheme="primary" ml="auto" type="submit">
-          Login
+          Signin
         </Button>
       </Flex>
     </Flex>

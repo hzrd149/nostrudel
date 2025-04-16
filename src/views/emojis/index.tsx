@@ -19,7 +19,7 @@ function UserEmojiPackMangerPage() {
 
   const favoritePacks = useFavoriteEmojiPacks(account.pubkey);
   const readRelays = useReadRelays();
-  const { loader, timeline: packs } = useTimelineLoader(
+  const { timeline: packs } = useTimelineLoader(
     `${account.pubkey}-emoji-packs`,
     readRelays,
     account.pubkey

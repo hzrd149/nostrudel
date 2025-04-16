@@ -1,12 +1,11 @@
-import { useEffect, useMemo } from "react";
 import { kinds as eventKinds } from "nostr-tools";
+import { useMemo } from "react";
 
-import useSingleEvent from "./use-single-event";
-import singleEventLoader from "../services/single-event-loader";
-import useTimelineLoader from "./use-timeline-loader";
+import { unique } from "../helpers/array";
 import { getThreadReferences } from "../helpers/nostr/event";
 import { NostrEvent } from "../types/nostr-event";
-import { unique } from "../helpers/array";
+import useSingleEvent from "./use-single-event";
+import useTimelineLoader from "./use-timeline-loader";
 
 export default function useThreadTimelineLoader(
   focusedEvent: NostrEvent | undefined,

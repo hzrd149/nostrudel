@@ -1,5 +1,5 @@
 import { Query } from "applesauce-core";
-import { groupBy, map } from "rxjs";
+import { map } from "rxjs";
 import { NostrEvent } from "nostr-tools";
 
 import { WIKI_PAGE_KIND } from "../helpers/nostr/wiki";

@@ -6,7 +6,7 @@ import { ProfileContent, unixNow } from "applesauce-core/helpers";
 
 import { containerProps } from "./common";
 import { nostrBuildUploadImage } from "../../../helpers/media-upload/nostr-build";
-import { COMMON_CONTACT_RELAYS } from "../../../const";
+import { DEFAULT_LOOKUP_RELAYS } from "../../../const";
 import { DraftNostrEvent } from "../../../types/nostr-event";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
 import { SimpleAccount } from "applesauce-accounts/accounts";
@@ -59,7 +59,7 @@ export default function CreateStep({
         key,
       );
 
-      await publish("Create Profile", kind0, [...relays, ...COMMON_CONTACT_RELAYS]);
+      await publish("Create Profile", kind0, [...relays, ...DEFAULT_LOOKUP_RELAYS]);
 
       // login
       const account = SimpleAccount.fromKey(key);

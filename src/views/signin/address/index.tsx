@@ -15,7 +15,7 @@ import { NOSTR_CONNECT_PERMISSIONS } from "../../../const";
 import { getMatchSimpleEmail } from "../../../helpers/regexp";
 import QRCodeScannerButton from "../../../components/qr-code/qr-code-scanner-button";
 
-export default function LoginNostrAddressView() {
+export default function SigninNostrAddressView() {
   const navigate = useNavigate();
   const toast = useToast();
   const manager = useAccountManager();
@@ -23,7 +23,7 @@ export default function LoginNostrAddressView() {
   const [address, setAddress] = useState("");
 
   const [nip05, setNip05] = useState<Identity | null>();
-  const [rootNip05, setRootNip05] = useState<Identity | null>();
+  const [_rootNip05, setRootNip05] = useState<Identity | null>();
   useDebounce(
     async () => {
       if (!address) return setNip05(undefined);

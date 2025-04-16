@@ -1,16 +1,4 @@
-import {
-  Box,
-  Card,
-  CardBody,
-  CardProps,
-  Flex,
-  Heading,
-  Image,
-  Link,
-  LinkBox,
-  LinkOverlay,
-  Text,
-} from "@chakra-ui/react";
+import { Box, Card, CardBody, CardProps, Heading, Image, Link, LinkBox, LinkOverlay, Text } from "@chakra-ui/react";
 import useOpenGraphData from "../../hooks/use-open-graph-data";
 import { useBreakpointValue } from "../../providers/global/breakpoint-provider";
 

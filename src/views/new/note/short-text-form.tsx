@@ -1,52 +1,52 @@
-import { useRef, useState } from "react";
 import {
-  Flex,
-  Button,
-  Box,
-  Heading,
-  useDisclosure,
-  Input,
-  Switch,
-  FormLabel,
-  FormControl,
-  FormHelperText,
-  Link,
-  Slider,
-  SliderTrack,
-  SliderFilledTrack,
-  SliderThumb,
   Alert,
   AlertIcon,
+  Box,
+  Button,
   ButtonGroup,
-  Text,
+  Flex,
   FlexProps,
+  FormControl,
+  FormHelperText,
+  FormLabel,
+  Heading,
+  Input,
+  Link,
+  Slider,
+  SliderFilledTrack,
+  SliderThumb,
+  SliderTrack,
+  Switch,
+  Text,
+  useDisclosure,
 } from "@chakra-ui/react";
-import { useForm } from "react-hook-form";
-import { UnsignedEvent } from "nostr-tools";
-import { useAsync, useThrottle } from "react-use";
-import { useEventFactory, useObservable } from "applesauce-react/hooks";
 import { Emoji, getEventPointerFromQTag, processTags } from "applesauce-core/helpers";
+import { useEventFactory, useObservable } from "applesauce-react/hooks";
+import { UnsignedEvent } from "nostr-tools";
+import { useRef, useState } from "react";
+import { useForm } from "react-hook-form";
+import { useAsync, useThrottle } from "react-use";
 
-import { PublishLogEntry, useFinalizeDraft, usePublishEvent } from "../../../providers/global/publish-provider";
 import { useActiveAccount } from "applesauce-react/hooks";
-import useAppSettings from "../../../hooks/use-user-app-settings";
-import localSettings from "../../../services/local-settings";
-import useLocalStorageDisclosure from "../../../hooks/use-localstorage-disclosure";
-import { useContextEmojis } from "../../../providers/global/emoji-provider";
-import useCacheForm from "../../../hooks/use-cache-form";
-import MagicTextArea, { RefType } from "../../../components/magic-textarea";
-import useTextAreaUploadFile, { useTextAreaInsertTextWithForm } from "../../../hooks/use-textarea-upload-file";
 import { ErrorBoundary } from "../../../components/error-boundary";
-import { TrustProvider } from "../../../providers/local/trust-provider";
-import TextNoteContents from "../../../components/note/timeline-note/text-note-contents";
-import InsertImageButton from "./insert-image-button";
 import InsertGifButton from "../../../components/gif/insert-gif-button";
 import { ChevronDownIcon, ChevronUpIcon } from "../../../components/icons";
-import ZapSplitCreator, { Split } from "./zap-split-creator";
+import MagicTextArea, { RefType } from "../../../components/magic-textarea";
+import TextNoteContents from "../../../components/note/timeline-note/text-note-contents";
 import MinePOW from "../../../components/pow/mine-pow";
-import { PublishLogEntryDetails } from "../../task-manager/publish-log/entry-details";
 import InsertReactionButton from "../../../components/reactions/insert-reaction-button";
+import useCacheForm from "../../../hooks/use-cache-form";
+import useLocalStorageDisclosure from "../../../hooks/use-localstorage-disclosure";
+import useTextAreaUploadFile, { useTextAreaInsertTextWithForm } from "../../../hooks/use-textarea-upload-file";
+import useAppSettings from "../../../hooks/use-user-app-settings";
+import { useContextEmojis } from "../../../providers/global/emoji-provider";
+import { PublishLogEntry, usePublishEvent } from "../../../providers/global/publish-provider";
+import { TrustProvider } from "../../../providers/local/trust-provider";
 import { eventStore } from "../../../services/event-store";
+import localSettings from "../../../services/local-settings";
+import { PublishLogEntryDetails } from "../../task-manager/publish-log/entry-details";
+import InsertImageButton from "./insert-image-button";
+import ZapSplitCreator, { Split } from "./zap-split-creator";
 
 type FormValues = {
   content: string;
@@ -66,7 +66,6 @@ export default function ShortTextNoteForm({
   initContent = "",
 }: Omit<FlexProps, "children"> & ShortTextNoteFormProps) {
   const publish = usePublishEvent();
-  const finalizeDraft = useFinalizeDraft();
   const account = useActiveAccount()!;
   const { noteDifficulty } = useAppSettings();
   const addClientTag = useObservable(localSettings.addClientTag);

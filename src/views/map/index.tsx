@@ -1,24 +1,23 @@
+import { Button, Flex } from "@chakra-ui/react";
+import L from "leaflet";
+import "leaflet.locatecontrol";
+import "leaflet.locatecontrol/dist/L.Control.Locate.min.css";
+import "leaflet/dist/leaflet.css";
+import ngeohash from "ngeohash";
+import { kinds } from "nostr-tools";
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Button, Flex } from "@chakra-ui/react";
-import { useObservable } from "applesauce-react/hooks";
-import { kinds } from "nostr-tools";
-import ngeohash from "ngeohash";
-import "leaflet/dist/leaflet.css";
-import L from "leaflet";
-import "leaflet.locatecontrol/dist/L.Control.Locate.min.css";
-import "leaflet.locatecontrol";
 
-import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { useReadRelays } from "../../hooks/use-client-relays";
+import useTimelineLoader from "../../hooks/use-timeline-loader";
 
-import { debounce } from "../../helpers/function";
 import TimelineActionAndStatus from "../../components/timeline/timeline-action-and-status";
+import { debounce } from "../../helpers/function";
 import { NostrEvent } from "../../types/nostr-event";
 import MapTimeline from "./timeline";
 
-import useEventMarkers from "./hooks/use-event-markers";
 import LeafletMap from "./components/leaflet-map";
+import useEventMarkers from "./hooks/use-event-markers";
 
 function getPrecision(zoom: number) {
   if (zoom <= 4) return 1;
@@ -34,7 +33,7 @@ function getPrecision(zoom: number) {
 export default function MapView() {
   const navigate = useNavigate();
   const [map, setMap] = useState<L.Map>();
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [_searchParams, setSearchParams] = useSearchParams();
 
   // listen for map move event
   useEffect(() => {

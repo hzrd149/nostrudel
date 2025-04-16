@@ -1,32 +1,32 @@
-import { memo, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { Button, ButtonGroup, Flex, IconButton } from "@chakra-ui/react";
-import { UNSAFE_DataRouterContext, useLocation, useNavigate } from "react-router-dom";
 import { mergeRelaySets } from "applesauce-core/helpers";
 import { NostrEvent, kinds } from "nostr-tools";
+import { memo, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { UNSAFE_DataRouterContext, useLocation, useNavigate } from "react-router-dom";
 
-import { ThreadIcon } from "../../components/icons";
-import UserLink from "../../components/user/user-link";
-import RequireActiveAccount from "../../components/router/require-active-account";
-import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { useActiveAccount } from "applesauce-react/hooks";
-import IntersectionObserverProvider from "../../providers/local/intersection-observer";
-import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
-import TimelineActionAndStatus from "../../components/timeline/timeline-action-and-status";
-import SendMessageForm from "./components/send-message-form";
-import { groupMessages } from "../../helpers/nostr/dms";
-import ThreadDrawer from "./components/thread-drawer";
-import ThreadsProvider from "../../providers/local/thread-provider";
-import DirectMessageBlock from "./components/direct-message-block";
-import useParamsProfilePointer from "../../hooks/use-params-pubkey-pointer";
-import useUserMailboxes from "../../hooks/use-user-mailboxes";
-import useAppSettings from "../../hooks/use-user-app-settings";
-import { truncateId } from "../../helpers/string";
-import useRouterMarker from "../../hooks/use-router-marker";
-import decryptionCacheService from "../../services/decryption-cache";
-import UserDnsIdentityIcon from "../../components/user/user-dns-identity-icon";
-import UserAvatarLink from "../../components/user/user-avatar-link";
+import { ThreadIcon } from "../../components/icons";
 import SimpleView from "../../components/layout/presets/simple-view";
+import RequireActiveAccount from "../../components/router/require-active-account";
+import TimelineActionAndStatus from "../../components/timeline/timeline-action-and-status";
+import UserAvatarLink from "../../components/user/user-avatar-link";
+import UserDnsIdentityIcon from "../../components/user/user-dns-identity-icon";
+import UserLink from "../../components/user/user-link";
+import { groupMessages } from "../../helpers/nostr/dms";
+import { truncateId } from "../../helpers/string";
+import useParamsProfilePointer from "../../hooks/use-params-pubkey-pointer";
+import useRouterMarker from "../../hooks/use-router-marker";
 import useScrollRestoreRef from "../../hooks/use-scroll-restore";
+import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
+import useTimelineLoader from "../../hooks/use-timeline-loader";
+import useAppSettings from "../../hooks/use-user-app-settings";
+import useUserMailboxes from "../../hooks/use-user-mailboxes";
+import IntersectionObserverProvider from "../../providers/local/intersection-observer";
+import ThreadsProvider from "../../providers/local/thread-provider";
+import decryptionCacheService from "../../services/decryption-cache";
+import DirectMessageBlock from "./components/direct-message-block";
+import SendMessageForm from "./components/send-message-form";
+import ThreadDrawer from "./components/thread-drawer";
 
 /** This is broken out from DirectMessageChatPage for performance reasons. Don't use outside of file */
 const ChatLog = memo(({ messages }: { messages: NostrEvent[] }) => {

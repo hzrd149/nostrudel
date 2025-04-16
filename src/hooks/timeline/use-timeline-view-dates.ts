@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+
 import { getEntryDetails, useIntersectionObserver } from "../../providers/local/intersection-observer";
 
 /** tracks the min and max dates/entries that are visible in the view */
@@ -34,7 +35,7 @@ export default function useTimelineViewDates(init: { min?: number; max?: number 
       let foundVisible = false;
 
       for (let i = 0; i < timeline.length; i++) {
-        const { entry, ts, id } = timeline[i];
+        const { entry, ts } = timeline[i];
 
         const isIntersecting = entry.isIntersecting;
 

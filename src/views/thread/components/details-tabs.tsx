@@ -1,25 +1,25 @@
-import { ReactNode } from "react";
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/react";
-import { kinds } from "nostr-tools";
-import { getEventUID } from "nostr-idb";
 import styled from "@emotion/styled";
 import { ThreadItem } from "applesauce-core/queries";
+import { getEventUID } from "nostr-idb";
+import { kinds } from "nostr-tools";
+import { ReactNode } from "react";
 
-import PostZapsTab from "./tabs/zaps";
-import ThreadPost from "./thread-post";
+import { CORRECTION_EVENT_KIND } from "../../../helpers/nostr/corrections";
+import { getContentTagRefs } from "../../../helpers/nostr/event";
+import { repliesByDate } from "../../../helpers/thread";
+import { useReadRelays } from "../../../hooks/use-client-relays";
 import useEventZaps from "../../../hooks/use-event-zaps";
+import useRouteSearchValue from "../../../hooks/use-route-search-value";
+import useTimelineLoader from "../../../hooks/use-timeline-loader";
+import CorrectionsTab from "./tabs/corrections";
+import PostQuotesTab from "./tabs/quotes";
 import PostReactionsTab from "./tabs/reactions";
 import PostRepostsTab from "./tabs/reposts";
-import PostQuotesTab from "./tabs/quotes";
-import { useReadRelays } from "../../../hooks/use-client-relays";
-import useTimelineLoader from "../../../hooks/use-timeline-loader";
-import { getContentTagRefs } from "../../../helpers/nostr/event";
-import { CORRECTION_EVENT_KIND } from "../../../helpers/nostr/corrections";
-import CorrectionsTab from "./tabs/corrections";
-import UnknownTab from "./tabs/unknown";
-import { repliesByDate } from "../../../helpers/thread";
 import ToolsTab from "./tabs/tools";
-import useRouteSearchValue from "../../../hooks/use-route-search-value";
+import UnknownTab from "./tabs/unknown";
+import PostZapsTab from "./tabs/zaps";
+import ThreadPost from "./thread-post";
 
 const HiddenScrollbarTabList = styled(TabList)`
   -ms-overflow-style: none; /* IE and Edge */
@@ -35,7 +35,7 @@ export default function DetailsTabs({ post }: { post: ThreadItem }) {
   const zaps = useEventZaps(getEventUID(post.event));
 
   const readRelays = useReadRelays();
-  const { loader, timeline: events } = useTimelineLoader(`${post.event.id}-thread-refs`, readRelays, {
+  const { timeline: events } = useTimelineLoader(`${post.event.id}-thread-refs`, readRelays, {
     "#e": [post.event.id],
   });
 

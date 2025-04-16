@@ -1,12 +1,11 @@
 import { Flex, Heading, IconButton, Spacer } from "@chakra-ui/react";
 import { ReadonlyAccount } from "applesauce-accounts/accounts";
+import { useActiveAccount } from "applesauce-react/hooks";
 import { useNavigate } from "react-router-dom";
 
 import { EditIcon } from "../../../components/icons";
 import UserAvatar from "../../../components/user/user-avatar";
 import UserDnsIdentity from "../../../components/user/user-dns-identity";
-import { useActiveAccount } from "applesauce-react/hooks";
-import useUserProfile from "../../../hooks/use-user-profile";
 import { UserProfileMenu } from "./user-profile-menu";
 import { UserFollowButton } from "../../../components/user/user-follow-button";
 import { useBreakpointValue } from "../../../providers/global/breakpoint-provider";
@@ -20,7 +19,6 @@ export default function Header({
   showRelaySelectionModal: () => void;
 }) {
   const navigate = useNavigate();
-  const metadata = useUserProfile(pubkey);
 
   const account = useActiveAccount();
   const isSelf = pubkey === account?.pubkey;

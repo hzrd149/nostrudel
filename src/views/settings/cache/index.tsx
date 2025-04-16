@@ -1,4 +1,4 @@
-import { Box, Button, Divider, Flex, Heading, Text, useDisclosure } from "@chakra-ui/react";
+import { Box, Button, Divider, Text, useDisclosure } from "@chakra-ui/react";
 
 import { ChevronDownIcon, ChevronUpIcon } from "../../../components/icons";
 import WasmRelay from "../../../services/wasm-relay";
@@ -7,7 +7,6 @@ import InternalRelayCard from "./components/internal-relay-card";
 import CitrineRelayCard from "./components/citrine-relay-card";
 import NostrRelayTrayCard from "./components/nostr-relay-tray-card";
 import HostedRelayCard from "./components/hosted-relay-card";
-import MemoryRelayCard from "./components/memory-relay-card";
 import NoRelayCard from "./components/no-relay-card";
 import SimpleView from "../../../components/layout/presets/simple-view";
 import useCacheRelay from "../../../hooks/use-cache-relay";
@@ -35,7 +34,6 @@ export default function CacheRelayView() {
       </Button>
       {showAdvanced.isOpen && (
         <>
-          <MemoryRelayCard />
           <NoRelayCard />
         </>
       )}

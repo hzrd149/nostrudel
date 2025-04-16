@@ -7,7 +7,6 @@ import {
   Button,
   ButtonGroup,
   Flex,
-  Heading,
   IconButton,
   Link,
   Text,
@@ -18,7 +17,6 @@ import { EventTemplate, kinds } from "nostr-tools";
 import dayjs from "dayjs";
 import { CloseIcon } from "@chakra-ui/icons";
 
-import BackButton from "../../../components/router/back-button";
 import useUserSearchRelayList from "../../../hooks/use-user-search-relay-list";
 import { useActiveAccount } from "applesauce-react/hooks";
 import { cloneList, getRelaysFromList, listAddRelay, listRemoveRelay } from "../../../helpers/nostr/lists";

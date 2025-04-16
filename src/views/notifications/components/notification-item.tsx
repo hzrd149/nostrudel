@@ -1,21 +1,20 @@
-import { ReactNode, memo, useCallback } from "react";
 import { Flex, FlexProps, IconButton, IconButtonProps } from "@chakra-ui/react";
+import { ReactNode, memo, useCallback } from "react";
 
-import EmbeddedUnknown from "../../../components/embed-event/event-types/embedded-unknown";
+import { NostrEvent } from "nostr-tools";
 import { ErrorBoundary } from "../../../components/error-boundary";
-import { TrustProvider } from "../../../providers/local/trust-provider";
 import { ChevronDownIcon, ChevronUpIcon } from "../../../components/icons";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
-import { NostrEvent } from "nostr-tools";
-import ReplyNotification from "./reply-notification";
+import { TrustProvider } from "../../../providers/local/trust-provider";
+import { CategorizedEvent, NotificationType, NotificationTypeSymbol } from "../../../services/notifications";
 import MentionNotification from "./mention-notification";
-import ReactionNotification from "./reaction-notification";
-import RepostNotification from "./repost-notification";
-import ZapNotification from "./zap-notificaiton";
-import UnknownNotification from "./unknown-notification";
 import MessageNotification from "./message-notification";
 import QuoteNotification from "./quote-notification";
-import { CategorizedEvent, NotificationType, NotificationTypeSymbol } from "../../../services/notifications";
+import ReactionNotification from "./reaction-notification";
+import ReplyNotification from "./reply-notification";
+import RepostNotification from "./repost-notification";
+import UnknownNotification from "./unknown-notification";
+import ZapNotification from "./zap-notificaiton";
 
 export const ExpandableToggleButton = ({
   toggle,

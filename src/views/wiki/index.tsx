@@ -23,7 +23,7 @@ function eventFilter(event: NostrEvent) {
 
 export default function WikiHomeView() {
   const relays = useReadRelays(WIKI_RELAYS);
-  const { loader, timeline: pages } = useTimelineLoader(`wiki-recent-pages`, relays, [{ kinds: [WIKI_PAGE_KIND] }], {
+  const { loader } = useTimelineLoader(`wiki-recent-pages`, relays, [{ kinds: [WIKI_PAGE_KIND] }], {
     eventFilter,
   });
 
