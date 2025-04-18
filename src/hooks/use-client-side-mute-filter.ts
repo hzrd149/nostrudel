@@ -1,21 +1,20 @@
 import { useCallback } from "react";
 import { useActiveAccount } from "applesauce-react/hooks";
 
-import useWordMuteFilter from "./use-mute-word-filter";
+import useLegacyMuteWordsFilter from "./use-mute-word-filter";
 import useUserMuteFilter from "./use-user-mute-filter";
 import { NostrEvent } from "../types/nostr-event";
 
-export default function useClientSideMuteFilter() {
+/** @deprecated Use useUserMuteFilter once the legacy mute words filter is removed */
+export default function useClientSideMuteFilter(pubkey?: string) {
   const account = useActiveAccount();
+  pubkey = pubkey || account?.pubkey;
 
-  const wordMuteFilter = useWordMuteFilter();
-  const mustListFilter = useUserMuteFilter(account?.pubkey);
+  const legacyMuteWords = useLegacyMuteWordsFilter();
+  const mustListFilter = useUserMuteFilter(pubkey);
 
   return useCallback(
-    (event: NostrEvent) => {
-      if (event.pubkey === account?.pubkey) return false;
-      return wordMuteFilter(event) || mustListFilter(event);
-    },
-    [wordMuteFilter, mustListFilter, account?.pubkey],
+    (event: NostrEvent) => legacyMuteWords(event) || mustListFilter(event),
+    [legacyMuteWords, mustListFilter],
   );
 }

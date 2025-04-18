@@ -1,24 +1,21 @@
-import { useCallback, useMemo } from "react";
+import { useCallback } from "react";
 
 import { NostrEvent } from "../types/nostr-event";
 import useAppSettings from "./use-user-app-settings";
 
-export default function useWordMuteFilter() {
+/** @deprecated Use useUserMuteFilter once the legacy mute words filter is removed */
+export default function useLegacyMuteWordsFilter() {
   const { mutedWords } = useAppSettings();
-
-  const regexp = useMemo(() => {
-    if (!mutedWords) return;
-    const words = mutedWords
-      .split(/[,\n]/g)
-      .map((s) => s.trim())
-      .filter(Boolean);
-    return new RegExp(`(?:^|\\s|#)(?:${words.join("|")})(?:\\s|$)`, "i");
-  }, [mutedWords]);
 
   return useCallback(
     (event: NostrEvent) => {
-      if (!regexp) return false;
-      return event.content.match(regexp) !== null;
+      const content = event.content.toLocaleLowerCase();
+      if (mutedWords)
+        for (const word of mutedWords) {
+          if (content.includes(word.toLocaleLowerCase())) return false;
+        }
+
+      return true;
     },
     [mutedWords],
   );
