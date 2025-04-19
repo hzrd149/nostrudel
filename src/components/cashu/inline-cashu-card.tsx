@@ -22,7 +22,7 @@ export default function InlineCachuCard({
     if (!token) return;
     const wallet = await getCashuWallet(token.mint);
     const status = await wallet.checkProofsStates(token.proofs);
-    return status.some((s) => s.state !== CheckStateEnum.UNSPENT);
+    return status.some((s) => s.state === CheckStateEnum.UNSPENT);
   }, [token]);
 
   const amount = token?.proofs.reduce((acc, v) => acc + v.amount, 0);
