@@ -6,7 +6,7 @@ import { useCallback, useContext, useMemo } from "react";
 import useUserProfile from "../../hooks/use-user-profile";
 import { PostModalContext } from "../../providers/route/post-modal-provider";
 import { getSharableEventAddress } from "../../services/relay-hints";
-import { QuoteEventIcon } from "../icons";
+import { QuoteIcon } from "../icons";
 
 export default function QuoteEventMenuItem({ event }: { event: NostrEvent }) {
   const toast = useToast();
@@ -29,7 +29,7 @@ export default function QuoteEventMenuItem({ event }: { event: NostrEvent }) {
 
   return (
     address && (
-      <MenuItem onClick={share} icon={<QuoteEventIcon />}>
+      <MenuItem onClick={share} icon={<QuoteIcon />}>
         Quote Event
       </MenuItem>
     )

@@ -55,6 +55,7 @@ const NotificationsTimeline = memo(
   ({
     showReplies,
     showMentions,
+    showQuotes,
     showZaps,
     showReposts,
     showReactions,
@@ -62,6 +63,7 @@ const NotificationsTimeline = memo(
   }: {
     showReplies: boolean;
     showMentions: boolean;
+    showQuotes: boolean;
     showZaps: boolean;
     showReposts: boolean;
     showReactions: boolean;
@@ -98,6 +100,9 @@ const NotificationsTimeline = memo(
           break;
 
         case NotificationType.Quote:
+          if (!showQuotes) continue;
+          break;
+
         case NotificationType.Mention:
           if (!showMentions) continue;
           break;
@@ -191,6 +196,7 @@ function NotificationsPage() {
 
   const showReplies = useLocalStorageDisclosure("notifications-show-replies", true);
   const showMentions = useLocalStorageDisclosure("notifications-show-mentions", true);
+  const showQuotes = useLocalStorageDisclosure("notifications-show-quotes", true);
   const showZaps = useLocalStorageDisclosure("notifications-show-zaps", true);
   const showReposts = useLocalStorageDisclosure("notifications-show-reposts", true);
   const showReactions = useLocalStorageDisclosure("notifications-show-reactions", false);
@@ -205,6 +211,7 @@ function NotificationsPage() {
           <NotificationTypeToggles
             showReplies={showReplies}
             showMentions={showMentions}
+            showQuotes={showQuotes}
             showZaps={showZaps}
             showReactions={showReactions}
             showReposts={showReposts}
@@ -220,6 +227,7 @@ function NotificationsPage() {
             <NotificationsTimeline
               showReplies={showReplies.isOpen}
               showMentions={showMentions.isOpen}
+              showQuotes={showQuotes.isOpen}
               showZaps={showZaps.isOpen}
               showReposts={showReposts.isOpen}
               showReactions={showReactions.isOpen}

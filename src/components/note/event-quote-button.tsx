@@ -2,7 +2,7 @@ import { useContext } from "react";
 import { IconButton, IconButtonProps } from "@chakra-ui/react";
 import { NostrEvent } from "nostr-tools";
 
-import { QuoteEventIcon } from "../icons";
+import { QuoteIcon } from "../icons";
 import { PostModalContext } from "../../providers/route/post-modal-provider";
 import { getSharableEventAddress } from "../../services/relay-hints";
 
@@ -23,12 +23,6 @@ export default function EventQuoteButton({
   };
 
   return (
-    <IconButton
-      icon={<QuoteEventIcon />}
-      onClick={handleClick}
-      aria-label={ariaLabel || title}
-      title={title}
-      {...props}
-    />
+    <IconButton icon={<QuoteIcon />} onClick={handleClick} aria-label={ariaLabel || title} title={title} {...props} />
   );
 }
