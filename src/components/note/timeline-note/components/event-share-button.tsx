@@ -1,10 +1,9 @@
 import { Button, IconButton, useDisclosure } from "@chakra-ui/react";
-import { kinds } from "nostr-tools";
 import { useActiveAccount } from "applesauce-react/hooks";
+import { kinds, NostrEvent } from "nostr-tools";
 
-import { NostrEvent } from "../../../../types/nostr-event";
-import { RepostIcon } from "../../../icons";
 import useEventCount from "../../../../hooks/use-event-count";
+import { RepostIcon } from "../../../icons";
 import ShareModal from "./share-modal";
 
 export default function EventShareButton({ event, title = "Share Event" }: { event: NostrEvent; title?: string }) {

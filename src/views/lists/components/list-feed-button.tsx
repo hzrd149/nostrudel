@@ -2,7 +2,7 @@ import { Button, ButtonProps } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 import { kinds } from "nostr-tools";
 
-import { NostrEvent } from "../../../types/nostr-event";
+import { NostrEvent } from "nostr-tools";
 import { getEventCoordinate } from "../../../helpers/nostr/event";
 
 export default function ListFeedButton({ list, ...props }: { list: NostrEvent } & Omit<ButtonProps, "children">) {

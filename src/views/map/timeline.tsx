@@ -3,7 +3,7 @@ import { kinds } from "nostr-tools";
 
 import { ErrorBoundary } from "../../components/error-boundary";
 import StreamNote from "../../components/timeline-page/generic-note-timeline/stream-note";
-import { NostrEvent } from "../../types/nostr-event";
+import { NostrEvent } from "nostr-tools";
 import TimelineNote from "../../components/note/timeline-note";
 
 const RenderEvent = React.memo(({ event, focused }: { event: NostrEvent; focused?: boolean }) => {

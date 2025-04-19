@@ -1,9 +1,9 @@
 import { ButtonProps, IconButton, useDisclosure } from "@chakra-ui/react";
+import { NostrEvent } from "nostr-tools";
 
-import { NostrEvent } from "../../types/nostr-event";
-import { LightningIcon } from "../icons";
-import ZapModal from "../event-zap-modal";
 import useUserLNURLMetadata from "../../hooks/use-user-lnurl-metadata";
+import ZapModal from "../event-zap-modal";
+import { LightningIcon } from "../icons";
 
 export type SingleZapButton = Omit<ButtonProps, "children"> & {
   event: NostrEvent;

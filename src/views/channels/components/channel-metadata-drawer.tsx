@@ -18,7 +18,7 @@ import {
 } from "@chakra-ui/react";
 import { kinds } from "nostr-tools";
 
-import { NostrEvent } from "../../../types/nostr-event";
+import { NostrEvent } from "nostr-tools";
 import useChannelMetadata from "../../../hooks/use-channel-metadata";
 import useTimelineLoader from "../../../hooks/use-timeline-loader";
 import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";

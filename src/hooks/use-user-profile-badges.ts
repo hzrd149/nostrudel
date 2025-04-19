@@ -5,7 +5,7 @@ import { PROFILE_BADGES_IDENTIFIER, parseProfileBadges } from "../helpers/nostr/
 import useReplaceableEvents from "./use-replaceable-events";
 import useSingleEvents from "./use-single-events";
 import { getEventCoordinate } from "../helpers/nostr/event";
-import { NostrEvent } from "../types/nostr-event";
+import { NostrEvent } from "nostr-tools";
 
 export default function useUserProfileBadges(pubkey: string, additionalRelays?: Iterable<string>) {
   const profileBadgesEvent = useReplaceableEvent(

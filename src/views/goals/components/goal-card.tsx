@@ -4,7 +4,7 @@ import { ButtonGroup, Card, CardBody, CardHeader, CardProps, Flex, Heading, Link
 
 import UserAvatarLink from "../../../components/user/user-avatar-link";
 import UserLink from "../../../components/user/user-link";
-import { NostrEvent } from "../../../types/nostr-event";
+import { NostrEvent } from "nostr-tools";
 import { getGoalClosedDate, getGoalName } from "../../../helpers/nostr/goal";
 import GoalMenu from "./goal-menu";
 import GoalProgress from "./goal-progress";

@@ -34,8 +34,8 @@ import {
 import { getDisplayName } from "../../helpers/nostr/profile";
 import useUserMuteList from "../../hooks/use-user-mute-list";
 import useUserProfile from "../../hooks/use-user-profile";
-import { DraftNostrEvent } from "../../types/nostr-event";
 import { usePublishEvent } from "../global/publish-provider";
+import { EventTemplate } from "nostr-tools";
 
 type MuteModalContextType = {
   openModal: (pubkey: string) => void;
@@ -120,7 +120,7 @@ function UnmuteHandler() {
 
   const unmuteAll = async () => {
     if (!muteList) return;
-    let draft: DraftNostrEvent = cloneList(muteList);
+    let draft: EventTemplate = cloneList(muteList);
     draft = pruneExpiredPubkeys(draft);
 
     const pub = await publish("Unmute", draft);
@@ -163,7 +163,7 @@ function UnmuteModal({ onClose }: Omit<ModalProps, "children">) {
 
   const unmuteAll = async () => {
     if (!muteList) return;
-    let draft: DraftNostrEvent = cloneList(muteList);
+    let draft: EventTemplate = cloneList(muteList);
     draft = pruneExpiredPubkeys(draft);
     const pub = await publish("Unmute", draft);
     if (pub) onClose();
@@ -171,7 +171,7 @@ function UnmuteModal({ onClose }: Omit<ModalProps, "children">) {
   const extendAll = async (expiration: number) => {
     if (!muteList) return;
     const expired = getExpiredPubkeys();
-    let draft: DraftNostrEvent = cloneList(muteList);
+    let draft: EventTemplate = cloneList(muteList);
     draft = pruneExpiredPubkeys(draft);
     for (const [pubkey] of expired) {
       draft = muteListAddPubkey(draft, pubkey, expiration);
@@ -183,13 +183,13 @@ function UnmuteModal({ onClose }: Omit<ModalProps, "children">) {
 
   const unmuteUser = async (pubkey: string) => {
     if (!muteList) return;
-    let draft: DraftNostrEvent = cloneList(muteList);
+    let draft: EventTemplate = cloneList(muteList);
     draft = muteListRemovePubkey(draft, pubkey);
     await publish("Unmute", draft);
   };
   const extendUser = async (pubkey: string, expiration: number) => {
     if (!muteList) return;
-    let draft: DraftNostrEvent = cloneList(muteList);
+    let draft: EventTemplate = cloneList(muteList);
     draft = muteListRemovePubkey(draft, pubkey);
     draft = muteListAddPubkey(draft, pubkey, expiration);
     await publish("Extend mute", draft);

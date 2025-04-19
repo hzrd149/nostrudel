@@ -8,7 +8,7 @@ import PeopleListProvider, { usePeopleListContext } from "../../providers/local/
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { useReadRelays } from "../../hooks/use-client-relays";
-import { NostrEvent } from "../../types/nostr-event";
+import { NostrEvent } from "nostr-tools";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import EmojiPackCard from "./components/emoji-pack-card";

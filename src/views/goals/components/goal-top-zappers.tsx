@@ -3,7 +3,7 @@ import { getEventUID, getZapPayment, getZapSender } from "applesauce-core/helper
 
 import { getGoalRelays } from "../../../helpers/nostr/goal";
 import useEventZaps from "../../../hooks/use-event-zaps";
-import { NostrEvent } from "../../../types/nostr-event";
+import { NostrEvent } from "nostr-tools";
 import UserAvatarLink from "../../../components/user/user-avatar-link";
 import UserLink from "../../../components/user/user-link";
 import { humanReadableSats } from "../../../helpers/lightning";

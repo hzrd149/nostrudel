@@ -1,5 +1,5 @@
-import { getProfilePointerFromPTag, isPTag } from "applesauce-core/helpers";
-import { ATag, NostrEvent, isATag, isETag } from "../../types/nostr-event";
+import { getProfilePointerFromPTag, isATag, isETag, isPTag } from "applesauce-core/helpers";
+import { NostrEvent } from "nostr-tools";
 
 export const PROFILE_BADGES_IDENTIFIER = "profile_badges";
 
@@ -43,7 +43,7 @@ export function parseProfileBadges(profileBadges: NostrEvent) {
   const badgesAdded = new Set();
   const badgeAwardSets: { badgeCord: string; awardEventId: string; relay?: string }[] = [];
 
-  let lastBadgeTag: ATag | undefined;
+  let lastBadgeTag: ["a", ...string[]] | undefined;
   for (const tag of profileBadges.tags) {
     if (isATag(tag)) {
       lastBadgeTag = tag;

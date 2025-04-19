@@ -1,21 +1,20 @@
-import { useOutletContext } from "react-router-dom";
 import { Box, Flex, Spacer, Text } from "@chakra-ui/react";
-import { nip25 } from "nostr-tools";
+import { nip25, NostrEvent } from "nostr-tools";
+import { useOutletContext } from "react-router-dom";
 
-import useTimelineLoader from "../../hooks/use-timeline-loader";
-import { NostrEvent } from "../../types/nostr-event";
-import { useAdditionalRelayContext } from "../../providers/local/additional-relay-context";
-import { useReadRelays } from "../../hooks/use-client-relays";
+import { EmbedEventPointer } from "../../components/embed-event";
+import NoteMenu from "../../components/note/note-menu";
 import TimelineActionAndStatus from "../../components/timeline/timeline-action-and-status";
-import IntersectionObserverProvider from "../../providers/local/intersection-observer";
-import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
-import { TrustProvider } from "../../providers/local/trust-provider";
 import UserAvatar from "../../components/user/user-avatar";
 import UserLink from "../../components/user/user-link";
-import { EmbedEventPointer } from "../../components/embed-event";
 import VerticalPageLayout from "../../components/vertical-page-layout";
-import NoteMenu from "../../components/note/note-menu";
+import { useReadRelays } from "../../hooks/use-client-relays";
 import useEventIntersectionRef from "../../hooks/use-event-intersection-ref";
+import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
+import useTimelineLoader from "../../hooks/use-timeline-loader";
+import { useAdditionalRelayContext } from "../../providers/local/additional-relay-context";
+import IntersectionObserverProvider from "../../providers/local/intersection-observer";
+import { TrustProvider } from "../../providers/local/trust-provider";
 
 const Reaction = ({ reaction: reaction }: { reaction: NostrEvent }) => {
   const ref = useEventIntersectionRef(reaction);

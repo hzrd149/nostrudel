@@ -1,5 +1,5 @@
 import { getTagValue } from "applesauce-core/helpers";
-import { NostrEvent } from "../../types/nostr-event";
+import { NostrEvent } from "nostr-tools";
 
 export const FLARE_VIDEO_KIND = 34235;
 

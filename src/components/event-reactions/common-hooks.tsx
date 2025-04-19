@@ -1,9 +1,8 @@
 import { useCallback } from "react";
 import { Emoji } from "applesauce-core/helpers";
 import { useActiveAccount, useEventFactory } from "applesauce-react/hooks";
-
+import { NostrEvent } from "nostr-tools";
 import { ReactionGroup } from "../../helpers/nostr/reactions";
-import { NostrEvent } from "../../types/nostr-event";
 import { usePublishEvent } from "../../providers/global/publish-provider";
 import { useSigningContext } from "../../providers/global/signing-provider";
 

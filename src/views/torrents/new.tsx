@@ -21,7 +21,7 @@ import {
 import { sha1 } from "@noble/hashes/sha1";
 import { bytesToHex } from "@noble/hashes/utils";
 import dayjs from "dayjs";
-import { nip19 } from "nostr-tools";
+import { EventTemplate, nip19 } from "nostr-tools";
 import { PropsWithChildren, ReactNode, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
@@ -31,7 +31,6 @@ import { Category, TORRENT_KIND, torrentCatagories } from "../../helpers/nostr/t
 import { BencodeValue, decode, encode } from "../../lib/bencode";
 import { useBreakpointValue } from "../../providers/global/breakpoint-provider";
 import { usePublishEvent } from "../../providers/global/publish-provider";
-import { DraftNostrEvent } from "../../types/nostr-event";
 
 function RadioCard(props: UseRadioProps & PropsWithChildren) {
   const { getInputProps, getRadioProps } = useRadio(props);
@@ -101,7 +100,7 @@ export default function NewTorrentView() {
   };
 
   const onSubmit = handleSubmit(async (values) => {
-    const draft: DraftNostrEvent = {
+    const draft: EventTemplate = {
       kind: TORRENT_KIND,
       content: values.description,
       tags: [

@@ -1,23 +1,22 @@
-import { useCallback, useState } from "react";
 import { Button, Flex, Select } from "@chakra-ui/react";
 import dayjs from "dayjs";
 import codes from "iso-language-codes";
-import { Filter } from "nostr-tools";
+import { EventTemplate, Filter, NostrEvent } from "nostr-tools";
+import { useCallback, useState } from "react";
 
-import { useReadRelays } from "../../../../hooks/use-client-relays";
-import useTimelineLoader from "../../../../hooks/use-timeline-loader";
-import { getEventUID } from "../../../../helpers/nostr/event";
+import { useActiveAccount } from "applesauce-react/hooks";
 import {
   DVM_STATUS_KIND,
   DVM_TTS_JOB_KIND,
   DVM_TTS_RESULT_KIND,
   groupEventsIntoJobs,
 } from "../../../../helpers/nostr/dvm";
-import { DraftNostrEvent, NostrEvent } from "../../../../types/nostr-event";
-import relayScoreboardService from "../../../../services/relay-scoreboard";
-import { useActiveAccount } from "applesauce-react/hooks";
-import TextToSpeechJob from "./tts-job";
+import { getEventUID } from "../../../../helpers/nostr/event";
+import { useReadRelays } from "../../../../hooks/use-client-relays";
+import useTimelineLoader from "../../../../hooks/use-timeline-loader";
 import { usePublishEvent } from "../../../../providers/global/publish-provider";
+import relayScoreboardService from "../../../../services/relay-scoreboard";
+import TextToSpeechJob from "./tts-job";
 
 export default function NoteTextToSpeechPage({ note }: { note: NostrEvent }) {
   const publish = usePublishEvent();
@@ -27,7 +26,7 @@ export default function NoteTextToSpeechPage({ note }: { note: NostrEvent }) {
   const readRelays = useReadRelays();
   const requestReading = useCallback(async () => {
     const top8Relays = relayScoreboardService.getRankedRelays(readRelays).slice(0, 8);
-    const draft: DraftNostrEvent = {
+    const draft: EventTemplate = {
       kind: DVM_TTS_JOB_KIND,
       content: "",
       created_at: dayjs().unix(),

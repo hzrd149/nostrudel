@@ -1,7 +1,20 @@
 import { Box, ButtonGroup, Flex, Heading, Spinner, Tag, Text } from "@chakra-ui/react";
 import { getEventUID, isStreamURL } from "applesauce-core/helpers";
+import { NostrEvent } from "nostr-tools";
 
+import { ErrorBoundary } from "../../components/error-boundary";
+import SimpleDislikeButton from "../../components/event-reactions/simple-dislike-button";
+import SimpleLikeButton from "../../components/event-reactions/simple-like-button";
+import LiveVideoPlayer from "../../components/live-video-player";
+import EventQuoteButton from "../../components/note/event-quote-button";
+import SimpleBookmarkButton from "../../components/simple-bookmark-button";
+import UserAvatarLink from "../../components/user/user-avatar-link";
+import UserDnsIdentity from "../../components/user/user-dns-identity";
+import { UserFollowButton } from "../../components/user/user-follow-button";
+import UserLink from "../../components/user/user-link";
+import UserName from "../../components/user/user-name";
 import VerticalPageLayout from "../../components/vertical-page-layout";
+import EventZapButton from "../../components/zap/event-zap-button";
 import {
   FLARE_VIDEO_KIND,
   getVideoImages,
@@ -9,26 +22,13 @@ import {
   getVideoTitle,
   getVideoUrl,
 } from "../../helpers/nostr/video";
-import { NostrEvent } from "../../types/nostr-event";
+import { useReadRelays } from "../../hooks/use-client-relays";
 import useParamsAddressPointer from "../../hooks/use-params-address-pointer";
 import useReplaceableEvent from "../../hooks/use-replaceable-event";
-import UserAvatarLink from "../../components/user/user-avatar-link";
-import UserLink from "../../components/user/user-link";
-import UserDnsIdentity from "../../components/user/user-dns-identity";
-import { UserFollowButton } from "../../components/user/user-follow-button";
-import VideoMenu from "./components/video-menu";
-import SimpleLikeButton from "../../components/event-reactions/simple-like-button";
-import SimpleDislikeButton from "../../components/event-reactions/simple-dislike-button";
-import { ErrorBoundary } from "../../components/error-boundary";
-import { useReadRelays } from "../../hooks/use-client-relays";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
-import VideoCard from "./components/video-card";
-import UserName from "../../components/user/user-name";
 import { useBreakpointValue } from "../../providers/global/breakpoint-provider";
-import SimpleBookmarkButton from "../../components/simple-bookmark-button";
-import EventZapButton from "../../components/zap/event-zap-button";
-import EventQuoteButton from "../../components/note/event-quote-button";
-import LiveVideoPlayer from "../../components/live-video-player";
+import VideoCard from "./components/video-card";
+import VideoMenu from "./components/video-menu";
 
 function VideoRecommendations({ video }: { video: NostrEvent }) {
   const readRelays = useReadRelays();

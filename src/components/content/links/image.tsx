@@ -1,4 +1,3 @@
-import { MouseEvent, MouseEventHandler, forwardRef, useCallback, useEffect, useRef, useState } from "react";
 import {
   Button,
   ButtonProps,
@@ -21,20 +20,21 @@ import { sha256 } from "@noble/hashes/sha256";
 import { bytesToHex } from "@noble/hashes/utils";
 import {
   getHashFromURL,
-  handleImageFallbacks,
   getServersFromServerListEvent,
+  handleImageFallbacks,
   USER_BLOSSOM_SERVER_LIST_KIND,
 } from "blossom-client-sdk";
+import { NostrEvent } from "nostr-tools";
+import { forwardRef, MouseEvent, MouseEventHandler, useCallback, useEffect, useRef, useState } from "react";
 
-import { useRegisterSlide } from "../../lightbox-provider";
-import { isImageURL } from "../../../helpers/url";
-import { NostrEvent } from "../../../types/nostr-event";
-import useAppSettings from "../../../hooks/use-user-app-settings";
-import useElementTrustBlur from "../../../hooks/use-element-trust-blur";
 import { buildImageProxyURL } from "../../../helpers/image";
-import ExpandableEmbed from "../components/expandable-embed";
+import { isImageURL } from "../../../helpers/url";
+import useElementTrustBlur from "../../../hooks/use-element-trust-blur";
+import useAppSettings from "../../../hooks/use-user-app-settings";
 import { useMediaOwnerContext } from "../../../providers/local/media-owner-provider";
 import { eventStore } from "../../../services/event-store";
+import { useRegisterSlide } from "../../lightbox-provider";
+import ExpandableEmbed from "../components/expandable-embed";
 
 export type TrustImageProps = ImageProps;
 

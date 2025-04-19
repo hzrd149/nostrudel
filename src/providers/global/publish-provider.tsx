@@ -1,19 +1,18 @@
-import { PropsWithChildren, createContext, useCallback, useContext, useMemo, useState } from "react";
 import { useToast } from "@chakra-ui/react";
-import { EventTemplate, NostrEvent, UnsignedEvent } from "nostr-tools";
 import { addSeenRelay, mergeRelaySets } from "applesauce-core/helpers";
 import { useActiveAccount } from "applesauce-react/hooks";
+import { nanoid } from "nanoid";
+import { EventTemplate, NostrEvent, UnsignedEvent } from "nostr-tools";
+import { PropsWithChildren, createContext, useCallback, useContext, useMemo, useState } from "react";
 import { OkPacketAgainstEvent } from "rx-nostr";
 import { BehaviorSubject } from "rxjs";
-import { nanoid } from "nanoid";
 
-import { useSigningContext } from "./signing-provider";
-import { DraftNostrEvent } from "../../types/nostr-event";
+import { useWriteRelays } from "../../hooks/use-client-relays";
+import { useUserOutbox } from "../../hooks/use-user-mailboxes";
 import { getCacheRelay } from "../../services/cache-relay";
 import { eventStore } from "../../services/event-store";
-import { useUserOutbox } from "../../hooks/use-user-mailboxes";
-import { useWriteRelays } from "../../hooks/use-client-relays";
 import rxNostr from "../../services/rx-nostr";
+import { useSigningContext } from "./signing-provider";
 
 export type PublishResults = { packets: OkPacketAgainstEvent[]; relays: Record<string, OkPacketAgainstEvent> };
 
@@ -112,7 +111,7 @@ export default function PublishProvider({ children }: PropsWithChildren) {
   const publishEvent = useCallback(
     async (
       label: string,
-      event: DraftNostrEvent | NostrEvent,
+      event: EventTemplate | NostrEvent,
       additionalRelays?: string[],
       quite = true,
       onlyAdditionalRelays = false,

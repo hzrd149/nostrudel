@@ -1,6 +1,6 @@
 import { ReactNode, memo, useCallback } from "react";
 
-import { NostrEvent } from "../../../types/nostr-event";
+import { NostrEvent } from "nostr-tools";
 import MessageBlock, { MessageBlockProps } from "../../../components/message/message-block";
 import ChannelMessageContent from "./channel-message-content";
 

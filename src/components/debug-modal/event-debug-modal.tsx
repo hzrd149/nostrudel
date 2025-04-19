@@ -1,34 +1,33 @@
-import { ComponentType, useState } from "react";
 import {
+  Button,
+  ComponentWithAs,
+  Flex,
+  IconButton,
+  IconProps,
   Modal,
-  ModalOverlay,
-  ModalContent,
   ModalBody,
   ModalCloseButton,
+  ModalContent,
   ModalHeader,
-  Button,
+  ModalOverlay,
+  ModalProps,
   Text,
-  ComponentWithAs,
-  IconProps,
-  IconButton,
-  Flex,
 } from "@chakra-ui/react";
-import { nip19 } from "nostr-tools";
-import { ModalProps } from "@chakra-ui/react";
+import { nip19, NostrEvent } from "nostr-tools";
+import { ComponentType, useState } from "react";
 
-import { NostrEvent } from "../../types/nostr-event";
-import RawValue from "./raw-value";
 import { getSharableEventAddress } from "../../services/relay-hints";
 import { CodeIcon, RelayIcon, ThreadIcon } from "../icons";
-import RawJsonPage from "./pages/raw";
-import PenTool01 from "../icons/pen-tool-01";
-import DebugContentPage from "./pages/content";
-import DebugThreadingPage from "./pages/threading";
-import Tag01 from "../icons/tag-01";
-import DebugTagsPage from "./pages/tags";
-import DebugEventRelaysPage from "./pages/relays";
 import Database01 from "../icons/database-01";
+import PenTool01 from "../icons/pen-tool-01";
+import Tag01 from "../icons/tag-01";
 import DebugEventCachePage from "./pages/cache";
+import DebugContentPage from "./pages/content";
+import RawJsonPage from "./pages/raw";
+import DebugEventRelaysPage from "./pages/relays";
+import DebugTagsPage from "./pages/tags";
+import DebugThreadingPage from "./pages/threading";
+import RawValue from "./raw-value";
 
 type DebugTool = {
   id: string;

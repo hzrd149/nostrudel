@@ -1,16 +1,16 @@
-import { MouseEventHandler, useCallback } from "react";
 import { Card, CardProps, Flex, LinkBox, Spacer } from "@chakra-ui/react";
+import { NostrEvent } from "nostr-tools";
+import { MouseEventHandler, useCallback } from "react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 
-import { NostrEvent } from "../../../types/nostr-event";
-import UserAvatarLink from "../../user/user-avatar-link";
-import UserLink from "../../user/user-link";
 import { TrustProvider } from "../../../providers/local/trust-provider";
-import { NoteLink } from "../../note/note-link";
-import Timestamp from "../../timestamp";
+import { getSharableEventAddress } from "../../../services/relay-hints";
 import { CompactNoteContent } from "../../compact-note-content";
 import HoverLinkOverlay from "../../hover-link-overlay";
-import { getSharableEventAddress } from "../../../services/relay-hints";
+import { NoteLink } from "../../note/note-link";
+import Timestamp from "../../timestamp";
+import UserAvatarLink from "../../user/user-avatar-link";
+import UserLink from "../../user/user-link";
 
 export default function EmbeddedNote({ event, ...props }: Omit<CardProps, "children"> & { event: NostrEvent }) {
   const navigate = useNavigate();

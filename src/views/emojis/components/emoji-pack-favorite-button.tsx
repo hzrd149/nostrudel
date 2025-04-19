@@ -1,9 +1,8 @@
 import { useState } from "react";
 import { IconButton, IconButtonProps } from "@chakra-ui/react";
-import { kinds } from "nostr-tools";
+import { EventTemplate, kinds, NostrEvent } from "nostr-tools";
 import dayjs from "dayjs";
 
-import { DraftNostrEvent, NostrEvent } from "../../../types/nostr-event";
 import { StarEmptyIcon, StarFullIcon } from "../../../components/icons";
 import { getEventCoordinate } from "../../../helpers/nostr/event";
 import useFavoriteEmojiPacks from "../../../hooks/use-favorite-emoji-packs";
@@ -21,7 +20,7 @@ export default function EmojiPackFavoriteButton({
   const [loading, setLoading] = useState(false);
 
   const handleClick = async () => {
-    const prev: DraftNostrEvent = favoritePacks || {
+    const prev: EventTemplate = favoritePacks || {
       kind: kinds.UserEmojiList,
       created_at: dayjs().unix(),
       content: "",

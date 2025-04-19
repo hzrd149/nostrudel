@@ -1,11 +1,11 @@
-import { useMemo, useState } from "react";
 import { useActiveAccount } from "applesauce-react/hooks";
+import { NostrEvent } from "nostr-tools";
+import { useMemo, useState } from "react";
 
-import { NostrEvent } from "../../types/nostr-event";
-import useEventReactions from "../../hooks/use-event-reactions";
 import { groupReactions } from "../../helpers/nostr/reactions";
-import ReactionGroupButton from "./reaction-group-button";
+import useEventReactions from "../../hooks/use-event-reactions";
 import { useAddReaction } from "./common-hooks";
+import ReactionGroupButton from "./reaction-group-button";
 
 export default function EventReactionButtons({ event, max }: { event: NostrEvent; max?: number }) {
   const account = useActiveAccount();

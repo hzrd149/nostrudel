@@ -15,7 +15,7 @@ import { getEmojis, getPackName } from "applesauce-core/helpers/emoji";
 
 import UserAvatarLink from "../../../components/user/user-avatar-link";
 import UserLink from "../../../components/user/user-link";
-import { NostrEvent } from "../../../types/nostr-event";
+import { NostrEvent } from "nostr-tools";
 import EmojiPackFavoriteButton from "./emoji-pack-favorite-button";
 import EmojiPackMenu from "./emoji-pack-menu";
 import EventZapButton from "../../../components/zap/event-zap-button";

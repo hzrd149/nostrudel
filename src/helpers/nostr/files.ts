@@ -1,4 +1,4 @@
-import { NostrEvent } from "../../types/nostr-event";
+import { NostrEvent } from "nostr-tools";
 
 export const FILE_KIND = 1063;
 export const VIDEO_TYPES = ["video/mp4", "video/webm"];

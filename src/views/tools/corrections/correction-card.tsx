@@ -1,11 +1,11 @@
-import { Suspense, useMemo, useState } from "react";
-import { NostrEvent } from "nostr-tools";
 import { Button, ButtonGroup, Spinner } from "@chakra-ui/react";
+import { isETag } from "applesauce-core/helpers";
+import { NostrEvent } from "nostr-tools";
+import { Suspense, useMemo, useState } from "react";
 
-import { isETag } from "../../../types/nostr-event";
-import useSingleEvent from "../../../hooks/use-single-event";
-import TimelineItem from "../../../components/timeline-page/generic-note-timeline/timeline-item";
 import DiffViewer from "../../../components/diff/diff-viewer";
+import TimelineItem from "../../../components/timeline-page/generic-note-timeline/timeline-item";
+import useSingleEvent from "../../../hooks/use-single-event";
 
 export default function CorrectionCard({
   correction,

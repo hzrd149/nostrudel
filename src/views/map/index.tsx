@@ -13,7 +13,7 @@ import useTimelineLoader from "../../hooks/use-timeline-loader";
 
 import TimelineActionAndStatus from "../../components/timeline/timeline-action-and-status";
 import { debounce } from "../../helpers/function";
-import { NostrEvent } from "../../types/nostr-event";
+import { NostrEvent } from "nostr-tools";
 import MapTimeline from "./timeline";
 
 import LeafletMap from "./components/leaflet-map";

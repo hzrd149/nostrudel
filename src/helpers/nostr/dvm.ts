@@ -1,5 +1,6 @@
+import { isETag } from "applesauce-core/helpers";
 import { safeParse } from "applesauce-core/helpers/json";
-import { NostrEvent, Tag, isETag } from "../../types/nostr-event";
+import { NostrEvent } from "nostr-tools";
 
 export const DVM_STATUS_KIND = 7000;
 
@@ -61,7 +62,7 @@ export function getResponseFromDVM(job: DVMJob, pubkey: string) {
 export function getResultEventIds(result: NostrEvent) {
   const parsed = JSON.parse(result.content);
   if (!Array.isArray(parsed)) return [];
-  const tags = parsed as Tag[];
+  const tags = parsed as string[][];
   return tags.filter(isETag).map((t) => t[1]);
 }
 

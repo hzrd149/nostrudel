@@ -1,15 +1,15 @@
 import { Card, CardProps, Divider, Flex, Link } from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router-dom";
-import { NostrEvent } from "nostr-tools";
 import { isATag } from "applesauce-core/helpers";
+import { NostrEvent } from "nostr-tools";
+import { Link as RouterLink } from "react-router-dom";
 
-import UserLink from "../../user/user-link";
-import UserAvatar from "../../user/user-avatar";
-import ChatMessageContent from "../../../views/streams/stream/stream-chat/chat-message-content";
-import useReplaceableEvent from "../../../hooks/use-replaceable-event";
-import StreamStatusBadge from "../../../views/streams/components/status-badge";
-import { getSharableEventAddress } from "../../../services/relay-hints";
 import { getStreamTitle } from "../../../helpers/nostr/stream";
+import useReplaceableEvent from "../../../hooks/use-replaceable-event";
+import { getSharableEventAddress } from "../../../services/relay-hints";
+import StreamStatusBadge from "../../../views/streams/components/status-badge";
+import ChatMessageContent from "../../../views/streams/stream/stream-chat/chat-message-content";
+import UserAvatar from "../../user/user-avatar";
+import UserLink from "../../user/user-link";
 
 export default function EmbeddedStreamMessage({
   message,

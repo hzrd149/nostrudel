@@ -1,16 +1,16 @@
 import { Box, Button, Flex, Input, Text } from "@chakra-ui/react";
 import { getZapSplits } from "applesauce-core/helpers";
+import { NostrEvent } from "nostr-tools";
 import { useForm } from "react-hook-form";
 
-import { NostrEvent } from "../../types/nostr-event";
 import { humanReadableSats } from "../../helpers/lightning";
-import { LightningIcon } from "../icons";
+import useAppSettings from "../../hooks/use-user-app-settings";
 import useUserLNURLMetadata from "../../hooks/use-user-lnurl-metadata";
 import { EmbedEvent, EmbedProps } from "../embed-event";
-import useAppSettings from "../../hooks/use-user-app-settings";
-import CustomZapAmountOptions from "./zap-options";
+import { LightningIcon } from "../icons";
 import UserAvatar from "../user/user-avatar";
 import UserLink from "../user/user-link";
+import CustomZapAmountOptions from "./zap-options";
 
 function UserCard({ pubkey, percent }: { pubkey: string; percent?: number }) {
   const { address } = useUserLNURLMetadata(pubkey);

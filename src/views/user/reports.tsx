@@ -1,18 +1,18 @@
 import { Flex, Text } from "@chakra-ui/react";
+import { kinds, NostrEvent } from "nostr-tools";
 import { useOutletContext } from "react-router-dom";
-import { kinds } from "nostr-tools";
 
+import { isETag, isPTag } from "applesauce-core/helpers";
 import { NoteLink } from "../../components/note/note-link";
-import UserLink from "../../components/user/user-link";
-import { filterTagsByContentRefs } from "../../helpers/nostr/event";
-import useTimelineLoader from "../../hooks/use-timeline-loader";
-import { isETag, isPTag, NostrEvent } from "../../types/nostr-event";
-import { useAdditionalRelayContext } from "../../providers/local/additional-relay-context";
 import TimelineActionAndStatus from "../../components/timeline/timeline-action-and-status";
-import IntersectionObserverProvider from "../../providers/local/intersection-observer";
-import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
+import UserLink from "../../components/user/user-link";
 import VerticalPageLayout from "../../components/vertical-page-layout";
+import { filterTagsByContentRefs } from "../../helpers/nostr/event";
 import useEventIntersectionRef from "../../hooks/use-event-intersection-ref";
+import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
+import useTimelineLoader from "../../hooks/use-timeline-loader";
+import { useAdditionalRelayContext } from "../../providers/local/additional-relay-context";
+import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 
 function ReportEvent({ report }: { report: NostrEvent }) {
   const reportedEvent = report.tags.filter(isETag)[0]?.[1];

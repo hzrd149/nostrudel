@@ -1,4 +1,4 @@
-import { NostrEvent } from "../../types/nostr-event";
+import { NostrEvent } from "nostr-tools";
 
 export type ReactionGroup = { emoji: string; url?: string; name?: string; count: number; pubkeys: string[] };
 

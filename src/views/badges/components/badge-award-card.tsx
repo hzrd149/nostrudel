@@ -4,7 +4,7 @@ import { Link as RouterLink } from "react-router-dom";
 
 import { getBadgeAwardBadge, getBadgeAwardPubkeys, getBadgeImage, getBadgeName } from "../../../helpers/nostr/badges";
 import useReplaceableEvent from "../../../hooks/use-replaceable-event";
-import { NostrEvent } from "../../../types/nostr-event";
+import { NostrEvent } from "nostr-tools";
 import UserLink from "../../../components/user/user-link";
 import Timestamp from "../../../components/timestamp";
 import UserAvatarLink from "../../../components/user/user-avatar-link";

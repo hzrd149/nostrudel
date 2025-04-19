@@ -1,9 +1,10 @@
-import { NostrEvent } from "../../types/nostr-event";
-import { DotsMenuButton, MenuIconButtonProps } from "../dots-menu-button";
-import OpenInAppMenuItem from "../common-menu-items/open-in-app";
+import { NostrEvent } from "nostr-tools";
+
 import CopyEmbedCodeMenuItem from "../common-menu-items/copy-embed-code";
-import DebugEventMenuItem from "../debug-modal/debug-event-menu-item";
+import OpenInAppMenuItem from "../common-menu-items/open-in-app";
 import QuoteEventMenuItem from "../common-menu-items/quote-event";
+import DebugEventMenuItem from "../debug-modal/debug-event-menu-item";
+import { DotsMenuButton, MenuIconButtonProps } from "../dots-menu-button";
 
 export default function ZapReceiptMenu({ zap, ...props }: { zap: NostrEvent } & Omit<MenuIconButtonProps, "children">) {
   return (

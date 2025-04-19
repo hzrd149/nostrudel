@@ -1,8 +1,8 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useForm } from "react-hook-form";
-import { useThrottle } from "react-use";
 import dayjs from "dayjs";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
+import { useThrottle } from "react-use";
 
 import {
   Button,
@@ -19,23 +19,22 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { getEmojis, getPackName } from "applesauce-core/helpers/emoji";
-import { kinds } from "nostr-tools";
-
-import UserLink from "../../components/user/user-link";
-import { ChevronLeftIcon } from "../../components/icons";
 import { useActiveAccount } from "applesauce-react/hooks";
-import { useDeleteEventContext } from "../../providers/route/delete-event-provider";
-import useReplaceableEvent from "../../hooks/use-replaceable-event";
-import EmojiPackMenu from "./components/emoji-pack-menu";
-import EmojiPackFavoriteButton from "./components/emoji-pack-favorite-button";
-import { DraftNostrEvent, NostrEvent } from "../../types/nostr-event";
-import VerticalPageLayout from "../../components/vertical-page-layout";
-import UserAvatarLink from "../../components/user/user-avatar-link";
-import Timestamp from "../../components/timestamp";
-import useParamsAddressPointer from "../../hooks/use-params-address-pointer";
-import { usePublishEvent } from "../../providers/global/publish-provider";
-import EventZapButton from "../../components/zap/event-zap-button";
+import { EventTemplate, kinds, NostrEvent } from "nostr-tools";
+
+import { ChevronLeftIcon } from "../../components/icons";
 import EventQuoteButton from "../../components/note/event-quote-button";
+import Timestamp from "../../components/timestamp";
+import UserAvatarLink from "../../components/user/user-avatar-link";
+import UserLink from "../../components/user/user-link";
+import VerticalPageLayout from "../../components/vertical-page-layout";
+import EventZapButton from "../../components/zap/event-zap-button";
+import useParamsAddressPointer from "../../hooks/use-params-address-pointer";
+import useReplaceableEvent from "../../hooks/use-replaceable-event";
+import { usePublishEvent } from "../../providers/global/publish-provider";
+import { useDeleteEventContext } from "../../providers/route/delete-event-provider";
+import EmojiPackFavoriteButton from "./components/emoji-pack-favorite-button";
+import EmojiPackMenu from "./components/emoji-pack-menu";
 
 function AddEmojiForm({ onAdd }: { onAdd: (values: { shortcode: string; url: string }) => void }) {
   const { register, handleSubmit, watch, getValues, reset } = useForm({
@@ -131,7 +130,7 @@ function EmojiPackPage({ pack }: { pack: NostrEvent }) {
     setEditing(false);
   };
   const saveEdit = async () => {
-    const draft: DraftNostrEvent = {
+    const draft: EventTemplate = {
       kind: kinds.Emojisets,
       content: pack.content || "",
       created_at: dayjs().unix(),

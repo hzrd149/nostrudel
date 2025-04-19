@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { NostrEvent } from "../types/nostr-event";
+import { NostrEvent } from "nostr-tools";
 import { getSharableEventAddress } from "../services/relay-hints";
 import useUserMailboxes from "./use-user-mailboxes";
 

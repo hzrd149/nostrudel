@@ -1,14 +1,14 @@
 import { Card, CardProps, Flex, LinkBox, Spacer, Text } from "@chakra-ui/react";
+import { NostrEvent } from "nostr-tools";
 
-import { NostrEvent } from "../../../types/nostr-event";
+import { nip25 } from "nostr-tools";
 import { TrustProvider } from "../../../providers/local/trust-provider";
-import UserAvatarLink from "../../user/user-avatar-link";
-import UserLink from "../../user/user-link";
-import Timestamp from "../../timestamp";
+import DebugEventButton from "../../debug-modal/debug-event-button";
 import ReactionIcon from "../../event-reactions/reaction-icon";
 import { NoteLink } from "../../note/note-link";
-import { nip25 } from "nostr-tools";
-import DebugEventButton from "../../debug-modal/debug-event-button";
+import Timestamp from "../../timestamp";
+import UserAvatarLink from "../../user/user-avatar-link";
+import UserLink from "../../user/user-link";
 
 export default function EmbeddedReaction({ event, ...props }: Omit<CardProps, "children"> & { event: NostrEvent }) {
   const pointer = nip25.getReactedEventPointer(event);

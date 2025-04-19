@@ -3,7 +3,7 @@ import { useMemo } from "react";
 
 import { unique } from "../helpers/array";
 import { getThreadReferences } from "../helpers/nostr/event";
-import { NostrEvent } from "../types/nostr-event";
+import { NostrEvent } from "nostr-tools";
 import useSingleEvent from "./use-single-event";
 import useTimelineLoader from "./use-timeline-loader";
 

@@ -1,9 +1,9 @@
 import { Box, Card, CardBody, CardHeader, CardProps, Heading, LinkBox, Text } from "@chakra-ui/react";
+import { NostrEvent } from "nostr-tools";
 import { Link as RouterLink } from "react-router-dom";
 
-import { NostrEvent } from "../../../types/nostr-event";
-import { getVideoImages, getVideoSummary, getVideoTitle } from "../../../helpers/nostr/video";
 import HoverLinkOverlay from "../../../components/hover-link-overlay";
+import { getVideoImages, getVideoSummary, getVideoTitle } from "../../../helpers/nostr/video";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
 import useShareableEventAddress from "../../../hooks/use-shareable-event-address";
 

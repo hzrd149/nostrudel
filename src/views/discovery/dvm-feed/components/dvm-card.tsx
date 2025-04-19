@@ -4,7 +4,7 @@ import { Link as RouterLink, To } from "react-router-dom";
 import { getAddressPointerForEvent } from "applesauce-core/helpers";
 import { AddressPointer } from "nostr-tools/nip19";
 
-import { NostrEvent } from "../../../../types/nostr-event";
+import { NostrEvent } from "nostr-tools";
 import HoverLinkOverlay from "../../../../components/hover-link-overlay";
 import { DVMAvatar } from "./dvm-avatar";
 import { getEventCoordinate } from "../../../../helpers/nostr/event";

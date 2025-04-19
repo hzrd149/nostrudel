@@ -1,7 +1,6 @@
-import { getEventPointerFromETag, getTagValue, isSafeRelayURL, normalizeURL } from "applesauce-core/helpers";
-
-import { NostrEvent, isPTag } from "../../types/nostr-event";
+import { getEventPointerFromETag, getTagValue, isPTag, isSafeRelayURL, normalizeURL } from "applesauce-core/helpers";
 import dayjs from "dayjs";
+import { NostrEvent } from "nostr-tools";
 
 export type StreamStatus = "live" | "ended" | "planned";
 

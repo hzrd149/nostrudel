@@ -26,7 +26,6 @@ import { createDefer, Deferred } from "applesauce-core/promise";
 import RelayFavicon from "../../components/relay-favicon";
 import { ExternalLinkIcon } from "../../components/icons";
 import { getEventCoordinate, isReplaceable } from "../../helpers/nostr/event";
-import { Tag } from "../../types/nostr-event";
 import { EmbedEvent } from "../../components/embed-event";
 import { useWriteRelays } from "../../hooks/use-client-relays";
 import { usePublishEvent } from "../global/publish-provider";
@@ -71,7 +70,7 @@ export default function DeleteEventProvider({ children }: PropsWithChildren) {
     try {
       if (!event) throw new Error("no event");
       setLoading(true);
-      const tags: Tag[] = [["e", event.id]];
+      const tags: string[][] = [["e", event.id]];
       if (isReplaceable(event.kind)) {
         tags.push(["a", getEventCoordinate(event)]);
       }

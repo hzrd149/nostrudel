@@ -1,10 +1,10 @@
 import { IconButton, IconButtonProps, useDisclosure } from "@chakra-ui/react";
+import { NostrEvent } from "nostr-tools";
 
 import { getEventUID } from "../../helpers/nostr/event";
 import { useReadRelays } from "../../hooks/use-client-relays";
 import useUserLNURLMetadata from "../../hooks/use-user-lnurl-metadata";
 import { requestZaps } from "../../services/event-zaps-loader";
-import { NostrEvent } from "../../types/nostr-event";
 import ZapModal from "../event-zap-modal";
 import { LightningIcon } from "../icons";
 

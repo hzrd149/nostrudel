@@ -4,7 +4,7 @@ import { useActiveAccount } from "applesauce-react/hooks";
 import { Filter, kinds } from "nostr-tools";
 
 import useReplaceableEvent from "../../hooks/use-replaceable-event";
-import { NostrEvent } from "../../types/nostr-event";
+import { NostrEvent } from "nostr-tools";
 import useRouteSearchValue from "../../hooks/use-route-search-value";
 
 export type ListId = "following" | "global" | "self" | string;

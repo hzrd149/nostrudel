@@ -17,13 +17,13 @@ import {
 import { NostrEvent } from "nostr-tools";
 import { useContext } from "react";
 import { Link as RouterLink } from "react-router-dom";
+import { getTagValue } from "applesauce-core/helpers";
 
 import DebugEventButton from "../../../../components/debug-modal/debug-event-button";
 import { ExternalLinkIcon } from "../../../../components/icons";
 import RelayFavicon from "../../../../components/relay-favicon";
 import UserAvatarLink from "../../../../components/user/user-avatar-link";
 import UserName from "../../../../components/user/user-name";
-import { getTagValue } from "../../../../helpers/nostr/event";
 import { getPubkeysFromList } from "../../../../helpers/nostr/lists";
 import PeopleListProvider from "../../../../providers/local/people-list-provider";
 import SupportedNIPs from "../../../relays/components/supported-nips";

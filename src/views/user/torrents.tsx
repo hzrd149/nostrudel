@@ -1,4 +1,5 @@
 import { Table, TableContainer, Tbody, Th, Thead, Tr } from "@chakra-ui/react";
+import { NostrEvent } from "nostr-tools";
 import { useCallback } from "react";
 import { useOutletContext } from "react-router-dom";
 
@@ -9,7 +10,6 @@ import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { useAdditionalRelayContext } from "../../providers/local/additional-relay-context";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
-import { NostrEvent } from "../../types/nostr-event";
 import TorrentTableRow from "../torrents/components/torrent-table-row";
 
 export default function UserTorrentsTab() {

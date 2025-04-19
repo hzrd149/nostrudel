@@ -13,10 +13,9 @@ import {
 } from "@chakra-ui/react";
 import dayjs from "dayjs";
 import codes from "iso-language-codes";
-import { Filter } from "nostr-tools";
+import { EventTemplate, Filter, NostrEvent } from "nostr-tools";
 import { getEventUID } from "applesauce-core/helpers";
 
-import { DraftNostrEvent, NostrEvent } from "../../../../types/nostr-event";
 import useTimelineLoader from "../../../../hooks/use-timeline-loader";
 import { useReadRelays } from "../../../../hooks/use-client-relays";
 import relayScoreboardService from "../../../../services/relay-scoreboard";
@@ -38,7 +37,7 @@ export function NoteTranslationsPage({ note }: { note: NostrEvent }) {
   const readRelays = useReadRelays();
   const requestTranslation = useCallback(async () => {
     const top8Relays = relayScoreboardService.getRankedRelays(readRelays).slice(0, 8);
-    const draft: DraftNostrEvent = {
+    const draft: EventTemplate = {
       kind: DVM_TRANSLATE_JOB_KIND,
       content: "",
       created_at: dayjs().unix(),

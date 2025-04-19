@@ -1,19 +1,18 @@
-import { ReactNode, Suspense, lazy, memo } from "react";
-import { kinds } from "nostr-tools";
 import { Box, Spinner } from "@chakra-ui/react";
 import { PICTURE_POST_KIND } from "applesauce-core/helpers";
+import { NostrEvent, kinds } from "nostr-tools";
+import { ReactNode, Suspense, lazy, memo } from "react";
 
-import { ErrorBoundary } from "../../error-boundary";
-import ReplyNote from "./reply-note";
-import ShareEvent from "./share-event";
 import { isReply } from "../../../helpers/nostr/event";
-import { NostrEvent } from "../../../types/nostr-event";
 import { FLARE_VIDEO_KIND } from "../../../helpers/nostr/video";
-import { TimelineNote } from "../../note/timeline-note";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
 import ArticleCard from "../../../views/articles/components/article-card";
 import EmbeddedUnknown from "../../embed-event/event-types/embedded-unknown";
+import { ErrorBoundary } from "../../error-boundary";
+import { TimelineNote } from "../../note/timeline-note";
 import PicturePost from "../../picture-post/picture-post-card";
+import ReplyNote from "./reply-note";
+import ShareEvent from "./share-event";
 
 // other stuff
 const StreamNote = lazy(() => import("./stream-note"));

@@ -13,6 +13,7 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { useObservable } from "applesauce-react/hooks";
+import { NostrEvent } from "nostr-tools";
 import { memo } from "react";
 import { Link as RouterLink } from "react-router-dom";
 
@@ -24,7 +25,6 @@ import { ExpandProvider } from "../../../providers/local/expanded";
 import { TrustProvider } from "../../../providers/local/trust-provider";
 import localSettings from "../../../services/local-settings";
 import { getSharableEventAddress } from "../../../services/relay-hints";
-import { NostrEvent } from "../../../types/nostr-event";
 import ReplyForm from "../../../views/thread/components/reply-form";
 import HoverLinkOverlay from "../../hover-link-overlay";
 import { ReplyIcon } from "../../icons";

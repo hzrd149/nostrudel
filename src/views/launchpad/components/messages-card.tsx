@@ -12,7 +12,7 @@ import {
   identifyConversation,
   sortConversationsByLastReceived,
 } from "../../../helpers/nostr/dms";
-import { NostrEvent } from "../../../types/nostr-event";
+import { NostrEvent } from "nostr-tools";
 import UserAvatar from "../../../components/user/user-avatar";
 import HoverLinkOverlay from "../../../components/hover-link-overlay";
 import UserName from "../../../components/user/user-name";

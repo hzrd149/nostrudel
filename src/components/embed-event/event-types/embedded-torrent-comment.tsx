@@ -1,18 +1,17 @@
-import { MouseEventHandler, useCallback } from "react";
 import { Card, CardProps, Flex, LinkBox, Spacer, Text } from "@chakra-ui/react";
+import { nip19, NostrEvent } from "nostr-tools";
+import { MouseEventHandler, useCallback } from "react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
-import { nip19 } from "nostr-tools";
 
-import { NostrEvent } from "../../../types/nostr-event";
-import UserAvatarLink from "../../user/user-avatar-link";
-import UserLink from "../../user/user-link";
+import { getThreadReferences } from "../../../helpers/nostr/event";
+import { getTorrentTitle } from "../../../helpers/nostr/torrents";
+import useSingleEvent from "../../../hooks/use-single-event";
 import { TrustProvider } from "../../../providers/local/trust-provider";
-import Timestamp from "../../timestamp";
 import { CompactNoteContent } from "../../compact-note-content";
 import HoverLinkOverlay from "../../hover-link-overlay";
-import { getThreadReferences } from "../../../helpers/nostr/event";
-import useSingleEvent from "../../../hooks/use-single-event";
-import { getTorrentTitle } from "../../../helpers/nostr/torrents";
+import Timestamp from "../../timestamp";
+import UserAvatarLink from "../../user/user-avatar-link";
+import UserLink from "../../user/user-link";
 
 export default function EmbeddedTorrentComment({
   comment,

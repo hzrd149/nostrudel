@@ -1,7 +1,7 @@
 import { Flex, Spacer, Spinner, Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/react";
 
 import useParamsEventPointer from "../../../hooks/use-params-event-pointer";
-import { NostrEvent } from "../../../types/nostr-event";
+import { NostrEvent } from "nostr-tools";
 import useSingleEvent from "../../../hooks/use-single-event";
 import { NoteTranslationsPage } from "./translation";
 import UserAvatarLink from "../../../components/user/user-avatar-link";

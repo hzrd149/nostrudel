@@ -14,7 +14,7 @@ import { Link as RouterLink } from "react-router-dom";
 import { kinds } from "nostr-tools";
 
 import useUserSets from "../../../hooks/use-user-lists";
-import { NostrEvent } from "../../../types/nostr-event";
+import { NostrEvent } from "nostr-tools";
 import { getListName, getPubkeysFromList } from "../../../helpers/nostr/lists";
 import UserAvatar from "../../../components/user/user-avatar";
 import { useActiveAccount } from "applesauce-react/hooks";

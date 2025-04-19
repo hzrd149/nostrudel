@@ -1,4 +1,3 @@
-import { memo, useState } from "react";
 import {
   Alert,
   AlertIcon,
@@ -12,31 +11,32 @@ import {
 } from "@chakra-ui/react";
 import { ThreadItem, ThreadQuery } from "applesauce-core/queries";
 import { useStoreQuery } from "applesauce-react/hooks";
+import { NostrEvent } from "nostr-tools";
+import { memo, useState } from "react";
 
-import { NostrEvent } from "../../../types/nostr-event";
-import { TORRENT_COMMENT_KIND } from "../../../helpers/nostr/torrents";
-import { useReadRelays } from "../../../hooks/use-client-relays";
-import useThreadTimelineLoader from "../../../hooks/use-thread-timeline-loader";
-import { countReplies, repliesByDate } from "../../../helpers/thread";
-import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
-import IntersectionObserverProvider from "../../../providers/local/intersection-observer";
-import useAppSettings from "../../../hooks/use-user-app-settings";
-import useClientSideMuteFilter from "../../../hooks/use-client-side-mute-filter";
-import UserAvatarLink from "../../../components/user/user-avatar-link";
-import UserLink from "../../../components/user/user-link";
-import UserDnsIdentity from "../../../components/user/user-dns-identity";
-import Timestamp from "../../../components/timestamp";
-import Minus from "../../../components/icons/minus";
-import Expand01 from "../../../components/icons/expand-01";
-import { TrustProvider } from "../../../providers/local/trust-provider";
 import { ReplyIcon } from "../../../components/icons";
-import ReplyForm from "../../thread/components/reply-form";
-import useThreadColorLevelProps from "../../../hooks/use-thread-color-level-props";
-import TorrentCommentMenu from "./torrent-comment-menu";
+import Expand01 from "../../../components/icons/expand-01";
+import Minus from "../../../components/icons/minus";
 import NoteReactions from "../../../components/note/timeline-note/components/note-reactions";
-import EventZapButton from "../../../components/zap/event-zap-button";
 import { TextNoteContents } from "../../../components/note/timeline-note/text-note-contents";
+import Timestamp from "../../../components/timestamp";
+import UserAvatarLink from "../../../components/user/user-avatar-link";
+import UserDnsIdentity from "../../../components/user/user-dns-identity";
+import UserLink from "../../../components/user/user-link";
+import EventZapButton from "../../../components/zap/event-zap-button";
+import { TORRENT_COMMENT_KIND } from "../../../helpers/nostr/torrents";
+import { countReplies, repliesByDate } from "../../../helpers/thread";
+import { useReadRelays } from "../../../hooks/use-client-relays";
+import useClientSideMuteFilter from "../../../hooks/use-client-side-mute-filter";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
+import useThreadColorLevelProps from "../../../hooks/use-thread-color-level-props";
+import useThreadTimelineLoader from "../../../hooks/use-thread-timeline-loader";
+import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
+import useAppSettings from "../../../hooks/use-user-app-settings";
+import IntersectionObserverProvider from "../../../providers/local/intersection-observer";
+import { TrustProvider } from "../../../providers/local/trust-provider";
+import ReplyForm from "../../thread/components/reply-form";
+import TorrentCommentMenu from "./torrent-comment-menu";
 
 export const ThreadPost = memo(({ post, level = -1 }: { post: ThreadItem; level?: number }) => {
   const { showReactions } = useAppSettings();

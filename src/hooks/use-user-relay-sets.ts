@@ -1,8 +1,8 @@
-import { kinds } from "nostr-tools";
+import { isRTag } from "applesauce-core/helpers";
+import { kinds, NostrEvent } from "nostr-tools";
 import { useCallback } from "react";
 
 import { truncateId } from "../helpers/string";
-import { NostrEvent, isRTag } from "../types/nostr-event";
 import { useReadRelays } from "./use-client-relays";
 import useTimelineLoader from "./use-timeline-loader";
 

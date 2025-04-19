@@ -3,7 +3,7 @@ import { AvatarGroup, Flex, Text } from "@chakra-ui/react";
 import { kinds, nip25 } from "nostr-tools";
 
 import { useActiveAccount } from "applesauce-react/hooks";
-import { NostrEvent } from "../../../types/nostr-event";
+import { NostrEvent } from "nostr-tools";
 import { EmbedEventPointer } from "../../../components/embed-event";
 import Heart from "../../../components/icons/heart";
 import UserAvatarLink from "../../../components/user/user-avatar-link";

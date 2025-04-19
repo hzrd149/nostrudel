@@ -1,6 +1,6 @@
 import { IconButton, IconButtonProps } from "@chakra-ui/react";
+import { NostrEvent } from "nostr-tools";
 
-import { NostrEvent } from "../types/nostr-event";
 import useEventBookmarkActions from "../hooks/use-event-bookmark-actions";
 import { BookmarkIcon, BookmarkedIcon } from "./icons";
 

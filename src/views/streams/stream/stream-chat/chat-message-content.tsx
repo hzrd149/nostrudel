@@ -1,6 +1,9 @@
-import React from "react";
+import { textNoteTransformers } from "applesauce-content/text";
 import { useRenderedContent } from "applesauce-react/hooks";
+import { NostrEvent } from "nostr-tools";
+import React from "react";
 
+import { components } from "../../../../components/content";
 import {
   renderGenericUrl,
   renderImageUrl,
@@ -8,11 +11,8 @@ import {
   renderStemstrUrl,
   renderWavlakeUrl,
 } from "../../../../components/content/links";
-import { NostrEvent } from "../../../../types/nostr-event";
-import { components } from "../../../../components/content";
-import { textNoteTransformers } from "applesauce-content/text";
-import { nipDefinitions } from "../../../../components/content/transform/nip-notation";
 import { bipDefinitions } from "../../../../components/content/transform/bip-notation";
+import { nipDefinitions } from "../../../../components/content/transform/nip-notation";
 
 const StreamChatMessageContentSymbol = Symbol.for("stream-chat-message-content");
 const transformers = [...textNoteTransformers, nipDefinitions, bipDefinitions];

@@ -6,7 +6,7 @@ import { humanReadableSats } from "../../helpers/lightning";
 import { totalZaps } from "../../helpers/nostr/zaps";
 import useEventZaps from "../../hooks/use-event-zaps";
 import { requestZaps } from "../../services/event-zaps-loader";
-import { NostrEvent } from "../../types/nostr-event";
+import { NostrEvent } from "nostr-tools";
 import { LightningIcon } from "../icons";
 import ZapModal from "../event-zap-modal";
 import useUserLNURLMetadata from "../../hooks/use-user-lnurl-metadata";

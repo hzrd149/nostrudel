@@ -1,5 +1,5 @@
 import { DotsMenuButton, MenuIconButtonProps } from "../../../components/dots-menu-button";
-import { NostrEvent } from "../../../types/nostr-event";
+import { NostrEvent } from "nostr-tools";
 import OpenInAppMenuItem from "../../../components/common-menu-items/open-in-app";
 import CopyEmbedCodeMenuItem from "../../../components/common-menu-items/copy-embed-code";
 import DebugEventMenuItem from "../../../components/debug-modal/debug-event-menu-item";

@@ -1,11 +1,12 @@
-import { DotsMenuButton, MenuIconButtonProps } from "../../../components/dots-menu-button";
+import { NostrEvent } from "nostr-tools";
+
+import CopyEmbedCodeMenuItem from "../../../components/common-menu-items/copy-embed-code";
+import DeleteEventMenuItem from "../../../components/common-menu-items/delete-event";
+import MuteUserMenuItem from "../../../components/common-menu-items/mute-user";
 import OpenInAppMenuItem from "../../../components/common-menu-items/open-in-app";
 import ShareLinkMenuItem from "../../../components/common-menu-items/share-link";
-import CopyEmbedCodeMenuItem from "../../../components/common-menu-items/copy-embed-code";
-import MuteUserMenuItem from "../../../components/common-menu-items/mute-user";
-import DeleteEventMenuItem from "../../../components/common-menu-items/delete-event";
-import { NostrEvent } from "../../../types/nostr-event";
 import DebugEventMenuItem from "../../../components/debug-modal/debug-event-menu-item";
+import { DotsMenuButton, MenuIconButtonProps } from "../../../components/dots-menu-button";
 
 export default function TorrentCommentMenu({
   comment,

@@ -1,4 +1,3 @@
-import { useContext } from "react";
 import {
   Badge,
   Box,
@@ -12,13 +11,14 @@ import {
   Spacer,
   Text,
 } from "@chakra-ui/react";
+import { getEventUID, getTagValue } from "applesauce-core/helpers";
 import { NostrEvent } from "nostr-tools";
+import { useContext } from "react";
 
-import { getEventUID, getTagValue } from "../../../../helpers/nostr/event";
-import SupportedNIPs from "../../../relays/components/supported-nips";
-import { SelectedContext } from "../selected-context";
 import RelayFavicon from "../../../../components/relay-favicon";
 import Timestamp from "../../../../components/timestamp";
+import SupportedNIPs from "../../../relays/components/supported-nips";
+import { SelectedContext } from "../selected-context";
 
 const IgnoreNips = [1, 2, 4, 11, 12, 15, 16];
 

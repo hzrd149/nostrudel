@@ -4,7 +4,8 @@ import { Image, Input, InputProps, Textarea, TextareaProps } from "@chakra-ui/re
 import { type EmojiMartData } from "@emoji-mart/data";
 import ReactTextareaAutocomplete, {
   ItemComponentProps,
-  TriggerType
+  TriggerType,
+  TextareaProps as ReactTextareaAutocompleteProps,
 } from "@webscopeio/react-textarea-autocomplete";
 import "@webscopeio/react-textarea-autocomplete/style.css";
 import { useObservable } from "applesauce-react/hooks";
@@ -59,6 +60,12 @@ function output(token: Token) {
     return "nostr:" + nip19.npubEncode(token.pubkey) || "";
   } else return "";
 }
+
+// NOTE: Do not remove this, it is in the text area autocomplete
+const Loading: ReactTextareaAutocompleteProps<
+  Token,
+  React.TextareaHTMLAttributes<HTMLTextAreaElement>
+>["loadingComponent"] = ({ data }) => <div>Loading</div>;
 
 function useEmojiTokens() {
   const customEmojis = useContextEmojis();

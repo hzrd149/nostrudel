@@ -1,17 +1,17 @@
-import { memo, useMemo } from "react";
 import { ButtonGroup, IconButton, Link, Td, Tr } from "@chakra-ui/react";
+import { NostrEvent } from "nostr-tools";
+import { memo, useMemo } from "react";
 import { Link as RouterLink, useLocation } from "react-router-dom";
 
-import { getTorrentMagnetLink, getTorrentSize, getTorrentTitle } from "../../../helpers/nostr/torrents";
-import { NostrEvent } from "../../../types/nostr-event";
+import Magnet from "../../../components/icons/magnet";
 import Timestamp from "../../../components/timestamp";
 import UserLink from "../../../components/user/user-link";
-import Magnet from "../../../components/icons/magnet";
-import { formatBytes } from "../../../helpers/number";
-import TorrentMenu from "./torrent-menu";
 import EventZapButton from "../../../components/zap/event-zap-button";
+import { getTorrentMagnetLink, getTorrentSize, getTorrentTitle } from "../../../helpers/nostr/torrents";
+import { formatBytes } from "../../../helpers/number";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
 import useShareableEventAddress from "../../../hooks/use-shareable-event-address";
+import TorrentMenu from "./torrent-menu";
 
 type DisplayCategory = { name: string; tags: string[] };
 

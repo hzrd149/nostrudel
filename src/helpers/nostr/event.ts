@@ -1,21 +1,19 @@
-import { EventTemplate, kinds } from "nostr-tools";
-import { getEventUID } from "nostr-idb";
+import { getNip10References, getOrComputeCachedValue, getReplaceableIdentifier, isDTag } from "applesauce-core/helpers";
 import dayjs from "dayjs";
 import { nanoid } from "nanoid";
-import { getNip10References } from "applesauce-core/helpers";
-
-import { ATag, ETag, isDTag, NostrEvent, Tag } from "../../types/nostr-event";
-import { getMatchNostrLink } from "../regexp";
+import { getEventUID } from "nostr-idb";
+import { EventTemplate, kinds, NostrEvent } from "nostr-tools";
 import { AddressPointer, DecodeResult, EventPointer } from "nostr-tools/nip19";
+
 import { safeDecode } from "../nip19";
+import { getMatchNostrLink } from "../regexp";
 import { truncateId } from "../string";
-import { createATagFromAddressPointer, createETagFromEventPointer } from "applesauce-factory/helpers";
 
 export { truncateId as truncatedId };
 
 /** @deprecated use isReplaceableKind or isParameterizedReplaceableKind instead */
 export function isReplaceable(kind: number) {
-  return kinds.isReplaceableKind(kind) || kinds.isParameterizedReplaceableKind(kind);
+  return kinds.isReplaceableKind(kind) || kinds.isAddressableKind(kind);
 }
 
 export function pointerMatchEvent(event: NostrEvent, pointer: AddressPointer | EventPointer) {
@@ -36,57 +34,27 @@ export function pointerMatchEvent(event: NostrEvent, pointer: AddressPointer | E
 
 const isReplySymbol = Symbol("isReply");
 export function isReply(event: NostrEvent | EventTemplate) {
-  try {
-    // @ts-expect-error
-    if (event[isReplySymbol] !== undefined) return event[isReplySymbol] as boolean;
-
-    if (event.kind === kinds.Repost || event.kind === kinds.GenericRepost) return false;
-    const isReply = !!getNip10References(event).reply;
-    // @ts-expect-error
-    event[isReplySymbol] = isReply;
-    return isReply;
-  } catch (error) {
-    return false;
-  }
-}
-export function isPTagMentionedInContent(event: NostrEvent | EventTemplate, pubkey: string) {
-  return filterTagsByContentRefs(event.content, event.tags).some((t) => t[1] === pubkey);
+  return getOrComputeCachedValue(event, isReplySymbol, () => {
+    try {
+      if (event.kind === kinds.Repost || event.kind === kinds.GenericRepost) return false;
+      return !!getNip10References(event).reply;
+    } catch (error) {
+      return false;
+    }
+  });
 }
 
-const isRepostSymbol = Symbol("isRepost");
+/** @deprecated test event kind instead */
 export function isRepost(event: NostrEvent | EventTemplate) {
-  // @ts-expect-error
-  if (event[isRepostSymbol] !== undefined) return event[isRepostSymbol] as boolean;
-
-  if (event.kind === kinds.Repost || event.kind === kinds.GenericRepost) return true;
-
-  const match = event.content.match(getMatchNostrLink());
-  const isRepost = !!match && match[0].length === event.content.length;
-
-  // @ts-expect-error
-  event[isRepostSymbol] = isRepost;
-  return isRepost;
-}
-
-export function getContentPointers(content: string) {
-  const pointers: DecodeResult[] = [];
-
-  const linkMatches = Array.from(content.matchAll(getMatchNostrLink()));
-  for (const [_, _prefix, link] of linkMatches) {
-    const decoded = safeDecode(link);
-    if (!decoded) continue;
-    pointers.push(decoded);
-  }
-
-  return pointers;
+  return event.kind === kinds.Repost || event.kind === kinds.GenericRepost;
 }
 
 /**
  * returns an array of tags that are referenced in the content
  * either with the legacy #[0] syntax or nostr:xxxxx links
  */
-export function getContentTagRefs(content: string, tags: Tag[]) {
-  const foundTags = new Set<Tag>();
+export function getContentTagRefs(content: string, tags: string[][]) {
+  const foundTags = new Set<string[]>();
 
   const linkMatches = Array.from(content.matchAll(getMatchNostrLink()));
   for (const [_, _prefix, link] of linkMatches) {
@@ -122,28 +90,18 @@ export function getContentTagRefs(content: string, tags: Tag[]) {
 }
 
 /** returns all tags that are referenced in the content */
-export function filterTagsByContentRefs(content: string, tags: Tag[], referenced = true) {
+export function filterTagsByContentRefs(content: string, tags: string[][], referenced = true) {
   const contentTagRefs = getContentTagRefs(content, tags);
   return tags.filter((t) => contentTagRefs.includes(t) === referenced);
 }
 
-/** @deprecated */
+/** @deprecated use getNip10References instead */
 export { getNip10References as getThreadReferences };
 
 /** @deprecated */
 export function getEventCoordinate(event: NostrEvent) {
   const d = event.tags.find(isDTag)?.[1];
   return d ? `${event.kind}:${event.pubkey}:${d}` : `${event.kind}:${event.pubkey}`;
-}
-
-/** @deprecated use createATagFromAddressPointer instead*/
-export function addressPointerToATag(pointer: AddressPointer): ATag {
-  return createATagFromAddressPointer(pointer) as ATag;
-}
-
-/** @deprecated use createETagFromEventPointer instead*/
-export function eventPointerToETag(pointer: EventPointer): ETag {
-  return createETagFromEventPointer(pointer) as ETag;
 }
 
 export type CustomAddressPointer = Omit<AddressPointer, "identifier"> & {
@@ -156,7 +114,9 @@ export function sortByDate(a: NostrEvent, b: NostrEvent) {
   return b.created_at - a.created_at;
 }
 
-/** create a copy of the event with a new created_at  */
+/**
+ * create a copy of the event with a new created_at
+ * @deprecated use factory.modify instead */
 export function cloneEvent(kind: number, event?: EventTemplate | NostrEvent): EventTemplate {
   return {
     kind: event?.kind ?? kind,
@@ -166,14 +126,10 @@ export function cloneEvent(kind: number, event?: EventTemplate | NostrEvent): Ev
   };
 }
 
-/** ensure an event has a d tag */
-export function ensureDTag(draft: EventTemplate, d: string = nanoid()) {
-  if (!draft.tags.some(isDTag)) {
-    draft.tags.push(["d", d]);
-  }
-}
-
-/** either replaces the existing tag or adds a new one */
+/**
+ * either replaces the existing tag or adds a new one
+ * @deprecated use factory.modifyTags with includeNameValueTag
+ */
 export function replaceOrAddSimpleTag(draft: EventTemplate, tagName: string, value: string) {
   if (draft.tags.some((t) => t[0] === tagName)) {
     draft.tags = draft.tags.map((t) => (t[0] === tagName ? [tagName, value] : t));
@@ -198,10 +154,6 @@ export function getSortedKinds(events: NostrEvent[]) {
     .map(([kind, events]) => ({ kind, count: events.length }))
     .sort((a, b) => b.count - a.count)
     .reduce((dir, k) => ({ ...dir, [k.kind]: k.count }), {} as Record<string, number>);
-}
-
-export function getTagValue(event: NostrEvent, tag: string) {
-  return event.tags.find((t) => t[0] === tag && t.length >= 2)?.[1];
 }
 
 export { getEventUID };

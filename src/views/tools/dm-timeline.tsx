@@ -11,7 +11,7 @@ import { useReadRelays } from "../../hooks/use-client-relays";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import EmbeddedDM from "../../components/embed-event/event-types/embedded-dm";
-import { NostrEvent } from "../../types/nostr-event";
+import { NostrEvent } from "nostr-tools";
 import { ChevronLeftIcon } from "../../components/icons";
 import useClientSideMuteFilter from "../../hooks/use-client-side-mute-filter";
 import { ErrorBoundary } from "../../components/error-boundary";

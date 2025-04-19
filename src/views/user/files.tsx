@@ -1,19 +1,18 @@
 import { Link, Table, TableContainer, Tbody, Td, Th, Thead, Tr } from "@chakra-ui/react";
 import { getTagValue } from "applesauce-core/helpers";
-import { useOutletContext, Link as RouterLink } from "react-router-dom";
-import { kinds } from "nostr-tools";
+import { kinds, NostrEvent } from "nostr-tools";
+import { Link as RouterLink, useOutletContext } from "react-router-dom";
 
+import SimpleView from "../../components/layout/presets/simple-view";
+import TimelineActionAndStatus from "../../components/timeline/timeline-action-and-status";
+import Timestamp from "../../components/timestamp";
+import { formatBytes } from "../../helpers/number";
+import useEventIntersectionRef from "../../hooks/use-event-intersection-ref";
+import useShareableEventAddress from "../../hooks/use-shareable-event-address";
+import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { useAdditionalRelayContext } from "../../providers/local/additional-relay-context";
-import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
-import TimelineActionAndStatus from "../../components/timeline/timeline-action-and-status";
-import { NostrEvent } from "../../types/nostr-event";
-import Timestamp from "../../components/timestamp";
-import useEventIntersectionRef from "../../hooks/use-event-intersection-ref";
-import { formatBytes } from "../../helpers/number";
-import useShareableEventAddress from "../../hooks/use-shareable-event-address";
-import SimpleView from "../../components/layout/presets/simple-view";
 
 function FileRow({ file }: { file: NostrEvent }) {
   const ref = useEventIntersectionRef<HTMLTableRowElement>(file);

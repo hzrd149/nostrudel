@@ -1,10 +1,10 @@
-import { MouseEventHandler, useState } from "react";
 import { Button, Flex, Spacer, Text, useToast } from "@chakra-ui/react";
+import { NostrEvent } from "nostr-tools";
+import { MouseEventHandler, useState } from "react";
 
-import { NostrEvent } from "../../../../types/nostr-event";
+import { LightningIcon } from "../../../../components/icons";
 import UserAvatarLink from "../../../../components/user/user-avatar-link";
 import UserLink from "../../../../components/user/user-link";
-import { LightningIcon } from "../../../../components/icons";
 import { humanReadableSats } from "../../../../helpers/lightning";
 
 export default function TextToSpeechStatus({ status }: { status: NostrEvent }) {

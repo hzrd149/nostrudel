@@ -1,14 +1,13 @@
-import { useCallback, useState } from "react";
 import { MenuItem } from "@chakra-ui/react";
-import { kinds } from "nostr-tools";
+import { addEventTag, removeEventTag } from "applesauce-factory/operations/tag";
 import { useActiveAccount, useEventFactory } from "applesauce-react/hooks";
-import { removeEventTag, addEventTag } from "applesauce-factory/operations/tag";
+import { kinds, NostrEvent } from "nostr-tools";
+import { useCallback, useState } from "react";
 
-import useUserPinList from "../../hooks/use-user-pin-list";
-import { NostrEvent } from "../../types/nostr-event";
 import { isEventInList } from "../../helpers/nostr/lists";
-import { PinIcon } from "../icons";
+import useUserPinList from "../../hooks/use-user-pin-list";
 import { usePublishEvent } from "../../providers/global/publish-provider";
+import { PinIcon } from "../icons";
 
 export default function PinEventMenuItem({ event }: { event: NostrEvent }) {
   const publish = usePublishEvent();

@@ -1,4 +1,4 @@
-import { NostrEvent } from "../../../types/nostr-event";
+import { NostrEvent } from "nostr-tools";
 import { DotsMenuButton, MenuIconButtonProps } from "../../../components/dots-menu-button";
 import DeleteEventMenuItem from "../../../components/common-menu-items/delete-event";
 import OpenInAppMenuItem from "../../../components/common-menu-items/open-in-app";

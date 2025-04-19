@@ -1,11 +1,11 @@
 import { Card, CardBody, CardHeader, CardProps, Heading, Image, LinkBox, LinkOverlay } from "@chakra-ui/react";
+import { isATag } from "applesauce-core/helpers";
 
-import { useReadRelays } from "../../../hooks/use-client-relays";
-import { isATag } from "../../../types/nostr-event";
-import useReplaceableEvent from "../../../hooks/use-replaceable-event";
-import OpenGraphCard from "../../../components/open-graph/open-graph-card";
-import { useAdditionalRelayContext } from "../../../providers/local/additional-relay-context";
 import { TextNoteContents } from "../../../components/note/timeline-note/text-note-contents";
+import OpenGraphCard from "../../../components/open-graph/open-graph-card";
+import { useReadRelays } from "../../../hooks/use-client-relays";
+import useReplaceableEvent from "../../../hooks/use-replaceable-event";
+import { useAdditionalRelayContext } from "../../../providers/local/additional-relay-context";
 
 export const STREAMER_CARDS_TYPE = 17777;
 export const STREAMER_CARD_TYPE = 37777;

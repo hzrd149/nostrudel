@@ -1,20 +1,20 @@
-import { useOutletContext, Link as RouterLink } from "react-router-dom";
 import { Button, Flex, Heading, Spacer, StackDivider, Tag, VStack } from "@chakra-ui/react";
+import { NostrEvent } from "nostr-tools";
+import { Link as RouterLink, useOutletContext } from "react-router-dom";
 
-import useTimelineLoader from "../../hooks/use-timeline-loader";
-import { useReadRelays } from "../../hooks/use-client-relays";
-import { NostrEvent } from "../../types/nostr-event";
-import RelayReviewNote from "../relays/components/relay-review-note";
-import RelayFavicon from "../../components/relay-favicon";
-import { RelayDebugButton, RelayMetadata } from "../relays/components/relay-card";
-import IntersectionObserverProvider from "../../providers/local/intersection-observer";
-import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
-import { useRelayInfo } from "../../hooks/use-relay-info";
 import { ErrorBoundary } from "../../components/error-boundary";
-import { RelayShareButton } from "../relays/components/relay-share-button";
-import useUserMailboxes from "../../hooks/use-user-mailboxes";
-import { truncateId } from "../../helpers/string";
 import SimpleView from "../../components/layout/presets/simple-view";
+import RelayFavicon from "../../components/relay-favicon";
+import { truncateId } from "../../helpers/string";
+import { useReadRelays } from "../../hooks/use-client-relays";
+import { useRelayInfo } from "../../hooks/use-relay-info";
+import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
+import useTimelineLoader from "../../hooks/use-timeline-loader";
+import useUserMailboxes from "../../hooks/use-user-mailboxes";
+import IntersectionObserverProvider from "../../providers/local/intersection-observer";
+import { RelayDebugButton, RelayMetadata } from "../relays/components/relay-card";
+import RelayReviewNote from "../relays/components/relay-review-note";
+import { RelayShareButton } from "../relays/components/relay-share-button";
 
 function Relay({ url, reviews }: { url: string; reviews: NostrEvent[] }) {
   const { info } = useRelayInfo(url);

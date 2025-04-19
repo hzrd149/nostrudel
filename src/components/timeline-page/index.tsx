@@ -1,19 +1,19 @@
-import { useCallback } from "react";
 import { FlexProps } from "@chakra-ui/react";
-import { useSearchParams } from "react-router-dom";
 import { Expressions } from "applesauce-content/helpers";
 import { TimelineLoader } from "applesauce-loaders";
+import { NostrEvent } from "nostr-tools";
+import { useCallback } from "react";
+import { useSearchParams } from "react-router-dom";
 
+import useMaxPageWidth from "../../hooks/use-max-page-width";
+import useRouteSearchValue from "../../hooks/use-route-search-value";
+import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
+import TimelineActionAndStatus from "../timeline/timeline-action-and-status";
+import VerticalPageLayout from "../vertical-page-layout";
 import GenericNoteTimeline from "./generic-note-timeline";
 import MediaTimeline from "./media-timeline";
-import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
-import TimelineActionAndStatus from "../timeline/timeline-action-and-status";
-import { NostrEvent } from "../../types/nostr-event";
 import TimelineHealth from "./timeline-health";
-import useRouteSearchValue from "../../hooks/use-route-search-value";
-import VerticalPageLayout from "../vertical-page-layout";
-import useMaxPageWidth from "../../hooks/use-max-page-width";
 
 export function useTimelinePageEventFilter() {
   const [params] = useSearchParams();

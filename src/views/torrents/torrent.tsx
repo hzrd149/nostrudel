@@ -17,6 +17,7 @@ import {
   Tr,
   useDisclosure,
 } from "@chakra-ui/react";
+import { NostrEvent } from "nostr-tools";
 
 import { ErrorBoundary } from "../../components/error-boundary";
 import Magnet from "../../components/icons/magnet";
@@ -39,7 +40,6 @@ import {
 import { formatBytes } from "../../helpers/number";
 import useParamsEventPointer from "../../hooks/use-params-event-pointer";
 import useSingleEvent from "../../hooks/use-single-event";
-import { NostrEvent } from "../../types/nostr-event";
 import ReplyForm from "../thread/components/reply-form";
 import TorrentMenu from "./components/torrent-menu";
 import TorrentComments from "./components/torrents-comments";

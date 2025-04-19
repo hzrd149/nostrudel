@@ -1,21 +1,20 @@
-import { memo, useEffect } from "react";
 import { Flex, Heading, Text } from "@chakra-ui/react";
 import { parseSharedEvent } from "applesauce-core/helpers/share";
-import { kinds, nip18 } from "nostr-tools";
+import { kinds, nip18, NostrEvent } from "nostr-tools";
+import { memo, useEffect } from "react";
 
-import { NostrEvent } from "../../../types/nostr-event";
+import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
+import useSingleEvent from "../../../hooks/use-single-event";
+import useUserMuteFilter from "../../../hooks/use-user-mute-filter";
+import { TrustProvider } from "../../../providers/local/trust-provider";
+import { eventStore } from "../../../services/event-store";
+import { EmbedEvent } from "../../embed-event";
+import LoadingNostrLink from "../../loading-nostr-link";
+import NoteMenu from "../../note/note-menu";
 import TimelineNote from "../../note/timeline-note";
 import UserAvatar from "../../user/user-avatar";
 import UserDnsIdentity from "../../user/user-dns-identity";
 import UserLink from "../../user/user-link";
-import { TrustProvider } from "../../../providers/local/trust-provider";
-import useSingleEvent from "../../../hooks/use-single-event";
-import { EmbedEvent } from "../../embed-event";
-import useUserMuteFilter from "../../../hooks/use-user-mute-filter";
-import LoadingNostrLink from "../../loading-nostr-link";
-import NoteMenu from "../../note/note-menu";
-import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
-import { eventStore } from "../../../services/event-store";
 
 function ShareEvent({ event }: { event: NostrEvent }) {
   const muteFilter = useUserMuteFilter();

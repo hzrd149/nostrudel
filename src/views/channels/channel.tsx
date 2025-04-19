@@ -6,7 +6,7 @@ import { ChannelHiddenQuery, ChannelMessagesQuery, ChannelMutedQuery } from "app
 
 import useSingleEvent from "../../hooks/use-single-event";
 import { ErrorBoundary } from "../../components/error-boundary";
-import { NostrEvent } from "../../types/nostr-event";
+import { NostrEvent } from "nostr-tools";
 import useChannelMetadata from "../../hooks/use-channel-metadata";
 import ChannelMetadataDrawer from "./components/channel-metadata-drawer";
 import ChannelJoinButton from "./components/channel-join-button";

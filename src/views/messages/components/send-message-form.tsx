@@ -1,19 +1,18 @@
+import dayjs from "dayjs";
+import { EventTemplate, kinds } from "nostr-tools";
 import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
-import dayjs from "dayjs";
-import { kinds } from "nostr-tools";
 
 import { Button, ButtonGroup, Flex, FlexProps, Heading } from "@chakra-ui/react";
-import { useSigningContext } from "../../../providers/global/signing-provider";
+import InsertGifButton from "../../../components/gif/insert-gif-button";
 import MagicTextArea, { RefType } from "../../../components/magic-textarea";
+import InsertReactionButton from "../../../components/reactions/insert-reaction-button";
+import useCacheForm from "../../../hooks/use-cache-form";
 import useTextAreaUploadFile, { useTextAreaInsertTextWithForm } from "../../../hooks/use-textarea-upload-file";
-import { DraftNostrEvent } from "../../../types/nostr-event";
 import useUserMailboxes from "../../../hooks/use-user-mailboxes";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
-import useCacheForm from "../../../hooks/use-cache-form";
+import { useSigningContext } from "../../../providers/global/signing-provider";
 import decryptionCacheService from "../../../services/decryption-cache";
-import InsertGifButton from "../../../components/gif/insert-gif-button";
-import InsertReactionButton from "../../../components/reactions/insert-reaction-button";
 
 export default function SendMessageForm({
   pubkey,
@@ -47,7 +46,7 @@ export default function SendMessageForm({
     setLoadingMessage("Encrypting...");
     const encrypted = await requestEncrypt(values.content, pubkey);
 
-    const draft: DraftNostrEvent = {
+    const draft: EventTemplate = {
       kind: kinds.EncryptedDirectMessage,
       content: encrypted,
       tags: [["p", pubkey]],

@@ -1,9 +1,9 @@
 import { Button, Flex, FlexProps, Heading, Textarea } from "@chakra-ui/react";
-import { useForm } from "react-hook-form";
 import dayjs from "dayjs";
+import { EventTemplate } from "nostr-tools";
+import { useForm } from "react-hook-form";
 
 import StarRating from "../../../components/star-rating";
-import { DraftNostrEvent } from "../../../types/nostr-event";
 import { RELAY_REVIEW_LABEL, RELAY_REVIEW_LABEL_NAMESPACE, REVIEW_KIND } from "../../../helpers/nostr/reviews";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
 
@@ -23,7 +23,7 @@ export default function RelayReviewForm({
   watch("quality");
 
   const onSubmit = handleSubmit(async (values) => {
-    const draft: DraftNostrEvent = {
+    const draft: EventTemplate = {
       kind: REVIEW_KIND,
       content: values.content,
       tags: [

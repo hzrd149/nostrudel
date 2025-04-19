@@ -1,7 +1,8 @@
 import { IconButton, IconButtonProps, Link } from "@chakra-ui/react";
-import { NostrEvent } from "../../../types/nostr-event";
-import { getDownloadURL } from "../../../helpers/nostr/stemstr";
+import { NostrEvent } from "nostr-tools";
+
 import { DownloadIcon } from "../../../components/icons";
+import { getDownloadURL } from "../../../helpers/nostr/stemstr";
 
 export default function TrackDownloadButton({
   track,

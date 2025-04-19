@@ -1,13 +1,13 @@
-import { useCallback, useMemo, useState } from "react";
 import { Flex, FlexProps, IconButton, IconButtonProps, Text } from "@chakra-ui/react";
+import { NostrEvent } from "nostr-tools";
+import { useCallback, useMemo, useState } from "react";
 
-import { ChevronDownIcon, ChevronUpIcon, DislikeIcon, LikeIcon } from "../icons";
-import useEventReactions from "../../hooks/use-event-reactions";
-import { getEventReactionScore, groupReactions } from "../../helpers/nostr/reactions";
-import { NostrEvent } from "../../types/nostr-event";
-import { useAdditionalRelayContext } from "../../providers/local/additional-relay-context";
-import { usePublishEvent } from "../../providers/global/publish-provider";
 import { useActiveAccount, useEventFactory } from "applesauce-react/hooks";
+import { getEventReactionScore, groupReactions } from "../../helpers/nostr/reactions";
+import useEventReactions from "../../hooks/use-event-reactions";
+import { usePublishEvent } from "../../providers/global/publish-provider";
+import { useAdditionalRelayContext } from "../../providers/local/additional-relay-context";
+import { ChevronDownIcon, ChevronUpIcon, DislikeIcon, LikeIcon } from "../icons";
 
 export default function EventVoteButtons({
   event,

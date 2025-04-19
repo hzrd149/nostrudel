@@ -1,4 +1,3 @@
-import { useForm } from "react-hook-form";
 import {
   Button,
   ButtonGroup,
@@ -14,12 +13,12 @@ import {
   ModalProps,
   Select,
 } from "@chakra-ui/react";
-import { kinds } from "nostr-tools";
 import dayjs from "dayjs";
-
-import { DraftNostrEvent, NostrEvent } from "../../../types/nostr-event";
-import { usePublishEvent } from "../../../providers/global/publish-provider";
 import { nanoid } from "nanoid";
+import { EventTemplate, kinds, NostrEvent } from "nostr-tools";
+import { useForm } from "react-hook-form";
+
+import { usePublishEvent } from "../../../providers/global/publish-provider";
 
 export type NewSetModalProps = Omit<ModalProps, "children"> & {
   onCreated?: (list: NostrEvent) => void;
@@ -43,7 +42,7 @@ export default function NewSetModal({
   });
 
   const submit = handleSubmit(async (values) => {
-    const draft: DraftNostrEvent = {
+    const draft: EventTemplate = {
       content: "",
       created_at: dayjs().unix(),
       tags: [

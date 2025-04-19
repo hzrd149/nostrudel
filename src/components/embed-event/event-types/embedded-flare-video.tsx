@@ -1,11 +1,11 @@
 import { Card, CardBody, CardProps, Flex, Heading, Image, Link, Text } from "@chakra-ui/react";
+import { NostrEvent } from "nostr-tools";
 import { useMemo } from "react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 
 import { getVideoImages, getVideoSummary, getVideoTitle } from "../../../helpers/nostr/video";
 import { useBreakpointValue } from "../../../providers/global/breakpoint-provider";
 import { getSharableEventAddress } from "../../../services/relay-hints";
-import { NostrEvent } from "../../../types/nostr-event";
 import UserAvatar from "../../user/user-avatar";
 import UserLink from "../../user/user-link";
 

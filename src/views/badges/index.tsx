@@ -14,7 +14,7 @@ import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-
 import BadgeAwardCard from "./components/badge-award-card";
 import { ErrorBoundary } from "../../components/error-boundary";
 import useClientSideMuteFilter from "../../hooks/use-client-side-mute-filter";
-import { NostrEvent } from "../../types/nostr-event";
+import { NostrEvent } from "nostr-tools";
 
 function BadgesPage() {
   const { filter, listId } = usePeopleListContext();

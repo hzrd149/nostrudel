@@ -1,13 +1,7 @@
 import { Card, CardBody, CardProps, Flex, Heading, Image, Link, Tag, Text } from "@chakra-ui/react";
-import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { NostrEvent } from "nostr-tools";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
 
-import StreamStatusBadge from "../../../views/streams/components/status-badge";
-import UserLink from "../../user/user-link";
-import UserAvatar from "../../user/user-avatar";
-import useShareableEventAddress from "../../../hooks/use-shareable-event-address";
-import Timestamp from "../../timestamp";
-import { useBreakpointValue } from "../../../providers/global/breakpoint-provider";
 import {
   getStreamHashtags,
   getStreamHost,
@@ -16,6 +10,12 @@ import {
   getStreamStartTime,
   getStreamTitle,
 } from "../../../helpers/nostr/stream";
+import useShareableEventAddress from "../../../hooks/use-shareable-event-address";
+import { useBreakpointValue } from "../../../providers/global/breakpoint-provider";
+import StreamStatusBadge from "../../../views/streams/components/status-badge";
+import Timestamp from "../../timestamp";
+import UserAvatar from "../../user/user-avatar";
+import UserLink from "../../user/user-link";
 
 export default function EmbeddedStream({ stream, ...props }: Omit<CardProps, "children"> & { stream: NostrEvent }) {
   const naddr = useShareableEventAddress(stream, getStreamRelays(stream));

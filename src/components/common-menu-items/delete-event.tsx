@@ -1,7 +1,7 @@
 import { MenuItem } from "@chakra-ui/react";
 import { useActiveAccount } from "applesauce-react/hooks";
+import { NostrEvent } from "nostr-tools";
 
-import { NostrEvent } from "../../types/nostr-event";
 import { useDeleteEventContext } from "../../providers/route/delete-event-provider";
 import { TrashIcon } from "../icons";
 

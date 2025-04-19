@@ -6,7 +6,7 @@ import UserAvatarLink from "../../../components/user/user-avatar-link";
 import UserLink from "../../../components/user/user-link";
 import UserDnsIdentity from "../../../components/user/user-dns-identity";
 import StarRating from "../../../components/star-rating";
-import { NostrEvent } from "../../../types/nostr-event";
+import { NostrEvent } from "nostr-tools";
 import { Metadata } from "./relay-card";
 import Timestamp from "../../../components/timestamp";
 import { TextNoteContents } from "../../../components/note/timeline-note/text-note-contents";

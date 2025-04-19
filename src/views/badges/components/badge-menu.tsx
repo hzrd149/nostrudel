@@ -1,6 +1,6 @@
 import { MenuItem } from "@chakra-ui/react";
 
-import { NostrEvent } from "../../../types/nostr-event";
+import { NostrEvent } from "nostr-tools";
 import { DotsMenuButton, MenuIconButtonProps } from "../../../components/dots-menu-button";
 import { useActiveAccount } from "applesauce-react/hooks";
 import { TrashIcon } from "../../../components/icons";

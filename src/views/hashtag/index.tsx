@@ -17,7 +17,7 @@ import { useAppTitle } from "../../hooks/use-app-title";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { isReply, isRepost } from "../../helpers/nostr/event";
 import { CheckIcon, EditIcon } from "../../components/icons";
-import { NostrEvent } from "../../types/nostr-event";
+import { NostrEvent } from "nostr-tools";
 import TimelinePage, { useTimelinePageEventFilter } from "../../components/timeline-page";
 import TimelineViewTypeButtons from "../../components/timeline-page/timeline-view-type";
 import useClientSideMuteFilter from "../../hooks/use-client-side-mute-filter";

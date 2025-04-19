@@ -1,13 +1,12 @@
-import { useCallback, useContext, useMemo } from "react";
 import { MenuItem, useToast } from "@chakra-ui/react";
 import { getZapSender } from "applesauce-core/helpers";
-import { kinds, nip19 } from "nostr-tools";
+import { kinds, nip19, NostrEvent } from "nostr-tools";
+import { useCallback, useContext, useMemo } from "react";
 
-import { NostrEvent } from "../../types/nostr-event";
-import { QuoteEventIcon } from "../icons";
 import useUserProfile from "../../hooks/use-user-profile";
 import { PostModalContext } from "../../providers/route/post-modal-provider";
 import { getSharableEventAddress } from "../../services/relay-hints";
+import { QuoteEventIcon } from "../icons";
 
 export default function QuoteEventMenuItem({ event }: { event: NostrEvent }) {
   const toast = useToast();

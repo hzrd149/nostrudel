@@ -1,13 +1,13 @@
 import { MenuItem } from "@chakra-ui/react";
 import { UnmuteUser } from "applesauce-actions/actions";
 import { useActionHub, useActiveAccount } from "applesauce-react/hooks";
+import { NostrEvent } from "nostr-tools";
 
-import { NostrEvent } from "../../types/nostr-event";
-import { MuteIcon, UnmuteIcon } from "../icons";
-import { useMuteModalContext } from "../../providers/route/mute-modal-provider";
+import useAsyncAction from "../../hooks/use-async-action";
 import useUserMuteActions from "../../hooks/use-user-mute-actions";
 import { usePublishEvent } from "../../providers/global/publish-provider";
-import useAsyncAction from "../../hooks/use-async-action";
+import { useMuteModalContext } from "../../providers/route/mute-modal-provider";
+import { MuteIcon, UnmuteIcon } from "../icons";
 
 export default function MuteUserMenuItem({ event }: { event: NostrEvent }) {
   const account = useActiveAccount();

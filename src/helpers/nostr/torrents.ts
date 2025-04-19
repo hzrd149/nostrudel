@@ -1,4 +1,4 @@
-import { NostrEvent } from "../../types/nostr-event";
+import { NostrEvent } from "nostr-tools";
 
 export const TORRENT_KIND = 2003;
 export const TORRENT_COMMENT_KIND = 2004;

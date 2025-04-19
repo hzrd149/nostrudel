@@ -1,17 +1,16 @@
-import { useCallback } from "react";
 import { Flex, Spacer } from "@chakra-ui/react";
+import { NostrEvent, kinds } from "nostr-tools";
+import { useCallback } from "react";
 import { useOutletContext } from "react-router-dom";
-import { kinds } from "nostr-tools";
 
-import { isReply, isRepost } from "../../helpers/nostr/event";
-import { useAdditionalRelayContext } from "../../providers/local/additional-relay-context";
-import { RelayIconStack } from "../../components/relay-icon-stack";
-import { NostrEvent } from "../../types/nostr-event";
-import useTimelineLoader from "../../hooks/use-timeline-loader";
-import TimelineViewType from "../../components/timeline-page/timeline-view-type";
-import TimelinePage, { useTimelinePageEventFilter } from "../../components/timeline-page";
 import NoteFilterTypeButtons from "../../components/note-filter-type-buttons";
+import { RelayIconStack } from "../../components/relay-icon-stack";
+import TimelinePage, { useTimelinePageEventFilter } from "../../components/timeline-page";
+import TimelineViewType from "../../components/timeline-page/timeline-view-type";
+import { isReply, isRepost } from "../../helpers/nostr/event";
 import { useRouteStateBoolean } from "../../hooks/use-route-state-value";
+import useTimelineLoader from "../../hooks/use-timeline-loader";
+import { useAdditionalRelayContext } from "../../providers/local/additional-relay-context";
 
 export default function UserNotesTab() {
   const { pubkey } = useOutletContext() as { pubkey: string };

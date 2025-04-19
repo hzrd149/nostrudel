@@ -2,7 +2,7 @@ import { Card, CardBody, CardHeader, Flex, Spacer, Spinner, Text } from "@chakra
 import codes from "iso-language-codes";
 
 import { DVMJob, getRequestInputParam } from "../../../../helpers/nostr/dvm";
-import { NostrEvent } from "../../../../types/nostr-event";
+import { NostrEvent } from "nostr-tools";
 import Timestamp from "../../../../components/timestamp";
 import UserLink from "../../../../components/user/user-link";
 import UserAvatarLink from "../../../../components/user/user-avatar-link";

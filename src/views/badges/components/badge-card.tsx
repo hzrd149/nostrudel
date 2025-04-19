@@ -5,7 +5,7 @@ import { kinds } from "nostr-tools";
 
 import UserAvatarLink from "../../../components/user/user-avatar-link";
 import UserLink from "../../../components/user/user-link";
-import { NostrEvent } from "../../../types/nostr-event";
+import { NostrEvent } from "nostr-tools";
 import { getEventCoordinate } from "../../../helpers/nostr/event";
 import BadgeMenu from "./badge-menu";
 import { getBadgeImage, getBadgeName } from "../../../helpers/nostr/badges";

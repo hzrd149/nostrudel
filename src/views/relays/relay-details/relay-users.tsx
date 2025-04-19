@@ -15,7 +15,7 @@ import HoverLinkOverlay from "../../../components/hover-link-overlay";
 import UserLink from "../../../components/user/user-link";
 import { getRelaysFromList } from "../../../helpers/nostr/lists";
 import { getRelayVariations } from "../../../helpers/relay";
-import { NostrEvent } from "../../../types/nostr-event";
+import { NostrEvent } from "nostr-tools";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
 
 function UserCard({ list, pubkey }: { list: NostrEvent; pubkey: string }) {

@@ -2,14 +2,13 @@ import { ChangeEventHandler, useCallback, useMemo, useState } from "react";
 import { Alert, Button, Flex, Spacer, Table, TableContainer, Tbody, Th, Thead, Tr, useToast } from "@chakra-ui/react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { SimpleAccount } from "applesauce-accounts/accounts";
-import { generateSecretKey } from "nostr-tools";
+import { generateSecretKey, NostrEvent } from "nostr-tools";
 
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import useClientSideMuteFilter from "../../hooks/use-client-side-mute-filter";
-import { NostrEvent } from "../../types/nostr-event";
 import { TORRENT_KIND, validateTorrent } from "../../helpers/nostr/torrents";
 import TorrentTableRow from "./components/torrent-table-row";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";

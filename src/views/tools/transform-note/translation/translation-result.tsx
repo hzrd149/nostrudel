@@ -2,7 +2,7 @@ import { Button, Flex, Text, useDisclosure } from "@chakra-ui/react";
 
 import UserAvatarLink from "../../../../components/user/user-avatar-link";
 import UserLink from "../../../../components/user/user-link";
-import { NostrEvent } from "../../../../types/nostr-event";
+import { NostrEvent } from "nostr-tools";
 import TextNoteContents from "../../../../components/note/timeline-note/text-note-contents";
 import { TrustProvider } from "../../../../providers/local/trust-provider";
 import DebugEventButton from "../../../../components/debug-modal/debug-event-button";

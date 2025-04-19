@@ -1,4 +1,5 @@
 import { Box, Card, CardBody, CardProps, Flex, Heading, Image, LinkBox, Text } from "@chakra-ui/react";
+import { NostrEvent } from "nostr-tools";
 import { Link as RouterLink } from "react-router-dom";
 
 import {
@@ -8,7 +9,6 @@ import {
   getArticleTitle,
 } from "../../../helpers/nostr/long-form";
 import useShareableEventAddress from "../../../hooks/use-shareable-event-address";
-import { NostrEvent } from "../../../types/nostr-event";
 import ArticleTags from "../../../views/articles/components/article-tags";
 import HoverLinkOverlay from "../../hover-link-overlay";
 import Timestamp from "../../timestamp";

@@ -1,15 +1,15 @@
 import { Card, CardBody, CardHeader, CardProps, LinkBox, Text } from "@chakra-ui/react";
 import { useActiveAccount } from "applesauce-react/hooks";
+import { NostrEvent } from "nostr-tools";
 
-import { NostrEvent } from "../../../types/nostr-event";
-import { TrustProvider } from "../../../providers/local/trust-provider";
-import UserAvatarLink from "../../user/user-avatar-link";
-import UserLink from "../../user/user-link";
-import Timestamp from "../../timestamp";
-import DecryptPlaceholder from "../../../views/messages/components/decrypt-placeholder";
 import { getDMRecipient, getDMSender } from "../../../helpers/nostr/dms";
+import { TrustProvider } from "../../../providers/local/trust-provider";
+import DecryptPlaceholder from "../../../views/messages/components/decrypt-placeholder";
 import DirectMessageContent from "../../../views/messages/components/direct-message-content";
 import DebugEventButton from "../../debug-modal/debug-event-button";
+import Timestamp from "../../timestamp";
+import UserAvatarLink from "../../user/user-avatar-link";
+import UserLink from "../../user/user-link";
 
 export default function EmbeddedDM({ dm, ...props }: Omit<CardProps, "children"> & { dm: NostrEvent }) {
   const account = useActiveAccount();

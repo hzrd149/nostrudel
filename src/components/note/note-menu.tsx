@@ -1,22 +1,22 @@
-import { useCallback, useMemo } from "react";
 import { MenuItem, useDisclosure } from "@chakra-ui/react";
+import { NostrEvent } from "nostr-tools";
+import { useCallback, useMemo } from "react";
 import { Link as RouterLink } from "react-router-dom";
 
-import { BroadcastEventIcon } from "../icons";
-import { NostrEvent } from "../../types/nostr-event";
-import { DotsMenuButton, MenuIconButtonProps } from "../dots-menu-button";
+import { usePublishEvent } from "../../providers/global/publish-provider";
+import { getSharableEventAddress } from "../../services/relay-hints";
 import NoteTranslationModal from "../../views/tools/transform-note/translation";
-import Translate01 from "../icons/translate-01";
+import CopyEmbedCodeMenuItem from "../common-menu-items/copy-embed-code";
+import DeleteEventMenuItem from "../common-menu-items/delete-event";
+import MuteUserMenuItem from "../common-menu-items/mute-user";
+import OpenInAppMenuItem from "../common-menu-items/open-in-app";
 import PinEventMenuItem from "../common-menu-items/pin-event";
 import ShareLinkMenuItem from "../common-menu-items/share-link";
-import OpenInAppMenuItem from "../common-menu-items/open-in-app";
-import MuteUserMenuItem from "../common-menu-items/mute-user";
-import DeleteEventMenuItem from "../common-menu-items/delete-event";
-import CopyEmbedCodeMenuItem from "../common-menu-items/copy-embed-code";
-import Recording02 from "../icons/recording-02";
-import { usePublishEvent } from "../../providers/global/publish-provider";
 import DebugEventMenuItem from "../debug-modal/debug-event-menu-item";
-import { getSharableEventAddress } from "../../services/relay-hints";
+import { DotsMenuButton, MenuIconButtonProps } from "../dots-menu-button";
+import { BroadcastEventIcon } from "../icons";
+import Recording02 from "../icons/recording-02";
+import Translate01 from "../icons/translate-01";
 
 export default function NoteMenu({ event, ...props }: { event: NostrEvent } & Omit<MenuIconButtonProps, "children">) {
   const translationsModal = useDisclosure();

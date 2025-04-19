@@ -1,15 +1,15 @@
 import { Card, CardBody, CardHeader, CardProps, Flex, Heading, Link, Text } from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router-dom";
+import { NostrEvent } from "nostr-tools";
 import { useMemo } from "react";
+import { Link as RouterLink } from "react-router-dom";
 
-import { NostrEvent } from "../../../types/nostr-event";
 import { getGoalName } from "../../../helpers/nostr/goal";
+import { getSharableEventAddress } from "../../../services/relay-hints";
+import GoalProgress from "../../../views/goals/components/goal-progress";
+import GoalTopZappers from "../../../views/goals/components/goal-top-zappers";
+import GoalZapButton from "../../../views/goals/components/goal-zap-button";
 import UserAvatarLink from "../../user/user-avatar-link";
 import UserLink from "../../user/user-link";
-import GoalProgress from "../../../views/goals/components/goal-progress";
-import GoalZapButton from "../../../views/goals/components/goal-zap-button";
-import GoalTopZappers from "../../../views/goals/components/goal-top-zappers";
-import { getSharableEventAddress } from "../../../services/relay-hints";
 
 export type EmbeddedGoalOptions = {
   showActions?: boolean;

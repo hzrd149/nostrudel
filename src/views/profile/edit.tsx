@@ -1,4 +1,3 @@
-import { useEffect, useMemo, useRef } from "react";
 import {
   Avatar,
   Button,
@@ -6,30 +5,31 @@ import {
   FormControl,
   FormErrorMessage,
   FormLabel,
+  IconButton,
   Input,
-  Link,
-  Textarea,
   InputGroup,
   InputRightElement,
-  IconButton,
+  Link,
+  Textarea,
   VisuallyHiddenInput,
 } from "@chakra-ui/react";
-import { useForm } from "react-hook-form";
 import { parseNIP05Address, ProfileContent, unixNow } from "applesauce-core/helpers";
+import { IdentityStatus } from "applesauce-loaders/helpers/dns-identity";
+import { useActiveAccount } from "applesauce-react/hooks";
+import { EventTemplate } from "nostr-tools";
+import { useEffect, useMemo, useRef } from "react";
+import { useForm } from "react-hook-form";
 
 import { ExternalLinkIcon, OutboxIcon } from "../../components/icons";
-import { isLNURL } from "../../helpers/lnurl";
-import { useReadRelays } from "../../hooks/use-client-relays";
-import { useActiveAccount } from "applesauce-react/hooks";
-import useUserProfile from "../../hooks/use-user-profile";
-import dnsIdentityLoader from "../../services/dns-identity-loader";
-import { DraftNostrEvent } from "../../types/nostr-event";
-import lnurlMetadataService from "../../services/lnurl-metadata";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import { DEFAULT_LOOKUP_RELAYS } from "../../const";
-import { usePublishEvent } from "../../providers/global/publish-provider";
+import { isLNURL } from "../../helpers/lnurl";
+import { useReadRelays } from "../../hooks/use-client-relays";
 import { useInputUploadFileWithForm } from "../../hooks/use-input-upload-file";
-import { IdentityStatus } from "applesauce-loaders/helpers/dns-identity";
+import useUserProfile from "../../hooks/use-user-profile";
+import { usePublishEvent } from "../../providers/global/publish-provider";
+import dnsIdentityLoader from "../../services/dns-identity-loader";
+import lnurlMetadataService from "../../services/lnurl-metadata";
 
 const isEmail =
   /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -309,7 +309,7 @@ export const ProfileEditView = () => {
       }
     }
 
-    const draft: DraftNostrEvent = {
+    const draft: EventTemplate = {
       created_at: unixNow(),
       kind: 0,
       content: JSON.stringify({ ...metadata, ...newMetadata }),

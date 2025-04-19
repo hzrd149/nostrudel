@@ -18,7 +18,7 @@ import { ChainedDVMJob, getEventIdsFromJobs, getRequestInput, getRequestRelays }
 import dayjs from "dayjs";
 import { truncatedId } from "../../../../helpers/nostr/event";
 import { CopyIconButton } from "../../../../components/copy-icon-button";
-import { NostrEvent } from "../../../../types/nostr-event";
+import { NostrEvent } from "nostr-tools";
 import UserLink from "../../../../components/user/user-link";
 
 function JobResult({ result }: { result: NostrEvent }) {

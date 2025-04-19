@@ -17,7 +17,7 @@ import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { AdditionalRelayProvider, useAdditionalRelayContext } from "../../providers/local/additional-relay-context";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
-import { NostrEvent } from "../../types/nostr-event";
+import { NostrEvent } from "nostr-tools";
 import StreamCard from "./components/stream-card";
 
 function StreamsPage() {

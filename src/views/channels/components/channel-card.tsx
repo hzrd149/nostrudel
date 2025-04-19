@@ -4,7 +4,7 @@ import { EventPointer } from "nostr-tools/nip19";
 import { Card, CardBody, CardHeader, CardProps, Flex, Heading, LinkBox, Spinner, Text } from "@chakra-ui/react";
 
 import useChannelMetadata from "../../../hooks/use-channel-metadata";
-import { NostrEvent } from "../../../types/nostr-event";
+import { NostrEvent } from "nostr-tools";
 import HoverLinkOverlay from "../../../components/hover-link-overlay";
 import useSingleEvent from "../../../hooks/use-single-event";
 import { useReadRelays } from "../../../hooks/use-client-relays";

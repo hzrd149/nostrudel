@@ -1,18 +1,18 @@
-import { useContext, useMemo } from "react";
+import { QuestionIcon } from "@chakra-ui/icons";
 import { Box, Button, ButtonGroup, Card, CardBody, CardHeader, CardProps, IconButton, Text } from "@chakra-ui/react";
+import { NostrEvent } from "nostr-tools";
+import { useContext, useMemo } from "react";
 
-import { NostrEvent } from "../../../types/nostr-event";
-import UserAvatarLink from "../../user/user-avatar-link";
-import UserLink from "../../user/user-link";
-import UserDnsIdentity from "../../user/user-dns-identity";
-import Timestamp from "../../timestamp";
-import { ExternalLinkIcon } from "../../icons";
-import DebugEventButton from "../../debug-modal/debug-event-button";
-import DebugEventTags from "../../debug-modal/event-tags";
 import { AppHandlerContext } from "../../../providers/route/app-handler-provider";
 import { getSharableEventAddress } from "../../../services/relay-hints";
-import { QuestionIcon } from "@chakra-ui/icons";
+import DebugEventButton from "../../debug-modal/debug-event-button";
+import DebugEventTags from "../../debug-modal/event-tags";
+import { ExternalLinkIcon } from "../../icons";
 import RouterLink from "../../router-link";
+import Timestamp from "../../timestamp";
+import UserAvatarLink from "../../user/user-avatar-link";
+import UserDnsIdentity from "../../user/user-dns-identity";
+import UserLink from "../../user/user-link";
 
 export default function EmbeddedUnknown({ event, ...props }: Omit<CardProps, "children"> & { event: NostrEvent }) {
   const address = useMemo(() => getSharableEventAddress(event), [event]);

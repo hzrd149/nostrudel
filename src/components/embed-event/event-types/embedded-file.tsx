@@ -1,15 +1,15 @@
 import { Box, Card, CardBody, CardProps, Flex, Heading, Image, LinkBox, Text } from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router-dom";
 import { getTagValue } from "applesauce-core/helpers";
+import { NostrEvent } from "nostr-tools";
+import { Link as RouterLink } from "react-router-dom";
 
 import { getArticlePublishDate } from "../../../helpers/nostr/long-form";
-import { NostrEvent } from "../../../types/nostr-event";
+import { formatBytes } from "../../../helpers/number";
+import useShareableEventAddress from "../../../hooks/use-shareable-event-address";
+import HoverLinkOverlay from "../../hover-link-overlay";
+import Timestamp from "../../timestamp";
 import UserAvatarLink from "../../user/user-avatar-link";
 import UserLink from "../../user/user-link";
-import Timestamp from "../../timestamp";
-import HoverLinkOverlay from "../../hover-link-overlay";
-import useShareableEventAddress from "../../../hooks/use-shareable-event-address";
-import { formatBytes } from "../../../helpers/number";
 
 export default function EmbeddedFile({ file, ...props }: Omit<CardProps, "children"> & { file: NostrEvent }) {
   const name = getTagValue(file, "name");

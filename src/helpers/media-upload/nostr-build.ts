@@ -1,5 +1,4 @@
-import { nip98 } from "nostr-tools";
-import { DraftNostrEvent, NostrEvent } from "../../types/nostr-event";
+import { EventTemplate, NostrEvent, nip98 } from "nostr-tools";
 
 type NostrBuildResponse = {
   status: "success" | "error";
@@ -31,7 +30,7 @@ type NostrBuildResponse = {
   ];
 };
 
-export async function nostrBuildUploadImage(file: File, sign?: (draft: DraftNostrEvent) => Promise<NostrEvent>) {
+export async function nostrBuildUploadImage(file: File, sign?: (draft: EventTemplate) => Promise<NostrEvent>) {
   if (!(file.type.includes("image") || file.type.includes("video") || file.type.includes("audio")))
     throw new Error("Unsupported file type");
 

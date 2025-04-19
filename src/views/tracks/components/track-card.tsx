@@ -1,20 +1,20 @@
 import { Button, ButtonGroup, Card, CardBody, CardFooter, CardHeader, CardProps, Flex, Tag } from "@chakra-ui/react";
+import { NostrEvent } from "nostr-tools";
 
-import { NostrEvent } from "../../../types/nostr-event";
-import { getHashtags } from "../../../helpers/nostr/stemstr";
 import { CompactNoteContent } from "../../../components/compact-note-content";
-import Timestamp from "../../../components/timestamp";
-import UserLink from "../../../components/user/user-link";
-import UserAvatarLink from "../../../components/user/user-avatar-link";
 import { ReplyIcon } from "../../../components/icons";
-import TrackStemstrButton from "./track-stemstr-button";
-import TrackDownloadButton from "./track-download-button";
-import TrackPlayer from "./track-player";
-import UserDnsIdentity from "../../../components/user/user-dns-identity";
-import TrackMenu from "./track-menu";
 import EventQuoteButton from "../../../components/note/event-quote-button";
+import Timestamp from "../../../components/timestamp";
+import UserAvatarLink from "../../../components/user/user-avatar-link";
+import UserDnsIdentity from "../../../components/user/user-dns-identity";
+import UserLink from "../../../components/user/user-link";
 import EventZapButton from "../../../components/zap/event-zap-button";
+import { getHashtags } from "../../../helpers/nostr/stemstr";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
+import TrackDownloadButton from "./track-download-button";
+import TrackMenu from "./track-menu";
+import TrackPlayer from "./track-player";
+import TrackStemstrButton from "./track-stemstr-button";
 
 export default function TrackCard({ track, ...props }: { track: NostrEvent } & Omit<CardProps, "children">) {
   const hashtags = getHashtags(track);

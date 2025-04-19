@@ -1,4 +1,3 @@
-import { useCallback, useState } from "react";
 import {
   IconButton,
   IconButtonProps,
@@ -11,19 +10,19 @@ import {
   MenuOptionGroup,
   useDisclosure,
 } from "@chakra-ui/react";
-import { kinds } from "nostr-tools";
 import { getEventPointersFromList } from "applesauce-core/helpers/lists";
 import { useActiveAccount } from "applesauce-react/hooks";
+import { kinds, NostrEvent } from "nostr-tools";
+import { useCallback, useState } from "react";
 
-import useUserSets from "../../hooks/use-user-lists";
-import { listAddEvent, listRemoveEvent, getListName } from "../../helpers/nostr/lists";
-import { NostrEvent } from "../../types/nostr-event";
-import { getEventCoordinate } from "../../helpers/nostr/event";
-import { BookmarkIcon, BookmarkedIcon, PlusCircleIcon } from "../icons";
-import NewSetModal from "../../views/lists/components/new-set-modal";
-import useEventBookmarkActions from "../../hooks/use-event-bookmark-actions";
-import { usePublishEvent } from "../../providers/global/publish-provider";
 import { ReadonlyAccount } from "applesauce-accounts/accounts";
+import { getEventCoordinate } from "../../helpers/nostr/event";
+import { getListName, listAddEvent, listRemoveEvent } from "../../helpers/nostr/lists";
+import useEventBookmarkActions from "../../hooks/use-event-bookmark-actions";
+import useUserSets from "../../hooks/use-user-lists";
+import { usePublishEvent } from "../../providers/global/publish-provider";
+import NewSetModal from "../../views/lists/components/new-set-modal";
+import { BookmarkedIcon, BookmarkIcon, PlusCircleIcon } from "../icons";
 
 export default function BookmarkEventButton({
   event,

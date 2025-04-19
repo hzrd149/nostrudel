@@ -10,18 +10,17 @@ import {
   LinkBox,
   Text,
 } from "@chakra-ui/react";
+import { nip19, NostrEvent } from "nostr-tools";
 import { useMemo } from "react";
 import { Link as RouterLink } from "react-router-dom";
-import { nip19 } from "nostr-tools";
 
-import { NostrEvent } from "../../../types/nostr-event";
-import UserLink from "../../user/user-link";
 import { getPageForks, getPageSummary, getPageTitle } from "../../../helpers/nostr/wiki";
-import HoverLinkOverlay from "../../hover-link-overlay";
-import Timestamp from "../../timestamp";
-import GitBranch01 from "../../icons/git-branch-01";
-import UserName from "../../user/user-name";
 import { getSharableEventAddress } from "../../../services/relay-hints";
+import HoverLinkOverlay from "../../hover-link-overlay";
+import GitBranch01 from "../../icons/git-branch-01";
+import Timestamp from "../../timestamp";
+import UserLink from "../../user/user-link";
+import UserName from "../../user/user-name";
 
 export default function EmbeddedWikiPage({ page: page, ...props }: Omit<CardProps, "children"> & { page: NostrEvent }) {
   const { address } = useMemo(() => getPageForks(page), [page]);

@@ -1,7 +1,7 @@
 import { MouseEventHandler, useState } from "react";
 import { Button, Flex, Spacer, Text, useToast } from "@chakra-ui/react";
+import { NostrEvent } from "nostr-tools";
 
-import { NostrEvent } from "../../../../types/nostr-event";
 import UserAvatarLink from "../../../../components/user/user-avatar-link";
 import UserLink from "../../../../components/user/user-link";
 import { LightningIcon } from "../../../../components/icons";

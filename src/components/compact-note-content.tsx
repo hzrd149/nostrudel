@@ -1,20 +1,20 @@
-import React, { useMemo, useRef } from "react";
 import { Box, BoxProps, Text } from "@chakra-ui/react";
 import { Root, truncateContent } from "applesauce-content/nast";
+import { EventTemplate, NostrEvent } from "nostr-tools";
+import React, { useMemo, useRef } from "react";
 
-import { DraftNostrEvent, NostrEvent } from "../types/nostr-event";
-import { LightboxProvider } from "./lightbox-provider";
-import { nostrMentions, emojis, hashtags, links } from "applesauce-content/text";
+import { emojis, hashtags, links, nostrMentions } from "applesauce-content/text";
 import { useRenderedContent } from "applesauce-react/hooks";
 import { components } from "./content";
 import { renderGenericUrl } from "./content/links/common";
+import { LightboxProvider } from "./lightbox-provider";
 
 const linkRenderers = [renderGenericUrl];
 
 const CompactNoteContentSymbol = Symbol.for("compact-note-content");
 
 export type NoteContentsProps = {
-  event: NostrEvent | DraftNostrEvent;
+  event: NostrEvent | EventTemplate;
   textOnly?: boolean;
   maxLength?: number;
 };

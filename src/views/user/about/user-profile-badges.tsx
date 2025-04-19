@@ -1,4 +1,3 @@
-import { useState } from "react";
 import {
   Button,
   Flex,
@@ -17,15 +16,16 @@ import {
   Tooltip,
   useDisclosure,
 } from "@chakra-ui/react";
+import { NostrEvent } from "nostr-tools";
+import { useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
 
-import useUserProfileBadges from "../../../hooks/use-user-profile-badges";
-import { getBadgeDescription, getBadgeImage, getBadgeName } from "../../../helpers/nostr/badges";
-import { getEventCoordinate } from "../../../helpers/nostr/event";
-import { NostrEvent } from "../../../types/nostr-event";
+import Timestamp from "../../../components/timestamp";
 import UserAvatarLink from "../../../components/user/user-avatar-link";
 import UserLink from "../../../components/user/user-link";
-import Timestamp from "../../../components/timestamp";
+import { getBadgeDescription, getBadgeImage, getBadgeName } from "../../../helpers/nostr/badges";
+import { getEventCoordinate } from "../../../helpers/nostr/event";
+import useUserProfileBadges from "../../../hooks/use-user-profile-badges";
 import { getSharableEventAddress } from "../../../services/relay-hints";
 
 function Badge({ pubkey, badge, award }: { pubkey: string; badge: NostrEvent; award: NostrEvent }) {

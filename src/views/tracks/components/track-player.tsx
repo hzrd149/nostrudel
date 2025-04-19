@@ -1,9 +1,9 @@
 import { Box, Flex, IconButton, useDisclosure } from "@chakra-ui/react";
+import { NostrEvent } from "nostr-tools";
 
-import { NostrEvent } from "../../../types/nostr-event";
+import Play from "../../../components/icons/play";
 import { LiveAudioPlayer } from "../../../components/live-audio-player";
 import { getDownloadURL, getStreamURL, getWaveform } from "../../../helpers/nostr/stemstr";
-import Play from "../../../components/icons/play";
 
 export default function TrackPlayer({ track }: { track: NostrEvent }) {
   const streamUrl = getStreamURL(track);

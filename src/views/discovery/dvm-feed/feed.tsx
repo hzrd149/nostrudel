@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { ChevronLeftIcon } from "@chakra-ui/icons";
 import {
   Button,
   Code,
@@ -21,34 +21,34 @@ import {
   Tr,
   useDisclosure,
 } from "@chakra-ui/react";
-import { ChevronLeftIcon } from "@chakra-ui/icons";
-import dayjs from "dayjs";
-import { useNavigate } from "react-router-dom";
 import { getCoordinateFromAddressPointer } from "applesauce-core/helpers";
+import dayjs from "dayjs";
+import { EventTemplate } from "nostr-tools";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
+import { useActiveAccount } from "applesauce-react/hooks";
+import { AddressPointer } from "nostr-tools/nip19";
+import { CodeIcon } from "../../../components/icons";
+import RequireActiveAccount from "../../../components/router/require-active-account";
+import Timestamp from "../../../components/timestamp";
+import VerticalPageLayout from "../../../components/vertical-page-layout";
 import {
+  chainJobs,
   DVM_CONTENT_DISCOVERY_JOB_KIND,
   DVM_CONTENT_DISCOVERY_RESULT_KIND,
   DVM_STATUS_KIND,
   flattenJobChain,
-  chainJobs,
   groupEventsIntoJobs,
 } from "../../../helpers/nostr/dvm";
-import { DraftNostrEvent } from "../../../types/nostr-event";
-import VerticalPageLayout from "../../../components/vertical-page-layout";
-import useTimelineLoader from "../../../hooks/use-timeline-loader";
 import { useReadRelays } from "../../../hooks/use-client-relays";
-import { useActiveAccount } from "applesauce-react/hooks";
-import RequireActiveAccount from "../../../components/router/require-active-account";
-import { CodeIcon } from "../../../components/icons";
-import DebugChains from "./components/debug-chains";
-import Feed from "./components/feed";
-import { AddressPointer } from "nostr-tools/nip19";
 import useParamsAddressPointer from "../../../hooks/use-params-address-pointer";
-import DVMParams from "./components/dvm-params";
+import useTimelineLoader from "../../../hooks/use-timeline-loader";
 import { useUserOutbox } from "../../../hooks/use-user-mailboxes";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
-import Timestamp from "../../../components/timestamp";
+import DebugChains from "./components/debug-chains";
+import DVMParams from "./components/dvm-params";
+import Feed from "./components/feed";
 
 function DVMFeedPage({ pointer }: { pointer: AddressPointer }) {
   const [since] = useState(() => dayjs().subtract(1, "day").unix());
@@ -76,7 +76,7 @@ function DVMFeedPage({ pointer }: { pointer: AddressPointer }) {
     setRequesting(true);
 
     const paramTags = Object.entries(params).map(([key, value]) => ["param", key, value]);
-    const draft: DraftNostrEvent = {
+    const draft: EventTemplate = {
       kind: DVM_CONTENT_DISCOVERY_JOB_KIND,
       created_at: dayjs().unix(),
       content: "",

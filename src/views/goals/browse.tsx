@@ -11,7 +11,7 @@ import IntersectionObserverProvider from "../../providers/local/intersection-obs
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import GoalCard from "./components/goal-card";
 import { getGoalClosedDate } from "../../helpers/nostr/goal";
-import { NostrEvent } from "../../types/nostr-event";
+import { NostrEvent } from "nostr-tools";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import { ErrorBoundary } from "../../components/error-boundary";
 import { kinds } from "nostr-tools";

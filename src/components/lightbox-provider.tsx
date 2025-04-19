@@ -1,3 +1,5 @@
+import { Button, Flex, FlexProps, Spacer, useDisclosure } from "@chakra-ui/react";
+import styled from "@emotion/styled";
 import {
   DependencyList,
   MutableRefObject,
@@ -10,18 +12,17 @@ import {
   useRef,
   useState,
 } from "react";
-import { Button, Flex, FlexProps, Spacer, useDisclosure } from "@chakra-ui/react";
-import { useUnmount } from "react-use";
 import { Link as RouterLink } from "react-router-dom";
-import styled from "@emotion/styled";
+import { useUnmount } from "react-use";
+import { NostrEvent } from "nostr-tools";
 
 import Lightbox, { RenderSlideContainerProps, Slide } from "yet-another-react-lightbox";
-import Zoom from "yet-another-react-lightbox/plugins/zoom";
 import Counter from "yet-another-react-lightbox/plugins/counter";
 import Download from "yet-another-react-lightbox/plugins/download";
+import Zoom from "yet-another-react-lightbox/plugins/zoom";
 
-import "yet-another-react-lightbox/styles.css";
 import "yet-another-react-lightbox/plugins/counter.css";
+import "yet-another-react-lightbox/styles.css";
 
 // extend slide type to include eventId
 declare module "yet-another-react-lightbox" {
@@ -30,10 +31,9 @@ declare module "yet-another-react-lightbox" {
   }
 }
 
-import { NostrEvent } from "../types/nostr-event";
+import { getSharableEventAddress } from "../services/relay-hints";
 import UserAvatarLink from "./user/user-avatar-link";
 import UserLink from "./user/user-link";
-import { getSharableEventAddress } from "../services/relay-hints";
 
 type RefType = MutableRefObject<HTMLElement | null>;
 

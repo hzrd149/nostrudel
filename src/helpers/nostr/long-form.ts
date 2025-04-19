@@ -1,10 +1,11 @@
-import { NostrEvent } from "../../types/nostr-event";
+import { getTagValue } from "applesauce-core/helpers";
+import { NostrEvent } from "nostr-tools";
 
 export function getArticleTitle(event: NostrEvent) {
-  return event.tags.find((t) => t[0] === "title")?.[1];
+  return getTagValue(event, "title");
 }
 export function getArticleSummary(event: NostrEvent) {
-  return event.tags.find((t) => t[0] === "summary")?.[1];
+  return getTagValue(event, "summary");
 }
 export function getArticleImage(event: NostrEvent) {
   return event.tags.find((t) => t[0] === "image")?.[1];

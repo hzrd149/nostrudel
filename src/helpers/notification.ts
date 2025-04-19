@@ -1,5 +1,5 @@
 import SuperMap from "../classes/super-map";
-import { NostrEvent } from "../types/nostr-event";
+import { NostrEvent } from "nostr-tools";
 
 const DAY_IN_SECONDS = 60 * 60 * 24;
 

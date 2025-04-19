@@ -1,8 +1,8 @@
-import { useCallback } from "react";
-import dayjs from "dayjs";
 import { IconButton, IconButtonProps } from "@chakra-ui/react";
+import dayjs from "dayjs";
+import { EventTemplate } from "nostr-tools";
+import { useCallback } from "react";
 
-import { DraftNostrEvent } from "../../../types/nostr-event";
 import { RepostIcon } from "../../../components/icons";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
 
@@ -13,7 +13,7 @@ export function RelayShareButton({
   const publish = usePublishEvent();
 
   const recommendRelay = useCallback(async () => {
-    const draft: DraftNostrEvent = {
+    const draft: EventTemplate = {
       kind: 2,
       content: relay,
       tags: [],

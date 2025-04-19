@@ -1,7 +1,7 @@
 import React, { PropsWithChildren, useContext, useMemo, useState } from "react";
 import { useActiveAccount } from "applesauce-react/hooks";
 
-import { NostrEvent } from "../../types/nostr-event";
+import { NostrEvent } from "nostr-tools";
 import useUserContactList from "../../hooks/use-user-contact-list";
 import { getPubkeysFromList } from "../../helpers/nostr/lists";
 

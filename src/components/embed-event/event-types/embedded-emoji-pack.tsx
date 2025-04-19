@@ -11,16 +11,16 @@ import {
   Link,
   Text,
 } from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router-dom";
 import { getEmojis, getPackName } from "applesauce-core/helpers/emoji";
+import { NostrEvent } from "nostr-tools";
+import { Link as RouterLink } from "react-router-dom";
 
-import UserAvatarLink from "../../user/user-avatar-link";
-import UserLink from "../../user/user-link";
+import { getSharableEventAddress } from "../../../services/relay-hints";
 import EmojiPackFavoriteButton from "../../../views/emojis/components/emoji-pack-favorite-button";
 import EmojiPackMenu from "../../../views/emojis/components/emoji-pack-menu";
-import { NostrEvent } from "../../../types/nostr-event";
 import Timestamp from "../../timestamp";
-import { getSharableEventAddress } from "../../../services/relay-hints";
+import UserAvatarLink from "../../user/user-avatar-link";
+import UserLink from "../../user/user-link";
 
 export default function EmbeddedEmojiPack({ pack, ...props }: Omit<CardProps, "children"> & { pack: NostrEvent }) {
   const emojis = getEmojis(pack);

@@ -1,12 +1,12 @@
-import { useMemo } from "react";
 import { ButtonProps } from "@chakra-ui/react";
 import { useActiveAccount } from "applesauce-react/hooks";
+import { NostrEvent } from "nostr-tools";
+import { useMemo } from "react";
 
-import { NostrEvent } from "../../types/nostr-event";
-import useEventReactions from "../../hooks/use-event-reactions";
 import { groupReactions } from "../../helpers/nostr/reactions";
-import ReactionGroupButton from "./reaction-group-button";
+import useEventReactions from "../../hooks/use-event-reactions";
 import { useAddReaction } from "./common-hooks";
+import ReactionGroupButton from "./reaction-group-button";
 
 export default function SimpleDislikeButton({
   event,

@@ -1,5 +1,5 @@
 import { Expressions } from "applesauce-content/helpers";
-import { kinds } from "nostr-tools";
+import { kinds, NostrEvent } from "nostr-tools";
 import { useMemo } from "react";
 import { Photo } from "react-photo-album";
 
@@ -7,7 +7,6 @@ import { isImageURL } from "../../../helpers/url";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
 import { useBreakpointValue } from "../../../providers/global/breakpoint-provider";
 import { TrustProvider } from "../../../providers/local/trust-provider";
-import { NostrEvent } from "../../../types/nostr-event";
 import { GalleryImage } from "../../content/components/gallery";
 import { EmbeddedImageProps } from "../../content/links";
 import { LightboxProvider } from "../../lightbox-provider";

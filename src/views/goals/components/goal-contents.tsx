@@ -1,9 +1,9 @@
 import { encodeDecodeResult } from "applesauce-core/helpers";
+import { NostrEvent } from "nostr-tools";
 
 import { EmbedEventPointer } from "../../../components/embed-event";
-import { getGoalEventPointers, getGoalLinks } from "../../../helpers/nostr/goal";
-import { NostrEvent } from "../../../types/nostr-event";
 import OpenGraphCard from "../../../components/open-graph/open-graph-card";
+import { getGoalEventPointers, getGoalLinks } from "../../../helpers/nostr/goal";
 
 export default function GoalContents({ goal }: { goal: NostrEvent }) {
   const pointers = getGoalEventPointers(goal);

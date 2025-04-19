@@ -1,4 +1,4 @@
-import { NostrEvent } from "../../types/nostr-event";
+import { NostrEvent } from "nostr-tools";
 
 export const STEMSTR_RELAY = "wss://relay.stemstr.app";
 export const STEMSTR_TRACK_KIND = 1808;

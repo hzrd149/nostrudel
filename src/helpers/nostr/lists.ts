@@ -1,9 +1,8 @@
 import dayjs from "dayjs";
 import { EventTemplate, NostrEvent, kinds } from "nostr-tools";
 import { isAddressPointerInList, isEventPointerInList, isProfilePointerInList } from "applesauce-core/helpers/lists";
-import { mergeRelaySets } from "applesauce-core/helpers";
+import { isDTag, isPTag, isRTag, mergeRelaySets } from "applesauce-core/helpers";
 
-import { PTag, isDTag, isPTag, isRTag } from "../../types/nostr-event";
 import { getEventCoordinate, replaceOrAddSimpleTag } from "./event";
 
 export const USER_GROUPS_LIST_KIND = 10009;
@@ -120,15 +119,6 @@ export function isEventInList(list?: NostrEvent, event?: NostrEvent) {
   } else return isEventPointerInList(list, event.id);
 }
 
-export function createEmptyContactList(): EventTemplate {
-  return {
-    created_at: dayjs().unix(),
-    content: "",
-    tags: [],
-    kind: kinds.Contacts,
-  };
-}
-
 /** @deprecated */
 export function listAddPerson(
   list: NostrEvent | EventTemplate,
@@ -137,7 +127,7 @@ export function listAddPerson(
   petname?: string,
 ): EventTemplate {
   if (list.tags.some((t) => t[0] === "p" && t[1] === pubkey)) throw new Error("Person already in list");
-  const pTag: PTag = ["p", pubkey, relay ?? "", petname ?? ""];
+  const pTag: string[] = ["p", pubkey, relay ?? "", petname ?? ""];
   while (pTag[pTag.length - 1] === "") pTag.pop();
 
   return {

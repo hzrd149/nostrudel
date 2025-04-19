@@ -1,16 +1,15 @@
-import { useEffect, useState } from "react";
-import { generateSecretKey, finalizeEvent, kinds } from "nostr-tools";
 import { Avatar, Button, Flex, Heading, Text, useToast } from "@chakra-ui/react";
 import { bytesToHex } from "@noble/hashes/utils";
-import { ProfileContent, unixNow } from "applesauce-core/helpers";
-
-import { containerProps } from "./common";
-import { nostrBuildUploadImage } from "../../../helpers/media-upload/nostr-build";
-import { DEFAULT_LOOKUP_RELAYS } from "../../../const";
-import { DraftNostrEvent } from "../../../types/nostr-event";
-import { usePublishEvent } from "../../../providers/global/publish-provider";
 import { SimpleAccount } from "applesauce-accounts/accounts";
+import { ProfileContent, unixNow } from "applesauce-core/helpers";
 import { useAccountManager } from "applesauce-react/hooks";
+import { EventTemplate, finalizeEvent, generateSecretKey, kinds } from "nostr-tools";
+import { useEffect, useState } from "react";
+
+import { DEFAULT_LOOKUP_RELAYS } from "../../../const";
+import { nostrBuildUploadImage } from "../../../helpers/media-upload/nostr-build";
+import { usePublishEvent } from "../../../providers/global/publish-provider";
+import { containerProps } from "./common";
 
 export default function CreateStep({
   metadata,
@@ -67,7 +66,7 @@ export default function CreateStep({
       manager.setActive(account);
 
       // set relays
-      const draft: DraftNostrEvent = {
+      const draft: EventTemplate = {
         kind: kinds.RelayList,
         content: "",
         tags: relays.map((url) => ["r", url]),

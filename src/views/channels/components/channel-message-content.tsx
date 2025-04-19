@@ -2,7 +2,7 @@ import { memo } from "react";
 import { Box, BoxProps } from "@chakra-ui/react";
 import { useRenderedContent } from "applesauce-react/hooks";
 
-import { NostrEvent } from "../../../types/nostr-event";
+import { NostrEvent } from "nostr-tools";
 import { TrustProvider } from "../../../providers/local/trust-provider";
 import {
   renderAppleMusicUrl,

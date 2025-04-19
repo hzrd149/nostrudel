@@ -16,7 +16,7 @@ import {
 } from "@chakra-ui/react";
 import { getTagValue } from "applesauce-core/helpers";
 import dayjs from "dayjs";
-import { NostrEvent } from "nostr-tools";
+import { EventTemplate, NostrEvent } from "nostr-tools";
 import { AddressPointer } from "nostr-tools/nip19";
 
 import DebugEventButton from "../../../../components/debug-modal/debug-event-button";
@@ -29,7 +29,6 @@ import { ChainedDVMJob, DVM_CONTENT_DISCOVERY_JOB_KIND, getResponseFromDVM } fro
 import { useReadRelays } from "../../../../hooks/use-client-relays";
 import useUserMailboxes from "../../../../hooks/use-user-mailboxes";
 import { usePublishEvent } from "../../../../providers/global/publish-provider";
-import { DraftNostrEvent } from "../../../../types/nostr-event";
 import { DVMAvatarLink } from "./dvm-avatar";
 import DVMLink from "./dvm-name";
 
@@ -40,7 +39,7 @@ function NextPageButton({ chain, pointer }: { pointer: AddressPointer; chain: Ch
 
   const lastJob = chain[chain.length - 1];
   const requestNextPage = async () => {
-    const draft: DraftNostrEvent = {
+    const draft: EventTemplate = {
       kind: DVM_CONTENT_DISCOVERY_JOB_KIND,
       created_at: dayjs().unix(),
       content: "",

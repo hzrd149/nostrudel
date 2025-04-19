@@ -1,21 +1,20 @@
 import { Flex, Table, TableContainer, Tbody, Td, Th, Thead, Tr } from "@chakra-ui/react";
-import { kinds } from "nostr-tools";
+import { kinds, NostrEvent } from "nostr-tools";
 import { useOutletContext } from "react-router-dom";
 
+import SuperMap from "../../classes/super-map";
+import TimelineActionAndStatus from "../../components/timeline/timeline-action-and-status";
+import Timestamp from "../../components/timestamp";
+import UserAvatarLink from "../../components/user/user-avatar-link";
+import UserDnsIdentityIcon from "../../components/user/user-dns-identity-icon";
+import UserLink from "../../components/user/user-link";
+import VerticalPageLayout from "../../components/vertical-page-layout";
+import { getDMRecipient, getDMSender } from "../../helpers/nostr/dms";
+import useEventIntersectionRef from "../../hooks/use-event-intersection-ref";
+import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { useAdditionalRelayContext } from "../../providers/local/additional-relay-context";
-import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
-import VerticalPageLayout from "../../components/vertical-page-layout";
-import TimelineActionAndStatus from "../../components/timeline/timeline-action-and-status";
-import { NostrEvent } from "../../types/nostr-event";
-import UserAvatarLink from "../../components/user/user-avatar-link";
-import UserLink from "../../components/user/user-link";
-import Timestamp from "../../components/timestamp";
-import useEventIntersectionRef from "../../hooks/use-event-intersection-ref";
-import SuperMap from "../../classes/super-map";
-import { getDMRecipient, getDMSender } from "../../helpers/nostr/dms";
-import UserDnsIdentityIcon from "../../components/user/user-dns-identity-icon";
 
 function DirectMessageRow({ messages, pubkey, self }: { messages: NostrEvent[]; pubkey: string; self: string }) {
   const ref = useEventIntersectionRef<HTMLTableRowElement>(messages[0]);

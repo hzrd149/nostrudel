@@ -12,12 +12,11 @@ import {
   ModalOverlay,
   ModalProps,
 } from "@chakra-ui/react";
+import dayjs from "dayjs";
+import { EventTemplate, kinds } from "nostr-tools";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import { kinds } from "nostr-tools";
-import dayjs from "dayjs";
 
-import { DraftNostrEvent } from "../../../types/nostr-event";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
 import { getSharableEventAddress } from "../../../services/relay-hints";
 
@@ -31,7 +30,7 @@ export default function EmojiPackCreateModal({ onClose, ...props }: Omit<ModalPr
   });
 
   const submit = handleSubmit(async (values) => {
-    const draft: DraftNostrEvent = {
+    const draft: EventTemplate = {
       kind: kinds.Emojisets,
       created_at: dayjs().unix(),
       content: "",

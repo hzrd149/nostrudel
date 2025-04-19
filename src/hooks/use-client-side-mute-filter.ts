@@ -1,9 +1,9 @@
 import { useCallback } from "react";
 import { useActiveAccount } from "applesauce-react/hooks";
+import { NostrEvent } from "nostr-tools";
 
 import useLegacyMuteWordsFilter from "./use-mute-word-filter";
 import useUserMuteFilter from "./use-user-mute-filter";
-import { NostrEvent } from "../types/nostr-event";
 
 /** @deprecated Use useUserMuteFilter once the legacy mute words filter is removed */
 export default function useClientSideMuteFilter(pubkey?: string) {

@@ -29,7 +29,7 @@ import {
   getReferencesFromList,
   isSpecialListKind,
 } from "../../../helpers/nostr/lists";
-import { NostrEvent } from "../../../types/nostr-event";
+import { NostrEvent } from "nostr-tools";
 import useReplaceableEvent from "../../../hooks/use-replaceable-event";
 import ListFavoriteButton from "./list-favorite-button";
 import ListMenu from "./list-menu";

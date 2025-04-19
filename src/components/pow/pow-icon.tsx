@@ -1,6 +1,6 @@
 import { IconProps, Tooltip } from "@chakra-ui/react";
-import { NostrEvent } from "../../types/nostr-event";
-import { nip13 } from "nostr-tools";
+import { nip13, NostrEvent } from "nostr-tools";
+
 import Dice1 from "../icons/dice-1";
 import Dice2 from "../icons/dice-2";
 import Dice3 from "../icons/dice-3";

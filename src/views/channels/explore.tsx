@@ -11,7 +11,7 @@ import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
-import { NostrEvent } from "../../types/nostr-event";
+import { NostrEvent } from "nostr-tools";
 import ChannelCard from "./components/channel-card";
 
 function ChannelsExplorePage() {

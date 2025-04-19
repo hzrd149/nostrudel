@@ -5,13 +5,13 @@ import {
   getZapPayment,
   getZapRecipient,
   getZapRequest,
-  getZapSender
+  getZapSender,
 } from "applesauce-core/helpers";
+import { NostrEvent } from "nostr-tools";
 import { DecodeResult } from "nostr-tools/nip19";
 import { useMemo } from "react";
 
 import { humanReadableSats } from "../../../helpers/lightning";
-import { NostrEvent } from "../../../types/nostr-event";
 import { LightningIcon } from "../../icons";
 import TextNoteContents from "../../note/timeline-note/text-note-contents";
 import Timestamp from "../../timestamp";

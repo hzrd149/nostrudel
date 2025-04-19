@@ -1,16 +1,16 @@
+import { isPTag } from "applesauce-core/helpers";
 import dayjs from "dayjs";
-import { DraftNostrEvent, NostrEvent, isPTag } from "../../types/nostr-event";
+import { EventTemplate, kinds, NostrEvent } from "nostr-tools";
 import { getPubkeysFromList, isPubkeyInList, listAddPerson, listRemovePerson } from "./lists";
-import { kinds } from "nostr-tools";
 
-export function getPubkeysFromMuteList(muteList: NostrEvent | DraftNostrEvent) {
+export function getPubkeysFromMuteList(muteList: NostrEvent | EventTemplate) {
   const expirations = getPubkeysExpiration(muteList);
   return getPubkeysFromList(muteList).map((p) => ({
     pubkey: p.pubkey,
     expiration: expirations[p.pubkey] ?? Infinity,
   }));
 }
-export function getPubkeysExpiration(muteList: NostrEvent | DraftNostrEvent) {
+export function getPubkeysExpiration(muteList: NostrEvent | EventTemplate) {
   return muteList.tags.reduce<Record<string, number>>((dir, tag) => {
     if (tag[0] === "mute_expiration" && tag[1] && tag[2]) {
       const date = parseInt(tag[2]);
@@ -34,7 +34,7 @@ export function getPubkeyExpiration(muteList: NostrEvent, pubkey: string) {
 }
 
 /** @todo this should be handled by applesauce-factory */
-export function createEmptyMuteList(): DraftNostrEvent {
+export function createEmptyMuteList(): EventTemplate {
   return {
     created_at: dayjs().unix(),
     content: "",
@@ -44,7 +44,7 @@ export function createEmptyMuteList(): DraftNostrEvent {
 }
 
 /** @todo this should be updated to use applesauce-factory when it supports updating lists */
-export function muteListAddPubkey(muteList: NostrEvent | DraftNostrEvent, pubkey: string, expiration = Infinity) {
+export function muteListAddPubkey(muteList: NostrEvent | EventTemplate, pubkey: string, expiration = Infinity) {
   let draft = listAddPerson(muteList, pubkey);
   if (expiration < Infinity) {
     draft = {
@@ -57,7 +57,7 @@ export function muteListAddPubkey(muteList: NostrEvent | DraftNostrEvent, pubkey
 }
 
 /** @todo this should be updated to use applesauce-factory when it supports updating lists */
-export function muteListRemovePubkey(muteList: NostrEvent | DraftNostrEvent, pubkey: string) {
+export function muteListRemovePubkey(muteList: NostrEvent | EventTemplate, pubkey: string) {
   let draft = listRemovePerson(muteList, pubkey);
 
   draft = {
@@ -72,10 +72,10 @@ export function muteListRemovePubkey(muteList: NostrEvent | DraftNostrEvent, pub
 }
 
 /** @todo this should be updated to use applesauce-factory when it supports updating lists */
-export function pruneExpiredPubkeys(muteList: NostrEvent | DraftNostrEvent) {
+export function pruneExpiredPubkeys(muteList: NostrEvent | EventTemplate) {
   const expirations = getPubkeysExpiration(muteList);
   const now = dayjs().unix();
-  const draft: DraftNostrEvent = {
+  const draft: EventTemplate = {
     kind: kinds.Mutelist,
     content: muteList.content,
     created_at: now,

@@ -1,14 +1,4 @@
-import {
-  Flex,
-  Link,
-  Table,
-  TableContainer,
-  Tbody,
-  Td,
-  Th,
-  Thead,
-  Tr
-} from "@chakra-ui/react";
+import { Flex, Link, Table, TableContainer, Tbody, Td, Th, Thead, Tr } from "@chakra-ui/react";
 import { getTagValue } from "applesauce-core/helpers";
 import { memo, useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
@@ -30,7 +20,7 @@ import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
-import { NostrEvent } from "../../types/nostr-event";
+import { NostrEvent } from "nostr-tools";
 import MimeTypePicker from "./mime-type-picker";
 
 const FileRow = memo(({ file }: { file: NostrEvent }) => {

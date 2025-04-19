@@ -1,16 +1,15 @@
-import { MouseEventHandler, useCallback } from "react";
 import { Box, Button, Flex, Link, Text, useDisclosure } from "@chakra-ui/react";
+import { getAddressPointerFromATag, getEventPointerFromETag, isATag, isETag, isPTag } from "applesauce-core/helpers";
 import { NostrEvent, nip19 } from "nostr-tools";
+import { MouseEventHandler, useCallback } from "react";
 import { Link as RouterLink } from "react-router-dom";
-import { getAddressPointerFromATag, getEventPointerFromETag } from "applesauce-core/helpers";
 
-import { Tag, isATag, isETag, isPTag } from "../../types/nostr-event";
 import { EmbedEventPointer } from "../embed-event";
 import UserAvatarLink from "../user/user-avatar-link";
-import UserLink from "../user/user-link";
 import UserDnsIdentity from "../user/user-dns-identity";
+import UserLink from "../user/user-link";
 
-function EventTag({ tag }: { tag: Tag }) {
+function EventTag({ tag }: { tag: string[] }) {
   const expand = useDisclosure();
   const content = `[${tag[0]}] ${tag.slice(1).join(", ")}`;
   const props = {

@@ -22,7 +22,7 @@ import useUserSets from "../../hooks/use-user-lists";
 import { getListName, getPubkeysFromList } from "../../helpers/nostr/lists";
 import { getEventCoordinate, getEventUID } from "../../helpers/nostr/event";
 import useFavoriteLists from "../../hooks/use-favorite-lists";
-import { NostrEvent } from "../../types/nostr-event";
+import { NostrEvent } from "nostr-tools";
 import useUserContactList from "../../hooks/use-user-contact-list";
 import { matchSorter } from "match-sorter";
 import UserAvatar from "../user/user-avatar";

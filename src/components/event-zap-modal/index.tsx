@@ -7,11 +7,11 @@ import {
   ModalOverlay,
   ModalProps,
 } from "@chakra-ui/react";
-import { getInboxes, getInvoice, getOutboxes, mergeRelaySets } from "applesauce-core/helpers";
+import { getInboxes, getInvoice, getOutboxes, isDTag, mergeRelaySets } from "applesauce-core/helpers";
 import { getZapSplits } from "applesauce-core/helpers/zap";
 import { getObservableValue } from "applesauce-core/observable";
 import dayjs from "dayjs";
-import { kinds } from "nostr-tools";
+import { EventTemplate, kinds, NostrEvent } from "nostr-tools";
 import { useState } from "react";
 
 import { getEventCoordinate, isReplaceable } from "../../helpers/nostr/event";
@@ -21,7 +21,6 @@ import lnurlMetadataService from "../../services/lnurl-metadata";
 import { getEventRelayHints } from "../../services/relay-hints";
 import relayScoreboardService from "../../services/relay-scoreboard";
 import signingService from "../../services/signing";
-import { DraftNostrEvent, NostrEvent, isDTag } from "../../types/nostr-event";
 import { EmbedProps } from "../embed-event";
 import UserLink from "../user/user-link";
 import InputStep from "./input-step";
@@ -82,7 +81,7 @@ export async function getPayRequestForPubkey(
   const additional = additionalRelays ? relayScoreboardService.getRankedRelays(additionalRelays) : [];
 
   // create zap request
-  const zapRequest: DraftNostrEvent = {
+  const zapRequest: EventTemplate = {
     kind: kinds.ZapRequest,
     created_at: dayjs().unix(),
     content: comment ?? "",

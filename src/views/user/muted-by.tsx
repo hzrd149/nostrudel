@@ -1,20 +1,19 @@
-import { memo, useMemo } from "react";
 import { Flex, Heading, Link, SimpleGrid } from "@chakra-ui/react";
+import { kinds, NostrEvent } from "nostr-tools";
+import { memo, useMemo } from "react";
 import { Link as RouterLink, useOutletContext } from "react-router-dom";
-import { kinds } from "nostr-tools";
 
+import SuperMap from "../../classes/super-map";
 import UserAvatarLink from "../../components/user/user-avatar-link";
 import UserLink from "../../components/user/user-link";
-import useTimelineLoader from "../../hooks/use-timeline-loader";
-import { useReadRelays } from "../../hooks/use-client-relays";
-import { getListName, getPubkeysFromList } from "../../helpers/nostr/lists";
-import IntersectionObserverProvider from "../../providers/local/intersection-observer";
-import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import VerticalPageLayout from "../../components/vertical-page-layout";
-import { NostrEvent } from "../../types/nostr-event";
-import SuperMap from "../../classes/super-map";
-import { createListLink } from "../lists/components/list-card";
+import { getListName, getPubkeysFromList } from "../../helpers/nostr/lists";
+import { useReadRelays } from "../../hooks/use-client-relays";
 import useEventIntersectionRef from "../../hooks/use-event-intersection-ref";
+import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
+import useTimelineLoader from "../../hooks/use-timeline-loader";
+import IntersectionObserverProvider from "../../providers/local/intersection-observer";
+import { createListLink } from "../lists/components/list-card";
 
 function ListLink({ list }: { list: NostrEvent }) {
   const ref = useEventIntersectionRef<HTMLAnchorElement>(list);

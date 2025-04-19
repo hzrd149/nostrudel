@@ -1,5 +1,3 @@
-import { useMemo } from "react";
-import { Link as RouterLink } from "react-router-dom";
 import {
   Card,
   CardBody,
@@ -12,12 +10,14 @@ import {
   LinkOverlay,
   Text,
 } from "@chakra-ui/react";
+import { NostrEvent } from "nostr-tools";
+import { useMemo } from "react";
+import { Link as RouterLink } from "react-router-dom";
 
-import UserAvatarLink from "../../user/user-avatar-link";
-import UserLink from "../../user/user-link";
-import { NostrEvent } from "../../../types/nostr-event";
 import { getBadgeDescription, getBadgeImage, getBadgeName } from "../../../helpers/nostr/badges";
 import { getSharableEventAddress } from "../../../services/relay-hints";
+import UserAvatarLink from "../../user/user-avatar-link";
+import UserLink from "../../user/user-link";
 
 export default function EmbeddedBadge({ badge, ...props }: Omit<CardProps, "children"> & { badge: NostrEvent }) {
   const naddr = useMemo(() => getSharableEventAddress(badge), [badge]);

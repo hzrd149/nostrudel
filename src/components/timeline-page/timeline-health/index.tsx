@@ -17,7 +17,7 @@ import {
 import { getSeenRelays } from "applesauce-core/helpers";
 import { TimelineLoader } from "applesauce-loaders";
 
-import { NostrEvent } from "../../../types/nostr-event";
+import { NostrEvent } from "nostr-tools";
 import RelayFavicon from "../../relay-favicon";
 import { NoteLink } from "../../note/note-link";
 import { BroadcastEventIcon } from "../../icons";

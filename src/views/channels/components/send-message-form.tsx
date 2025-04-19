@@ -7,7 +7,7 @@ import { Emoji } from "applesauce-core/helpers";
 
 import MagicTextArea, { RefType } from "../../../components/magic-textarea";
 import useTextAreaUploadFile, { useTextAreaInsertTextWithForm } from "../../../hooks/use-textarea-upload-file";
-import { NostrEvent } from "../../../types/nostr-event";
+import { NostrEvent } from "nostr-tools";
 import { useContextEmojis } from "../../../providers/global/emoji-provider";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
 import InsertGifButton from "../../../components/gif/insert-gif-button";

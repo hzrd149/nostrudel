@@ -1,13 +1,13 @@
-import { useCallback } from "react";
-import { MenuItem, useToast } from "@chakra-ui/react";
 import { Share } from "@capacitor/share";
+import { MenuItem, useToast } from "@chakra-ui/react";
+import { NostrEvent } from "nostr-tools";
+import { useCallback } from "react";
 
 import { CAP_IS_NATIVE } from "../../env";
-import { NostrEvent } from "../../types/nostr-event";
-import { ShareIcon } from "../icons";
-import useUserProfile from "../../hooks/use-user-profile";
 import { getDisplayName } from "../../helpers/nostr/profile";
 import useShareableEventAddress from "../../hooks/use-shareable-event-address";
+import useUserProfile from "../../hooks/use-user-profile";
+import { ShareIcon } from "../icons";
 
 export default function ShareLinkMenuItem({ event }: { event: NostrEvent }) {
   const toast = useToast();

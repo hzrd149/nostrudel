@@ -14,7 +14,7 @@ import RequireActiveAccount from "../../../components/router/require-active-acco
 import useUserMailboxes from "../../../hooks/use-user-mailboxes";
 import { InboxIcon, OutboxIcon } from "../../../components/icons";
 import MediaServerFavicon from "../../../components/favicon/media-server-favicon";
-import { NostrEvent } from "../../../types/nostr-event";
+import { NostrEvent } from "nostr-tools";
 import useAsyncAction from "../../../hooks/use-async-action";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
 import AddRelayForm from "../relays/add-relay-form";

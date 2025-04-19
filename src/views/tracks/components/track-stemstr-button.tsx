@@ -1,5 +1,5 @@
 import { Button, Image, Link } from "@chakra-ui/react";
-import { NostrEvent } from "../../../types/nostr-event";
+import { NostrEvent } from "nostr-tools";
 
 export default function TrackStemstrButton({ track }: { track: NostrEvent }) {
   return (

@@ -1,28 +1,27 @@
-import { Suspense, lazy } from "react";
-import type { DecodeResult } from "nostr-tools/nip19";
 import { CardProps, Spinner } from "@chakra-ui/react";
-import { kinds } from "nostr-tools";
+import { kinds, NostrEvent } from "nostr-tools";
+import type { DecodeResult } from "nostr-tools/nip19";
+import { lazy, Suspense } from "react";
 
-import EmbeddedNote from "./event-types/embedded-note";
-import useSingleEvent from "../../hooks/use-single-event";
-import { NostrEvent } from "../../types/nostr-event";
+import { safeDecode } from "../../helpers/nip19";
 import { LIST_KINDS, SET_KINDS } from "../../helpers/nostr/lists";
 import { STEMSTR_TRACK_KIND } from "../../helpers/nostr/stemstr";
 import { TORRENT_COMMENT_KIND, TORRENT_KIND } from "../../helpers/nostr/torrents";
 import { FLARE_VIDEO_KIND } from "../../helpers/nostr/video";
 import { WIKI_PAGE_KIND } from "../../helpers/nostr/wiki";
 import useReplaceableEvent from "../../hooks/use-replaceable-event";
-import { safeDecode } from "../../helpers/nip19";
+import useSingleEvent from "../../hooks/use-single-event";
 import type { EmbeddedGoalOptions } from "./event-types/embedded-goal";
+import EmbeddedNote from "./event-types/embedded-note";
 
-import LoadingNostrLink from "../loading-nostr-link";
-import EmbeddedRepost from "./event-types/embedded-repost";
-import EmbeddedSetOrList from "./event-types/embedded-list";
-import EmbeddedReaction from "./event-types/embedded-reaction";
-import EmbeddedDM from "./event-types/embedded-dm";
-import EmbeddedUnknown from "./event-types/embedded-unknown";
 import { DVM_CONTENT_DISCOVERY_JOB_KIND } from "../../helpers/nostr/dvm";
 import DVMCard from "../../views/discovery/dvm-feed/components/dvm-card";
+import LoadingNostrLink from "../loading-nostr-link";
+import EmbeddedDM from "./event-types/embedded-dm";
+import EmbeddedSetOrList from "./event-types/embedded-list";
+import EmbeddedReaction from "./event-types/embedded-reaction";
+import EmbeddedRepost from "./event-types/embedded-repost";
+import EmbeddedUnknown from "./event-types/embedded-unknown";
 
 const EmbeddedGoal = lazy(() => import("./event-types/embedded-goal"));
 const EmbeddedArticle = lazy(() => import("./event-types/embedded-article"));

@@ -1,12 +1,12 @@
-import { useContext } from "react";
 import { Card, CardFooter, CardHeader, CardProps, Heading, LinkBox, LinkOverlay, Text } from "@chakra-ui/react";
 import { getTagValue } from "applesauce-core/helpers";
+import { NostrEvent } from "nostr-tools";
+import { useContext } from "react";
 
+import useShareableEventAddress from "../../../hooks/use-shareable-event-address";
+import { AppHandlerContext } from "../../../providers/route/app-handler-provider";
 import UserAvatarLink from "../../user/user-avatar-link";
 import UserLink from "../../user/user-link";
-import { NostrEvent } from "../../../types/nostr-event";
-import { AppHandlerContext } from "../../../providers/route/app-handler-provider";
-import useShareableEventAddress from "../../../hooks/use-shareable-event-address";
 
 export default function EmbeddedCommunity({
   community,

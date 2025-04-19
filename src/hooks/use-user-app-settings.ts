@@ -1,8 +1,8 @@
-import { useCallback, useMemo } from "react";
-import { useActiveAccount, useStoreQuery } from "applesauce-react/hooks";
-import { EventTemplate } from "nostr-tools";
 import { ReadonlyAccount } from "applesauce-accounts/accounts";
+import { useActiveAccount, useStoreQuery } from "applesauce-react/hooks";
 import dayjs from "dayjs";
+import { EventTemplate } from "nostr-tools";
+import { useCallback, useMemo } from "react";
 
 import { APP_SETTING_IDENTIFIER, APP_SETTINGS_KIND, AppSettings, defaultSettings } from "../helpers/app-settings";
 import { usePublishEvent } from "../providers/global/publish-provider";

@@ -10,18 +10,18 @@ import {
   Tag,
   Tooltip,
 } from "@chakra-ui/react";
+import { NostrEvent } from "nostr-tools";
 
-import { NostrEvent } from "../../../types/nostr-event";
-import UserAvatarLink from "../../user/user-avatar-link";
-import UserLink from "../../user/user-link";
-import { CompactNoteContent } from "../../compact-note-content";
 import { getHashtags } from "../../../helpers/nostr/stemstr";
-import { ReplyIcon } from "../../icons";
-import Timestamp from "../../timestamp";
-import TrackStemstrButton from "../../../views/tracks/components/track-stemstr-button";
 import TrackDownloadButton from "../../../views/tracks/components/track-download-button";
 import TrackPlayer from "../../../views/tracks/components/track-player";
+import TrackStemstrButton from "../../../views/tracks/components/track-stemstr-button";
+import { CompactNoteContent } from "../../compact-note-content";
+import { ReplyIcon } from "../../icons";
 import EventQuoteButton from "../../note/event-quote-button";
+import Timestamp from "../../timestamp";
+import UserAvatarLink from "../../user/user-avatar-link";
+import UserLink from "../../user/user-link";
 import EventZapButton from "../../zap/event-zap-button";
 
 // example nevent1qqst32cnyhhs7jt578u7vp3y047dduuwjquztpvwqc43f3nvg8dh28gpzamhxue69uhhyetvv9ujuum5v4khxarj9eshquq4rxdxa

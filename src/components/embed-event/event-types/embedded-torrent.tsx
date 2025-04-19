@@ -13,13 +13,13 @@ import {
   Tag,
   Text,
 } from "@chakra-ui/react";
+import { NostrEvent } from "nostr-tools";
 import { MouseEventHandler, useCallback } from "react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 
 import { getTorrentMagnetLink, getTorrentSize, getTorrentTitle } from "../../../helpers/nostr/torrents";
 import { formatBytes } from "../../../helpers/number";
 import { getSharableEventAddress } from "../../../services/relay-hints";
-import { NostrEvent } from "../../../types/nostr-event";
 import HoverLinkOverlay from "../../hover-link-overlay";
 import Magnet from "../../icons/magnet";
 import Timestamp from "../../timestamp";

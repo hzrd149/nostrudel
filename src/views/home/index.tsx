@@ -4,7 +4,7 @@ import { kinds } from "nostr-tools";
 
 import { isReply, isRepost } from "../../helpers/nostr/event";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
-import { NostrEvent } from "../../types/nostr-event";
+import { NostrEvent } from "nostr-tools";
 import TimelinePage, { useTimelinePageEventFilter } from "../../components/timeline-page";
 import TimelineViewTypeButtons from "../../components/timeline-page/timeline-view-type";
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";

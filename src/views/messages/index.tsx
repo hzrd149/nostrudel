@@ -25,7 +25,7 @@ import useUserContacts from "../../hooks/use-user-contacts";
 import useUserMailboxes from "../../hooks/use-user-mailboxes";
 import useUserMutes from "../../hooks/use-user-mutes";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
-import { NostrEvent } from "../../types/nostr-event";
+import { NostrEvent } from "nostr-tools";
 
 export function useDirectMessagesTimeline(pubkey?: string) {
   const mailboxes = useUserMailboxes(pubkey);

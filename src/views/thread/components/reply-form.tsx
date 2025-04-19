@@ -7,7 +7,7 @@ import { ThreadItem } from "applesauce-core/queries";
 import { useEventFactory } from "applesauce-react/hooks";
 import { Emoji } from "applesauce-core/helpers";
 
-import { NostrEvent } from "../../../types/nostr-event";
+import { NostrEvent } from "nostr-tools";
 import MagicTextArea, { RefType } from "../../../components/magic-textarea";
 import { useContextEmojis } from "../../../providers/global/emoji-provider";
 import { TrustProvider } from "../../../providers/local/trust-provider";
