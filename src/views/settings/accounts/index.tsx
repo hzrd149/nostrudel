@@ -102,7 +102,8 @@ export default function AccountSettings() {
       <Button
         colorScheme="primary"
         mt="10"
-        w="xl"
+        w="full"
+        maxW="xl"
         mx="auto"
         onClick={() => {
           manager.clearActive();
