@@ -1,25 +1,38 @@
-import { useCallback, useMemo } from "react";
-import { Filter, kinds, NostrEvent } from "nostr-tools";
-import { Flex, Heading, Spacer } from "@chakra-ui/react";
+import { Box, Flex } from "@chakra-ui/react";
 import { getEventUID } from "applesauce-core/helpers";
+import { Filter, kinds, NostrEvent } from "nostr-tools";
+import { useCallback, useMemo } from "react";
+import AutoSizer from "react-virtualized-auto-sizer";
+import { FixedSizeList as List, ListChildComponentProps } from "react-window";
 
-import VerticalPageLayout from "../../components/vertical-page-layout";
-import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
-import { useReadRelays } from "../../hooks/use-client-relays";
-import useClientSideMuteFilter from "../../hooks/use-client-side-mute-filter";
-import useTimelineLoader from "../../hooks/use-timeline-loader";
-import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
-import IntersectionObserverProvider from "../../providers/local/intersection-observer";
-import TimelineActionAndStatus from "../../components/timeline/timeline-action-and-status";
-import ArticleCard from "./components/article-card";
+import { ErrorBoundary } from "../../components/error-boundary";
+import SimpleView from "../../components/layout/presets/simple-view";
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
 import { getArticleTitle } from "../../helpers/nostr/long-form";
-import { ErrorBoundary } from "../../components/error-boundary";
-import useMaxPageWidth from "../../hooks/use-max-page-width";
+import { useReadRelays } from "../../hooks/use-client-relays";
+import useClientSideMuteFilter from "../../hooks/use-client-side-mute-filter";
+import { useVirtualListScrollRestore } from "../../hooks/use-scroll-restore";
+import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
+import useTimelineLoader from "../../hooks/use-timeline-loader";
+import IntersectionObserverProvider from "../../providers/local/intersection-observer";
+import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
+import ArticleCard from "./components/article-card";
+import { useBreakpointValue } from "../../providers/global/breakpoint-provider";
+
+function ArticleRow({ index, style, data }: ListChildComponentProps<NostrEvent[]>) {
+  return (
+    <Box style={style} pb="2">
+      <ErrorBoundary key={getEventUID(data[index])}>
+        <ArticleCard article={data[index]} h="full" mx="auto" maxW="6xl" w="full" />
+      </ErrorBoundary>
+    </Box>
+  );
+}
 
 function ArticlesHomePage() {
   const relays = useReadRelays();
   const userMuteFilter = useClientSideMuteFilter();
+  const scroll = useVirtualListScrollRestore("manual");
 
   const eventFilter = useCallback(
     (event: NostrEvent) => {
@@ -42,28 +55,30 @@ function ArticlesHomePage() {
   });
   const callback = useTimelineCurserIntersectionCallback(loader);
 
-  const maxWidth = useMaxPageWidth();
+  const rowHight = useBreakpointValue({ base: 400, lg: 250 }) || 250;
 
   return (
-    <VerticalPageLayout maxW={maxWidth} mx="auto">
-      <Flex gap="2">
-        <Heading>Articles</Heading>
-        <PeopleListSelection />
-        <Spacer />
-        {/* <Button as={RouterLink} to="/articles/new" colorScheme="primary" leftIcon={<Plus boxSize={6} />}>
-          New
-        </Button> */}
-      </Flex>
-
-      <IntersectionObserverProvider callback={callback}>
-        {articles.map((article) => (
-          <ErrorBoundary key={getEventUID(article)}>
-            <ArticleCard article={article} />
-          </ErrorBoundary>
-        ))}
-        <TimelineActionAndStatus loader={loader} />
-      </IntersectionObserverProvider>
-    </VerticalPageLayout>
+    <IntersectionObserverProvider callback={callback}>
+      <SimpleView title="Articles" scroll={false} actions={<PeopleListSelection ms="auto" />} flush>
+        {/* Container */}
+        <Flex direction="column" flex={1}>
+          <AutoSizer>
+            {({ height, width }) => (
+              <List
+                itemCount={articles.length}
+                itemSize={rowHight}
+                itemData={articles}
+                width={width}
+                height={height}
+                {...scroll}
+              >
+                {ArticleRow}
+              </List>
+            )}
+          </AutoSizer>
+        </Flex>
+      </SimpleView>
+    </IntersectionObserverProvider>
   );
 }
 
