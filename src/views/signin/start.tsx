@@ -32,8 +32,13 @@ export default function SigninStartView() {
     const signer = new ExtensionSigner();
     const pubkey = await signer.getPublicKey();
 
-    const account = new ExtensionAccount(pubkey, signer);
-    manager.addAccount(account);
+    // Get the existing account or create a new one
+    const account =
+      manager.accounts.find((a) => a.type === ExtensionAccount.type && a.pubkey === pubkey) ??
+      new ExtensionAccount(pubkey, signer);
+
+    if (!manager.accounts.includes(account)) manager.addAccount(account);
+
     manager.setActive(account);
   });
 

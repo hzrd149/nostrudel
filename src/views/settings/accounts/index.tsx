@@ -66,23 +66,7 @@ export default function AccountSettings() {
   };
 
   return (
-    <SimpleView
-      title="Account settings"
-      maxW="6xl"
-      actions={
-        <Button
-          colorScheme="primary"
-          ml="auto"
-          size="sm"
-          onClick={() => {
-            manager.clearActive();
-            navigate("/signin", { state: { from: location.pathname } });
-          }}
-        >
-          Add Account
-        </Button>
-      }
-    >
+    <SimpleView title="Accounts" maxW="6xl">
       <Flex gap="2" alignItems="center" wrap="wrap">
         <UserAvatar pubkey={account.pubkey} />
         <Box lineHeight={1}>
@@ -115,6 +99,18 @@ export default function AccountSettings() {
         .map((account) => (
           <AccountCard key={account.id} account={account} />
         ))}
+      <Button
+        colorScheme="primary"
+        mt="10"
+        w="xl"
+        mx="auto"
+        onClick={() => {
+          manager.clearActive();
+          navigate("/signin", { state: { from: location.pathname } });
+        }}
+      >
+        Add Account
+      </Button>
     </SimpleView>
   );
 }

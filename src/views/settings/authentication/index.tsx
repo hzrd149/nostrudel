@@ -14,7 +14,7 @@ export default function AuthenticationSettingsView() {
     <SimpleView title="Authentication settings" maxW="6xl">
       <FormControl>
         <FormLabel htmlFor="default-mode">Default mode</FormLabel>
-        <DefaultAuthModeSelect id="default-mode" w="auto" />
+        <DefaultAuthModeSelect id="default-mode" w="sm" />
       </FormControl>
 
       <Heading size="md" mt="4">

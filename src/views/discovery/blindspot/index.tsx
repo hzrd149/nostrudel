@@ -1,4 +1,3 @@
-import { memo, useEffect, useMemo, useState } from "react";
 import {
   Alert,
   AlertDescription,
@@ -11,17 +10,18 @@ import {
   SimpleGrid,
   Text,
 } from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router-dom";
-import { nip19 } from "nostr-tools";
-
 import { useActiveAccount } from "applesauce-react/hooks";
-import useUserContactList from "../../../hooks/use-user-contact-list";
-import { useWebOfTrust } from "../../../providers/global/web-of-trust-provider";
+import { nip19 } from "nostr-tools";
+import { memo, useEffect, useMemo, useState } from "react";
+import { Link as RouterLink } from "react-router-dom";
+
+import HoverLinkOverlay from "../../../components/hover-link-overlay";
 import UserAvatar from "../../../components/user/user-avatar";
 import UserName from "../../../components/user/user-name";
-import HoverLinkOverlay from "../../../components/hover-link-overlay";
 import VerticalPageLayout from "../../../components/vertical-page-layout";
 import useForceUpdate from "../../../hooks/use-force-update";
+import useUserContactList from "../../../hooks/use-user-contact-list";
+import { useWebOfTrust } from "../../../providers/global/web-of-trust-provider";
 
 const UserCard = memo(({ pubkey, blindspot }: { pubkey: string; blindspot: string[] }) => {
   return (
