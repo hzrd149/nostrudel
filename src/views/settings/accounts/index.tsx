@@ -11,6 +11,8 @@ import AccountTypeBadge from "../../../components/accounts/account-info-badge";
 import SimpleSignerBackup from "./components/simple-signer-backup";
 import MigrateAccountToDevice from "./components/migrate-to-device";
 import SimpleView from "../../../components/layout/presets/simple-view";
+import RouterLink from "../../../components/router-link";
+import { IAccount } from "applesauce-accounts";
 
 function AccountBackup() {
   const account = useActiveAccount()!;
@@ -22,6 +24,31 @@ function AccountBackup() {
       {(account.signer instanceof SimpleSigner || account.signer instanceof PasswordSigner) &&
         SerialPortSigner.SUPPORTED && <MigrateAccountToDevice />}
     </>
+  );
+}
+
+function AccountCard({ account }: { account: IAccount }) {
+  const manager = useAccountManager();
+
+  return (
+    <Flex gap="2" alignItems="center" wrap="wrap" key={account.pubkey}>
+      <UserAvatar pubkey={account.pubkey} />
+      <Box lineHeight={1}>
+        <Heading size="md">
+          <UserName pubkey={account.pubkey} />
+        </Heading>
+        <AccountTypeBadge account={account} />
+      </Box>
+
+      <ButtonGroup size="sm" ml="auto">
+        <Button onClick={() => manager.setActive(account)} variant="ghost">
+          Switch
+        </Button>
+        <Button onClick={() => confirm("Remove account?") && manager.removeAccount(account)} colorScheme="red">
+          Remove
+        </Button>
+      </ButtonGroup>
+    </Flex>
   );
 }
 
@@ -62,13 +89,15 @@ export default function AccountSettings() {
           <Heading size="md">
             <UserName pubkey={account.pubkey} />
           </Heading>
-          <UserDnsIdentity pubkey={account.pubkey} />
+          <AccountTypeBadge account={account} />
         </Box>
-        <AccountTypeBadge account={account} ml="4" />
 
-        <Button onClick={signout} ml="auto">
-          Signout
-        </Button>
+        <ButtonGroup ms="auto">
+          <Button as={RouterLink} to="/profile" variant="ghost">
+            Edit Profile
+          </Button>
+          <Button onClick={signout}>Signout</Button>
+        </ButtonGroup>
       </Flex>
 
       <AccountBackup />
@@ -84,25 +113,7 @@ export default function AccountSettings() {
       {accounts
         .filter((a) => a.pubkey !== account.pubkey)
         .map((account) => (
-          <Flex gap="2" alignItems="center" wrap="wrap" key={account.pubkey}>
-            <UserAvatar pubkey={account.pubkey} />
-            <Box lineHeight={1}>
-              <Heading size="md">
-                <UserName pubkey={account.pubkey} />
-              </Heading>
-              <UserDnsIdentity pubkey={account.pubkey} />
-            </Box>
-            <AccountTypeBadge account={account} ml="4" />
-
-            <ButtonGroup size="sm" ml="auto">
-              <Button onClick={() => manager.setActive(account)} variant="ghost">
-                Switch
-              </Button>
-              <Button onClick={() => confirm("Remove account?") && manager.removeAccount(account)} colorScheme="red">
-                Remove
-              </Button>
-            </ButtonGroup>
-          </Flex>
+          <AccountCard key={account.id} account={account} />
         ))}
     </SimpleView>
   );

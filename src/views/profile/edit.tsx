@@ -1,6 +1,7 @@
 import {
   Avatar,
   Button,
+  ButtonGroup,
   Flex,
   FormControl,
   FormErrorMessage,
@@ -21,7 +22,6 @@ import { useEffect, useMemo, useRef } from "react";
 import { useForm } from "react-hook-form";
 
 import { ExternalLinkIcon, OutboxIcon } from "../../components/icons";
-import VerticalPageLayout from "../../components/vertical-page-layout";
 import { DEFAULT_LOOKUP_RELAYS } from "../../const";
 import { isLNURL } from "../../helpers/lnurl";
 import { useReadRelays } from "../../hooks/use-client-relays";
@@ -30,6 +30,7 @@ import useUserProfile from "../../hooks/use-user-profile";
 import { usePublishEvent } from "../../providers/global/publish-provider";
 import dnsIdentityLoader from "../../services/dns-identity-loader";
 import lnurlMetadataService from "../../services/lnurl-metadata";
+import SimpleView from "../../components/layout/presets/simple-view";
 
 const isEmail =
   /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -49,12 +50,13 @@ type FormData = {
   lightningAddress?: string;
 };
 
-type MetadataFormProps = {
+const MetadataForm = ({
+  defaultValues,
+  onSubmit,
+}: {
   defaultValues?: FormData;
   onSubmit: (data: FormData) => void;
-};
-
-const MetadataForm = ({ defaultValues, onSubmit }: MetadataFormProps) => {
+}) => {
   const account = useActiveAccount()!;
   const {
     register,
@@ -79,7 +81,7 @@ const MetadataForm = ({ defaultValues, onSubmit }: MetadataFormProps) => {
   const bannerUploadRef = useRef<HTMLInputElement | null>(null);
 
   return (
-    <VerticalPageLayout as="form" onSubmit={handleSubmit(onSubmit)}>
+    <SimpleView title="Edit Profile" as="form" onSubmit={handleSubmit(onSubmit)} maxW="6xl" center>
       <Flex gap="2">
         <FormControl isInvalid={!!errors.displayName}>
           <FormLabel>Display Name</FormLabel>
@@ -257,16 +259,13 @@ const MetadataForm = ({ defaultValues, onSubmit }: MetadataFormProps) => {
         />
         <FormErrorMessage>{errors.lightningAddress?.message}</FormErrorMessage>
       </FormControl>
-      <Flex alignSelf="flex-end" gap="2">
-        <Button as={Link} isExternal href="https://metadata.nostr.com/" rightIcon={<ExternalLinkIcon />}>
-          Download Backup
-        </Button>
+      <ButtonGroup ms="auto">
         <Button onClick={() => reset()}>Reset</Button>
         <Button colorScheme="primary" isLoading={isSubmitting} type="submit">
           Update
         </Button>
-      </Flex>
-    </VerticalPageLayout>
+      </ButtonGroup>
+    </SimpleView>
   );
 };
 

@@ -22,7 +22,7 @@ export default function AccountTypeBadge({ account, ...props }: BadgeProps & { a
   }
 
   return (
-    <Badge {...props} variant="solid" colorScheme={color}>
+    <Badge p="1" {...props} variant="solid" colorScheme={color}>
       {account.type}
     </Badge>
   );
