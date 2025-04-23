@@ -9,6 +9,9 @@ import {
   Mutes,
   processTags,
 } from "applesauce-core/helpers";
+import { TimelineQuery } from "applesauce-core/queries";
+import { getContentPointers } from "applesauce-factory/helpers";
+import { kinds, nip18, nip25, NostrEvent } from "nostr-tools";
 import {
   combineLatest,
   filter,
@@ -21,16 +24,13 @@ import {
   throttleTime,
   timer,
 } from "rxjs";
-import { TimelineQuery, UserMuteQuery } from "applesauce-core/queries";
-import { getContentPointers } from "applesauce-factory/helpers";
-import { kinds, nip18, nip25, NostrEvent } from "nostr-tools";
 
-import localSettings from "./local-settings";
-import singleEventLoader from "./single-event-loader";
-import { eventStore, queryStore } from "./event-store";
+import { getThreadReferences, isReply, isRepost } from "../helpers/nostr/event";
 import { TORRENT_COMMENT_KIND } from "../helpers/nostr/torrents";
 import accounts from "./accounts";
-import { getThreadReferences, isReply, isRepost } from "../helpers/nostr/event";
+import { eventStore, queryStore } from "./event-store";
+import localSettings from "./local-settings";
+import singleEventLoader from "./single-event-loader";
 
 export const NotificationTypeSymbol = Symbol("notificationType");
 
@@ -214,7 +214,7 @@ const notifications$: Observable<CategorizedEvent[]> = combineLatest([accounts.a
         map((timeline) => timeline.map((e) => categorizeEvent(e, account.pubkey))),
       );
 
-    const mute$ = queryStore.createQuery(UserMuteQuery, account.pubkey);
+    const mute$ = queryStore.mutes(account.pubkey);
 
     return combineLatest([timeline$, mute$]).pipe(
       // filter events out by mutes
