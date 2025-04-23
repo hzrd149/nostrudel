@@ -1,3 +1,4 @@
+import { MouseEventHandler } from "react";
 import {
   Avatar,
   ButtonGroup,
@@ -8,6 +9,7 @@ import {
   DrawerProps,
   Flex,
   Text,
+  DrawerHeader,
 } from "@chakra-ui/react";
 import { useActiveAccount } from "applesauce-react/hooks";
 
@@ -16,7 +18,6 @@ import NavItems from "../components";
 import { CollapsedContext } from "../context";
 import RelayConnectionButton from "../components/connections-button";
 import PublishLogButton from "../components/publish-log-button";
-import { MouseEventHandler } from "react";
 
 export default function NavDrawer({ onClose, ...props }: Omit<DrawerProps, "children">) {
   const account = useActiveAccount();
@@ -28,10 +29,20 @@ export default function NavDrawer({ onClose, ...props }: Omit<DrawerProps, "chil
   };
 
   return (
-    <Drawer placement="left" onClose={onClose} {...props}>
+    <Drawer placement="left" onClose={onClose} aria-label="Main navigation menu" returnFocusOnClose={true} {...props}>
       <DrawerOverlay />
-      <DrawerContent>
+      <DrawerContent role="navigation">
         <CollapsedContext.Provider value={false}>
+          <DrawerHeader px="4" pb="0">
+            {!account && (
+              <Flex gap="2" alignItems="center">
+                <Avatar src="/apple-touch-icon.png" size="md" aria-label="Nostrudel logo" />
+                <Text as="h1" m={0} fontSize="xl">
+                  Nostrudel
+                </Text>
+              </Flex>
+            )}
+          </DrawerHeader>
           <DrawerBody
             display="flex"
             flexDirection="column"
@@ -42,15 +53,9 @@ export default function NavDrawer({ onClose, ...props }: Omit<DrawerProps, "chil
             gap="2"
             onClick={handleClickItem}
           >
-            {!account && (
-              <Flex gap="2" my="2" alignItems="center">
-                <Avatar src="/apple-touch-icon.png" size="md" />
-                <Text m={0}>Nostrudel</Text>
-              </Flex>
-            )}
             <AccountSwitcher />
             <NavItems />
-            <ButtonGroup variant="ghost" onClick={onClose}>
+            <ButtonGroup variant="ghost" onClick={onClose} aria-label="Relay connections">
               <RelayConnectionButton w="full" />
               <PublishLogButton flexShrink={0} />
             </ButtonGroup>

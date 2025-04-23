@@ -159,7 +159,7 @@ export const internalTools: App[] = [
     description: "A feed of post edits",
     icon: Edit04,
     id: "corrections",
-    to: "/tools/corrections ",
+    to: "/tools/corrections",
   },
   {
     title: "noStrudel Users",

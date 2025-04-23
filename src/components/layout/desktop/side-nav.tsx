@@ -17,6 +17,9 @@ export default function DesktopSideNav({ ...props }: Omit<FlexProps, "children">
   return (
     <CollapsedContext.Provider value={collapsed}>
       <Flex
+        as="nav"
+        aria-label="Main navigation"
+        role="navigation"
         direction="column"
         gap="2"
         px="2"
@@ -38,17 +41,18 @@ export default function DesktopSideNav({ ...props }: Omit<FlexProps, "children">
       >
         <AccountSwitcher />
         <NavItems />
-        <ButtonGroup variant="ghost">
+        <ButtonGroup variant="ghost" role="group" aria-label="Navigation controls">
           <IconButton
-            aria-label={collapsed ? "Open" : "Close"}
-            title={collapsed ? "Open" : "Close"}
+            aria-label={collapsed ? "Expand navigation menu" : "Collapse navigation menu"}
+            aria-expanded={!collapsed}
+            title={collapsed ? "Expand" : "Collapse"}
             onClick={() => setCollapsed(!collapsed)}
             icon={collapsed ? <ChevronRightIcon boxSize={6} /> : <ChevronLeftIcon boxSize={6} />}
           />
           {!collapsed && (
             <>
-              <RelayConnectionButton w="full" />
-              <PublishLogButton flexShrink={0} />
+              <RelayConnectionButton w="full" aria-label="Manage relay connections" />
+              <PublishLogButton flexShrink={0} aria-label="Publish log" />
             </>
           )}
         </ButtonGroup>

@@ -41,23 +41,39 @@ function ParentNote({ note, level = 0 }: { note: NostrEvent; level?: number }) {
       rounded="none"
       borderColor="var(--chakra-colors-chakra-border-color)"
       ref={ref}
+      role="article"
     >
-      <ExpandableToggleButton toggle={more} aria-label="Show More" size="sm" float="right" />
+      <ExpandableToggleButton
+        toggle={more}
+        aria-label={more.isOpen ? "Collapse post" : "Expand post"}
+        size="sm"
+        float="right"
+      />
       <Box float="left" mr="2">
-        <UserAvatarLink pubkey={note.pubkey} size="xs" mr="2" />
+        <UserAvatarLink pubkey={note.pubkey} size="xs" mr="2" aria-label="avatar" />
         <UserLink pubkey={note.pubkey} fontWeight="bold" mr="1" />
         <UserDnsIdentityIcon pubkey={note.pubkey} mr="2" />
-        <Link as={RouterLink} to={`/n/${getSharableEventAddress(note)}`}>
+        <Link
+          as={RouterLink}
+          to={`/n/${getSharableEventAddress(note)}`}
+          aria-label={`Posted at ${new Date(note.created_at * 1000).toLocaleString()}`}
+        >
           <Timestamp timestamp={note.created_at} />
         </Link>
       </Box>
       {more.isOpen ? (
         <TrustProvider trust>
           <br />
-          <TextNoteContents event={note} />
+          <TextNoteContents event={note} aria-expanded="true" />
         </TrustProvider>
       ) : (
-        <Link as={RouterLink} to={`/n/${getSharableEventAddress(note)}`} noOfLines={1} fontStyle="italic">
+        <Link
+          as={RouterLink}
+          to={`/n/${getSharableEventAddress(note)}`}
+          noOfLines={1}
+          fontStyle="italic"
+          aria-expanded="false"
+        >
           {note.content}
         </Link>
       )}
