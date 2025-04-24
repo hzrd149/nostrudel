@@ -1,22 +1,23 @@
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 
 import { NostrEvent } from "nostr-tools";
 import useAppSettings from "./use-user-app-settings";
+import { createMutedWordsRegExp } from "applesauce-core/helpers";
 
 /** @deprecated Use useUserMuteFilter once the legacy mute words filter is removed */
 export default function useLegacyMuteWordsFilter() {
   const { mutedWords } = useAppSettings();
+  const regex = useMemo(
+    () => (mutedWords && mutedWords.length > 0 ? createMutedWordsRegExp(mutedWords.split(/[\s,]+/)) : undefined),
+    [mutedWords],
+  );
 
   return useCallback(
     (event: NostrEvent) => {
       const content = event.content.toLocaleLowerCase();
-      if (mutedWords)
-        for (const word of mutedWords) {
-          if (content.includes(word.toLocaleLowerCase())) return true;
-        }
-
+      if (regex) return regex.test(content);
       return false;
     },
-    [mutedWords],
+    [regex],
   );
 }

@@ -7,14 +7,21 @@ import {
   ModalOverlay,
   ModalProps,
 } from "@chakra-ui/react";
-import { getInboxes, getInvoice, getOutboxes, isDTag, mergeRelaySets } from "applesauce-core/helpers";
+import {
+  getInboxes,
+  getInvoice,
+  getOutboxes,
+  getReplaceableAddress,
+  isDTag,
+  isReplaceable,
+  mergeRelaySets,
+} from "applesauce-core/helpers";
 import { getZapSplits } from "applesauce-core/helpers/zap";
 import { getObservableValue } from "applesauce-core/observable";
 import dayjs from "dayjs";
 import { EventTemplate, kinds, NostrEvent } from "nostr-tools";
 import { useState } from "react";
 
-import { getEventCoordinate, isReplaceable } from "../../helpers/nostr/event";
 import accounts from "../../services/accounts";
 import { eventStore, queryStore } from "../../services/event-store";
 import lnurlMetadataService from "../../services/lnurl-metadata";
@@ -95,7 +102,7 @@ export async function getPayRequestForPubkey(
   // attach "e" or "a" tag
   if (event) {
     if (isReplaceable(event.kind) && event.tags.some(isDTag)) {
-      zapRequest.tags.push(["a", getEventCoordinate(event)]);
+      zapRequest.tags.push(["a", getReplaceableAddress(event)]);
     } else zapRequest.tags.push(["e", event.id]);
   }
 

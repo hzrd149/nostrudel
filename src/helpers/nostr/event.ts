@@ -1,20 +1,14 @@
-import { getNip10References, getOrComputeCachedValue, getReplaceableIdentifier, isDTag } from "applesauce-core/helpers";
+import { getNip10References, getOrComputeCachedValue, isDTag, isReplaceable } from "applesauce-core/helpers";
 import dayjs from "dayjs";
-import { nanoid } from "nanoid";
 import { getEventUID } from "nostr-idb";
 import { EventTemplate, kinds, NostrEvent } from "nostr-tools";
-import { AddressPointer, DecodeResult, EventPointer } from "nostr-tools/nip19";
+import { AddressPointer, EventPointer } from "nostr-tools/nip19";
 
 import { safeDecode } from "../nip19";
 import { getMatchNostrLink } from "../regexp";
 import { truncateId } from "../string";
 
 export { truncateId as truncatedId };
-
-/** @deprecated use isReplaceableKind or isParameterizedReplaceableKind instead */
-export function isReplaceable(kind: number) {
-  return kinds.isReplaceableKind(kind) || kinds.isAddressableKind(kind);
-}
 
 export function pointerMatchEvent(event: NostrEvent, pointer: AddressPointer | EventPointer) {
   if (isReplaceable(event.kind)) {

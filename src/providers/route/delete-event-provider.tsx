@@ -1,4 +1,3 @@
-import { PropsWithChildren, createContext, useCallback, useContext, useMemo, useState } from "react";
 import {
   Accordion,
   AccordionButton,
@@ -19,19 +18,19 @@ import {
   ModalOverlay,
   Text,
 } from "@chakra-ui/react";
-import { Event, kinds } from "nostr-tools";
-import { useActiveAccount } from "applesauce-react/hooks";
+import { getReplaceableAddress, isReplaceable, unixNow } from "applesauce-core/helpers";
 import { createDefer, Deferred } from "applesauce-core/promise";
+import { useActiveAccount } from "applesauce-react/hooks";
+import { Event, kinds } from "nostr-tools";
+import { createContext, PropsWithChildren, useCallback, useContext, useMemo, useState } from "react";
 
-import RelayFavicon from "../../components/relay-favicon";
-import { ExternalLinkIcon } from "../../components/icons";
-import { getEventCoordinate, isReplaceable } from "../../helpers/nostr/event";
 import { EmbedEvent } from "../../components/embed-event";
+import { ExternalLinkIcon } from "../../components/icons";
+import RelayFavicon from "../../components/relay-favicon";
 import { useWriteRelays } from "../../hooks/use-client-relays";
-import { usePublishEvent } from "../global/publish-provider";
 import { useUserOutbox } from "../../hooks/use-user-mailboxes";
 import { eventStore } from "../../services/event-store";
-import { unixNow } from "applesauce-core/helpers";
+import { usePublishEvent } from "../global/publish-provider";
 
 type DeleteEventContextType = {
   isLoading: boolean;
@@ -72,7 +71,7 @@ export default function DeleteEventProvider({ children }: PropsWithChildren) {
       setLoading(true);
       const tags: string[][] = [["e", event.id]];
       if (isReplaceable(event.kind)) {
-        tags.push(["a", getEventCoordinate(event)]);
+        tags.push(["a", getReplaceableAddress(event)]);
       }
 
       const draft = {
