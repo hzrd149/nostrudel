@@ -22,6 +22,8 @@ export default function VersionButton({ ...props }: Omit<ButtonProps, "children"
           setTimeout(() => setCopied(false), 2000);
         } else toast({ description: version, isClosable: true, duration: null });
       }}
+      aria-label={copied ? "Version copied" : "Copy version"}
+      aria-live="polite"
       {...props}
     >
       {version}

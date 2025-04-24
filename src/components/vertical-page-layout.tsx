@@ -5,8 +5,17 @@ const VerticalPageLayout: ComponentWithAs<"div", FlexProps> = ({ children, ...pr
   const ref = useScrollRestoreRef();
 
   return (
-    <Box overflowX="hidden" overflowY="auto" h="full" w="full" mt="var(--safe-top)" ref={ref}>
-      <Flex direction="column" pt="2" pb="12" gap="2" px="2" w="full" role="main" {...props}>
+    <Box
+      overflowX="hidden"
+      overflowY="auto"
+      h="full"
+      w="full"
+      mt="var(--safe-top)"
+      ref={ref}
+      tabIndex={0}
+      aria-label="Main content"
+    >
+      <Flex direction="column" pt="2" pb="12" gap="2" px="2" w="full" role="main" aria-live="polite" {...props}>
         {children}
       </Flex>
     </Box>

@@ -38,14 +38,15 @@ const Item = ({ entity }: ItemComponentProps<Token>) => {
     const { url, name, char } = entity;
     if (url)
       return (
-        <span>
-          {name}: <Image src={url} h="1.2em" w="1.2em" display="inline-block" verticalAlign="middle" title={name} />
+        <span role="option" aria-label={`Emoji: ${name}`}>
+          {name}:{" "}
+          <Image src={url} h="1.2em" w="1.2em" display="inline-block" verticalAlign="middle" title={name} alt={name} />
         </span>
       );
-    else return <span>{`${name}: ${char}`}</span>;
+    else return <span role="option" aria-label={`Emoji: ${name}`}>{`${name}: ${char}`}</span>;
   } else if (isPersonToken(entity)) {
     return (
-      <span>
+      <span role="option" aria-label={`User: ${entity.names[0]}`}>
         <UserAvatar pubkey={entity.pubkey} size="xs" /> {entity.names[0]}{" "}
         <UserDnsIdentity pubkey={entity.pubkey} onlyIcon />
       </span>
@@ -166,6 +167,10 @@ const MagicInput = forwardRef<HTMLInputElement, InputProps & { instanceRef?: Leg
         minChar={0}
         trigger={triggers}
         innerRef={ref && (typeof ref === "function" ? ref : (el) => (ref.current = el))}
+        aria-label={props["aria-label"] || "Input with autocomplete"}
+        role="combobox"
+        aria-autocomplete="list"
+        aria-expanded="false"
       />
     );
   },
@@ -185,6 +190,10 @@ const MagicTextArea = forwardRef<HTMLTextAreaElement, TextareaProps & { instance
         minChar={0}
         trigger={triggers}
         innerRef={ref && (typeof ref === "function" ? ref : (el) => (ref.current = el))}
+        aria-label={props["aria-label"] || "Textarea with autocomplete"}
+        role="combobox"
+        aria-autocomplete="list"
+        aria-expanded="false"
       />
     );
   },

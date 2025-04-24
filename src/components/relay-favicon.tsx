@@ -31,6 +31,8 @@ const RelayFavicon = React.memo(({ relay, showStatus, ...props }: RelayFaviconPr
       colorScheme={color}
       outline={showStatus ? "2px solid" : "none"}
       outlineColor={showStatus ? color + ".500" : undefined}
+      aria-label={`Relay: ${relay}`}
+      title={`Relay: ${relay}`}
       {...props}
     />
   );

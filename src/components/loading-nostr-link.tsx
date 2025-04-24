@@ -3,6 +3,7 @@ import {
   Box,
   Button,
   ButtonGroup,
+  Flex,
   Heading,
   Input,
   Modal,
@@ -74,7 +75,7 @@ function SearchOnRelaysModal({
         <ModalCloseButton />
         <ModalBody px="2" pb="2" pt="0" gap="2" display="flex" flexDirection="column">
           {loading ? (
-            <Heading size="md" mx="auto">
+            <Heading size="md" mx="auto" aria-live="polite">
               Searching {relays.size} relays...
             </Heading>
           ) : (
@@ -85,21 +86,26 @@ function SearchOnRelaysModal({
                 onChange={(e) => setFilter(e.target.value)}
                 autoFocus
                 placeholder="Filter relays"
+                aria-label="Filter relays"
               />
-              {filtered.map((relay) => (
-                <Button
-                  key={relay}
-                  variant="outline"
-                  w="full"
-                  p="2"
-                  leftIcon={<RelayFavicon relay={relay} size="xs" />}
-                  justifyContent="flex-start"
-                  colorScheme={relays.has(relay) ? "primary" : undefined}
-                  onClick={() => (relays.has(relay) ? actions.remove(relay) : actions.add(relay))}
-                >
-                  {relay}
-                </Button>
-              ))}
+              <Flex direction="column" role="list" aria-label="Available relays">
+                {filtered.map((relay) => (
+                  <Button
+                    key={relay}
+                    variant="outline"
+                    w="full"
+                    p="2"
+                    leftIcon={<RelayFavicon relay={relay} size="xs" />}
+                    justifyContent="flex-start"
+                    colorScheme={relays.has(relay) ? "primary" : undefined}
+                    onClick={() => (relays.has(relay) ? actions.remove(relay) : actions.add(relay))}
+                    role="listitem"
+                    aria-pressed={relays.has(relay)}
+                  >
+                    {relay}
+                  </Button>
+                ))}
+              </Flex>
             </>
           )}
         </ModalBody>
@@ -109,7 +115,7 @@ function SearchOnRelaysModal({
             <Button variant="ghost" onClick={onClose}>
               Cancel
             </Button>
-            <Button colorScheme="primary" onClick={searchForEvent} isLoading={loading}>
+            <Button colorScheme="primary" onClick={searchForEvent} isLoading={loading} aria-label="Search for event">
               Search
             </Button>
           </ButtonGroup>
@@ -176,6 +182,8 @@ export default function LoadingNostrLink({ link }: { link: nip19.DecodeResult })
         fontFamily="monospace"
         whiteSpace="pre"
         onClick={details.onToggle}
+        aria-expanded={details.isOpen}
+        aria-controls="nostr-link-details"
       >
         [{details.isOpen ? "-" : "+"}]
         <Text as="span" isTruncated>
@@ -183,14 +191,27 @@ export default function LoadingNostrLink({ link }: { link: nip19.DecodeResult })
         </Text>
       </Button>
       {details.isOpen && (
-        <Box px="2" fontFamily="monospace" color="GrayText" fontWeight="bold" fontSize="sm">
+        <Box
+          id="nostr-link-details"
+          px="2"
+          fontFamily="monospace"
+          color="GrayText"
+          fontWeight="bold"
+          fontSize="sm"
+          role="region"
+          aria-label="Link details"
+        >
           <Text>Type: {link.type}</Text>
           {renderDetails()}
           <ButtonGroup variant="link" size="sm" my="1">
-            <Button leftIcon={<SearchIcon />} colorScheme="primary" onClick={search.onOpen}>
+            <Button leftIcon={<SearchIcon />} colorScheme="primary" onClick={search.onOpen} aria-label="Find event">
               Find
             </Button>
-            <Button leftIcon={<ExternalLinkIcon />} onClick={() => openAddress(address)}>
+            <Button
+              leftIcon={<ExternalLinkIcon />}
+              onClick={() => openAddress(address)}
+              aria-label="Open in new window"
+            >
               Open
             </Button>
           </ButtonGroup>

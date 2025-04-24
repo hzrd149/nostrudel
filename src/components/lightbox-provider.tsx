@@ -107,7 +107,7 @@ function EventSlideHeader({ event, ...props }: { event: NostrEvent } & Omit<Flex
       <UserAvatarLink pubkey={event.pubkey} size={["xs", "sm"]} />
       <UserLink pubkey={event.pubkey} isTruncated fontWeight="bold" fontSize="lg" />
       <Spacer />
-      <Button as={RouterLink} to={`/n/${encoded}`} colorScheme="primary" size="sm">
+      <Button as={RouterLink} to={`/n/${encoded}`} colorScheme="primary" size="sm" aria-label="View note details">
         View Note
       </Button>
     </Flex>

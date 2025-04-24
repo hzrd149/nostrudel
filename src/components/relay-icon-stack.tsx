@@ -26,7 +26,17 @@ export function RelayIconStack({ relays, maxRelays, ...props }: RelayIconStackPr
 
   return (
     <>
-      <Flex alignItems="center" gap="-4" overflow="hidden" cursor="pointer" onClick={onOpen} {...props}>
+      <Flex
+        alignItems="center"
+        gap="-4"
+        overflow="hidden"
+        cursor="pointer"
+        onClick={onOpen}
+        role="button"
+        tabIndex={0}
+        aria-label="View relay information"
+        {...props}
+      >
         {clamped.map((url) => (
           <RelayFavicon key={url} relay={url} size="2xs" title={url} />
         ))}
@@ -44,7 +54,7 @@ export function RelayIconStack({ relays, maxRelays, ...props }: RelayIconStackPr
           </ModalHeader>
           <ModalCloseButton />
           <ModalBody px="4" pb="4" pt="0">
-            <Flex gap="2" wrap="wrap">
+            <Flex gap="2" wrap="wrap" role="list">
               {topRelays.map((url) => (
                 <Tag
                   key={url}
@@ -53,6 +63,8 @@ export function RelayIconStack({ relays, maxRelays, ...props }: RelayIconStackPr
                   fontWeight="bold"
                   fontSize="md"
                   to={`/relays/${encodeURIComponent(url)}`}
+                  role="listitem"
+                  tabIndex={0}
                 >
                   <RelayFavicon relay={url} size="xs" mr="2" />
                   {url}

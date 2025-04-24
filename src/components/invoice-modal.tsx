@@ -57,21 +57,29 @@ export function InvoiceModalContent({ invoice, onPaid }: CommonProps) {
 
   return (
     <Flex gap="2" direction="column">
-      {showQr.isOpen && <QrCodeSvg content={invoice} maxW="4in" mx="auto" />}
+      {showQr.isOpen && <QrCodeSvg content={invoice} maxW="4in" mx="auto" aria-label="Payment QR code" />}
       <Flex gap="2">
-        <Input value={invoice} userSelect="all" onChange={() => {}} />
+        <Input value={invoice} userSelect="all" onChange={() => {}} aria-label="Lightning invoice" readOnly />
         <IconButton
           icon={<QrCodeIcon boxSize={6} />}
-          aria-label="Show QrCode"
+          aria-label="Show QR code"
           onClick={showQr.onToggle}
           variant="solid"
           size="md"
+          aria-pressed={showQr.isOpen}
         />
-        <CopyIconButton value={invoice} aria-label="Copy Invoice" variant="solid" size="md" />
+        <CopyIconButton value={invoice} aria-label="Copy invoice" variant="solid" size="md" />
       </Flex>
       <Flex gap="2">
         {window.webln && (
-          <Button onClick={() => payWithWebLn(invoice)} flex={1} variant="solid" size="md" isLoading={payingWebLn}>
+          <Button
+            onClick={() => payWithWebLn(invoice)}
+            flex={1}
+            variant="solid"
+            size="md"
+            isLoading={payingWebLn}
+            aria-label="Pay with WebLN"
+          >
             Pay with WebLN
           </Button>
         )}
@@ -82,6 +90,7 @@ export function InvoiceModalContent({ invoice, onPaid }: CommonProps) {
           variant="solid"
           size="md"
           isLoading={payingApp}
+          aria-label="Open in lightning app"
         >
           Open App
         </Button>
@@ -100,7 +109,7 @@ export default function InvoiceModal({
     <Modal onClose={onClose} {...props}>
       <ModalOverlay />
       <ModalContent>
-        <ModalBody padding="4">
+        <ModalBody padding="4" role="region" aria-label="Payment options">
           <InvoiceModalContent
             invoice={invoice}
             onPaid={() => {

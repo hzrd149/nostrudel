@@ -16,6 +16,9 @@ export default function SimpleBookmarkButton({
       onClick={toggleBookmark}
       isLoading={isLoading}
       {...props}
+      aria-pressed={isBookmarked}
+      title={props.title || (isBookmarked ? "Remove bookmark" : "Add bookmark")}
+      aria-label={props["aria-label"] || (isBookmarked ? "Remove bookmark" : "Add bookmark")}
     />
   );
 }
