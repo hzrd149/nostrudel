@@ -3,7 +3,12 @@ import { Flex, FlexProps, Heading } from "@chakra-ui/react";
 
 import { BackIconButton } from "../../router/back-button";
 
-export default function SimpleHeader({ children, title, ...props }: Omit<FlexProps, "title"> & { title?: ReactNode }) {
+export default function SimpleHeader({
+  children,
+  title,
+  icon,
+  ...props
+}: Omit<FlexProps, "title"> & { title?: ReactNode; icon?: ReactNode }) {
   return (
     <Flex
       p="2"
@@ -19,6 +24,7 @@ export default function SimpleHeader({ children, title, ...props }: Omit<FlexPro
       {...props}
     >
       <BackIconButton hideFrom="lg" />
+      {icon}
       <Heading fontWeight="bold" size="md" ml={{ base: 0, md: "2" }} whiteSpace="pre" isTruncated>
         {title}
       </Heading>

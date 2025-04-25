@@ -33,6 +33,13 @@ import VerticalPageLayout from "../../components/vertical-page-layout";
 import BadgeAwardCard from "./components/badge-award-card";
 import { ErrorBoundary } from "../../components/error-boundary";
 import useParamsAddressPointer from "../../hooks/use-params-address-pointer";
+import { GenericComments } from "../../components/comment/generic-comments";
+import GenericCommentForm from "../../components/comment/generic-comment-form";
+import { useDisclosure } from "@chakra-ui/react";
+import { getReplaceableAddress } from "applesauce-core/helpers";
+import SimpleView from "../../components/layout/presets/simple-view";
+import UserName from "../../components/user/user-name";
+import UserAvatar from "../../components/user/user-avatar";
 
 function BadgeActivityTab({ awards }: { awards: NostrEvent[] }) {
   return (
@@ -68,6 +75,29 @@ function BadgeUsersTab({ awards }: { awards: NostrEvent[] }) {
   );
 }
 
+function BadgeCommentsTab({ badge }: { badge: NostrEvent }) {
+  const comment = useDisclosure();
+
+  return (
+    <Flex direction="column" gap="4">
+      {comment.isOpen ? (
+        <GenericCommentForm
+          event={badge}
+          onCancel={comment.onClose}
+          onSubmitted={comment.onClose}
+          aria-label="Add comment form"
+        />
+      ) : (
+        <Button onClick={comment.onOpen} mr="auto">
+          Add Comment
+        </Button>
+      )}
+
+      <GenericComments event={badge} aria-label="Badge comments" />
+    </Flex>
+  );
+}
+
 function BadgeDetailsPage({ badge }: { badge: NostrEvent }) {
   const navigate = useNavigate();
 
@@ -75,7 +105,7 @@ function BadgeDetailsPage({ badge }: { badge: NostrEvent }) {
   const description = getBadgeDescription(badge);
 
   const readRelays = useReadRelays();
-  const coordinate = getEventCoordinate(badge);
+  const coordinate = getReplaceableAddress(badge);
   const { loader, timeline } = useTimelineLoader(`${coordinate}-awards`, readRelays, {
     "#a": [coordinate],
     kinds: [kinds.BadgeAward],
@@ -86,23 +116,16 @@ function BadgeDetailsPage({ badge }: { badge: NostrEvent }) {
   if (!badge) return <Spinner />;
 
   return (
-    <VerticalPageLayout>
+    <SimpleView
+      icon={<UserAvatar pubkey={badge.pubkey} size="sm" />}
+      title={
+        <>
+          <UserName pubkey={badge.pubkey} /> | {getBadgeName(badge)}
+        </>
+      }
+      actions={<BadgeMenu aria-label="More options" badge={badge} variant="ghost" ms="auto" />}
+    >
       <IntersectionObserverProvider callback={callback}>
-        <Flex gap="2" alignItems="center" wrap="wrap">
-          <Button onClick={() => navigate(-1)} leftIcon={<ChevronLeftIcon />}>
-            Back
-          </Button>
-
-          <UserAvatarLink pubkey={badge.pubkey} size="sm" />
-          <UserLink fontWeight="bold" pubkey={badge.pubkey} />
-          <Text>|</Text>
-          <Heading size="md">{getBadgeName(badge)}</Heading>
-
-          <Spacer />
-
-          <BadgeMenu aria-label="More options" badge={badge} />
-        </Flex>
-
         <Flex direction={{ base: "column", lg: "row" }} gap="4">
           {image && (
             <Image src={image.src} maxW="3in" mr="2" mb="2" mx={{ base: "auto", lg: "initial" }} borderRadius="lg" />
@@ -131,6 +154,7 @@ function BadgeDetailsPage({ badge }: { badge: NostrEvent }) {
           <TabList>
             <Tab>Activity</Tab>
             <Tab>Users</Tab>
+            <Tab>Comments</Tab>
           </TabList>
           <TabPanels>
             <TabPanel px="0">
@@ -139,10 +163,13 @@ function BadgeDetailsPage({ badge }: { badge: NostrEvent }) {
             <TabPanel>
               <BadgeUsersTab awards={timeline} />
             </TabPanel>
+            <TabPanel px="0">
+              <BadgeCommentsTab badge={badge} />
+            </TabPanel>
           </TabPanels>
         </Tabs>
       </IntersectionObserverProvider>
-    </VerticalPageLayout>
+    </SimpleView>
   );
 }
 

@@ -8,6 +8,7 @@ import { useDeleteEventContext } from "../../../providers/route/delete-event-pro
 import OpenInAppMenuItem from "../../../components/common-menu-items/open-in-app";
 import CopyEmbedCodeMenuItem from "../../../components/common-menu-items/copy-embed-code";
 import DebugEventMenuItem from "../../../components/debug-modal/debug-event-menu-item";
+import QuoteEventMenuItem from "../../../components/common-menu-items/quote-event";
 
 export default function BadgeMenu({ badge, ...props }: { badge: NostrEvent } & Omit<MenuIconButtonProps, "children">) {
   const account = useActiveAccount();
@@ -19,6 +20,7 @@ export default function BadgeMenu({ badge, ...props }: { badge: NostrEvent } & O
       <DotsMenuButton {...props}>
         <OpenInAppMenuItem event={badge} />
         <CopyEmbedCodeMenuItem event={badge} />
+        <QuoteEventMenuItem event={badge} />
         {account?.pubkey === badge.pubkey && (
           <MenuItem icon={<TrashIcon />} color="red.500" onClick={() => deleteEvent(badge)}>
             Delete Badge
