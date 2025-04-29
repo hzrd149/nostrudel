@@ -9,13 +9,13 @@ import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import { NostrEvent } from "nostr-tools";
-import { getListName, getRelaysFromList } from "../../helpers/nostr/lists";
+import { getListTitle, getRelaysFromList } from "../../helpers/nostr/lists";
 import RelayFavicon from "../../components/relay-favicon";
 import TimelineActionAndStatus from "../../components/timeline/timeline-action-and-status";
 import { useReadRelays } from "../../hooks/use-client-relays";
 
 function RelaySetCard({ set }: { set: NostrEvent }) {
-  const name = getListName(set);
+  const name = getListTitle(set);
   const relays = getRelaysFromList(set);
 
   return (

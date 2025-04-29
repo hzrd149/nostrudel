@@ -15,7 +15,7 @@ import { useActiveAccount } from "applesauce-react/hooks";
 import { useDeleteEventContext } from "../../../providers/route/delete-event-provider";
 import {
   getListDescription,
-  getListName,
+  getListTitle,
   getReferencesFromList,
   isSpecialListKind,
 } from "../../../helpers/nostr/lists";
@@ -31,6 +31,7 @@ import { EmbedEvent, EmbedEventPointer } from "../../../components/embed-event";
 import useSingleEvent from "../../../hooks/use-single-event";
 import UserAvatarLink from "../../../components/user/user-avatar-link";
 import useParamsAddressPointer from "../../../hooks/use-params-address-pointer";
+import FollowSetView from "./follow-set";
 
 function BookmarkedEvent({ id, relays }: { id: string; relays?: string[] }) {
   const event = useSingleEvent(id, relays);
@@ -74,7 +75,7 @@ function ListPage({ list }: { list: NostrEvent }) {
 
         <Box>
           <Heading size="lg" isTruncated>
-            {getListName(list)}
+            {getListTitle(list)}
           </Heading>
           <Text>
             Created by <UserAvatarLink pubkey={list.pubkey} size="xs" />{" "}
@@ -158,5 +159,10 @@ export default function ListView() {
       </>
     );
 
-  return <ListPage list={list} />;
+  switch (list.kind) {
+    case kinds.Followsets:
+      return <FollowSetView event={list} />;
+    default:
+      return <ListPage list={list} />;
+  }
 }

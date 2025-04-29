@@ -12,7 +12,7 @@ const NEW_TYPES: { title: string; path: string; summary?: string; icon: Componen
 
 export default function NewView() {
   return (
-    <SimpleView title="Create new">
+    <SimpleView title="Create new" maxW="6xl" center>
       <SimpleGrid columns={{ base: 1, lg: 2 }} gap="2">
         {NEW_TYPES.map(({ title, path, icon: Icon, summary }) => (
           <Card key={title} as={LinkBox}>

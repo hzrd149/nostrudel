@@ -17,7 +17,7 @@ import { useCallback, useState } from "react";
 
 import { ReadonlyAccount } from "applesauce-accounts/accounts";
 import { getEventCoordinate } from "../../helpers/nostr/event";
-import { getListName, listAddEvent, listRemoveEvent } from "../../helpers/nostr/lists";
+import { getListTitle, listAddEvent, listRemoveEvent } from "../../helpers/nostr/lists";
 import useEventBookmarkActions from "../../hooks/use-event-bookmark-actions";
 import useUserSets from "../../hooks/use-user-lists";
 import { usePublishEvent } from "../../providers/global/publish-provider";
@@ -96,7 +96,7 @@ export default function BookmarkEventButton({
                   isTruncated
                   maxW="90vw"
                 >
-                  {getListName(set)}
+                  {getListTitle(set)}
                 </MenuItemOption>
               ))}
             </MenuOptionGroup>

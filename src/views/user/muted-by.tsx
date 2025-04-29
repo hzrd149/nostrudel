@@ -7,7 +7,7 @@ import SuperMap from "../../classes/super-map";
 import UserAvatarLink from "../../components/user/user-avatar-link";
 import UserLink from "../../components/user/user-link";
 import VerticalPageLayout from "../../components/vertical-page-layout";
-import { getListName, getPubkeysFromList } from "../../helpers/nostr/lists";
+import { getListTitle, getPubkeysFromList } from "../../helpers/nostr/lists";
 import { useReadRelays } from "../../hooks/use-client-relays";
 import useEventIntersectionRef from "../../hooks/use-event-intersection-ref";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
@@ -20,7 +20,7 @@ function ListLink({ list }: { list: NostrEvent }) {
 
   return (
     <Link as={RouterLink} ref={ref} color="blue.500" to={createListLink(list)}>
-      {getListName(list)} ({getPubkeysFromList(list).length})
+      {getListTitle(list)} ({getPubkeysFromList(list).length})
     </Link>
   );
 }

@@ -3,7 +3,7 @@ import RequireActiveAccount from "../../components/router/require-active-account
 
 import NewView from ".";
 import NewNoteView from "./note";
-import NewMediaPostView from "./picture";
+import NewPictureView from "./picture/index";
 
 export default [
   {
@@ -15,7 +15,7 @@ export default [
     children: [
       { index: true, element: <NewView /> },
       { path: "note", element: <NewNoteView /> },
-      { path: "media", element: <NewMediaPostView /> },
+      { path: "media", element: <NewPictureView /> },
     ],
   },
 ] satisfies RouteObject[];

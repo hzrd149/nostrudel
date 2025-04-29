@@ -1,16 +1,14 @@
-import { Button, Card, CardBody, CardProps, Flex, Heading, Link } from "@chakra-ui/react";
+import { Button, Card, CardBody, CardProps, Flex } from "@chakra-ui/react";
 import { removePubkeyTag } from "applesauce-factory/operations/tag";
-import { Link as RouterLink } from "react-router-dom";
-import { nip19 } from "nostr-tools";
 
+import { useActiveAccount, useEventFactory } from "applesauce-react/hooks";
+import { NostrEvent } from "nostr-tools";
 import UserAvatar from "../../../components/user/user-avatar";
 import UserDnsIdentity from "../../../components/user/user-dns-identity";
-import { NostrEvent } from "nostr-tools";
+import { SimpleUserFollowButton } from "../../../components/user/user-follow-button";
+import UserLink from "../../../components/user/user-link";
 import useAsyncAction from "../../../hooks/use-async-action";
-import { useActiveAccount, useEventFactory } from "applesauce-react/hooks";
-import { UserFollowButton } from "../../../components/user/user-follow-button";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
-import UserName from "../../../components/user/user-name";
 
 export type UserCardProps = { pubkey: string; relay?: string; list: NostrEvent } & Omit<CardProps, "children">;
 
@@ -30,11 +28,7 @@ export default function UserCard({ pubkey, relay, list, ...props }: UserCardProp
       <CardBody p="2" display="flex" alignItems="center" overflow="hidden" gap="2">
         <UserAvatar pubkey={pubkey} />
         <Flex direction="column" flex={1} overflow="hidden">
-          <Link as={RouterLink} to={`/u/${nip19.npubEncode(pubkey)}`}>
-            <Heading size="sm" whiteSpace="nowrap" isTruncated>
-              <UserName as="span" pubkey={pubkey} />
-            </Heading>
-          </Link>
+          <UserLink isTruncated pubkey={pubkey} />
           <UserDnsIdentity pubkey={pubkey} />
         </Flex>
         {account?.pubkey === list.pubkey ? (
@@ -42,7 +36,7 @@ export default function UserCard({ pubkey, relay, list, ...props }: UserCardProp
             Remove
           </Button>
         ) : (
-          <UserFollowButton pubkey={pubkey} variant="outline" />
+          <SimpleUserFollowButton pubkey={pubkey} variant="outline" />
         )}
       </CardBody>
     </Card>

@@ -25,7 +25,7 @@ import UserAvatarLink from "../../../components/user/user-avatar-link";
 import UserLink from "../../../components/user/user-link";
 import {
   getListDescription,
-  getListName,
+  getListTitle,
   getReferencesFromList,
   isSpecialListKind,
 } from "../../../helpers/nostr/lists";
@@ -42,6 +42,7 @@ import File02 from "../../../components/icons/file-02";
 import SimpleLikeButton from "../../../components/event-reactions/simple-like-button";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
 import { getSharableEventAddress } from "../../../services/relay-hints";
+import Timestamp from "../../../components/timestamp";
 
 export function ListCardContent({ list }: { list: NostrEvent }) {
   const people = getProfilePointersFromList(list);
@@ -99,7 +100,7 @@ function ListCardRender({
         <Flex gap="2" alignItems="center">
           <Heading size="md" isTruncated>
             <HoverLinkOverlay as={RouterLink} to={createListLink(list)}>
-              {getListName(list)}
+              {getListTitle(list)}
             </HoverLinkOverlay>
           </Heading>
           {!hideCreator && (
@@ -116,9 +117,10 @@ function ListCardRender({
         <ListCardContent list={list} />
       </CardBody>
       <CardFooter p="2">
-        {!isSpecialList && <EventZapButton event={list} size="sm" variant="ghost" />}
-        {!isSpecialList && <SimpleLikeButton event={list} variant="ghost" size="sm" />}
-        <ButtonGroup size="sm" variant="ghost" ml="auto">
+        <Text>
+          updated <Timestamp timestamp={list.created_at} />
+        </Text>
+        <ButtonGroup size="sm" variant="ghost" ml="auto" zIndex="1">
           <ListFavoriteButton list={list} />
           <ListMenu list={list} aria-label="list menu" />
         </ButtonGroup>

@@ -4,7 +4,7 @@ import { NostrEvent } from "nostr-tools";
 import { useActiveAccount } from "applesauce-react/hooks";
 import useUserRelaySets from "../../../hooks/use-user-relay-sets";
 import { getEventCoordinate } from "../../../helpers/nostr/event";
-import { getListName } from "../../../helpers/nostr/lists";
+import { getListTitle } from "../../../helpers/nostr/lists";
 
 export default function SelectRelaySet({
   value,
@@ -33,7 +33,7 @@ export default function SelectRelaySet({
     >
       {relaySets.map((set) => (
         <option key={set.id} value={getEventCoordinate(set)}>
-          {getListName(set)}
+          {getListTitle(set)}
         </option>
       ))}
     </Select>

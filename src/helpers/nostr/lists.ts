@@ -31,8 +31,7 @@ export const SET_KINDS = [
   kinds.Curationsets,
 ];
 
-/** @deprecated this should be moved out to applesauce-list */
-export function getListName(event: NostrEvent) {
+export function getListTitle(event: NostrEvent) {
   if (event.kind === kinds.Contacts) return "Following";
   if (event.kind === kinds.Mutelist) return "Mute";
   if (event.kind === kinds.Pinlist) return "Pins";
@@ -48,16 +47,16 @@ export function getListName(event: NostrEvent) {
   );
 }
 
-/** @deprecated this should be moved out to applesauce-factory */
+/** @deprecated use factory.modifyEvent instead */
 export function setListName(draft: EventTemplate, name: string) {
   replaceOrAddSimpleTag(draft, "name", name);
 }
 
-/** @deprecated this should be moved out to applesauce-factory */
 export function getListDescription(event: NostrEvent) {
   return event.tags.find((t) => t[0] === "description")?.[1];
 }
-/** @deprecated this should be moved out to applesauce-factory */
+
+/** @deprecated use factory.modifyEvent instead */
 export function setListDescription(draft: EventTemplate, description: string) {
   replaceOrAddSimpleTag(draft, "description", description);
 }

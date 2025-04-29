@@ -3,7 +3,7 @@ import { getReplaceableUID } from "applesauce-core/helpers";
 import { NostrEvent } from "nostr-tools";
 import { Link as RouterLink } from "react-router-dom";
 
-import { getListDescription, getListName, isSpecialListKind } from "../../../helpers/nostr/lists";
+import { getListDescription, getListTitle, isSpecialListKind } from "../../../helpers/nostr/lists";
 import { getSharableEventAddress } from "../../../services/relay-hints";
 import { ListCardContent } from "../../../views/lists/components/list-card";
 import ListFeedButton from "../../../views/lists/components/list-feed-button";
@@ -20,7 +20,7 @@ export default function EmbeddedSetOrList({ list, ...props }: Omit<CardProps, "c
         <Flex alignItems="center" gap="2">
           <Heading size="md">
             <Link as={RouterLink} to={`/lists/${link}`}>
-              {getListName(list)}
+              {getListTitle(list)}
             </Link>
           </Heading>
           <Flex gap="2">

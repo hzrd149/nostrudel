@@ -46,7 +46,6 @@ rxNostr.createAllMessageObservable().subscribe((packet) => {
   }
 });
 
-// TODO: this should not use one off request, but there isn't a good way to use forward requests
 export function nostrRequest(relays: string[], filters: Filter[], id?: string): Observable<NostrEvent> {
   const req = createRxOneshotReq({ filters, rxReqId: id });
   return rxNostr.use(req, { on: { relays } }).pipe(

@@ -18,7 +18,7 @@ import { getEventUID, getReplaceableIdentifier } from "applesauce-core/helpers";
 
 import { ChevronDownIcon, FollowIcon, MuteIcon, PlusCircleIcon, UnfollowIcon, UnmuteIcon } from "../icons";
 import useUserSets from "../../hooks/use-user-lists";
-import { getListName } from "../../helpers/nostr/lists";
+import { getListTitle } from "../../helpers/nostr/lists";
 import { getEventCoordinate } from "../../helpers/nostr/event";
 import useUserContactList from "../../hooks/use-user-contact-list";
 import useAsyncAction from "../../hooks/use-async-action";
@@ -68,7 +68,7 @@ function UsersLists({ pubkey }: { pubkey: string }) {
         >
           {lists.map((list) => (
             <MenuItemOption key={getEventUID(list)} value={getEventCoordinate(list)} isTruncated maxW="90vw">
-              {getListName(list)}
+              {getListTitle(list)}
             </MenuItemOption>
           ))}
         </MenuOptionGroup>
@@ -87,6 +87,34 @@ export type UserFollowButtonProps = { pubkey: string; showLists?: boolean } & Om
   ButtonProps,
   "onClick" | "isLoading" | "isDisabled"
 >;
+
+export function SimpleUserFollowButton({ pubkey, ...props }: UserFollowButtonProps) {
+  const account = useActiveAccount()!;
+  const contacts = useUserContactList(account?.pubkey, undefined, true);
+  const actions = useActionHub();
+  const publish = usePublishEvent();
+
+  const isFollowing = !!contacts && isProfilePointerInList(contacts, pubkey);
+  const toggleFollow = useAsyncAction(async () => {
+    if (isFollowing) {
+      await actions.exec(UnfollowUser, pubkey).forEach((e) => publish("Unfollow user", e));
+    } else {
+      await actions.exec(FollowUser, pubkey).forEach((e) => publish("Follow user", e));
+    }
+  }, [actions, isFollowing, pubkey]);
+
+  return (
+    <Button
+      as={Button}
+      colorScheme={isFollowing ? "gray" : "primary"}
+      {...props}
+      onClick={toggleFollow.run}
+      isLoading={toggleFollow.loading}
+    >
+      {isFollowing ? "Unfollow" : "Follow"}
+    </Button>
+  );
+}
 
 export function UserFollowButton({ pubkey, showLists, ...props }: UserFollowButtonProps) {
   const publish = usePublishEvent();

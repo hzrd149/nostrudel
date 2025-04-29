@@ -15,13 +15,16 @@ import { ChevronLeftIcon } from "../../components/icons";
 import useClientSideMuteFilter from "../../hooks/use-client-side-mute-filter";
 import { EmbedEvent } from "../../components/embed-event";
 import useEventIntersectionRef from "../../hooks/use-event-intersection-ref";
+import { ErrorBoundary } from "../../components/error-boundary";
 
 const UnknownEvent = memo(({ event }: { event: NostrEvent }) => {
   const ref = useEventIntersectionRef(event);
 
   return (
     <div ref={ref}>
-      <EmbedEvent event={event} />
+      <ErrorBoundary event={event}>
+        <EmbedEvent event={event} />
+      </ErrorBoundary>
     </div>
   );
 });

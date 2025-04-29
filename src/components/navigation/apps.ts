@@ -31,6 +31,7 @@ import Rocket02 from "../icons/rocket-02";
 import PuzzlePiece01 from "../icons/puzzle-piece-01";
 import Users02 from "../icons/users-02";
 import Wallet02 from "../icons/wallet-02";
+import Users01 from "../icons/users-01";
 
 export type App = {
   icon?: ComponentWithAs<"svg", IconProps>;
@@ -95,7 +96,13 @@ export const internalApps: App[] = [
   { title: "Torrents", description: "Browse torrents on nostr", icon: TorrentIcon, id: "torrents", to: "/torrents" },
   { title: "Emojis", description: "Create custom emoji packs", icon: EmojiPacksIcon, id: "emojis", to: "/emojis" },
   { title: "Bookmarks", description: "Manage your bookmarks", icon: BookmarkIcon, id: "bookmarks", to: "/bookmarks" },
-  { title: "Lists", description: "Browse and create lists", icon: ListsIcon, id: "lists", to: "/lists" },
+  {
+    title: "Lists",
+    description: "Lists of people and notes",
+    icon: Users01,
+    id: "lists",
+    to: "/lists",
+  },
   { title: "Tracks", description: "Browse stemstr tracks", icon: TrackIcon, id: "tracks", to: "/tracks" },
   { title: "Videos", description: "Browse videos", icon: VideoIcon, id: "videos", to: "/videos" },
   { title: "Articles", description: "Browse articles", icon: ArticleIcon, id: "articles", to: "/articles" },
