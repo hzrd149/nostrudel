@@ -8,7 +8,7 @@ import { getEventUID, unixNow } from "applesauce-core/helpers";
 import { usePublishEvent } from "../../../../../providers/global/publish-provider";
 import DVMResponsesQuery from "../../../../../queries/dvm-responses";
 import { DVMStatusCard } from "../../../../discovery/dvm-feed/components/feed-status";
-import useForwardSubscription from "../../../../../hooks/use-forward-subscription";
+import useSimpleSubscription from "../../../../../hooks/use-forward-subscription";
 import { useReadRelays } from "../../../../../hooks/use-client-relays";
 
 function PromptForm({ onSubmit }: { onSubmit: (prompt: string) => void | Promise<void> }) {
@@ -63,7 +63,7 @@ export default function EventSummarizePage({ event }: { event: NostrEvent }) {
   };
 
   // subscribe to dvm responses
-  useForwardSubscription(relays, request ? { kinds: [7000, 6001], "#e": [request.id] } : undefined);
+  useSimpleSubscription(relays, request ? { kinds: [7000, 6001], "#e": [request.id] } : undefined);
 
   const responses = useStoreQuery(DVMResponsesQuery, request ? [request] : undefined);
 

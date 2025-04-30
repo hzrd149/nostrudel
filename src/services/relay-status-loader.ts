@@ -1,6 +1,6 @@
 import { MONITOR_STATS_KIND } from "../helpers/nostr/relay-stats";
 import { TagValueLoader } from "applesauce-loaders";
-import { nostrRequest } from "./rx-nostr";
+import { nostrRequest } from "./pool";
 import { eventStore } from "./event-store";
 
 export const MONITOR_PUBKEY = "151c17c9d234320cf0f189af7b761f63419fd6c38c6041587a008b7682e4640f";

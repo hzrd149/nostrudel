@@ -5,7 +5,7 @@ import { useActiveAccount } from "applesauce-react/hooks";
 import { humanReadableSats } from "../../helpers/lightning";
 import { totalZaps } from "../../helpers/nostr/zaps";
 import useEventZaps from "../../hooks/use-event-zaps";
-import { requestZaps } from "../../services/event-zaps-loader";
+import { requestZaps } from "../../services/zaps-loader";
 import { NostrEvent } from "nostr-tools";
 import { LightningIcon } from "../icons";
 import ZapModal from "../event-zap-modal";

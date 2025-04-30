@@ -1,20 +1,20 @@
-import { useEffect, useState } from "react";
 import { Flex, Select } from "@chakra-ui/react";
-import { Filter, NostrEvent } from "nostr-tools";
-import { getReplaceableIdentifier, matchFilter } from "applesauce-core/helpers";
+import { isReplaceable, matchFilter } from "applesauce-core/helpers";
+import { onlyEvents } from "applesauce-relay";
 import { getEventUID } from "nostr-idb";
+import { Filter, NostrEvent } from "nostr-tools";
+import { useEffect, useState } from "react";
 import { useThrottle } from "react-use";
-import { createRxForwardReq } from "rx-nostr";
 
-import RelayList from "./components/relay-list";
-import useRouteStateValue from "../../../hooks/use-route-state-value";
-import RelayMap from "./components/relay-map";
-import RelayStatusDetails from "./components/relay-details";
-import { SelectedContext } from "./selected-context";
 import CountyPicker from "../../../components/county-picker";
-import { useBreakpointValue } from "../../../providers/global/breakpoint-provider";
-import rxNostr from "../../../services/rx-nostr";
 import SimpleView from "../../../components/layout/presets/simple-view";
+import useRouteStateValue from "../../../hooks/use-route-state-value";
+import { useBreakpointValue } from "../../../providers/global/breakpoint-provider";
+import pool from "../../../services/pool";
+import RelayStatusDetails from "./components/relay-details";
+import RelayList from "./components/relay-list";
+import RelayMap from "./components/relay-map";
+import { SelectedContext } from "./selected-context";
 
 export default function RelayDiscoveryView() {
   const showMap = useBreakpointValue({ base: false, lg: true });
@@ -27,26 +27,7 @@ export default function RelayDiscoveryView() {
   const selected = useRouteStateValue<string>("selected");
   const [events, setEvents] = useState<Record<string, NostrEvent>>({});
 
-  const [request, setRequest] = useState<ReturnType<typeof createRxForwardReq>>();
-
-  // recreate the subscription when the relay changes
   useEffect(() => {
-    const req = createRxForwardReq();
-
-    const sub = rxNostr.use(req, { on: { relays: [discoveryRelay] } }).subscribe((packet) => {
-      if (getReplaceableIdentifier(packet.event)) {
-        setEvents((arr) => ({ ...arr, [getEventUID(packet.event)]: packet.event }));
-      }
-    });
-
-    setRequest(req);
-
-    return () => sub.unsubscribe();
-  }, [discoveryRelay, setEvents]);
-
-  useEffect(() => {
-    if (!request) return;
-
     const filter: Filter = {
       kinds: [30166],
       // set from https://github.com/nostr-protocol/nips/pull/230#pullrequestreview-2290873405
@@ -64,7 +45,14 @@ export default function RelayDiscoveryView() {
       else filter["#l"] = [county];
     }
 
-    request.emit([filter]);
+    const sub = pool
+      .subscription([discoveryRelay], filter)
+      .pipe(onlyEvents())
+      .subscribe((event) => {
+        if (isReplaceable(event.kind)) {
+          setEvents((arr) => ({ ...arr, [getEventUID(event)]: event }));
+        }
+      });
 
     // remove non matching events
     setEvents((dir) => {
@@ -74,7 +62,9 @@ export default function RelayDiscoveryView() {
       }
       return newDir;
     });
-  }, [request, monitor, network, county, setEvents]);
+
+    return () => sub.unsubscribe();
+  }, [monitor, network, county, setEvents, discoveryRelay]);
 
   // throttle updates to map
   const eventsThrottle = useThrottle(Object.values(events), 250);

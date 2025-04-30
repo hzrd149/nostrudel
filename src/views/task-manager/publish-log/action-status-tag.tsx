@@ -9,7 +9,7 @@ export function usePublishLogEntryStatus(entry: PublishLogEntry) {
 
   const total = entry.relays.length;
   const successful = Object.values(relays).filter((p) => p.ok);
-  const failedWithNotice = Object.values(relays).filter((p) => !p.ok && !!p.notice);
+  const failedWithMessage = Object.values(relays).filter((p) => !p.ok && !!p.message);
 
   let icon = <Spinner size="xs" />;
   let color: TagProps["colorScheme"] = "blue";
@@ -19,7 +19,7 @@ export function usePublishLogEntryStatus(entry: PublishLogEntry) {
   } else if (successful.length === 0) {
     color = "red";
     icon = <ErrorIcon />;
-  } else if (failedWithNotice.length > 0) {
+  } else if (failedWithMessage.length > 0) {
     color = "orange";
     icon = <CheckIcon />;
   } else {
@@ -27,7 +27,7 @@ export function usePublishLogEntryStatus(entry: PublishLogEntry) {
     icon = <CheckIcon />;
   }
 
-  return { color, icon, successful, failedWithNotice, total };
+  return { color, icon, successful, failedWithNotice: failedWithMessage, total };
 }
 
 export default function PublishActionStatusTag({

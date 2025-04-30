@@ -2,7 +2,7 @@ import _throttle from "lodash.throttle";
 import { UserSetsLoader } from "applesauce-loaders";
 
 import { eventStore } from "./event-store";
-import { nostrRequest } from "./rx-nostr";
+import { nostrRequest } from "./pool";
 import { cacheRequest } from "./cache-relay";
 
 const userSetsLoader = new UserSetsLoader(nostrRequest, { cacheRequest });

@@ -2,7 +2,7 @@ import "./polyfill";
 
 import { GlobalProviders } from "./providers/global";
 
-import "./services/user-event-sync";
+import "./services/lifecycle";
 import "./services/username-search";
 import "./services/debug-api";
 

@@ -1,6 +1,6 @@
 import { ThemeTypings } from "@chakra-ui/react";
 import { Filter } from "nostr-tools";
-import { ConnectionState } from "rx-nostr";
+import { ConnectionState } from "../services/pool";
 
 // NOTE: only use this for equality checks and querying
 export function getRelayVariations(relay: string) {
@@ -50,41 +50,25 @@ export function splitQueryByPubkeys(query: Filter, relayPubkeyMap: Record<string
 
 export function getConnectionStateColor(state: ConnectionState): ThemeTypings["colorSchemes"] {
   switch (state) {
-    case "initialized":
     case "connecting":
       return "blue";
 
     case "connected":
       return "green";
 
-    case "rejected":
     case "error":
       return "red";
-
-    case "waiting-for-retrying":
-      return "orange";
 
     case "retrying":
       return "yellow";
 
     default:
     case "dormant":
-    case "terminated":
       return "gray";
   }
 }
 
-const connectionStateSortOrder: ConnectionState[] = [
-  "connected",
-  "connecting",
-  "retrying",
-  "waiting-for-retrying",
-  "error",
-  "rejected",
-  "initialized",
-  "dormant",
-  "terminated",
-];
+const connectionStateSortOrder: ConnectionState[] = ["connected", "connecting", "retrying", "error", "dormant"];
 export function getConnectionStateSort(state: ConnectionState) {
   return connectionStateSortOrder.indexOf(state);
 }

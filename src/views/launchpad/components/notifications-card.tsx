@@ -9,7 +9,7 @@ import KeyboardShortcut from "../../../components/keyboard-shortcut";
 import NotificationItem from "../../notifications/components/notification-item";
 import { ErrorBoundary } from "../../../components/error-boundary";
 import notifications$, { NotificationType, NotificationTypeSymbol } from "../../../services/notifications";
-import useForwardSubscription from "../../../hooks/use-forward-subscription";
+import useSimpleSubscription from "../../../hooks/use-forward-subscription";
 import useUserMailboxes from "../../../hooks/use-user-mailboxes";
 import { useReadRelays } from "../../../hooks/use-client-relays";
 
@@ -19,7 +19,7 @@ export default function NotificationsCard({ ...props }: Omit<CardProps, "childre
   const account = useActiveAccount();
   const mailboxes = useUserMailboxes(account?.pubkey);
   const readRelays = useReadRelays(mailboxes?.inboxes);
-  useForwardSubscription(
+  useSimpleSubscription(
     readRelays,
     account
       ? {

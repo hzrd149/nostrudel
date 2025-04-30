@@ -1,4 +1,3 @@
-import rxNostr from "./rx-nostr";
 import accounts from "./accounts";
 import channelMetadataService from "./channel-metadata-loader";
 import { eventStore, queryStore } from "./event-store";
@@ -10,9 +9,11 @@ import timelineCacheService from "./timeline-cache";
 import { userSearchDirectory } from "./username-search";
 import singleEventLoader from "./single-event-loader";
 import userSetsLoader from "./user-sets-loader";
+import pool from "./pool";
 
 const noStrudel = {
-  rxNostr,
+  /** Connection pool */
+  pool,
 
   /**
    * Internal applesauce EventStore

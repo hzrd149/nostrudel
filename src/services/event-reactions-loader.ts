@@ -4,7 +4,7 @@ import { getCoordinateFromAddressPointer, isAddressPointer, isEventPointer } fro
 
 import { cacheRequest } from "./cache-relay";
 import { TagValueLoader } from "applesauce-loaders";
-import { nostrRequest } from "./rx-nostr";
+import { nostrRequest } from "./pool";
 import { eventStore } from "./event-store";
 
 export function requestReactions(id: string | EventPointer | AddressPointer, relays: string[], force?: boolean) {

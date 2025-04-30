@@ -2,7 +2,7 @@ import { kinds } from "nostr-tools";
 
 import { cacheRequest } from "./cache-relay";
 import { TagValueLoader } from "applesauce-loaders";
-import { nostrRequest } from "./rx-nostr";
+import { nostrRequest } from "./pool";
 import { eventStore } from "./event-store";
 
 const channelMetadataLoader = new TagValueLoader(nostrRequest, "e", {

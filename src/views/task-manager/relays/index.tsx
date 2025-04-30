@@ -2,7 +2,7 @@ import { Tab, TabIndicator, TabList, TabPanel, TabPanels, Tabs } from "@chakra-u
 import { useObservable } from "applesauce-react/hooks";
 
 import useRouteSearchValue from "../../../hooks/use-route-search-value";
-import { connections$, notices$ } from "../../../services/rx-nostr";
+import { connections$, notices$ } from "../../../services/pool";
 import RelayConnectionsTab from "./tabs/connections";
 import RelayAuthenticationTab from "./tabs/authentication";
 import NoticesTab from "./tabs/notices";
@@ -16,7 +16,7 @@ export default function TaskManagerRelays() {
 
   const notices = useObservable(notices$);
 
-  const connections = useObservable(connections$);
+  const connections = useObservable(connections$) ?? {};
   const connected = Object.values(connections).reduce((t, s) => (s === "connected" ? t + 1 : t), 0);
   const pending = useObservable(authenticationSigner.relayState$);
 

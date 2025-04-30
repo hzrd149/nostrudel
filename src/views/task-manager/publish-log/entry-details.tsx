@@ -12,13 +12,13 @@ import {
 } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 import { useObservable } from "applesauce-react/hooks";
-import { OkPacketAgainstEvent } from "rx-nostr";
+import { PublishResponse } from "applesauce-relay";
 
 import { RelayPaidTag } from "../../relays/components/relay-card";
 import { EmbedEvent } from "../../../components/embed-event";
 import { PublishLogEntry } from "../../../providers/global/publish-provider";
 
-function PublishResultRow({ packet }: { packet: OkPacketAgainstEvent }) {
+function PublishResultRow({ packet }: { packet: PublishResponse }) {
   return (
     <Alert status={packet.ok ? "success" : "warning"}>
       <AlertIcon />
@@ -29,7 +29,7 @@ function PublishResultRow({ packet }: { packet: OkPacketAgainstEvent }) {
           </Link>
           <RelayPaidTag url={packet.from} />
         </AlertTitle>
-        {packet.notice && <AlertDescription>{packet.notice}</AlertDescription>}
+        {packet.message && <AlertDescription>{packet.message}</AlertDescription>}
       </Box>
     </Alert>
   );

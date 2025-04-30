@@ -1,7 +1,7 @@
 import { Flex, Link, SimpleGrid, Spacer } from "@chakra-ui/react";
 import { useObservable } from "applesauce-react/hooks";
 
-import { connections$ } from "../../../../services/rx-nostr";
+import { connections$ } from "../../../../services/pool";
 import RelayFavicon from "../../../../components/relay-favicon";
 import RouterLink from "../../../../components/router-link";
 import { RelayAuthIconButton } from "../../../../components/relays/relay-auth-icon-button";
@@ -23,7 +23,7 @@ function RelayCard({ relay }: { relay: string }) {
 }
 
 export default function RelayConnectionsTab() {
-  const connections = useObservable(connections$);
+  const connections = useObservable(connections$) ?? {};
 
   return (
     <Flex direction="column">

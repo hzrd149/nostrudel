@@ -40,9 +40,9 @@ export default function WikiSearchView() {
       seen.add(getEventUID(event));
     };
 
-    const sub = search([filter]).subscribe((packet) => {
-      eventStore.add(packet.event, packet.from);
-      handleEvent(packet.event);
+    const sub = search([filter]).subscribe((event) => {
+      eventStore.add(event);
+      handleEvent(event);
     });
 
     return () => sub.unsubscribe();

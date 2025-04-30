@@ -2,7 +2,7 @@ import { useEffect, useMemo } from "react";
 import { useStoreQuery } from "applesauce-react/hooks";
 import { parseCoordinate } from "applesauce-core/helpers";
 import { EventZapsQuery } from "applesauce-core/queries";
-import { requestZaps } from "../services/event-zaps-loader";
+import { requestZaps } from "../services/zaps-loader";
 
 import { useReadRelays } from "./use-client-relays";
 

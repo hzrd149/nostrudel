@@ -1,7 +1,7 @@
 import { LRU } from "applesauce-core/helpers";
 import { TimelessFilter, TimelineLoader } from "applesauce-loaders";
 
-import { nostrRequest } from "./rx-nostr";
+import { nostrRequest } from "./pool";
 import { logger } from "../helpers/debug";
 import { cacheRequest } from "./cache-relay";
 

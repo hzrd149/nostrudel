@@ -4,8 +4,9 @@ import { AddressPointer, EventPointer } from "nostr-tools/nip19";
 import { TagValueLoader } from "applesauce-loaders";
 
 import { cacheRequest } from "./cache-relay";
-import { nostrRequest } from "./rx-nostr";
+import { nostrRequest } from "./pool";
 import { eventStore } from "./event-store";
+import localSettings from "./local-settings";
 
 export function requestZaps(id: string | EventPointer | AddressPointer, relays: string[], force?: boolean) {
   if (typeof id === "string") {
@@ -18,12 +19,12 @@ export function requestZaps(id: string | EventPointer | AddressPointer, relays: 
   }
 }
 
-const replaceableEventsZapsLoader = new TagValueLoader(nostrRequest, "a", {
+export const replaceableEventsZapsLoader = new TagValueLoader(nostrRequest, "a", {
   name: "zaps",
   kinds: [kinds.Zap],
   cacheRequest,
 });
-const singleEventsZapsLoader = new TagValueLoader(nostrRequest, "e", {
+export const singleEventsZapsLoader = new TagValueLoader(nostrRequest, "e", {
   name: "zaps",
   kinds: [kinds.Zap],
   cacheRequest,
@@ -32,3 +33,9 @@ const singleEventsZapsLoader = new TagValueLoader(nostrRequest, "e", {
 // start the loader and send all events to the event store
 replaceableEventsZapsLoader.subscribe((event) => eventStore.add(event));
 singleEventsZapsLoader.subscribe((event) => eventStore.add(event));
+
+// Set loaders extra relays to app relays
+localSettings.readRelays.subscribe((relays) => {
+  replaceableEventsZapsLoader.extraRelays = relays;
+  singleEventsZapsLoader.extraRelays = relays;
+});

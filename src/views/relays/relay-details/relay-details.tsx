@@ -23,7 +23,7 @@ import VerticalPageLayout from "../../../components/vertical-page-layout";
 import { getSortedKinds } from "../../../helpers/nostr/event";
 import { useAppTitle } from "../../../hooks/use-app-title";
 import { eventStore } from "../../../services/event-store";
-import { nostrRequest } from "../../../services/rx-nostr";
+import { nostrRequest } from "../../../services/pool";
 
 ChartJS.register(
   ArcElement,

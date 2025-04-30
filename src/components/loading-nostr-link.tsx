@@ -29,7 +29,7 @@ import singleEventLoader from "../services/single-event-loader";
 import replaceableEventLoader from "../services/replaceable-loader";
 import { AppHandlerContext } from "../providers/route/app-handler-provider";
 import { useObservable } from "applesauce-react/hooks";
-import { connections$ } from "../services/rx-nostr";
+import { connections$ } from "../services/pool";
 
 function SearchOnRelaysModal({
   isOpen,
@@ -39,7 +39,7 @@ function SearchOnRelaysModal({
   const [loading, setLoading] = useState(false);
   const [filter, setFilter] = useState("");
 
-  const discoveredRelays = Object.entries(useObservable(connections$)).reduce<string[]>(
+  const discoveredRelays = Object.entries(useObservable(connections$) ?? {}).reduce<string[]>(
     (arr, [relay, status]) => (status !== "error" ? [...arr, relay] : arr),
     [],
   );

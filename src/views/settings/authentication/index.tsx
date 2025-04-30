@@ -3,11 +3,11 @@ import { useObservable } from "applesauce-react/hooks";
 
 import DefaultAuthModeSelect from "../../../components/settings/default-auth-mode-select";
 import SimpleView from "../../../components/layout/presets/simple-view";
-import { connections$ } from "../../../services/rx-nostr";
+import { connections$ } from "../../../services/pool";
 import RelayAuthCard from "../../../components/relays/relay-auth-card";
 
 export default function AuthenticationSettingsView() {
-  const connections = useObservable(connections$);
+  const connections = useObservable(connections$) ?? {};
   const sortedRelays = Object.keys(connections).sort();
 
   return (

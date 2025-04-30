@@ -3,7 +3,7 @@ import { TagValueLoader } from "applesauce-loaders";
 import { WIKI_PAGE_KIND } from "../helpers/nostr/wiki";
 import { eventStore } from "./event-store";
 import { cacheRequest } from "./cache-relay";
-import { nostrRequest } from "./rx-nostr";
+import { nostrRequest } from "./pool";
 
 const wikiPageLoader = new TagValueLoader(nostrRequest, "d", {
   name: "wiki-pages",

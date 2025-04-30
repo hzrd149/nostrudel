@@ -1,37 +1,24 @@
-import { useEffect, useMemo, useState } from "react";
-import { Filter, kinds, NostrEvent } from "nostr-tools";
 import { Alert, AlertDescription, AlertIcon, AlertTitle, Heading, Spinner, Text } from "@chakra-ui/react";
-import { map, Observable } from "rxjs";
 import { LRU } from "applesauce-core/helpers";
+import { onlyEvents } from "applesauce-relay";
+import { Filter, kinds, NostrEvent } from "nostr-tools";
+import { useEffect, useMemo, useState } from "react";
+import { Observable } from "rxjs";
 
-import ProfileSearchResults from "./profile-results";
-import NoteSearchResults from "./note-results";
-import ArticleSearchResults from "./article-results";
-import { eventStore } from "../../../services/event-store";
-import { createRxOneshotReq, EventPacket } from "rx-nostr";
-import rxNostr from "../../../services/rx-nostr";
 import { cacheRequest } from "../../../services/cache-relay";
+import { eventStore } from "../../../services/event-store";
+import pool from "../../../services/pool";
+import ArticleSearchResults from "./article-results";
+import NoteSearchResults from "./note-results";
+import ProfileSearchResults from "./profile-results";
 
-export function createSearchAction(relays?: string[]): (filters: Filter[]) => Observable<EventPacket> {
+export function createSearchAction(relays?: string[]): (filters: Filter[]) => Observable<NostrEvent> {
   return (filters: Filter[]) => {
     // search local
-    if (!relays || relays.length === 0)
-      return cacheRequest(filters).pipe(
-        map(
-          (event) =>
-            ({
-              event,
-              from: "",
-              subId: "cache",
-              type: "EVENT",
-              message: ["EVENT", "cache", event],
-            }) as EventPacket,
-        ),
-      );
+    if (!relays || relays.length === 0) return cacheRequest(filters);
 
     // search remote
-    const req = createRxOneshotReq({ filters });
-    return rxNostr.use(req, { on: { relays } });
+    return pool.request(relays, filters).pipe(onlyEvents());
   };
 }
 
@@ -60,8 +47,8 @@ export default function SearchResults({ query, relay }: { query: string; relay: 
 
       const sub = search([
         { search: query, kinds: [kinds.Metadata, kinds.ShortTextNote, kinds.LongFormArticle], limit: 200 },
-      ]).subscribe((packet) => {
-        const event = eventStore.add(packet.event, packet.from);
+      ]).subscribe((event) => {
+        event = eventStore.add(event);
 
         setResults((arr) => {
           const newArr = [...arr, event];

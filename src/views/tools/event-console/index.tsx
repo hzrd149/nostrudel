@@ -20,7 +20,6 @@ import { NostrEvent } from "nostr-tools";
 import { memo, useCallback, useRef, useState } from "react";
 import { useLocation, useSearchParams } from "react-router-dom";
 import { useLocalStorage } from "react-use";
-import { createRxForwardReq, EventPacket } from "rx-nostr";
 import { Subscription } from "rxjs";
 
 import { DownloadIcon, ShareIcon } from "../../../components/icons";
@@ -32,12 +31,13 @@ import { RelayUrlInput } from "../../../components/relay-url-input";
 import useCacheRelay from "../../../hooks/use-cache-relay";
 import { cacheRequest } from "../../../services/cache-relay";
 import { eventStore } from "../../../services/event-store";
-import rxNostr from "../../../services/rx-nostr";
+import pool from "../../../services/pool";
 import EventRow from "./event-row";
 import FilterEditor from "./filter-editor";
 import HelpModal from "./help-modal";
 import HistoryDrawer from "./history-drawer";
 import { processFilter } from "./process";
+import { onlyEvents } from "applesauce-relay";
 
 const EventTimeline = memo(({ events }: { events: NostrEvent[] }) => {
   return (
@@ -103,19 +103,12 @@ export default function EventConsoleView() {
         buffer.push(event);
         flush();
       };
-      const handleEventPacket = (packet: EventPacket) => {
-        const event = eventStore.add(packet.event, packet.from);
-        buffer.push(event);
-        flush();
-      };
 
       if (queryRelay.isOpen) {
         if (!relay) throw new Error("Must set relay");
 
         // query remote relay
-        const req = createRxForwardReq();
-        const sub = rxNostr.use(req, { on: { relays: [relay] } }).subscribe(handleEventPacket);
-        req.emit([filter]);
+        const sub = pool.subscription([relay], filter).pipe(onlyEvents()).subscribe(handleEvent);
         setSub(sub);
       } else {
         // query cache relay
