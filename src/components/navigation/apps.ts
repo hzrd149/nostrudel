@@ -32,6 +32,7 @@ import PuzzlePiece01 from "../icons/puzzle-piece-01";
 import Users02 from "../icons/users-02";
 import Wallet02 from "../icons/wallet-02";
 import Users01 from "../icons/users-01";
+import MessageChatCircle from "../icons/message-chat-circle";
 
 export type App = {
   icon?: ComponentWithAs<"svg", IconProps>;
@@ -75,6 +76,13 @@ export const internalApps: App[] = [
     icon: Users02,
     id: "groups",
     to: "/groups",
+  },
+  {
+    title: "Relay Chat",
+    description: "Simple dissapearing chat on relays",
+    icon: MessageChatCircle,
+    id: "relay-chat",
+    to: "/relay-chat",
   },
   {
     title: "Pictures",

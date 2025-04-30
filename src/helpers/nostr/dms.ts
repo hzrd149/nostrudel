@@ -59,6 +59,7 @@ export function sortConversationsByLastReceived(conversations: KnownConversation
   });
 }
 
+/** Groups messages into bubble sets based on the pubkey and time */
 export function groupMessages(messages: NostrEvent[], minutes = 5, ascending = false) {
   const sorted = messages.sort(sortByDate);
 

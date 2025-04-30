@@ -16,7 +16,7 @@ export default function useSimpleSubscription(relays?: string[], filters?: Filte
     [relays, filters, id],
   );
 
-  // subscribe
+  // subscribe to the observable
   useEffect(() => {
     const sub = observable?.subscribe((event) => eventStore.add(event));
     return () => sub?.unsubscribe();

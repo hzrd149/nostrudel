@@ -129,7 +129,7 @@ importers:
         version: 0.0.0-next-20250429163257(react-dom@19.1.0(react@19.1.0))(typescript@5.8.3)
       applesauce-relay:
         specifier: next
-        version: 0.0.0-next-20250430173639(typescript@5.8.3)
+        version: 0.0.0-next-20250430200159(typescript@5.8.3)
       applesauce-signers:
         specifier: next
         version: 0.0.0-next-20250429163257(typescript@5.8.3)
@@ -307,9 +307,6 @@ importers:
       remark-wiki-link:
         specifier: ^2.0.1
         version: 2.0.1
-      rx-nostr:
-        specifier: ^3.6.1
-        version: 3.6.1
       rxjs:
         specifier: ^7.8.2
         version: 7.8.2
@@ -2197,8 +2194,8 @@ packages:
   applesauce-react@0.0.0-next-20250429163257:
     resolution: {integrity: sha512-6L9fUpdv+TXsVjvebaZykRF223qv7gN717k0C22hPwJP2BsGUybGwsiJgLODfsJRNianQJ9fJOxHs2DNDhc5LA==}
 
-  applesauce-relay@0.0.0-next-20250430173639:
-    resolution: {integrity: sha512-o2sOuTmqe7OznOV7QUS8lEtK+3V7D0RF3l5Oq0aYDmma4zNLLnjiFJnkYDXqM8YdZdSqRT9nu9kx3OptOfGrKQ==}
+  applesauce-relay@0.0.0-next-20250430200159:
+    resolution: {integrity: sha512-qTzxePB/NGObLXtay2VCHN7m/omp9g6+u7/y0KBxyso4Pr4pbmx/ChH0dPngmYOErS90PUInKn7ZOAJfeLpGrQ==}
 
   applesauce-signers@0.0.0-next-20250429163257:
     resolution: {integrity: sha512-cnkCp5TNNrl6rv+pxxXowy6LInH1fcpQhGa5YFo6qxTbAnwjbAyNIJV5lhWbXZIL9SLBeztakwk644mIMMWKYw==}
@@ -4346,9 +4343,6 @@ packages:
   nostr-typedef@0.11.0:
     resolution: {integrity: sha512-grXIdS0dnfi3fUQNJFRNKjQZaFl3sYUpQ+U67XRtAFpl/ZAwFWkboJpryv72PS7pQ/Gkd0Q2uEoX8wm9H2uaQg==}
 
-  nostr-typedef@0.9.0:
-    resolution: {integrity: sha512-nLTzhlYcRnLQGUJ5YfvGAUDyGFHjGH6Qozltl/wV3UXelmiUwjrwI8IIxQNkbgVMv+zmbFi/m1xKHxIvVfG09w==}
-
   nostr-wasm@0.1.0:
     resolution: {integrity: sha512-78BTryCLcLYv96ONU8Ws3Q1JzjlAt+43pWQhIl86xZmWeegYCNLPml7yQ+gG3vR6V5h4XGj+TxO+SS5dsThQIA==}
 
@@ -5045,9 +5039,6 @@ packages:
 
   run-parallel@1.2.0:
     resolution: {integrity: sha512-5l4VyZR86LZ/lDxZTR6jqL8AFE2S0IFLMP26AbjsLVADxHdhB/c0GUsH+y39UfCi3dzz8OlQuPmnaJOMoDHQBA==}
-
-  rx-nostr@3.6.1:
-    resolution: {integrity: sha512-9e26DpaPSfbJVg8eSgDS9aEK5OTzAxv8x+5PQCFvC4qSB08r5bpHOZSaKa7A8rNYLOJr0zmTi1cpf5Z8gjwF6g==}
 
   rxjs@7.8.2:
     resolution: {integrity: sha512-dhKf903U/PQZY6boNNtAGdWbG85WAbjT/1xYoZIC7FAY0yWapOBQVsVrDl58W86//e1VpMNBtRV4MaXfdMySFA==}
@@ -8392,7 +8383,7 @@ snapshots:
       - supports-color
       - typescript
 
-  applesauce-relay@0.0.0-next-20250430173639(typescript@5.8.3):
+  applesauce-relay@0.0.0-next-20250430200159(typescript@5.8.3):
     dependencies:
       '@noble/hashes': 1.8.0
       applesauce-core: 1.0.0(typescript@5.8.3)
@@ -10936,8 +10927,6 @@ snapshots:
 
   nostr-typedef@0.11.0: {}
 
-  nostr-typedef@0.9.0: {}
-
   nostr-wasm@0.1.0: {}
 
   nth-check@2.1.1:
@@ -11730,11 +11719,6 @@ snapshots:
   run-parallel@1.2.0:
     dependencies:
       queue-microtask: 1.2.3
-
-  rx-nostr@3.6.1:
-    dependencies:
-      nostr-typedef: 0.9.0
-      rxjs: 7.8.2
 
   rxjs@7.8.2:
     dependencies:

@@ -48,6 +48,7 @@ import articlesRoutes from "./views/articles/routes";
 import torrentsRoutes from "./views/torrents/routes";
 import channelsRoutes from "./views/channels/routes";
 import groupsRoutes from "./views/groups/routes";
+import relayChatRoutes from "./views/relay-chat/routes";
 import goalsRoutes from "./views/goals/routes";
 import badgesRoutes from "./views/badges/routes";
 import emojisRoutes from "./views/emojis/routes";
@@ -107,6 +108,7 @@ const router = createBrowserRouter(
         { path: "pictures", children: picturesRoutes },
         { path: "streams", children: streamsRoutes },
         { path: "groups", children: groupsRoutes },
+        { path: "relay-chat", children: relayChatRoutes },
         { path: "tools", children: toolsRoutes },
         { path: "discovery", children: discoveryRoutes },
         { path: "wiki", children: wikiRoutes },
