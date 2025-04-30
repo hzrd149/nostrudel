@@ -12,7 +12,7 @@ import {
 } from "@chakra-ui/react";
 import { RemoveUserFromFollowSet } from "applesauce-actions/actions";
 import { getProfilePointersFromList, getReplaceableAddress, getTagValue } from "applesauce-core/helpers";
-import { useActionHub } from "applesauce-react/hooks";
+import { useActionHub, useActiveAccount } from "applesauce-react/hooks";
 import { NostrEvent } from "nostr-tools";
 import { useMemo } from "react";
 
@@ -35,6 +35,8 @@ import { usePublishEvent } from "../../../providers/global/publish-provider";
 import ListMenu from "../components/list-menu";
 import GenericCommentSection from "../../../components/comment/generic-comment-section";
 import RouterLink from "../../../components/router-link";
+import { ListPageHeader } from ".";
+import ListEditModal from "../components/list-edit-modal";
 
 function ListFeedButton({ list, ...props }: { list: NostrEvent } & Omit<ButtonProps, "children">) {
   return (
@@ -86,10 +88,12 @@ function UserCard({ pubkey, list }: { pubkey: string; list: NostrEvent }) {
 }
 
 export default function FollowSetView({ event }: { event: NostrEvent }) {
+  const account = useActiveAccount();
   const title = getListTitle(event);
   const people = useMemo(() => getProfilePointersFromList(event), [event]);
-  const image = getTagValue(event, "image");
-  const description = getListDescription(event);
+  const edit = useDisclosure();
+
+  const isAuthor = useMemo(() => event.pubkey === account?.pubkey, [event, account]);
 
   return (
     <SimpleView
@@ -104,42 +108,17 @@ export default function FollowSetView({ event }: { event: NostrEvent }) {
           >
             View Feed
           </Button>
+          {isAuthor && (
+            <Button onClick={edit.onOpen} colorScheme="primary">
+              Edit
+            </Button>
+          )}
           <ListMenu list={event} aria-label="List options" variant="ghost" />
         </ButtonGroup>
       }
     >
-      <Box>
-        {image && (
-          <Box
-            h="20vh"
-            w="full"
-            backgroundImage={`url(${image})`}
-            backgroundPosition="center"
-            backgroundSize="cover"
-            backgroundRepeat="no-repeat"
-            mb="4"
-            rounded="md"
-          />
-        )}
-        <Flex direction="column" gap="2">
-          <Heading size="lg">{title}</Heading>
-          <Flex gap="2" alignItems="center">
-            <UserAvatar pubkey={event.pubkey} size="sm" />
-            <UserLink pubkey={event.pubkey} fontWeight="bold" fontSize="lg" />
-            <UserDnsIdentity pubkey={event.pubkey} />
-          </Flex>
-        </Flex>
-      </Box>
-      {description && (
-        <Box p="2" whiteSpace="pre-line">
-          {description}
-        </Box>
-      )}
-      <Flex gap="2" role="toolbar" aria-label="List actions">
-        <EventZapButton event={event} size="sm" variant="ghost" showEventPreview={false} aria-label="Send zap" />
-        <EventQuoteButton event={event} size="sm" variant="ghost" aria-label="Quote follow list" />
-        <NoteReactions event={event} size="sm" variant="ghost" aria-label="React to follow list" />
-      </Flex>
+      <ListPageHeader list={event} />
+
       <SimpleGrid columns={{ base: 1, xl: 2 }} spacing="4">
         {people.map((person) => (
           <UserCard key={person.pubkey} pubkey={person.pubkey} list={event} />
@@ -147,6 +126,8 @@ export default function FollowSetView({ event }: { event: NostrEvent }) {
       </SimpleGrid>
 
       <GenericCommentSection event={event} />
+
+      {edit.isOpen && <ListEditModal isOpen list={event} onClose={edit.onClose} />}
     </SimpleView>
   );
 }

@@ -13,7 +13,7 @@ import useEventIntersectionRef from "../../hooks/use-event-intersection-ref";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
-import { createListLink } from "../lists/components/list-card";
+import { createListLink } from "../lists/components/fallback-list-card";
 
 function ListLink({ list }: { list: NostrEvent }) {
   const ref = useEventIntersectionRef<HTMLAnchorElement>(list);

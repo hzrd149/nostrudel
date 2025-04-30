@@ -95,7 +95,7 @@ function ListCardRender({
   const description = getListDescription(list);
 
   return (
-    <Card as={LinkBox} ref={ref} variant="outline" {...props}>
+    <Card as={LinkBox} ref={ref} {...props}>
       <CardHeader p="4">
         <Flex gap="2" alignItems="center">
           <Heading size="md" isTruncated>
@@ -129,7 +129,8 @@ function ListCardRender({
   );
 }
 
-function ListCard({
+/** @deprecated build new list cards instead of using this */
+export default function FallbackListCard({
   cord,
   list: maybeEvent,
   hideCreator,
@@ -142,5 +143,3 @@ function ListCard({
   if (!event) return null;
   else return <ListCardRender list={event} hideCreator={hideCreator} />;
 }
-
-export default memo(ListCard);

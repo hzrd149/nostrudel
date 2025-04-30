@@ -4,7 +4,7 @@ import { getEventUID } from "applesauce-core/helpers";
 import { kinds } from "nostr-tools";
 
 import { isJunkList } from "../../helpers/nostr/lists";
-import ListCard from "../lists/components/list-card";
+import FallbackListCard from "../lists/components/fallback-list-card";
 import useUserSets from "../../hooks/use-user-lists";
 import SimpleView from "../../components/layout/presets/simple-view";
 
@@ -24,12 +24,12 @@ export default function UserListsTab() {
         Special lists
       </Heading>
       <SimpleGrid columns={columns} spacing="2">
-        <ListCard cord={`${kinds.Contacts}:${pubkey}`} hideCreator />
-        <ListCard cord={`${kinds.Mutelist}:${pubkey}`} hideCreator />
-        <ListCard cord={`${kinds.Pinlist}:${pubkey}`} hideCreator />
-        <ListCard cord={`${kinds.BookmarkList}:${pubkey}`} hideCreator />
-        <ListCard cord={`${kinds.CommunitiesList}:${pubkey}`} hideCreator />
-        <ListCard cord={`${kinds.PublicChatsList}:${pubkey}`} hideCreator />
+        <FallbackListCard cord={`${kinds.Contacts}:${pubkey}`} hideCreator />
+        <FallbackListCard cord={`${kinds.Mutelist}:${pubkey}`} hideCreator />
+        <FallbackListCard cord={`${kinds.Pinlist}:${pubkey}`} hideCreator />
+        <FallbackListCard cord={`${kinds.BookmarkList}:${pubkey}`} hideCreator />
+        <FallbackListCard cord={`${kinds.CommunitiesList}:${pubkey}`} hideCreator />
+        <FallbackListCard cord={`${kinds.PublicChatsList}:${pubkey}`} hideCreator />
       </SimpleGrid>
 
       {followSets.length > 0 && (
@@ -39,7 +39,7 @@ export default function UserListsTab() {
           </Heading>
           <SimpleGrid columns={columns} spacing="2">
             {followSets.map((set) => (
-              <ListCard key={getEventUID(set)} list={set} hideCreator />
+              <FallbackListCard key={getEventUID(set)} list={set} hideCreator />
             ))}
           </SimpleGrid>
         </>
@@ -52,7 +52,7 @@ export default function UserListsTab() {
           </Heading>
           <SimpleGrid columns={columns} spacing="2">
             {genericSets.map((set) => (
-              <ListCard key={getEventUID(set)} list={set} hideCreator />
+              <FallbackListCard key={getEventUID(set)} list={set} hideCreator />
             ))}
           </SimpleGrid>
         </>
@@ -65,7 +65,7 @@ export default function UserListsTab() {
           </Heading>
           <SimpleGrid columns={columns} spacing="2">
             {bookmarkSets.map((set) => (
-              <ListCard key={getEventUID(set)} list={set} hideCreator />
+              <FallbackListCard key={getEventUID(set)} list={set} hideCreator />
             ))}
           </SimpleGrid>
         </>

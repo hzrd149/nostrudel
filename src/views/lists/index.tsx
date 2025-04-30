@@ -9,7 +9,7 @@ import VerticalPageLayout from "../../components/vertical-page-layout";
 import useFavoriteLists from "../../hooks/use-favorite-lists";
 import useUserSets from "../../hooks/use-user-lists";
 import { getSharableEventAddress } from "../../services/relay-hints";
-import ListCard from "./components/list-card";
+import FallbackListCard from "./components/fallback-list-card";
 import NewSetModal from "./components/new-set-modal";
 import SimpleView from "../../components/layout/presets/simple-view";
 import ListTypeCard from "./components/list-type-card";
@@ -34,7 +34,7 @@ function ListHomePage() {
   const genericSets = sets.filter((event) => event.kind === kinds.Genericlists);
   const bookmarkSets = sets.filter((event) => event.kind === kinds.Bookmarksets);
 
-  const columns = { base: 1, lg: 2, xl: 3, "2xl": 4 };
+  const columns = { base: 1, lg: 2, xl: 3 };
 
   return (
     <SimpleView title="Lists" maxW="8xl" center>
@@ -44,12 +44,12 @@ function ListHomePage() {
       </SimpleGrid>
 
       <Flex mt="4">
-        <Heading size="lg">Follow sets</Heading>
+        <Heading size="lg">People lists</Heading>
         <Button leftIcon={<Plus boxSize={5} />} onClick={newList.onOpen} colorScheme="primary" ms="auto">
           New List
         </Button>
       </Flex>
-      <SimpleGrid columns={{ base: 1, md: 2, xl: 3 }} spacing="2">
+      <SimpleGrid columns={columns} spacing="2">
         {followSets.map((event) => (
           <PeopleListCard key={getEventUID(event)} list={event} />
         ))}
@@ -62,7 +62,7 @@ function ListHomePage() {
           </Heading>
           <SimpleGrid columns={columns} spacing="2">
             {genericSets.map((event) => (
-              <ListCard key={getEventUID(event)} list={event} hideCreator />
+              <FallbackListCard key={getEventUID(event)} list={event} hideCreator />
             ))}
           </SimpleGrid>
         </>
@@ -74,7 +74,7 @@ function ListHomePage() {
           </Heading>
           <SimpleGrid columns={columns} spacing="2">
             {bookmarkSets.map((event) => (
-              <ListCard key={getEventUID(event)} list={event} hideCreator />
+              <FallbackListCard key={getEventUID(event)} list={event} hideCreator />
             ))}
           </SimpleGrid>
         </>
@@ -86,7 +86,7 @@ function ListHomePage() {
           </Heading>
           <SimpleGrid columns={columns} spacing="2">
             {favoriteLists.map((event) => (
-              <ListCard key={getEventUID(event)} list={event} />
+              <FallbackListCard key={getEventUID(event)} list={event} />
             ))}
           </SimpleGrid>
         </>

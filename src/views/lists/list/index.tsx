@@ -1,37 +1,83 @@
-import { useNavigate } from "react-router-dom";
-import { kinds, nip19, NostrEvent } from "nostr-tools";
-import type { DecodeResult } from "nostr-tools/nip19";
-import { Box, Button, Flex, Heading, SimpleGrid, Spacer, Spinner, Text } from "@chakra-ui/react";
+import { Box, Button, ButtonGroup, Flex, Heading, SimpleGrid, Spinner, useDisclosure } from "@chakra-ui/react";
 import {
   encodeDecodeResult,
   getAddressPointersFromList,
   getEventPointersFromList,
   getProfilePointersFromList,
+  getTagValue,
 } from "applesauce-core/helpers";
-
-import UserLink from "../../../components/user/user-link";
-import { ChevronLeftIcon } from "../../../components/icons";
 import { useActiveAccount } from "applesauce-react/hooks";
-import { useDeleteEventContext } from "../../../providers/route/delete-event-provider";
+import { kinds, nip19, NostrEvent } from "nostr-tools";
+import type { DecodeResult } from "nostr-tools/nip19";
+
+import GenericCommentSection from "../../../components/comment/generic-comment-section";
+import { EmbedEvent, EmbedEventPointer } from "../../../components/embed-event";
+import SimpleView from "../../../components/layout/presets/simple-view";
+import EventQuoteButton from "../../../components/note/event-quote-button";
+import NoteReactions from "../../../components/note/timeline-note/components/note-reactions";
+import OpenGraphCard from "../../../components/open-graph/open-graph-card";
+import UserAvatarLink from "../../../components/user/user-avatar-link";
+import UserDnsIdentity from "../../../components/user/user-dns-identity";
+import UserLink from "../../../components/user/user-link";
+import EventZapButton from "../../../components/zap/event-zap-button";
 import {
   getListDescription,
   getListTitle,
   getReferencesFromList,
   isSpecialListKind,
 } from "../../../helpers/nostr/lists";
-import useReplaceableEvent from "../../../hooks/use-replaceable-event";
-import UserCard from "../components/user-card";
-import OpenGraphCard from "../../../components/open-graph/open-graph-card";
-import { TrustProvider } from "../../../providers/local/trust-provider";
-import ListMenu from "../components/list-menu";
-import ListFavoriteButton from "../components/list-favorite-button";
-import ListFeedButton from "../components/list-feed-button";
-import VerticalPageLayout from "../../../components/vertical-page-layout";
-import { EmbedEvent, EmbedEventPointer } from "../../../components/embed-event";
-import useSingleEvent from "../../../hooks/use-single-event";
-import UserAvatarLink from "../../../components/user/user-avatar-link";
 import useParamsAddressPointer from "../../../hooks/use-params-address-pointer";
+import useReplaceableEvent from "../../../hooks/use-replaceable-event";
+import useSingleEvent from "../../../hooks/use-single-event";
+import { TrustProvider } from "../../../providers/local/trust-provider";
+import ListFavoriteButton from "../components/list-favorite-button";
+import ListMenu from "../components/list-menu";
+import UserCard from "../components/user-card";
 import FollowSetView from "./follow-set";
+import ListEditModal from "../components/list-edit-modal";
+
+export function ListPageHeader({ list }: { list: NostrEvent }) {
+  const title = getListTitle(list);
+  const description = getListDescription(list);
+  const image = getTagValue(list, "image");
+
+  return (
+    <>
+      <Box>
+        {image && (
+          <Box
+            aspectRatio={3 / 1}
+            w="full"
+            backgroundImage={`url(${image})`}
+            backgroundPosition="center"
+            backgroundSize="cover"
+            backgroundRepeat="no-repeat"
+            mb="4"
+            rounded="md"
+          />
+        )}
+        <Flex direction="column" gap="2">
+          <Heading size="lg">{title}</Heading>
+          <Flex gap="2" alignItems="center">
+            <UserAvatarLink pubkey={list.pubkey} size="sm" />
+            <UserLink pubkey={list.pubkey} fontWeight="bold" fontSize="lg" />
+            <UserDnsIdentity pubkey={list.pubkey} />
+          </Flex>
+        </Flex>
+      </Box>
+      {description && (
+        <Box p="2" whiteSpace="pre-line">
+          {description}
+        </Box>
+      )}
+      <Flex gap="2" role="toolbar" aria-label="List actions">
+        <EventZapButton event={list} size="sm" variant="ghost" showEventPreview={false} aria-label="Send zap" />
+        <EventQuoteButton event={list} size="sm" variant="ghost" aria-label="Quote follow list" />
+        <NoteReactions event={list} size="sm" variant="ghost" aria-label="React to follow list" />
+      </Flex>
+    </>
+  );
+}
 
 function BookmarkedEvent({ id, relays }: { id: string; relays?: string[] }) {
   const event = useSingleEvent(id, relays);
@@ -39,12 +85,11 @@ function BookmarkedEvent({ id, relays }: { id: string; relays?: string[] }) {
   return event ? <EmbedEvent event={event} /> : <>Loading {id}</>;
 }
 
-function ListPage({ list }: { list: NostrEvent }) {
-  const navigate = useNavigate();
-  const { deleteEvent } = useDeleteEventContext();
+function FallbackListPage({ list }: { list: NostrEvent }) {
+  const edit = useDisclosure();
   const account = useActiveAccount();
 
-  const description = getListDescription(list);
+  const title = getListTitle(list);
   const isAuthor = account?.pubkey === list.pubkey;
   const people = getProfilePointersFromList(list);
   const notes = getEventPointersFromList(list);
@@ -55,34 +100,23 @@ function ListPage({ list }: { list: NostrEvent }) {
 
   return (
     <TrustProvider trust>
-      <VerticalPageLayout h="full">
-        <Flex gap="2" alignItems="center">
-          <Button onClick={() => navigate(-1)} leftIcon={<ChevronLeftIcon />}>
-            Back
-          </Button>
-
-          <Spacer />
-
-          <ListFavoriteButton list={list} />
-          <ListFeedButton list={list} />
-          {isAuthor && !isSpecialListKind(list.kind) && (
-            <Button colorScheme="red" onClick={() => deleteEvent(list).then(() => navigate("/lists"))}>
-              Delete
-            </Button>
-          )}
-          <ListMenu aria-label="More options" list={list} />
-        </Flex>
-
-        <Box>
-          <Heading size="lg" isTruncated>
-            {getListTitle(list)}
-          </Heading>
-          <Text>
-            Created by <UserAvatarLink pubkey={list.pubkey} size="xs" />{" "}
-            <UserLink pubkey={list.pubkey} fontWeight="bold" />
-          </Text>
-          {description && <Text fontStyle="italic">{description}</Text>}
-        </Box>
+      <SimpleView
+        title={title}
+        maxW="6xl"
+        center
+        actions={
+          <ButtonGroup ms="auto">
+            <ListFavoriteButton list={list} />
+            {isAuthor && !isSpecialListKind(list.kind) && (
+              <Button onClick={edit.onOpen} colorScheme="primary">
+                Edit
+              </Button>
+            )}
+            <ListMenu aria-label="More options" list={list} variant="ghost" />
+          </ButtonGroup>
+        }
+      >
+        <ListPageHeader list={list} />
 
         {people.length > 0 && (
           <>
@@ -142,7 +176,11 @@ function ListPage({ list }: { list: NostrEvent }) {
             </Flex>
           </>
         )}
-      </VerticalPageLayout>
+
+        <GenericCommentSection event={list} />
+
+        {edit.isOpen && <ListEditModal isOpen list={list} onClose={edit.onClose} />}
+      </SimpleView>
     </TrustProvider>
   );
 }
@@ -163,6 +201,6 @@ export default function ListView() {
     case kinds.Followsets:
       return <FollowSetView event={list} />;
     default:
-      return <ListPage list={list} />;
+      return <FallbackListPage list={list} />;
   }
 }

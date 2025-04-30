@@ -1,4 +1,5 @@
 import {
+  AspectRatio,
   AvatarGroup,
   ButtonGroup,
   Card,
@@ -33,8 +34,12 @@ export default function PeopleListCard({ list }: { list: NostrEvent }) {
   const naddr = useShareableEventAddress(list);
 
   return (
-    <Card as={LinkBox}>
-      {image && <Image src={image} alt={title} objectFit="cover" />}
+    <Card as={LinkBox} overflow="hidden">
+      {image && (
+        <AspectRatio ratio={3 / 1}>
+          <Image src={image} alt={title} objectFit="cover" />
+        </AspectRatio>
+      )}
       <CardHeader p="2">
         <Heading size="md">
           <HoverLinkOverlay as={RouterLink} to={`/lists/${naddr}`}>

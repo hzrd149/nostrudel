@@ -134,7 +134,7 @@ const MetadataForm = ({
               autoComplete="off"
               isDisabled={isSubmitting}
               placeholder="https://domain.com/path/picture.png"
-              {...register("picture", { maxLength: 150 })}
+              {...register("picture")}
             />
             <InputRightElement>
               <IconButton
@@ -165,7 +165,7 @@ const MetadataForm = ({
               autoComplete="off"
               isDisabled={isSubmitting}
               placeholder="https://domain.com/path/banner.png"
-              {...register("banner", { maxLength: 150 })}
+              {...register("banner")}
             />
             <InputRightElement>
               <IconButton
