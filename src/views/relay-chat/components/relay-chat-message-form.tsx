@@ -13,14 +13,14 @@ import { useTextAreaInsertTextWithForm } from "../../../hooks/use-textarea-uploa
 import { useContextEmojis } from "../../../providers/global/emoji-provider";
 import { eventStore } from "../../../services/event-store";
 import pool from "../../../services/pool";
-import InsertImageButton from "../../new/note/insert-image-button";
 import { RELAY_CHAT_MESSAGE_KIND } from "../../../services/relay-chats";
+import InsertImageButton from "../../new/note/insert-image-button";
 
 export default function RelayChatMessageForm({
   relay,
   channel,
   ...props
-}: { relay: string; channel: string } & Omit<FlexProps, "children">) {
+}: { relay: string; channel?: string } & Omit<FlexProps, "children">) {
   const toast = useToast();
   const account = useActiveAccount();
   const emojis = useContextEmojis();
@@ -45,7 +45,7 @@ export default function RelayChatMessageForm({
 
     const draft = await factory.build(
       { kind: RELAY_CHAT_MESSAGE_KIND },
-      includeSingletonTag(["d", channel]),
+      channel ? includeSingletonTag(["d", channel]) : undefined,
       setContent(values.content),
     );
     const signed = await account?.signEvent(draft);

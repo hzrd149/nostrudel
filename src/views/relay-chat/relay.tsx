@@ -2,10 +2,10 @@ import { Alert, AlertIcon, Box, Divider, Flex, Text } from "@chakra-ui/react";
 import { getSeenRelays, getTagValue } from "applesauce-core/helpers";
 import { TimelineQuery } from "applesauce-core/queries";
 import { useStoreQuery } from "applesauce-react/hooks";
+import { NostrEvent } from "nostr-tools";
 import { useEffect, useState } from "react";
 import { Navigate, useParams } from "react-router-dom";
 
-import { NostrEvent } from "nostr-tools";
 import SimpleView from "../../components/layout/presets/simple-view";
 import RelayStatusBadge from "../../components/relays/relay-status";
 import Timestamp from "../../components/timestamp";
@@ -15,7 +15,6 @@ import useSimpleSubscription from "../../hooks/use-forward-subscription";
 import { getRelayChatSubscription, RELAY_CHAT_MESSAGE_KIND } from "../../services/relay-chats";
 import RelayChatMessageContent from "./components/relay-chat-message-content";
 import RelayChatMessageForm from "./components/relay-chat-message-form";
-import dayjs from "dayjs";
 
 function RelayChatMessage({ message }: { message: NostrEvent }) {
   const color = `#${message.pubkey.slice(0, 6)}`;
@@ -31,11 +30,11 @@ function RelayChatMessage({ message }: { message: NostrEvent }) {
   );
 }
 
-function RelayChatLog({ relay, channel }: { relay: string; channel: string }) {
+function RelayChatLog({ relay, channel }: { relay: string; channel?: string }) {
   const clientMuteFilter = useClientSideMuteFilter();
   const messages =
     useStoreQuery(TimelineQuery, [{ kinds: [RELAY_CHAT_MESSAGE_KIND] }])
-      ?.filter((e) => getSeenRelays(e)?.has(relay) && getTagValue(e, "d") === channel)
+      ?.filter((e) => getSeenRelays(e)?.has(relay) && (getTagValue(e, "d") ?? "") === (channel ?? ""))
       .filter((e) => !clientMuteFilter(e)) ?? [];
 
   return (
@@ -48,7 +47,7 @@ function RelayChatLog({ relay, channel }: { relay: string; channel: string }) {
 }
 
 function RelayChatRelayPage({ relay }: { relay: string }) {
-  const [channel, setChannel] = useState("");
+  const [channel, setChannel] = useState<string>();
 
   useSimpleSubscription([relay], [{ kinds: [RELAY_CHAT_MESSAGE_KIND] }]);
 
