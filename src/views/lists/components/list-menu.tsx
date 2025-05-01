@@ -1,8 +1,8 @@
 import { NostrEvent } from "nostr-tools";
-import { DotsMenuButton, MenuIconButtonProps } from "../../../components/dots-menu-button";
-import DeleteEventMenuItem from "../../../components/common-menu-items/delete-event";
-import OpenInAppMenuItem from "../../../components/common-menu-items/open-in-app";
-import CopyEmbedCodeMenuItem from "../../../components/common-menu-items/copy-embed-code";
+import { DotsMenuButton, MenuIconButtonProps } from "../../../components/menu/dots-menu-button";
+import DeleteEventMenuItem from "../../../components/menu/delete-event";
+import OpenInAppMenuItem from "../../../components/menu/open-in-app";
+import CopyEmbedCodeMenuItem from "../../../components/menu/copy-embed-code";
 import { isSpecialListKind } from "../../../helpers/nostr/lists";
 import DebugEventMenuItem from "../../../components/debug-modal/debug-event-menu-item";
 

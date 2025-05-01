@@ -3,11 +3,11 @@ import { MenuItem } from "@chakra-ui/react";
 import { NostrEvent } from "nostr-tools";
 
 import { usePublishEvent } from "../../../providers/global/publish-provider";
-import { DotsMenuButton, MenuIconButtonProps } from "../../../components/dots-menu-button";
-import OpenInAppMenuItem from "../../../components/common-menu-items/open-in-app";
-import ShareLinkMenuItem from "../../../components/common-menu-items/share-link";
-import CopyEmbedCodeMenuItem from "../../../components/common-menu-items/copy-embed-code";
-import DeleteEventMenuItem from "../../../components/common-menu-items/delete-event";
+import { DotsMenuButton, MenuIconButtonProps } from "../../../components/menu/dots-menu-button";
+import OpenInAppMenuItem from "../../../components/menu/open-in-app";
+import ShareLinkMenuItem from "../../../components/menu/share-link";
+import CopyEmbedCodeMenuItem from "../../../components/menu/copy-embed-code";
+import DeleteEventMenuItem from "../../../components/menu/delete-event";
 import { BroadcastEventIcon } from "../../../components/icons";
 import DebugEventMenuItem from "../../../components/debug-modal/debug-event-menu-item";
 

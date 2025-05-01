@@ -4,11 +4,8 @@ import {
   ButtonGroup,
   FormControl,
   FormLabel,
-  IconButton,
   Image,
   Input,
-  InputGroup,
-  InputRightElement,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -17,20 +14,16 @@ import {
   ModalOverlay,
   ModalProps,
   Textarea,
-  VisuallyHiddenInput,
 } from "@chakra-ui/react";
-import { UpdateFollowSetInformation } from "applesauce-actions/actions";
-import { getReplaceableIdentifier, getTagValue } from "applesauce-core/helpers";
+import { SetListMetadata } from "applesauce-actions/actions/lists";
+import { getTagValue } from "applesauce-core/helpers";
 import { useActionHub } from "applesauce-react/hooks";
 import { NostrEvent } from "nostr-tools";
-import { useRef } from "react";
 import { useForm } from "react-hook-form";
 
-import { getListDescription, getListTitle } from "../../../helpers/nostr/lists";
-import { useInputUploadFileWithForm } from "../../../hooks/use-input-upload-file";
-import { usePublishEvent } from "../../../providers/global/publish-provider";
-import { OutboxIcon } from "../../../components/icons";
 import ImageURLInput from "../../../components/form/image-input";
+import { getListDescription, getListTitle } from "../../../helpers/nostr/lists";
+import { usePublishEvent } from "../../../providers/global/publish-provider";
 
 type FormData = {
   title: string;
@@ -57,9 +50,8 @@ export default function ListEditModal({ list, onClose, ...props }: ListEditModal
   const imageUrl = watch("image");
 
   const onSubmit = handleSubmit(async (data) => {
-    const identifier = getReplaceableIdentifier(list);
     await actions
-      .exec(UpdateFollowSetInformation, identifier, {
+      .exec(SetListMetadata, list, {
         title: data.title,
         description: data.description,
         image: data.image,

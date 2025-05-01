@@ -2,13 +2,13 @@ import { MenuItem } from "@chakra-ui/react";
 import { NostrEvent } from "nostr-tools";
 import { useCallback } from "react";
 
-import CopyEmbedCodeMenuItem from "../../../components/common-menu-items/copy-embed-code";
-import DeleteEventMenuItem from "../../../components/common-menu-items/delete-event";
-import OpenInAppMenuItem from "../../../components/common-menu-items/open-in-app";
-import PinEventMenuItem from "../../../components/common-menu-items/pin-event";
-import ShareLinkMenuItem from "../../../components/common-menu-items/share-link";
+import CopyEmbedCodeMenuItem from "../../../components/menu/copy-embed-code";
+import DeleteEventMenuItem from "../../../components/menu/delete-event";
+import OpenInAppMenuItem from "../../../components/menu/open-in-app";
+import PinEventMenuItem from "../../../components/menu/pin-event";
+import ShareLinkMenuItem from "../../../components/menu/share-link";
 import DebugEventMenuItem from "../../../components/debug-modal/debug-event-menu-item";
-import { DotsMenuButton, MenuIconButtonProps } from "../../../components/dots-menu-button";
+import { DotsMenuButton, MenuIconButtonProps } from "../../../components/menu/dots-menu-button";
 import { BroadcastEventIcon } from "../../../components/icons";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
 

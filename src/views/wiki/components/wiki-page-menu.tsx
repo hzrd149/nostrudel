@@ -2,17 +2,17 @@ import { NostrEvent } from "nostr-tools";
 import { Link as RouterLink } from "react-router-dom";
 import { MenuItem } from "@chakra-ui/react";
 
-import { DotsMenuButton, MenuIconButtonProps } from "../../../components/dots-menu-button";
-import OpenInAppMenuItem from "../../../components/common-menu-items/open-in-app";
-import ShareLinkMenuItem from "../../../components/common-menu-items/share-link";
-import CopyEmbedCodeMenuItem from "../../../components/common-menu-items/copy-embed-code";
+import { DotsMenuButton, MenuIconButtonProps } from "../../../components/menu/dots-menu-button";
+import OpenInAppMenuItem from "../../../components/menu/open-in-app";
+import ShareLinkMenuItem from "../../../components/menu/share-link";
+import CopyEmbedCodeMenuItem from "../../../components/menu/copy-embed-code";
 import DebugEventMenuItem from "../../../components/debug-modal/debug-event-menu-item";
 import { useActiveAccount } from "applesauce-react/hooks";
 import { EditIcon } from "../../../components/icons";
 import { getPageTopic } from "../../../helpers/nostr/wiki";
 import GitBranch02 from "../../../components/icons/git-branch-02";
 import useShareableEventAddress from "../../../hooks/use-shareable-event-address";
-import DeleteEventMenuItem from "../../../components/common-menu-items/delete-event";
+import DeleteEventMenuItem from "../../../components/menu/delete-event";
 
 export default function WikiPageMenu({ page, ...props }: { page: NostrEvent } & Omit<MenuIconButtonProps, "children">) {
   const account = useActiveAccount();

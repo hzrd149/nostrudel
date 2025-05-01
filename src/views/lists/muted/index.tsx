@@ -35,7 +35,7 @@ function UserCard({ pubkey, ...props }: { pubkey: string } & Omit<CardProps, "ch
           icon={<TrashIcon boxSize={5} />}
           onClick={remove.run}
           isLoading={remove.loading}
-          aria-label="Unfollow"
+          aria-label="Remove from muted list"
           variant="ghost"
           colorScheme="red"
         />

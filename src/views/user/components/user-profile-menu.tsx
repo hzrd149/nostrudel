@@ -5,7 +5,7 @@ import { nip19 } from "nostr-tools";
 import { ReadonlyAccount } from "applesauce-accounts/accounts";
 import { ReadonlySigner } from "applesauce-signers";
 
-import { DotsMenuButton, MenuIconButtonProps } from "../../../components/dots-menu-button";
+import { DotsMenuButton, MenuIconButtonProps } from "../../../components/menu/dots-menu-button";
 import {
   DirectMessagesIcon,
   CopyToClipboardIcon,

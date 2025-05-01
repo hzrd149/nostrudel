@@ -2,6 +2,7 @@ import {
   AvatarGroup,
   Card,
   CardBody,
+  CardFooter,
   ComponentWithAs,
   Flex,
   Heading,
@@ -15,6 +16,7 @@ import { ProfilePointer } from "nostr-tools/nip19";
 import HoverLinkOverlay from "../../../components/hover-link-overlay";
 import RouterLink from "../../../components/router-link";
 import UserAvatar from "../../../components/user/user-avatar";
+import Timestamp from "../../../components/timestamp";
 
 export default function ListTypeCard({
   title,
@@ -22,12 +24,14 @@ export default function ListTypeCard({
   summary,
   icon,
   people,
+  updated,
 }: {
   title: string;
   path: string;
   summary?: string;
   icon: ComponentWithAs<"svg", IconProps>;
   people?: ProfilePointer[];
+  updated?: number;
 }) {
   return (
     <Card key={title} as={LinkBox}>
@@ -51,6 +55,13 @@ export default function ListTypeCard({
           )}
         </Flex>
       </CardBody>
+      {updated && (
+        <CardFooter p="2">
+          <Text>
+            updated <Timestamp timestamp={updated} />
+          </Text>
+        </CardFooter>
+      )}
     </Card>
   );
 }

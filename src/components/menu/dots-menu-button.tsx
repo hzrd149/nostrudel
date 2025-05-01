@@ -1,5 +1,5 @@
 import { Menu, MenuButton, MenuList, IconButton, MenuListProps, IconButtonProps } from "@chakra-ui/react";
-import { MoreIcon } from "./icons";
+import { MoreIcon } from "../icons";
 
 export type MenuIconButtonProps = IconButtonProps & {
   children: MenuListProps["children"];

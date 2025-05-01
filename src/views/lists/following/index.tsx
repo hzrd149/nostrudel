@@ -36,7 +36,7 @@ function UserCard({ person, ...props }: { person: ProfilePointer } & Omit<CardPr
           icon={<TrashIcon boxSize={5} />}
           onClick={remove.run}
           isLoading={remove.loading}
-          aria-label="Unfollow"
+          aria-label="Remove from following list"
           variant="ghost"
           colorScheme="red"
         />

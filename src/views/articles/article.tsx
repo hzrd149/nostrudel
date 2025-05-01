@@ -25,6 +25,7 @@ import BookmarkEventButton from "../../components/note/bookmark-event";
 import EventQuoteButton from "../../components/note/event-quote-button";
 import { GenericComments } from "../../components/comment/generic-comments";
 import GenericCommentForm from "../../components/comment/generic-comment-form";
+import EventShareButton from "../../components/note/timeline-note/components/event-share-button";
 
 function ArticlePage({ article }: { article: NostrEvent }) {
   const image = getArticleImage(article);
@@ -74,10 +75,11 @@ function ArticlePage({ article }: { article: NostrEvent }) {
           <Image src={image} maxW="6xl" w="full" mx="auto" maxH="60vh" alt="Article featured image" loading="lazy" />
         )}
 
-        <Box mx="auto" maxW="4xl" w="full" mb="8" as="section" role="article">
+        <Box mx="auto" maxW="4xl" w="full" mb="8" as="section" role="article" mt="4">
           <ZapBubbles event={article} mb="2" aria-label="Zap reactions" />
           <Flex gap="2" role="toolbar" aria-label="Article actions">
             <EventZapButton event={article} size="sm" variant="ghost" showEventPreview={false} aria-label="Send zap" />
+            <EventShareButton event={article} size="sm" variant="ghost" aria-label="Share article" />
             <EventQuoteButton event={article} size="sm" variant="ghost" aria-label="Quote article" />
             <NoteReactions event={article} size="sm" variant="ghost" aria-label="React to article" />
           </Flex>
@@ -86,8 +88,9 @@ function ArticlePage({ article }: { article: NostrEvent }) {
             <MarkdownContent event={article} />
           </Box>
 
-          <Flex gap="2" role="toolbar" aria-label="Article actions">
+          <Flex gap="2" role="toolbar" aria-label="Article actions" mt="4">
             <EventZapButton event={article} size="sm" variant="ghost" showEventPreview={false} aria-label="Send zap" />
+            <EventShareButton event={article} size="sm" variant="ghost" aria-label="Share article" />
             <EventQuoteButton event={article} size="sm" variant="ghost" aria-label="Quote article" />
             <NoteReactions event={article} size="sm" variant="ghost" aria-label="React to article" />
           </Flex>
