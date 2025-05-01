@@ -20,11 +20,12 @@ import { GenericComments } from "../../../components/comment/generic-comments";
 import { ErrorBoundary } from "../../../components/error-boundary";
 import { ThreadIcon } from "../../../components/icons";
 import Magnet from "../../../components/icons/magnet";
+import SimpleView from "../../../components/layout/presets/simple-view";
 import EventQuoteButton from "../../../components/note/event-quote-button";
 import EventShareButton from "../../../components/note/timeline-note/components/event-share-button";
 import NoteReactions from "../../../components/note/timeline-note/components/note-reactions";
 import BackButton from "../../../components/router/back-button";
-import VerticalPageLayout from "../../../components/vertical-page-layout";
+import UserName from "../../../components/user/user-name";
 import EventZapButton from "../../../components/zap/event-zap-button";
 import { formatBytes } from "../../../helpers/number";
 import useMaxPageWidth from "../../../hooks/use-max-page-width";
@@ -36,7 +37,7 @@ import FileMenu from "../components/file-menu";
 import FilePreview from "./preview";
 
 function FileDetailsPage({ file }: { file: NostrEvent }) {
-  const name = getTagValue(file, "name") || getTagValue(file, "x");
+  const name = getTagValue(file, "name");
   const summary = getTagValue(file, "summary");
   const magnet = getTagValue(file, "magnet");
   const type = getTagValue(file, "m");
@@ -47,20 +48,20 @@ function FileDetailsPage({ file }: { file: NostrEvent }) {
   const maxWidth = useMaxPageWidth();
 
   return (
-    <VerticalPageLayout>
-      <Flex gap="2" alignItems="center">
-        <BackButton variant="ghost" size="sm" />
-        <Heading size="md" isTruncated>
-          {name}
-        </Heading>
-
+    <SimpleView
+      title={
+        <Text>
+          {name || type || "File"} by <UserName pubkey={file.pubkey} />
+        </Text>
+      }
+      actions={
         <ButtonGroup variant="ghost" size="sm" ms="auto">
           <EventShareButton event={file} />
           <EventQuoteButton event={file} />
           <FileMenu file={file} aria-label="More options" />
         </ButtonGroup>
-      </Flex>
-
+      }
+    >
       <Flex
         direction="column"
         maxW={maxWidth}
@@ -94,7 +95,7 @@ function FileDetailsPage({ file }: { file: NostrEvent }) {
         <Divider mx="auto" maxW={maxWidth} w="full" />
         {summary && <Text whiteSpace="pre-line">{summary}</Text>}
         <Flex gap="2" wrap="wrap">
-          <ButtonGroup gap="2" size="sm" variant="ghost">
+          <ButtonGroup size="sm" variant="ghost">
             <EventZapButton event={file} showEventPreview={false} />
             <EventShareButton event={file} />
             <EventQuoteButton event={file} />
@@ -121,7 +122,7 @@ function FileDetailsPage({ file }: { file: NostrEvent }) {
 
         <GenericComments event={file} />
       </Flex>
-    </VerticalPageLayout>
+    </SimpleView>
   );
 }
 
