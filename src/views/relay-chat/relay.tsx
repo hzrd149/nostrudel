@@ -34,7 +34,7 @@ function RelayChatLog({ relay, channel }: { relay: string; channel?: string }) {
   const clientMuteFilter = useClientSideMuteFilter();
   const messages =
     useStoreQuery(TimelineQuery, [{ kinds: [RELAY_CHAT_MESSAGE_KIND] }])
-      ?.filter((e) => getSeenRelays(e)?.has(relay) && (getTagValue(e, "d") ?? "") === (channel ?? ""))
+      ?.filter((e) => getSeenRelays(e)?.has(relay) && (getTagValue(e, "d") ?? "_") === (channel ?? "_"))
       .filter((e) => !clientMuteFilter(e)) ?? [];
 
   return (

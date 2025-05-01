@@ -1,16 +1,15 @@
 import { ButtonGroup, Flex, FlexProps, useToast } from "@chakra-ui/react";
+import { addSeenRelay } from "applesauce-core/helpers";
+import { includeSingletonTag, setContent } from "applesauce-factory/operations/event";
 import { useActiveAccount, useEventFactory } from "applesauce-react/hooks";
 import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
-
-import { addSeenRelay } from "applesauce-core/helpers";
-import { includeSingletonTag, setContent } from "applesauce-factory/operations/event";
 import { lastValueFrom } from "rxjs";
+
 import InsertGifButton from "../../../components/gif/insert-gif-button";
 import { MagicInput, RefType } from "../../../components/magic-textarea";
 import InsertReactionButton from "../../../components/reactions/insert-reaction-button";
 import { useTextAreaInsertTextWithForm } from "../../../hooks/use-textarea-upload-file";
-import { useContextEmojis } from "../../../providers/global/emoji-provider";
 import { eventStore } from "../../../services/event-store";
 import pool from "../../../services/pool";
 import { RELAY_CHAT_MESSAGE_KIND } from "../../../services/relay-chats";
@@ -23,7 +22,6 @@ export default function RelayChatMessageForm({
 }: { relay: string; channel?: string } & Omit<FlexProps, "children">) {
   const toast = useToast();
   const account = useActiveAccount();
-  const emojis = useContextEmojis();
   const factory = useEventFactory();
 
   const [loadingMessage, setLoadingMessage] = useState("");
@@ -45,7 +43,7 @@ export default function RelayChatMessageForm({
 
     const draft = await factory.build(
       { kind: RELAY_CHAT_MESSAGE_KIND },
-      channel ? includeSingletonTag(["d", channel]) : undefined,
+      includeSingletonTag(["d", channel ?? "_"]),
       setContent(values.content),
     );
     const signed = await account?.signEvent(draft);
