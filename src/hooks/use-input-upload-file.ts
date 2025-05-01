@@ -1,6 +1,7 @@
 import { ChangeEventHandler, ClipboardEventHandler, useCallback } from "react";
-import useUploadFile from "./use-upload-file";
 import { UseFormSetValue } from "react-hook-form";
+
+import useUploadFile from "./use-upload-file";
 
 export function useInputUploadFileWithForm(setValue: UseFormSetValue<any>, field: string) {
   const setText = useCallback((text: string) => setValue(field, text), [setValue]);
@@ -8,30 +9,29 @@ export function useInputUploadFileWithForm(setValue: UseFormSetValue<any>, field
 }
 
 export default function useInputUploadFile(setText: (text: string) => void) {
-  const { uploadFile, uploading } = useUploadFile();
-
-  const privateUploadFile = useCallback(async (file: File) => {
-    const imageUrl = await uploadFile(file);
-
-    if (imageUrl)
-      setText(imageUrl);
-  }, [uploadFile])
+  const uploadFile = useUploadFile();
 
   const onFileInputChange = useCallback<ChangeEventHandler<HTMLInputElement>>(
-    (e) => {
+    async (e) => {
       const img = e.target.files?.[0];
-      if (img) privateUploadFile(img);
+      if (img) {
+        const upload = await uploadFile.run(img);
+        if (upload) setText(upload.url);
+      }
     },
-    [privateUploadFile],
+    [uploadFile.run, setText],
   );
 
   const onPaste = useCallback<ClipboardEventHandler<HTMLInputElement>>(
-    (e) => {
+    async (e) => {
       const imageFile = Array.from(e.clipboardData.files).find((f) => f.type.includes("image"));
-      if (imageFile) privateUploadFile(imageFile);
+      if (imageFile) {
+        const upload = await uploadFile.run(imageFile);
+        if (upload) setText(upload.url);
+      }
     },
-    [privateUploadFile],
+    [uploadFile.run, setText],
   );
 
-  return { uploadFile, uploading, onPaste, onFileInputChange };
+  return { uploadFile: uploadFile.run, uploading: uploadFile.loading, onPaste, onFileInputChange };
 }

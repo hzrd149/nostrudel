@@ -19,11 +19,7 @@ export default defineConfig({
     react(),
     tsconfigPaths(),
     VitePWA({
-      // strategies: "injectManifest",
-      // srcDir: "src",
-      // filename: "worker.ts",
-      registerType: "prompt",
-      // injectRegister: null,
+      registerType: "autoUpdate",
       injectManifest: {
         minify: false,
         sourcemap: true,

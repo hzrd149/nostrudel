@@ -1,14 +1,14 @@
 import { Link, Text } from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router-dom";
 import { ComponentMap } from "applesauce-react/hooks";
+import { Link as RouterLink } from "react-router-dom";
 
-import Mention from "./components/mention";
-import Cashu from "./components/cashu";
-import { InlineEmoji } from "./components/ininle-emoji";
-import { ImageGallery } from "./components/gallery";
-import LightningInvoice from "./components/lightning";
-import NipDefinition from "./components/nip";
 import BipDefinition from "./components/bip";
+import Cashu from "./components/cashu";
+import { ImageGallery } from "./components/gallery";
+import { InlineEmoji } from "./components/ininle-emoji";
+import LightningInvoice from "./components/lightning";
+import Mention from "./components/mention";
+import NipDefinition from "./components/nip";
 
 export const components: ComponentMap = {
   text: ({ node }) => <Text as="span">{node.value}</Text>,

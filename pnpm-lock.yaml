@@ -110,8 +110,8 @@ importers:
         specifier: next
         version: 0.0.0-next-20250501170544(typescript@5.8.3)
       applesauce-content:
-        specifier: next
-        version: 0.0.0-next-20250429163257(typescript@5.8.3)
+        specifier: ^1
+        version: 1.0.0(typescript@5.8.3)
       applesauce-core:
         specifier: next
         version: 0.0.0-next-20250429163257(typescript@5.8.3)
@@ -2168,9 +2168,6 @@ packages:
 
   applesauce-actions@0.0.0-next-20250501170544:
     resolution: {integrity: sha512-agIKy66b4cUib0fQ97vFIBM4W2z7YHzPXz6ipN48KYOUCVihUrBW8euyY21kGfmeLwyKOfYsFGLfOvpo0ivJqQ==}
-
-  applesauce-content@0.0.0-next-20250429163257:
-    resolution: {integrity: sha512-+rPLgm6Wk0FjxIOCycF5eAF/95O/wwvEntwNe985Sm+BEvJ0f5kStMYGNULwhoqa79g+hv0SpQVV9p+h3o2o3A==}
 
   applesauce-content@1.0.0:
     resolution: {integrity: sha512-AwgAa03A2S3QXUGuoNdCqPDJKpjA0CkNHqc2Fi47VaDowvcT3GNPhkxWj8jLZrHwRFzVU2kx0qM365vMV+vdgA==}
@@ -7982,23 +7979,6 @@ snapshots:
       applesauce-factory: 0.0.0-next-20250501170544(typescript@5.8.3)
       nostr-tools: 2.12.0(typescript@5.8.3)
       rxjs: 7.8.2
-    transitivePeerDependencies:
-      - supports-color
-      - typescript
-
-  applesauce-content@0.0.0-next-20250429163257(typescript@5.8.3):
-    dependencies:
-      '@cashu/cashu-ts': 2.0.0-rc1
-      '@types/hast': 3.0.4
-      '@types/mdast': 4.0.4
-      '@types/unist': 3.0.3
-      applesauce-core: 0.0.0-next-20250429163257(typescript@5.8.3)
-      mdast-util-find-and-replace: 3.0.2
-      nostr-tools: 2.12.0(typescript@5.8.3)
-      remark: 15.0.1
-      remark-parse: 11.0.0
-      unified: 11.0.5
-      unist-util-visit-parents: 6.0.1
     transitivePeerDependencies:
       - supports-color
       - typescript

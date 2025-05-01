@@ -34,32 +34,29 @@ export function useTextAreaInsertTextWithForm(
 }
 
 export default function useTextAreaUploadFile(insertText: (url: string) => void) {
-  const { uploadFile, uploading } = useUploadFile();
-
-  const privateUploadFile = useCallback(
-    async (file: File) => {
-      const imageUrl = await uploadFile(file);
-
-      if (imageUrl) insertText(imageUrl);
-    },
-    [uploadFile],
-  );
+  const uploadFile = useUploadFile();
 
   const onFileInputChange = useCallback<ChangeEventHandler<HTMLInputElement>>(
-    (e) => {
+    async (e) => {
       const img = e.target.files?.[0];
-      if (img) privateUploadFile(img);
+      if (img) {
+        const upload = await uploadFile.run(img);
+        if (upload) insertText(upload.url);
+      }
     },
-    [privateUploadFile],
+    [uploadFile.run],
   );
 
   const onPaste = useCallback<ClipboardEventHandler<HTMLTextAreaElement>>(
-    (e) => {
+    async (e) => {
       const imageFile = Array.from(e.clipboardData.files).find((f) => f.type.includes("image"));
-      if (imageFile) privateUploadFile(imageFile);
+      if (imageFile) {
+        const upload = await uploadFile.run(imageFile);
+        if (upload) insertText(upload.url);
+      }
     },
-    [privateUploadFile],
+    [uploadFile.run],
   );
 
-  return { uploadFile, uploading, onPaste, onFileInputChange };
+  return { uploadFile: uploadFile.run, uploading: uploadFile.loading, onPaste, onFileInputChange };
 }

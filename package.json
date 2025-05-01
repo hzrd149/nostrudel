@@ -51,7 +51,7 @@
     "ansi-to-html": "^0.7.2",
     "applesauce-accounts": "next",
     "applesauce-actions": "next",
-    "applesauce-content": "next",
+    "applesauce-content": "^1",
     "applesauce-core": "next",
     "applesauce-factory": "next",
     "applesauce-loaders": "next",
