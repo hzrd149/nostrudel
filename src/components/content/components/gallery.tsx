@@ -51,7 +51,14 @@ export function ImageGallery({ images, event }: { images: string[]; event?: Nost
   const rowMultiplier = useBreakpointValue({ base: 1.5, sm: 2, md: 3, lg: 4, xl: 5 }) ?? 4;
 
   return (
-    <ExpandableEmbed label="Image Gallery" urls={images}>
+    <ExpandableEmbed
+      label="Image Gallery"
+      raw={images.map((img) => (
+        <Link key={img} color="blue.500" href={img} isExternal noOfLines={1}>
+          {img}
+        </Link>
+      ))}
+    >
       <PhotoGallery
         layout="rows"
         photos={photos}

@@ -3,20 +3,23 @@ import EmbedActions from "./embed-actions";
 import { Link, useDisclosure } from "@chakra-ui/react";
 
 import useAppSettings from "../../../hooks/use-user-app-settings";
+import OpenGraphCard from "../../open-graph/open-graph-card";
 
 export default function ExpandableEmbed({
   children,
   label,
   url,
-  urls,
+  raw,
   hideOnDefaultOpen,
   actions,
+  card,
 }: PropsWithChildren<{
   label: string;
   url?: string | URL;
-  urls?: string[] | URL[];
   hideOnDefaultOpen?: boolean;
   actions?: ReactNode;
+  raw?: ReactNode;
+  card?: boolean;
 }>) {
   const { autoShowMedia } = useAppSettings();
   const expanded = useDisclosure({ defaultIsOpen: autoShowMedia });
@@ -39,17 +42,15 @@ export default function ExpandableEmbed({
       )}
       {expanded.isOpen
         ? children
-        : urls
-          ? urls.map((url) => (
-              <Link key={url.toString()} color="blue.500" href={url.toString()} isExternal noOfLines={1}>
+        : raw ||
+          (url &&
+            (card ? (
+              <OpenGraphCard url={new URL(url)} />
+            ) : (
+              <Link color="blue.500" href={url.toString()} isExternal>
                 {url.toString()}
               </Link>
-            ))
-          : url && (
-              <Link color="blue.500" href={url.toString()} isExternal noOfLines={1}>
-                {url.toString()}
-              </Link>
-            )}
+            )))}
     </>
   );
 }
