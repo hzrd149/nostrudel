@@ -14,7 +14,7 @@ import UserAvatarLink from "../../components/user/user-avatar-link";
 import useEventBookmarkActions from "../../hooks/use-event-bookmark-actions";
 import useParamsProfilePointer from "../../hooks/use-params-pubkey-pointer";
 import useReplaceableEvent from "../../hooks/use-replaceable-event";
-import { EmbedEvent } from "../../components/embed-event";
+import { EmbedEventCard } from "../../components/embed-event/card";
 import SimpleView from "../../components/layout/presets/simple-view";
 import useMaxPageWidth from "../../hooks/use-max-page-width";
 
@@ -47,7 +47,7 @@ function BookmarkAddressItem({ pointer }: { pointer: AddressPointer }) {
 
   return (
     <>
-      <EmbedEvent event={event} />
+      <EmbedEventCard event={event} />
       <ButtonGroup ml="auto" size="sm">
         <RemoveBookmarkButton event={event} />
       </ButtonGroup>

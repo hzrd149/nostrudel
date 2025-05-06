@@ -8,7 +8,7 @@ import useSingleEvent from "../../../hooks/use-single-event";
 import useUserMuteFilter from "../../../hooks/use-user-mute-filter";
 import { TrustProvider } from "../../../providers/local/trust-provider";
 import { eventStore } from "../../../services/event-store";
-import { EmbedEvent } from "../../embed-event";
+import { EmbedEventCard } from "../../embed-event/card";
 import LoadingNostrLink from "../../loading-nostr-link";
 import NoteMenu from "../../note/note-menu";
 import TimelineNote from "../../note/timeline-note";
@@ -50,7 +50,7 @@ function ShareEvent({ event }: { event: NostrEvent }) {
           // NOTE: tell the note not to register itself with the intersection observer. since this is an older note it will break the order of the timeline
           <TimelineNote event={note} showReplyButton registerIntersectionEntity={false} />
         ) : (
-          <EmbedEvent event={note} />
+          <EmbedEventCard event={note} />
         )}
       </Flex>
     </TrustProvider>

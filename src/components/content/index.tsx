@@ -7,12 +7,12 @@ import Cashu from "./components/cashu";
 import { ImageGallery } from "./components/gallery";
 import { InlineEmoji } from "./components/ininle-emoji";
 import LightningInvoice from "./components/lightning";
-import Mention from "./components/mention";
+import { NostrMentionCard } from "./components/mention";
 import NipDefinition from "./components/nip";
 
 export const components: ComponentMap = {
   text: ({ node }) => <Text as="span">{node.value}</Text>,
-  mention: Mention,
+  mention: NostrMentionCard,
   cashu: Cashu,
   emoji: ({ node }) => <InlineEmoji url={node.url} code={node.code} />,
   hashtag: ({ node }) => (

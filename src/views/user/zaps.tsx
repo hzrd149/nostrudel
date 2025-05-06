@@ -8,7 +8,7 @@ import { useOutletContext } from "react-router-dom";
 
 import { components } from "../../components/content";
 import { renderGenericUrl } from "../../components/content/links/common";
-import { EmbedEventPointer } from "../../components/embed-event";
+import { EmbedEventPointerCard } from "../../components/embed-event/card";
 import { ErrorBoundary } from "../../components/error-boundary";
 import { LightningIcon } from "../../components/icons";
 import TimelineActionAndStatus from "../../components/timeline/timeline-action-and-status";
@@ -42,7 +42,7 @@ const Zap = ({ zap }: { zap: NostrEvent }) => {
   let eventJSX: ReactNode | null = null;
   if (parsedCoordinate && parsedCoordinate.identifier) {
     eventJSX = (
-      <EmbedEventPointer
+      <EmbedEventPointerCard
         pointer={{
           type: "naddr",
           data: {
@@ -54,7 +54,7 @@ const Zap = ({ zap }: { zap: NostrEvent }) => {
       />
     );
   } else if (eventId) {
-    eventJSX = <EmbedEventPointer pointer={{ type: "note", data: eventId }} />;
+    eventJSX = <EmbedEventPointerCard pointer={{ type: "note", data: eventId }} />;
   }
 
   const content = useRenderedContent(request, components, { linkRenderers, cacheKey: ZapContentSymbol });

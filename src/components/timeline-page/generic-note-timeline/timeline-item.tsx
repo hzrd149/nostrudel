@@ -7,7 +7,7 @@ import { isReply } from "../../../helpers/nostr/event";
 import { FLARE_VIDEO_KIND } from "../../../helpers/nostr/video";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
 import ArticleCard from "../../../views/articles/components/article-card";
-import EmbeddedUnknown from "../../embed-event/event-types/embedded-unknown";
+import EmbeddedUnknown from "../../embed-event/card/embedded-unknown";
 import { ErrorBoundary } from "../../error-boundary";
 import { TimelineNote } from "../../note/timeline-note";
 import PicturePost from "../../picture-post/picture-post-card";
@@ -17,7 +17,7 @@ import ShareEvent from "./share-event";
 // other stuff
 const StreamNote = lazy(() => import("./stream-note"));
 const BadgeAwardCard = lazy(() => import("../../../views/badges/components/badge-award-card"));
-const EmbeddedFlareVideo = lazy(() => import("../../embed-event/event-types/embedded-flare-video"));
+const EmbeddedFlareVideo = lazy(() => import("../../embed-event/card/embedded-flare-video"));
 
 function TimelineItem({ event, visible, minHeight }: { event: NostrEvent; visible: boolean; minHeight?: number }) {
   const ref = useEventIntersectionRef(event);

@@ -15,7 +15,7 @@ import { useObservable } from "applesauce-react/hooks";
 import { PublishResponse } from "applesauce-relay";
 
 import { RelayPaidTag } from "../../relays/components/relay-card";
-import { EmbedEvent } from "../../../components/embed-event";
+import { EmbedEventCard } from "../../../components/embed-event/card";
 import { PublishLogEntry } from "../../../providers/global/publish-provider";
 
 function PublishResultRow({ packet }: { packet: PublishResponse }) {
@@ -40,7 +40,7 @@ export function PublishLogEntryDetails({ entry }: { entry: PublishLogEntry } & O
 
   return (
     <Flex direction="column" gap="2">
-      <EmbedEvent event={entry.event} />
+      <EmbedEventCard event={entry.event} />
       <Progress value={(Object.keys(relays).length / entry.relays.length) * 100} size="lg" hasStripe />
       {Object.entries(relays).map(([url, packet]) =>
         packet ? (

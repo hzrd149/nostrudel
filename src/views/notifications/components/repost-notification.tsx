@@ -2,7 +2,7 @@ import { forwardRef } from "react";
 import { Text } from "@chakra-ui/react";
 import { nip18, NostrEvent } from "nostr-tools";
 
-import { EmbedEventPointer } from "../../../components/embed-event";
+import { EmbedEventPointerCard } from "../../../components/embed-event/card";
 import { RepostIcon } from "../../../components/icons";
 import NotificationIconEntry from "./notification-icon-entry";
 import UserAvatar from "../../../components/user/user-avatar";
@@ -27,7 +27,7 @@ const RepostNotification = forwardRef<HTMLDivElement, { event: NostrEvent; onCli
         <Text>
           <UserAvatar size="xs" pubkey={event.pubkey} /> <UserLink pubkey={event.pubkey} /> reposted:
         </Text>
-        <EmbedEventPointer pointer={{ type: "nevent", data: pointer }} />
+        <EmbedEventPointerCard pointer={{ type: "nevent", data: pointer }} />
       </NotificationIconEntry>
     );
   },

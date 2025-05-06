@@ -18,7 +18,7 @@ import Timestamp from "../../timestamp";
 import UserAvatar from "../../user/user-avatar";
 import UserLink from "../../user/user-link";
 import ZapReceiptMenu from "../../zap/zap-receipt-menu";
-import { EmbedEventPointer } from "../index";
+import { EmbedEventPointerCard } from "./index";
 
 export default function EmbeddedZapRecept({ zap, ...props }: Omit<CardProps, "children"> & { zap: NostrEvent }) {
   const sender = getZapSender(zap);
@@ -60,7 +60,7 @@ export default function EmbeddedZapRecept({ zap, ...props }: Omit<CardProps, "ch
           <TextNoteContents event={request} />
         </Box>
 
-        {pointer && <EmbedEventPointer pointer={pointer} />}
+        {pointer && <EmbedEventPointerCard pointer={pointer} />}
       </CardBody>
     </Card>
   );

@@ -11,7 +11,7 @@ import { kinds, nip19, NostrEvent } from "nostr-tools";
 import type { DecodeResult } from "nostr-tools/nip19";
 
 import GenericCommentSection from "../../../components/comment/generic-comment-section";
-import { EmbedEvent, EmbedEventPointer } from "../../../components/embed-event";
+import { EmbedEventCard, EmbedEventPointerCard } from "../../../components/embed-event/card";
 import SimpleView from "../../../components/layout/presets/simple-view";
 import EventQuoteButton from "../../../components/note/event-quote-button";
 import NoteReactions from "../../../components/note/timeline-note/components/note-reactions";
@@ -82,7 +82,7 @@ export function ListPageHeader({ list }: { list: NostrEvent }) {
 function BookmarkedEvent({ id, relays }: { id: string; relays?: string[] }) {
   const event = useSingleEvent(id, relays);
 
-  return event ? <EmbedEvent event={event} /> : <>Loading {id}</>;
+  return event ? <EmbedEventCard event={event} /> : <>Loading {id}</>;
 }
 
 function FallbackListPage({ list }: { list: NostrEvent }) {
@@ -159,7 +159,7 @@ function FallbackListPage({ list }: { list: NostrEvent }) {
             <Heading size="lg">Communities</Heading>
             <SimpleGrid spacing="2" columns={{ base: 1, lg: 2 }}>
               {communities.map((pointer) => (
-                <EmbedEventPointer key={nip19.naddrEncode(pointer)} pointer={{ type: "naddr", data: pointer }} />
+                <EmbedEventPointerCard key={nip19.naddrEncode(pointer)} pointer={{ type: "naddr", data: pointer }} />
               ))}
             </SimpleGrid>
           </>
@@ -171,7 +171,7 @@ function FallbackListPage({ list }: { list: NostrEvent }) {
             <Flex gap="2" direction="column">
               {articles.map((pointer) => {
                 const decode: DecodeResult = { type: "naddr", data: pointer };
-                return <EmbedEventPointer key={encodeDecodeResult(decode)} pointer={decode} />;
+                return <EmbedEventPointerCard key={encodeDecodeResult(decode)} pointer={decode} />;
               })}
             </Flex>
           </>

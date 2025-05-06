@@ -28,7 +28,7 @@ import lnurlMetadataService from "../../services/lnurl-metadata";
 import { getEventRelayHints } from "../../services/relay-hints";
 import relayScoreboardService from "../../services/relay-scoreboard";
 import signingService from "../../services/signing";
-import { EmbedProps } from "../embed-event";
+import { EmbedProps } from "../embed-event/card";
 import UserLink from "../user/user-link";
 import InputStep from "./input-step";
 import PayStep from "./pay-step";

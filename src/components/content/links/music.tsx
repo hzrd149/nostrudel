@@ -1,6 +1,6 @@
 import { CSSProperties } from "react";
 import { Box, useColorMode } from "@chakra-ui/react";
-import { EmbedEventPointer } from "../../embed-event";
+import { EmbedEventPointerCard } from "../../embed-event/card";
 import { STEMSTR_RELAY } from "../../../helpers/nostr/stemstr";
 import ExpandableEmbed from "../components/expandable-embed";
 import useAppSettings from "../../../hooks/use-user-app-settings";
@@ -134,7 +134,7 @@ export function renderStemstrUrl(match: URL) {
   const [_, base, id] = match.pathname.split("/");
   if (base !== "thread" || id.length !== 64) return null;
 
-  return <EmbedEventPointer pointer={{ type: "nevent", data: { id, relays: [STEMSTR_RELAY] } }} />;
+  return <EmbedEventPointerCard pointer={{ type: "nevent", data: { id, relays: [STEMSTR_RELAY] } }} />;
 }
 
 function SoundCloudEmbed({ match }: { match: URL }) {

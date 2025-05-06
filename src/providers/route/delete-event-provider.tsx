@@ -24,7 +24,7 @@ import { useActiveAccount } from "applesauce-react/hooks";
 import { Event, kinds } from "nostr-tools";
 import { createContext, PropsWithChildren, useCallback, useContext, useMemo, useState } from "react";
 
-import { EmbedEvent } from "../../components/embed-event";
+import { EmbedEventCard } from "../../components/embed-event/card";
 import { ExternalLinkIcon } from "../../components/icons";
 import RelayFavicon from "../../components/relay-favicon";
 import { useWriteRelays } from "../../hooks/use-client-relays";
@@ -113,7 +113,7 @@ export default function DeleteEventProvider({ children }: PropsWithChildren) {
             </ModalHeader>
             <ModalCloseButton />
             <ModalBody px="4" py="0">
-              <EmbedEvent event={event} />
+              <EmbedEventCard event={event} />
               <Input
                 name="reason"
                 value={reason}

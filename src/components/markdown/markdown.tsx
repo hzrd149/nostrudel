@@ -29,7 +29,7 @@ import Markdown, { Components, defaultUrlTransform, ExtraProps } from "react-mar
 import remarkGfm from "remark-gfm";
 import wikiLinkPlugin from "remark-wiki-link";
 
-import { EmbedEventPointer } from "../embed-event";
+import { EmbedEventPointerCard } from "../embed-event/card";
 import UserLink from "../user/user-link";
 import WikiLink from "./wiki-link";
 
@@ -109,7 +109,7 @@ function A({ children, node, href, ...props }: LinkProps & ExtraProps) {
         case "naddr":
         case "nevent":
         case "note":
-          return <EmbedEventPointer pointer={parsed} />;
+          return <EmbedEventPointerCard pointer={parsed} />;
       }
     } catch (error) {
       if (error instanceof Error) return <Text color="red.500">{error.message}</Text>;

@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { humanReadableSats } from "../../helpers/lightning";
 import useAppSettings from "../../hooks/use-user-app-settings";
 import useUserLNURLMetadata from "../../hooks/use-user-lnurl-metadata";
-import { EmbedEvent, EmbedProps } from "../embed-event";
+import { EmbedEventCard, EmbedProps } from "../embed-event/card";
 import { LightningIcon } from "../icons";
 import UserAvatar from "../user/user-avatar";
 import UserLink from "../user/user-link";
@@ -88,7 +88,7 @@ export default function InputStep({
           <UserCard key={p.pubkey} pubkey={p.pubkey} percent={p.percent} />
         ))}
 
-        {showEmbed && event && <EmbedEvent event={event} {...embedProps} />}
+        {showEmbed && event && <EmbedEventCard event={event} {...embedProps} />}
 
         {showComment && (
           <Input

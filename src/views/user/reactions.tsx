@@ -2,7 +2,7 @@ import { Box, Flex, Spacer, Text } from "@chakra-ui/react";
 import { nip25, NostrEvent } from "nostr-tools";
 import { useOutletContext } from "react-router-dom";
 
-import { EmbedEventPointer } from "../../components/embed-event";
+import { EmbedEventPointerCard } from "../../components/embed-event/card";
 import NoteMenu from "../../components/note/note-menu";
 import TimelineActionAndStatus from "../../components/timeline/timeline-action-and-status";
 import UserAvatar from "../../components/user/user-avatar";
@@ -35,7 +35,7 @@ const Reaction = ({ reaction: reaction }: { reaction: NostrEvent }) => {
         <Spacer />
         <NoteMenu event={reaction} aria-label="Note menu" variant="ghost" size="xs" />
       </Flex>
-      <EmbedEventPointer pointer={decoded} />
+      <EmbedEventPointerCard pointer={decoded} />
     </Box>
   );
 };

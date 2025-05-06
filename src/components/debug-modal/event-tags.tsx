@@ -4,7 +4,7 @@ import { NostrEvent, nip19 } from "nostr-tools";
 import { MouseEventHandler, useCallback } from "react";
 import { Link as RouterLink } from "react-router-dom";
 
-import { EmbedEventPointer } from "../embed-event";
+import { EmbedEventPointerCard } from "../embed-event/card";
 import UserAvatarLink from "../user/user-avatar-link";
 import UserDnsIdentity from "../user/user-dns-identity";
 import UserLink from "../user/user-link";
@@ -36,7 +36,7 @@ function EventTag({ tag }: { tag: string[] }) {
           <Link as={RouterLink} to={`/l/${nip19.neventEncode(pointer)}`} onClick={toggle} {...props}>
             {content}
           </Link>
-          {expand.isOpen && <EmbedEventPointer pointer={{ type: "nevent", data: pointer }} />}
+          {expand.isOpen && <EmbedEventPointerCard pointer={{ type: "nevent", data: pointer }} />}
         </>
       );
     } else if (isATag(tag)) {
@@ -46,7 +46,7 @@ function EventTag({ tag }: { tag: string[] }) {
           <Link as={RouterLink} to={`/l/${nip19.naddrEncode(pointer)}`} onClick={toggle} {...props}>
             {content}
           </Link>
-          {expand.isOpen && <EmbedEventPointer pointer={{ type: "naddr", data: pointer }} />}
+          {expand.isOpen && <EmbedEventPointerCard pointer={{ type: "naddr", data: pointer }} />}
         </>
       );
     } else if (isPTag(tag)) {

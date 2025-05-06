@@ -10,7 +10,7 @@ import {
 import { NostrEvent } from "nostr-tools";
 
 import { humanReadableSats } from "../../../helpers/lightning";
-import { EmbedEventPointer } from "../../../components/embed-event";
+import { EmbedEventPointerCard } from "../../../components/embed-event/card";
 import UserAvatarLink from "../../../components/user/user-avatar-link";
 import { LightningIcon } from "../../../components/icons";
 import NotificationIconEntry from "./notification-icon-entry";
@@ -30,7 +30,7 @@ const ZapNotification = forwardRef<HTMLDivElement, { zap: NostrEvent; onClick?: 
     let eventJSX: ReactNode | null = null;
     if (naddr) {
       eventJSX = (
-        <EmbedEventPointer
+        <EmbedEventPointerCard
           pointer={{
             type: "naddr",
             data: naddr,
@@ -38,7 +38,7 @@ const ZapNotification = forwardRef<HTMLDivElement, { zap: NostrEvent; onClick?: 
         />
       );
     } else if (nevent) {
-      eventJSX = <EmbedEventPointer pointer={{ type: "nevent", data: nevent }} />;
+      eventJSX = <EmbedEventPointerCard pointer={{ type: "nevent", data: nevent }} />;
     }
 
     return (

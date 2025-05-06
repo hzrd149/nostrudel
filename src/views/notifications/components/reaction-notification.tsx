@@ -4,7 +4,7 @@ import { kinds, nip25 } from "nostr-tools";
 
 import { useActiveAccount } from "applesauce-react/hooks";
 import { NostrEvent } from "nostr-tools";
-import { EmbedEventPointer } from "../../../components/embed-event";
+import { EmbedEventPointerCard } from "../../../components/embed-event/card";
 import Heart from "../../../components/icons/heart";
 import UserAvatarLink from "../../../components/user/user-avatar-link";
 import useSingleEvent from "../../../hooks/use-single-event";
@@ -45,7 +45,7 @@ const ReactionNotification = forwardRef<HTMLDivElement, { event: NostrEvent; onC
             reacted with <ReactionIcon emoji={event.content} />
           </Text>
         </Flex>
-        <EmbedEventPointer pointer={{ type: "nevent", data: pointer }} />
+        <EmbedEventPointerCard pointer={{ type: "nevent", data: pointer }} />
       </NotificationIconEntry>
     );
   },

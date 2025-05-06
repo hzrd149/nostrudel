@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { NostrEvent } from "nostr-tools";
 import { Button, Flex, Heading, useDisclosure } from "@chakra-ui/react";
 
-import EmbeddedArticle from "../../../components/embed-event/event-types/embedded-article";
+import EmbeddedArticle from "../../../components/embed-event/card/embedded-article";
 
 const MAX_ARTICLES = 4;
 

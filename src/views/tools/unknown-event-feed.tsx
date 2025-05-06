@@ -13,7 +13,7 @@ import IntersectionObserverProvider from "../../providers/local/intersection-obs
 import { NostrEvent } from "nostr-tools";
 import { ChevronLeftIcon } from "../../components/icons";
 import useClientSideMuteFilter from "../../hooks/use-client-side-mute-filter";
-import { EmbedEvent } from "../../components/embed-event";
+import { EmbedEventCard } from "../../components/embed-event/card";
 import useEventIntersectionRef from "../../hooks/use-event-intersection-ref";
 import { ErrorBoundary } from "../../components/error-boundary";
 
@@ -23,7 +23,7 @@ const UnknownEvent = memo(({ event }: { event: NostrEvent }) => {
   return (
     <div ref={ref}>
       <ErrorBoundary event={event}>
-        <EmbedEvent event={event} />
+        <EmbedEventCard event={event} />
       </ErrorBoundary>
     </div>
   );

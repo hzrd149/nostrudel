@@ -2,7 +2,7 @@ import { Box, SimpleGrid } from "@chakra-ui/react";
 import { NostrEvent } from "nostr-tools";
 import { useOutletContext } from "react-router-dom";
 
-import EmbeddedStemstrTrack from "../../components/embed-event/event-types/embedded-stemstr-track";
+import EmbeddedStemstrTrack from "../../components/embed-event/card/embedded-stemstr-track";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import { unique } from "../../helpers/array";
 import { getEventUID } from "../../helpers/nostr/event";

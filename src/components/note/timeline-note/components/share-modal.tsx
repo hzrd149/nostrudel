@@ -23,7 +23,7 @@ import { BlossomClient } from "blossom-client-sdk";
 
 import { useSigningContext } from "../../../../providers/global/signing-provider";
 import { usePublishEvent } from "../../../../providers/global/publish-provider";
-import { EmbedEvent } from "../../../embed-event";
+import { EmbedEventCard } from "../../../embed-event/card";
 import useAppSettings from "../../../../hooks/use-user-app-settings";
 import useUsersMediaServers from "../../../../hooks/use-user-media-servers";
 
@@ -120,7 +120,7 @@ export default function ShareModal({
             </Center>
           ) : (
             <>
-              <EmbedEvent event={event} />
+              <EmbedEventCard event={event} />
 
               {canMirror && (
                 <>

@@ -3,7 +3,7 @@ import { NostrEvent } from "nostr-tools";
 import { DecodeResult } from "nostr-tools/nip19";
 
 import { getThreadReferences } from "../../../helpers/nostr/event";
-import { EmbedEventPointer } from "../../../components/embed-event";
+import { EmbedEventPointerCard } from "../../../components/embed-event/card";
 import { ReplyIcon } from "../../../components/icons";
 import NotificationIconEntry from "./notification-icon-entry";
 import { TimelineNote } from "../../../components/note/timeline-note";
@@ -27,7 +27,7 @@ const ReplyNotification = forwardRef<HTMLDivElement, { event: NostrEvent; onClic
         summary={event.content}
         onClick={onClick}
       >
-        {pointer && <EmbedEventPointer pointer={pointer} />}
+        {pointer && <EmbedEventPointerCard pointer={pointer} />}
         <TimelineNote event={event} showReplyLine={false} showReplyButton />
       </NotificationIconEntry>
     );

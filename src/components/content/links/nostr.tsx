@@ -1,6 +1,6 @@
 import { nip19 } from "nostr-tools";
 import ExpandableEmbed from "../components/expandable-embed";
-import { EmbedEventNostrLink } from "../../embed-event";
+import { EmbedEventPointerCard } from "../../embed-event/card";
 
 export function renderNostrAppWebLink(url: URL) {
   const match = url.pathname.match(/\/((?:naddr1|nevent1|note1)[a-z\d]+$)/i);
@@ -12,7 +12,7 @@ export function renderNostrAppWebLink(url: URL) {
 
     return (
       <ExpandableEmbed label={`${url.hostname} nostr link`} url={url} card>
-        <EmbedEventNostrLink link={match[1]} />
+        <EmbedEventPointerCard pointer={match[1]} />
       </ExpandableEmbed>
     );
   } catch (error) {

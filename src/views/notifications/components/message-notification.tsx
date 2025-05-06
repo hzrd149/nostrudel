@@ -1,7 +1,7 @@
 import { NostrEvent } from "nostr-tools";
 import { forwardRef } from "react";
 
-import { EmbedEvent } from "../../../components/embed-event";
+import { EmbedEventCard } from "../../../components/embed-event/card";
 import { DirectMessagesIcon } from "../../../components/icons";
 import NotificationIconEntry from "./notification-icon-entry";
 
@@ -17,7 +17,7 @@ const MessageNotification = forwardRef<HTMLDivElement, { event: NostrEvent; onCl
         summary={<>Direct Messaged</>}
         onClick={onClick}
       >
-        <EmbedEvent event={event} />
+        <EmbedEventCard event={event} />
       </NotificationIconEntry>
     );
   },

@@ -5,7 +5,7 @@ import { Text } from "@chakra-ui/react";
 import NotificationIconEntry from "./notification-icon-entry";
 import UserAvatar from "../../../components/user/user-avatar";
 import UserName from "../../../components/user/user-name";
-import { EmbedEvent } from "../../../components/embed-event";
+import { EmbedEventCard } from "../../../components/embed-event/card";
 import HelpCircle from "../../../components/icons/help-circle";
 
 const UnknownNotification = forwardRef<HTMLDivElement, { event: NostrEvent; onClick?: () => void }>(
@@ -23,7 +23,7 @@ const UnknownNotification = forwardRef<HTMLDivElement, { event: NostrEvent; onCl
         <Text>
           <UserAvatar size="xs" pubkey={event.pubkey} /> <UserName pubkey={event.pubkey} /> reposted:
         </Text>
-        <EmbedEvent event={event} />
+        <EmbedEventCard event={event} />
       </NotificationIconEntry>
     );
   },

@@ -1,7 +1,7 @@
 import { ReactNode, forwardRef } from "react";
 import { kinds, NostrEvent } from "nostr-tools";
 
-import { EmbedEvent } from "../../../components/embed-event";
+import { EmbedEventCard } from "../../../components/embed-event/card";
 import { AtIcon } from "../../../components/icons";
 import NotificationIconEntry from "./notification-icon-entry";
 import { TimelineNote } from "../../../components/note/timeline-note";
@@ -18,7 +18,7 @@ const MentionNotification = forwardRef<HTMLDivElement, { event: NostrEvent; onCl
         content = <TimelineNote event={event} showReplyButton />;
         break;
       default:
-        content = <EmbedEvent event={event} />;
+        content = <EmbedEventCard event={event} />;
         break;
     }
 

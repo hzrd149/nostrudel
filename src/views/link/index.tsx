@@ -6,7 +6,7 @@ import { ErrorBoundary } from "../../components/error-boundary";
 import { TORRENT_KIND } from "../../helpers/nostr/torrents";
 import { FLARE_VIDEO_KIND } from "../../helpers/nostr/video";
 import { WIKI_PAGE_KIND } from "../../helpers/nostr/wiki";
-import { EmbedEvent, EmbedEventPointer } from "../../components/embed-event";
+import { EmbedEventCard, EmbedEventPointerCard } from "../../components/embed-event/card";
 import useReplaceableEvent from "../../hooks/use-replaceable-event";
 import useSingleEvent from "../../hooks/use-single-event";
 import SimpleView from "../../components/layout/presets/simple-view";
@@ -31,7 +31,7 @@ function UnknownView({ pointer, event }: { pointer: nip19.DecodeResult; event?: 
 
   return (
     <SimpleView title="Unknown event kind" maxW="4xl" center>
-      {event ? <EmbedEvent event={event} /> : <EmbedEventPointer pointer={pointer} />}
+      {event ? <EmbedEventCard event={event} /> : <EmbedEventPointerCard pointer={pointer} />}
 
       {event && (
         <Flex mx="auto" maxW="4xl" w="full" gap="2" direction="column" mt="4">
