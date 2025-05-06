@@ -3,7 +3,7 @@ import { mergeRelaySets } from "applesauce-core/helpers";
 import { defined } from "applesauce-core/observable";
 import { USER_BLOSSOM_SERVER_LIST_KIND } from "blossom-client-sdk";
 import { kinds, nip42 } from "nostr-tools";
-import { combineLatest, distinct, distinctUntilChanged, map, merge, NEVER, switchMap, tap } from "rxjs";
+import { combineLatest, distinct, distinctUntilChanged, map, merge, NEVER, switchMap, tap, throttleTime } from "rxjs";
 
 import { DEFAULT_LOOKUP_RELAYS } from "../const";
 import { APP_SETTING_IDENTIFIER, APP_SETTINGS_KIND } from "../helpers/app-settings";
@@ -15,6 +15,7 @@ import { eventStore, queryStore } from "./event-store";
 import localSettings from "./local-settings";
 import pool from "./pool";
 import replaceableEventLoader from "./replaceable-loader";
+import { saveSocialGraph, socialGraph } from "./social-graph";
 
 const log = logger.extend("Lifecycle");
 
@@ -103,3 +104,22 @@ pool.relays$
     ),
   )
   .subscribe();
+
+// Add all profile and contact and mute lists to social graph
+eventStore
+  .filters({ kinds: [kinds.Contacts, kinds.Mutelist] })
+  .pipe(
+    tap((event) => socialGraph.handleEvent(event)),
+    // Update social graph and save
+    throttleTime(5_000),
+    tap(() => {
+      socialGraph.recalculateFollowDistances();
+      saveSocialGraph();
+    }),
+  )
+  .subscribe();
+
+// Set social graph root to active account
+accounts.active$.subscribe((active) => {
+  if (active) socialGraph.setRoot(active.pubkey);
+});

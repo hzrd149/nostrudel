@@ -24,7 +24,7 @@ import EventKindsPieChart from "../../../../components/charts/event-kinds-pie-ch
 import EventKindsTable from "../../../../components/charts/event-kinds-table";
 import ImportEventsButton from "./components/import-events-button";
 import ExportEventsButton from "./components/export-events-button";
-import { clearCacheData, deleteDatabase } from "../../../../services/db";
+import { clearCacheData, deleteDatabase } from "../../../../services/database";
 import localSettings from "../../../../services/local-settings";
 
 async function importEvents(events: NostrEvent[]) {

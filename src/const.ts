@@ -81,6 +81,7 @@ export const NIP_89_CLIENT_APP: EventFactoryClient = {
   },
 };
 
+export const SOCIAL_GRAPH_FALLBACK_PUBKEY = "713978c3094081b34fcf2f5491733b0c22728cd3b7a6946519d40f5f08598af8";
 export const SUPPORT_PUBKEY = "713978c3094081b34fcf2f5491733b0c22728cd3b7a6946519d40f5f08598af8";
 
 export const TENOR_API_KEY = import.meta.env.VITE_TENOR_API_KEY as string | undefined;

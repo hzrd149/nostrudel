@@ -12,7 +12,7 @@ import {
   SchemaV9,
   SchemaV10,
   SchemaV11,
-  SchemaV12,
+  SchemaV13,
 } from "./schema";
 import { logger } from "../../helpers/debug";
 import { localDatabase } from "../cache-relay";
@@ -20,8 +20,8 @@ import { localDatabase } from "../cache-relay";
 const log = logger.extend("Database");
 
 const dbName = "storage";
-const version = 12;
-const db = await openDB<SchemaV12>(dbName, version, {
+const version = 13;
+const db = await openDB<SchemaV13>(dbName, version, {
   upgrade(db, oldVersion, newVersion, transaction, event) {
     if (oldVersion < 1) {
       const v0 = db as unknown as IDBPDatabase<SchemaV1>;
@@ -208,6 +208,10 @@ const db = await openDB<SchemaV12>(dbName, version, {
       const v11 = db as unknown as IDBPDatabase<SchemaV11>;
       v11.deleteObjectStore("dnsIdentifiers");
       db.createObjectStore("identities");
+    }
+
+    if (oldVersion < 13) {
+      db.createObjectStore("kv");
     }
   },
 });

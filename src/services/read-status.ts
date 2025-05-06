@@ -3,7 +3,7 @@ import _throttle from "lodash.throttle";
 import { BehaviorSubject } from "rxjs";
 
 import SuperMap from "../classes/super-map";
-import db from "./db";
+import db from "./database";
 import { logger } from "../helpers/debug";
 
 class ReadStatusService {

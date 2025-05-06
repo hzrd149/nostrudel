@@ -52,6 +52,10 @@ import UserRecentEvents from "./user-recent-events";
 import { useUserAppSettings } from "../../../hooks/use-user-app-settings";
 import UserJoinedGroups from "./user-joined-groups";
 import DNSIdentityWarning from "../../settings/dns-identity/identity-warning";
+import { socialGraph } from "../../../services/social-graph";
+import Share07 from "../../../components/icons/share-07";
+import { useMemo } from "react";
+import UserLink from "../../../components/user/user-link";
 
 export default function UserAboutTab() {
   const expanded = useDisclosure();
@@ -71,6 +75,11 @@ export default function UserAboutTab() {
     : undefined;
 
   const identity = useUserDNSIdentity(pubkey);
+
+  const followedByFriends = useMemo(
+    () => Array.from(socialGraph.followedByFriends(pubkey)).sort(() => Math.random() - 0.5),
+    [pubkey],
+  );
 
   return (
     <Flex
@@ -177,12 +186,26 @@ export default function UserAboutTab() {
             </Link>
           </Flex>
         )}
-        {npub && (
+        <Flex gap="2">
+          <KeyIcon boxSize="1.2em" />
+          <Text>{truncatedId(npub, 10)}</Text>
+          <CopyIconButton value={npub} title="Copy npub" aria-label="Copy npub" size="xs" variant="ghost" />
+          <QrIconButton pubkey={pubkey} title="Show QrCode" aria-label="Show QrCode" size="xs" variant="ghost" />
+        </Flex>
+
+        {followedByFriends.length > 0 && (
           <Flex gap="2">
-            <KeyIcon boxSize="1.2em" />
-            <Text>{truncatedId(npub, 10)}</Text>
-            <CopyIconButton value={npub} title="Copy npub" aria-label="Copy npub" size="xs" />
-            <QrIconButton pubkey={pubkey} title="Show QrCode" aria-label="Show QrCode" size="xs" />
+            <Share07 boxSize="1.2em" />
+            <Text>
+              Followed by{" "}
+              {followedByFriends.slice(0, 3).map((pubkey, i, arr) => (
+                <>
+                  <UserName pubkey={pubkey} fontWeight="normal" />
+                  <span>{i < arr.length - 1 && ", "}</span>
+                </>
+              ))}
+              {followedByFriends.length > 3 && ` and ${followedByFriends.length - 3} others you follow`}
+            </Text>
           </Flex>
         )}
 

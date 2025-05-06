@@ -232,6 +232,9 @@ importers:
       nostr-signer-capacitor-plugin:
         specifier: ^0.0.3
         version: 0.0.3(@capacitor/core@7.2.0)
+      nostr-social-graph:
+        specifier: ^1.0.17
+        version: 1.0.17
       nostr-tools:
         specifier: ^2.12.0
         version: 2.12.0(typescript@5.8.3)
@@ -4116,6 +4119,9 @@ packages:
     resolution: {integrity: sha512-Aa3gmaEsmI80zm6/+Z12CEryzVlSSB+ERUhPTUGg/juQUlYGyeynifm306URUXYF4NkrdBpJua/gmcvhXcZoUA==}
     peerDependencies:
       '@capacitor/core': ^6.0.0
+
+  nostr-social-graph@1.0.17:
+    resolution: {integrity: sha512-gmrWE6KWvjps/Nj5rCvYZDXimpnaHeRJZF7JwkDs6yyw7xrhZNnOU9sjT46OM4umBRuMb2hH99BWtYwAvf5hRA==}
 
   nostr-tools@2.12.0:
     resolution: {integrity: sha512-pUWEb020gTvt1XZvTa8AKNIHWFapjsv2NKyk43Ez2nnvz6WSXsrTFE0XtkNLSRBjPn6EpxumKeNiVzLz74jNSA==}
@@ -10327,6 +10333,8 @@ snapshots:
   nostr-signer-capacitor-plugin@0.0.3(@capacitor/core@7.2.0):
     dependencies:
       '@capacitor/core': 7.2.0
+
+  nostr-social-graph@1.0.17: {}
 
   nostr-tools@2.12.0(typescript@5.8.3):
     dependencies:

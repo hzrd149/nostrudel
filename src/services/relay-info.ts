@@ -4,7 +4,7 @@ import { RelayInformation } from "nostr-tools/nip11";
 import { from } from "rxjs";
 import { fetchWithProxy } from "../helpers/request";
 
-import db from "./db";
+import db from "./database";
 
 // Use CORS fetch implementation
 nip11.useFetchImplementation(fetchWithProxy);

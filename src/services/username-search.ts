@@ -5,7 +5,7 @@ import { filter, bufferTime, concatMap, mergeWith, shareReplay, map, scan } from
 import { getProfileContent, isFromCache } from "applesauce-core/helpers";
 
 import { getSearchNames } from "../helpers/nostr/profile";
-import db from "./db";
+import db from "./database";
 import { eventStore } from "./event-store";
 import { logger } from "../helpers/debug";
 

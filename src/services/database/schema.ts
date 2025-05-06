@@ -168,3 +168,10 @@ export interface SchemaV12 extends Omit<SchemaV11, "dnsIdentifiers"> {
     value: Identity;
   };
 }
+
+export interface SchemaV13 extends SchemaV12 {
+  kv: {
+    key: string;
+    value: any;
+  };
+}

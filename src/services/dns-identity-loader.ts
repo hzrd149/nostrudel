@@ -1,4 +1,4 @@
-import db from "./db";
+import db from "./database";
 import _throttle from "lodash.throttle";
 import { DnsIdentityLoader } from "applesauce-loaders/loaders/dns-identity-loader";
 import { fetchWithProxy } from "../helpers/request";

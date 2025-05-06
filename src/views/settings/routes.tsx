@@ -15,6 +15,7 @@ import PostSettings from "./post";
 import PrivacySettings from "./privacy";
 import AppRelaysView from "./relays";
 import SearchRelaysView from "./search";
+import SocialGraphView from "./social-graph";
 
 export default [
   {
@@ -41,6 +42,7 @@ export default [
       { path: "privacy", Component: PrivacySettings },
       { path: "lightning", Component: LightningSettings },
       { path: "performance", Component: PerformanceSettings },
+      { path: "social-graph", Component: SocialGraphView },
     ],
   },
 ] satisfies RouteObject[];

@@ -3,7 +3,7 @@ import { AmberClipboardAccount, registerCommonAccountTypes } from "applesauce-ac
 import { NostrConnectSigner } from "applesauce-signers";
 import { skip } from "rxjs";
 
-import db from "./db";
+import db from "./database";
 import { CAP_IS_NATIVE } from "../env";
 import { logger } from "../helpers/debug";
 import AndroidSignerAccount from "../classes/accounts/android-signer-account";

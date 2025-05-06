@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
 import SuperMap from "../classes/super-map";
-import db from "./db";
+import db from "./database";
 
 function clamp(v: number, min: number, max: number) {
   return Math.min(Math.max(v, min), max);

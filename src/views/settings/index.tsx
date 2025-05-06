@@ -1,5 +1,6 @@
 import { Divider, Flex, Link, Spacer, Text } from "@chakra-ui/react";
 
+import { useActiveAccount } from "applesauce-react/hooks";
 import {
   AppearanceIcon,
   DatabaseIcon,
@@ -12,15 +13,15 @@ import {
   SpyIcon,
   VerifiedIcon,
 } from "../../components/icons";
-import { useActiveAccount } from "applesauce-react/hooks";
+import CheckCircleBroken from "../../components/icons/check-circle-broken";
+import Database01 from "../../components/icons/database-01";
 import Image01 from "../../components/icons/image-01";
+import Mail02 from "../../components/icons/mail-02";
+import Share07 from "../../components/icons/share-07";
+import SimpleNavItem from "../../components/layout/presets/simple-nav-item";
+import SimpleParentView from "../../components/layout/presets/simple-parent-view";
 import UserAvatar from "../../components/user/user-avatar";
 import VersionButton from "../../components/version-button";
-import SimpleNavItem from "../../components/layout/presets/simple-nav-item";
-import Database01 from "../../components/icons/database-01";
-import Mail02 from "../../components/icons/mail-02";
-import SimpleParentView from "../../components/layout/presets/simple-parent-view";
-import CheckCircleBroken from "../../components/icons/check-circle-broken";
 
 function DividerHeader({ title }: { title: string }) {
   return (
@@ -55,6 +56,9 @@ export default function SettingsView() {
           </SimpleNavItem>
           <SimpleNavItem to="/settings/identity" leftIcon={<VerifiedIcon boxSize={6} />}>
             DNS Identity
+          </SimpleNavItem>
+          <SimpleNavItem to="/settings/social-graph" leftIcon={<Share07 boxSize={5} />}>
+            Social Graph
           </SimpleNavItem>
         </>
       )}
