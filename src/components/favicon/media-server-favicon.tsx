@@ -4,7 +4,7 @@ import { Avatar, AvatarProps } from "@chakra-ui/react";
 import { MediaServerIcon } from "../icons";
 
 export type RelayFaviconProps = Omit<AvatarProps, "src"> & {
-  server: string;
+  server: string | URL;
 };
 export default function MediaServerFavicon({ server, ...props }: RelayFaviconProps) {
   const url = useMemo(() => {

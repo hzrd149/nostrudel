@@ -17,7 +17,7 @@ export default function FileDownloadButton({
   const [loading, setLoading] = useState(false);
   const toast = useToast();
 
-  const { servers } = useUsersMediaServers(file.pubkey);
+  const servers = useUsersMediaServers(file.pubkey) || [];
   const url = getTagValue(file, "url");
   const sha256 = getTagValue(file, "x");
   const name = getTagValue(file, "name");

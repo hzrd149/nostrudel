@@ -12,7 +12,7 @@ import useUsersMediaServers from "./use-user-media-servers";
 export default function useUploadFile() {
   const account = useActiveAccount();
   const { mediaUploadService } = useAppSettings();
-  const { servers: mediaServers } = useUsersMediaServers(account?.pubkey);
+  const mediaServers = useUsersMediaServers(account?.pubkey) || [];
   const { requestSignature } = useSigningContext();
 
   return useAsyncAction(

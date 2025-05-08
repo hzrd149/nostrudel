@@ -40,7 +40,7 @@ export default function ShareModal({
   const toast = useToast();
 
   const { requestSignature } = useSigningContext();
-  const { servers } = useUsersMediaServers(account?.pubkey);
+  const servers = useUsersMediaServers(account?.pubkey) || [];
   const [mirror, setMirror] = useState(mirrorBlobsOnShare);
   const mediaAttachments = useMemo(() => {
     const attachments = getMediaAttachments(event)

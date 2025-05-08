@@ -1,11 +1,14 @@
-import { lazy, VideoHTMLAttributes } from "react";
-import styled from "@emotion/styled";
 import { Box, BoxProps } from "@chakra-ui/react";
+import styled from "@emotion/styled";
+import { getHashFromURL } from "blossom-client-sdk";
+import { lazy, VideoHTMLAttributes } from "react";
 
 import { isStreamURL, isVideoURL } from "../../../helpers/url";
-import useAppSettings from "../../../hooks/use-user-app-settings";
 import useElementTrustBlur from "../../../hooks/use-element-trust-blur";
+import useAppSettings from "../../../hooks/use-user-app-settings";
 import ExpandableEmbed from "../components/expandable-embed";
+import { BlobDetailsButton } from "./common";
+
 const LiveVideoPlayer = lazy(() => import("../../live-video-player"));
 
 const StyledVideo = styled.video`
@@ -37,8 +40,14 @@ export function TrustVideo({
 export function renderVideoUrl(match: URL) {
   if (!isVideoURL(match)) return null;
 
+  const hash = getHashFromURL(match);
+
   return (
-    <ExpandableEmbed label="Video" url={match}>
+    <ExpandableEmbed
+      label="Video"
+      url={match}
+      actions={hash ? <BlobDetailsButton src={match} original={hash} zIndex={1} /> : undefined}
+    >
       <TrustVideo src={match.toString()} maxH="lg" w="auto" />
     </ExpandableEmbed>
   );

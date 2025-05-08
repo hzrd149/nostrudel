@@ -1,11 +1,10 @@
-import { useMemo } from "react";
-import { USER_BLOSSOM_SERVER_LIST_KIND, getServersFromServerListEvent } from "blossom-client-sdk";
+import { USER_BLOSSOM_SERVER_LIST_KIND } from "blossom-client-sdk";
 
+import { UserBlossomServersQuery } from "applesauce-core/queries";
+import { useStoreQuery } from "applesauce-react/hooks";
 import useReplaceableEvent from "./use-replaceable-event";
 
 export default function useUsersMediaServers(pubkey?: string, additionalRelays?: string[], force?: boolean) {
-  const event = useReplaceableEvent(pubkey && { kind: USER_BLOSSOM_SERVER_LIST_KIND, pubkey }, additionalRelays, force);
-  const servers = useMemo(() => (event ? getServersFromServerListEvent(event) : []), [event?.id]);
-
-  return { event, servers };
+  useReplaceableEvent(pubkey && { kind: USER_BLOSSOM_SERVER_LIST_KIND, pubkey }, additionalRelays, force);
+  return useStoreQuery(UserBlossomServersQuery, pubkey ? [pubkey] : null);
 }

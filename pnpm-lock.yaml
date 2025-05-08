@@ -137,8 +137,8 @@ importers:
         specifier: ^2.0.0
         version: 2.0.0
       blossom-client-sdk:
-        specifier: ^3.0.1
-        version: 3.0.1
+        specifier: ^4.0.0
+        version: 4.0.0
       blurhash:
         specifier: ^2.0.5
         version: 2.0.5
@@ -2328,8 +2328,8 @@ packages:
   bl@4.1.0:
     resolution: {integrity: sha512-1W07cM9gS6DcLperZfFSj+bWLtaPGSOHWhPiGzXmvVJbRLdG82sH/Kn8EtW1VqWVA54AKf2h5k5BbnIbwF3h6w==}
 
-  blossom-client-sdk@3.0.1:
-    resolution: {integrity: sha512-LG4evwVH8LDRTUoc+1C/o68ITDzK68kuqLwZv4aTBlm9cEtFAWBDtrZeajnqNAN77dTFA0U1QX82GLt6CCkMKw==}
+  blossom-client-sdk@4.0.0:
+    resolution: {integrity: sha512-1tjFVwSRPo2fq1HskHzfneWSBa4JmfyveFSiyPas/weyLpMKD7lgN8/F2AxdB9v7TaEFO/xhPwE/KTBGcyofWw==}
     engines: {node: '>=18'}
 
   blurhash@2.0.5:
@@ -8203,7 +8203,7 @@ snapshots:
       inherits: 2.0.4
       readable-stream: 3.6.2
 
-  blossom-client-sdk@3.0.1:
+  blossom-client-sdk@4.0.0:
     dependencies:
       '@cashu/cashu-ts': 2.4.3
       '@noble/hashes': 1.8.0
