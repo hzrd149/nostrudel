@@ -93,7 +93,7 @@
     "nostr-idb": "^2.2.0",
     "nostr-signer-capacitor-plugin": "^0.0.3",
     "nostr-social-graph": "^1.0.17",
-    "nostr-tools": "^2.13.0",
+    "nostr-tools": "~2.12.0",
     "nostr-typedef": "^0.11.0",
     "nostr-wasm": "^0.1.0",
     "nuka-carousel": "^8.2.0",

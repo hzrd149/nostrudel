@@ -236,8 +236,8 @@ importers:
         specifier: ^1.0.17
         version: 1.0.17
       nostr-tools:
-        specifier: ^2.13.0
-        version: 2.13.0(typescript@5.8.3)
+        specifier: ~2.12.0
+        version: 2.12.0(typescript@5.8.3)
       nostr-typedef:
         specifier: ^0.11.0
         version: 0.11.0
@@ -4120,8 +4120,8 @@ packages:
   nostr-social-graph@1.0.17:
     resolution: {integrity: sha512-gmrWE6KWvjps/Nj5rCvYZDXimpnaHeRJZF7JwkDs6yyw7xrhZNnOU9sjT46OM4umBRuMb2hH99BWtYwAvf5hRA==}
 
-  nostr-tools@2.13.0:
-    resolution: {integrity: sha512-A1arGsvpULqVK0NmZQqK1imwaCiPm8gcG/lo+cTax2NbNqBEYsuplbqAFdVqcGHEopmkByYbTwF76x25+oEbew==}
+  nostr-tools@2.12.0:
+    resolution: {integrity: sha512-pUWEb020gTvt1XZvTa8AKNIHWFapjsv2NKyk43Ez2nnvz6WSXsrTFE0XtkNLSRBjPn6EpxumKeNiVzLz74jNSA==}
     peerDependencies:
       typescript: '>=5.0.0'
     peerDependenciesMeta:
@@ -7521,7 +7521,7 @@ snapshots:
   '@scure/bip32@1.3.1':
     dependencies:
       '@noble/curves': 1.1.0
-      '@noble/hashes': 1.3.1
+      '@noble/hashes': 1.3.2
       '@scure/base': 1.1.1
 
   '@scure/bip32@1.7.0':
@@ -7532,7 +7532,7 @@ snapshots:
 
   '@scure/bip39@1.2.1':
     dependencies:
-      '@noble/hashes': 1.3.1
+      '@noble/hashes': 1.3.2
       '@scure/base': 1.1.1
 
   '@scure/bip39@1.6.0':
@@ -7943,7 +7943,7 @@ snapshots:
       '@noble/hashes': 1.8.0
       applesauce-signers: 1.2.0(typescript@5.8.3)
       nanoid: 5.1.5
-      nostr-tools: 2.13.0(typescript@5.8.3)
+      nostr-tools: 2.12.0(typescript@5.8.3)
       rxjs: 7.8.2
     transitivePeerDependencies:
       - supports-color
@@ -7953,7 +7953,7 @@ snapshots:
     dependencies:
       applesauce-core: 1.2.0(typescript@5.8.3)
       applesauce-factory: 1.2.0(typescript@5.8.3)
-      nostr-tools: 2.13.0(typescript@5.8.3)
+      nostr-tools: 2.12.0(typescript@5.8.3)
       rxjs: 7.8.2
     transitivePeerDependencies:
       - supports-color
@@ -7967,7 +7967,7 @@ snapshots:
       '@types/unist': 3.0.3
       applesauce-core: 1.2.0(typescript@5.8.3)
       mdast-util-find-and-replace: 3.0.2
-      nostr-tools: 2.13.0(typescript@5.8.3)
+      nostr-tools: 2.12.0(typescript@5.8.3)
       remark: 15.0.1
       remark-parse: 11.0.0
       unified: 11.0.5
@@ -7985,7 +7985,7 @@ snapshots:
       hash-sum: 2.0.0
       light-bolt11-decoder: 3.2.0
       nanoid: 5.1.5
-      nostr-tools: 2.13.0(typescript@5.8.3)
+      nostr-tools: 2.12.0(typescript@5.8.3)
       rxjs: 7.8.2
     transitivePeerDependencies:
       - supports-color
@@ -7996,7 +7996,7 @@ snapshots:
       applesauce-content: 1.2.0(typescript@5.8.3)
       applesauce-core: 1.2.0(typescript@5.8.3)
       nanoid: 5.1.5
-      nostr-tools: 2.13.0(typescript@5.8.3)
+      nostr-tools: 2.12.0(typescript@5.8.3)
     transitivePeerDependencies:
       - supports-color
       - typescript
@@ -8005,7 +8005,7 @@ snapshots:
     dependencies:
       applesauce-core: 1.2.0(typescript@5.8.3)
       nanoid: 5.1.5
-      nostr-tools: 2.13.0(typescript@5.8.3)
+      nostr-tools: 2.12.0(typescript@5.8.3)
       rxjs: 7.8.2
     transitivePeerDependencies:
       - supports-color
@@ -8018,7 +8018,7 @@ snapshots:
       applesauce-content: 1.2.0(typescript@5.8.3)
       applesauce-core: 1.2.0(typescript@5.8.3)
       applesauce-factory: 1.2.0(typescript@5.8.3)
-      nostr-tools: 2.13.0(typescript@5.8.3)
+      nostr-tools: 2.12.0(typescript@5.8.3)
       observable-hooks: 4.2.4(react-dom@19.1.0(react@19.1.0))(react@18.3.1)(rxjs@7.8.2)
       react: 18.3.1
       rxjs: 7.8.2
@@ -8032,7 +8032,7 @@ snapshots:
       '@noble/hashes': 1.8.0
       applesauce-core: 1.2.0(typescript@5.8.3)
       nanoid: 5.1.5
-      nostr-tools: 2.13.0(typescript@5.8.3)
+      nostr-tools: 2.12.0(typescript@5.8.3)
       rxjs: 7.8.2
     transitivePeerDependencies:
       - supports-color
@@ -8046,7 +8046,7 @@ snapshots:
       applesauce-core: 1.2.0(typescript@5.8.3)
       debug: 4.4.0
       nanoid: 5.1.5
-      nostr-tools: 2.13.0(typescript@5.8.3)
+      nostr-tools: 2.12.0(typescript@5.8.3)
     transitivePeerDependencies:
       - supports-color
       - typescript
@@ -8059,7 +8059,7 @@ snapshots:
       applesauce-actions: 1.1.0(typescript@5.8.3)
       applesauce-core: 1.2.0(typescript@5.8.3)
       applesauce-factory: 1.2.0(typescript@5.8.3)
-      nostr-tools: 2.13.0(typescript@5.8.3)
+      nostr-tools: 2.12.0(typescript@5.8.3)
       rxjs: 7.8.2
     transitivePeerDependencies:
       - supports-color
@@ -10315,7 +10315,7 @@ snapshots:
     dependencies:
       debug: 4.4.0
       idb: 8.0.3
-      nostr-tools: 2.13.0(typescript@5.8.3)
+      nostr-tools: 2.12.0(typescript@5.8.3)
     transitivePeerDependencies:
       - supports-color
       - typescript
@@ -10326,7 +10326,7 @@ snapshots:
 
   nostr-social-graph@1.0.17: {}
 
-  nostr-tools@2.13.0(typescript@5.8.3):
+  nostr-tools@2.12.0(typescript@5.8.3):
     dependencies:
       '@noble/ciphers': 0.5.3
       '@noble/curves': 1.2.0

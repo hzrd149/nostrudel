@@ -25,7 +25,7 @@ import SimpleView from "../../../components/layout/presets/simple-view";
 export default function PostSettings() {
   const account = useActiveAccount();
   const { register, getValues, watch, submit, formState } = useSettingsForm();
-  const { servers: mediaServers } = useUsersMediaServers(account?.pubkey);
+  const mediaServers = useUsersMediaServers(account?.pubkey);
 
   watch("mediaUploadService");
 

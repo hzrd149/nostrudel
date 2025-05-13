@@ -26,7 +26,7 @@ export default function MarkdownEditor({ options, ...props }: SimpleMDEReactProp
   const account = useActiveAccount();
   const { requestSignature } = useSigningContext();
   const { mediaUploadService } = useAppSettings();
-  const { servers } = useUsersMediaServers(account?.pubkey);
+  const servers = useUsersMediaServers(account?.pubkey);
 
   const [_, setPreview] = useState<HTMLElement>();
   const previewRef = useRef<HTMLDivElement | null>(null);
