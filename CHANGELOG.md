@@ -1,5 +1,12 @@
 # nostrudel
 
+## 0.44.0
+
+### Minor Changes
+
+- 605905f: Detect `naddr1` and `nevent` links in normal web links
+- ebf622e: Improve blossom URL verify modal
+
 ## 0.43.0
 
 ### Minor Changes
