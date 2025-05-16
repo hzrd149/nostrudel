@@ -1,5 +1,6 @@
 import { BlobDescriptor, createUploadAuth, ServerType, Signer } from "blossom-client-sdk";
 import { multiServerUpload, MultiServerUploadOptions } from "blossom-client-sdk/actions/multi-server";
+import localSettings from "../../services/local-settings";
 
 export async function simpleMultiServerUpload<T extends ServerType = ServerType>(
   servers: T[],
@@ -7,10 +8,14 @@ export async function simpleMultiServerUpload<T extends ServerType = ServerType>
   signer: Signer,
   opts?: MultiServerUploadOptions<T, File>,
 ): Promise<BlobDescriptor> {
+  const isMedia = file.type.startsWith("image/") || file.type.startsWith("video/");
+  const auth = localSettings.alwaysAuthUpload.value || undefined;
+
   const results = await multiServerUpload(servers, file, {
-    isMedia: file.type.startsWith("image/") || file.type.startsWith("video/"),
+    isMedia,
     mediaUploadBehavior: "any",
     mediaUploadFallback: true,
+    auth,
     ...opts,
     onAuth: (_server, blob, type) => createUploadAuth(signer, blob, { type }),
   });

@@ -52,6 +52,7 @@ const enableKeyboardShortcuts = new BooleanLocalStorageEntry("enable-keyboard-sh
 
 // privacy
 const debugApi = new BooleanLocalStorageEntry("debug-api", false);
+const alwaysAuthUpload = new BooleanLocalStorageEntry("always-auth-upload", true);
 
 // relay authentication
 const defaultAuthenticationMode = new LocalStorageEntry<RelayAuthMode>("default-authentication-mode", "ask");
@@ -90,6 +91,7 @@ const localSettings = {
   ntfyTopic,
   ntfyServer,
   cacheRelayURL,
+  alwaysAuthUpload,
 };
 
 if (import.meta.env.DEV) {

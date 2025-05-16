@@ -60,7 +60,7 @@
     "applesauce-signers": "^1.2.0",
     "applesauce-wallet": "^1.0.0",
     "bech32": "^2.0.0",
-    "blossom-client-sdk": "^4.0.0",
+    "blossom-client-sdk": "next",
     "blurhash": "^2.0.5",
     "canvas-confetti": "^1.9.3",
     "chart.js": "^4.4.9",

@@ -30,6 +30,7 @@ export default function PostSettings() {
   watch("mediaUploadService");
 
   const addClientTag = useObservable(localSettings.addClientTag);
+  const alwaysAuthUpload = useObservable(localSettings.alwaysAuthUpload);
 
   return (
     <SimpleView
@@ -120,11 +121,25 @@ export default function PostSettings() {
       <FormControl>
         <Flex alignItems="center">
           <FormLabel htmlFor="mirrorBlobsOnShare" mb="0">
-            Always mirror media
+            Mirror media when sharing
           </FormLabel>
           <Switch id="mirrorBlobsOnShare" {...register("mirrorBlobsOnShare")} />
         </Flex>
-        <FormHelperText>Copy all media to your personal blossom servers when sharing notes</FormHelperText>
+        <FormHelperText>Mirror all media to your personal blossom servers when sharing notes</FormHelperText>
+      </FormControl>
+
+      <FormControl>
+        <Flex alignItems="center">
+          <FormLabel htmlFor="alwaysAuthUpload" mb="0">
+            Always authenticate media uploads
+          </FormLabel>
+          <Switch
+            id="alwaysAuthUpload"
+            isChecked={alwaysAuthUpload}
+            onChange={() => localSettings.alwaysAuthUpload.next(!localSettings.alwaysAuthUpload.value)}
+          />
+        </Flex>
+        <FormHelperText>Always authenticate with media servers when uploading media</FormHelperText>
       </FormControl>
     </SimpleView>
   );

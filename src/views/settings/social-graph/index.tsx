@@ -10,20 +10,29 @@ import {
   NumberInputField,
   Text,
 } from "@chakra-ui/react";
-import { useActiveAccount, useObservable } from "applesauce-react/hooks";
-import { SocialGraph } from "nostr-social-graph";
+import { useActiveAccount } from "applesauce-react/hooks";
 import { useCallback, useEffect, useState } from "react";
-import { tap, throttleTime } from "rxjs";
 
 import SimpleView from "../../../components/layout/presets/simple-view";
 import UserAvatar from "../../../components/user/user-avatar";
 import { UserAvatarLink } from "../../../components/user/user-avatar-link";
 import UserDnsIdentity from "../../../components/user/user-dns-identity";
 import UserName from "../../../components/user/user-name";
-import { crawlFollowGraph, exportGraph, importGraph, socialGraph } from "../../../services/social-graph";
+import { useAppTitle } from "../../../hooks/use-app-title";
 import { useBreakpointValue } from "../../../providers/global/breakpoint-provider";
+import pool from "../../../services/pool";
+import {
+  createBatchUserLoader,
+  exportGraph,
+  graphLoader,
+  importGraph,
+  socialGraph,
+} from "../../../services/social-graph";
+import { useUnmount } from "react-use";
+import { Subscription } from "rxjs";
 
 export default function SocialGraphSettings() {
+  useAppTitle("Social Graph");
   const [followDistances, setFollowDistances] = useState<{ distance: number; count: number; randomUsers: string[] }[]>(
     [],
   );
@@ -50,28 +59,21 @@ export default function SocialGraphSettings() {
     setFollowDistances(generateFollowDistances());
   }, [socialGraph, generateFollowDistances]);
 
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState<Subscription>();
   const handleLoadGraph = () => {
     if (account?.pubkey && socialGraph) {
-      setLoading(true);
-
-      // Create and start the loader
-      crawlFollowGraph(account.pubkey, distance)
-        .pipe(
-          // send event to graph
-          tap((e) => socialGraph.handleEvent(e)),
-          // Update the follow distance every second while loading
-          throttleTime(1000),
-          tap(() => {
-            socialGraph.recalculateFollowDistances();
-            setFollowDistances(generateFollowDistances());
-          }),
-        )
-        .subscribe({
-          complete: () => setLoading(false),
-        });
+      setLoading(
+        graphLoader(account.pubkey, distance, createBatchUserLoader(pool.request.bind(pool))).subscribe({
+          next: (progress) => {
+            console.log(progress);
+          },
+        }),
+      );
     }
   };
+  useUnmount(() => {
+    loading?.unsubscribe();
+  });
 
   const displayMaxPeople = useBreakpointValue({ base: 4, lg: 5, xl: 10 }) || 4;
 
