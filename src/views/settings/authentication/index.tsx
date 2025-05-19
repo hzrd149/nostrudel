@@ -1,20 +1,39 @@
-import { FormControl, FormLabel, Heading, SimpleGrid } from "@chakra-ui/react";
+import { Flex, FormControl, FormHelperText, FormLabel, Heading, SimpleGrid, Switch } from "@chakra-ui/react";
 import { useObservable } from "applesauce-react/hooks";
 
-import DefaultAuthModeSelect from "../../../components/settings/default-auth-mode-select";
 import SimpleView from "../../../components/layout/presets/simple-view";
-import { connections$ } from "../../../services/pool";
 import RelayAuthCard from "../../../components/relays/relay-auth-card";
+import DefaultAuthModeSelect from "../../../components/settings/default-auth-mode-select";
+import localSettings from "../../../services/local-settings";
+import { connections$ } from "../../../services/pool";
 
 export default function AuthenticationSettingsView() {
   const connections = useObservable(connections$) ?? {};
   const sortedRelays = Object.keys(connections).sort();
+
+  const proactivelyAuthenticate = useObservable(localSettings.proactivelyAuthenticate);
 
   return (
     <SimpleView title="Authentication settings" maxW="6xl">
       <FormControl>
         <FormLabel htmlFor="default-mode">Default mode</FormLabel>
         <DefaultAuthModeSelect id="default-mode" w="sm" />
+      </FormControl>
+
+      <FormControl>
+        <Flex alignItems="center">
+          <FormLabel htmlFor="proactivelyAuthenticate" mb="0">
+            Proactively authenticate to relays
+          </FormLabel>
+          <Switch
+            id="proactivelyAuthenticate"
+            isChecked={proactivelyAuthenticate}
+            onChange={(e) => localSettings.proactivelyAuthenticate.next(e.currentTarget.checked)}
+          />
+        </Flex>
+        <FormHelperText>
+          <span>Authenticate to relays as soon as they send the authentication challenge</span>
+        </FormHelperText>
       </FormControl>
 
       <Heading size="md" mt="4">
