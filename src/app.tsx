@@ -1,6 +1,6 @@
 import { lazy, Suspense } from "react";
 import { Spinner } from "@chakra-ui/react";
-import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
+import { createBrowserRouter, matchRoutes, Outlet, RouterProvider } from "react-router-dom";
 
 import GlobalStyles from "./styles";
 
@@ -54,7 +54,9 @@ import badgesRoutes from "./views/badges/routes";
 import emojisRoutes from "./views/emojis/routes";
 import walletRoutes from "./views/wallet/routes";
 
-// const getScrollKey = (location: Location) => location.pathname + location.search + location.hash;
+// Redirect old hash routing
+const hashPath = window.location.hash.match(/^#(\/.+)/);
+if (hashPath) window.history.replaceState({}, "", hashPath[1]);
 
 const RootPage = () => {
   useSetColorMode();

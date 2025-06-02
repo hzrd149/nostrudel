@@ -35,7 +35,7 @@ import { bipDefinitions } from "../../content/transform/bip-notation";
 const transformers = [...textNoteTransformers, galleries, nipDefinitions, bipDefinitions];
 
 export type TextNoteContentsProps = {
-  event: NostrEvent | EventTemplate;
+  event: NostrEvent | EventTemplate | string;
   noOpenGraphLinks?: boolean;
   maxLength?: number;
 };

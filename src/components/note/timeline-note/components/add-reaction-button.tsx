@@ -5,7 +5,7 @@ import { Emoji } from "applesauce-core/helpers";
 import { useEventFactory } from "applesauce-react/hooks";
 
 import { usePublishEvent } from "../../../../providers/global/publish-provider";
-import ReactionIconButton from "../../../reactions/reaction-icon-button";
+import SelectReactionButton from "../../../reactions/select-reaction-button";
 
 export default function AddReactionButton({
   event,
@@ -25,5 +25,5 @@ export default function AddReactionButton({
     }
     setLoading(false);
   };
-  return <ReactionIconButton onSelect={addReaction} isLoading={loading} portal />;
+  return <SelectReactionButton onSelect={addReaction} isLoading={loading} portal />;
 }

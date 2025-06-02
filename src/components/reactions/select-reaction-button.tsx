@@ -22,7 +22,7 @@ import { useBreakpointValue } from "../../providers/global/breakpoint-provider";
 
 const ReactionPicker = lazy(() => import("./reaction-picker"));
 
-export default function ReactionIconButton({
+export default function SelectReactionButton({
   portal = false,
   onSelect,
   ...props

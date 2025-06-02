@@ -29,8 +29,8 @@ import {
 import { useForm } from "react-hook-form";
 import { UnsignedEvent } from "nostr-tools";
 import { useAsync, useThrottle } from "react-use";
-import { useActiveAccount, useEventFactory, useObservable } from "applesauce-react/hooks";
-import { Emoji, ZapSplit } from "applesauce-core/helpers";
+import { useActiveAccount, useEventFactory, useEventStore, useObservable } from "applesauce-react/hooks";
+import { Emoji, getEventPointerFromQTag, processTags, ZapSplit } from "applesauce-core/helpers";
 
 import { ChevronDownIcon, ChevronUpIcon } from "../icons";
 import { PublishLogEntryDetails } from "../../views/task-manager/publish-log/entry-details";
@@ -78,6 +78,7 @@ export default function PostModal({
   const [publishEntry, setPublishEntry] = useState<PublishLogEntry>();
   const emojis = useContextEmojis();
   const moreOptions = useDisclosure();
+  const eventStore = useEventStore();
 
   const factory = useEventFactory();
   const [draft, setDraft] = useState<UnsignedEvent>();
@@ -103,7 +104,7 @@ export default function PostModal({
   // cache form to localStorage
   useCacheForm<FormValues>(cacheFormKey, getValues, reset, formState);
 
-  const getDraft = async (values = getValues()) => {
+  const createDraft = async (values = getValues()) => {
     // build draft using factory
     let draft = await factory.note(values.content, {
       emojis: emojis.filter((e) => !!e.url) as Emoji[],
@@ -116,28 +117,26 @@ export default function PostModal({
     return unsigned;
   };
 
-  // throttle update the draft every 500ms
-  const throttleValues = useThrottle(getValues(), 500);
-  const { value: preview } = useAsync(() => getDraft(), [throttleValues]);
-
   const textAreaRef = useRef<RefType | null>(null);
   const insertText = useTextAreaInsertTextWithForm(textAreaRef, getValues, setValue);
   const { onPaste } = useTextAreaUploadFile(insertText);
 
-  const publishPost = async (unsigned?: UnsignedEvent) => {
-    unsigned = unsigned || draft || (await getDraft());
+  const publishPost = async (unsigned: UnsignedEvent) => {
+    // Broadcast quoted events
+    const pointers = processTags(unsigned.tags, (t) => (t[0] === "q" ? getEventPointerFromQTag(t) : undefined));
+    const events = pointers.map((p) => eventStore.getEvent(p.id)).filter((t) => !!t);
+    for (const event of events) publish("Broadcast event", event);
 
+    // Publish the note
     const pub = await publish("Post", unsigned);
     if (pub) setPublishEntry(pub);
   };
   const submit = handleSubmit(async (values) => {
-    if (values.difficulty > 0) {
-      setMiningTarget(values.difficulty);
-    } else {
-      const unsigned = await getDraft(values);
-      publishPost(unsigned);
-    }
+    if (values.difficulty > 0) setMiningTarget(values.difficulty);
+    else publishPost(await createDraft(values));
   });
+
+  const preview = useThrottle(getValues().content, 500);
 
   const canSubmit = getValues().content.length > 0;
 
@@ -160,7 +159,7 @@ export default function PostModal({
             draft={draft}
             targetPOW={miningTarget}
             onCancel={() => setMiningTarget(0)}
-            onSkip={publishPost}
+            onSkip={() => publishPost(draft)}
             onComplete={publishPost}
           />
         </ModalBody>
@@ -184,7 +183,7 @@ export default function PostModal({
               if ((e.ctrlKey || e.metaKey) && e.key === "Enter") submit();
             }}
           />
-          {preview && preview.content.length > 0 && (
+          {preview && preview.length > 0 && (
             <Box>
               <Heading size="sm">Preview:</Heading>
               <Box borderWidth={1} borderRadius="md" p="2">

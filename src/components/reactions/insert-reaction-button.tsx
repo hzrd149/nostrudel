@@ -2,7 +2,7 @@ import { useCallback } from "react";
 import { IconButtonProps } from "@chakra-ui/react";
 import { Emoji } from "applesauce-core/helpers";
 
-import ReactionIconButton from "./reaction-icon-button";
+import SelectReactionButton from "./select-reaction-button";
 
 export default function InsertReactionButton({
   onSelect,
@@ -21,7 +21,7 @@ export default function InsertReactionButton({
 
   return (
     <>
-      <ReactionIconButton onSelect={handleSelect} {...props} />
+      <SelectReactionButton onSelect={handleSelect} {...props} />
     </>
   );
 }

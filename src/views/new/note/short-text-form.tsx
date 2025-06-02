@@ -25,7 +25,7 @@ import { useEventFactory, useObservable } from "applesauce-react/hooks";
 import { UnsignedEvent } from "nostr-tools";
 import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useAsync, useThrottle } from "react-use";
+import { useThrottle } from "react-use";
 
 import { useActiveAccount } from "applesauce-react/hooks";
 import { ErrorBoundary } from "../../../components/error-boundary";
@@ -99,7 +99,7 @@ export default function ShortTextNoteForm({
   // cache form to localStorage
   useCacheForm<FormValues>(cacheFormKey, getValues, reset, formState);
 
-  const getDraft = async (values = getValues()) => {
+  const createDraft = async (values = getValues()) => {
     // build draft using factory
     let draft = await factory.note(values.content, {
       emojis: emojis.filter((e) => !!e.url) as Emoji[],
@@ -112,18 +112,12 @@ export default function ShortTextNoteForm({
     return unsigned;
   };
 
-  // throttle update the draft every 500ms
-  const throttleValues = useThrottle(getValues(), 500);
-  const { value: preview } = useAsync(() => getDraft(), [throttleValues]);
-
   const textAreaRef = useRef<RefType | null>(null);
   const insertText = useTextAreaInsertTextWithForm(textAreaRef, getValues, setValue);
   const { onPaste } = useTextAreaUploadFile(insertText);
 
-  const publishPost = async (unsigned?: UnsignedEvent) => {
-    unsigned = unsigned || draft || (await getDraft());
-
-    // mirror quoted events
+  const publishPost = async (unsigned: UnsignedEvent) => {
+    // Broadcast quoted events
     const pointers = processTags(unsigned.tags, (t) => (t[0] === "q" ? getEventPointerFromQTag(t) : undefined));
     const events = pointers.map((p) => eventStore.getEvent(p.id)).filter((t) => !!t);
     for (const event of events) publish("Broadcast event", event);
@@ -131,12 +125,10 @@ export default function ShortTextNoteForm({
     const pub = await publish("Post", unsigned);
     if (pub) setPublished(pub);
   };
+
   const submit = handleSubmit(async (values) => {
-    if (values.difficulty > 0) {
-      setMiningTarget(values.difficulty);
-    } else {
-      publishPost(await getDraft(values));
-    }
+    if (values.difficulty > 0) setMiningTarget(values.difficulty);
+    else publishPost(await createDraft(values));
   });
 
   const canSubmit = getValues().content.length > 0;
@@ -156,12 +148,14 @@ export default function ShortTextNoteForm({
           draft={draft}
           targetPOW={miningTarget}
           onCancel={() => setMiningTarget(0)}
-          onSkip={publishPost}
+          onSkip={() => publishPost(draft)}
           onComplete={publishPost}
         />
       </Flex>
     );
   }
+
+  const preview = useThrottle(getValues("content"), 500);
 
   const showAdvanced =
     advanced.isOpen || formState.dirtyFields.difficulty || formState.dirtyFields.nsfw || formState.dirtyFields.split;
@@ -173,7 +167,7 @@ export default function ShortTextNoteForm({
         <MagicTextArea
           autoFocus
           mb="2"
-          value={getValues().content}
+          value={getValues("content")}
           onChange={(e) => setValue("content", e.target.value, { shouldDirty: true, shouldTouch: true })}
           rows={8}
           isRequired
@@ -183,13 +177,13 @@ export default function ShortTextNoteForm({
             if ((e.ctrlKey || e.metaKey) && e.key === "Enter") submit();
           }}
         />
-        {preview && preview.content.length > 0 && (
+        {preview && preview.length > 0 && (
           <Box>
             <Heading size="sm">Preview:</Heading>
             <Box borderWidth={1} borderRadius="md" p="2">
               <ErrorBoundary>
                 <TrustProvider trust>
-                  <TextNoteContents event={preview} />
+                  <TextNoteContents event={getValues("content")} />
                 </TrustProvider>
               </ErrorBoundary>
             </Box>
