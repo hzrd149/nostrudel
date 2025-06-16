@@ -6,7 +6,7 @@ settings:
 
 overrides:
   applesauce-content: 0.0.0-next-20250610194602
-  applesauce-actions: 0.0.0-next-20250610194602
+  applesauce-actions: 0.0.0-next-20250616205249
 
 importers:
 
@@ -106,23 +106,23 @@ importers:
         specifier: next
         version: 0.0.0-next-20250610194602(typescript@5.8.3)
       applesauce-actions:
-        specifier: 0.0.0-next-20250610194602
-        version: 0.0.0-next-20250610194602(typescript@5.8.3)
+        specifier: 0.0.0-next-20250616205249
+        version: 0.0.0-next-20250616205249(typescript@5.8.3)
       applesauce-content:
         specifier: 0.0.0-next-20250610194602
         version: 0.0.0-next-20250610194602(typescript@5.8.3)
       applesauce-core:
         specifier: next
-        version: 0.0.0-next-20250616165757(typescript@5.8.3)
+        version: 0.0.0-next-20250616205249(typescript@5.8.3)
       applesauce-factory:
         specifier: next
         version: 0.0.0-next-20250610194602(typescript@5.8.3)
       applesauce-loaders:
         specifier: next
-        version: 0.0.0-next-20250616165757(typescript@5.8.3)
+        version: 0.0.0-next-20250616205249(typescript@5.8.3)
       applesauce-react:
         specifier: next
-        version: 0.0.0-next-20250616165757(react-dom@19.1.0(react@19.1.0))(typescript@5.8.3)
+        version: 0.0.0-next-20250616205249(react-dom@19.1.0(react@19.1.0))(typescript@5.8.3)
       applesauce-relay:
         specifier: next
         version: 0.0.0-next-20250610194602(typescript@5.8.3)
@@ -2179,8 +2179,8 @@ packages:
   applesauce-accounts@2.0.0:
     resolution: {integrity: sha512-ApvqsosvBmiVm24+nWfvr23F3HKQ9SVZwvycxT+0omGDrg2bqTY5TA/BjUvHDo27l3q2HA2N6wcmAxhYdLxdLA==}
 
-  applesauce-actions@0.0.0-next-20250610194602:
-    resolution: {integrity: sha512-yB2Ec8QTI0vm7/DOTS+/TlOQWU+sxwGhBJRB8CfmRoOXNhO9R9mLCRH05ttlvYWCYuznxqn5byfsKz9uYoSjcA==}
+  applesauce-actions@0.0.0-next-20250616205249:
+    resolution: {integrity: sha512-be/QN2A2HfCbMFOjwgyq75imM9mtBC1nM+NyBNTwi8h/w5QSM74fLOVMrD53h2vfvLKVhMNuML+CD2eSYrNyZw==}
 
   applesauce-content@0.0.0-next-20250610194602:
     resolution: {integrity: sha512-G74eKPaHD41J8YBX8akM4qVyTxK0PfQDGlYPu0a7JIwG/e18yBcSFzpqZsG8G6aNAuVD3pQPSb7mgTg23x9JdQ==}
@@ -2188,8 +2188,8 @@ packages:
   applesauce-core@0.0.0-next-20250610194602:
     resolution: {integrity: sha512-4y1aKyvtXcMMz9PuhKZdYN2exZSn39V6LEpqzr/8pQMef6JhJo6OTRPsju+K51llTmRu82tKVQ4T0l8ZIPqKfg==}
 
-  applesauce-core@0.0.0-next-20250616165757:
-    resolution: {integrity: sha512-lTKzse29u8tC9KSinmyQNO39y26eIWFzZ2FqH1nkxaWKqSeR2Kj202CeKnE7G1HKJUXnkXsQkUvS3eBsfLiQfA==}
+  applesauce-core@0.0.0-next-20250616205249:
+    resolution: {integrity: sha512-AGJ7LIHPXnIDQiqdAUFUBm8w9QPQqgL6gfeziYxSK5UO40Q8Ne7M5D7GaOX4OrUvAq/GFQxReg2jYd7pVJ+iuQ==}
 
   applesauce-core@2.0.0:
     resolution: {integrity: sha512-GXfgtnkn08GjTKopm+Pfffrkf3g00Z3vOA7XALTavjDfHoDtSLJRn7GWrSji7Lm0zvV3/umIDQvUlILqUhBcxQ==}
@@ -2200,11 +2200,11 @@ packages:
   applesauce-factory@2.0.0:
     resolution: {integrity: sha512-Fw3Dt6JsDIuci0oJNoz03x30YwwEjgpKNWGZih/5TE+Skuv0m4FOe+0LfY0xDlwNs+bB8YvAvSQ3tsdQflNXMA==}
 
-  applesauce-loaders@0.0.0-next-20250616165757:
-    resolution: {integrity: sha512-M4/+G3VRIA9ks5xM3Qm9Kkg5x2koptlZ+gbN+RAblCSdBpla+k9XoDlI8xS/E3WrFibWMOJFiPSrEupauMzTfw==}
+  applesauce-loaders@0.0.0-next-20250616205249:
+    resolution: {integrity: sha512-ssSRGsYgzVOSKBTL90/vjtQFli4MwXmJbNyasaJu+9ZjZ/bNvIJMjhgkt9/kobIeDHwI/P3MVJ4vRT+TbjHUng==}
 
-  applesauce-react@0.0.0-next-20250616165757:
-    resolution: {integrity: sha512-jCENt4GKs5ima9WquFef0sR1hxQHkKnEAEGMRTdL8VDspSau3wIRCdprniE52KUU4goF9D2tYEpa/lBYtgT2uw==}
+  applesauce-react@0.0.0-next-20250616205249:
+    resolution: {integrity: sha512-Jqnz/EqqNEbdy9wbPbEGpUIRLLmZUgAoVUQlplrxqfg1GvPjxJhLoec/f2WAZWTxE6F9yWHbcT0wVn6d3ghGWQ==}
 
   applesauce-relay@0.0.0-next-20250610194602:
     resolution: {integrity: sha512-pZ7mUNYh0iTvPthfMKMq/QXNJZUV5pjOg3Y1jBQ+xbiXtFzvygCSok3+Kr8sGBcJ1vI+C5JWtsPuxvspPjvHMQ==}
@@ -2893,8 +2893,8 @@ packages:
     engines: {node: '>=0.10.0'}
     hasBin: true
 
-  electron-to-chromium@1.5.167:
-    resolution: {integrity: sha512-LxcRvnYO5ez2bMOFpbuuVuAI5QNeY1ncVytE/KXaL6ZNfzX1yPlAO0nSOyIHx2fVAuUprMqPs/TdVhUFZy7SIQ==}
+  electron-to-chromium@1.5.168:
+    resolution: {integrity: sha512-RUNQmFLNIWVW6+z32EJQ5+qx8ci6RGvdtDC0Ls+F89wz6I2AthpXF0w0DIrn2jpLX0/PU9ZCo+Qp7bg/EckJmA==}
 
   elementtree@0.1.7:
     resolution: {integrity: sha512-wkgGT6kugeQk/P6VZ/f4T+4HB41BVgNBq5CDIZVbQ02nvTVqAiVTbskxxu3eA/X96lMlfYOwnLQpN2v5E1zDEg==}
@@ -8016,10 +8016,10 @@ snapshots:
       - supports-color
       - typescript
 
-  applesauce-actions@0.0.0-next-20250610194602(typescript@5.8.3):
+  applesauce-actions@0.0.0-next-20250616205249(typescript@5.8.3):
     dependencies:
-      applesauce-core: 0.0.0-next-20250610194602(typescript@5.8.3)
-      applesauce-factory: 0.0.0-next-20250610194602(typescript@5.8.3)
+      applesauce-core: 0.0.0-next-20250616205249(typescript@5.8.3)
+      applesauce-factory: 2.0.0(typescript@5.8.3)
       nostr-tools: 2.13.3(typescript@5.8.3)
       rxjs: 7.8.2
     transitivePeerDependencies:
@@ -8058,7 +8058,7 @@ snapshots:
       - supports-color
       - typescript
 
-  applesauce-core@0.0.0-next-20250616165757(typescript@5.8.3):
+  applesauce-core@0.0.0-next-20250616205249(typescript@5.8.3):
     dependencies:
       '@noble/hashes': 1.8.0
       '@scure/base': 1.2.6
@@ -8108,9 +8108,9 @@ snapshots:
       - supports-color
       - typescript
 
-  applesauce-loaders@0.0.0-next-20250616165757(typescript@5.8.3):
+  applesauce-loaders@0.0.0-next-20250616205249(typescript@5.8.3):
     dependencies:
-      applesauce-core: 0.0.0-next-20250616165757(typescript@5.8.3)
+      applesauce-core: 0.0.0-next-20250616205249(typescript@5.8.3)
       nanoid: 5.1.5
       nostr-tools: 2.13.3(typescript@5.8.3)
       rxjs: 7.8.2
@@ -8118,12 +8118,12 @@ snapshots:
       - supports-color
       - typescript
 
-  applesauce-react@0.0.0-next-20250616165757(react-dom@19.1.0(react@19.1.0))(typescript@5.8.3):
+  applesauce-react@0.0.0-next-20250616205249(react-dom@19.1.0(react@19.1.0))(typescript@5.8.3):
     dependencies:
       applesauce-accounts: 2.0.0(typescript@5.8.3)
-      applesauce-actions: 0.0.0-next-20250610194602(typescript@5.8.3)
+      applesauce-actions: 0.0.0-next-20250616205249(typescript@5.8.3)
       applesauce-content: 0.0.0-next-20250610194602(typescript@5.8.3)
-      applesauce-core: 0.0.0-next-20250616165757(typescript@5.8.3)
+      applesauce-core: 0.0.0-next-20250616205249(typescript@5.8.3)
       applesauce-factory: 2.0.0(typescript@5.8.3)
       hash-sum: 2.0.0
       nostr-tools: 2.13.3(typescript@5.8.3)
@@ -8177,7 +8177,7 @@ snapshots:
       '@cashu/cashu-ts': 2.0.0-rc1
       '@gandlaf21/bc-ur': 1.1.12
       '@noble/hashes': 1.8.0
-      applesauce-actions: 0.0.0-next-20250610194602(typescript@5.8.3)
+      applesauce-actions: 0.0.0-next-20250616205249(typescript@5.8.3)
       applesauce-core: 0.0.0-next-20250610194602(typescript@5.8.3)
       applesauce-factory: 0.0.0-next-20250610194602(typescript@5.8.3)
       nostr-tools: 2.13.3(typescript@5.8.3)
@@ -8351,7 +8351,7 @@ snapshots:
   browserslist@4.25.0:
     dependencies:
       caniuse-lite: 1.0.30001723
-      electron-to-chromium: 1.5.167
+      electron-to-chromium: 1.5.168
       node-releases: 2.0.19
       update-browserslist-db: 1.1.3(browserslist@4.25.0)
 
@@ -8936,7 +8936,7 @@ snapshots:
     dependencies:
       jake: 10.9.2
 
-  electron-to-chromium@1.5.167: {}
+  electron-to-chromium@1.5.168: {}
 
   elementtree@0.1.7:
     dependencies:

@@ -110,14 +110,7 @@ export function isPubkeyInList(list?: NostrEvent, pubkey?: string) {
   return isProfilePointerInList(list, pubkey);
 }
 
-export function isEventInList(list?: NostrEvent, event?: NostrEvent) {
-  if (!event || !list) return false;
-
-  if (isAddressableKind(event.kind)) {
-    const cord = getEventCoordinate(event);
-    return isAddressPointerInList(list, cord);
-  } else return isEventPointerInList(list, event.id);
-}
+export { isEventInList } from "applesauce-core/helpers/lists";
 
 /** @deprecated */
 export function listAddPerson(

@@ -16,7 +16,7 @@ import useUserMutes from "../../hooks/use-user-mutes";
 import { getSharableEventAddress } from "../../services/relay-hints";
 import FallbackListCard from "./components/fallback-list-card";
 import ListTypeCard from "./components/list-type-card";
-import NewSetModal from "./components/new-set-modal";
+import NewBookmarkSetModal from "./components/new-set-modal";
 import PeopleListCard from "./components/people-list-card";
 
 function ListHomePage() {
@@ -92,7 +92,7 @@ function ListHomePage() {
       )}
 
       {newList.isOpen && (
-        <NewSetModal
+        <NewBookmarkSetModal
           isOpen
           onClose={newList.onClose}
           onCreated={(list) => navigate(`/lists/${getSharableEventAddress(list)}`)}

@@ -6,6 +6,7 @@ import {
   eventLoader,
   profileLoader,
   reactionsLoader,
+  userSetsLoader,
   zapsLoader,
 } from "./loaders";
 import localSettings from "./local-settings";
@@ -13,7 +14,6 @@ import pool from "./pool";
 import readStatusService from "./read-status";
 import relayInfoService from "./relay-info";
 import timelineCacheService from "./timeline-cache";
-import userSetsLoader from "./user-sets-loader";
 import { userSearchDirectory } from "./username-search";
 
 const noStrudel = {

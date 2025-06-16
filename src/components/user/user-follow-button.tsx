@@ -23,7 +23,7 @@ import useUserSets from "../../hooks/use-user-lists";
 import useUserMuteActions from "../../hooks/use-user-mute-actions";
 import { usePublishEvent } from "../../providers/global/publish-provider";
 import { useMuteModalContext } from "../../providers/route/mute-modal-provider";
-import NewSetModal from "../../views/lists/components/new-set-modal";
+import NewBookmarkSetModal from "../../views/lists/components/new-set-modal";
 import { ChevronDownIcon, FollowIcon, MuteIcon, PlusCircleIcon, UnfollowIcon, UnmuteIcon } from "../icons";
 
 function UsersLists({ pubkey }: { pubkey: string }) {
@@ -79,7 +79,9 @@ function UsersLists({ pubkey }: { pubkey: string }) {
         New list
       </MenuItem>
 
-      {newListModal.isOpen && <NewSetModal onClose={newListModal.onClose} isOpen onCreated={newListModal.onClose} />}
+      {newListModal.isOpen && (
+        <NewBookmarkSetModal onClose={newListModal.onClose} isOpen onCreated={newListModal.onClose} />
+      )}
     </>
   );
 }

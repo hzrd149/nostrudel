@@ -21,7 +21,7 @@ import ArticleTags from "./components/article-tags";
 import NoteReactions from "../../components/note/timeline-note/components/note-reactions";
 import EventZapButton from "../../components/zap/event-zap-button";
 import ZapBubbles from "../../components/note/timeline-note/components/zap-bubbles";
-import BookmarkEventButton from "../../components/note/bookmark-event";
+import BookmarkEventButton from "../../components/note/bookmark-button";
 import EventQuoteButton from "../../components/note/event-quote-button";
 import { GenericComments } from "../../components/comment/generic-comments";
 import GenericCommentForm from "../../components/comment/generic-comment-form";

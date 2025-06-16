@@ -1,15 +1,14 @@
+import { AddressPointerWithoutD } from "applesauce-core/helpers";
 import { useEventModel } from "applesauce-react/hooks";
+import hash_sum from "hash-sum";
+import { AddressPointer } from "nostr-tools/nip19";
 import { useMemo } from "react";
 
-import { CustomAddressPointer, parseCoordinate } from "../helpers/nostr/event";
-import { ReplaceableQuery } from "../models";
-import hash_sum from "hash-sum";
+import { parseCoordinate } from "../helpers/nostr/event";
+import { AddressableQuery } from "../models";
 
-export default function useReplaceableEvent(cord: string | CustomAddressPointer | undefined) {
+export default function useReplaceableEvent(cord: string | AddressPointer | AddressPointerWithoutD | undefined) {
   const parsed = useMemo(() => (typeof cord === "string" ? parseCoordinate(cord) : cord), [hash_sum(cord)]);
 
-  return useEventModel(
-    ReplaceableQuery,
-    parsed ? [parsed.kind, parsed.pubkey, parsed.identifier, parsed.relays] : undefined,
-  );
+  return useEventModel(AddressableQuery, parsed ? [parsed] : undefined);
 }

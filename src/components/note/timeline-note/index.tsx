@@ -33,7 +33,7 @@ import Timestamp from "../../timestamp";
 import UserAvatarLink from "../../user/user-avatar-link";
 import UserLink from "../../user/user-link";
 import EventZapButton from "../../zap/event-zap-button";
-import BookmarkEventButton from "../bookmark-event";
+import BookmarkEventButton from "../bookmark-button";
 import EventQuoteButton from "../event-quote-button";
 import NoteMenu from "../note-menu";
 import NotePublishedUsing from "../note-published-using";

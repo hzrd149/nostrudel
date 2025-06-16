@@ -1,27 +1,35 @@
-import { AddressPointer, EventPointer } from "nostr-tools/nip19";
 import { Button, ButtonGroup, Flex, Heading, SkeletonText, Spinner } from "@chakra-ui/react";
-import { useParams } from "react-router-dom";
-import { NostrEvent } from "nostr-tools";
 import { getAddressPointerFromATag, getEventPointerFromETag, isATag, isETag } from "applesauce-core/helpers";
+import { NostrEvent } from "nostr-tools";
+import { AddressPointer, EventPointer } from "nostr-tools/nip19";
+import { useParams } from "react-router-dom";
 
-import { useActiveAccount } from "applesauce-react/hooks";
-import TimelineItem from "../../components/timeline-page/generic-note-timeline/timeline-item";
-import useSingleEvent from "../../hooks/use-single-event";
-import userUserBookmarksList from "../../hooks/use-user-bookmarks-list";
-import UserName from "../../components/user/user-name";
-import ListMenu from "../lists/components/list-menu";
-import UserAvatarLink from "../../components/user/user-avatar-link";
-import useEventBookmarkActions from "../../hooks/use-event-bookmark-actions";
-import useParamsProfilePointer from "../../hooks/use-params-pubkey-pointer";
-import useReplaceableEvent from "../../hooks/use-replaceable-event";
+import { UnbookmarkEvent } from "applesauce-actions/actions";
+import { useActionHub, useActiveAccount } from "applesauce-react/hooks";
 import { EmbedEventCard } from "../../components/embed-event/card";
 import SimpleView from "../../components/layout/presets/simple-view";
+import TimelineItem from "../../components/timeline-page/generic-note-timeline/timeline-item";
+import UserAvatarLink from "../../components/user/user-avatar-link";
+import UserName from "../../components/user/user-name";
+import useAddressableEvent from "../../hooks/use-addressable-event";
+import useAsyncAction from "../../hooks/use-async-action";
 import useMaxPageWidth from "../../hooks/use-max-page-width";
+import useParamsProfilePointer from "../../hooks/use-params-pubkey-pointer";
+import useSingleEvent from "../../hooks/use-single-event";
+import userUserBookmarksList from "../../hooks/use-user-bookmarks-list";
+import { usePublishEvent } from "../../providers/global/publish-provider";
+import ListMenu from "../lists/components/list-menu";
 
 function RemoveBookmarkButton({ event }: { event: NostrEvent }) {
-  const { isLoading, removeBookmark } = useEventBookmarkActions(event);
+  const actions = useActionHub();
+  const publish = usePublishEvent();
+
+  const remove = useAsyncAction(async () => {
+    await actions.exec(UnbookmarkEvent, event).forEach((e) => publish("Remove bookmark", e));
+  }, [event, actions, publish]);
+
   return (
-    <Button colorScheme="red" onClick={removeBookmark} isLoading={isLoading}>
+    <Button colorScheme="red" onClick={remove.run} isLoading={remove.loading}>
       Remove
     </Button>
   );
@@ -42,7 +50,7 @@ function BookmarkEventItem({ pointer }: { pointer: EventPointer }) {
   );
 }
 function BookmarkAddressItem({ pointer }: { pointer: AddressPointer }) {
-  const event = useReplaceableEvent(pointer);
+  const event = useAddressableEvent(pointer);
   if (!event) return <SkeletonText mt="4" noOfLines={4} spacing="4" skeletonHeight="2" />;
 
   return (
@@ -56,8 +64,8 @@ function BookmarkAddressItem({ pointer }: { pointer: AddressPointer }) {
 }
 
 function BookmarksPage({ pubkey }: { pubkey: string }) {
-  const { list } = userUserBookmarksList(pubkey, undefined, true);
   const maxWidth = useMaxPageWidth();
+  const { list } = userUserBookmarksList(pubkey);
 
   if (!list) return <Spinner />;
 
@@ -94,6 +102,7 @@ function BookmarksPage({ pubkey }: { pubkey: string }) {
 
 function BookmarksViewKeyInParams() {
   const pointer = useParamsProfilePointer("pubkey");
+
   return <BookmarksPage pubkey={pointer.pubkey} />;
 }
 export default function BookmarksView() {

@@ -65,7 +65,7 @@ function DVMFeeds() {
       </Text>
       <IntersectionObserverProvider callback={callback}>
         <SimpleGrid columns={{ base: 1, md: 1, lg: 2, xl: 3, "2xl": 4 }} spacing="2">
-          {DVMs.filter((feed) => !isEventInList(favorites, feed)).map((feed) => (
+          {DVMs.filter((feed) => !favorites || !isEventInList(favorites, feed)).map((feed) => (
             <ErrorBoundary key={getEventUID(feed)} event={feed}>
               <DVMCard dvm={feed} />
             </ErrorBoundary>

@@ -5,7 +5,7 @@ import { useActiveAccount } from "applesauce-react/hooks";
 
 import useReplaceableEvent from "./use-replaceable-event";
 
-export default function userUserBookmarksList(pubkey?: string, relays: string[] = [], force = false) {
+export default function userUserBookmarksList(pubkey?: string, relays?: string[]) {
   const account = useActiveAccount();
   const key = pubkey ?? account?.pubkey;
 

@@ -50,8 +50,8 @@
     "@webscopeio/react-textarea-autocomplete": "^4.9.2",
     "ansi-to-html": "^0.7.2",
     "applesauce-accounts": "next",
-    "applesauce-actions": "next",
-    "applesauce-content": "next",
+    "applesauce-actions": "0.0.0-next-20250616205249",
+    "applesauce-content": "0.0.0-next-20250610194602",
     "applesauce-core": "next",
     "applesauce-factory": "next",
     "applesauce-loaders": "next",
@@ -169,7 +169,7 @@
   },
   "resolutions": {
     "applesauce-content": "0.0.0-next-20250610194602",
-    "applesauce-actions": "0.0.0-next-20250610194602"
+    "applesauce-actions": "0.0.0-next-20250616205249"
   },
   "funding": {
     "type": "lightning",

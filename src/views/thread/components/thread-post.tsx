@@ -6,7 +6,7 @@ import { Link as RouterLink } from "react-router-dom";
 import { ReplyIcon } from "../../../components/icons";
 import Expand01 from "../../../components/icons/expand-01";
 import Minus from "../../../components/icons/minus";
-import BookmarkEventButton from "../../../components/note/bookmark-event";
+import BookmarkEventButton from "../../../components/note/bookmark-button";
 import EventQuoteButton from "../../../components/note/event-quote-button";
 import NoteMenu from "../../../components/note/note-menu";
 import NotePublishedUsing from "../../../components/note/note-published-using";
@@ -32,6 +32,7 @@ import { TrustProvider } from "../../../providers/local/trust-provider";
 import { getSharableEventAddress } from "../../../services/relay-hints";
 import DetailsTabs from "./details-tabs";
 import ReplyForm from "./reply-form";
+import SeenOnRelaysButton from "../../../components/note/seen-on-relays-button";
 
 export type ThreadItemProps = {
   post: ThreadItem;
@@ -123,6 +124,7 @@ function ThreadPost({ post, initShowReplies, focusId, level = -1 }: ThreadItemPr
       <ButtonGroup size="sm" variant="ghost">
         <NoteProxyLink event={post.event} />
         <BookmarkEventButton event={post.event} aria-label="Bookmark" />
+        <SeenOnRelaysButton event={post.event} />
         <NoteMenu event={post.event} aria-label="More Options" />
       </ButtonGroup>
     </Flex>

@@ -26,7 +26,7 @@ export type NewSetModalProps = Omit<ModalProps, "children"> & {
   allowSelectKind?: boolean;
 };
 
-export default function NewSetModal({
+export default function NewBookmarkSetModal({
   onClose,
   onCreated,
   initKind,

@@ -3,6 +3,7 @@ import {
   createEventLoader,
   createReactionsLoader,
   createTagValueLoader,
+  createUserListsLoader,
   createZapsLoader,
 } from "applesauce-loaders/loaders";
 import { kinds } from "nostr-tools";
@@ -39,6 +40,12 @@ export const eventLoader = createEventLoader(pool, {
 export const zapsLoader = createZapsLoader(pool, { cacheRequest, eventStore, extraRelays: localSettings.readRelays });
 
 export const reactionsLoader = createReactionsLoader(pool, {
+  cacheRequest,
+  eventStore,
+  extraRelays: localSettings.readRelays,
+});
+
+export const userSetsLoader = createUserListsLoader(pool, {
   cacheRequest,
   eventStore,
   extraRelays: localSettings.readRelays,

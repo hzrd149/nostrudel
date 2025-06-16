@@ -17,7 +17,7 @@ export default function PinEventMenuItem({ event }: { event: NostrEvent }) {
   const eventStore = useEventStore();
   const { list } = useUserPinList(account?.pubkey);
 
-  const isPinned = isEventInList(list, event);
+  const isPinned = !!list && isEventInList(list, event);
 
   let type = "Note";
   switch (event.kind) {
