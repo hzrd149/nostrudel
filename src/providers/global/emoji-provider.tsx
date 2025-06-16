@@ -14,7 +14,7 @@ export function useContextEmojis() {
 
 export function UserEmojiProvider({ children, pubkey }: PropsWithChildren & { pubkey?: string }) {
   const account = useActiveAccount();
-  const favoriteList = useFavoriteEmojiPacks(pubkey || account?.pubkey, undefined, true);
+  const favoriteList = useFavoriteEmojiPacks(pubkey || account?.pubkey);
 
   const favoritePacks = useReplaceableEvents(favoriteList && getPackCordsFromFavorites(favoriteList));
   const emojis = favoritePacks.map((pack) => getEmojis(pack)).flat();

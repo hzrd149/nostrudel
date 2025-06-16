@@ -15,7 +15,7 @@ import PeopleListCard from "../lists/components/people-list-card";
 
 export default function UserListsTab() {
   const { pubkey } = useOutletContext() as { pubkey: string };
-  const sets = useUserSets(pubkey).filter((e) => !isJunkList(e));
+  const sets = useUserSets(pubkey) ?? [];
 
   const contacts = useUserContacts(pubkey);
   const muted = useUserMutes(pubkey);

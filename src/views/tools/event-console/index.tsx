@@ -99,7 +99,7 @@ export default function EventConsoleView() {
       );
 
       const handleEvent = (event: NostrEvent) => {
-        event = eventStore.add(event);
+        event = eventStore.add(event) ?? event;
         buffer.push(event);
         flush();
       };

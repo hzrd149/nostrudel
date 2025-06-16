@@ -1,20 +1,20 @@
-import { useMemo, useRef, useState } from "react";
 import { VisuallyHidden } from "@chakra-ui/react";
-import SimpleMDE, { SimpleMDEReactProps } from "react-simplemde-editor";
-import ReactDOMServer from "react-dom/server";
 import { Global, css } from "@emotion/react";
+import { useMemo, useRef, useState } from "react";
+import ReactDOMServer from "react-dom/server";
+import SimpleMDE, { SimpleMDEReactProps } from "react-simplemde-editor";
+import { useActiveAccount } from "applesauce-react/hooks";
 
 import EasyMDE from "easymde";
 import "easymde/dist/easymde.min.css";
 
-import useUsersMediaServers from "../../../hooks/use-user-media-servers";
 import useAppSettings from "../../../hooks/use-user-app-settings";
-import { useActiveAccount } from "applesauce-react/hooks";
+import useUsersMediaServers from "../../../hooks/use-user-media-servers";
 
 import { CharkaMarkdown } from "../../../components/markdown/markdown";
-import { useSigningContext } from "../../../providers/global/signing-provider";
-import { simpleMultiServerUpload } from "../../../helpers/media-upload/blossom";
 import { stripSensitiveMetadataOnFile } from "../../../helpers/image";
+import { simpleMultiServerUpload } from "../../../helpers/media-upload/blossom";
+import { useSigningContext } from "../../../providers/global/signing-provider";
 
 const fixCodeMirrorFont = css`
   .EasyMDEContainer .CodeMirror {

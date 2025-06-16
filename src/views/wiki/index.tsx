@@ -1,20 +1,20 @@
-import { AvatarGroup, Link, Button, Flex, Heading, LinkBox, SimpleGrid } from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router-dom";
-import { useStoreQuery } from "applesauce-react/hooks";
+import { AvatarGroup, Button, Flex, Heading, Link, LinkBox, SimpleGrid } from "@chakra-ui/react";
+import { useEventModel } from "applesauce-react/hooks";
 import { NostrEvent } from "nostr-tools";
+import { Link as RouterLink } from "react-router-dom";
 
-import { WIKI_RELAYS } from "../../const";
-import VerticalPageLayout from "../../components/vertical-page-layout";
-import WikiSearchForm from "./components/wiki-search-form";
-import { WIKI_PAGE_KIND, validatePage } from "../../helpers/nostr/wiki";
-import useTimelineLoader from "../../hooks/use-timeline-loader";
-import { useReadRelays } from "../../hooks/use-client-relays";
-import TimelineActionAndStatus from "../../components/timeline/timeline-action-and-status";
+import HoverLinkOverlay from "../../components/hover-link-overlay";
 import { ExternalLinkIcon } from "../../components/icons";
 import WikiLink from "../../components/markdown/wiki-link";
+import TimelineActionAndStatus from "../../components/timeline/timeline-action-and-status";
 import UserAvatar from "../../components/user/user-avatar";
-import HoverLinkOverlay from "../../components/hover-link-overlay";
-import { WikiTopicsQuery } from "../../queries/wiki-topics";
+import VerticalPageLayout from "../../components/vertical-page-layout";
+import { WIKI_RELAYS } from "../../const";
+import { WIKI_PAGE_KIND, validatePage } from "../../helpers/nostr/wiki";
+import { useReadRelays } from "../../hooks/use-client-relays";
+import useTimelineLoader from "../../hooks/use-timeline-loader";
+import { WikiTopicsModel } from "../../models/wiki-topics";
+import WikiSearchForm from "./components/wiki-search-form";
 
 function eventFilter(event: NostrEvent) {
   if (!validatePage(event)) return false;
@@ -27,7 +27,7 @@ export default function WikiHomeView() {
     eventFilter,
   });
 
-  const topics = useStoreQuery(WikiTopicsQuery, []);
+  const topics = useEventModel(WikiTopicsModel, []) ?? [];
 
   return (
     <VerticalPageLayout>

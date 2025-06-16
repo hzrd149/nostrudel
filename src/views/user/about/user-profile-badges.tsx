@@ -20,15 +20,15 @@ import { NostrEvent } from "nostr-tools";
 import { useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
 
+import { getCoordinateFromAddressPointer } from "applesauce-core/helpers";
 import Timestamp from "../../../components/timestamp";
 import UserAvatarLink from "../../../components/user/user-avatar-link";
 import UserLink from "../../../components/user/user-link";
 import { getBadgeDescription, getBadgeImage, getBadgeName } from "../../../helpers/nostr/badges";
-import { getEventCoordinate } from "../../../helpers/nostr/event";
 import useUserProfileBadges from "../../../hooks/use-user-profile-badges";
 import { getSharableEventAddress } from "../../../services/relay-hints";
 
-function Badge({ pubkey, badge, award }: { pubkey: string; badge: NostrEvent; award: NostrEvent }) {
+function Badge({ badge, award }: { badge: NostrEvent; award: NostrEvent }) {
   const naddr = getSharableEventAddress(badge);
   const modal = useDisclosure();
   const description = getBadgeDescription(badge);
@@ -81,17 +81,19 @@ function Badge({ pubkey, badge, award }: { pubkey: string; badge: NostrEvent; aw
 }
 
 export default function UserProfileBadges({ pubkey, ...props }: Omit<FlexProps, "children"> & { pubkey: string }) {
-  const profileBadges = useUserProfileBadges(pubkey);
+  const badges = useUserProfileBadges({ pubkey });
   const [limit, setLimit] = useState<number | null>(10);
 
-  if (profileBadges.length === 0) return null;
+  if (!badges || badges.length === 0) return null;
 
   return (
     <Flex gap="2" wrap="wrap" alignItems="center" {...props}>
-      {(limit !== null ? profileBadges.slice(0, limit) : profileBadges).map(({ badge, award }) => (
-        <Badge key={getEventCoordinate(badge)} pubkey={pubkey} badge={badge} award={award} />
-      ))}
-      {limit !== null && profileBadges.length > limit && (
+      {(limit !== null ? badges.slice(0, limit) : badges)
+        .filter((b) => !!b.badge && !!b.award)
+        .map(({ badge, award, badgePointer }) => (
+          <Badge key={getCoordinateFromAddressPointer(badgePointer)} badge={badge!} award={award!} />
+        ))}
+      {limit !== null && badges.length > limit && (
         <Button variant="outline" onClick={() => setLimit(null)}>
           Show More
         </Button>

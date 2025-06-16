@@ -2,9 +2,7 @@ import { ButtonGroup, Flex, Heading, Spinner, Text } from "@chakra-ui/react";
 import { NostrEvent } from "nostr-tools";
 
 import DebugEventButton from "~/components/debug-modal/debug-event-button";
-import EventReactionButtons from "~/components/event-reactions/event-reactions";
 import EventQuoteButton from "~/components/note/event-quote-button";
-import AddReactionButton from "~/components/note/timeline-note/components/add-reaction-button";
 import EventShareButton from "~/components/note/timeline-note/components/event-share-button";
 import PicturePostContents from "~/components/picture-post/picture-post-content";
 import PicturePostSlides from "~/components/picture-post/picture-slides";
@@ -12,19 +10,17 @@ import BackButton from "~/components/router/back-button";
 import UserAvatarLink from "~/components/user/user-avatar-link";
 import UserDnsIdentity from "~/components/user/user-dns-identity";
 import UserLink from "~/components/user/user-link";
-import EventZapIconButton from "~/components/zap/event-zap-icon-button";
-import { useReadRelays } from "~/hooks/use-client-relays";
 import useParamsEventPointer from "~/hooks/use-params-event-pointer";
 import useSingleEvent from "~/hooks/use-single-event";
 import { useBreakpointValue } from "~/providers/global/breakpoint-provider";
 import { TrustProvider } from "~/providers/local/trust-provider";
+import SimpleView from "../../../components/layout/presets/simple-view";
+import NoteReactions from "../../../components/note/timeline-note/components/note-reactions";
+import PicturePostMenu from "../../../components/picture-post/picture-menu";
+import UserName from "../../../components/user/user-name";
+import EventZapButton from "../../../components/zap/event-zap-button";
 import PicturePostCommentForm from "./media-post-comment-form";
 import { PicturePostComments } from "./picture-comments";
-import SimpleView from "../../../components/layout/presets/simple-view";
-import UserName from "../../../components/user/user-name";
-import PicturePostMenu from "../../../components/picture-post/picture-menu";
-import EventZapButton from "../../../components/zap/event-zap-button";
-import NoteReactions from "../../../components/note/timeline-note/components/note-reactions";
 
 function Header({ post }: { post: NostrEvent }) {
   return (
@@ -133,9 +129,8 @@ function PicturePostPage({ post }: { post: NostrEvent }) {
 
 export default function PicturePostView() {
   const pointer = useParamsEventPointer("pointer");
-  const readRelays = useReadRelays(pointer.relays);
 
-  const post = useSingleEvent(pointer.id, readRelays);
+  const post = useSingleEvent(pointer);
 
   if (post) return <PicturePostPage post={post} />;
   else return <Spinner />;

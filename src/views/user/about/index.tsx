@@ -1,4 +1,4 @@
-import { useOutletContext, Link as RouterLink } from "react-router-dom";
+import { ChatIcon } from "@chakra-ui/icons";
 import {
   Box,
   Button,
@@ -17,13 +17,12 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
-import { nip19 } from "nostr-tools";
-import { ChatIcon } from "@chakra-ui/icons";
 import { parseLNURLOrAddress, parseNIP05Address } from "applesauce-core/helpers";
+import { nip19 } from "nostr-tools";
+import { Link as RouterLink, useOutletContext } from "react-router-dom";
 
-import { truncatedId } from "../../../helpers/nostr/event";
-import { useAdditionalRelayContext } from "../../../providers/local/additional-relay-context";
-import useUserProfile from "../../../hooks/use-user-profile";
+import { useMemo } from "react";
+import { CopyIconButton } from "../../../components/copy-icon-button";
 import {
   ChevronDownIcon,
   ChevronUpIcon,
@@ -32,30 +31,30 @@ import {
   LightningIcon,
   VerifiedIcon,
 } from "../../../components/icons";
-import { CopyIconButton } from "../../../components/copy-icon-button";
-import { QrIconButton } from "../components/share-qr-button";
-import UserDnsIdentity from "../../../components/user/user-dns-identity";
-import UserAvatar from "../../../components/user/user-avatar";
-import { UserFollowButton } from "../../../components/user/user-follow-button";
-import UserZapButton from "../components/user-zap-button";
-import { UserProfileMenu } from "../components/user-profile-menu";
-import { useSharableProfileId } from "../../../hooks/use-shareable-profile-id";
-import UserProfileBadges from "./user-profile-badges";
-import UserPinnedEvents from "./user-pinned-events";
-import UserStatsAccordion from "./user-stats-accordion";
-import UserJoinedChannels from "./user-joined-channels";
-import { getTextColor } from "../../../helpers/color";
-import UserName from "../../../components/user/user-name";
-import { useUserDNSIdentity } from "../../../hooks/use-user-dns-identity";
-import UserAboutContent from "../../../components/user/user-about-content";
-import UserRecentEvents from "./user-recent-events";
-import { useUserAppSettings } from "../../../hooks/use-user-app-settings";
-import UserJoinedGroups from "./user-joined-groups";
-import DNSIdentityWarning from "../../settings/dns-identity/identity-warning";
-import { socialGraph } from "../../../services/social-graph";
 import Share07 from "../../../components/icons/share-07";
-import { useMemo } from "react";
-import UserLink from "../../../components/user/user-link";
+import UserAboutContent from "../../../components/user/user-about-content";
+import UserAvatar from "../../../components/user/user-avatar";
+import UserDnsIdentity from "../../../components/user/user-dns-identity";
+import { UserFollowButton } from "../../../components/user/user-follow-button";
+import UserName from "../../../components/user/user-name";
+import { getTextColor } from "../../../helpers/color";
+import { truncatedId } from "../../../helpers/nostr/event";
+import { useSharableProfileId } from "../../../hooks/use-shareable-profile-id";
+import { useUserAppSettings } from "../../../hooks/use-user-app-settings";
+import { useUserDNSIdentity } from "../../../hooks/use-user-dns-identity";
+import useUserProfile from "../../../hooks/use-user-profile";
+import { useAdditionalRelayContext } from "../../../providers/local/additional-relay-context";
+import { socialGraph } from "../../../services/social-graph";
+import DNSIdentityWarning from "../../settings/dns-identity/identity-warning";
+import { QrIconButton } from "../components/share-qr-button";
+import { UserProfileMenu } from "../components/user-profile-menu";
+import UserZapButton from "../components/user-zap-button";
+import UserJoinedChannels from "./user-joined-channels";
+import UserJoinedGroups from "./user-joined-groups";
+import UserPinnedEvents from "./user-pinned-events";
+import UserProfileBadges from "./user-profile-badges";
+import UserRecentEvents from "./user-recent-events";
+import UserStatsAccordion from "./user-stats-accordion";
 
 export default function UserAboutTab() {
   const expanded = useDisclosure();
@@ -63,7 +62,7 @@ export default function UserAboutTab() {
   const contextRelays = useAdditionalRelayContext();
   const colorModal = useDisclosure();
 
-  const metadata = useUserProfile(pubkey, contextRelays);
+  const metadata = useUserProfile({ pubkey, relays: contextRelays });
   const npub = nip19.npubEncode(pubkey);
   const nprofile = useSharableProfileId(pubkey);
   const pubkeyColor = "#" + pubkey.slice(0, 6);

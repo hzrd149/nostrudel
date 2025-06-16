@@ -1,4 +1,3 @@
-import { useCallback, useEffect, useState } from "react";
 import {
   Button,
   ButtonGroup,
@@ -14,25 +13,26 @@ import {
   NumberInputStepper,
   Text,
 } from "@chakra-ui/react";
+import { useObservableEagerState } from "applesauce-react/hooks";
 import { NostrEvent } from "nostr-tools";
-import { useObservable } from "applesauce-react/hooks";
+import { useCallback, useEffect, useState } from "react";
 
-import { cacheRelay$ } from "../../../../services/cache-relay";
-import WasmRelay from "../../../../services/wasm-relay";
 import EventKindsPieChart from "../../../../components/charts/event-kinds-pie-chart";
 import EventKindsTable from "../../../../components/charts/event-kinds-table";
-import ImportEventsButton from "./components/import-events-button";
-import ExportEventsButton from "./components/export-events-button";
+import { cacheRelay$ } from "../../../../services/cache-relay";
 import localSettings from "../../../../services/local-settings";
+import WasmRelay from "../../../../services/wasm-relay";
+import ExportEventsButton from "./components/export-events-button";
+import ImportEventsButton from "./components/import-events-button";
 
 export default function WasmDatabasePage() {
-  const cacheRelay = useObservable(cacheRelay$);
+  const cacheRelay = useObservableEagerState(cacheRelay$);
   if (!(cacheRelay instanceof WasmRelay)) return null;
   const worker = cacheRelay.worker;
   if (!worker) return null;
 
   const [summary, setSummary] = useState<Record<string, number>>();
-  const persistForDays = useObservable(localSettings.wasmPersistForDays);
+  const persistForDays = useObservableEagerState(localSettings.wasmPersistForDays);
 
   const total = summary ? Object.values(summary).reduce((t, v) => t + v, 0) : undefined;
 

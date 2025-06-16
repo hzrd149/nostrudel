@@ -1,5 +1,5 @@
 import { Flex, Heading, Text } from "@chakra-ui/react";
-import { parseSharedEvent } from "applesauce-core/helpers/share";
+import { getEmbededSharedEvent } from "applesauce-core/helpers/share";
 import { kinds, nip18, NostrEvent } from "nostr-tools";
 import { memo, useEffect } from "react";
 
@@ -18,14 +18,14 @@ import UserLink from "../../user/user-link";
 
 function ShareEvent({ event }: { event: NostrEvent }) {
   const muteFilter = useUserMuteFilter();
-  const hardCodedNote = parseSharedEvent(event);
+  const hardCodedNote = getEmbededSharedEvent(event);
 
   useEffect(() => {
     if (hardCodedNote) eventStore.add(hardCodedNote);
   }, [hardCodedNote]);
 
   const pointer = nip18.getRepostedEventPointer(event);
-  const loadedNote = useSingleEvent(pointer?.id, pointer?.relays);
+  const loadedNote = useSingleEvent(pointer);
   const note = hardCodedNote || loadedNote;
 
   const ref = useEventIntersectionRef(event);

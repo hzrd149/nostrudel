@@ -1,20 +1,20 @@
 import { Box, Flex, FlexProps } from "@chakra-ui/react";
-import { getEventUID, getZapPayment, getZapSender } from "applesauce-core/helpers";
+import { getZapPayment, getZapSender } from "applesauce-core/helpers";
 
-import { getGoalRelays } from "../../../helpers/nostr/goal";
-import useEventZaps from "../../../hooks/use-event-zaps";
 import { NostrEvent } from "nostr-tools";
+import { LightningIcon } from "../../../components/icons";
 import UserAvatarLink from "../../../components/user/user-avatar-link";
 import UserLink from "../../../components/user/user-link";
 import { humanReadableSats } from "../../../helpers/lightning";
-import { LightningIcon } from "../../../components/icons";
+import { getGoalRelays } from "../../../helpers/nostr/goal";
+import useEventZaps from "../../../hooks/use-event-zaps";
 
 export default function GoalTopZappers({
   goal,
   max,
   ...props
 }: Omit<FlexProps, "children"> & { goal: NostrEvent; max?: number }) {
-  const zaps = useEventZaps(getEventUID(goal), getGoalRelays(goal), true);
+  const zaps = useEventZaps(goal, getGoalRelays(goal));
 
   const totals = zaps?.reduce<Record<string, number>>((dir, z) => {
     const sender = getZapSender(z);

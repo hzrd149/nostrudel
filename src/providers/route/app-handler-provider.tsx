@@ -1,6 +1,8 @@
 import { useToast } from "@chakra-ui/react";
+import { DecodeResult } from "applesauce-core/helpers";
 import { nip19 } from "nostr-tools";
 import { PropsWithChildren, createContext, useCallback, useMemo, useState } from "react";
+
 import AppHandlerModal from "../../components/app-handler-modal";
 
 type AppHandlerContextType = {
@@ -14,7 +16,7 @@ export const AppHandlerContext = createContext<AppHandlerContextType>({
 
 export default function AppHandlerProvider({ children }: PropsWithChildren) {
   const toast = useToast();
-  const [decoded, setDecoded] = useState<nip19.DecodeResult>();
+  const [decoded, setDecoded] = useState<DecodeResult>();
 
   const openAddress = useCallback((address: string) => {
     try {

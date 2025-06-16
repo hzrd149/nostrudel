@@ -1,5 +1,14 @@
-import { getProfilePointerFromPTag, isATag, isETag, isPTag } from "applesauce-core/helpers";
+import {
+  getAddressPointerFromATag,
+  getEventPointerFromETag,
+  getOrComputeCachedValue,
+  getProfilePointerFromPTag,
+  isATag,
+  isETag,
+  isPTag,
+} from "applesauce-core/helpers";
 import { NostrEvent } from "nostr-tools";
+import { AddressPointer, EventPointer } from "nostr-tools/nip19";
 
 export const PROFILE_BADGES_IDENTIFIER = "profile_badges";
 
@@ -39,20 +48,29 @@ export function getBadgeAwardBadge(event: NostrEvent) {
   return badgeCord;
 }
 
-export function parseProfileBadges(profileBadges: NostrEvent) {
-  const badgesAdded = new Set();
-  const badgeAwardSets: { badgeCord: string; awardEventId: string; relay?: string }[] = [];
+export const ProfileBadgesSymbol = Symbol("profile-badges");
 
-  let lastBadgeTag: ["a", ...string[]] | undefined;
-  for (const tag of profileBadges.tags) {
-    if (isATag(tag)) {
-      lastBadgeTag = tag;
-    } else if (isETag(tag) && lastBadgeTag && !badgesAdded.has(lastBadgeTag[1])) {
-      badgeAwardSets.push({ badgeCord: lastBadgeTag[1], awardEventId: tag[1], relay: tag[2] });
-      badgesAdded.add(lastBadgeTag[1]);
-      lastBadgeTag = undefined;
+export type ProfileBadge = {
+  badge: AddressPointer;
+  award: EventPointer;
+};
+
+export function getProfileBadges(profileBadges: NostrEvent): ProfileBadge[] {
+  return getOrComputeCachedValue(profileBadges, ProfileBadgesSymbol, () => {
+    const seen = new Set();
+    const badges: ProfileBadge[] = [];
+
+    let lastAtag: ["a", ...string[]] | undefined;
+    for (const tag of profileBadges.tags) {
+      if (isATag(tag)) {
+        lastAtag = tag;
+      } else if (isETag(tag) && lastAtag && !seen.has(lastAtag[1])) {
+        badges.push({ badge: getAddressPointerFromATag(lastAtag), award: getEventPointerFromETag(tag) });
+        seen.add(lastAtag[1]);
+        lastAtag = undefined;
+      }
     }
-  }
 
-  return badgeAwardSets;
+    return badges;
+  });
 }

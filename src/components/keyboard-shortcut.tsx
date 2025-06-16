@@ -1,6 +1,6 @@
-import { useRef } from "react";
 import { Code, CodeProps } from "@chakra-ui/react";
-import { useObservable } from "applesauce-react/hooks";
+import { useObservableEagerState } from "applesauce-react/hooks";
+import { useRef } from "react";
 import { useKeyPressEvent } from "react-use";
 
 import localSettings from "../services/local-settings";
@@ -15,7 +15,7 @@ export default function KeyboardShortcut({
   requireMeta?: boolean;
   onPress?: (e: KeyboardEvent) => void;
 } & Omit<CodeProps, "children">) {
-  const enableKeyboardShortcuts = useObservable(localSettings.enableKeyboardShortcuts);
+  const enableKeyboardShortcuts = useObservableEagerState(localSettings.enableKeyboardShortcuts);
   const ref = useRef<HTMLDivElement | null>(null);
   useKeyPressEvent(
     (e) => (requireMeta ? e.ctrlKey || e.metaKey : true) && e.key === letter,

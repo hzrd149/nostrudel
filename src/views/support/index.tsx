@@ -1,28 +1,28 @@
-import { useEffect, useState } from "react";
 import { Box, Button, Divider, Flex, Heading, Text, useDisclosure } from "@chakra-ui/react";
-import { useStoreQuery } from "applesauce-react/hooks";
-import { TimelineQuery } from "applesauce-core/queries";
-import { kinds } from "nostr-tools";
 import { getTagValue, getZapPayment, unixNow } from "applesauce-core/helpers";
+import { TimelineModel } from "applesauce-core/models";
+import { useEventModel } from "applesauce-react/hooks";
 import confetti from "canvas-confetti";
 import dayjs from "dayjs";
+import { kinds } from "nostr-tools";
+import { useEffect, useState } from "react";
 
+import { PayRequest } from "../../components/event-zap-modal";
+import PayStep from "../../components/event-zap-modal/pay-step";
+import { LightningIcon } from "../../components/icons";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import { SUPPORT_PUBKEY } from "../../const";
 import { isProfileZap } from "../../helpers/nostr/zaps";
-import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { useReadRelays } from "../../hooks/use-client-relays";
-import { useUserInbox } from "../../hooks/use-user-mailboxes";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
+import useTimelineLoader from "../../hooks/use-timeline-loader";
+import { useUserInbox } from "../../hooks/use-user-mailboxes";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
-import { TopZap } from "./components/top-zap";
+import { eventStore } from "../../services/event-store";
 import { NotQuiteTopZap } from "./components/not-quite-top-zap";
 import { OtherZap } from "./components/other-zap";
 import SupportForm from "./components/support-form";
-import { LightningIcon } from "../../components/icons";
-import { PayRequest } from "../../components/event-zap-modal";
-import PayStep from "../../components/event-zap-modal/pay-step";
-import { eventStore } from "../../services/event-store";
+import { TopZap } from "./components/top-zap";
 
 function randomInRange(min: number, max: number) {
   return Math.random() * (max - min) + min;
@@ -49,7 +49,7 @@ function fireworks(duration: number = 10_000) {
 const aMonthAgo = dayjs().subtract(1, "month").unix();
 
 export default function SupportView() {
-  const zaps = useStoreQuery(TimelineQuery, [{ kinds: [kinds.Zap], "#p": [SUPPORT_PUBKEY], since: aMonthAgo }]);
+  const zaps = useEventModel(TimelineModel, [{ kinds: [kinds.Zap], "#p": [SUPPORT_PUBKEY], since: aMonthAgo }]);
   const form = useDisclosure();
   const [request, setRequest] = useState<PayRequest>();
 

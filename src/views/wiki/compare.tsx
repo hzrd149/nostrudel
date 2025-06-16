@@ -93,8 +93,8 @@ export default function WikiCompareView() {
   const { topic, a, b } = useParams();
   if (!topic || !a || !b) return <Navigate to="/wiki" />;
 
-  const base = useReplaceableEvent({ kind: WIKI_PAGE_KIND, identifier: topic, pubkey: a }, WIKI_RELAYS);
-  const diff = useReplaceableEvent({ kind: WIKI_PAGE_KIND, identifier: topic, pubkey: b }, WIKI_RELAYS);
+  const base = useReplaceableEvent({ kind: WIKI_PAGE_KIND, identifier: topic, pubkey: a, relays: WIKI_RELAYS });
+  const diff = useReplaceableEvent({ kind: WIKI_PAGE_KIND, identifier: topic, pubkey: b, relays: WIKI_RELAYS });
 
   if (!base || !diff) return <Spinner />;
   return <WikiComparePage base={base} diff={diff} />;

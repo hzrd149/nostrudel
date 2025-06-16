@@ -1,17 +1,8 @@
-import _throttle from "lodash.throttle";
-import { UserSetsLoader } from "applesauce-loaders";
-
-import { eventStore } from "./event-store";
-import { nostrRequest } from "./pool";
+import { createUserListsLoader } from "applesauce-loaders/loaders";
 import { cacheRequest } from "./cache-relay";
+import { eventStore } from "./event-store";
+import pool from "./pool";
 
-const userSetsLoader = new UserSetsLoader(nostrRequest, { cacheRequest });
-
-userSetsLoader.subscribe((event) => eventStore.add(event));
-
-if (import.meta.env.DEV) {
-  //@ts-expect-error
-  window.userSetsLoader = userSetsLoader;
-}
+const userSetsLoader = createUserListsLoader(pool, { cacheRequest, eventStore });
 
 export default userSetsLoader;

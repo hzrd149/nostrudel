@@ -1,18 +1,15 @@
-import { Subscription } from "rxjs";
-import AppSettingsQuery from "../queries/app-settings";
+import { EMPTY, switchMap } from "rxjs";
+import { AppSettingsQuery } from "../models";
 import accounts from "../services/accounts";
-import { queryStore } from "../services/event-store";
+import { eventStore } from "../services/event-store";
 import { AppSettings } from "./app-settings";
 import { convertToUrl } from "./url";
 
 // hack to get app settings
 let settings: AppSettings | undefined;
-let sub: Subscription;
-accounts.active$.subscribe((account) => {
-  if (sub) sub.unsubscribe();
-  if (!account) return;
-  sub = queryStore.createQuery(AppSettingsQuery, account.pubkey).subscribe((v) => (settings = v));
-});
+accounts.active$
+  .pipe(switchMap((account) => (account ? eventStore.model(AppSettingsQuery, account.pubkey) : EMPTY)))
+  .subscribe((v) => (settings = v));
 
 const clearNetFailedHosts = new Set();
 const proxyFailedHosts = new Set();

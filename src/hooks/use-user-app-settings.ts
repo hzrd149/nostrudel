@@ -1,13 +1,14 @@
 import { ReadonlyAccount } from "applesauce-accounts/accounts";
-import { useActiveAccount, useStoreQuery } from "applesauce-react/hooks";
+import { useActiveAccount, useEventModel } from "applesauce-react/hooks";
 import dayjs from "dayjs";
 import { EventTemplate } from "nostr-tools";
 import { useCallback, useMemo } from "react";
 
-import { APP_SETTING_IDENTIFIER, APP_SETTINGS_KIND, AppSettings, defaultSettings } from "../helpers/app-settings";
+import { APP_SETTING_IDENTIFIER, APP_SETTINGS_KIND, AppSettings, DEFAULT_APP_SETTINGS } from "../helpers/app-settings";
+import { AppSettingsQuery } from "../models";
 import { usePublishEvent } from "../providers/global/publish-provider";
-import AppSettingsQuery from "../queries/app-settings";
 import useReplaceableEvent from "./use-replaceable-event";
+import { ProfilePointer } from "nostr-tools/nip19";
 
 function buildAppSettingsEvent(settings: Partial<AppSettings>): EventTemplate {
   return {
@@ -18,9 +19,8 @@ function buildAppSettingsEvent(settings: Partial<AppSettings>): EventTemplate {
   };
 }
 
-export function useUserAppSettings(pubkey: string) {
-  useReplaceableEvent({ kind: APP_SETTINGS_KIND, pubkey, identifier: APP_SETTING_IDENTIFIER });
-  return useStoreQuery(AppSettingsQuery, [pubkey]);
+export function useUserAppSettings(pubkey?: string | ProfilePointer) {
+  return useEventModel(AppSettingsQuery, pubkey ? [pubkey] : undefined) ?? DEFAULT_APP_SETTINGS;
 }
 
 export default function useAppSettings() {
@@ -33,7 +33,7 @@ export default function useAppSettings() {
   );
 
   const localSettings = account?.metadata?.settings;
-  const syncedSettings = useStoreQuery(AppSettingsQuery, account && [account.pubkey]);
+  const syncedSettings = useEventModel(AppSettingsQuery, account && [account.pubkey]);
 
   const updateSettings = useCallback(
     async (newSettings: Partial<AppSettings>) => {
@@ -51,7 +51,7 @@ export default function useAppSettings() {
   );
 
   const settings: AppSettings = useMemo(
-    () => ({ ...defaultSettings, ...localSettings, ...syncedSettings }),
+    () => ({ ...DEFAULT_APP_SETTINGS, ...localSettings, ...syncedSettings }),
     [localSettings, syncedSettings],
   );
 

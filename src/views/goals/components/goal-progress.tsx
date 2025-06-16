@@ -1,16 +1,15 @@
 import { Flex, Progress, Text } from "@chakra-ui/react";
 
 import { NostrEvent } from "nostr-tools";
-import { getGoalAmount, getGoalRelays } from "../../../helpers/nostr/goal";
 import { LightningIcon } from "../../../components/icons";
-import useEventZaps from "../../../hooks/use-event-zaps";
-import { getEventUID } from "../../../helpers/nostr/event";
-import { totalZaps } from "../../../helpers/nostr/zaps";
 import { humanReadableSats } from "../../../helpers/lightning";
+import { getGoalAmount, getGoalRelays } from "../../../helpers/nostr/goal";
+import { totalZaps } from "../../../helpers/nostr/zaps";
+import useEventZaps from "../../../hooks/use-event-zaps";
 
 export default function GoalProgress({ goal }: { goal: NostrEvent }) {
   const amount = getGoalAmount(goal);
-  const zaps = useEventZaps(getEventUID(goal), getGoalRelays(goal), true);
+  const zaps = useEventZaps(goal, getGoalRelays(goal));
   const raised = totalZaps(zaps);
 
   return (

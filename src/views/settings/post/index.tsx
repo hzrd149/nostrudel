@@ -1,26 +1,26 @@
-import { Link as RouterLink } from "react-router-dom";
 import {
-  Flex,
-  FormControl,
-  FormLabel,
-  FormHelperText,
-  Input,
-  Button,
-  Select,
-  Link,
   Alert,
+  AlertDescription,
   AlertIcon,
   AlertTitle,
-  AlertDescription,
+  Button,
+  Flex,
+  FormControl,
+  FormHelperText,
+  FormLabel,
+  Input,
+  Link,
+  Select,
   Switch,
 } from "@chakra-ui/react";
-import { useObservable } from "applesauce-react/hooks";
+import { useObservableEagerState } from "applesauce-react/hooks";
+import { Link as RouterLink } from "react-router-dom";
 
-import useUsersMediaServers from "../../../hooks/use-user-media-servers";
 import { useActiveAccount } from "applesauce-react/hooks";
-import useSettingsForm from "../use-settings-form";
-import localSettings from "../../../services/local-settings";
 import SimpleView from "../../../components/layout/presets/simple-view";
+import useUsersMediaServers from "../../../hooks/use-user-media-servers";
+import localSettings from "../../../services/local-settings";
+import useSettingsForm from "../use-settings-form";
 
 export default function PostSettings() {
   const account = useActiveAccount();
@@ -29,8 +29,8 @@ export default function PostSettings() {
 
   watch("mediaUploadService");
 
-  const addClientTag = useObservable(localSettings.addClientTag);
-  const alwaysAuthUpload = useObservable(localSettings.alwaysAuthUpload);
+  const addClientTag = useObservableEagerState(localSettings.addClientTag);
+  const alwaysAuthUpload = useObservableEagerState(localSettings.alwaysAuthUpload);
 
   return (
     <SimpleView

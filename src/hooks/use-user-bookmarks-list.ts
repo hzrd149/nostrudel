@@ -9,7 +9,7 @@ export default function userUserBookmarksList(pubkey?: string, relays: string[] 
   const account = useActiveAccount();
   const key = pubkey ?? account?.pubkey;
 
-  const list = useReplaceableEvent(key ? { kind: kinds.BookmarkList, pubkey: key } : undefined, relays, force);
+  const list = useReplaceableEvent(key ? { kind: kinds.BookmarkList, pubkey: key, relays } : undefined);
 
   const addressPointers = useMemo(() => (list ? getAddressPointersFromList(list) : []), [list]);
   const eventPointers = useMemo(() => (list ? getEventPointersFromList(list) : []), [list]);

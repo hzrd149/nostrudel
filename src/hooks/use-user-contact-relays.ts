@@ -1,10 +1,11 @@
-import { useMemo } from "react";
 import { getRelaysFromContactsEvent } from "applesauce-core/helpers/contacts";
+import { useMemo } from "react";
+import { ProfilePointer } from "nostr-tools/nip19";
 
 import useUserContactList from "./use-user-contact-list";
 
-export default function useUserContactRelays(pubkey?: string, additionalRelays?: Iterable<string>, force?: boolean) {
-  const contacts = useUserContactList(pubkey, additionalRelays, force);
+export default function useUserContactRelays(user?: string | ProfilePointer) {
+  const contacts = useUserContactList(user);
 
   return useMemo(() => {
     if (!contacts) return undefined;

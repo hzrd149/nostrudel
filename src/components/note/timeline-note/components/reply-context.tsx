@@ -1,18 +1,19 @@
-import { NostrEvent, nip19 } from "nostr-tools";
 import { Flex, Link, Text } from "@chakra-ui/react";
+import { NostrEvent } from "nostr-tools";
+import { AddressPointer, EventPointer, naddrEncode, neventEncode } from "nostr-tools/nip19";
 import { Link as RouterLink } from "react-router-dom";
 
 import { getThreadReferences, truncatedId } from "../../../../helpers/nostr/event";
-import UserLink from "../../../user/user-link";
 import useSingleEvent from "../../../../hooks/use-single-event";
 import { CompactNoteContent } from "../../../compact-note-content";
 import { ReplyIcon } from "../../../icons";
+import UserLink from "../../../user/user-link";
 
-function ReplyToE({ pointer }: { pointer: nip19.EventPointer }) {
-  const event = useSingleEvent(pointer.id, pointer.relays);
+function ReplyToE({ pointer }: { pointer: EventPointer }) {
+  const event = useSingleEvent(pointer);
 
   if (!event) {
-    const nevent = nip19.neventEncode(pointer);
+    const nevent = neventEncode(pointer);
     return (
       <Text>
         Replying to{" "}
@@ -32,8 +33,8 @@ function ReplyToE({ pointer }: { pointer: nip19.EventPointer }) {
     </>
   );
 }
-function ReplyToA({ pointer }: { pointer: nip19.AddressPointer }) {
-  const naddr = nip19.naddrEncode(pointer);
+function ReplyToA({ pointer }: { pointer: AddressPointer }) {
+  const naddr = naddrEncode(pointer);
 
   return (
     <Text>

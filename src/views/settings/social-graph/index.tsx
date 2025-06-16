@@ -100,7 +100,7 @@ export default function SocialGraphSettings() {
             >
               <NumberInputField />
             </NumberInput>
-            <Button colorScheme="primary" onClick={handleLoadGraph} isDisabled={!account?.pubkey} isLoading={loading}>
+            <Button colorScheme="primary" onClick={handleLoadGraph} isDisabled={!account?.pubkey} isLoading={!!loading}>
               Load Graph
             </Button>
           </Flex>

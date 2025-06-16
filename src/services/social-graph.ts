@@ -25,7 +25,7 @@ import { logger } from "../helpers/debug";
 import accounts from "./accounts";
 import idbKeyValueStore from "./database/kv";
 import { eventStore } from "./event-store";
-import replaceableEventLoader from "./replaceable-loader";
+import { addressLoader } from "./loaders";
 
 const log = logger.extend("SocialGraph");
 const cacheKey = "social-graph";
@@ -168,14 +168,14 @@ export function crawlFollowGraph(
     // create new observable to load each user
     mergeMap(([user, distance]) => {
       log(`Loading contacts for ${user.pubkey}`);
-      replaceableEventLoader.next({ kind: nostrKinds.Contacts, ...user });
+      addressLoader({ kind: nostrKinds.Contacts, ...user }).subscribe();
 
       const event = eventStore.getReplaceable(nostrKinds.Contacts, user.pubkey);
 
       return (
         event
           ? of(event)
-          : eventStore.inserts.pipe(
+          : eventStore.insert$.pipe(
               // Wait for the contacts event to be loaded
               filter((e) => e.kind === nostrKinds.Contacts && e.pubkey === user.pubkey),
               // Take the first event

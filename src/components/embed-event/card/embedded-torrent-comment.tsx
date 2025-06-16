@@ -19,7 +19,7 @@ export default function EmbeddedTorrentComment({
 }: Omit<CardProps, "children"> & { comment: NostrEvent }) {
   const navigate = useNavigate();
   const refs = getThreadReferences(comment);
-  const torrent = useSingleEvent(refs.root?.e?.id, refs.root?.e?.relays);
+  const torrent = useSingleEvent(refs.root?.e);
   const linkToTorrent = refs.root?.e && `/torrents/${nip19.neventEncode(refs.root.e)}`;
 
   const handleClick = useCallback<MouseEventHandler>(

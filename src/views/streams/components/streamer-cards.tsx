@@ -1,31 +1,22 @@
 import { Card, CardBody, CardHeader, CardProps, Heading, Image, LinkBox, LinkOverlay } from "@chakra-ui/react";
-import { isATag } from "applesauce-core/helpers";
+import { getEventUID, getTagValue } from "applesauce-core/helpers";
+import { useEventModel } from "applesauce-react/hooks";
+import { NostrEvent } from "nostr-tools";
 
 import { TextNoteContents } from "../../../components/note/timeline-note/text-note-contents";
 import OpenGraphCard from "../../../components/open-graph/open-graph-card";
-import { useReadRelays } from "../../../hooks/use-client-relays";
-import useReplaceableEvent from "../../../hooks/use-replaceable-event";
+import { StreamCardsQuery } from "../../../models/stream";
 import { useAdditionalRelayContext } from "../../../providers/local/additional-relay-context";
 
 export const STREAMER_CARDS_TYPE = 17777;
 export const STREAMER_CARD_TYPE = 37777;
 
-function useStreamerCardsCords(pubkey: string, relays: Iterable<string>) {
-  const streamerCards = useReplaceableEvent({ kind: STREAMER_CARDS_TYPE, pubkey }, relays);
-
-  return streamerCards?.tags.filter(isATag) ?? [];
-}
-
-function StreamerCard({ cord, relay, ...props }: { cord: string; relay?: string } & CardProps) {
-  const contextRelays = useAdditionalRelayContext();
-  const readRelays = useReadRelays(relay ? [...contextRelays, relay] : contextRelays);
-
-  const card = useReplaceableEvent(cord, readRelays);
+function StreamerCard({ card, ...props }: { card: NostrEvent } & CardProps) {
   if (!card || card.kind !== STREAMER_CARD_TYPE) return null;
 
-  const title = card.tags.find((t) => t[0] === "title")?.[1];
-  const image = card.tags.find((t) => t[0] === "image")?.[1];
-  const link = card.tags.find((t) => t[0] === "r")?.[1];
+  const title = getTagValue(card, "title");
+  const image = getTagValue(card, "image");
+  const link = getTagValue(card, "r");
 
   if (!card.content && !image && link) {
     return <OpenGraphCard url={new URL(link)} />;
@@ -55,15 +46,8 @@ function StreamerCard({ cord, relay, ...props }: { cord: string; relay?: string 
 
 export default function StreamerCards({ pubkey, ...props }: Omit<CardProps, "children"> & { pubkey: string }) {
   const contextRelays = useAdditionalRelayContext();
-  const readRelays = useReadRelays(contextRelays);
 
-  const cardCords = useStreamerCardsCords(pubkey, readRelays);
+  const cards = useEventModel(StreamCardsQuery, [{ pubkey, relays: contextRelays }]);
 
-  return (
-    <>
-      {cardCords.map(([_, cord, relay]) => (
-        <StreamerCard key={cord} cord={cord} relay={relay} {...props} />
-      ))}
-    </>
-  );
+  return <>{cards?.map((card) => <StreamerCard key={getEventUID(card)} card={card} {...props} />)}</>;
 }

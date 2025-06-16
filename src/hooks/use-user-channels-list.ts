@@ -1,14 +1,13 @@
-import { kinds } from "nostr-tools";
 import { getEventPointersFromList } from "applesauce-core/helpers/lists";
-import { useActiveAccount } from "applesauce-react/hooks";
+import { kinds } from "nostr-tools";
+import { ProfilePointer } from "nostr-tools/nip19";
 
-import useReplaceableEvent from "./use-replaceable-event";
+import useAddressableEvent from "./use-addressable-event";
 
-export default function useUserChannelsList(pubkey?: string, relays: string[] = [], force?: boolean) {
-  const account = useActiveAccount();
-  const key = pubkey ?? account?.pubkey;
-
-  const list = useReplaceableEvent(key ? { kind: kinds.PublicChatsList, pubkey: key } : undefined, relays, force);
+export default function useUserChannelsList(user?: ProfilePointer) {
+  const list = useAddressableEvent(
+    user ? { kind: kinds.PublicChatsList, pubkey: user.pubkey, relays: user.relays } : undefined,
+  );
 
   const pointers = list ? getEventPointersFromList(list) : [];
 

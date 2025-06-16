@@ -1,7 +1,7 @@
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/react";
 import styled from "@emotion/styled";
-import { ThreadItem } from "applesauce-core/queries";
-import { getEventUID } from "nostr-idb";
+import { getEventUID } from "applesauce-core/helpers";
+import { ThreadItem } from "applesauce-core/models";
 import { kinds } from "nostr-tools";
 import { ReactNode } from "react";
 
@@ -32,7 +32,7 @@ const HiddenScrollbarTabList = styled(TabList)`
 export default function DetailsTabs({ post }: { post: ThreadItem }) {
   const selected = useRouteSearchValue("tab", "replies");
 
-  const zaps = useEventZaps(getEventUID(post.event));
+  const zaps = useEventZaps(post.event);
 
   const readRelays = useReadRelays();
   const { timeline: events } = useTimelineLoader(`${post.event.id}-thread-refs`, readRelays, {

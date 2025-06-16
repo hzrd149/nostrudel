@@ -1,24 +1,23 @@
-import { useMemo, useRef } from "react";
 import { Box, Button, ButtonGroup, Flex, Input, Switch, useDisclosure } from "@chakra-ui/react";
+import { Emoji } from "applesauce-core/helpers";
+import { ThreadItem } from "applesauce-core/models";
+import { useEventFactory } from "applesauce-react/hooks";
+import { kinds, NostrEvent } from "nostr-tools";
+import { useMemo, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { useAsync, useThrottle } from "react-use";
-import { kinds } from "nostr-tools";
-import { ThreadItem } from "applesauce-core/queries";
-import { useEventFactory } from "applesauce-react/hooks";
-import { Emoji } from "applesauce-core/helpers";
 
-import { NostrEvent } from "nostr-tools";
+import InsertGifButton from "../../../components/gif/insert-gif-button";
+import { ChevronDownIcon, ChevronUpIcon } from "../../../components/icons";
 import MagicTextArea, { RefType } from "../../../components/magic-textarea";
-import { useContextEmojis } from "../../../providers/global/emoji-provider";
-import { TrustProvider } from "../../../providers/local/trust-provider";
-import { usePublishEvent } from "../../../providers/global/publish-provider";
 import { TextNoteContents } from "../../../components/note/timeline-note/text-note-contents";
+import InsertReactionButton from "../../../components/reactions/insert-reaction-button";
 import useCacheForm from "../../../hooks/use-cache-form";
 import useTextAreaUploadFile, { useTextAreaInsertTextWithForm } from "../../../hooks/use-textarea-upload-file";
-import InsertGifButton from "../../../components/gif/insert-gif-button";
+import { useContextEmojis } from "../../../providers/global/emoji-provider";
+import { usePublishEvent } from "../../../providers/global/publish-provider";
+import { TrustProvider } from "../../../providers/local/trust-provider";
 import InsertImageButton from "../../new/note/insert-image-button";
-import InsertReactionButton from "../../../components/reactions/insert-reaction-button";
-import { ChevronDownIcon, ChevronUpIcon } from "../../../components/icons";
 
 export type ReplyFormProps = {
   item: ThreadItem;

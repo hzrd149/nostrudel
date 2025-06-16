@@ -11,16 +11,16 @@ import { logger } from "../helpers/debug";
 import accounts from "./accounts";
 import authenticationSigner from "./authentication-signer";
 import { cacheRelay$ } from "./cache-relay";
-import { eventStore, queryStore } from "./event-store";
+import { eventStore } from "./event-store";
+import { addressLoader } from "./loaders";
 import localSettings from "./local-settings";
 import pool from "./pool";
-import replaceableEventLoader from "./replaceable-loader";
 import { saveSocialGraph, socialGraph } from "./social-graph";
 
 const log = logger.extend("Lifecycle");
 
 const requestReplaceable = (account: IAccount, relays: Iterable<string>, kind: number, d?: string) => {
-  replaceableEventLoader.next({ relays: [...relays], kind, pubkey: account.pubkey, identifier: d, force: true });
+  addressLoader({ relays: [...relays], kind, pubkey: account.pubkey, identifier: d, cache: false }).subscribe();
 };
 
 // listen for account changes and load users events
@@ -38,7 +38,7 @@ combineLatest([
       log("Loading outboxes");
       requestReplaceable(account, mergeRelaySets(relays, DEFAULT_LOOKUP_RELAYS), kinds.RelayList);
 
-      return queryStore.mailboxes(account.pubkey).pipe(
+      return eventStore.mailboxes(account.pubkey).pipe(
         defined(),
         // Once mailboxes are loaded, load user information
         switchMap((mailboxes) => {

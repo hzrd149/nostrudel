@@ -32,7 +32,7 @@ const HiddenScrollbar = styled(Flex)`
 `;
 
 export default function ZapBubbles({ event, ...props }: { event: NostrEvent } & Omit<FlexProps, "children">) {
-  const zaps = useEventZaps(getEventUID(event));
+  const zaps = useEventZaps(event);
 
   if (!zaps || zaps.length === 0) return null;
 

@@ -1,4 +1,3 @@
-import { useContext, useState } from "react";
 import {
   Box,
   Button,
@@ -17,29 +16,24 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
-import { nip19 } from "nostr-tools";
+import { DecodeResult, encodeDecodeResult } from "applesauce-core/helpers";
+import { useObservableState } from "applesauce-react/hooks";
+import { useContext, useState } from "react";
 import { useSet } from "react-use";
-import { encodeDecodeResult } from "applesauce-core/helpers";
 
 import { ExternalLinkIcon, SearchIcon } from "./icons";
 import UserLink from "./user/user-link";
 
-import RelayFavicon from "./relay-favicon";
-import singleEventLoader from "../services/single-event-loader";
-import replaceableEventLoader from "../services/replaceable-loader";
 import { AppHandlerContext } from "../providers/route/app-handler-provider";
-import { useObservable } from "applesauce-react/hooks";
+import { addressLoader, eventLoader } from "../services/loaders";
 import { connections$ } from "../services/pool";
+import RelayFavicon from "./relay-favicon";
 
-function SearchOnRelaysModal({
-  isOpen,
-  onClose,
-  decode,
-}: Omit<ModalProps, "children"> & { decode: nip19.DecodeResult }) {
+function SearchOnRelaysModal({ isOpen, onClose, decode }: Omit<ModalProps, "children"> & { decode: DecodeResult }) {
   const [loading, setLoading] = useState(false);
   const [filter, setFilter] = useState("");
 
-  const discoveredRelays = Object.entries(useObservable(connections$) ?? {}).reduce<string[]>(
+  const discoveredRelays = Object.entries(useObservableState(connections$) ?? {}).reduce<string[]>(
     (arr, [relay, status]) => (status !== "error" ? [...arr, relay] : arr),
     [],
   );
@@ -50,17 +44,17 @@ function SearchOnRelaysModal({
     setLoading(true);
     switch (decode.type) {
       case "naddr":
-        replaceableEventLoader.next({
+        addressLoader({
           ...decode.data,
           relays: [...relays, ...(decode.data.relays ?? [])],
-          force: true,
-        });
+          cache: false,
+        }).subscribe();
         break;
       case "note":
-        singleEventLoader.next({ id: decode.data, relays: Array.from(relays) });
+        eventLoader({ id: decode.data, relays: Array.from(relays) }).subscribe();
         break;
       case "nevent":
-        singleEventLoader.next({ id: decode.data.id, relays: Array.from(relays) });
+        eventLoader({ id: decode.data.id, relays: Array.from(relays) }).subscribe();
         break;
     }
   };
@@ -125,7 +119,7 @@ function SearchOnRelaysModal({
   );
 }
 
-export default function LoadingNostrLink({ link }: { link: nip19.DecodeResult }) {
+export default function LoadingNostrLink({ link }: { link: DecodeResult }) {
   const { openAddress } = useContext(AppHandlerContext);
   const address = encodeDecodeResult(link);
   const details = useDisclosure();

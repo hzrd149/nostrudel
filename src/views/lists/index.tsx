@@ -1,28 +1,27 @@
-import { Button, Flex, Heading, SimpleGrid, Spacer, useDisclosure } from "@chakra-ui/react";
+import { Button, Flex, Heading, SimpleGrid, useDisclosure } from "@chakra-ui/react";
 import { getEventUID } from "applesauce-core/helpers";
 import { kinds } from "nostr-tools";
-import { Link as RouterLink, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import { useActiveAccount } from "applesauce-react/hooks";
+import { MuteIcon } from "../../components/icons";
 import Plus from "../../components/icons/plus";
-import VerticalPageLayout from "../../components/vertical-page-layout";
+import Users01 from "../../components/icons/users-01";
+import SimpleView from "../../components/layout/presets/simple-view";
+import RequireActiveAccount from "../../components/router/require-active-account";
 import useFavoriteLists from "../../hooks/use-favorite-lists";
+import useUserContacts from "../../hooks/use-user-contacts";
 import useUserSets from "../../hooks/use-user-lists";
+import useUserMutes from "../../hooks/use-user-mutes";
 import { getSharableEventAddress } from "../../services/relay-hints";
 import FallbackListCard from "./components/fallback-list-card";
-import NewSetModal from "./components/new-set-modal";
-import SimpleView from "../../components/layout/presets/simple-view";
 import ListTypeCard from "./components/list-type-card";
-import Users01 from "../../components/icons/users-01";
-import useUserContacts from "../../hooks/use-user-contacts";
-import useUserMutes from "../../hooks/use-user-mutes";
-import { MuteIcon } from "../../components/icons";
-import RequireActiveAccount from "../../components/router/require-active-account";
+import NewSetModal from "./components/new-set-modal";
 import PeopleListCard from "./components/people-list-card";
 
 function ListHomePage() {
   const account = useActiveAccount()!;
-  const sets = useUserSets(account?.pubkey, undefined, true);
+  const sets = useUserSets(account?.pubkey) ?? [];
   const { lists: favoriteLists } = useFavoriteLists();
   const newList = useDisclosure();
   const navigate = useNavigate();

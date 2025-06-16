@@ -1,9 +1,8 @@
-import { useStoreQuery } from "applesauce-react/hooks";
-import TrustedMintsQuery from "../queries/trusted-mints";
+import { useEventModel } from "applesauce-react/hooks";
+import TrustedMintsQuery from "../models/trusted-mints";
 import useReplaceableEvent from "./use-replaceable-event";
+import { ProfilePointer } from "nostr-tools/nip19";
 
-export default function useTrustedMints(pubkey?: string, force?: boolean) {
-  useReplaceableEvent(pubkey && { kind: 10019, pubkey }, undefined, force);
-
-  return useStoreQuery(TrustedMintsQuery, pubkey ? [pubkey] : undefined);
+export default function useTrustedMints(user?: string | ProfilePointer) {
+  return useEventModel(TrustedMintsQuery, user ? [user] : undefined);
 }

@@ -116,11 +116,7 @@ class DecryptionCache {
   }
 }
 
+/** @deprecated use eventStore.update to track decryption updates */
 const decryptionCacheService = new DecryptionCache();
-
-if (import.meta.env.DEV) {
-  // @ts-expect-error debug
-  window.decryptionCacheService = decryptionCacheService;
-}
 
 export default decryptionCacheService;

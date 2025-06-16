@@ -1,18 +1,17 @@
-import { useState } from "react";
-import { NostrEvent } from "nostr-tools";
 import { Button, ButtonGroup, Flex, Heading, SimpleGrid, Text, useInterval } from "@chakra-ui/react";
+import { NostrEvent } from "nostr-tools";
+import { useState } from "react";
 
-import UserAvatar from "../../../../components/user/user-avatar";
-import UserName from "../../../../components/user/user-name";
+import { useActiveAccount, useObservableEagerState } from "applesauce-react/hooks";
+import NostrWebRTCPeer from "../../../../classes/webrtc/nostr-webrtc-peer";
 import WebRtcRelayClient from "../../../../classes/webrtc/webrtc-relay-client";
 import WebRtcRelayServer from "../../../../classes/webrtc/webrtc-relay-server";
-import NostrWebRTCPeer from "../../../../classes/webrtc/nostr-webrtc-peer";
-import { cacheRelay$ } from "../../../../services/cache-relay";
-import { useActiveAccount } from "applesauce-react/hooks";
-import useUserContactList from "../../../../hooks/use-user-contact-list";
+import UserAvatar from "../../../../components/user/user-avatar";
+import UserName from "../../../../components/user/user-name";
 import { getPubkeysFromList } from "../../../../helpers/nostr/lists";
 import useForceUpdate from "../../../../hooks/use-force-update";
-import { useObservable } from "applesauce-react/hooks";
+import useUserContactList from "../../../../hooks/use-user-contact-list";
+import { cacheRelay$ } from "../../../../services/cache-relay";
 
 export default function Connection({
   call,
@@ -25,7 +24,7 @@ export default function Connection({
   client: WebRtcRelayClient;
   server: WebRtcRelayServer;
 }) {
-  const cacheRelay = useObservable(cacheRelay$);
+  const cacheRelay = useObservableEagerState(cacheRelay$);
   const update = useForceUpdate();
   useInterval(update, 1000);
   // const toggleRead = () => {

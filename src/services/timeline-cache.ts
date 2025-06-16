@@ -1,9 +1,11 @@
 import { LRU } from "applesauce-core/helpers";
-import { TimelessFilter, TimelineLoader } from "applesauce-loaders";
+import { TimelessFilter } from "applesauce-loaders";
+import { createTimelineLoader, TimelineLoader } from "applesauce-loaders/loaders";
 
-import { nostrRequest } from "./pool";
 import { logger } from "../helpers/debug";
 import { cacheRequest } from "./cache-relay";
+import { eventStore } from "./event-store";
+import pool from "./pool";
 
 const MAX_CACHE = 30;
 const BATCH_LIMIT = 100;
@@ -17,9 +19,10 @@ class TimelineCacheService {
 
     if (!timeline && relays.length > 0 && filters.length > 0) {
       this.log(`Creating ${key}`);
-      timeline = new TimelineLoader(nostrRequest, TimelineLoader.simpleFilterMap(relays, filters), {
+      timeline = createTimelineLoader(pool, relays, filters, {
         limit: BATCH_LIMIT,
-        cacheRequest,
+        cache: cacheRequest,
+        eventStore,
       });
       this.timelines.set(key, timeline);
     }

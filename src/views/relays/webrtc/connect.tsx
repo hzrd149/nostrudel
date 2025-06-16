@@ -1,16 +1,16 @@
-import { useEffect } from "react";
 import { Alert, AlertIcon, Button, CloseButton, Flex, Heading, Input, Text, useInterval } from "@chakra-ui/react";
+import { useObservableEagerState } from "applesauce-react/hooks";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { useObservable } from "applesauce-react/hooks";
 
-import webRtcRelaysService from "../../../services/webrtc-relays";
 import NostrWebRtcBroker from "../../../classes/webrtc/nostr-webrtc-broker";
+import SimpleView from "../../../components/layout/presets/simple-view";
 import QRCodeScannerButton from "../../../components/qr-code/qr-code-scanner-button";
 import UserAvatar from "../../../components/user/user-avatar";
 import UserName from "../../../components/user/user-name";
-import localSettings from "../../../services/local-settings";
 import useForceUpdate from "../../../hooks/use-force-update";
-import SimpleView from "../../../components/layout/presets/simple-view";
+import localSettings from "../../../services/local-settings";
+import webRtcRelaysService from "../../../services/webrtc-relays";
 
 export default function WebRtcConnectView() {
   const update = useForceUpdate();
@@ -36,7 +36,7 @@ export default function WebRtcConnectView() {
     reset();
   });
 
-  const recent = useObservable(localSettings.webRtcRecentConnections)
+  const recent = useObservableEagerState(localSettings.webRtcRecentConnections)
     .map((uri) => ({ ...NostrWebRtcBroker.parseNostrWebRtcURI(uri), uri }))
     .filter(({ pubkey }) => !webRtcRelaysService.broker.peers.has(pubkey));
 

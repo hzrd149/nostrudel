@@ -128,7 +128,7 @@ function FileDetailsPage({ file }: { file: NostrEvent }) {
 
 export default function FileDetailsView() {
   const pointer = useParamsEventPointer("nevent");
-  const file = useSingleEvent(pointer?.id, pointer?.relays ?? []);
+  const file = useSingleEvent(pointer);
 
   if (!file) return <Spinner />;
 

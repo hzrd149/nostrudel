@@ -36,7 +36,7 @@ export default function useThreadTimelineLoader(
       : undefined,
   );
 
-  const rootEvent = useSingleEvent(rootPointer?.id, rootPointer?.relays);
+  const rootEvent = useSingleEvent(rootPointer);
   const allEvents = useMemo(() => {
     const arr = Array.from(events);
     if (focusedEvent) arr.push(focusedEvent);

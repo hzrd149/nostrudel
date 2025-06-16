@@ -1,11 +1,11 @@
 import { Select, SelectProps } from "@chakra-ui/react";
-import { useObservable } from "applesauce-react/hooks";
+import { useObservableEagerState } from "applesauce-react/hooks";
 
-import localSettings from "../../services/local-settings";
 import { RelayAuthMode } from "../../services/authentication-signer";
+import localSettings from "../../services/local-settings";
 
 export default function DefaultAuthModeSelect({ ...props }: Omit<SelectProps, "children" | "value" | "onChange">) {
-  const defaultAuthenticationMode = useObservable(localSettings.defaultAuthenticationMode);
+  const defaultAuthenticationMode = useObservableEagerState(localSettings.defaultAuthenticationMode);
 
   return (
     <Select

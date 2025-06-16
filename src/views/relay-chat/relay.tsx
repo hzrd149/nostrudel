@@ -1,7 +1,7 @@
 import { Alert, AlertIcon, Box, Divider, Flex, Text } from "@chakra-ui/react";
 import { getSeenRelays, getTagValue } from "applesauce-core/helpers";
-import { TimelineQuery } from "applesauce-core/queries";
-import { useStoreQuery } from "applesauce-react/hooks";
+import { TimelineModel } from "applesauce-core/models";
+import { useEventModel } from "applesauce-react/hooks";
 import { NostrEvent } from "nostr-tools";
 import { useEffect, useState } from "react";
 import { Navigate, useParams } from "react-router-dom";
@@ -33,7 +33,7 @@ function RelayChatMessage({ message }: { message: NostrEvent }) {
 function RelayChatLog({ relay, channel }: { relay: string; channel?: string }) {
   const clientMuteFilter = useClientSideMuteFilter();
   const messages =
-    useStoreQuery(TimelineQuery, [{ kinds: [RELAY_CHAT_MESSAGE_KIND] }])
+    useEventModel(TimelineModel, [{ kinds: [RELAY_CHAT_MESSAGE_KIND] }])
       ?.filter((e) => getSeenRelays(e)?.has(relay) && (getTagValue(e, "d") ?? "_") === (channel ?? "_"))
       .filter((e) => !clientMuteFilter(e)) ?? [];
 

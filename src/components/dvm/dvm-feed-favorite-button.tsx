@@ -9,6 +9,7 @@ import useAsyncAction from "../../hooks/use-async-action";
 import useFavoriteFeeds, { FAVORITE_FEEDS_IDENTIFIER } from "../../hooks/use-favorite-feeds";
 import { usePublishEvent } from "../../providers/global/publish-provider";
 import { StarEmptyIcon, StarFullIcon } from "../icons";
+import { unixNow } from "applesauce-core/helpers";
 
 export default function DVMFeedFavoriteButton({
   pointer,
@@ -23,6 +24,8 @@ export default function DVMFeedFavoriteButton({
     const prev = favorites || {
       kind: kinds.Application,
       tags: [["d", FAVORITE_FEEDS_IDENTIFIER]],
+      created_at: unixNow(),
+      content: "",
     };
 
     const draft = await factory.modifyTags(prev, isFavorite ? removeCoordinateTag(pointer) : addCoordinateTag(pointer));

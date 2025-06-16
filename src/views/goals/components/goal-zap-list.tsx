@@ -36,7 +36,7 @@ function GoalZap({ zap }: { zap: NostrEvent }) {
 }
 
 export default function GoalZapList({ goal }: { goal: NostrEvent }) {
-  const zaps = useEventZaps(getEventUID(goal), getGoalRelays(goal), true);
+  const zaps = useEventZaps(goal, getGoalRelays(goal));
 
   return (
     <>

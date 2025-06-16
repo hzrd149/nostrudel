@@ -1,12 +1,12 @@
 import { Card, Flex, Link, Text } from "@chakra-ui/react";
-import { useActiveAccount, useStoreQuery } from "applesauce-react/hooks";
-import { WalletBalanceQuery } from "applesauce-wallet/queries";
+import { useActiveAccount, useEventModel } from "applesauce-react/hooks";
+import { WalletBalanceModel } from "applesauce-wallet/models";
 import CashuMintFavicon from "../../../components/cashu/cashu-mint-favicon";
 import CashuMintName from "../../../components/cashu/cashu-mint-name";
 
 export default function WalletMintsTab() {
   const account = useActiveAccount()!;
-  const balance = useStoreQuery(WalletBalanceQuery, [account.pubkey]);
+  const balance = useEventModel(WalletBalanceModel, [account.pubkey]);
 
   return (
     <Flex direction="column" gap="2">

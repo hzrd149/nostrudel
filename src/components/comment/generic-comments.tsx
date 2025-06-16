@@ -1,4 +1,3 @@
-import { memo } from "react";
 import {
   Box,
   Button,
@@ -11,29 +10,31 @@ import {
   IconButton,
   useDisclosure,
 } from "@chakra-ui/react";
-import { kinds, NostrEvent } from "nostr-tools";
 import { COMMENT_KIND, getEventUID } from "applesauce-core/helpers";
-import { useStoreQuery } from "applesauce-react/hooks";
-import { CommentsQuery, RepliesQuery } from "applesauce-core/queries";
+import { CommentsModel, RepliesModel } from "applesauce-core/models";
+import { useEventModel } from "applesauce-react/hooks";
+import { NostrEvent } from "nostr-tools";
+import { isAddressableKind } from "nostr-tools/kinds";
+import { memo } from "react";
 
-import Timestamp from "../timestamp";
-import DebugEventButton from "../debug-modal/debug-event-button";
-import UserLink from "../user/user-link";
-import TextNoteContents from "../note/timeline-note/text-note-contents";
 import { useReadRelays } from "../../hooks/use-client-relays";
-import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
+import useTimelineLoader from "../../hooks/use-timeline-loader";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
+import DebugEventButton from "../debug-modal/debug-event-button";
+import { ChevronDownIcon, ChevronUpIcon, ReplyIcon } from "../icons";
+import NoteReactions from "../note/timeline-note/components/note-reactions";
+import TextNoteContents from "../note/timeline-note/text-note-contents";
+import Timestamp from "../timestamp";
 import UserAvatarLink from "../user/user-avatar-link";
 import UserDnsIdentity from "../user/user-dns-identity";
-import NoteReactions from "../note/timeline-note/components/note-reactions";
-import { ChevronDownIcon, ChevronUpIcon, ReplyIcon } from "../icons";
+import UserLink from "../user/user-link";
 import EventZapButton from "../zap/event-zap-button";
 import GenericCommentForm from "./generic-comment-form";
 
 const Comment = memo(({ comment, level = 0 }: { comment: NostrEvent; level?: number }) => {
   const reply = useDisclosure();
-  const replies = useStoreQuery(RepliesQuery, [comment]);
+  const replies = useEventModel(RepliesModel, [comment]);
   const expand = useDisclosure({ defaultIsOpen: true });
   const all = useDisclosure();
 
@@ -98,7 +99,7 @@ export function GenericComments({ event }: { event: NostrEvent }) {
   const { loader } = useTimelineLoader(
     `${getEventUID(event)}-comments`,
     readRelays,
-    kinds.isParameterizedReplaceableKind(event.kind)
+    isAddressableKind(event.kind)
       ? {
           kinds: [COMMENT_KIND],
           "#A": [getEventUID(event)],
@@ -109,7 +110,7 @@ export function GenericComments({ event }: { event: NostrEvent }) {
         },
   );
 
-  const comments = useStoreQuery(CommentsQuery, [event]);
+  const comments = useEventModel(CommentsModel, [event]);
   const callback = useTimelineCurserIntersectionCallback(loader);
 
   return (

@@ -1,6 +1,8 @@
-import { Query } from "applesauce-core";
+import { Model } from "applesauce-core";
 import { isSafeRelayURL } from "applesauce-core/helpers";
+import { ProfilePointer } from "nostr-tools/nip19";
 import { map } from "rxjs/operators";
+import { ReplaceableQuery } from "./addressable";
 
 type TrustedMints = {
   mints: string[];
@@ -8,9 +10,11 @@ type TrustedMints = {
   pubkey?: string;
 };
 
-export default function TrustedMintsQuery(pubkey: string): Query<TrustedMints | undefined> {
+export default function TrustedMintsModel(user: string | ProfilePointer): Model<TrustedMints | undefined> {
+  const pointer = typeof user === "string" ? { pubkey: user } : user;
+
   return (events) =>
-    events.replaceable(10019, pubkey).pipe(
+    events.model(ReplaceableQuery, 10019, pointer.pubkey, undefined, pointer.relays).pipe(
       map((event) => {
         if (!event) return undefined;
 

@@ -1,5 +1,5 @@
 import { LinkBox, Text } from "@chakra-ui/react";
-import { useObservable } from "applesauce-react/hooks";
+import { useObservableEagerState } from "applesauce-react/hooks";
 
 import HoverLinkOverlay from "../../../../components/hover-link-overlay";
 import RouterLink from "../../../../components/router-link";
@@ -7,7 +7,7 @@ import Timestamp from "../../../../components/timestamp";
 import { notices$ } from "../../../../services/pool";
 
 export default function NoticesTab() {
-  const notices = useObservable(notices$);
+  const notices = useObservableEagerState(notices$);
 
   return (
     <>

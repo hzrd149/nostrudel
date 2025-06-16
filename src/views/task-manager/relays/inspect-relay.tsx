@@ -1,5 +1,5 @@
 import { Flex, Heading, Spacer, Tab, TabIndicator, TabList, TabPanel, TabPanels, Tabs, Text } from "@chakra-ui/react";
-import { useObservable } from "applesauce-react/hooks";
+import { useObservableEagerState } from "applesauce-react/hooks";
 import { Navigate, useParams } from "react-router-dom";
 
 import BackButton from "../../../components/router/back-button";
@@ -13,7 +13,7 @@ export default function InspectRelayView() {
   const { relay } = useParams();
   if (!relay) return <Navigate to="/" />;
 
-  const notices = useObservable(notices$)?.filter((n) => n.from === relay) ?? [];
+  const notices = useObservableEagerState(notices$).filter((n) => n.from === relay);
 
   return (
     <VerticalPageLayout>

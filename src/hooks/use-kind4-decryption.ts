@@ -1,28 +1,34 @@
-import { useCallback, useMemo } from "react";
+import { watchEventUpdates } from "applesauce-core";
+import { getEncryptedContent, unlockLegacyMessage } from "applesauce-core/helpers";
+import { useActiveAccount, useEventStore, useObservableEagerMemo } from "applesauce-react/hooks";
 import { NostrEvent } from "nostr-tools";
-import { useActiveAccount, useObservable } from "applesauce-react/hooks";
+import { useCallback, useState } from "react";
+import { filter, map, of } from "rxjs";
 
-import decryptionCacheService from "../services/decryption-cache";
-import { getDMRecipient, getDMSender } from "../helpers/nostr/dms";
-
-export function useKind4Decrypt(event: NostrEvent, pubkey?: string) {
+export function useLegacyMessagePlaintext(event: NostrEvent) {
+  const eventStore = useEventStore();
   const account = useActiveAccount()!;
 
-  pubkey = pubkey || event.pubkey === account.pubkey ? getDMRecipient(event) : getDMSender(event);
-
-  const container = useMemo(
-    () => decryptionCacheService.getOrCreateContainer(event.id, "nip04", pubkey, event.content),
-    [event, pubkey],
+  const [error, setError] = useState<Error>();
+  const plaintext = useObservableEagerMemo(
+    () =>
+      of(event)
+        .pipe(watchEventUpdates(eventStore))
+        .pipe(
+          filter((e) => !!e),
+          map((event) => getEncryptedContent(event)),
+        ),
+    [event.id, eventStore],
   );
 
-  const plaintext = useObservable(container.plaintext);
-  const error = useObservable(container.error);
+  const requestDecrypt = useCallback(async () => {
+    try {
+      setError(undefined);
+      await unlockLegacyMessage(event, account.pubkey, account);
+    } catch (error) {
+      setError(error as Error);
+    }
+  }, [event, account]);
 
-  const requestDecrypt = useCallback(() => {
-    const p = decryptionCacheService.requestDecrypt(container);
-    decryptionCacheService.startDecryptionQueue();
-    return p;
-  }, [container]);
-
-  return { container, error, plaintext, requestDecrypt };
+  return { error, plaintext, requestDecrypt };
 }

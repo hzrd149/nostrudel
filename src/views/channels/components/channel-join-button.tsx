@@ -14,7 +14,7 @@ export default function ChannelJoinButton({
 }: Omit<ButtonProps, "children"> & { channel: NostrEvent }) {
   const publish = usePublishEvent();
   const account = useActiveAccount();
-  const { list, pointers } = useUserChannelsList(account?.pubkey);
+  const { list, pointers } = useUserChannelsList(account && { pubkey: account.pubkey });
 
   const isSubscribed = pointers.find((e) => e.id === channel.id);
 

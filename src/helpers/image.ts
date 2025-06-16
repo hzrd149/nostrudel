@@ -1,9 +1,9 @@
-import { Subscription } from "rxjs";
+import { EMPTY, Subscription, switchMap } from "rxjs";
 import { fixOrientationAndStripMetadata } from "../lib/fix-image-orientation";
-import AppSettingsQuery from "../queries/app-settings";
+import { AppSettingsQuery } from "../models";
 import accounts from "../services/accounts";
-import { queryStore } from "../services/event-store";
 import { AppSettings } from "./app-settings";
+import { eventStore } from "../services/event-store";
 
 export type ImageSize = { width: number; height: number };
 const imageSizeCache = new Map<string, ImageSize>();
@@ -27,12 +27,9 @@ export function getImageSize(src: string): Promise<{ width: number; height: numb
 
 // hack to get app settings
 let settings: AppSettings | undefined;
-let sub: Subscription;
-accounts.active$.subscribe((account) => {
-  if (sub) sub.unsubscribe();
-  if (!account) return;
-  sub = queryStore.createQuery(AppSettingsQuery, account.pubkey).subscribe((v) => (settings = v));
-});
+accounts.active$
+  .pipe(switchMap((account) => (account ? eventStore.model(AppSettingsQuery, account.pubkey) : EMPTY)))
+  .subscribe((v) => (settings = v));
 
 export function buildImageProxyURL(src: string, size: string | number) {
   let url: URL | null = null;

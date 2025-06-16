@@ -12,32 +12,28 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
-import { useActiveAccount, useEventStore, useStoreQuery } from "applesauce-react/hooks";
-import {
-  getHistoryContent,
-  getHistoryRedeemed,
-  isHistoryContentLocked,
-  unlockHistoryContent,
-} from "applesauce-wallet/helpers";
-import { WalletHistoryQuery } from "applesauce-wallet/queries";
+import { useActiveAccount, useEventModel, useEventStore } from "applesauce-react/hooks";
+import { getHistoryContent, isHistoryContentLocked, unlockHistoryContent } from "applesauce-wallet/helpers";
+import { WalletHistoryModel } from "applesauce-wallet/models";
 import { NostrEvent } from "nostr-tools";
 
-import Lock01 from "../../../components/icons/lock-01";
-import DebugEventButton from "../../../components/debug-modal/debug-event-button";
-import ArrowBlockUp from "../../../components/icons/arrow-block-up";
-import ArrowBlockDown from "../../../components/icons/arrow-block-down";
-import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
-import useAsyncAction from "../../../hooks/use-async-action";
-import { useDeleteEventContext } from "../../../providers/route/delete-event-provider";
-import { ChevronDownIcon, ChevronUpIcon, TrashIcon } from "../../../components/icons";
-import useEventUpdate from "../../../hooks/use-event-update";
-import Timestamp from "../../../components/timestamp";
-import useSingleEvents from "../../../hooks/use-single-events";
-import UserAvatarLink from "../../../components/user/user-avatar-link";
 import CashuMintFavicon from "../../../components/cashu/cashu-mint-favicon";
 import CashuMintName from "../../../components/cashu/cashu-mint-name";
+import DebugEventButton from "../../../components/debug-modal/debug-event-button";
+import { ChevronDownIcon, ChevronUpIcon, TrashIcon } from "../../../components/icons";
+import ArrowBlockDown from "../../../components/icons/arrow-block-down";
+import ArrowBlockUp from "../../../components/icons/arrow-block-up";
+import Lock01 from "../../../components/icons/lock-01";
+import Timestamp from "../../../components/timestamp";
+import UserAvatarLink from "../../../components/user/user-avatar-link";
+import useAsyncAction from "../../../hooks/use-async-action";
+import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
+import useEventUpdate from "../../../hooks/use-event-update";
+import { WalletHistoryRedeemedQuery } from "../../../models/wallet";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
+import { useDeleteEventContext } from "../../../providers/route/delete-event-provider";
 import factory from "../../../services/event-factory";
+import { ErrorBoundary } from "../../../components/error-boundary";
 
 function HistoryEntry({ entry }: { entry: NostrEvent }) {
   const more = useDisclosure();
@@ -50,8 +46,7 @@ function HistoryEntry({ entry }: { entry: NostrEvent }) {
   const ref = useEventIntersectionRef(entry);
   const { deleteEvent } = useDeleteEventContext();
 
-  const redeemedIds = getHistoryRedeemed(entry);
-  const redeemed = useSingleEvents(redeemedIds);
+  const redeemed = useEventModel(WalletHistoryRedeemedQuery, [entry]) ?? [];
 
   const { run: unlock } = useAsyncAction(async () => {
     await unlockHistoryContent(entry, account);
@@ -133,8 +128,8 @@ export default function WalletHistoryTab() {
   const eventStore = useEventStore();
   const publish = usePublishEvent();
 
-  const history = useStoreQuery(WalletHistoryQuery, [account.pubkey]) ?? [];
-  const locked = useStoreQuery(WalletHistoryQuery, [account.pubkey, true]) ?? [];
+  const history = useEventModel(WalletHistoryModel, [account.pubkey]) ?? [];
+  const locked = useEventModel(WalletHistoryModel, [account.pubkey, true]) ?? [];
 
   const { run: unlock } = useAsyncAction(async () => {
     for (const entry of locked) {
@@ -161,7 +156,11 @@ export default function WalletHistoryTab() {
           Unlock all ({locked?.length})
         </Button>
       </ButtonGroup>
-      {history?.map((entry) => <HistoryEntry key={entry.id} entry={entry} />)}
+      {history?.map((entry) => (
+        <ErrorBoundary key={entry.id} event={entry}>
+          <HistoryEntry entry={entry} />
+        </ErrorBoundary>
+      ))}
     </Flex>
   );
 }

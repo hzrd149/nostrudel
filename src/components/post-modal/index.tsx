@@ -1,54 +1,54 @@
-import { useRef, useState } from "react";
 import {
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalBody,
-  Flex,
-  Button,
-  Box,
-  Heading,
-  useDisclosure,
-  Input,
-  Switch,
-  ModalProps,
-  FormLabel,
-  FormControl,
-  FormHelperText,
-  Link,
-  Slider,
-  SliderTrack,
-  SliderFilledTrack,
-  SliderThumb,
-  ModalCloseButton,
   Alert,
   AlertIcon,
+  Box,
+  Button,
   ButtonGroup,
+  Flex,
+  FormControl,
+  FormHelperText,
+  FormLabel,
+  Heading,
+  Input,
+  Link,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalOverlay,
+  ModalProps,
+  Slider,
+  SliderFilledTrack,
+  SliderThumb,
+  SliderTrack,
+  Switch,
   Text,
+  useDisclosure,
 } from "@chakra-ui/react";
-import { useForm } from "react-hook-form";
-import { UnsignedEvent } from "nostr-tools";
-import { useAsync, useThrottle } from "react-use";
-import { useActiveAccount, useEventFactory, useEventStore, useObservable } from "applesauce-react/hooks";
 import { Emoji, getEventPointerFromQTag, processTags, ZapSplit } from "applesauce-core/helpers";
+import { useActiveAccount, useEventFactory, useEventStore, useObservableEagerState } from "applesauce-react/hooks";
+import { UnsignedEvent } from "nostr-tools";
+import { useRef, useState } from "react";
+import { useForm } from "react-hook-form";
+import { useThrottle } from "react-use";
 
-import { ChevronDownIcon, ChevronUpIcon } from "../icons";
-import { PublishLogEntryDetails } from "../../views/task-manager/publish-log/entry-details";
-import { TrustProvider } from "../../providers/local/trust-provider";
-import MagicTextArea, { RefType } from "../magic-textarea";
-import { useContextEmojis } from "../../providers/global/emoji-provider";
-import ZapSplitCreator from "../../views/new/note/zap-split-creator";
 import useCacheForm from "../../hooks/use-cache-form";
-import useTextAreaUploadFile, { useTextAreaInsertTextWithForm } from "../../hooks/use-textarea-upload-file";
-import MinePOW from "../pow/mine-pow";
-import useAppSettings from "../../hooks/use-user-app-settings";
-import { ErrorBoundary } from "../error-boundary";
-import { PublishLogEntry, usePublishEvent } from "../../providers/global/publish-provider";
-import { TextNoteContents } from "../note/timeline-note/text-note-contents";
-import localSettings from "../../services/local-settings";
 import useLocalStorageDisclosure from "../../hooks/use-localstorage-disclosure";
-import InsertGifButton from "../gif/insert-gif-button";
+import useTextAreaUploadFile, { useTextAreaInsertTextWithForm } from "../../hooks/use-textarea-upload-file";
+import useAppSettings from "../../hooks/use-user-app-settings";
+import { useContextEmojis } from "../../providers/global/emoji-provider";
+import { PublishLogEntry, usePublishEvent } from "../../providers/global/publish-provider";
+import { TrustProvider } from "../../providers/local/trust-provider";
+import localSettings from "../../services/local-settings";
 import InsertImageButton from "../../views/new/note/insert-image-button";
+import ZapSplitCreator from "../../views/new/note/zap-split-creator";
+import { PublishLogEntryDetails } from "../../views/task-manager/publish-log/entry-details";
+import { ErrorBoundary } from "../error-boundary";
+import InsertGifButton from "../gif/insert-gif-button";
+import { ChevronDownIcon, ChevronUpIcon } from "../icons";
+import MagicTextArea, { RefType } from "../magic-textarea";
+import { TextNoteContents } from "../note/timeline-note/text-note-contents";
+import MinePOW from "../pow/mine-pow";
 
 type FormValues = {
   content: string;
@@ -72,7 +72,7 @@ export default function PostModal({
   const publish = usePublishEvent();
   const account = useActiveAccount()!;
   const { noteDifficulty } = useAppSettings();
-  const addClientTag = useObservable(localSettings.addClientTag);
+  const addClientTag = useObservableEagerState(localSettings.addClientTag);
   const promptAddClientTag = useLocalStorageDisclosure("prompt-add-client-tag", true);
   const [miningTarget, setMiningTarget] = useState(0);
   const [publishEntry, setPublishEntry] = useState<PublishLogEntry>();

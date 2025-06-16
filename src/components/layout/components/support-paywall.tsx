@@ -1,16 +1,16 @@
-import { useObservable } from "applesauce-react/hooks";
+import { useObservableState } from "applesauce-react/hooks";
 
-import { paywall, hidePaywall } from "../../../services/paywall";
 import { Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay } from "@chakra-ui/react";
 import { unixNow } from "applesauce-core/helpers";
-import RouterLink from "../../router-link";
 import { useMatch } from "react-router-dom";
-import { LightningIcon } from "../../icons";
 import { PAYWALL_MESSAGE } from "../../../env";
+import { hidePaywall, paywall } from "../../../services/paywall";
+import { LightningIcon } from "../../icons";
+import RouterLink from "../../router-link";
 
 export default function SupportPaywall() {
   const isSupportPage = useMatch("/support");
-  const paid = useObservable(paywall);
+  const paid = useObservableState(paywall);
 
   const dismiss = () => {
     hidePaywall.next(unixNow() + 60 * 60 * 24);

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { IconButton, IconButtonProps } from "@chakra-ui/react";
 import { kinds } from "nostr-tools";
 import { useEventFactory } from "applesauce-react/hooks";
-import { NameValueTag } from "applesauce-core/helpers";
+import { NameValueTag, unixNow } from "applesauce-core/helpers";
 import { removeNameValueTag, addNameValueTag } from "applesauce-factory/operations/tag";
 
 import { App, defaultUserFavoriteApps } from "./apps";
@@ -24,6 +24,8 @@ export default function AppFavoriteButton({
     const prev = favorites || {
       kind: kinds.Application,
       tags: [["d", "nostrudel-favorite-apps"], ...defaultUserFavoriteApps.map((id) => ["app", id])],
+      created_at: unixNow(),
+      content: "",
     };
 
     setLoading(true);

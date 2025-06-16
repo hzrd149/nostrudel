@@ -7,7 +7,7 @@ import { truncatedId } from "./event";
 export function getSearchNames(profile: ProfileContent) {
   if (!profile) return [];
 
-  return [profile.displayName, profile.display_name, profile.name].filter(Boolean) as string[];
+  return [profile.display_name, profile.name, profile.displayName].filter(Boolean) as string[];
 }
 
 const matchEmoji = emojiRegex();

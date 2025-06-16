@@ -34,9 +34,9 @@ export default function BookmarkEventButton({
   const [isLoading, setLoading] = useState(false);
 
   const { isLoading: loadingBookmark, toggleBookmark, isBookmarked } = useEventBookmarkActions(event);
-  const bookmarkSets = useUserSets(account?.pubkey).filter(
-    (set) => set.kind === kinds.Genericlists || set.kind === kinds.Bookmarksets,
-  );
+  const bookmarkSets =
+    useUserSets(account?.pubkey)?.filter((set) => set.kind === kinds.Genericlists || set.kind === kinds.Bookmarksets) ??
+    [];
 
   const inSets = bookmarkSets.filter((list) => getEventPointersFromList(list).some((p) => p.id === event.id));
 

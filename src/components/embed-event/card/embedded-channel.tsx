@@ -1,5 +1,6 @@
 import { Box, Card, CardBody, CardFooter, CardHeader, CardProps, Flex, Heading, LinkBox, Text } from "@chakra-ui/react";
-import { nip19, NostrEvent } from "nostr-tools";
+import { NostrEvent } from "nostr-tools";
+import { neventEncode } from "nostr-tools/nip19";
 import { Link as RouterLink } from "react-router-dom";
 
 import useChannelMetadata from "../../../hooks/use-channel-metadata";
@@ -14,7 +15,7 @@ export default function EmbeddedChannel({
   ...props
 }: Omit<CardProps, "children"> & { channel: NostrEvent; additionalRelays?: string[] }) {
   const readRelays = useReadRelays(additionalRelays);
-  const metadata = useChannelMetadata(channel.id, readRelays);
+  const metadata = useChannelMetadata(channel, readRelays);
 
   if (!channel || !metadata) return null;
 
@@ -32,7 +33,7 @@ export default function EmbeddedChannel({
       <Flex direction="column" flex={1} overflow="hidden" h="full">
         <CardHeader p="2" display="flex" gap="2" alignItems="center">
           <Heading size="md" isTruncated>
-            <HoverLinkOverlay as={RouterLink} to={`/channels/${nip19.neventEncode({ id: channel.id })}`}>
+            <HoverLinkOverlay as={RouterLink} to={`/channels/${neventEncode(channel)}`}>
               {metadata.name}
             </HoverLinkOverlay>
           </Heading>

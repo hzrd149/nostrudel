@@ -11,12 +11,6 @@ export default function TimelineViewTypeButtons(props: ButtonGroupProps) {
   return (
     <ButtonGroup {...props}>
       <IconButton
-        aria-label="Health"
-        icon={<TimelineHealthIcon boxSize={5} />}
-        variant={mode === "health" ? "solid" : "ghost"}
-        onClick={() => viewParam.setValue("health")}
-      />
-      <IconButton
         aria-label="Timeline"
         icon={<NoteFeedIcon boxSize={5} />}
         variant={mode === "timeline" ? "solid" : "outline"}

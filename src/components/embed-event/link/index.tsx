@@ -1,16 +1,16 @@
 import { CardProps, Link } from "@chakra-ui/react";
+import { DecodeResult } from "applesauce-core/helpers";
 import { kinds, NostrEvent } from "nostr-tools";
 
-import { getArticleTitle } from "../../../helpers/nostr/long-form";
-import useShareableEventAddress from "../../../hooks/use-shareable-event-address";
-import RouterLink from "../../router-link";
-import UserName from "../../user/user-name";
-import { DecodeResult } from "nostr-tools/nip19";
 import { safeDecode } from "../../../helpers/nip19";
+import { KindNames } from "../../../helpers/nostr/kinds";
+import { getArticleTitle } from "../../../helpers/nostr/long-form";
+import useReplaceableEvent from "../../../hooks/use-replaceable-event";
+import useShareableEventAddress from "../../../hooks/use-shareable-event-address";
 import useSingleEvent from "../../../hooks/use-single-event";
 import LoadingNostrLink from "../../loading-nostr-link";
-import useReplaceableEvent from "../../../hooks/use-replaceable-event";
-import { KindNames } from "../../../helpers/nostr/kinds";
+import RouterLink from "../../router-link";
+import UserName from "../../user/user-name";
 
 /** A component that renders an inline link to an event */
 export function EmbedEventLink({ event }: { event: NostrEvent }) {
@@ -50,10 +50,10 @@ export function EmbedEventPointerLink({
       event = useSingleEvent(pointer.data);
       break;
     case "nevent":
-      event = useSingleEvent(pointer.data.id, pointer.data.relays);
+      event = useSingleEvent(pointer.data.id);
       break;
     case "naddr":
-      event = useReplaceableEvent(pointer.data, pointer.data.relays);
+      event = useReplaceableEvent(pointer.data);
       break;
   }
 

@@ -19,7 +19,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { NostrEvent, kinds, nip19 } from "nostr-tools";
-import { encodeDecodeResult, getProfileContent } from "applesauce-core/helpers";
+import { DecodeResult, encodeDecodeResult, getProfileContent } from "applesauce-core/helpers";
 
 import { ExternalLinkIcon } from "../icons";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
@@ -36,17 +36,17 @@ import { CopyIconButton } from "../copy-icon-button";
 import useEventIntersectionRef from "../../hooks/use-event-intersection-ref";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 
-function useEventFromDecode(decoded: nip19.DecodeResult) {
+function useEventFromDecode(decoded: DecodeResult) {
   switch (decoded.type) {
     case "note":
       return useSingleEvent(decoded.data);
     case "nevent":
-      return useSingleEvent(decoded.data.id, decoded.data.relays);
+      return useSingleEvent(decoded.data);
     case "naddr":
-      return useReplaceableEvent(decoded.data, decoded.data.relays);
+      return useReplaceableEvent(decoded.data);
   }
 }
-function getKindFromDecoded(decoded: nip19.DecodeResult) {
+function getKindFromDecoded(decoded: DecodeResult) {
   switch (decoded.type) {
     case "naddr":
       return decoded.data.kind;
@@ -61,7 +61,7 @@ function getKindFromDecoded(decoded: nip19.DecodeResult) {
   }
 }
 
-function AppHandler({ app, decoded }: { app: NostrEvent; decoded: nip19.DecodeResult }) {
+function AppHandler({ app, decoded }: { app: NostrEvent; decoded: DecodeResult }) {
   const metadata = useMemo(() => getProfileContent(app), [app]);
   const link = useMemo(() => {
     const tag = app.tags.find((t) => t[0] === "web" && t[2] === decoded.type) || app.tags.find((t) => t[0] === "web");
@@ -89,7 +89,7 @@ export default function AppHandlerModal({
   decoded,
   isOpen,
   onClose,
-}: { decoded: nip19.DecodeResult } & Omit<ModalProps, "children">) {
+}: { decoded: DecodeResult } & Omit<ModalProps, "children">) {
   const readRelays = useReadRelays();
   const event = useEventFromDecode(decoded);
   const kind = event?.kind ?? getKindFromDecoded(decoded);

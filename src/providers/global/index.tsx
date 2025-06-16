@@ -1,18 +1,18 @@
-import React, { useMemo } from "react";
 import { ChakraProvider, localStorageManager } from "@chakra-ui/react";
-import { AccountsProvider, QueryStoreProvider, ActionsProvider, FactoryProvider } from "applesauce-react/providers";
+import { AccountsProvider, ActionsProvider, EventStoreProvider, FactoryProvider } from "applesauce-react/providers";
+import React, { useMemo } from "react";
 
-import { SigningProvider } from "./signing-provider";
-import buildTheme from "../../theme";
 import useAppSettings from "../../hooks/use-user-app-settings";
-import { UserEmojiProvider } from "./emoji-provider";
-import BreakpointProvider from "./breakpoint-provider";
-import PublishProvider from "./publish-provider";
-import WebOfTrustProvider from "./web-of-trust-provider";
-import { queryStore } from "../../services/event-store";
 import accounts from "../../services/accounts";
 import actions from "../../services/actions";
 import factory from "../../services/event-factory";
+import { eventStore } from "../../services/event-store";
+import buildTheme from "../../theme";
+import BreakpointProvider from "./breakpoint-provider";
+import { UserEmojiProvider } from "./emoji-provider";
+import PublishProvider from "./publish-provider";
+import { SigningProvider } from "./signing-provider";
+import WebOfTrustProvider from "./web-of-trust-provider";
 
 function ThemeProviders({ children }: { children: React.ReactNode }) {
   const { theme: themeName, primaryColor } = useAppSettings();
@@ -28,7 +28,7 @@ function ThemeProviders({ children }: { children: React.ReactNode }) {
 // Top level providers, should be render as close to the root as possible
 export const GlobalProviders = ({ children }: { children: React.ReactNode }) => {
   return (
-    <QueryStoreProvider queryStore={queryStore}>
+    <EventStoreProvider eventStore={eventStore}>
       <AccountsProvider manager={accounts}>
         <ActionsProvider actionHub={actions}>
           <FactoryProvider factory={factory}>
@@ -44,6 +44,6 @@ export const GlobalProviders = ({ children }: { children: React.ReactNode }) => 
           </FactoryProvider>
         </ActionsProvider>
       </AccountsProvider>
-    </QueryStoreProvider>
+    </EventStoreProvider>
   );
 };

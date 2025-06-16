@@ -1,4 +1,3 @@
-import { useMount } from "react-use";
 import {
   Alert,
   Button,
@@ -10,14 +9,15 @@ import {
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
+import { PropsWithChildren, useEffect, useState } from "react";
+import { useMount } from "react-use";
 
 import { PayRequest } from ".";
+import useAppSettings from "../../hooks/use-user-app-settings";
+import { CheckIcon, ChevronDownIcon, ChevronUpIcon, ErrorIcon, LightningIcon } from "../icons";
+import { InvoiceModalContent } from "../invoice-modal";
 import UserAvatar from "../user/user-avatar";
 import UserLink from "../user/user-link";
-import { ChevronDownIcon, ChevronUpIcon, CheckIcon, ErrorIcon, LightningIcon } from "../icons";
-import { InvoiceModalContent } from "../invoice-modal";
-import { PropsWithChildren, useEffect, useState } from "react";
-import useAppSettings from "../../hooks/use-user-app-settings";
 
 function UserCard({ children, pubkey }: PropsWithChildren & { pubkey: string }) {
   return (

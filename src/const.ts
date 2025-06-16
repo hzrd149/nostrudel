@@ -13,7 +13,7 @@ export const DEFAULT_SEARCH_RELAYS = normalizeRelayURLs([
   "wss://filter.nostr.wine",
 ]);
 export const WIKI_RELAYS = normalizeRelayURLs(["wss://relay.wikifreedia.xyz/"]);
-export const DEFAULT_LOOKUP_RELAYS = normalizeRelayURLs(["wss://purplepag.es/", "wss://kindpag.es"]);
+export const DEFAULT_LOOKUP_RELAYS = normalizeRelayURLs(["wss://purplepag.es/"]);
 
 export const DEFAULT_SIGNAL_RELAYS = normalizeRelayURLs(["wss://nostrue.com/", "wss://relay.damus.io"]);
 export const DEFAULT_NOSTR_CONNECT_RELAY = normalizeURL("wss://relay.nsec.app/");

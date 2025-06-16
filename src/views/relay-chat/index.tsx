@@ -1,5 +1,5 @@
 import { Card, Flex, IconButton, LinkBox, SimpleGrid, Text } from "@chakra-ui/react";
-import { useObservable } from "applesauce-react/hooks";
+import { useObservableState } from "applesauce-react/hooks";
 import { useNavigate } from "react-router-dom";
 
 import HoverLinkOverlay from "../../components/hover-link-overlay";
@@ -35,7 +35,7 @@ function RelayCard({ relay }: { relay: string }) {
 
 export default function RelayChatHomeView() {
   const navigate = useNavigate();
-  const connections = useObservable(connections$) ?? {};
+  const connections = useObservableState(connections$) ?? {};
 
   // Filter out relays with error state
   const activeRelays = Object.entries(connections)

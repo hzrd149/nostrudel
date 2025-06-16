@@ -1,7 +1,7 @@
 import { Input, InputProps } from "@chakra-ui/react";
-import { forwardRef } from "react";
-import { useObservable } from "applesauce-react/hooks";
+import { useObservableState } from "applesauce-react/hooks";
 import { nip19 } from "nostr-tools";
+import { forwardRef } from "react";
 
 import { userSearchDirectory } from "../services/username-search";
 
@@ -10,7 +10,7 @@ type UserAutocompleteProps = InputProps & {
 };
 
 const UserAutocomplete = forwardRef<HTMLInputElement, UserAutocompleteProps>(({ value, hex, ...props }, ref) => {
-  const directory = useObservable(userSearchDirectory);
+  const directory = useObservableState(userSearchDirectory);
 
   return (
     <>

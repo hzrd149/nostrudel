@@ -4,11 +4,11 @@ import { Image, Input, InputProps, Textarea, TextareaProps } from "@chakra-ui/re
 import { type EmojiMartData } from "@emoji-mart/data";
 import ReactTextareaAutocomplete, {
   ItemComponentProps,
-  TriggerType,
   TextareaProps as ReactTextareaAutocompleteProps,
+  TriggerType,
 } from "@webscopeio/react-textarea-autocomplete";
 import "@webscopeio/react-textarea-autocomplete/style.css";
-import { useObservable } from "applesauce-react/hooks";
+import { useObservableState } from "applesauce-react/hooks";
 import { matchSorter } from "match-sorter";
 import { nip19 } from "nostr-tools";
 import { useAsync, useLocalStorage } from "react-use";
@@ -117,7 +117,7 @@ function useEmojiTokens() {
 
 function useAutocompleteTriggers() {
   const webOfTrust = useWebOfTrust();
-  const directory = useObservable(userSearchDirectory) ?? [];
+  const directory = useObservableState(userSearchDirectory) ?? [];
   const emojis = useEmojiTokens();
 
   const triggers: TriggerType<Token> = {

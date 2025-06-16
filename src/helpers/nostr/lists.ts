@@ -1,8 +1,9 @@
+import { isDTag, isPTag, isRTag, mergeRelaySets } from "applesauce-core/helpers";
+import { isAddressPointerInList, isEventPointerInList, isProfilePointerInList } from "applesauce-core/helpers/lists";
 import dayjs from "dayjs";
 import { EventTemplate, NostrEvent, kinds } from "nostr-tools";
-import { isAddressPointerInList, isEventPointerInList, isProfilePointerInList } from "applesauce-core/helpers/lists";
-import { isDTag, isPTag, isRTag, mergeRelaySets } from "applesauce-core/helpers";
 
+import { isAddressableKind } from "nostr-tools/kinds";
 import { getEventCoordinate, replaceOrAddSimpleTag } from "./event";
 
 export const USER_GROUPS_LIST_KIND = 10009;
@@ -112,7 +113,7 @@ export function isPubkeyInList(list?: NostrEvent, pubkey?: string) {
 export function isEventInList(list?: NostrEvent, event?: NostrEvent) {
   if (!event || !list) return false;
 
-  if (kinds.isParameterizedReplaceableKind(event.kind)) {
+  if (isAddressableKind(event.kind)) {
     const cord = getEventCoordinate(event);
     return isAddressPointerInList(list, cord);
   } else return isEventPointerInList(list, event.id);
@@ -149,7 +150,7 @@ export function listRemovePerson(list: NostrEvent | EventTemplate, pubkey: strin
 
 /** @deprecated */
 export function listAddEvent(list: NostrEvent | EventTemplate, event: NostrEvent, relay?: string): EventTemplate {
-  const tag = kinds.isParameterizedReplaceableKind(event.kind) ? ["a", getEventCoordinate(event)] : ["e", event.id];
+  const tag = isAddressableKind(event.kind) ? ["a", getEventCoordinate(event)] : ["e", event.id];
   if (relay) tag.push(relay);
 
   if (list.tags.some((t) => t[0] === tag[0] && t[1] === tag[1])) throw new Error("Event already in list");
@@ -164,7 +165,7 @@ export function listAddEvent(list: NostrEvent | EventTemplate, event: NostrEvent
 
 /** @deprecated */
 export function listRemoveEvent(list: NostrEvent | EventTemplate, event: NostrEvent): EventTemplate {
-  const tag = kinds.isParameterizedReplaceableKind(event.kind) ? ["a", getEventCoordinate(event)] : ["e", event.id];
+  const tag = isAddressableKind(event.kind) ? ["a", getEventCoordinate(event)] : ["e", event.id];
 
   return {
     created_at: dayjs().unix(),

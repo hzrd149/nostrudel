@@ -11,7 +11,7 @@ import AccountTypeBadge from "../../../components/accounts/account-info-badge";
 export default function AccountCard({ account }: { account: IAccount }) {
   const pubkey = account.pubkey;
   // this wont load unless the data is cached since there are no relay connections yet
-  const metadata = useUserProfile(pubkey, []);
+  const metadata = useUserProfile(pubkey);
   const manager = useAccountManager();
 
   return (

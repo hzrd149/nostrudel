@@ -16,7 +16,7 @@ import UserName from "../../components/user/user-name";
 import { KnownConversation, groupIntoConversations, hasResponded, identifyConversation } from "../../helpers/nostr/dms";
 import { truncateId } from "../../helpers/string";
 import useEventIntersectionRef from "../../hooks/use-event-intersection-ref";
-import { useKind4Decrypt } from "../../hooks/use-kind4-decryption";
+import { useLegacyMessagePlaintext } from "../../hooks/use-kind4-decryption";
 import useRouteStateValue from "../../hooks/use-route-state-value";
 import useScrollRestoreRef from "../../hooks/use-scroll-restore";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
@@ -45,7 +45,7 @@ export function useDirectMessagesTimeline(pubkey?: string) {
 function MessagePreview({ message, pubkey }: { message: NostrEvent; pubkey: string }) {
   const ref = useEventIntersectionRef(message);
 
-  const { plaintext } = useKind4Decrypt(message);
+  const { plaintext } = useLegacyMessagePlaintext(message);
   return (
     <Text isTruncated ref={ref}>
       {plaintext || "<Encrypted>"}
@@ -83,8 +83,8 @@ function MessagesHomePage() {
   const { value: filter, setValue: setFilter } = useRouteStateValue<"contacts" | "other" | "muted">("tab", "contacts");
 
   const account = useActiveAccount()!;
-  const contacts = useUserContacts(account?.pubkey, undefined, true)?.map((p) => p.pubkey);
-  const mutes = useUserMutes(account.pubkey, undefined, true);
+  const contacts = useUserContacts(account.pubkey)?.map((p) => p.pubkey);
+  const mutes = useUserMutes(account.pubkey);
 
   const { timeline: messages, loader } = useDirectMessagesTimeline(account.pubkey);
 

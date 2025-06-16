@@ -4,7 +4,7 @@ import { Alert, AlertIcon, AlertTitle, AlertDescription } from "@chakra-ui/react
 import { NostrEvent } from "nostr-tools";
 import DebugEventButton from "./debug-modal/debug-event-button";
 
-export function ErrorFallback({ error, event, resetErrorBoundary }: Partial<FallbackProps> & { event?: NostrEvent }) {
+export function ErrorFallback({ error, event }: Partial<FallbackProps> & { event?: NostrEvent }) {
   return (
     <Alert status="error">
       <AlertIcon />

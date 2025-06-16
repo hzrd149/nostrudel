@@ -1,35 +1,34 @@
-import { memo, useCallback, useMemo } from "react";
 import { Button, ButtonGroup, Flex, Spinner, useDisclosure } from "@chakra-ui/react";
-import { kinds } from "nostr-tools";
-import { useStoreQuery } from "applesauce-react/hooks";
-import { ChannelHiddenQuery, ChannelMessagesQuery, ChannelMutedQuery } from "applesauce-core/queries";
+import { ChannelHiddenModel, ChannelMessagesModel, ChannelMutedModel } from "applesauce-core/models";
+import { useEventModel } from "applesauce-react/hooks";
+import { kinds, NostrEvent } from "nostr-tools";
+import { memo, useCallback, useMemo } from "react";
 
-import useSingleEvent from "../../hooks/use-single-event";
 import { ErrorBoundary } from "../../components/error-boundary";
-import { NostrEvent } from "nostr-tools";
+import SimpleView from "../../components/layout/presets/simple-view";
+import TimelineActionAndStatus from "../../components/timeline/timeline-action-and-status";
+import { groupMessages } from "../../helpers/nostr/dms";
+import { truncateId } from "../../helpers/string";
 import useChannelMetadata from "../../hooks/use-channel-metadata";
-import ChannelMetadataDrawer from "./components/channel-metadata-drawer";
-import ChannelJoinButton from "./components/channel-join-button";
-import ChannelMenu from "./components/channel-menu";
+import { useReadRelays } from "../../hooks/use-client-relays";
 import useClientSideMuteFilter from "../../hooks/use-client-side-mute-filter";
-import useTimelineLoader from "../../hooks/use-timeline-loader";
+import useParamsEventPointer from "../../hooks/use-params-event-pointer";
+import useSingleEvent from "../../hooks/use-single-event";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
+import useTimelineLoader from "../../hooks/use-timeline-loader";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import ThreadsProvider from "../../providers/local/thread-provider";
-import { groupMessages } from "../../helpers/nostr/dms";
-import ChannelMessageBlock from "./components/channel-message-block";
-import TimelineActionAndStatus from "../../components/timeline/timeline-action-and-status";
-import ChannelMessageForm from "./components/send-message-form";
-import useParamsEventPointer from "../../hooks/use-params-event-pointer";
-import { useReadRelays } from "../../hooks/use-client-relays";
-import { truncateId } from "../../helpers/string";
 import ChannelImage from "./components/channel-image";
-import SimpleView from "../../components/layout/presets/simple-view";
+import ChannelJoinButton from "./components/channel-join-button";
+import ChannelMenu from "./components/channel-menu";
+import ChannelMessageBlock from "./components/channel-message-block";
+import ChannelMetadataDrawer from "./components/channel-metadata-drawer";
+import ChannelMessageForm from "./components/send-message-form";
 
 const ChannelChatLog = memo(({ channel }: { channel: NostrEvent }) => {
-  const messages = useStoreQuery(ChannelMessagesQuery, [channel]) ?? [];
-  const mutes = useStoreQuery(ChannelMutedQuery, [channel]);
-  const hidden = useStoreQuery(ChannelHiddenQuery, [channel]);
+  const messages = useEventModel(ChannelMessagesModel, [channel]) ?? [];
+  const mutes = useEventModel(ChannelMutedModel, [channel]);
+  const hidden = useEventModel(ChannelHiddenModel, [channel]);
 
   const filteredMessages = useMemo(
     () =>
@@ -56,7 +55,7 @@ function ChannelPage({ channel }: { channel: NostrEvent }) {
   const relays = useReadRelays();
   const drawer = useDisclosure();
 
-  const metadata = useChannelMetadata(channel.id, relays);
+  const metadata = useChannelMetadata(channel, relays);
 
   const clientMuteFilter = useClientSideMuteFilter();
   const eventFilter = useCallback(
@@ -112,7 +111,7 @@ function ChannelPage({ channel }: { channel: NostrEvent }) {
 
 export default function ChannelView() {
   const pointer = useParamsEventPointer("id");
-  const channel = useSingleEvent(pointer?.id, pointer?.relays);
+  const channel = useSingleEvent(pointer);
 
   if (!channel) return <Spinner />;
 

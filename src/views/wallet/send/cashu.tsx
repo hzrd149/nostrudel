@@ -1,24 +1,24 @@
-import { Button, Flex, Input, Select } from "@chakra-ui/react";
-import { WalletBalanceQuery, WalletQuery, WalletTokensQuery } from "applesauce-wallet/queries";
-import { useActionHub, useActiveAccount, useStoreQuery } from "applesauce-react/hooks";
-import { CompleteSpend } from "applesauce-wallet/actions";
-import { useNavigate } from "react-router-dom";
-import { useForm } from "react-hook-form";
 import { getEncodedToken, Token } from "@cashu/cashu-ts";
+import { Button, Flex, Input, Select } from "@chakra-ui/react";
+import { useActionHub, useActiveAccount, useEventModel } from "applesauce-react/hooks";
+import { CompleteSpend } from "applesauce-wallet/actions";
 import { dumbTokenSelection } from "applesauce-wallet/helpers";
+import { WalletBalanceModel, WalletModel, WalletTokensModel } from "applesauce-wallet/models";
+import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 
-import SimpleView from "../../../components/layout/presets/simple-view";
 import CashuMintName from "../../../components/cashu/cashu-mint-name";
-import WalletUnlockButton from "../components/wallet-unlock-button";
+import SimpleView from "../../../components/layout/presets/simple-view";
 import RouterLink from "../../../components/router-link";
 import { getCashuWallet } from "../../../services/cashu-mints";
+import WalletUnlockButton from "../components/wallet-unlock-button";
 
 export default function WalletSendCashuView() {
   const navigate = useNavigate();
   const account = useActiveAccount()!;
-  const wallet = useStoreQuery(WalletQuery, [account.pubkey]);
-  const balance = useStoreQuery(WalletBalanceQuery, [account.pubkey]);
-  const tokens = useStoreQuery(WalletTokensQuery, [account.pubkey, false]);
+  const wallet = useEventModel(WalletModel, [account.pubkey]);
+  const balance = useEventModel(WalletBalanceModel, [account.pubkey]);
+  const tokens = useEventModel(WalletTokensModel, [account.pubkey, false]);
 
   const defaultMint = balance && Object.keys(balance).reduce((a, b) => (balance[a] > balance[b] ? a : b));
 

@@ -1,7 +1,7 @@
 import { SerializedAccount } from "applesauce-accounts";
 import { Identity } from "applesauce-loaders/helpers/dns-identity";
-
 import { NostrEvent } from "nostr-tools";
+
 import { AppSettings } from "../../helpers/app-settings";
 
 export interface SchemaV1 {

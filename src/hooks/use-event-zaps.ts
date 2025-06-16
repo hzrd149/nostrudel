@@ -1,22 +1,7 @@
-import { useEffect, useMemo } from "react";
-import { useStoreQuery } from "applesauce-react/hooks";
-import { parseCoordinate } from "applesauce-core/helpers";
-import { EventZapsQuery } from "applesauce-core/queries";
-import { requestZaps } from "../services/zaps-loader";
+import { useEventModel } from "applesauce-react/hooks";
+import { NostrEvent } from "nostr-tools";
+import EventZapsQuery from "../models/event-zaps";
 
-import { useReadRelays } from "./use-client-relays";
-
-export default function useEventZaps(uid: string, additionalRelays?: Iterable<string>, force?: boolean) {
-  const relay = useReadRelays(additionalRelays);
-
-  useEffect(() => {
-    requestZaps(uid, relay, force);
-  }, [uid, relay.join("|"), force]);
-
-  const pointer = useMemo(() => {
-    if (uid.includes(":")) return parseCoordinate(uid, true);
-    return uid;
-  }, [uid]);
-
-  return useStoreQuery(EventZapsQuery, pointer ? [pointer] : undefined) ?? [];
+export default function useEventZaps(event?: NostrEvent, relays?: string[]) {
+  return useEventModel(EventZapsQuery, event ? [event, relays] : undefined) ?? [];
 }

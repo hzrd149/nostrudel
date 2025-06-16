@@ -1,19 +1,17 @@
-import { useEffect } from "react";
-import { Queries } from "applesauce-core";
-import { useStoreQuery } from "applesauce-react/hooks";
+import { useEventStore, useObservableMemo } from "applesauce-react/hooks";
+import hash_sum from "hash-sum";
+import { NostrEvent } from "nostr-tools";
+import { combineLatest, map } from "rxjs";
+import EventQuery from "../models/events";
 
-import singleEventLoader from "../services/single-event-loader";
-import { useReadRelays } from "./use-client-relays";
+export default function useSingleEvents(ids?: string[], relays?: string[]): NostrEvent[] {
+  const eventStore = useEventStore();
 
-export default function useSingleEvents(ids?: string[], additionalRelays?: Iterable<string>) {
-  const readRelays = useReadRelays(additionalRelays);
-  useEffect(() => {
-    if (!ids) return;
+  return (
+    useObservableMemo(() => {
+      const models = Object.fromEntries(ids?.map((id) => [id, eventStore.model(EventQuery, { id, relays })]) ?? []);
 
-    for (const id of ids) {
-      singleEventLoader.next({ id, relays: [...readRelays] });
-    }
-  }, [ids, readRelays.join("|")]);
-
-  return useStoreQuery(Queries.TimelineQuery, ids ? [{ ids }] : undefined) ?? [];
+      return combineLatest(models).pipe(map((events) => Object.values(events).filter((e) => !!e)));
+    }, [hash_sum(ids), eventStore, hash_sum(relays)]) ?? []
+  );
 }

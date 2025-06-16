@@ -1,17 +1,17 @@
-import { memo } from "react";
 import { Box, ButtonGroup, Flex, Text } from "@chakra-ui/react";
-import { ThreadItem } from "applesauce-core/queries";
-import { NostrEvent } from "nostr-tools";
 import { getZapPayment, getZapRequest, getZapSender } from "applesauce-core/helpers";
+import { ThreadItem } from "applesauce-core/models";
+import { NostrEvent } from "nostr-tools";
+import { memo } from "react";
 
+import { LightningIcon } from "../../../../components/icons";
+import TextNoteContents from "../../../../components/note/timeline-note/text-note-contents";
+import Timestamp from "../../../../components/timestamp";
 import UserAvatarLink from "../../../../components/user/user-avatar-link";
 import UserLink from "../../../../components/user/user-link";
-import Timestamp from "../../../../components/timestamp";
-import { LightningIcon } from "../../../../components/icons";
-import { humanReadableSats } from "../../../../helpers/lightning";
-import TextNoteContents from "../../../../components/note/timeline-note/text-note-contents";
-import { TrustProvider } from "../../../../providers/local/trust-provider";
 import ZapReceiptMenu from "../../../../components/zap/zap-receipt-menu";
+import { humanReadableSats } from "../../../../helpers/lightning";
+import { TrustProvider } from "../../../../providers/local/trust-provider";
 
 const ZapEvent = memo(({ zap }: { zap: NostrEvent }) => {
   const request = getZapRequest(zap);

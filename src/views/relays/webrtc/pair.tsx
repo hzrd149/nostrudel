@@ -1,4 +1,3 @@
-import { useEffect, useMemo } from "react";
 import {
   Alert,
   AlertIcon,
@@ -15,24 +14,25 @@ import {
   useDisclosure,
   useInterval,
 } from "@chakra-ui/react";
-import { getPublicKey, kinds, nip19 } from "nostr-tools";
-import { useForm } from "react-hook-form";
+import { useObservableEagerState } from "applesauce-react/hooks";
 import dayjs from "dayjs";
+import { getPublicKey, kinds, nip19 } from "nostr-tools";
+import { useEffect, useMemo } from "react";
+import { useForm } from "react-hook-form";
 import { useAsync } from "react-use";
-import { useObservable } from "applesauce-react/hooks";
 
-import webRtcRelaysService from "../../../services/webrtc-relays";
-import localSettings from "../../../services/local-settings";
+import { useActiveAccount } from "applesauce-react/hooks";
 import { CopyIconButton } from "../../../components/copy-icon-button";
+import { QrCodeIcon } from "../../../components/icons";
+import SimpleView from "../../../components/layout/presets/simple-view";
+import QrCodeSvg from "../../../components/qr-code/qr-code-svg";
 import UserAvatar from "../../../components/user/user-avatar";
 import UserName from "../../../components/user/user-name";
-import QrCodeSvg from "../../../components/qr-code/qr-code-svg";
-import { QrCodeIcon } from "../../../components/icons";
-import { usePublishEvent } from "../../../providers/global/publish-provider";
-import { useActiveAccount } from "applesauce-react/hooks";
-import useUserProfile from "../../../hooks/use-user-profile";
 import useForceUpdate from "../../../hooks/use-force-update";
-import SimpleView from "../../../components/layout/presets/simple-view";
+import useUserProfile from "../../../hooks/use-user-profile";
+import { usePublishEvent } from "../../../providers/global/publish-provider";
+import localSettings from "../../../services/local-settings";
+import webRtcRelaysService from "../../../services/webrtc-relays";
 
 function NameForm() {
   const publish = usePublishEvent();
@@ -85,7 +85,7 @@ export default function WebRtcPairView() {
   const account = useActiveAccount();
   const showQrCode = useDisclosure();
 
-  const identity = useObservable(localSettings.webRtcLocalIdentity);
+  const identity = useObservableEagerState(localSettings.webRtcLocalIdentity);
   const pubkey = useMemo(() => getPublicKey(identity), [identity]);
   const npub = useMemo(() => nip19.npubEncode(pubkey), [pubkey]);
 

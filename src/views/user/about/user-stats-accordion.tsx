@@ -13,20 +13,20 @@ import {
   StatNumber,
   Text,
 } from "@chakra-ui/react";
-import { useAsync } from "react-use";
 import { kinds } from "nostr-tools";
+import { useAsync } from "react-use";
 
-import { humanReadableSats } from "../../../helpers/lightning";
-import trustedUserStatsService from "../../../services/trusted-user-stats";
-import { useAdditionalRelayContext } from "../../../providers/local/additional-relay-context";
-import useUserContactList from "../../../hooks/use-user-contact-list";
-import { getPubkeysFromList } from "../../../helpers/nostr/lists";
 import Timestamp from "../../../components/timestamp";
+import { humanReadableSats } from "../../../helpers/lightning";
+import { getPubkeysFromList } from "../../../helpers/nostr/lists";
 import useEventCount from "../../../hooks/use-event-count";
+import useUserContactList from "../../../hooks/use-user-contact-list";
+import { useAdditionalRelayContext } from "../../../providers/local/additional-relay-context";
+import trustedUserStatsService from "../../../services/trusted-user-stats";
 
 export default function UserStatsAccordion({ pubkey }: { pubkey: string }) {
   const contextRelays = useAdditionalRelayContext();
-  const contacts = useUserContactList(pubkey, contextRelays);
+  const contacts = useUserContactList({ pubkey, relays: contextRelays });
 
   const { value: stats } = useAsync(() => trustedUserStatsService.getUserStats(pubkey), [pubkey]);
   const followerCount = useEventCount({ "#p": [pubkey], kinds: [kinds.Contacts] });

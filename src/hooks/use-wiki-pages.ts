@@ -1,10 +1,10 @@
-import { useEffect } from "react";
-import { useStoreQuery } from "applesauce-react/hooks";
 import { NostrEvent } from "nostr-tools";
+import { useEffect } from "react";
+import { useEventModel } from "applesauce-react/hooks";
 
-import { useReadRelays } from "./use-client-relays";
+import { WikiPagesModel } from "../models/wiki-pages";
 import wikiPageLoader from "../services/wiki-page-loader";
-import { WikiPagesQuery } from "../queries/wiki-pages";
+import { useReadRelays } from "./use-client-relays";
 
 export default function useWikiPages(
   topic: string,
@@ -14,8 +14,8 @@ export default function useWikiPages(
   const relays = useReadRelays(additionalRelays);
 
   useEffect(() => {
-    wikiPageLoader.next({ value: topic, relays, force });
+    wikiPageLoader({ value: topic, relays, force }).subscribe();
   }, [topic, relays.join("|"), force]);
 
-  return useStoreQuery(WikiPagesQuery, topic ? [topic] : undefined) ?? [];
+  return useEventModel(WikiPagesModel, topic ? [topic] : undefined) ?? [];
 }

@@ -1,7 +1,5 @@
 import { Button, Card, Flex, Heading, Text } from "@chakra-ui/react";
 import { unixNow } from "applesauce-core/helpers";
-import { RelayTimelineLoader } from "applesauce-loaders";
-import { useObservable } from "applesauce-react/hooks";
 
 import {
   ArcElement,
@@ -16,6 +14,7 @@ import {
   Tooltip,
 } from "chart.js";
 
+import { createTimelineLoader } from "applesauce-loaders/loaders";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import EventKindsPieChart from "../../../components/charts/event-kinds-pie-chart";
 import EventKindsTable from "../../../components/charts/event-kinds-table";
@@ -23,7 +22,7 @@ import VerticalPageLayout from "../../../components/vertical-page-layout";
 import { getSortedKinds } from "../../../helpers/nostr/event";
 import { useAppTitle } from "../../../hooks/use-app-title";
 import { eventStore } from "../../../services/event-store";
-import { nostrRequest } from "../../../services/pool";
+import pool from "../../../services/pool";
 
 ChartJS.register(
   ArcElement,
@@ -44,35 +43,30 @@ export default function RelayDetailsTab({ relay }: { relay: string }) {
   const last = useRef(unixNow());
   const events = useRef(new Map());
 
-  const loader = useMemo(() => new RelayTimelineLoader(nostrRequest, relay, [{}], { limit: 500 }), [relay]);
-
-  // start the loader
-  useEffect(() => {
-    const sub = loader.subscribe((event) => {
-      events.current.set(event.id, event);
-      last.current = event.created_at;
-
-      eventStore.add(event);
-    });
-
-    return () => sub.unsubscribe();
-  }, [loader]);
+  const loader = useMemo(() => createTimelineLoader(pool, [relay], [{}], { limit: 500, eventStore }), [relay]);
 
   // load first batch when mounted
-  useEffect(() => loader.next(), [loader]);
-
-  const loadMore = useCallback(() => {
-    loader.next(-Infinity);
+  useEffect(() => {
+    loader().subscribe((event) => {
+      events.current.set(event.id, event);
+      last.current = event.created_at;
+    });
   }, [loader]);
 
-  const loading = useObservable(loader.loading$);
+  const loadMore = useCallback(() => {
+    loader().subscribe((event) => {
+      events.current.set(event.id, event);
+      last.current = event.created_at;
+    });
+  }, [loader]);
+
   const kinds = getSortedKinds(Array.from(events.current.values()));
 
   return (
     <VerticalPageLayout>
       <Flex gap="2" alignItems="center">
         <Text>Events loaded: {events.current.size}</Text>
-        <Button size="sm" onClick={loadMore} isLoading={loading}>
+        <Button size="sm" onClick={loadMore}>
           Load more
         </Button>
       </Flex>

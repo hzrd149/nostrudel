@@ -28,7 +28,7 @@ function RemoveBookmarkButton({ event }: { event: NostrEvent }) {
 }
 
 function BookmarkEventItem({ pointer }: { pointer: EventPointer }) {
-  const event = useSingleEvent(pointer.id, pointer.relays);
+  const event = useSingleEvent(pointer);
 
   if (!event) return <SkeletonText mt="4" noOfLines={4} spacing="4" skeletonHeight="2" />;
 

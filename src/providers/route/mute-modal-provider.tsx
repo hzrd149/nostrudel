@@ -54,7 +54,7 @@ function MuteModal({ pubkey, onClose, ...props }: Omit<ModalProps, "children"> &
   const publish = usePublishEvent();
 
   const account = useActiveAccount();
-  const muteList = useUserMuteList(account?.pubkey, [], true);
+  const muteList = useUserMuteList(account?.pubkey);
   const handleClick = async (expiration: number) => {
     let draft = muteList ? cloneList(muteList) : createEmptyMuteList();
     draft = pruneExpiredPubkeys(draft);
@@ -115,7 +115,7 @@ function MuteModal({ pubkey, onClose, ...props }: Omit<ModalProps, "children"> &
 function UnmuteHandler() {
   const publish = usePublishEvent();
   const account = useActiveAccount()!;
-  const muteList = useUserMuteList(account?.pubkey, [], true);
+  const muteList = useUserMuteList(account?.pubkey);
   const modal = useDisclosure();
 
   const unmuteAll = async () => {
@@ -151,7 +151,7 @@ function UnmuteHandler() {
 function UnmuteModal({ onClose }: Omit<ModalProps, "children">) {
   const publish = usePublishEvent();
   const account = useActiveAccount()!;
-  const muteList = useUserMuteList(account?.pubkey, [], true);
+  const muteList = useUserMuteList(account?.pubkey);
 
   const getExpiredPubkeys = useCallback(() => {
     if (!muteList) return [];

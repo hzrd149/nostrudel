@@ -1,11 +1,7 @@
-import { kinds } from "nostr-tools";
-import { useStoreQuery } from "applesauce-react/hooks";
-import { ContactsQuery } from "applesauce-core/queries";
+import { useEventModel } from "applesauce-react/hooks";
+import { ContactsQuery } from "../models";
+import { ProfilePointer } from "nostr-tools/nip19";
 
-import useReplaceableEvent from "./use-replaceable-event";
-
-export default function useUserContacts(pubkey?: string, additionalRelays?: Iterable<string>, force?: boolean) {
-  useReplaceableEvent(pubkey && { kind: kinds.Contacts, pubkey }, additionalRelays, force);
-
-  return useStoreQuery(ContactsQuery, pubkey ? [pubkey] : undefined);
+export default function useUserContacts(pubkey?: string | ProfilePointer) {
+  return useEventModel(ContactsQuery, pubkey ? [pubkey] : undefined);
 }

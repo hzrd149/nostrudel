@@ -1,31 +1,31 @@
-import { ReactNode } from "react";
 import { Box, Heading, Link, LinkBox, Spinner, useDisclosure } from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router-dom";
-import { Thread, ThreadQuery } from "applesauce-core/queries";
-import { useStoreQuery } from "applesauce-react/hooks";
-import { EventPointer } from "nostr-tools/nip19";
+import { getNip10References } from "applesauce-core/helpers";
+import { Thread, ThreadModel } from "applesauce-core/models";
+import { useEventModel } from "applesauce-react/hooks";
 import { nip19, NostrEvent } from "nostr-tools";
+import { EventPointer } from "nostr-tools/nip19";
+import { ReactNode } from "react";
+import { Link as RouterLink } from "react-router-dom";
 
-import ThreadPost from "./components/thread-post";
+import LoadingNostrLink from "../../components/loading-nostr-link";
+import TextNoteContents from "../../components/note/timeline-note/text-note-contents";
+import Timestamp from "../../components/timestamp";
+import UserAvatarLink from "../../components/user/user-avatar-link";
+import UserDnsIdentityIcon from "../../components/user/user-dns-identity-icon";
+import UserLink from "../../components/user/user-link";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import { useReadRelays } from "../../hooks/use-client-relays";
-import IntersectionObserverProvider from "../../providers/local/intersection-observer";
-import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
-import useThreadTimelineLoader from "../../hooks/use-thread-timeline-loader";
-import useSingleEvent from "../../hooks/use-single-event";
-import useParamsEventPointer from "../../hooks/use-params-event-pointer";
-import LoadingNostrLink from "../../components/loading-nostr-link";
-import UserAvatarLink from "../../components/user/user-avatar-link";
-import { getSharableEventAddress } from "../../services/relay-hints";
-import useMaxPageWidth from "../../hooks/use-max-page-width";
-import { getNip10References } from "applesauce-core/helpers";
 import useEventIntersectionRef from "../../hooks/use-event-intersection-ref";
-import UserLink from "../../components/user/user-link";
-import { ExpandableToggleButton } from "../notifications/components/notification-item";
-import TextNoteContents from "../../components/note/timeline-note/text-note-contents";
+import useMaxPageWidth from "../../hooks/use-max-page-width";
+import useParamsEventPointer from "../../hooks/use-params-event-pointer";
+import useSingleEvent from "../../hooks/use-single-event";
+import useThreadTimelineLoader from "../../hooks/use-thread-timeline-loader";
+import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
+import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import { TrustProvider } from "../../providers/local/trust-provider";
-import UserDnsIdentityIcon from "../../components/user/user-dns-identity-icon";
-import Timestamp from "../../components/timestamp";
+import { getSharableEventAddress } from "../../services/relay-hints";
+import { ExpandableToggleButton } from "../notifications/components/notification-item";
+import ThreadPost from "./components/thread-post";
 
 function ParentNote({ note, level = 0 }: { note: NostrEvent; level?: number }) {
   const ref = useEventIntersectionRef(note);
@@ -145,9 +145,9 @@ export default function ThreadView() {
   const pointer = useParamsEventPointer("id");
   const readRelays = useReadRelays(pointer.relays);
 
-  const focusedEvent = useSingleEvent(pointer.id, pointer.relays);
+  const focusedEvent = useSingleEvent(pointer);
   const { rootPointer, timeline } = useThreadTimelineLoader(focusedEvent, readRelays);
-  const thread = useStoreQuery(ThreadQuery, rootPointer && [rootPointer]);
+  const thread = useEventModel(ThreadModel, rootPointer ? [rootPointer] : undefined);
 
   const callback = useTimelineCurserIntersectionCallback(timeline);
 

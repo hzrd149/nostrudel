@@ -1,24 +1,9 @@
-import { useMemo } from "react";
-import { useStoreQuery } from "applesauce-react/hooks";
-import { ChannelMetadataQuery } from "applesauce-core/queries";
-
-import useSingleEvent from "./use-single-event";
-import channelMetadataLoader from "../services/channel-metadata-loader";
+import { useEventModel } from "applesauce-react/hooks";
+import { ChannelMetadataQuery } from "../models";
 import { useReadRelays } from "./use-client-relays";
+import { NostrEvent } from "nostr-tools";
 
-export default function useChannelMetadata(
-  channelId: string | undefined,
-  additionalRelays?: string[],
-  force?: boolean,
-) {
+export default function useChannelMetadata(channel: NostrEvent | undefined, additionalRelays?: string[]) {
   const relays = useReadRelays(additionalRelays);
-  const channel = useSingleEvent(channelId);
-  useMemo(() => {
-    if (!channelId) return;
-    return channelMetadataLoader.next({ value: channelId, relays, force });
-  }, [channelId, relays.join("|"), force]);
-
-  const metadata = useStoreQuery(ChannelMetadataQuery, channel && [channel]);
-
-  return metadata;
+  return useEventModel(ChannelMetadataQuery, channel ? [channel, relays] : undefined);
 }

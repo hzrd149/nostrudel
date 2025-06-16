@@ -1,24 +1,24 @@
 import {
+  Button,
   Flex,
   FormControl,
-  FormLabel,
-  Switch,
+  FormErrorMessage,
   FormHelperText,
+  FormLabel,
   Input,
   Link,
-  FormErrorMessage,
   Select,
-  Button,
+  Switch,
 } from "@chakra-ui/react";
-import { useObservable } from "applesauce-react/hooks";
+import { useObservableEagerState } from "applesauce-react/hooks";
 
-import { safeUrl } from "../../../helpers/parse";
-import useSettingsForm from "../use-settings-form";
-import localSettings from "../../../services/local-settings";
 import SimpleView from "../../../components/layout/presets/simple-view";
+import { safeUrl } from "../../../helpers/parse";
+import localSettings from "../../../services/local-settings";
+import useSettingsForm from "../use-settings-form";
 
 function VerifyEventSettings() {
-  const verifyEventMethod = useObservable(localSettings.verifyEventMethod);
+  const verifyEventMethod = useObservableEagerState(localSettings.verifyEventMethod);
 
   return (
     <>

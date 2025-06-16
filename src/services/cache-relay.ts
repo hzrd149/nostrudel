@@ -1,4 +1,4 @@
-import { BehaviorSubject, distinctUntilChanged, Observable, pairwise } from "rxjs";
+import { BehaviorSubject, distinctUntilChanged, filter, Observable, pairwise } from "rxjs";
 import { CacheRelay, openDB } from "nostr-idb";
 import { AbstractRelay } from "nostr-tools/abstract-relay";
 import { fakeVerifyEvent, isFromCache, isSafeRelayURL } from "applesauce-core/helpers";
@@ -155,7 +155,7 @@ setInterval(() => {
 }, 60_000);
 
 // watch for new events and send them to the cache relay
-eventStore.database.inserted.subscribe((event) => {
+eventStore.insert$.pipe(filter((event) => !isFromCache(event))).subscribe((event: NostrEvent) => {
   const relay = getCacheRelay();
-  if (relay && !isFromCache(event)) relay.publish(event);
+  if (relay) relay.publish(event);
 });

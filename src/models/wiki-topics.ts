@@ -1,13 +1,13 @@
-import { Query } from "applesauce-core";
-import { map } from "rxjs";
+import { Model } from "applesauce-core";
 import { NostrEvent } from "nostr-tools";
+import { map } from "rxjs";
 
-import { WIKI_PAGE_KIND } from "../helpers/nostr/wiki";
 import { getReplaceableIdentifier } from "applesauce-core/helpers";
+import { WIKI_PAGE_KIND } from "../helpers/nostr/wiki";
 
-export function WikiTopicsQuery(): Query<Record<string, NostrEvent[]>> {
-  return (store) =>
-    store.timeline([{ kinds: [WIKI_PAGE_KIND] }]).pipe(
+export function WikiTopicsModel(): Model<Record<string, NostrEvent[]>> {
+  return (events) =>
+    events.timeline([{ kinds: [WIKI_PAGE_KIND] }]).pipe(
       map((events) => {
         const topics: Record<string, NostrEvent[]> = {};
 

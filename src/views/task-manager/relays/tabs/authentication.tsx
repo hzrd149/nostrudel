@@ -1,12 +1,12 @@
 import { Flex, SimpleGrid, Text } from "@chakra-ui/react";
-import { useObservable } from "applesauce-react/hooks";
+import { useObservableEagerState } from "applesauce-react/hooks";
 
+import RelayAuthCard from "../../../../components/relays/relay-auth-card";
 import DefaultAuthModeSelect from "../../../../components/settings/default-auth-mode-select";
 import authenticationSigner from "../../../../services/authentication-signer";
-import RelayAuthCard from "../../../../components/relays/relay-auth-card";
 
 export default function RelayAuthenticationTab() {
-  const relayState = useObservable(authenticationSigner.relayState$);
+  const relayState = useObservableEagerState(authenticationSigner.relayState$);
 
   return (
     <>

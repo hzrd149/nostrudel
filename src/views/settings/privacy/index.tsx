@@ -11,7 +11,7 @@ import {
   FormLabel,
   Text,
 } from "@chakra-ui/react";
-import { useObservable } from "applesauce-react/hooks";
+import { useObservable, useObservableEagerState } from "applesauce-react/hooks";
 
 import { safeUrl } from "../../../helpers/parse";
 import { createRequestProxyUrl } from "../../../helpers/request";
@@ -46,8 +46,8 @@ async function validateRequestProxy(url?: string) {
 export default function PrivacySettings() {
   const { register, submit, formState } = useSettingsForm();
 
-  const proactivelyAuthenticate = useObservable(localSettings.proactivelyAuthenticate);
-  const debugApi = useObservable(localSettings.debugApi);
+  const proactivelyAuthenticate = useObservableEagerState(localSettings.proactivelyAuthenticate);
+  const debugApi = useObservableEagerState(localSettings.debugApi);
 
   return (
     <SimpleView

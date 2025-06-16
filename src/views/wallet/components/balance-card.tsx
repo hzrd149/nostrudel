@@ -1,8 +1,8 @@
 import { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button, Card, CardBody, CardHeader, CardProps, Flex, Text } from "@chakra-ui/react";
-import { useStoreQuery } from "applesauce-react/hooks";
-import { WalletBalanceQuery } from "applesauce-wallet/queries";
+import { useEventModel } from "applesauce-react/hooks";
+import { WalletBalanceModel } from "applesauce-wallet/models";
 import { WALLET_KIND } from "applesauce-wallet/helpers";
 
 import { ECashIcon } from "../../../components/icons";
@@ -16,7 +16,7 @@ export default function WalletBalanceCard({ pubkey, ...props }: { pubkey: string
   const wallet = useReplaceableEvent({ kind: WALLET_KIND, pubkey });
   useEventUpdate(wallet?.id);
 
-  const balance = useStoreQuery(WalletBalanceQuery, [pubkey]);
+  const balance = useEventModel(WalletBalanceModel, [pubkey]);
 
   const handleScan = useCallback(
     (data: string) => {

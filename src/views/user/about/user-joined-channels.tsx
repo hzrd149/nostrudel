@@ -8,7 +8,7 @@ import { PointerChannelCard } from "../../channels/components/channel-card";
 
 export default function UserJoinedChannels({ pubkey }: { pubkey: string }) {
   const contextRelays = useAdditionalRelayContext();
-  const { pointers: channels } = useUserChannelsList(pubkey, contextRelays, true);
+  const { pointers: channels } = useUserChannelsList({ pubkey, relays: contextRelays });
   const columns = useBreakpointValue({ base: 1, lg: 2, xl: 3 }) ?? 1;
   const showAll = useDisclosure();
 

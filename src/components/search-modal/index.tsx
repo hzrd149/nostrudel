@@ -3,7 +3,7 @@ import { useRef, useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import { useAsync, useThrottle } from "react-use";
 import { matchSorter } from "match-sorter";
-import { useObservable } from "applesauce-react/hooks";
+import { useObservable, useObservableState } from "applesauce-react/hooks";
 import { nip19 } from "nostr-tools";
 
 import UserAvatar from "../user/user-avatar";
@@ -24,7 +24,7 @@ function UserOption({ pubkey }: { pubkey: string }) {
 
 export default function SearchModal({ isOpen, onClose }: Omit<ModalProps, "children">) {
   const searchRef = useRef<HTMLInputElement | null>(null);
-  const directory = useObservable(userSearchDirectory);
+  const directory = useObservableState(userSearchDirectory);
 
   const [inputValue, setInputValue] = useState("");
   const search = useThrottle(inputValue);

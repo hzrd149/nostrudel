@@ -1,4 +1,6 @@
 import { Flex, Heading } from "@chakra-ui/react";
+import { useObservableMemo } from "applesauce-react/hooks";
+import { kinds } from "nostr-tools";
 import SimpleNavItem from "../../components/layout/presets/simple-nav-item";
 import SimpleParentView from "../../components/layout/presets/simple-parent-view";
 import UserAvatar from "../../components/user/user-avatar";
@@ -12,6 +14,7 @@ import useParamsProfilePointer from "../../hooks/use-params-pubkey-pointer";
 import useUserMailboxes from "../../hooks/use-user-mailboxes";
 import useUserProfile from "../../hooks/use-user-profile";
 import { AdditionalRelayProvider } from "../../providers/local/additional-relay-context";
+import { profileLoader } from "../../services/loaders";
 import relayScoreboardService from "../../services/relay-scoreboard";
 
 const tabs = [
@@ -48,8 +51,14 @@ export default function UserView() {
   const userTopRelays = useUserBestOutbox(pubkey, 4);
   const readRelays = unique([...userTopRelays, ...pointerRelays]);
 
-  const metadata = useUserProfile(pubkey, userTopRelays, true);
+  const metadata = useUserProfile({ pubkey, relays: userTopRelays });
   useAppTitle(getDisplayName(metadata, pubkey));
+
+  // TMP: force metadata load
+  useObservableMemo(
+    () => profileLoader({ kind: kinds.Metadata, pubkey, relays: userTopRelays, cache: false }),
+    [pubkey],
+  );
 
   return (
     <AdditionalRelayProvider relays={readRelays}>

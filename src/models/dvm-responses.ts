@@ -1,8 +1,8 @@
-import { Query } from "applesauce-core";
+import { Model } from "applesauce-core";
 import { NostrEvent } from "nostr-tools";
 import { scan } from "rxjs/operators";
 
-export default function DVMResponsesQuery(request: NostrEvent): Query<Record<string, NostrEvent>> {
+export function DVMResponsesModel(request: NostrEvent): Model<Record<string, NostrEvent>> {
   return (events) =>
     events.filters([{ kinds: [request.kind + 1000, 7000], "#e": [request.id] }]).pipe(
       scan(

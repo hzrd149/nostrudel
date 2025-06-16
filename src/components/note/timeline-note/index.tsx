@@ -12,7 +12,7 @@ import {
   LinkBox,
   useDisclosure,
 } from "@chakra-ui/react";
-import { useObservable } from "applesauce-react/hooks";
+import { useObservableEagerState } from "applesauce-react/hooks";
 import { NostrEvent } from "nostr-tools";
 import { memo } from "react";
 import { Link as RouterLink } from "react-router-dom";
@@ -66,7 +66,7 @@ export function TimelineNote({
   ...props
 }: TimelineNoteProps) {
   const { showReactions } = useAppSettings();
-  const hideZapBubbles = useObservable(localSettings.hideZapBubbles);
+  const hideZapBubbles = useObservableEagerState(localSettings.hideZapBubbles);
   const replyForm = useDisclosure();
 
   const ref = useEventIntersectionRef(event);

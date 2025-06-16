@@ -1,10 +1,9 @@
 import { IconButton, IconButtonProps, useDisclosure } from "@chakra-ui/react";
 import { NostrEvent } from "nostr-tools";
 
-import { getEventUID } from "../../helpers/nostr/event";
 import { useReadRelays } from "../../hooks/use-client-relays";
 import useUserLNURLMetadata from "../../hooks/use-user-lnurl-metadata";
-import { requestZaps } from "../../services/zaps-loader";
+import { zapsLoader } from "../../services/loaders";
 import ZapModal from "../event-zap-modal";
 import { LightningIcon } from "../icons";
 
@@ -18,7 +17,7 @@ export default function EventZapIconButton({
   const readRelays = useReadRelays();
   const onZapped = () => {
     onClose();
-    requestZaps(getEventUID(event), readRelays, true);
+    zapsLoader(event, readRelays).subscribe();
   };
 
   const canZap = !!metadata?.allowsNostr || event.tags.some((t) => t[0] === "zap");

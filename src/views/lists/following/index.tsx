@@ -61,7 +61,7 @@ function FollowingPage() {
   const account = useActiveAccount()!;
   const scroll = useVirtualListScrollRestore("following");
 
-  const contactsList = useUserContacts(account.pubkey, undefined, true);
+  const contactsList = useUserContacts(account.pubkey);
 
   return (
     <SimpleView title="Following" scroll={false} flush>

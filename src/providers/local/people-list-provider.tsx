@@ -44,7 +44,7 @@ export function usePeopleListSelect(selected: ListId, onChange: (list: ListId) =
   const account = useActiveAccount();
 
   const listId = useListCoordinate(selected);
-  const listEvent = useReplaceableEvent(listId, [], true);
+  const listEvent = useReplaceableEvent(listId);
 
   const people = useMemo(() => listEvent && getProfilePointersFromList(listEvent), [listEvent]);
 

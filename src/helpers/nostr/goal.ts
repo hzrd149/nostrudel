@@ -1,4 +1,5 @@
 import {
+  DecodeResult,
   getAddressPointerFromATag,
   getEventPointerFromETag,
   getProfilePointerFromPTag,
@@ -6,7 +7,7 @@ import {
 } from "applesauce-core/helpers";
 import dayjs from "dayjs";
 import { kinds, NostrEvent } from "nostr-tools";
-import { DecodeResult, decode } from "nostr-tools/nip19";
+import { decode } from "nostr-tools/nip19";
 
 /** @deprecated */
 export function getPointerFromTag(tag: string[]): ReturnType<typeof decode> | null {

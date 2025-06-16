@@ -199,7 +199,7 @@ function MissingServers() {
 function MediaServersPage() {
   const account = useActiveAccount()!;
   const { mediaUploadService, updateSettings } = useAppSettings();
-  const servers = useUsersMediaServers(account.pubkey, undefined, true);
+  const servers = useUsersMediaServers(account.pubkey);
   const event = useReplaceableEvent({ kind: USER_BLOSSOM_SERVER_LIST_KIND, pubkey: account.pubkey });
 
   const switchToBlossom = useAsyncAction(async () => {

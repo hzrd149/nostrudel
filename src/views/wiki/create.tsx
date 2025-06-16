@@ -1,4 +1,3 @@
-import { useEffect, useMemo } from "react";
 import {
   Alert,
   AlertIcon,
@@ -12,26 +11,26 @@ import {
   Textarea,
   useToast,
 } from "@chakra-ui/react";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import { useForm } from "react-hook-form";
-import { EventTemplate, nip19 } from "nostr-tools";
 import dayjs from "dayjs";
+import { EventTemplate, nip19 } from "nostr-tools";
+import { useEffect, useMemo } from "react";
+import { useForm } from "react-hook-form";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 import "easymde/dist/easymde.min.css";
 
-import { WIKI_RELAYS } from "../../const";
-import VerticalPageLayout from "../../components/vertical-page-layout";
-import { removeNonASCIIChar } from "../../helpers/string";
-import { usePublishEvent } from "../../providers/global/publish-provider";
-import { WIKI_PAGE_KIND, getPageSummary, getPageTitle, getPageTopic } from "../../helpers/nostr/wiki";
-import useCacheForm from "../../hooks/use-cache-form";
-import MarkdownEditor from "./components/markdown-editor";
-import useReplaceableEvent from "../../hooks/use-replaceable-event";
-import { useReadRelays } from "../../hooks/use-client-relays";
 import UserName from "../../components/user/user-name";
+import VerticalPageLayout from "../../components/vertical-page-layout";
+import { WIKI_RELAYS } from "../../const";
 import { getEventCoordinate } from "../../helpers/nostr/event";
-import FormatButton from "./components/format-toolbar";
+import { WIKI_PAGE_KIND, getPageSummary, getPageTitle, getPageTopic } from "../../helpers/nostr/wiki";
+import { removeNonASCIIChar } from "../../helpers/string";
+import useCacheForm from "../../hooks/use-cache-form";
+import useReplaceableEvent from "../../hooks/use-replaceable-event";
+import { usePublishEvent } from "../../providers/global/publish-provider";
 import { getSharableEventAddress } from "../../services/relay-hints";
+import FormatButton from "./components/format-toolbar";
+import MarkdownEditor from "./components/markdown-editor";
 
 export default function CreateWikiPageView() {
   const toast = useToast();
@@ -48,8 +47,7 @@ export default function CreateWikiPageView() {
     }
   }, [search]);
 
-  const readRelays = useReadRelays();
-  const fork = useReplaceableEvent(forkAddress ?? undefined, readRelays);
+  const fork = useReplaceableEvent(forkAddress ?? undefined);
 
   const { register, setValue, getValues, handleSubmit, watch, formState, reset } = useForm({
     defaultValues: { content: "", title: presetTitle || presetTopic || "", topic: presetTopic || "", summary: "" },

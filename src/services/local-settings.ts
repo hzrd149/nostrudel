@@ -3,7 +3,7 @@ import { bytesToHex, hexToBytes } from "@noble/hashes/utils";
 import { nanoid } from "nanoid";
 
 import { type RelayAuthMode } from "./authentication-signer";
-import { DEFAULT_SIGNAL_RELAYS } from "../const";
+import { DEFAULT_LOOKUP_RELAYS, DEFAULT_SIGNAL_RELAYS } from "../const";
 import {
   ArrayLocalStorageEntry,
   BooleanLocalStorageEntry,
@@ -15,6 +15,7 @@ import { LocalStorageEntry } from "../classes/local-settings/entry";
 // relays
 const readRelays = new ArrayLocalStorageEntry<string>("read-relays", []);
 const writeRelays = new ArrayLocalStorageEntry<string>("write-relays", []);
+const lookupRelays = new ArrayLocalStorageEntry<string>("lookup-relays", DEFAULT_LOOKUP_RELAYS);
 
 // local relay
 const idbMaxEvents = new NumberLocalStorageEntry("nostr-idb-max-events", 10_000);
@@ -74,6 +75,7 @@ const cacheRelayURL = new LocalStorageEntry("cache-relay-url", "");
 const localSettings = {
   readRelays,
   writeRelays,
+  lookupRelays,
   idbMaxEvents,
   wasmPersistForDays,
   hideZapBubbles,

@@ -1,11 +1,11 @@
 import { Link, LinkProps } from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router-dom";
-import { nip19 } from "nostr-tools";
 import { useActiveAccount } from "applesauce-react/hooks";
+import { Link as RouterLink } from "react-router-dom";
+import { npubEncode } from "nostr-tools/nip19";
 
 import { getDisplayName } from "../../helpers/nostr/profile";
-import useUserProfile from "../../hooks/use-user-profile";
 import useAppSettings from "../../hooks/use-user-app-settings";
+import useUserProfile from "../../hooks/use-user-profile";
 
 export type UserLinkProps = LinkProps & {
   pubkey: string;
@@ -15,7 +15,7 @@ export type UserLinkProps = LinkProps & {
 };
 
 export default function UserLink({ pubkey, showAt, tab, relays, ...props }: UserLinkProps) {
-  const metadata = useUserProfile(pubkey, relays);
+  const metadata = useUserProfile({ pubkey, relays });
   const account = useActiveAccount();
   const { hideUsernames, removeEmojisInUsernames, showPubkeyColor } = useAppSettings();
   const color = "#" + pubkey.slice(0, 6);
@@ -23,7 +23,7 @@ export default function UserLink({ pubkey, showAt, tab, relays, ...props }: User
   return (
     <Link
       as={RouterLink}
-      to={`/u/${nip19.npubEncode(pubkey)}` + (tab ? "/" + tab : "")}
+      to={`/u/${npubEncode(pubkey)}` + (tab ? "/" + tab : "")}
       whiteSpace="nowrap"
       textDecoration={showPubkeyColor === "underline" ? `underline ${color} solid 2px` : undefined}
       {...props}

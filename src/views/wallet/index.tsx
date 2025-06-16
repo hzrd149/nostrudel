@@ -1,4 +1,3 @@
-import { useState } from "react";
 import {
   Alert,
   AlertDescription,
@@ -12,24 +11,25 @@ import {
   Tabs,
   useToast,
 } from "@chakra-ui/react";
-import { kinds } from "nostr-tools";
-import { WalletBalanceQuery } from "applesauce-wallet/queries";
+import { useActionHub, useActiveAccount, useEventModel } from "applesauce-react/hooks";
 import { CreateWallet } from "applesauce-wallet/actions";
 import { WALLET_HISTORY_KIND, WALLET_TOKEN_KIND } from "applesauce-wallet/helpers";
+import { WalletBalanceModel } from "applesauce-wallet/models";
+import { kinds } from "nostr-tools";
+import { useState } from "react";
 
-import { useActionHub, useActiveAccount, useStoreQuery } from "applesauce-react/hooks";
 import SimpleView from "../../components/layout/presets/simple-view";
-import useTimelineLoader from "../../hooks/use-timeline-loader";
-import useUserMailboxes from "../../hooks/use-user-mailboxes";
 import { useReadRelays } from "../../hooks/use-client-relays";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
+import useTimelineLoader from "../../hooks/use-timeline-loader";
+import useUserMailboxes from "../../hooks/use-user-mailboxes";
+import useUserWallet from "../../hooks/use-user-wallet";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import WalletBalanceCard from "./components/balance-card";
-import WalletTokensTab from "./tabs/tokens";
+import WalletUnlockButton from "./components/wallet-unlock-button";
 import WalletHistoryTab from "./tabs/history";
 import WalletMintsTab from "./tabs/mints";
-import useUserWallet from "../../hooks/use-user-wallet";
-import WalletUnlockButton from "./components/wallet-unlock-button";
+import WalletTokensTab from "./tabs/tokens";
 
 export default function WalletHomeView() {
   const toast = useToast();
@@ -46,7 +46,7 @@ export default function WalletHomeView() {
     },
     { kinds: [kinds.EventDeletion], "#k": [String(WALLET_TOKEN_KIND)], authors: [account.pubkey] },
   ]);
-  const balance = useStoreQuery(WalletBalanceQuery, [account.pubkey]);
+  const balance = useEventModel(WalletBalanceModel, [account.pubkey]);
 
   const [creating, setCreating] = useState(false);
   const create = async () => {

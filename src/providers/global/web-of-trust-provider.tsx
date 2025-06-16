@@ -6,7 +6,7 @@ import { PubkeyGraph } from "../../classes/pubkey-graph";
 import { DEFAULT_LOOKUP_RELAYS } from "../../const";
 import { getPubkeysFromList } from "../../helpers/nostr/lists";
 import { eventStore } from "../../services/event-store";
-import replaceableEventLoader from "../../services/replaceable-loader";
+import { addressLoader } from "../../services/loaders";
 
 export function loadSocialGraph(
   graph: PubkeyGraph,
@@ -39,7 +39,7 @@ export function loadSocialGraph(
   if (contacts) {
     handleEvent(contacts);
   } else {
-    replaceableEventLoader.next({
+    addressLoader({
       relays: relay ? [relay, ...DEFAULT_LOOKUP_RELAYS] : DEFAULT_LOOKUP_RELAYS,
       kind,
       pubkey,

@@ -14,7 +14,7 @@ import useUserMuteList from "./use-user-mute-list";
 export default function useUserMuteActions(pubkey: string) {
   const account = useActiveAccount()!;
   const publish = usePublishEvent();
-  const muteList = useUserMuteList(account?.pubkey, undefined, true);
+  const muteList = useUserMuteList(account.pubkey);
 
   const isMuted = isPubkeyInList(muteList, pubkey);
   const expiration = muteList ? getPubkeyExpiration(muteList, pubkey) : 0;

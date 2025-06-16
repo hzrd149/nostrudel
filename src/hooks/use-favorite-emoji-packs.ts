@@ -1,16 +1,19 @@
-import { kinds } from "nostr-tools";
 import { useActiveAccount } from "applesauce-react/hooks";
+import { kinds } from "nostr-tools";
+import { ProfilePointer } from "nostr-tools/nip19";
+import { useMemo } from "react";
 
 import useReplaceableEvent from "./use-replaceable-event";
 
-export default function useFavoriteEmojiPacks(pubkey?: string, additionalRelays?: Iterable<string>, force?: boolean) {
+export default function useFavoriteEmojiPacks(user?: string | ProfilePointer) {
   const account = useActiveAccount();
-  const key = pubkey || account?.pubkey;
-  const favoritePacks = useReplaceableEvent(
-    key ? { kind: kinds.UserEmojiList, pubkey: key } : undefined,
-    additionalRelays,
-    force,
-  );
+  const pointer = useMemo(() => {
+    if (typeof user === "string") return { kind: kinds.UserEmojiList, pubkey: user };
+    if (user) return { kind: kinds.UserEmojiList, pubkey: user.pubkey, relays: user.relays };
+    else if (account) return { kind: kinds.UserEmojiList, pubkey: account.pubkey };
+  }, [user]);
+
+  const favoritePacks = useReplaceableEvent(pointer);
 
   return favoritePacks;
 }

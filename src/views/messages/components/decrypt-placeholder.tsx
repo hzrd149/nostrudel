@@ -5,7 +5,7 @@ import { NostrEvent } from "nostr-tools";
 import { UnlockIcon } from "../../../components/icons";
 import DebugEventButton from "../../../components/debug-modal/debug-event-button";
 import useAppSettings from "../../../hooks/use-user-app-settings";
-import { useKind4Decrypt } from "../../../hooks/use-kind4-decryption";
+import { useLegacyMessagePlaintext } from "../../../hooks/use-kind4-decryption";
 
 export default function DecryptPlaceholder({
   children,
@@ -17,7 +17,7 @@ export default function DecryptPlaceholder({
 } & Omit<ButtonProps, "children">): JSX.Element {
   const { autoDecryptDMs } = useAppSettings();
   const [loading, setLoading] = useState(false);
-  const { requestDecrypt, plaintext, error } = useKind4Decrypt(message);
+  const { requestDecrypt, plaintext, error } = useLegacyMessagePlaintext(message);
 
   const decrypt = async () => {
     setLoading(true);

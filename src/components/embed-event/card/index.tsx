@@ -1,6 +1,6 @@
 import { CardProps, Spinner } from "@chakra-ui/react";
+import { DecodeResult } from "applesauce-core/helpers";
 import { kinds, NostrEvent } from "nostr-tools";
-import type { DecodeResult } from "nostr-tools/nip19";
 import { lazy, Suspense } from "react";
 
 import { safeDecode } from "../../../helpers/nip19";
@@ -120,10 +120,10 @@ export function EmbedEventPointerCard({
       event = useSingleEvent(pointer.data);
       break;
     case "nevent":
-      event = useSingleEvent(pointer.data.id, pointer.data.relays);
+      event = useSingleEvent(pointer.data);
       break;
     case "naddr":
-      event = useReplaceableEvent(pointer.data, pointer.data.relays);
+      event = useReplaceableEvent(pointer.data);
       break;
   }
 

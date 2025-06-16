@@ -1,4 +1,3 @@
-import { NostrEvent, nip19 } from "nostr-tools";
 import {
   Alert,
   AlertIcon,
@@ -12,31 +11,33 @@ import {
   Spinner,
   Text,
 } from "@chakra-ui/react";
+import { addRelayHintsToPointer } from "applesauce-core/helpers";
+import { useActiveAccount } from "applesauce-react/hooks";
+import { NostrEvent, nip19 } from "nostr-tools";
 import { Link as RouterLink } from "react-router-dom";
 
-import useParamsAddressPointer from "../../hooks/use-params-address-pointer";
-import useReplaceableEvent from "../../hooks/use-replaceable-event";
-import VerticalPageLayout from "../../components/vertical-page-layout";
-import { getPageDefer, getPageForks, getPageSummary, getPageTitle, getPageTopic } from "../../helpers/nostr/wiki";
-import MarkdownContent from "../../components/markdown/markdown";
-import UserLink from "../../components/user/user-link";
-import WikiPageResult from "./components/wiki-page-result";
-import Timestamp from "../../components/timestamp";
-import WikiPageHeader from "./components/wiki-page-header";
-import { WIKI_RELAYS } from "../../const";
-import GitBranch01 from "../../components/icons/git-branch-01";
 import { ExternalLinkIcon } from "../../components/icons";
 import FileSearch01 from "../../components/icons/file-search-01";
-import EventZapButton from "../../components/zap/event-zap-button";
-import ZapBubbles from "../../components/note/timeline-note/components/zap-bubbles";
+import GitBranch01 from "../../components/icons/git-branch-01";
+import MarkdownContent from "../../components/markdown/markdown";
 import EventQuoteButton from "../../components/note/event-quote-button";
-import WikiPageMenu from "./components/wiki-page-menu";
+import ZapBubbles from "../../components/note/timeline-note/components/zap-bubbles";
 import EventVoteButtons from "../../components/reactions/event-vote-buttions";
-import { useActiveAccount } from "applesauce-react/hooks";
+import Timestamp from "../../components/timestamp";
+import UserLink from "../../components/user/user-link";
+import VerticalPageLayout from "../../components/vertical-page-layout";
+import EventZapButton from "../../components/zap/event-zap-button";
+import { WIKI_RELAYS } from "../../const";
+import { getPageDefer, getPageForks, getPageSummary, getPageTitle, getPageTopic } from "../../helpers/nostr/wiki";
 import { useReadRelays } from "../../hooks/use-client-relays";
+import useParamsAddressPointer from "../../hooks/use-params-address-pointer";
+import useReplaceableEvent from "../../hooks/use-replaceable-event";
+import useWikiPages from "../../hooks/use-wiki-pages";
 import { useWebOfTrust } from "../../providers/global/web-of-trust-provider";
 import { getSharableEventAddress } from "../../services/relay-hints";
-import useWikiPages from "../../hooks/use-wiki-pages";
+import WikiPageHeader from "./components/wiki-page-header";
+import WikiPageMenu from "./components/wiki-page-menu";
+import WikiPageResult from "./components/wiki-page-result";
 
 function ForkAlert({ page, address }: { page: NostrEvent; address: nip19.AddressPointer }) {
   const topic = getPageTopic(page);
@@ -179,7 +180,7 @@ function WikiPageFooter({ page }: { page: NostrEvent }) {
 
 export default function WikiPageView() {
   const pointer = useParamsAddressPointer("naddr");
-  const event = useReplaceableEvent(pointer, WIKI_RELAYS);
+  const event = useReplaceableEvent(addRelayHintsToPointer(pointer, WIKI_RELAYS));
 
   if (!event) return <Spinner />;
   return (

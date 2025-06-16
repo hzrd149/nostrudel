@@ -1,11 +1,8 @@
-import { kinds } from "nostr-tools";
-import { useStoreQuery } from "applesauce-react/hooks";
-import { MuteQuery } from "applesauce-core/queries";
+import { useEventModel } from "applesauce-react/hooks";
+import { ProfilePointer } from "nostr-tools/nip19";
 
-import useReplaceableEvent from "./use-replaceable-event";
+import { MutesQuery } from "../models/mutes";
 
-export default function useUserMutes(pubkey?: string, additionalRelays?: Iterable<string>, force?: boolean) {
-  useReplaceableEvent(pubkey && { kind: kinds.Mutelist, pubkey }, additionalRelays, force);
-
-  return useStoreQuery(MuteQuery, pubkey ? [pubkey] : undefined);
+export default function useUserMutes(pubkey?: string | ProfilePointer) {
+  return useEventModel(MutesQuery, pubkey ? [pubkey] : undefined);
 }

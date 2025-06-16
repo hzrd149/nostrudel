@@ -17,7 +17,7 @@ export default function ChannelCard({
   ...props
 }: Omit<CardProps, "children"> & { channel: NostrEvent; additionalRelays?: Iterable<string> }) {
   const readRelays = useReadRelays(additionalRelays);
-  const metadata = useChannelMetadata(channel.id, readRelays);
+  const metadata = useChannelMetadata(channel, readRelays);
 
   const ref = useEventIntersectionRef(channel);
 
@@ -43,7 +43,7 @@ export default function ChannelCard({
 }
 
 export function PointerChannelCard({ pointer, ...props }: Omit<CardProps, "children"> & { pointer: EventPointer }) {
-  const channel = useSingleEvent(pointer.id, pointer.relays);
+  const channel = useSingleEvent(pointer);
   if (!channel) return <Spinner />;
   return <ChannelCard channel={channel} {...props} />;
 }

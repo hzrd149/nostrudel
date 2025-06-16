@@ -1,15 +1,14 @@
-import { forwardRef } from "react";
 import { AvatarGroup, Flex, Text } from "@chakra-ui/react";
-import { kinds, nip25 } from "nostr-tools";
-
 import { useActiveAccount } from "applesauce-react/hooks";
-import { NostrEvent } from "nostr-tools";
+import { kinds, nip25, NostrEvent } from "nostr-tools";
+import { forwardRef } from "react";
+
 import { EmbedEventPointerCard } from "../../../components/embed-event/card";
+import ReactionIcon from "../../../components/event-reactions/reaction-icon";
 import Heart from "../../../components/icons/heart";
 import UserAvatarLink from "../../../components/user/user-avatar-link";
 import useSingleEvent from "../../../hooks/use-single-event";
 import NotificationIconEntry from "./notification-icon-entry";
-import ReactionIcon from "../../../components/event-reactions/reaction-icon";
 
 const ReactionNotification = forwardRef<HTMLDivElement, { event: NostrEvent; onClick?: () => void }>(
   ({ event, onClick }, ref) => {
@@ -17,7 +16,7 @@ const ReactionNotification = forwardRef<HTMLDivElement, { event: NostrEvent; onC
     const pointer = nip25.getReactedEventPointer(event);
     if (!pointer || (account?.pubkey && pointer.author !== account.pubkey)) return null;
 
-    const reactedEvent = useSingleEvent(pointer.id, pointer.relays);
+    const reactedEvent = useSingleEvent(pointer);
     if (reactedEvent?.kind === kinds.EncryptedDirectMessage) return null;
 
     return (

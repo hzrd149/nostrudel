@@ -6,7 +6,7 @@ import useChannelMetadata from "../../../hooks/use-channel-metadata";
 
 export default function ChannelImage({ channel, ...props }: { channel: NostrEvent } & Omit<BoxProps, "children">) {
   const readRelays = useReadRelays();
-  const metadata = useChannelMetadata(channel.id, readRelays);
+  const metadata = useChannelMetadata(channel, readRelays);
 
   return (
     <Box

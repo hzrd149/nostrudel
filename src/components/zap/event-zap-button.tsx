@@ -5,12 +5,12 @@ import { useActiveAccount } from "applesauce-react/hooks";
 import { humanReadableSats } from "../../helpers/lightning";
 import { totalZaps } from "../../helpers/nostr/zaps";
 import useEventZaps from "../../hooks/use-event-zaps";
-import { requestZaps } from "../../services/zaps-loader";
 import { NostrEvent } from "nostr-tools";
 import { LightningIcon } from "../icons";
 import ZapModal from "../event-zap-modal";
 import useUserLNURLMetadata from "../../hooks/use-user-lnurl-metadata";
 import { useReadRelays } from "../../hooks/use-client-relays";
+import { zapsLoader } from "../../services/loaders";
 
 export type NoteZapButtonProps = Omit<ButtonProps, "children"> & {
   event: NostrEvent;
@@ -21,7 +21,7 @@ export type NoteZapButtonProps = Omit<ButtonProps, "children"> & {
 export default function EventZapButton({ event, allowComment, showEventPreview, ...props }: NoteZapButtonProps) {
   const account = useActiveAccount();
   const { metadata } = useUserLNURLMetadata(event.pubkey);
-  const zaps = useEventZaps(getEventUID(event)) ?? [];
+  const zaps = useEventZaps(event) ?? [];
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const hasZapped = !!account && zaps.some((zap) => getZapSender(zap) === account.pubkey);
@@ -29,7 +29,7 @@ export default function EventZapButton({ event, allowComment, showEventPreview, 
   const readRelays = useReadRelays();
   const onZapped = () => {
     onClose();
-    requestZaps(getEventUID(event), readRelays, true);
+    zapsLoader(event, readRelays).subscribe();
   };
 
   const total = totalZaps(zaps);

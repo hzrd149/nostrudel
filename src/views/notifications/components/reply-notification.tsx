@@ -1,12 +1,12 @@
-import { forwardRef, useMemo } from "react";
+import { DecodeResult } from "applesauce-core/helpers";
 import { NostrEvent } from "nostr-tools";
-import { DecodeResult } from "nostr-tools/nip19";
+import { forwardRef, useMemo } from "react";
 
-import { getThreadReferences } from "../../../helpers/nostr/event";
 import { EmbedEventPointerCard } from "../../../components/embed-event/card";
 import { ReplyIcon } from "../../../components/icons";
-import NotificationIconEntry from "./notification-icon-entry";
 import { TimelineNote } from "../../../components/note/timeline-note";
+import { getThreadReferences } from "../../../helpers/nostr/event";
+import NotificationIconEntry from "./notification-icon-entry";
 
 const ReplyNotification = forwardRef<HTMLDivElement, { event: NostrEvent; onClick?: () => void }>(
   ({ event, onClick }, ref) => {

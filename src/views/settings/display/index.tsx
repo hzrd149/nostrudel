@@ -1,26 +1,26 @@
-import { Link as RouterLink } from "react-router-dom";
 import {
+  Button,
   Flex,
   FormControl,
-  FormLabel,
-  Switch,
   FormHelperText,
+  FormLabel,
   Input,
-  Select,
-  Textarea,
   Link,
-  Button,
+  Select,
+  Switch,
+  Textarea,
 } from "@chakra-ui/react";
-import { useObservable } from "applesauce-react/hooks";
+import { useObservableEagerState } from "applesauce-react/hooks";
+import { Link as RouterLink } from "react-router-dom";
 
+import SimpleView from "../../../components/layout/presets/simple-view";
 import localSettings from "../../../services/local-settings";
 import useSettingsForm from "../use-settings-form";
-import SimpleView from "../../../components/layout/presets/simple-view";
 
 export default function DisplaySettings() {
   const { register, submit, formState } = useSettingsForm();
 
-  const hideZapBubbles = useObservable(localSettings.hideZapBubbles);
+  const hideZapBubbles = useObservableEagerState(localSettings.hideZapBubbles);
 
   return (
     <SimpleView

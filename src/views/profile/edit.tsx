@@ -10,18 +10,18 @@ import {
   Input,
   InputGroup,
   InputRightElement,
-  Link,
   Textarea,
   VisuallyHiddenInput,
 } from "@chakra-ui/react";
 import { parseNIP05Address, ProfileContent, unixNow } from "applesauce-core/helpers";
 import { IdentityStatus } from "applesauce-loaders/helpers/dns-identity";
-import { useActiveAccount } from "applesauce-react/hooks";
+import { useActiveAccount, useObservableMemo } from "applesauce-react/hooks";
 import { EventTemplate } from "nostr-tools";
 import { useEffect, useMemo, useRef } from "react";
 import { useForm } from "react-hook-form";
 
-import { ExternalLinkIcon, OutboxIcon } from "../../components/icons";
+import { OutboxIcon } from "../../components/icons";
+import SimpleView from "../../components/layout/presets/simple-view";
 import { DEFAULT_LOOKUP_RELAYS } from "../../const";
 import { isLNURL } from "../../helpers/lnurl";
 import { useReadRelays } from "../../hooks/use-client-relays";
@@ -30,7 +30,7 @@ import useUserProfile from "../../hooks/use-user-profile";
 import { usePublishEvent } from "../../providers/global/publish-provider";
 import dnsIdentityLoader from "../../services/dns-identity-loader";
 import lnurlMetadataService from "../../services/lnurl-metadata";
-import SimpleView from "../../components/layout/presets/simple-view";
+import { profileLoader } from "../../services/loaders";
 
 const isEmail =
   /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -271,9 +271,15 @@ const MetadataForm = ({
 
 export const ProfileEditView = () => {
   const publish = usePublishEvent();
-  const readRelays = useReadRelays();
   const account = useActiveAccount()!;
-  const metadata = useUserProfile(account.pubkey, readRelays, true);
+  const metadata = useUserProfile(account.pubkey);
+  const readRelays = useReadRelays();
+
+  // Load a fresh profile metadata to avoid stale data
+  useObservableMemo(
+    () => profileLoader({ pubkey: account.pubkey, kind: 0, cache: false, relays: readRelays }),
+    [account.pubkey, readRelays],
+  );
 
   const defaultValues = useMemo<FormData>(
     () => ({

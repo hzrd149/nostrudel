@@ -173,7 +173,7 @@ export default function DnsIdentityView() {
   const account = useActiveAccount();
   if (!account) return <Navigate to="/" />;
 
-  const profile = useUserProfile(account.pubkey, undefined, true);
+  const profile = useUserProfile(account.pubkey);
 
   return (
     <SimpleView

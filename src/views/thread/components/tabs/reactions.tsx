@@ -1,12 +1,12 @@
-import { useMemo } from "react";
 import { Box, Button, Divider, Flex, SimpleGrid, SimpleGridProps, useDisclosure } from "@chakra-ui/react";
 import { NostrEvent } from "nostr-tools";
-import { ThreadItem } from "applesauce-core/queries";
+import { useMemo } from "react";
+import { ThreadItem } from "applesauce-core/models";
 
-import { groupReactions } from "../../../../helpers/nostr/reactions";
 import ReactionIcon from "../../../../components/event-reactions/reaction-icon";
-import UserLink from "../../../../components/user/user-link";
 import UserAvatarLink from "../../../../components/user/user-avatar-link";
+import UserLink from "../../../../components/user/user-link";
+import { groupReactions } from "../../../../helpers/nostr/reactions";
 
 function ShowMoreGrid({
   pubkeys,

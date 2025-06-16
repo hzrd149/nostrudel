@@ -56,7 +56,7 @@ function TransformNotePage({ note }: { note: NostrEvent }) {
 
 export default function TransformNoteView() {
   const pointer = useParamsEventPointer("id");
-  const event = useSingleEvent(pointer.id, pointer.relays);
+  const event = useSingleEvent(pointer);
 
   return event ? <TransformNotePage note={event} /> : <Spinner />;
 }

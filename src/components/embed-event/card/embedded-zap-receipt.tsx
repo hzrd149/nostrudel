@@ -1,5 +1,6 @@
 import { Box, ButtonGroup, Card, CardBody, CardHeader, CardProps, LinkBox, Text } from "@chakra-ui/react";
 import {
+  DecodeResult,
   getZapAddressPointer,
   getZapEventPointer,
   getZapPayment,
@@ -8,7 +9,6 @@ import {
   getZapSender,
 } from "applesauce-core/helpers";
 import { NostrEvent } from "nostr-tools";
-import { DecodeResult } from "nostr-tools/nip19";
 import { useMemo } from "react";
 
 import { humanReadableSats } from "../../../helpers/lightning";

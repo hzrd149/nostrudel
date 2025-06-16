@@ -1,32 +1,32 @@
 import { Alert, AlertIcon, AlertTitle, Button, Flex, Spinner, useDisclosure } from "@chakra-ui/react";
-import { Navigate, useParams } from "react-router-dom";
 import { NostrEvent, kinds, nip19 } from "nostr-tools";
+import { Navigate, useParams } from "react-router-dom";
+import { DecodeResult, PICTURE_POST_KIND } from "applesauce-core/helpers";
 
+import GenericCommentForm from "../../components/comment/generic-comment-form";
+import { GenericComments } from "../../components/comment/generic-comments";
+import { EmbedEventCard, EmbedEventPointerCard } from "../../components/embed-event/card";
 import { ErrorBoundary } from "../../components/error-boundary";
+import { ThreadIcon } from "../../components/icons";
+import SimpleView from "../../components/layout/presets/simple-view";
 import { TORRENT_KIND } from "../../helpers/nostr/torrents";
 import { FLARE_VIDEO_KIND } from "../../helpers/nostr/video";
 import { WIKI_PAGE_KIND } from "../../helpers/nostr/wiki";
-import { EmbedEventCard, EmbedEventPointerCard } from "../../components/embed-event/card";
 import useReplaceableEvent from "../../hooks/use-replaceable-event";
 import useSingleEvent from "../../hooks/use-single-event";
-import SimpleView from "../../components/layout/presets/simple-view";
-import { GenericComments } from "../../components/comment/generic-comments";
-import GenericCommentForm from "../../components/comment/generic-comment-form";
-import { ThreadIcon } from "../../components/icons";
-import { PICTURE_POST_KIND } from "applesauce-core/helpers";
 
 function LoadUnknownAddress({ pointer, link }: { pointer: nip19.AddressPointer; link: string }) {
-  const event = useReplaceableEvent(pointer, pointer.relays);
+  const event = useReplaceableEvent(pointer);
   if (!event) return <Spinner />;
   return <RenderRedirect event={event} link={link} />;
 }
 function LoadUnknownEvent({ pointer, link }: { pointer: nip19.EventPointer; link: string }) {
-  const event = useSingleEvent(pointer.id, pointer.relays);
+  const event = useSingleEvent(pointer);
   if (!event) return <Spinner />;
   return <RenderRedirect event={event} link={link} />;
 }
 
-function UnknownView({ pointer, event }: { pointer: nip19.DecodeResult; event?: NostrEvent }) {
+function UnknownView({ pointer, event }: { pointer: DecodeResult; event?: NostrEvent }) {
   const comment = useDisclosure();
 
   return (

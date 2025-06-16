@@ -1,46 +1,24 @@
-import { useEffect, useMemo } from "react";
+import { useEventStore, useObservableMemo } from "applesauce-react/hooks";
 import { NostrEvent } from "nostr-tools";
-import { useStoreQuery } from "applesauce-react/hooks";
-import { ReplaceableSetQuery } from "applesauce-core/queries";
 
-import { useReadRelays } from "./use-client-relays";
-import replaceableEventLoader from "../services/replaceable-loader";
+import hash_sum from "hash-sum";
+import { combineLatest, map, of } from "rxjs";
 import { CustomAddressPointer, parseCoordinate } from "../helpers/nostr/event";
+import { AddressableQuery } from "../models";
 
-export default function useReplaceableEvents(
-  coordinates: string[] | CustomAddressPointer[] | undefined,
-  additionalRelays?: Iterable<string>,
-  force?: boolean,
-): NostrEvent[] {
-  const readRelays = useReadRelays(additionalRelays);
+export default function useReplaceableEvents(coordinates: string[] | CustomAddressPointer[] | undefined): NostrEvent[] {
+  const eventStore = useEventStore();
 
-  const pointers = useMemo(() => {
-    if (!coordinates) return undefined;
-    const arr: CustomAddressPointer[] = [];
-    for (const cord of coordinates) {
-      const parsed = typeof cord === "string" ? parseCoordinate(cord) : cord;
-      if (!parsed) return;
+  return (
+    useObservableMemo(() => {
+      if (!coordinates) return of([]);
 
-      arr.push(parsed);
-    }
-    return arr;
-  }, [coordinates]);
+      const models = coordinates
+        .map((str) => (typeof str === "string" ? parseCoordinate(str) : str))
+        .filter((c) => c !== null)
+        .map((cord) => eventStore.model(AddressableQuery, cord));
 
-  // load events
-  useEffect(() => {
-    if (!pointers) return;
-
-    for (const pointer of pointers) {
-      replaceableEventLoader.next({
-        relays: [...readRelays, ...(pointer.relays ?? [])],
-        kind: pointer.kind,
-        pubkey: pointer.pubkey,
-        identifier: pointer.identifier,
-        force,
-      });
-    }
-  }, [pointers, readRelays.join("|"), force]);
-
-  const events = useStoreQuery(ReplaceableSetQuery, pointers && [pointers]);
-  return events ? Object.values(events) : [];
+      return combineLatest(models).pipe(map((events) => events.filter((e) => e !== undefined)));
+    }, [hash_sum(coordinates), eventStore]) ?? []
+  );
 }

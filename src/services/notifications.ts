@@ -6,10 +6,10 @@ import {
   getZapPayment,
   isETag,
   isPTag,
+  mergeRelaySets,
   Mutes,
   processTags,
 } from "applesauce-core/helpers";
-import { TimelineQuery } from "applesauce-core/queries";
 import { getContentPointers } from "applesauce-factory/helpers";
 import { kinds, nip18, nip25, NostrEvent } from "nostr-tools";
 import {
@@ -28,9 +28,10 @@ import {
 import { getThreadReferences, isReply, isRepost } from "../helpers/nostr/event";
 import { TORRENT_COMMENT_KIND } from "../helpers/nostr/torrents";
 import accounts from "./accounts";
-import { eventStore, queryStore } from "./event-store";
+import { eventStore } from "./event-store";
 import localSettings from "./local-settings";
-import singleEventLoader from "./single-event-loader";
+import { MuteModel } from "applesauce-core/models";
+import { eventLoader } from "./loaders";
 
 export const NotificationTypeSymbol = Symbol("notificationType");
 
@@ -141,10 +142,10 @@ async function handleTextNote(event: NostrEvent) {
   // request quotes
   const quotes = processTags(event.tags, (t) => (t[0] === "q" ? t : undefined), getEventPointerFromQTag);
   for (const pointer of quotes) {
-    singleEventLoader.next({
+    eventLoader({
       id: pointer.id,
-      relays: [...localSettings.readRelays.value, ...(pointer.relays ?? [])],
-    });
+      relays: mergeRelaySets(localSettings.readRelays.value, pointer.relays),
+    }).subscribe();
   }
 
   // request other event pointers
@@ -154,20 +155,20 @@ async function handleTextNote(event: NostrEvent) {
     getEventPointerFromETag,
   );
   for (const pointer of pointers) {
-    singleEventLoader.next({
+    eventLoader({
       id: pointer.id,
-      relays: [...localSettings.readRelays.value, ...(pointer.relays ?? [])],
-    });
+      relays: mergeRelaySets(localSettings.readRelays.value, pointer.relays),
+    }).subscribe();
   }
 }
 
 async function handleShare(event: NostrEvent) {
   const pointers = processTags(event.tags, (t) => (t[0] === "e" ? t : undefined), getEventPointerFromETag);
   for (const pointer of pointers) {
-    singleEventLoader.next({
+    eventLoader({
       id: pointer.id,
-      relays: [...localSettings.readRelays.value, ...(pointer.relays ?? [])],
-    });
+      relays: mergeRelaySets(localSettings.readRelays.value, pointer.relays),
+    }).subscribe();
   }
 }
 
@@ -175,8 +176,8 @@ const notifications$: Observable<CategorizedEvent[]> = combineLatest([accounts.a
   switchMap(([account]) => {
     if (!account) return [];
 
-    const timeline$ = queryStore
-      .createQuery(TimelineQuery, {
+    const timeline$ = eventStore
+      .timeline({
         "#p": [account.pubkey],
         kinds: [
           kinds.ShortTextNote,
@@ -214,7 +215,7 @@ const notifications$: Observable<CategorizedEvent[]> = combineLatest([accounts.a
         map((timeline) => timeline.map((e) => categorizeEvent(e, account.pubkey))),
       );
 
-    const mute$ = queryStore.mutes(account.pubkey);
+    const mute$ = eventStore.model(MuteModel, account.pubkey);
 
     return combineLatest([timeline$, mute$]).pipe(
       // filter events out by mutes

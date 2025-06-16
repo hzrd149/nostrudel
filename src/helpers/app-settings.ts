@@ -58,7 +58,7 @@ type AppSettingsV12 = Omit<AppSettingsV11, "showSignatureVerification" | "versio
 
 export type AppSettings = AppSettingsV12;
 
-export const defaultSettings: AppSettings = {
+export const DEFAULT_APP_SETTINGS: AppSettings = {
   version: 12,
 
   // display

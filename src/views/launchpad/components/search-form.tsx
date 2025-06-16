@@ -1,14 +1,14 @@
+import { Card, Flex, FlexProps, Input, InputGroup, InputRightElement, useDisclosure } from "@chakra-ui/react";
+import { useObservableState } from "applesauce-react/hooks";
+import { matchSorter } from "match-sorter";
+import { nip19 } from "nostr-tools";
 import { FormEventHandler, useCallback, useEffect, useRef, useState } from "react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
-import { Card, Flex, FlexProps, Input, InputGroup, InputRightElement, useDisclosure } from "@chakra-ui/react";
-import { matchSorter } from "match-sorter";
 import { useAsync, useKeyPressEvent, useThrottle } from "react-use";
-import { nip19 } from "nostr-tools";
-import { useObservable } from "applesauce-react/hooks";
 
+import KeyboardShortcut from "../../../components/keyboard-shortcut";
 import UserAvatar from "../../../components/user/user-avatar";
 import UserName from "../../../components/user/user-name";
-import KeyboardShortcut from "../../../components/keyboard-shortcut";
 import { useWebOfTrust } from "../../../providers/global/web-of-trust-provider";
 import { userSearchDirectory } from "../../../services/username-search";
 
@@ -23,7 +23,7 @@ function UserOption({ pubkey }: { pubkey: string }) {
 
 export default function SearchForm({ ...props }: Omit<FlexProps, "children">) {
   const webOfTrust = useWebOfTrust();
-  const directory = useObservable(userSearchDirectory);
+  const directory = useObservableState(userSearchDirectory);
   const navigate = useNavigate();
   const autoComplete = useDisclosure();
   const ref = useRef<HTMLInputElement | null>(null);

@@ -1,5 +1,6 @@
 import { Box, Button, ButtonGroup, Flex, Heading, SimpleGrid, Spinner, useDisclosure } from "@chakra-ui/react";
 import {
+  DecodeResult,
   encodeDecodeResult,
   getAddressPointersFromList,
   getEventPointersFromList,
@@ -7,8 +8,8 @@ import {
   getTagValue,
 } from "applesauce-core/helpers";
 import { useActiveAccount } from "applesauce-react/hooks";
-import { kinds, nip19, NostrEvent } from "nostr-tools";
-import type { DecodeResult } from "nostr-tools/nip19";
+import { kinds, NostrEvent } from "nostr-tools";
+import { EventPointer, naddrEncode } from "nostr-tools/nip19";
 
 import GenericCommentSection from "../../../components/comment/generic-comment-section";
 import { EmbedEventCard, EmbedEventPointerCard } from "../../../components/embed-event/card";
@@ -30,11 +31,11 @@ import useParamsAddressPointer from "../../../hooks/use-params-address-pointer";
 import useReplaceableEvent from "../../../hooks/use-replaceable-event";
 import useSingleEvent from "../../../hooks/use-single-event";
 import { TrustProvider } from "../../../providers/local/trust-provider";
+import ListEditModal from "../components/list-edit-modal";
 import ListFavoriteButton from "../components/list-favorite-button";
 import ListMenu from "../components/list-menu";
 import UserCard from "../components/user-card";
 import FollowSetView from "./follow-set";
-import ListEditModal from "../components/list-edit-modal";
 
 export function ListPageHeader({ list }: { list: NostrEvent }) {
   const title = getListTitle(list);
@@ -79,10 +80,10 @@ export function ListPageHeader({ list }: { list: NostrEvent }) {
   );
 }
 
-function BookmarkedEvent({ id, relays }: { id: string; relays?: string[] }) {
-  const event = useSingleEvent(id, relays);
+function BookmarkedEvent({ pointer }: { pointer: EventPointer }) {
+  const event = useSingleEvent(pointer);
 
-  return event ? <EmbedEventCard event={event} /> : <>Loading {id}</>;
+  return event ? <EmbedEventCard event={event} /> : <>Loading {pointer.id}</>;
 }
 
 function FallbackListPage({ list }: { list: NostrEvent }) {
@@ -133,8 +134,8 @@ function FallbackListPage({ list }: { list: NostrEvent }) {
           <>
             <Heading size="lg">Notes</Heading>
             <Flex gap="2" direction="column">
-              {notes.map(({ id, relays }) => (
-                <BookmarkedEvent key={id} id={id} relays={relays} />
+              {notes.map((pointer) => (
+                <BookmarkedEvent key={pointer.id} pointer={pointer} />
               ))}
             </Flex>
           </>
@@ -159,7 +160,7 @@ function FallbackListPage({ list }: { list: NostrEvent }) {
             <Heading size="lg">Communities</Heading>
             <SimpleGrid spacing="2" columns={{ base: 1, lg: 2 }}>
               {communities.map((pointer) => (
-                <EmbedEventPointerCard key={nip19.naddrEncode(pointer)} pointer={{ type: "naddr", data: pointer }} />
+                <EmbedEventPointerCard key={naddrEncode(pointer)} pointer={{ type: "naddr", data: pointer }} />
               ))}
             </SimpleGrid>
           </>
@@ -188,7 +189,7 @@ function FallbackListPage({ list }: { list: NostrEvent }) {
 export default function ListView() {
   const pointer = useParamsAddressPointer("addr", false);
 
-  const list = useReplaceableEvent(pointer, [], true);
+  const list = useReplaceableEvent(pointer);
 
   if (!list)
     return (

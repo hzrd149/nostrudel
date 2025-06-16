@@ -1,7 +1,14 @@
 import { kinds } from "nostr-tools";
+import { ProfilePointer } from "nostr-tools/nip19";
+import { useMemo } from "react";
 
-import useReplaceableEvent from "./use-replaceable-event";
+import useAddressableEvent from "./use-addressable-event";
 
-export default function useUserSearchRelayList(pubkey?: string, additionalRelays?: Iterable<string>, force?: boolean) {
-  return useReplaceableEvent(pubkey && { kind: kinds.SearchRelaysList, pubkey }, additionalRelays, force);
+export default function useUserSearchRelayList(user?: ProfilePointer) {
+  const pointer = useMemo(
+    () => (user ? { kind: kinds.SearchRelaysList, pubkey: user.pubkey, relays: user.relays } : undefined),
+    [user],
+  );
+
+  return useAddressableEvent(pointer);
 }

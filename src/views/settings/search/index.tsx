@@ -90,7 +90,7 @@ export default function SearchRelaysView() {
   const toast = useToast();
   const publish = usePublishEvent();
   const account = useActiveAccount();
-  const searchRelayList = useUserSearchRelayList(account?.pubkey);
+  const searchRelayList = useUserSearchRelayList(account && { pubkey: account.pubkey });
 
   const searchRelays = searchRelayList ? getRelaysFromList(searchRelayList) : [];
 

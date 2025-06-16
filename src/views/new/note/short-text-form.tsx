@@ -21,7 +21,7 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { Emoji, getEventPointerFromQTag, processTags } from "applesauce-core/helpers";
-import { useEventFactory, useObservable } from "applesauce-react/hooks";
+import { useEventFactory, useObservableEagerState } from "applesauce-react/hooks";
 import { UnsignedEvent } from "nostr-tools";
 import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -68,7 +68,7 @@ export default function ShortTextNoteForm({
   const publish = usePublishEvent();
   const account = useActiveAccount()!;
   const { noteDifficulty } = useAppSettings();
-  const addClientTag = useObservable(localSettings.addClientTag);
+  const addClientTag = useObservableEagerState(localSettings.addClientTag);
   const promptAddClientTag = useLocalStorageDisclosure("prompt-add-client-tag", true);
   const [miningTarget, setMiningTarget] = useState(0);
   const [published, setPublished] = useState<PublishLogEntry>();

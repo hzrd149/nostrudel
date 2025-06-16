@@ -1,4 +1,4 @@
-import { ThreadItem } from "applesauce-core/queries";
+import { ThreadItem } from "applesauce-core/models";
 import { sortByDate } from "./nostr/event";
 
 export function countReplies(replies: Set<ThreadItem> | ThreadItem[]): number {

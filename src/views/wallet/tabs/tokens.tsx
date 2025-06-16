@@ -13,8 +13,8 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
-import { useActiveAccount, useEventStore, useStoreQuery } from "applesauce-react/hooks";
-import { WalletTokensQuery } from "applesauce-wallet/queries";
+import { useActiveAccount, useEventModel, useEventStore } from "applesauce-react/hooks";
+import { WalletTokensModel } from "applesauce-wallet/models";
 import { getTokenContent, isTokenContentLocked, unlockTokenContent } from "applesauce-wallet/helpers";
 import { NostrEvent } from "nostr-tools";
 import { getEncodedToken, ProofState } from "@cashu/cashu-ts";
@@ -143,8 +143,8 @@ export default function WalletTokensTab({ ...props }: Omit<FlexProps, "children"
   const account = useActiveAccount()!;
   const eventStore = useEventStore();
 
-  const tokens = useStoreQuery(WalletTokensQuery, [account.pubkey]) ?? [];
-  const locked = useStoreQuery(WalletTokensQuery, [account.pubkey, true]) ?? [];
+  const tokens = useEventModel(WalletTokensModel, [account.pubkey]) ?? [];
+  const locked = useEventModel(WalletTokensModel, [account.pubkey, true]) ?? [];
 
   const { run: unlock } = useAsyncAction(async () => {
     if (!locked) return;

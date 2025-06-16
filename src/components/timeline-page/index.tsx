@@ -1,6 +1,6 @@
 import { FlexProps } from "@chakra-ui/react";
 import { Expressions } from "applesauce-content/helpers";
-import { TimelineLoader } from "applesauce-loaders";
+import { TimelineLoader } from "applesauce-loaders/loaders";
 import { NostrEvent } from "nostr-tools";
 import { useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
@@ -13,7 +13,6 @@ import TimelineActionAndStatus from "../timeline/timeline-action-and-status";
 import VerticalPageLayout from "../vertical-page-layout";
 import GenericNoteTimeline from "./generic-note-timeline";
 import MediaTimeline from "./media-timeline";
-import TimelineHealth from "./timeline-health";
 
 export function useTimelinePageEventFilter() {
   const [params] = useSearchParams();
@@ -28,7 +27,7 @@ export function useTimelinePageEventFilter() {
   );
 }
 
-export type TimelineViewType = "timeline" | "images" | "health";
+export type TimelineViewType = "timeline" | "images";
 
 export default function TimelinePage({
   loader,
@@ -51,9 +50,6 @@ export default function TimelinePage({
 
       case "images":
         return <MediaTimeline timeline={timeline} />;
-
-      case "health":
-        return <TimelineHealth loader={loader} timeline={timeline} />;
       default:
         return null;
     }

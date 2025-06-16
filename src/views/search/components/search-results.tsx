@@ -1,4 +1,5 @@
 import { Alert, AlertDescription, AlertIcon, AlertTitle, Heading, Spinner, Text } from "@chakra-ui/react";
+import { mapEventsToStore } from "applesauce-core";
 import { LRU } from "applesauce-core/helpers";
 import { onlyEvents } from "applesauce-relay";
 import { Filter, kinds, NostrEvent } from "nostr-tools";
@@ -15,10 +16,10 @@ import ProfileSearchResults from "./profile-results";
 export function createSearchAction(relays?: string[]): (filters: Filter[]) => Observable<NostrEvent> {
   return (filters: Filter[]) => {
     // search local
-    if (!relays || relays.length === 0) return cacheRequest(filters);
+    if (!relays || relays.length === 0) return cacheRequest(filters).pipe(mapEventsToStore(eventStore));
 
     // search remote
-    return pool.request(relays, filters).pipe(onlyEvents());
+    return pool.request(relays, filters).pipe(onlyEvents(), mapEventsToStore(eventStore));
   };
 }
 
@@ -48,8 +49,6 @@ export default function SearchResults({ query, relay }: { query: string; relay: 
       const sub = search([
         { search: query, kinds: [kinds.Metadata, kinds.ShortTextNote, kinds.LongFormArticle], limit: 200 },
       ]).subscribe((event) => {
-        event = eventStore.add(event);
-
         setResults((arr) => {
           const newArr = [...arr, event];
           searchCache.set(query + relay, newArr);

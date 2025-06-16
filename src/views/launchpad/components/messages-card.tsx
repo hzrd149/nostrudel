@@ -18,12 +18,12 @@ import HoverLinkOverlay from "../../../components/hover-link-overlay";
 import UserName from "../../../components/user/user-name";
 import UserDnsIdentity from "../../../components/user/user-dns-identity";
 import Timestamp from "../../../components/timestamp";
-import { useKind4Decrypt } from "../../../hooks/use-kind4-decryption";
+import { useLegacyMessagePlaintext } from "../../../hooks/use-kind4-decryption";
 import decryptionCacheService from "../../../services/decryption-cache";
 import { useDirectMessagesTimeline } from "../../messages";
 
 function MessagePreview({ message, pubkey }: { message: NostrEvent; pubkey: string }) {
-  const { plaintext } = useKind4Decrypt(message);
+  const { plaintext } = useLegacyMessagePlaintext(message);
   return <Text isTruncated>{plaintext || "<Encrypted>"}</Text>;
 }
 

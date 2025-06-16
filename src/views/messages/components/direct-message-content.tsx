@@ -23,7 +23,7 @@ import { TrustProvider } from "../../../providers/local/trust-provider";
 import { LightboxProvider } from "../../../components/lightbox-provider";
 import { renderAudioUrl } from "../../../components/content/links/audio";
 import { components } from "../../../components/content";
-import { useKind4Decrypt } from "../../../hooks/use-kind4-decryption";
+import { useLegacyMessagePlaintext } from "../../../hooks/use-kind4-decryption";
 
 const DirectMessageContentSymbol = Symbol.for("direct-message-content");
 const linkRenderers = [
@@ -51,7 +51,7 @@ export default function DirectMessageContent({
   children,
   ...props
 }: { event: NostrEvent; text: string } & BoxProps) {
-  const { plaintext } = useKind4Decrypt(event);
+  const { plaintext } = useLegacyMessagePlaintext(event);
   const content = useRenderedContent(plaintext, components, { linkRenderers, cacheKey: DirectMessageContentSymbol });
 
   return (

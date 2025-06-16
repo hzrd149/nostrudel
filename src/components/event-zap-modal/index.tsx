@@ -17,13 +17,13 @@ import {
   mergeRelaySets,
 } from "applesauce-core/helpers";
 import { getZapSplits } from "applesauce-core/helpers/zap";
-import { getObservableValue } from "applesauce-core/observable";
+import { firstValueFrom } from "applesauce-core/observable";
 import dayjs from "dayjs";
 import { EventTemplate, kinds, NostrEvent } from "nostr-tools";
 import { useState } from "react";
 
 import accounts from "../../services/accounts";
-import { eventStore, queryStore } from "../../services/event-store";
+import { eventStore } from "../../services/event-store";
 import lnurlMetadataService from "../../services/lnurl-metadata";
 import { getEventRelayHints } from "../../services/relay-hints";
 import relayScoreboardService from "../../services/relay-scoreboard";
@@ -53,7 +53,7 @@ export async function getPayRequestForPubkey(
   comment?: string,
   additionalRelays?: Iterable<string>,
 ): Promise<PayRequest> {
-  const metadata = await getObservableValue(queryStore.profile(pubkey));
+  const metadata = await firstValueFrom(eventStore.profile(pubkey));
   if (!metadata) throw new Error("Cant find user metadata");
   const address = metadata?.lud16 || metadata?.lud06;
   if (!address) throw new Error("User missing lightning address");

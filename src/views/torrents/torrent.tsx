@@ -139,7 +139,7 @@ function TorrentDetailsPage({ torrent }: { torrent: NostrEvent }) {
 
 export default function TorrentDetailsView() {
   const pointer = useParamsEventPointer("id");
-  const torrent = useSingleEvent(pointer?.id, pointer?.relays ?? []);
+  const torrent = useSingleEvent(pointer);
 
   if (!torrent) return <Spinner />;
 

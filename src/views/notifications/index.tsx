@@ -3,7 +3,7 @@ import { Button, Divider, Flex, Text } from "@chakra-ui/react";
 import dayjs, { Dayjs } from "dayjs";
 import { getEventUID } from "nostr-idb";
 import { BehaviorSubject } from "rxjs";
-import { useActiveAccount, useObservable } from "applesauce-react/hooks";
+import { useActiveAccount, useObservable, useObservableEagerState } from "applesauce-react/hooks";
 import { COMMENT_KIND } from "applesauce-core/helpers";
 import { kinds } from "nostr-tools";
 
@@ -72,7 +72,7 @@ const NotificationsTimeline = memo(
     const { people } = usePeopleListContext();
     const peoplePubkeys = useMemo(() => people?.map((p) => p.pubkey), [people]);
 
-    const timeline = useObservable(notifications$) ?? [];
+    const timeline = useObservableEagerState(notifications$) ?? [];
 
     const cacheKey = useTimelineLocationCacheKey();
     const numberCache = useNumberCache(cacheKey);
@@ -190,7 +190,7 @@ function NotificationsPage() {
 
   // const { value: focused, setValue: setFocused } = useRouteStateValue("focused", "");
   // const [focused, setFocused] = useState("");
-  const focused = useObservable(cachedFocus);
+  const focused = useObservableEagerState(cachedFocus);
   const setFocused = useCallback((id: string) => cachedFocus.next(id), [cachedFocus]);
   const focusContext = useMemo(() => ({ id: focused, focus: setFocused }), [focused, setFocused]);
 

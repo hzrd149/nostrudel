@@ -1,10 +1,7 @@
-import { WALLET_KIND } from "applesauce-wallet/helpers";
-import useReplaceableEvent from "./use-replaceable-event";
-import { useStoreQuery } from "applesauce-react/hooks";
-import { WalletQuery } from "applesauce-wallet/queries";
+import { useEventModel } from "applesauce-react/hooks";
+import { WalletQuery } from "../models/wallet";
+import { ProfilePointer } from "nostr-tools/nip19";
 
-export default function useUserWallet(pubkey?: string) {
-  useReplaceableEvent(pubkey ? { kind: WALLET_KIND, pubkey } : undefined);
-
-  return useStoreQuery(WalletQuery, pubkey ? [pubkey] : undefined);
+export default function useUserWallet(user?: string | ProfilePointer) {
+  return useEventModel(WalletQuery, user ? [user] : undefined);
 }

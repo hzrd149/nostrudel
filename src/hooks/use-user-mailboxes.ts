@@ -1,23 +1,14 @@
-import { useStoreQuery } from "applesauce-react/hooks";
-import { MailboxesQuery } from "applesauce-core/queries";
-import { kinds } from "nostr-tools";
+import { useEventModel } from "applesauce-react/hooks";
+import { ProfilePointer } from "nostr-tools/nip19";
+import { MailboxesQuery } from "../models/mailboxes";
 
-import { DEFAULT_LOOKUP_RELAYS } from "../const";
-import useReplaceableEvent from "./use-replaceable-event";
-
-export default function useUserMailboxes(pubkey?: string, additionalRelays?: Iterable<string>, force?: boolean) {
-  useReplaceableEvent(
-    pubkey && { kind: kinds.RelayList, pubkey },
-    additionalRelays ? [...additionalRelays, ...DEFAULT_LOOKUP_RELAYS] : DEFAULT_LOOKUP_RELAYS,
-    force,
-  );
-
-  return useStoreQuery(MailboxesQuery, pubkey ? [pubkey] : undefined);
+export default function useUserMailboxes(user?: string | ProfilePointer) {
+  return useEventModel(MailboxesQuery, user ? [user] : undefined);
 }
 
-export function useUserInbox(pubkey?: string, additionalRelays?: Iterable<string>, force?: boolean) {
-  return useUserMailboxes(pubkey, additionalRelays, force)?.inboxes;
+export function useUserInbox(pubkey?: string) {
+  return useUserMailboxes(pubkey)?.inboxes;
 }
-export function useUserOutbox(pubkey?: string, additionalRelays?: Iterable<string>, force?: boolean) {
-  return useUserMailboxes(pubkey, additionalRelays, force)?.outboxes;
+export function useUserOutbox(pubkey?: string) {
+  return useUserMailboxes(pubkey)?.outboxes;
 }

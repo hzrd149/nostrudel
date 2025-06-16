@@ -1,18 +1,19 @@
-import { forwardRef, memo, useMemo } from "react";
 import { Avatar, AvatarProps } from "@chakra-ui/react";
-import { useAsync } from "react-use";
 import styled from "@emotion/styled";
 import { ProfileContent } from "applesauce-core/helpers";
 import { useActiveAccount } from "applesauce-react/hooks";
+import { ProfilePointer } from "nostr-tools/nip19";
+import { forwardRef, memo, useMemo } from "react";
+import { useAsync } from "react-use";
 
 import { getIdenticon } from "../../helpers/identicon";
-import { safeUrl } from "../../helpers/parse";
-import { getDisplayName } from "../../helpers/nostr/profile";
-import useAppSettings from "../../hooks/use-user-app-settings";
 import { buildImageProxyURL } from "../../helpers/image";
-import UserDnsIdentityIcon from "./user-dns-identity-icon";
+import { getDisplayName } from "../../helpers/nostr/profile";
+import { safeUrl } from "../../helpers/parse";
+import useAppSettings from "../../hooks/use-user-app-settings";
 import useUserMuteList from "../../hooks/use-user-mute-list";
 import useUserProfile from "../../hooks/use-user-profile";
+import UserDnsIdentityIcon from "./user-dns-identity-icon";
 
 export const UserIdenticon = memo(({ pubkey }: { pubkey: string }) => {
   const { value: identicon } = useAsync(() => getIdenticon(pubkey), [pubkey]);
@@ -29,12 +30,13 @@ export const UserIdenticon = memo(({ pubkey }: { pubkey: string }) => {
 const RESIZE_PROFILE_SIZE = 96;
 
 export type UserAvatarProps = Omit<MetadataAvatarProps, "pubkey" | "metadata"> & {
-  pubkey: string;
+  pubkey?: string;
   relay?: string;
+  user?: ProfilePointer;
 };
 export const UserAvatar = forwardRef<HTMLDivElement, UserAvatarProps>(
-  ({ pubkey, noProxy, relay, size, ...props }, ref) => {
-    const profile = useUserProfile(pubkey, relay ? [relay] : undefined);
+  ({ user, pubkey, relay, noProxy, size, ...props }, ref) => {
+    const profile = useUserProfile(user ? user : { pubkey: pubkey!, relays: relay ? [relay] : [] });
     const account = useActiveAccount();
     const muteList = useUserMuteList(account?.pubkey);
 
@@ -51,7 +53,7 @@ export const UserAvatar = forwardRef<HTMLDivElement, UserAvatarProps>(
       >
         {size !== "xs" && (
           <UserDnsIdentityIcon
-            pubkey={pubkey}
+            pubkey={user?.pubkey ?? pubkey!}
             position="absolute"
             right={-1}
             bottom={-1}

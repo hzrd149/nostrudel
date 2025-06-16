@@ -1,17 +1,17 @@
-import { useCallback } from "react";
 import { Button, Card, CardBody, CardHeader, CardProps, Heading, Link } from "@chakra-ui/react";
-import { Link as RouterLink, useNavigate } from "react-router-dom";
-import { useActiveAccount, useObservable } from "applesauce-react/hooks";
 import { getEventUID } from "applesauce-core/helpers";
+import { useActiveAccount, useObservableState } from "applesauce-react/hooks";
 import { kinds, NostrEvent } from "nostr-tools";
+import { useCallback } from "react";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
 
-import KeyboardShortcut from "../../../components/keyboard-shortcut";
-import NotificationItem from "../../notifications/components/notification-item";
 import { ErrorBoundary } from "../../../components/error-boundary";
-import notifications$, { NotificationType, NotificationTypeSymbol } from "../../../services/notifications";
+import KeyboardShortcut from "../../../components/keyboard-shortcut";
+import { useReadRelays } from "../../../hooks/use-client-relays";
 import useSimpleSubscription from "../../../hooks/use-forward-subscription";
 import useUserMailboxes from "../../../hooks/use-user-mailboxes";
-import { useReadRelays } from "../../../hooks/use-client-relays";
+import notifications$, { NotificationType, NotificationTypeSymbol } from "../../../services/notifications";
+import NotificationItem from "../../notifications/components/notification-item";
 
 export default function NotificationsCard({ ...props }: Omit<CardProps, "children">) {
   const navigate = useNavigate();
@@ -38,7 +38,7 @@ export default function NotificationsCard({ ...props }: Omit<CardProps, "childre
   );
 
   const events =
-    useObservable(notifications$)?.filter(
+    useObservableState(notifications$)?.filter(
       (event) =>
         event[NotificationTypeSymbol] === NotificationType.Mention ||
         event[NotificationTypeSymbol] === NotificationType.Reply ||

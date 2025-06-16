@@ -1,17 +1,17 @@
 import { Box, ButtonGroup } from "@chakra-ui/react";
-import { NostrEvent } from "nostr-tools";
 import { COMMENT_KIND } from "applesauce-core/helpers";
-import { useStoreQuery } from "applesauce-react/hooks";
-import { CommentsQuery } from "applesauce-core/queries";
+import { CommentsModel } from "applesauce-core/models";
+import { useEventModel } from "applesauce-react/hooks";
+import { NostrEvent } from "nostr-tools";
 
-import { useReadRelays } from "../../../hooks/use-client-relays";
-import UserLink from "../../../components/user/user-link";
 import DebugEventButton from "../../../components/debug-modal/debug-event-button";
-import useTimelineLoader from "../../../hooks/use-timeline-loader";
-import IntersectionObserverProvider from "../../../providers/local/intersection-observer";
-import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
 import TextNoteContents from "../../../components/note/timeline-note/text-note-contents";
 import Timestamp from "../../../components/timestamp";
+import UserLink from "../../../components/user/user-link";
+import { useReadRelays } from "../../../hooks/use-client-relays";
+import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
+import useTimelineLoader from "../../../hooks/use-timeline-loader";
+import IntersectionObserverProvider from "../../../providers/local/intersection-observer";
 
 function Comment({ comment }: { comment: NostrEvent }) {
   return (
@@ -33,7 +33,7 @@ export function PicturePostComments({ post }: { post: NostrEvent }) {
   const readRelays = useReadRelays();
   const { loader } = useTimelineLoader(`${post.id}-comments`, readRelays, { kinds: [COMMENT_KIND], "#E": [post.id] });
 
-  const comments = useStoreQuery(CommentsQuery, [post]);
+  const comments = useEventModel(CommentsModel, [post]);
   const callback = useTimelineCurserIntersectionCallback(loader);
 
   return (
