@@ -18,10 +18,11 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { parseLNURLOrAddress, parseNIP05Address } from "applesauce-core/helpers";
+import { useObservableState } from "applesauce-react/hooks";
 import { nip19 } from "nostr-tools";
+import { useMemo } from "react";
 import { Link as RouterLink, useOutletContext } from "react-router-dom";
 
-import { useMemo } from "react";
 import { CopyIconButton } from "../../../components/copy-icon-button";
 import {
   ChevronDownIcon,
@@ -40,11 +41,10 @@ import UserName from "../../../components/user/user-name";
 import { getTextColor } from "../../../helpers/color";
 import { truncatedId } from "../../../helpers/nostr/event";
 import { useSharableProfileId } from "../../../hooks/use-shareable-profile-id";
-import { useUserAppSettings } from "../../../hooks/use-user-app-settings";
 import { useUserDNSIdentity } from "../../../hooks/use-user-dns-identity";
 import useUserProfile from "../../../hooks/use-user-profile";
 import { useAdditionalRelayContext } from "../../../providers/local/additional-relay-context";
-import { socialGraph } from "../../../services/social-graph";
+import { socialGraph$ } from "../../../services/social-graph";
 import DNSIdentityWarning from "../../settings/dns-identity/identity-warning";
 import { QrIconButton } from "../components/share-qr-button";
 import { UserProfileMenu } from "../components/user-profile-menu";
@@ -66,7 +66,6 @@ export default function UserAboutTab() {
   const npub = nip19.npubEncode(pubkey);
   const nprofile = useSharableProfileId(pubkey);
   const pubkeyColor = "#" + pubkey.slice(0, 6);
-  const settings = useUserAppSettings(pubkey);
 
   const parsedNip05 = metadata?.nip05 ? parseNIP05Address(metadata.nip05) : undefined;
   const nip05URL = parsedNip05
@@ -75,9 +74,10 @@ export default function UserAboutTab() {
 
   const identity = useUserDNSIdentity(pubkey);
 
-  const followedByFriends = useMemo(
-    () => Array.from(socialGraph.followedByFriends(pubkey)).sort(() => Math.random() - 0.5),
-    [pubkey],
+  const socialGraph = useObservableState(socialGraph$);
+  const followedBy = useMemo(
+    () => socialGraph && Array.from(socialGraph.followedByFriends(pubkey)).sort(() => Math.random() - 0.5),
+    [pubkey, socialGraph],
   );
 
   return (
@@ -192,26 +192,19 @@ export default function UserAboutTab() {
           <QrIconButton pubkey={pubkey} title="Show QrCode" aria-label="Show QrCode" size="xs" variant="ghost" />
         </Flex>
 
-        {followedByFriends.length > 0 && (
+        {followedBy && followedBy.length > 0 && (
           <Flex gap="2">
             <Share07 boxSize="1.2em" />
             <Text>
               Followed by{" "}
-              {followedByFriends.slice(0, 3).map((pubkey, i, arr) => (
+              {followedBy.slice(0, 3).map((pubkey, i, arr) => (
                 <>
                   <UserName pubkey={pubkey} fontWeight="normal" />
                   <span>{i < arr.length - 1 && ", "}</span>
                 </>
               ))}
-              {followedByFriends.length > 3 && ` and ${followedByFriends.length - 3} others you follow`}
+              {followedBy.length > 3 && ` and ${followedBy.length - 3} others you follow`}
             </Text>
-          </Flex>
-        )}
-
-        {settings?.primaryColor && (
-          <Flex gap="2">
-            <Box w="5" h="5" backgroundColor={settings.primaryColor} rounded="full" />
-            <Text>noStrudel theme color</Text>
           </Flex>
         )}
       </Flex>
@@ -253,7 +246,6 @@ export default function UserAboutTab() {
           Nostree page
         </Button>
       </Flex>
-      <UserJoinedGroups pubkey={pubkey} />
       <UserJoinedChannels pubkey={pubkey} />
 
       <Modal isOpen={colorModal.isOpen} onClose={colorModal.onClose} size="2xl">

@@ -1,5 +1,3 @@
-import { lazy, useMemo } from "react";
-import { useParams } from "react-router-dom";
 import {
   Button,
   ButtonGroup,
@@ -14,16 +12,18 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { isSafeRelayURL, normalizeURL } from "applesauce-core/helpers";
+import { lazy, useMemo } from "react";
+import { useParams } from "react-router-dom";
 
-import { useRelayInfo } from "../../../hooks/use-relay-info";
-import { RelayDebugButton, RelayMetadata } from "../components/relay-card";
-import SupportedNIPs from "../components/supported-nips";
-import RelayReviewForm from "./relay-review-form";
-import RelayReviews from "./relay-reviews";
-import RelayNotes from "./relay-notes";
-import PeopleListProvider from "../../../providers/local/people-list-provider";
 import PeopleListSelection from "../../../components/people-list-selection/people-list-selection";
 import RelayFavicon from "../../../components/relay-favicon";
+import { useRelayInfo } from "../../../hooks/use-relay-info";
+import PeopleListProvider from "../../../providers/local/people-list-provider";
+import { RelayDebugButton, RelayMetadata } from "../components/relay-card";
+import SupportedNIPs from "../components/supported-nips";
+import RelayNotes from "./relay-notes";
+import RelayReviewForm from "./relay-review-form";
+import RelayReviews from "./relay-reviews";
 import RelayUsersTab from "./relay-users";
 const RelayDetailsTab = lazy(() => import("./relay-details"));
 

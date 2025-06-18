@@ -2,6 +2,7 @@ import {
   createAddressLoader,
   createEventLoader,
   createReactionsLoader,
+  createSocialGraphLoader,
   createTagValueLoader,
   createUserListsLoader,
   createZapsLoader,
@@ -55,6 +56,13 @@ export const channelMetadataLoader = createTagValueLoader(pool, "e", {
   kinds: [kinds.ChannelMetadata],
   cacheRequest,
   extraRelays: localSettings.readRelays,
+});
+
+/** Loader for loading a users social graph */
+export const socialGraphLoader = createSocialGraphLoader(profileLoader, {
+  eventStore,
+  extraRelays: localSettings.readRelays,
+  hints: false,
 });
 
 if (import.meta.env.DEV) {

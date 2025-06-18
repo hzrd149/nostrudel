@@ -2,18 +2,7 @@ import { IAccount } from "applesauce-accounts";
 import { defined } from "applesauce-core/observable";
 import { USER_BLOSSOM_SERVER_LIST_KIND } from "blossom-client-sdk";
 import { kinds, nip42 } from "nostr-tools";
-import {
-  combineLatest,
-  distinct,
-  distinctUntilChanged,
-  map,
-  merge,
-  NEVER,
-  of,
-  switchMap,
-  tap,
-  throttleTime,
-} from "rxjs";
+import { combineLatest, distinct, distinctUntilChanged, map, merge, NEVER, of, switchMap, tap } from "rxjs";
 
 import { APP_SETTING_IDENTIFIER, APP_SETTINGS_KIND } from "../helpers/app-settings";
 import { MailboxesQuery } from "../models";
@@ -23,7 +12,6 @@ import { eventStore } from "./event-store";
 import { addressLoader } from "./loaders";
 import localSettings from "./local-settings";
 import pool from "./pool";
-import { saveSocialGraph, socialGraph } from "./social-graph";
 
 const addressable = (account: IAccount, relays: Iterable<string>, kind: number, d?: string) => {
   return addressLoader({ relays: [...relays], kind, pubkey: account.pubkey, identifier: d, cache: false });
@@ -102,22 +90,3 @@ pool.relays$
     ),
   )
   .subscribe();
-
-// Add all profile and contact and mute lists to social graph
-eventStore
-  .filters({ kinds: [kinds.Contacts, kinds.Mutelist] })
-  .pipe(
-    tap((event) => socialGraph.handleEvent(event)),
-    // Update social graph and save
-    throttleTime(5_000),
-    tap(() => {
-      socialGraph.recalculateFollowDistances();
-      saveSocialGraph();
-    }),
-  )
-  .subscribe();
-
-// Set social graph root to active account
-accounts.active$.subscribe((active) => {
-  if (active) socialGraph.setRoot(active.pubkey);
-});

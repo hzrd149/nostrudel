@@ -4,7 +4,7 @@ import { UserBlossomServersModel } from "applesauce-core/models";
 import { ProfilePointer } from "nostr-tools/nip19";
 import { ignoreElements, merge } from "rxjs";
 
-import { ReplaceableQuery } from "./addressable";
+import { AddressableQuery } from "./addressable";
 
 /** A model that loads a users profile */
 export function BlossomServersQuery(pubkey: string | ProfilePointer): Model<URL[] | undefined> {
@@ -12,7 +12,7 @@ export function BlossomServersQuery(pubkey: string | ProfilePointer): Model<URL[
   return (events) =>
     merge(
       events
-        .model(ReplaceableQuery, BLOSSOM_SERVER_LIST_KIND, pointer.pubkey, undefined, pointer.relays)
+        .model(AddressableQuery, { kind: BLOSSOM_SERVER_LIST_KIND, pubkey: pointer.pubkey, relays: pointer.relays })
         .pipe(ignoreElements()),
       events.model(UserBlossomServersModel, pointer.pubkey),
     );

@@ -76,18 +76,6 @@ export default function UserView() {
           rounded="md"
         >
           <UserAvatar pubkey={pubkey} size="xl" float="left" />
-          {/* <IconButton
-            icon={<DirectMessagesIcon boxSize={5} />}
-            as={RouterLink}
-            to={`/messages/${pubkey}`}
-            aria-label="Direct Message"
-            colorScheme="blue"
-            rounded="full"
-            position="absolute"
-            bottom="-6"
-            right="4"
-            size="lg"
-          /> */}
         </Flex>
         <Flex direction="column" overflow="hidden">
           <Heading size="md">

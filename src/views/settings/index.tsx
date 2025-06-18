@@ -57,11 +57,11 @@ export default function SettingsView() {
           <SimpleNavItem to="/settings/identity" leftIcon={<VerifiedIcon boxSize={6} />}>
             DNS Identity
           </SimpleNavItem>
-          <SimpleNavItem to="/settings/social-graph" leftIcon={<Share07 boxSize={5} />}>
-            Social Graph
-          </SimpleNavItem>
         </>
       )}
+      <SimpleNavItem to="/settings/social-graph" leftIcon={<Share07 boxSize={5} />}>
+        Social Graph
+      </SimpleNavItem>
 
       <DividerHeader title="App" />
       <SimpleNavItem to="/settings/display" leftIcon={<AppearanceIcon boxSize={5} />}>
