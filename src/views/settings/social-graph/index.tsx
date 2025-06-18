@@ -52,9 +52,6 @@ export default function SocialGraphSettings() {
 
     setLoading(
       socialGraphLoader({ pubkey: root, distance }).subscribe({
-        next: (event) => {
-          console.log(event);
-        },
         complete: () => setLoading(undefined),
       }),
     );
@@ -66,7 +63,7 @@ export default function SocialGraphSettings() {
   const displayMaxPeople = useBreakpointValue({ base: 4, lg: 5, xl: 10 }) || 4;
 
   return (
-    <SimpleView title="Social Graph" maxW="container.xl" center>
+    <SimpleView title="Social Graph" maxW="container.xl">
       {root && (
         <>
           <Card alignItems="center" rounded="md" p={4} direction="row" flexWrap="wrap" gap="2">

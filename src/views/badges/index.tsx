@@ -1,20 +1,19 @@
-import { useCallback } from "react";
 import { Button, Flex, Heading, Image, Link, Spacer } from "@chakra-ui/react";
+import { kinds, NostrEvent } from "nostr-tools";
+import { useCallback } from "react";
 import { Link as RouterLink } from "react-router-dom";
-import { kinds } from "nostr-tools";
 
-import { ExternalLinkIcon } from "../../components/icons";
-import VerticalPageLayout from "../../components/vertical-page-layout";
-import useTimelineLoader from "../../hooks/use-timeline-loader";
-import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
-import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
-import { useReadRelays } from "../../hooks/use-client-relays";
-import IntersectionObserverProvider from "../../providers/local/intersection-observer";
-import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
-import BadgeAwardCard from "./components/badge-award-card";
 import { ErrorBoundary } from "../../components/error-boundary";
+import { ExternalLinkIcon } from "../../components/icons";
+import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
+import VerticalPageLayout from "../../components/vertical-page-layout";
+import { useReadRelays } from "../../hooks/use-client-relays";
 import useClientSideMuteFilter from "../../hooks/use-client-side-mute-filter";
-import { NostrEvent } from "nostr-tools";
+import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
+import useTimelineLoader from "../../hooks/use-timeline-loader";
+import IntersectionObserverProvider from "../../providers/local/intersection-observer";
+import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
+import BadgeAwardCard from "./components/badge-award-card";
 
 function BadgesPage() {
   const { filter, listId } = usePeopleListContext();

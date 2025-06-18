@@ -6,6 +6,7 @@ import {
   DatabaseIcon,
   GithubIcon,
   LightningIcon,
+  MuteIcon,
   NotesIcon,
   PerformanceIcon,
   RelayIcon,
@@ -15,6 +16,7 @@ import {
 } from "../../components/icons";
 import CheckCircleBroken from "../../components/icons/check-circle-broken";
 import Database01 from "../../components/icons/database-01";
+import FilterFunnel02 from "../../components/icons/filter-funnel-02";
 import Image01 from "../../components/icons/image-01";
 import Mail02 from "../../components/icons/mail-02";
 import Share07 from "../../components/icons/share-07";
@@ -45,16 +47,16 @@ export default function SettingsView() {
           <SimpleNavItem to="/settings/accounts" leftIcon={<UserAvatar size="xs" pubkey={account.pubkey} />}>
             Accounts
           </SimpleNavItem>
-          <SimpleNavItem to="/settings/mailboxes" leftIcon={<Mail02 boxSize={6} />}>
+          <SimpleNavItem to="/settings/mailboxes" leftIcon={<Mail02 boxSize={5} />}>
             Mailboxes
           </SimpleNavItem>
-          <SimpleNavItem to="/settings/media-servers" leftIcon={<Image01 boxSize={6} />}>
+          <SimpleNavItem to="/settings/media-servers" leftIcon={<Image01 boxSize={5} />}>
             Media Servers
           </SimpleNavItem>
-          <SimpleNavItem to="/settings/search-relays" leftIcon={<SearchIcon boxSize={6} />}>
+          <SimpleNavItem to="/settings/search-relays" leftIcon={<SearchIcon boxSize={5} />}>
             Search
           </SimpleNavItem>
-          <SimpleNavItem to="/settings/identity" leftIcon={<VerifiedIcon boxSize={6} />}>
+          <SimpleNavItem to="/settings/identity" leftIcon={<VerifiedIcon boxSize={5} />}>
             DNS Identity
           </SimpleNavItem>
         </>
@@ -62,10 +64,16 @@ export default function SettingsView() {
       <SimpleNavItem to="/settings/social-graph" leftIcon={<Share07 boxSize={5} />}>
         Social Graph
       </SimpleNavItem>
+      <SimpleNavItem to="/settings/mutes" leftIcon={<MuteIcon boxSize={5} />}>
+        Mutes
+      </SimpleNavItem>
 
       <DividerHeader title="App" />
       <SimpleNavItem to="/settings/display" leftIcon={<AppearanceIcon boxSize={5} />}>
         Display
+      </SimpleNavItem>
+      <SimpleNavItem to="/settings/policies" leftIcon={<FilterFunnel02 boxSize={5} />}>
+        Content Policies
       </SimpleNavItem>
       <SimpleNavItem to="/settings/relays" leftIcon={<RelayIcon boxSize={5} />}>
         Relays

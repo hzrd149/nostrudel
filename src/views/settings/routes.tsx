@@ -16,6 +16,8 @@ import PrivacySettings from "./privacy";
 import AppRelaysView from "./relays";
 import SearchRelaysView from "./search";
 import SocialGraphView from "./social-graph";
+import ContentPoliciesSettings from "./policies";
+import MutesSettings from "./mutes";
 
 export default [
   {
@@ -37,12 +39,14 @@ export default [
       { path: "media-servers", Component: MediaServersView },
       { path: "search-relays", Component: SearchRelaysView },
       { path: "relays", Component: AppRelaysView },
+      { path: "social-graph", Component: SocialGraphView },
+      { path: "mutes", Component: MutesSettings },
+      { path: "policies", Component: ContentPoliciesSettings },
       { path: "cache", Component: CacheRelayView },
       { path: "post", Component: PostSettings },
       { path: "privacy", Component: PrivacySettings },
       { path: "lightning", Component: LightningSettings },
       { path: "performance", Component: PerformanceSettings },
-      { path: "social-graph", Component: SocialGraphView },
     ],
   },
 ] satisfies RouteObject[];

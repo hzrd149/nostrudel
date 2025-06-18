@@ -56,10 +56,14 @@ type AppSettingsV12 = Omit<AppSettingsV11, "showSignatureVerification" | "versio
   mirrorBlobsOnShare: boolean;
 };
 
-export type AppSettings = AppSettingsV12;
+type AppSettingsV13 = Omit<AppSettingsV12, "version" | "mutedWords"> & {
+  version: 13;
+};
+
+export type AppSettings = AppSettingsV13;
 
 export const DEFAULT_APP_SETTINGS: AppSettings = {
-  version: 12,
+  version: 13,
 
   // display
   theme: "default",
