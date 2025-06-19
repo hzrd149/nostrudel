@@ -1,8 +1,8 @@
 import { SerializedSocialGraph, SocialGraph } from "nostr-social-graph";
 import { kinds } from "nostr-tools";
-import { BehaviorSubject, combineLatest, firstValueFrom, take, tap, throttleTime } from "rxjs";
+import { BehaviorSubject, combineLatest, firstValueFrom, skip, take, tap, throttleTime } from "rxjs";
 
-import { SOCIAL_GRAPH_FALLBACK_PUBKEY } from "../const";
+import { SOCIAL_GRAPH_DOWNLOAD_URL, SOCIAL_GRAPH_FALLBACK_PUBKEY } from "../const";
 import { logger } from "../helpers/debug";
 import accounts from "./accounts";
 import idbKeyValueStore from "./database/kv";
@@ -19,8 +19,13 @@ export const socialGraph$ = new BehaviorSubject<SocialGraph>(
   new SocialGraph(accounts.active?.pubkey ?? SOCIAL_GRAPH_FALLBACK_PUBKEY, cached),
 );
 
-const size = socialGraph$.value.size();
-log(`Loaded social graph from cache (${size.users} users, ${size.mutes} mutes)`);
+if (cached) {
+  const size = socialGraph$.value.size();
+  log(`Loaded social graph from cache (${size.users} users, ${size.mutes} mutes)`);
+} else {
+  log(`Setting up social graph, downloading from ${SOCIAL_GRAPH_DOWNLOAD_URL}`);
+  loadSocialGraphFromUrl(SOCIAL_GRAPH_DOWNLOAD_URL);
+}
 
 // Set the social graph root to the active account pubkey
 combineLatest([socialGraph$, accounts.active$]).subscribe(([graph, account]) => {
@@ -46,13 +51,17 @@ combineLatest([
   });
 
 // Save the active users social graph at most every 10 seconds
-socialGraph$.pipe(throttleTime(10_000)).subscribe(saveSocialGraph);
+socialGraph$.pipe(skip(1), throttleTime(10_000)).subscribe(saveSocialGraph);
 
 /** Save the social graph to the cache */
-export function saveSocialGraph(graph: SocialGraph) {
+export async function saveSocialGraph(graph: SocialGraph) {
   const size = graph.size();
+
+  // Don't save empty graphs
+  if (size.users === 0) return;
+
   log(`Saving social graph (${size.users} users, ${size.mutes} mutes)`);
-  idbKeyValueStore.setItem(cacheKey, graph.serialize());
+  await idbKeyValueStore.setItem(cacheKey, graph.serialize());
 }
 
 /** Exports the social graph to a file */
@@ -92,6 +101,21 @@ export function importGraph() {
     }
   };
   input.click();
+}
+
+/** Replaces the social graph with a new one */
+export async function replaceSocialGraph(data: SerializedSocialGraph) {
+  const graph = await firstValueFrom(socialGraph$);
+  socialGraph$.next(new SocialGraph(graph.getRoot(), data));
+}
+
+/** Replaces the social graph with a new one from a URL */
+export async function loadSocialGraphFromUrl(url: string) {
+  const res = await fetch(url);
+  const data = (await res.json()) as SerializedSocialGraph;
+  if (!Reflect.has(data, "uniqueIds") || !Reflect.has(data, "followLists") || !Reflect.has(data, "muteLists"))
+    throw new Error("Invalid graph data");
+  await replaceSocialGraph(data);
 }
 
 if (import.meta.env.DEV) {

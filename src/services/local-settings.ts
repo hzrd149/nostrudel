@@ -68,12 +68,14 @@ const relayAuthenticationMode = new ArrayLocalStorageEntry<{ relay: string; mode
 const cacheRelayURL = new LocalStorageEntry("cache-relay-url", "");
 
 // Filtering policies
-const eventsPolicy = new ArrayLocalStorageEntry<EventPolicyRule>("events-policy", []);
+const eventsPolicy = new ArrayLocalStorageEntry<EventPolicyRule>("events-policy", [
+  { type: "social-graph-distance", distance: 5 },
+]);
 const mediaPolicy = new ArrayLocalStorageEntry<EventPolicyRule>("media-policy", [
   { type: "social-graph-distance", distance: 3 },
 ]);
 const embedsPolicy = new ArrayLocalStorageEntry<EventPolicyRule>("embeds-policy", [
-  { type: "social-graph-distance", distance: 3 },
+  { type: "social-graph-distance", distance: 4 },
 ]);
 
 const localSettings = {

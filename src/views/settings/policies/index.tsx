@@ -181,7 +181,7 @@ function HideWordsRuleComponent({ rule, index, onUpdate, onRemove }: RuleCompone
             placeholder="Enter word to hide"
             value={newWord}
             onChange={(e) => setNewWord(e.target.value)}
-            onKeyPress={(e) => e.key === "Enter" && addWord()}
+            onKeyDown={(e) => e.key === "Enter" && addWord()}
           />
           <Button onClick={addWord} leftIcon={<AddIcon />}>
             Add
@@ -236,7 +236,7 @@ function HideHashtagsRuleComponent({ rule, index, onUpdate, onRemove }: RuleComp
             placeholder="Enter hashtag to hide (without #)"
             value={newHashtag}
             onChange={(e) => setNewHashtag(e.target.value)}
-            onKeyPress={(e) => e.key === "Enter" && addHashtag()}
+            onKeyDown={(e) => e.key === "Enter" && addHashtag()}
           />
           <Button onClick={addHashtag} leftIcon={<AddIcon />}>
             Add

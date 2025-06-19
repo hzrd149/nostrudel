@@ -1,4 +1,17 @@
-import { AvatarGroup, Box, Button, ButtonGroup, Card, Flex, Heading, Select, Text } from "@chakra-ui/react";
+import {
+  AvatarGroup,
+  Box,
+  Button,
+  ButtonGroup,
+  Card,
+  Flex,
+  Heading,
+  Input,
+  Link,
+  Select,
+  Text,
+  useToast,
+} from "@chakra-ui/react";
 import { useObservableEagerState, useObservableState } from "applesauce-react/hooks";
 import { useMemo, useState } from "react";
 import { useUnmount } from "react-use";
@@ -8,11 +21,13 @@ import SimpleView from "../../../components/layout/presets/simple-view";
 import { UserAvatarLink } from "../../../components/user/user-avatar-link";
 import UserDnsIdentity from "../../../components/user/user-dns-identity";
 import UserLink from "../../../components/user/user-link";
+import { SOCIAL_GRAPH_DOWNLOAD_URL } from "../../../const";
 import { humanReadableSats } from "../../../helpers/lightning";
 import { useAppTitle } from "../../../hooks/use-app-title";
+import useAsyncAction from "../../../hooks/use-async-action";
 import { useBreakpointValue } from "../../../providers/global/breakpoint-provider";
 import { socialGraphLoader } from "../../../services/loaders";
-import { exportGraph, importGraph, socialGraph$ } from "../../../services/social-graph";
+import { exportGraph, importGraph, loadSocialGraphFromUrl, socialGraph$ } from "../../../services/social-graph";
 
 function FollowDistanceGroup({ distance, max, label }: { distance: number; max: number; label: string }) {
   const graph = useObservableEagerState(socialGraph$);
@@ -40,9 +55,12 @@ function FollowDistanceGroup({ distance, max, label }: { distance: number; max: 
 
 export default function SocialGraphSettings() {
   useAppTitle("Social Graph");
+  const toast = useToast();
   const socialGraph = useObservableState(socialGraph$);
   const root = useMemo(() => socialGraph?.getRoot(), [socialGraph]);
   const size = useMemo(() => socialGraph?.size(), [socialGraph]);
+
+  const [downloadUrl, setDownloadUrl] = useState(SOCIAL_GRAPH_DOWNLOAD_URL);
 
   const [loading, setLoading] = useState<Subscription>();
   const [distance, setDistance] = useState(2);
@@ -59,6 +77,19 @@ export default function SocialGraphSettings() {
   useUnmount(() => {
     loading?.unsubscribe();
   });
+
+  const downloadGraph = useAsyncAction(
+    async (e: React.FormEvent) => {
+      e.preventDefault();
+
+      await loadSocialGraphFromUrl(downloadUrl);
+      toast({
+        title: "Downloaded social graph",
+        status: "success",
+      });
+    },
+    [downloadUrl],
+  );
 
   const displayMaxPeople = useBreakpointValue({ base: 4, lg: 5, xl: 10 }) || 4;
 
@@ -104,14 +135,38 @@ export default function SocialGraphSettings() {
               </>
             )}
           </Card>
-          <ButtonGroup>
-            <Button onClick={() => exportGraph()} isDisabled={!socialGraph}>
-              Export
-            </Button>
-            <Button colorScheme="primary" onClick={() => importGraph()} isDisabled={!socialGraph}>
-              Import
-            </Button>
-          </ButtonGroup>
+          <Flex gap="2" justifyContent="space-between">
+            <Flex as="form" gap="2" onSubmit={downloadGraph.run} direction="column">
+              <Flex gap="2">
+                <Input
+                  name="url"
+                  type="url"
+                  placeholder={SOCIAL_GRAPH_DOWNLOAD_URL}
+                  value={downloadUrl}
+                  w="lg"
+                  onChange={(e) => setDownloadUrl(e.target.value)}
+                />
+                <Button type="submit" flexShrink={0} isLoading={downloadGraph.loading}>
+                  Download
+                </Button>
+              </Flex>
+              <Text fontSize="sm" color="gray.500">
+                A URL to download serialized social graph that is compatible with the{" "}
+                <Link href="https://github.com/mmalmi/nostr-social-graph" isExternal color="blue.500">
+                  nostr-social-graph
+                </Link>{" "}
+                library.
+              </Text>
+            </Flex>
+            <ButtonGroup>
+              <Button onClick={() => exportGraph()} isDisabled={!socialGraph}>
+                Export
+              </Button>
+              <Button colorScheme="primary" onClick={() => importGraph()} isDisabled={!socialGraph}>
+                Import
+              </Button>
+            </ButtonGroup>
+          </Flex>
         </>
       )}
     </SimpleView>

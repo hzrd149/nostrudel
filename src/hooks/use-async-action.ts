@@ -13,7 +13,9 @@ export default function useAsyncAction<Args extends Array<any>, T = any>(
   const run = useCallback<(...args: Args) => Promise<T | undefined>>(async (...args: Args) => {
     setLoading(true);
     try {
-      return await ref.current(...args);
+      const result = await ref.current(...args);
+      setLoading(false);
+      return result;
     } catch (e) {
       if (e instanceof Error) toast({ description: e.message, status: "error" });
       console.log(e);
