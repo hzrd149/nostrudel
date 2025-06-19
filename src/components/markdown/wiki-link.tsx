@@ -22,8 +22,8 @@ import { Link as RouterLink } from "react-router-dom";
 import { getPageDefer, getPageSummary } from "../../helpers/nostr/wiki";
 import { useReadRelays } from "../../hooks/use-client-relays";
 import useWikiPages from "../../hooks/use-wiki-pages";
-import { useWebOfTrust } from "../../providers/global/web-of-trust-provider";
 import UserName from "../user/user-name";
+import { sortByDistanceAndConnections } from "../../services/social-graph";
 
 export default function WikiLink({
   children,
@@ -33,7 +33,6 @@ export default function WikiLink({
   topic,
   ...props
 }: LinkProps & ExtraProps & { maxVersions?: number; topic?: string }) {
-  const webOfTrust = useWebOfTrust();
   const { isOpen, onClose, onOpen } = useDisclosure();
   const readRelays = useReadRelays();
 
@@ -50,9 +49,9 @@ export default function WikiLink({
   const sorted = useMemo(() => {
     if (!events) return [];
 
-    let arr = Array.from(events.values());
-    if (webOfTrust) arr = webOfTrust.sortByDistanceAndConnections(arr, (e) => e.pubkey);
-    arr = arr.filter((p) => !getPageDefer(p));
+    let arr = sortByDistanceAndConnections(Array.from(events.values()), (e) => e.pubkey).filter(
+      (p) => !getPageDefer(p),
+    );
 
     const seen = new Set<string>();
     const unique: NostrEvent[] = [];
@@ -67,7 +66,7 @@ export default function WikiLink({
     }
 
     return unique;
-  }, [events, maxVersions, webOfTrust]);
+  }, [events, maxVersions]);
 
   return (
     <Popover returnFocusOnClose={false} isOpen={isOpen} onClose={onClose} placement="top" closeOnBlur={true}>

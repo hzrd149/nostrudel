@@ -11,7 +11,7 @@ import { humanReadableSats } from "../../../helpers/lightning";
 import UserAboutContent from "../../../components/user/user-about-content";
 import UserName from "../../../components/user/user-name";
 import HoverLinkOverlay from "../../../components/hover-link-overlay";
-import { useWebOfTrust } from "../../../providers/global/web-of-trust-provider";
+import { sortByDistanceAndConnections } from "../../../services/social-graph";
 
 function ProfileResult({ profile }: { profile: NostrEvent }) {
   const { value: stats } = useAsync(() => trustedUserStatsService.getUserStats(profile.pubkey), [profile.pubkey]);
@@ -47,17 +47,16 @@ function ProfileResult({ profile }: { profile: NostrEvent }) {
 
 export default function ProfileSearchResults({ profiles }: { profiles: NostrEvent[] }) {
   const [order, setOrder] = useState("relay");
-  const graph = useWebOfTrust();
 
   const sorted = useMemo(() => {
     switch (order) {
       case "trust":
-        return graph?.sortByDistanceAndConnections(profiles, (p) => p.pubkey) || profiles;
+        return sortByDistanceAndConnections(profiles, (p) => p.pubkey) || profiles;
       default:
       case "relay":
         return profiles;
     }
-  }, [order, profiles, graph]);
+  }, [order, profiles]);
 
   return (
     <>
@@ -67,11 +66,9 @@ export default function ProfileSearchResults({ profiles }: { profiles: NostrEven
           <Button variant={order === "relay" ? "solid" : "outline"} onClick={() => setOrder("relay")}>
             Relay order
           </Button>
-          {graph && (
-            <Button variant={order === "trust" ? "solid" : "outline"} onClick={() => setOrder("trust")}>
-              Trust
-            </Button>
-          )}
+          <Button variant={order === "trust" ? "solid" : "outline"} onClick={() => setOrder("trust")}>
+            Trust
+          </Button>
         </ButtonGroup>
       </Flex>
       <Flex gap="2" overflowY="hidden" overflowX="auto" w="full" px="2" pb="2">

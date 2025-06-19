@@ -9,8 +9,8 @@ import { useAsync, useKeyPressEvent, useThrottle } from "react-use";
 import KeyboardShortcut from "../../../components/keyboard-shortcut";
 import UserAvatar from "../../../components/user/user-avatar";
 import UserName from "../../../components/user/user-name";
-import { useWebOfTrust } from "../../../providers/global/web-of-trust-provider";
 import { userSearchDirectory } from "../../../services/username-search";
+import { sortByDistanceAndConnections } from "../../../services/social-graph";
 
 function UserOption({ pubkey }: { pubkey: string }) {
   return (
@@ -22,7 +22,6 @@ function UserOption({ pubkey }: { pubkey: string }) {
 }
 
 export default function SearchForm({ ...props }: Omit<FlexProps, "children">) {
-  const webOfTrust = useWebOfTrust();
   const directory = useObservableState(userSearchDirectory);
   const navigate = useNavigate();
   const autoComplete = useDisclosure();
@@ -36,14 +35,12 @@ export default function SearchForm({ ...props }: Omit<FlexProps, "children">) {
     return matchSorter(directory ?? [], queryThrottle.trim(), {
       keys: ["names"],
       sorter: (items) =>
-        webOfTrust
-          ? webOfTrust.sortByDistanceAndConnections(
-              items.sort((a, b) => b.rank - a.rank),
-              (i) => i.item.pubkey,
-            )
-          : items,
+        sortByDistanceAndConnections(
+          items.sort((a, b) => b.rank - a.rank),
+          (i) => i.item.pubkey,
+        ),
     }).slice(0, 10);
-  }, [queryThrottle, webOfTrust]);
+  }, [queryThrottle]);
   useEffect(() => {
     if (localUsers.length > 0 && !autoComplete.isOpen) autoComplete.onOpen();
   }, [localUsers, autoComplete.isOpen]);

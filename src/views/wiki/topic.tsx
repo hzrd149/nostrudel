@@ -1,28 +1,27 @@
 import { Button, Flex, Heading, Link } from "@chakra-ui/react";
-import { Navigate, useParams, Link as RouterLink } from "react-router-dom";
 import { NostrEvent } from "nostr-tools";
+import { Navigate, Link as RouterLink, useParams } from "react-router-dom";
 
-import VerticalPageLayout from "../../components/vertical-page-layout";
-import { useReadRelays } from "../../hooks/use-client-relays";
-import WikiPageHeader from "./components/wiki-page-header";
 import UserAvatar from "../../components/user/user-avatar";
 import UserName from "../../components/user/user-name";
-import { WikiPagePage } from "./page";
-import { useWebOfTrust } from "../../providers/global/web-of-trust-provider";
-import useRouteSearchValue from "../../hooks/use-route-search-value";
+import VerticalPageLayout from "../../components/vertical-page-layout";
 import { getPageDefer } from "../../helpers/nostr/wiki";
+import { useReadRelays } from "../../hooks/use-client-relays";
+import useRouteSearchValue from "../../hooks/use-route-search-value";
 import useWikiPages from "../../hooks/use-wiki-pages";
+import { sortByDistanceAndConnections } from "../../services/social-graph";
+import WikiPageHeader from "./components/wiki-page-header";
+import { WikiPagePage } from "./page";
 
 export default function WikiTopicView() {
   const { topic } = useParams();
   if (!topic) return <Navigate to="/wiki" />;
 
-  const webOfTrust = useWebOfTrust();
   const readRelays = useReadRelays();
   const pages = useWikiPages(topic, readRelays, true);
 
   let sorted = pages ? Array.from(pages.values()) : [];
-  if (webOfTrust) sorted = webOfTrust.sortByDistanceAndConnections(sorted, (p) => p.pubkey);
+  sorted = sortByDistanceAndConnections(sorted, (p) => p.pubkey);
 
   // remove defer versions
   sorted = sorted.filter((p) => !getPageDefer(p));

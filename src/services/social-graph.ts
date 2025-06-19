@@ -118,6 +118,33 @@ export async function loadSocialGraphFromUrl(url: string) {
   await replaceSocialGraph(data);
 }
 
+export function sortByDistanceAndConnections(keys: string[]): string[];
+export function sortByDistanceAndConnections<T>(keys: T[], getKey: (d: T) => string): T[];
+export function sortByDistanceAndConnections<T>(keys: T[], getKey?: (d: T) => string): T[] {
+  return Array.from(keys).sort((a, b) => {
+    const aKey = typeof a === "string" ? a : getKey?.(a) || "";
+    const bKey = typeof b === "string" ? b : getKey?.(b) || "";
+
+    const v = sortComparePubkeys(aKey, bKey);
+    if (v === 0) {
+      // tied break with original index
+      const ai = keys.indexOf(a);
+      const bi = keys.indexOf(b);
+      if (ai < bi) return -1;
+      else if (ai > bi) return 1;
+      return 0;
+    }
+    return v;
+  });
+}
+
+export function sortComparePubkeys(a: string, b: string) {
+  const graph = socialGraph$.value;
+  const aDist = graph.getFollowDistance(a);
+  const bDist = graph.getFollowDistance(b);
+  return Math.abs(aDist - bDist);
+}
+
 if (import.meta.env.DEV) {
   // @ts-expect-error
   window.socialGraph = socialGraph$;

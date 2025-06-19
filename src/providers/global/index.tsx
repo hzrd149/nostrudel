@@ -12,7 +12,6 @@ import BreakpointProvider from "./breakpoint-provider";
 import { UserEmojiProvider } from "./emoji-provider";
 import PublishProvider from "./publish-provider";
 import { SigningProvider } from "./signing-provider";
-import WebOfTrustProvider from "./web-of-trust-provider";
 
 function ThemeProviders({ children }: { children: React.ReactNode }) {
   const { theme: themeName, primaryColor } = useAppSettings();
@@ -35,9 +34,7 @@ export const GlobalProviders = ({ children }: { children: React.ReactNode }) => 
             <ThemeProviders>
               <SigningProvider>
                 <PublishProvider>
-                  <UserEmojiProvider>
-                    <WebOfTrustProvider>{children}</WebOfTrustProvider>
-                  </UserEmojiProvider>
+                  <UserEmojiProvider>{children}</UserEmojiProvider>
                 </PublishProvider>
               </SigningProvider>
             </ThemeProviders>

@@ -10,13 +10,12 @@ import VerticalPageLayout from "../../components/vertical-page-layout";
 import { DEFAULT_SEARCH_RELAYS, WIKI_RELAYS } from "../../const";
 import { WIKI_PAGE_KIND } from "../../helpers/nostr/wiki";
 import useRouteSearchValue from "../../hooks/use-route-search-value";
-import { useWebOfTrust } from "../../providers/global/web-of-trust-provider";
 import { eventStore } from "../../services/event-store";
+import { sortByDistanceAndConnections } from "../../services/social-graph";
 import { createSearchAction } from "../search/components/search-results";
 import WikiPageResult from "./components/wiki-page-result";
 
 export default function WikiSearchView() {
-  const webOfTrust = useWebOfTrust();
   const { value: query, setValue: setQuery } = useRouteSearchValue("q");
   if (!query) return <Navigate to="/wiki" />;
 
@@ -48,7 +47,7 @@ export default function WikiSearchView() {
     return () => sub.unsubscribe();
   }, [query, setResults]);
 
-  const sorted = webOfTrust ? webOfTrust.sortByDistanceAndConnections(results, (p) => p.pubkey) : results;
+  const sorted = sortByDistanceAndConnections(results, (p) => p.pubkey);
 
   return (
     <VerticalPageLayout>

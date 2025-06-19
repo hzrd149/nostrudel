@@ -33,8 +33,8 @@ import { useReadRelays } from "../../hooks/use-client-relays";
 import useParamsAddressPointer from "../../hooks/use-params-address-pointer";
 import useReplaceableEvent from "../../hooks/use-replaceable-event";
 import useWikiPages from "../../hooks/use-wiki-pages";
-import { useWebOfTrust } from "../../providers/global/web-of-trust-provider";
 import { getSharableEventAddress } from "../../services/relay-hints";
+import { sortByDistanceAndConnections } from "../../services/social-graph";
 import WikiPageHeader from "./components/wiki-page-header";
 import WikiPageMenu from "./components/wiki-page-menu";
 import WikiPageResult from "./components/wiki-page-result";
@@ -136,17 +136,16 @@ export function WikiPagePage({ page }: { page: NostrEvent }) {
 }
 
 function WikiPageFooter({ page }: { page: NostrEvent }) {
-  const webOfTrust = useWebOfTrust();
   const topic = getPageTopic(page);
 
   const readRelays = useReadRelays();
   const pages = useWikiPages(topic, readRelays, true);
 
   let forks = pages ? Array.from(pages.values()).filter((p) => getPageForks(p).address?.pubkey === page.pubkey) : [];
-  if (webOfTrust) forks = webOfTrust.sortByDistanceAndConnections(forks, (p) => p.pubkey);
+  forks = sortByDistanceAndConnections(forks, (p) => p.pubkey);
 
   let other = pages ? Array.from(pages.values()).filter((p) => !forks.includes(p) && p.pubkey !== page.pubkey) : [];
-  if (webOfTrust) other = webOfTrust.sortByDistanceAndConnections(other, (p) => p.pubkey);
+  other = sortByDistanceAndConnections(other, (p) => p.pubkey);
 
   return (
     <>

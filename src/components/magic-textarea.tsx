@@ -14,7 +14,7 @@ import { nip19 } from "nostr-tools";
 import { useAsync, useLocalStorage } from "react-use";
 
 import { useContextEmojis } from "../providers/global/emoji-provider";
-import { useWebOfTrust } from "../providers/global/web-of-trust-provider";
+import { sortByDistanceAndConnections } from "../services/social-graph";
 import { userSearchDirectory } from "../services/username-search";
 import UserAvatar from "./user/user-avatar";
 import UserDnsIdentity from "./user/user-dns-identity";
@@ -116,7 +116,6 @@ function useEmojiTokens() {
 }
 
 function useAutocompleteTriggers() {
-  const webOfTrust = useWebOfTrust();
   const directory = useObservableState(userSearchDirectory) ?? [];
   const emojis = useEmojiTokens();
 
@@ -134,12 +133,10 @@ function useAutocompleteTriggers() {
         return matchSorter(directory, token.trim(), {
           keys: ["names"],
           sorter: (items) =>
-            webOfTrust
-              ? webOfTrust.sortByDistanceAndConnections(
-                  items.sort((a, b) => b.rank - a.rank),
-                  (i) => i.item.pubkey,
-                )
-              : items,
+            sortByDistanceAndConnections(
+              items.sort((a, b) => b.rank - a.rank),
+              (i) => i.item.pubkey,
+            ),
         }).slice(0, 10);
       },
       component: Item,
