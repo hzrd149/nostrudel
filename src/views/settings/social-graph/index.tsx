@@ -113,7 +113,7 @@ export default function SocialGraphSettings() {
                 <option value={3}>3rd degree</option>
               </Select>
               <Button colorScheme="primary" onClick={handleLoadGraph} isLoading={!!loading}>
-                Load Graph
+                Update Graph
               </Button>
             </Flex>
           </Card>
@@ -135,7 +135,7 @@ export default function SocialGraphSettings() {
               </>
             )}
           </Card>
-          <Flex gap="2" justifyContent="space-between">
+          <Flex gap="2" justifyContent="space-between" flexWrap="wrap">
             <Flex as="form" gap="2" onSubmit={downloadGraph.run} direction="column">
               <Flex gap="2">
                 <Input
@@ -143,7 +143,8 @@ export default function SocialGraphSettings() {
                   type="url"
                   placeholder={SOCIAL_GRAPH_DOWNLOAD_URL}
                   value={downloadUrl}
-                  w="lg"
+                  maxW="lg"
+                  w="full"
                   onChange={(e) => setDownloadUrl(e.target.value)}
                 />
                 <Button type="submit" flexShrink={0} isLoading={downloadGraph.loading}>
