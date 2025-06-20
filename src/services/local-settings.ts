@@ -66,7 +66,7 @@ const relayAuthenticationMode = new ArrayLocalStorageEntry<{ relay: string; mode
 const cacheRelayURL = new LocalStorageEntry("cache-relay-url", "");
 
 // Content Policies
-const hideEventsOutsideSocialGraph = new NullableNumberLocalStorageEntry("hide-events-outside-social-graph", 5);
+const hideEventsOutsideSocialGraph = new NullableNumberLocalStorageEntry("hide-events-outside-social-graph", null);
 const blurMediaOutsideSocialGraph = new NullableNumberLocalStorageEntry("blur-media-outside-social-graph", 3);
 const hideEmbedsOutsideSocialGraph = new NullableNumberLocalStorageEntry("hide-embeds-outside-social-graph", 4);
 

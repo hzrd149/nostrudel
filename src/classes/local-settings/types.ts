@@ -13,7 +13,7 @@ export class NumberLocalStorageEntry extends LocalStorageEntry<number> {
 }
 
 export class NullableNumberLocalStorageEntry extends NullableLocalStorageEntry<number> {
-  constructor(key: string, fallback: number) {
+  constructor(key: string, fallback: number | null) {
     super(
       key,
       fallback,
