@@ -14,7 +14,7 @@ import useTextAreaUploadFile, { useTextAreaInsertTextWithForm } from "../../../h
 import useUserLNURLMetadata from "../../../hooks/use-user-lnurl-metadata";
 import { useUserInbox } from "../../../hooks/use-user-mailboxes";
 import useUserProfile from "../../../hooks/use-user-profile";
-import { TrustProvider } from "../../../providers/local/trust-provider";
+import { ContentSettingsProvider } from "../../../providers/local/content-settings";
 import InsertImageButton from "../../new/note/insert-image-button";
 
 export default function SupportForm({
@@ -65,11 +65,11 @@ export default function SupportForm({
   return (
     <Flex as="form" direction="column" gap="2" onSubmit={submit} flexShrink={0} {...props}>
       {preview.isOpen ? (
-        <TrustProvider trust>
+        <ContentSettingsProvider blurMedia={false}>
           <Box py="2" px="4" borderWidth={1} rounded="md">
             <TextNoteContents event={previewEvent} minH="16" />
           </Box>
-        </TrustProvider>
+        </ContentSettingsProvider>
       ) : (
         <MagicTextArea
           value={getValues().content}

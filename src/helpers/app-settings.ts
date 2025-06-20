@@ -56,7 +56,7 @@ type AppSettingsV12 = Omit<AppSettingsV11, "showSignatureVerification" | "versio
   mirrorBlobsOnShare: boolean;
 };
 
-type AppSettingsV13 = Omit<AppSettingsV12, "version" | "mutedWords"> & {
+type AppSettingsV13 = Omit<AppSettingsV12, "version" | "mutedWords" | "autoShowMedia" | "blurImages"> & {
   version: 13;
 };
 
@@ -71,10 +71,8 @@ export const DEFAULT_APP_SETTINGS: AppSettings = {
   primaryColor: "#8DB600",
   maxPageWidth: "none",
   showPubkeyColor: "avatar",
-  blurImages: true,
   hideUsernames: false,
   removeEmojisInUsernames: false,
-  autoShowMedia: true,
   showContentWarning: true,
   loadOpenGraphData: true,
 

@@ -4,9 +4,8 @@ import { getHashFromURL } from "blossom-client-sdk";
 import { lazy, VideoHTMLAttributes } from "react";
 
 import { isStreamURL, isVideoURL } from "../../../helpers/url";
-import useElementTrustBlur from "../../../hooks/use-element-trust-blur";
-import useAppSettings from "../../../hooks/use-user-app-settings";
-import ExpandableEmbed from "../components/expandable-embed";
+import useMediaBlur from "../../../hooks/use-media-blur";
+import ExpandableEmbed from "../components/content-embed";
 import { BlobDetailsButton } from "./common";
 
 const LiveVideoPlayer = lazy(() => import("../../live-video-player"));
@@ -21,20 +20,9 @@ export function TrustVideo({
   src,
   ...props
 }: { src: string } & VideoHTMLAttributes<HTMLVideoElement> & Omit<BoxProps, "children">) {
-  const { blurImages } = useAppSettings();
-  const { onClick, handleEvent, style } = useElementTrustBlur();
+  const { onClick, handleEvent, style } = useMediaBlur();
 
-  return (
-    <Box
-      as={StyledVideo}
-      src={src}
-      controls
-      style={blurImages ? style : undefined}
-      onClick={blurImages ? onClick : undefined}
-      onPlay={blurImages ? handleEvent : undefined}
-      {...props}
-    />
-  );
+  return <Box as={StyledVideo} src={src} controls style={style} onClick={onClick} onPlay={handleEvent} {...props} />;
 }
 
 export function renderVideoUrl(match: URL) {

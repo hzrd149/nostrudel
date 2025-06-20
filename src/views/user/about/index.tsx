@@ -43,7 +43,7 @@ import { truncatedId } from "../../../helpers/nostr/event";
 import { useSharableProfileId } from "../../../hooks/use-shareable-profile-id";
 import { useUserDNSIdentity } from "../../../hooks/use-user-dns-identity";
 import useUserProfile from "../../../hooks/use-user-profile";
-import { useAdditionalRelayContext } from "../../../providers/local/additional-relay-context";
+import { useAdditionalRelayContext } from "../../../providers/local/additional-relay";
 import { socialGraph$ } from "../../../services/social-graph";
 import DNSIdentityWarning from "../../settings/dns-identity/identity-warning";
 import { QrIconButton } from "../components/share-qr-button";

@@ -1,41 +1,41 @@
 import { CSSProperties, MouseEventHandler, ReactEventHandler, useCallback } from "react";
-import { useTrustContext } from "../providers/local/trust-provider";
+import { useContentSettings } from "../providers/local/content-settings";
 
-export default function useElementTrustBlur(): {
+export default function useMediaBlur(): {
   style: CSSProperties;
   onClick: MouseEventHandler;
   handleEvent: ReactEventHandler<HTMLElement>;
 } {
-  const { trust, setOverride } = useTrustContext();
+  const { blurMedia, setOverride } = useContentSettings();
 
   const onClick = useCallback<MouseEventHandler>(
     (e) => {
-      if (!trust) {
+      if (blurMedia) {
         e.stopPropagation();
         e.preventDefault();
-        if (!trust) setOverride(true);
+        if (blurMedia) setOverride({ blurMedia: false });
 
         // prevent videos from auto playing
         if (e.target instanceof HTMLVideoElement) e.target.pause();
       }
     },
-    [trust],
+    [blurMedia, setOverride],
   );
   const handleEvent = useCallback<ReactEventHandler<HTMLElement>>(
     (e) => {
-      if (!trust) {
+      if (blurMedia) {
         e.stopPropagation();
         e.preventDefault();
-        if (!trust) setOverride(true);
+        if (blurMedia) setOverride({ blurMedia: false });
 
         // prevent videos from auto playing
         if (e.target instanceof HTMLVideoElement) e.target.pause();
       }
     },
-    [trust],
+    [blurMedia, setOverride],
   );
 
-  const style: CSSProperties = !trust ? { filter: "blur(1.5rem)", cursor: "pointer" } : {};
+  const style: CSSProperties = blurMedia ? { filter: "blur(1.5rem)", cursor: "pointer" } : {};
 
   return { onClick, handleEvent, style };
 }

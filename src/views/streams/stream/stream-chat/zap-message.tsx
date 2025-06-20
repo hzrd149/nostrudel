@@ -6,7 +6,7 @@ import UserAvatar from "../../../../components/user/user-avatar";
 import UserLink from "../../../../components/user/user-link";
 import { LightningIcon } from "../../../../components/icons";
 import { humanReadableSats } from "../../../../helpers/lightning";
-import { TrustProvider } from "../../../../providers/local/trust-provider";
+import { ContentSettingsProvider } from "../../../../providers/local/content-settings";
 import ChatMessageContent from "./chat-message-content";
 import useClientSideMuteFilter from "../../../../hooks/use-client-side-mute-filter";
 import useEventIntersectionRef from "../../../../hooks/use-event-intersection-ref";
@@ -24,7 +24,7 @@ function ZapMessage({ zap }: { zap: NostrEvent }) {
   if (clientMuteFilter(zap)) return null;
 
   return (
-    <TrustProvider event={request}>
+    <ContentSettingsProvider event={request}>
       <Flex direction="column" borderRadius="md" borderColor="yellow.400" borderWidth="1px" p="2" ref={ref}>
         <Flex gap="2">
           <LightningIcon color="yellow.400" />
@@ -36,7 +36,7 @@ function ZapMessage({ zap }: { zap: NostrEvent }) {
           <ChatMessageContent event={request} />
         </Box>
       </Flex>
-    </TrustProvider>
+    </ContentSettingsProvider>
   );
 }
 

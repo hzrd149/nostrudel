@@ -1,6 +1,6 @@
 import { Button, Flex, Heading, SimpleGrid, useDisclosure } from "@chakra-ui/react";
 
-import { useAdditionalRelayContext } from "../../../providers/local/additional-relay-context";
+import { useAdditionalRelayContext } from "../../../providers/local/additional-relay";
 import { ErrorBoundary } from "../../../components/error-boundary";
 import { useBreakpointValue } from "../../../providers/global/breakpoint-provider";
 import useUserChannelsList from "../../../hooks/use-user-channels-list";

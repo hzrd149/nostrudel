@@ -1,7 +1,7 @@
 import { Button, Flex, Heading, useDisclosure } from "@chakra-ui/react";
 import { getCoordinateFromAddressPointer, isEventPointer } from "applesauce-core/helpers";
 
-import { useAdditionalRelayContext } from "../../../providers/local/additional-relay-context";
+import { useAdditionalRelayContext } from "../../../providers/local/additional-relay";
 import useUserPinList from "../../../hooks/use-user-pin-list";
 import { EmbedEventPointerCard } from "../../../components/embed-event/card";
 

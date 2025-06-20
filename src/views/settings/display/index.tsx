@@ -100,17 +100,6 @@ export default function DisplaySettings() {
       </FormControl>
       <FormControl>
         <Flex alignItems="center">
-          <FormLabel htmlFor="blurImages" mb="0">
-            Blur media from strangers
-          </FormLabel>
-          <Switch id="blurImages" {...register("blurImages")} />
-        </Flex>
-        <FormHelperText>
-          <span>Enabled: blur media from people you aren't following</span>
-        </FormHelperText>
-      </FormControl>
-      <FormControl>
-        <Flex alignItems="center">
           <FormLabel htmlFor="hideUsernames" mb="0">
             Hide usernames (anon mode)
           </FormLabel>

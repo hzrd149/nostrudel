@@ -1,5 +1,5 @@
 import { nip19 } from "nostr-tools";
-import ExpandableEmbed from "../components/expandable-embed";
+import ExpandableEmbed from "../components/content-embed";
 import { EmbedEventPointerCard } from "../../embed-event/card";
 
 export function renderNostrAppWebLink(url: URL) {

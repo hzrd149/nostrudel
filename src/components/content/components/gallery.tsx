@@ -7,7 +7,7 @@ import { EmbeddedImageProps, getPubkeyMediaServers, TrustImage, useImageThumbnai
 import { useRegisterSlide } from "../../lightbox-provider";
 import PhotoGallery, { PhotoWithoutSize } from "../../photo-gallery";
 import { useBreakpointValue } from "../../../providers/global/breakpoint-provider";
-import ExpandableEmbed from "./expandable-embed";
+import ExpandableEmbed from "./content-embed";
 
 // nevent1qqs8397rp8tt60f3lm8zldt8uqljuqw9axp8z79w0qsmj3r96lmg4tgpz3mhxue69uhhyetvv9ujuerpd46hxtnfduq3zamnwvaz7tmwdaehgun4v5hxxmmd0mkwa9
 export const GalleryImage = forwardRef<HTMLImageElement | null, EmbeddedImageProps>(

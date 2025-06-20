@@ -5,7 +5,7 @@ import { LightningIcon } from "../../../components/icons";
 import useUserLNURLMetadata from "../../../hooks/use-user-lnurl-metadata";
 import ZapModal from "../../../components/event-zap-modal";
 import { useReadRelays } from "../../../hooks/use-client-relays";
-import { useAdditionalRelayContext } from "../../../providers/local/additional-relay-context";
+import { useAdditionalRelayContext } from "../../../providers/local/additional-relay";
 import { getStreamHost } from "../../../helpers/nostr/stream";
 
 export default function StreamZapButton({

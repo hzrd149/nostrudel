@@ -14,7 +14,7 @@ import StreamZapButton from "../../components/stream-zap-button";
 import { useUserInbox } from "../../../../hooks/use-user-mailboxes";
 import { usePublishEvent } from "../../../../providers/global/publish-provider";
 import { useReadRelays } from "../../../../hooks/use-client-relays";
-import { useAdditionalRelayContext } from "../../../../providers/local/additional-relay-context";
+import { useAdditionalRelayContext } from "../../../../providers/local/additional-relay";
 import useTextAreaUploadFile, { useTextAreaInsertTextWithForm } from "../../../../hooks/use-textarea-upload-file";
 import InsertGifButton from "../../../../components/gif/insert-gif-button";
 

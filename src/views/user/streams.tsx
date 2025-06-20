@@ -4,7 +4,7 @@ import { kinds } from "nostr-tools";
 import { getEventUID } from "applesauce-core/helpers";
 
 import { truncatedId } from "../../helpers/nostr/event";
-import { useAdditionalRelayContext } from "../../providers/local/additional-relay-context";
+import { useAdditionalRelayContext } from "../../providers/local/additional-relay";
 import TimelineActionAndStatus from "../../components/timeline/timeline-action-and-status";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";

@@ -1,7 +1,7 @@
 import { useOutletContext } from "react-router-dom";
 import { PICTURE_POST_KIND } from "applesauce-core/helpers";
 
-import { useAdditionalRelayContext } from "../../providers/local/additional-relay-context";
+import { useAdditionalRelayContext } from "../../providers/local/additional-relay";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import TimelinePage from "../../components/timeline-page";
 

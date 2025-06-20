@@ -6,7 +6,6 @@ import { useCallback } from "react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 
 import { ErrorBoundary } from "../../../components/error-boundary";
-import KeyboardShortcut from "../../../components/keyboard-shortcut";
 import { useReadRelays } from "../../../hooks/use-client-relays";
 import useSimpleSubscription from "../../../hooks/use-forward-subscription";
 import useUserMailboxes from "../../../hooks/use-user-mailboxes";
@@ -62,7 +61,6 @@ export default function NotificationsCard({ ...props }: Omit<CardProps, "childre
             Notifications
           </Link>
         </Heading>
-        <KeyboardShortcut letter="i" requireMeta ml="auto" onPress={() => navigate("/notifications")} />
       </CardHeader>
       <CardBody overflowX="hidden" overflowY="auto" pt="4" display="flex" flexDirection="column">
         {limit.map((event) => (

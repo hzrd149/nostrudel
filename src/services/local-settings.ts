@@ -1,16 +1,15 @@
-import { generateSecretKey } from "nostr-tools";
 import { bytesToHex, hexToBytes } from "@noble/hashes/utils";
+import { generateSecretKey } from "nostr-tools";
 
-import { type RelayAuthMode } from "./authentication-signer";
-import { DEFAULT_LOOKUP_RELAYS, DEFAULT_SIGNAL_RELAYS } from "../const";
+import { LocalStorageEntry } from "../classes/local-settings/entry";
 import {
   ArrayLocalStorageEntry,
   BooleanLocalStorageEntry,
   NullableNumberLocalStorageEntry,
   NumberLocalStorageEntry,
 } from "../classes/local-settings/types";
-import { LocalStorageEntry } from "../classes/local-settings/entry";
-import { EventPolicyRule } from "./event-policies";
+import { DEFAULT_LOOKUP_RELAYS, DEFAULT_SIGNAL_RELAYS } from "../const";
+import { type RelayAuthMode } from "./authentication-signer";
 
 // Relays
 const readRelays = new ArrayLocalStorageEntry<string>("read-relays", []);
@@ -50,10 +49,9 @@ const addClientTag = new BooleanLocalStorageEntry("add-client-tag", false);
 
 // Performance
 const verifyEventMethod = new LocalStorageEntry("verify-event-method", "wasm"); // wasm, internal, none
-const enableKeyboardShortcuts = new BooleanLocalStorageEntry("enable-keyboard-shortcuts", true);
 
 // Privacy
-const debugApi = new BooleanLocalStorageEntry("debug-api", false);
+const enableDebugApi = new BooleanLocalStorageEntry("debug-api", false);
 const alwaysAuthUpload = new BooleanLocalStorageEntry("always-auth-upload", true);
 
 // Relay Authentication
@@ -67,16 +65,10 @@ const relayAuthenticationMode = new ArrayLocalStorageEntry<{ relay: string; mode
 // Cache Relay
 const cacheRelayURL = new LocalStorageEntry("cache-relay-url", "");
 
-// Filtering policies
-const eventsPolicy = new ArrayLocalStorageEntry<EventPolicyRule>("events-policy", [
-  { type: "social-graph-distance", distance: 5 },
-]);
-const mediaPolicy = new ArrayLocalStorageEntry<EventPolicyRule>("media-policy", [
-  { type: "social-graph-distance", distance: 3 },
-]);
-const embedsPolicy = new ArrayLocalStorageEntry<EventPolicyRule>("embeds-policy", [
-  { type: "social-graph-distance", distance: 4 },
-]);
+// Content Policies
+const hideEventsOutsideSocialGraph = new NullableNumberLocalStorageEntry("hide-events-outside-social-graph", 5);
+const blurMediaOutsideSocialGraph = new NullableNumberLocalStorageEntry("blur-media-outside-social-graph", 3);
+const hideEmbedsOutsideSocialGraph = new NullableNumberLocalStorageEntry("hide-embeds-outside-social-graph", 4);
 
 const localSettings = {
   readRelays,
@@ -90,16 +82,16 @@ const localSettings = {
   webRtcRecentConnections,
   addClientTag,
   verifyEventMethod,
-  enableKeyboardShortcuts,
   defaultAuthenticationMode,
   proactivelyAuthenticate,
   relayAuthenticationMode,
-  debugApi,
+  enableDebugApi,
   cacheRelayURL,
   alwaysAuthUpload,
-  eventsPolicy,
-  mediaPolicy,
-  embedsPolicy,
+
+  hideEventsOutsideSocialGraph,
+  blurMediaOutsideSocialGraph,
+  hideEmbedsOutsideSocialGraph,
 };
 
 if (import.meta.env.DEV) {

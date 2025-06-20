@@ -13,7 +13,7 @@ import useCacheForm from "../../hooks/use-cache-form";
 import { Box, Button, ButtonGroup, Flex } from "@chakra-ui/react";
 import InsertImageButton from "../../views/new/note/insert-image-button";
 import InsertGifButton from "../gif/insert-gif-button";
-import { TrustProvider } from "../../providers/local/trust-provider";
+import { ContentSettingsProvider } from "../../providers/local/content-settings";
 import TextNoteContents from "../note/timeline-note/text-note-contents";
 import InsertReactionButton from "../reactions/insert-reaction-button";
 
@@ -94,9 +94,9 @@ export default function GenericCommentForm({
       </Flex>
       {preview && preview.content.length > 0 && (
         <Box p="2" borderWidth={1} borderRadius="md" mb="2">
-          <TrustProvider trust>
+          <ContentSettingsProvider blurMedia={false}>
             <TextNoteContents event={preview} />
-          </TrustProvider>
+          </ContentSettingsProvider>
         </Box>
       )}
     </Flex>

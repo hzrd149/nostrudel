@@ -13,7 +13,7 @@ import { useReadRelays } from "../../hooks/use-client-relays";
 import useParamsProfilePointer from "../../hooks/use-params-pubkey-pointer";
 import useUserMailboxes from "../../hooks/use-user-mailboxes";
 import useUserProfile from "../../hooks/use-user-profile";
-import { AdditionalRelayProvider } from "../../providers/local/additional-relay-context";
+import { AdditionalRelayProvider } from "../../providers/local/additional-relay";
 import { profileLoader } from "../../services/loaders";
 import relayScoreboardService from "../../services/relay-scoreboard";
 

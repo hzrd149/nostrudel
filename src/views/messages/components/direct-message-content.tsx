@@ -19,7 +19,7 @@ import {
   renderWavlakeUrl,
   renderYoutubeURL,
 } from "../../../components/content/links";
-import { TrustProvider } from "../../../providers/local/trust-provider";
+import { ContentSettingsProvider } from "../../../providers/local/content-settings";
 import { LightboxProvider } from "../../../components/lightbox-provider";
 import { renderAudioUrl } from "../../../components/content/links/audio";
 import { components } from "../../../components/content";
@@ -55,13 +55,13 @@ export default function DirectMessageContent({
   const content = useRenderedContent(plaintext, components, { linkRenderers, cacheKey: DirectMessageContentSymbol });
 
   return (
-    <TrustProvider event={event}>
+    <ContentSettingsProvider event={event}>
       <LightboxProvider>
         <Box whiteSpace="pre-wrap" {...props}>
           {content}
           {children}
         </Box>
       </LightboxProvider>
-    </TrustProvider>
+    </ContentSettingsProvider>
   );
 }

@@ -6,7 +6,7 @@ import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { getThreadReferences } from "../../../helpers/nostr/event";
 import { getTorrentTitle } from "../../../helpers/nostr/torrents";
 import useSingleEvent from "../../../hooks/use-single-event";
-import { TrustProvider } from "../../../providers/local/trust-provider";
+import { ContentSettingsProvider } from "../../../providers/local/content-settings";
 import { CompactNoteContent } from "../../compact-note-content";
 import HoverLinkOverlay from "../../hover-link-overlay";
 import Timestamp from "../../timestamp";
@@ -31,7 +31,7 @@ export default function EmbeddedTorrentComment({
   );
 
   return (
-    <TrustProvider event={comment}>
+    <ContentSettingsProvider event={comment}>
       <Card as={LinkBox} {...props}>
         <Flex p="2" gap="2" alignItems="center">
           <UserAvatarLink pubkey={comment.pubkey} size="xs" />
@@ -45,6 +45,6 @@ export default function EmbeddedTorrentComment({
         </Flex>
         <CompactNoteContent px="2" event={comment} maxLength={96} />
       </Card>
-    </TrustProvider>
+    </ContentSettingsProvider>
   );
 }

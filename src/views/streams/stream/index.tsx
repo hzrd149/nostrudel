@@ -41,12 +41,12 @@ import StreamZapButton from "../components/stream-zap-button";
 import StreamGoal from "../components/stream-goal";
 import VerticalPageLayout from "../../../components/vertical-page-layout";
 import { useBreakpointValue } from "../../../providers/global/breakpoint-provider";
-import { AdditionalRelayProvider } from "../../../providers/local/additional-relay-context";
+import { AdditionalRelayProvider } from "../../../providers/local/additional-relay";
 import DebugEventButton from "../../../components/debug-modal/debug-event-button";
 import useParamsAddressPointer from "../../../hooks/use-params-address-pointer";
 import useReplaceableEvent from "../../../hooks/use-replaceable-event";
 import EventQuoteButton from "../../../components/note/event-quote-button";
-import { TrustProvider } from "../../../providers/local/trust-provider";
+import { ContentSettingsProvider } from "../../../providers/local/content-settings";
 import StreamOpenButton from "../components/stream-open-button";
 import StreamFavoriteButton from "../components/stream-favorite-button";
 import {
@@ -136,7 +136,7 @@ function DesktopStreamPage({ stream }: { stream: NostrEvent }) {
           </Flex>
         )}
       </Flex>
-      <TrustProvider trust>
+      <ContentSettingsProvider blurMedia={false}>
         <Flex gap="2" alignItems="center">
           <UserAvatarLink pubkey={host} noProxy />
           <Box>
@@ -156,7 +156,7 @@ function DesktopStreamPage({ stream }: { stream: NostrEvent }) {
         <Flex gap="2" wrap="wrap">
           <StreamerCards pubkey={host} maxW="lg" minW="md" />
         </Flex>
-      </TrustProvider>
+      </ContentSettingsProvider>
     </VerticalPageLayout>
   );
 }
@@ -176,7 +176,7 @@ function MobileStreamPage({ stream }: { stream: NostrEvent }) {
 
   return (
     <VerticalPageLayout px={0}>
-      <TrustProvider trust>
+      <ContentSettingsProvider blurMedia={false}>
         <Flex gap="2" alignItems="center" px="2" flexShrink={0}>
           <Button onClick={() => navigate(-1)} leftIcon={<ChevronLeftIcon />} size="sm">
             Back
@@ -210,7 +210,7 @@ function MobileStreamPage({ stream }: { stream: NostrEvent }) {
           <StreamGoal stream={stream} />
           <StreamerCards pubkey={host} />
         </Flex>
-      </TrustProvider>
+      </ContentSettingsProvider>
       <Drawer onClose={showChat.onClose} isOpen={showChat.isOpen} size="full" isFullHeight>
         <DrawerOverlay />
         <DrawerContent>

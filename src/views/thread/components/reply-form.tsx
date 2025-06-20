@@ -16,7 +16,7 @@ import useCacheForm from "../../../hooks/use-cache-form";
 import useTextAreaUploadFile, { useTextAreaInsertTextWithForm } from "../../../hooks/use-textarea-upload-file";
 import { useContextEmojis } from "../../../providers/global/emoji-provider";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
-import { TrustProvider } from "../../../providers/local/trust-provider";
+import { ContentSettingsProvider } from "../../../providers/local/content-settings";
 import InsertImageButton from "../../new/note/insert-image-button";
 
 export type ReplyFormProps = {
@@ -129,9 +129,9 @@ export default function ReplyForm({ item, onCancel, onSubmitted, replyKind = kin
       )}
       {preview && preview.content.length > 0 && (
         <Box p="2" borderWidth={1} borderRadius="md" mb="2">
-          <TrustProvider trust>
+          <ContentSettingsProvider blurMedia={false}>
             <TextNoteContents event={preview} />
-          </TrustProvider>
+          </ContentSettingsProvider>
         </Box>
       )}
     </Flex>

@@ -4,7 +4,7 @@ import UserAvatarLink from "../../../../components/user/user-avatar-link";
 import UserLink from "../../../../components/user/user-link";
 import { NostrEvent } from "nostr-tools";
 import TextNoteContents from "../../../../components/note/timeline-note/text-note-contents";
-import { TrustProvider } from "../../../../providers/local/trust-provider";
+import { ContentSettingsProvider } from "../../../../providers/local/content-settings";
 import DebugEventButton from "../../../../components/debug-modal/debug-event-button";
 
 export default function TranslationResult({ result }: { result: NostrEvent }) {
@@ -22,9 +22,9 @@ export default function TranslationResult({ result }: { result: NostrEvent }) {
         <DebugEventButton ml="auto" event={result} size="sm" variant="ghost" />
       </Flex>
       {content.isOpen && (
-        <TrustProvider trust>
+        <ContentSettingsProvider blurMedia={false}>
           <TextNoteContents event={result} />
-        </TrustProvider>
+        </ContentSettingsProvider>
       )}
     </>
   );

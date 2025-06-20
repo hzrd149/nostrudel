@@ -22,7 +22,7 @@ import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
 import useAppSettings from "../../../hooks/use-user-app-settings";
 import { useBreakpointValue } from "../../../providers/global/breakpoint-provider";
 import { ExpandProvider } from "../../../providers/local/expanded";
-import { TrustProvider } from "../../../providers/local/trust-provider";
+import { ContentSettingsProvider } from "../../../providers/local/content-settings";
 import localSettings from "../../../services/local-settings";
 import { getSharableEventAddress } from "../../../services/relay-hints";
 import ReplyForm from "../../../views/thread/components/reply-form";
@@ -78,7 +78,7 @@ export function TimelineNote({
   );
 
   return (
-    <TrustProvider event={event}>
+    <ContentSettingsProvider event={event}>
       <ExpandProvider>
         <Flex
           direction="column"
@@ -142,7 +142,7 @@ export function TimelineNote({
           onSubmitted={replyForm.onClose}
         />
       )}
-    </TrustProvider>
+    </ContentSettingsProvider>
   );
 }
 

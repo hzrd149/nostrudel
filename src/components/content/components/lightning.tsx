@@ -1,5 +1,5 @@
 import InlineInvoiceCard from "../../lightning/inline-invoice-card";
-import ExpandableEmbed from "./expandable-embed";
+import ExpandableEmbed from "./content-embed";
 
 export default function LightningInvoice({ invoice }: { invoice: string }) {
   return (

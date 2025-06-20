@@ -6,7 +6,7 @@ import UserAvatarLink from "../user/user-avatar-link";
 import UserLink from "../user/user-link";
 import UserDnsIdentity from "../user/user-dns-identity";
 import DebugEventButton from "../debug-modal/debug-event-button";
-import { TrustProvider } from "../../providers/local/trust-provider";
+import { ContentSettingsProvider } from "../../providers/local/content-settings";
 import EventReactionButtons from "../event-reactions/event-reactions";
 import AddReactionButton from "../note/timeline-note/components/add-reaction-button";
 import EventShareButton from "../note/timeline-note/components/event-share-button";
@@ -22,7 +22,7 @@ export default function PicturePost({ post }: { post: NostrEvent }) {
   const nevent = getSharableEventAddress(post);
 
   return (
-    <TrustProvider event={post}>
+    <ContentSettingsProvider event={post}>
       <Card maxW="2xl" mx="auto">
         <CardHeader display="flex" alignItems="center" gap="2" p="2">
           <UserAvatarLink pubkey={post.pubkey} />
@@ -61,6 +61,6 @@ export default function PicturePost({ post }: { post: NostrEvent }) {
           </ButtonGroup>
         </CardFooter>
       </Card>
-    </TrustProvider>
+    </ContentSettingsProvider>
   );
 }

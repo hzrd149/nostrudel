@@ -8,7 +8,7 @@ import TextNoteContents from "../../../components/note/timeline-note/text-note-c
 import { LightningIcon } from "../../../components/icons";
 import Timestamp from "../../../components/timestamp";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
-import { TrustProvider } from "../../../providers/local/trust-provider";
+import { ContentSettingsProvider } from "../../../providers/local/content-settings";
 import ZapReceiptMenu from "../../../components/zap/zap-receipt-menu";
 
 export function TopZap({ zap }: { zap: NostrEvent }) {
@@ -42,9 +42,9 @@ export function TopZap({ zap }: { zap: NostrEvent }) {
 
       {request.content && (
         <CardBody px="4" pt="0" pb="4">
-          <TrustProvider event={request}>
+          <ContentSettingsProvider event={request}>
             <TextNoteContents event={request} fontSize="lg" />
-          </TrustProvider>
+          </ContentSettingsProvider>
         </CardBody>
       )}
     </Card>

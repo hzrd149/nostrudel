@@ -10,7 +10,7 @@ import { STEMSTR_TRACK_KIND } from "../../helpers/nostr/stemstr";
 import useEventIntersectionRef from "../../hooks/use-event-intersection-ref";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
-import { useAdditionalRelayContext } from "../../providers/local/additional-relay-context";
+import { useAdditionalRelayContext } from "../../providers/local/additional-relay";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 
 function Track({ track }: { track: NostrEvent }) {

@@ -14,7 +14,7 @@ import { useActiveAccount } from "applesauce-react/hooks";
 import { getEventCoordinate } from "../../../helpers/nostr/event";
 import { useReadRelays } from "../../../hooks/use-client-relays";
 import { ChevronLeftIcon } from "../../../components/icons";
-import { AdditionalRelayProvider } from "../../../providers/local/additional-relay-context";
+import { AdditionalRelayProvider } from "../../../providers/local/additional-relay";
 import UsersCard from "./users-card";
 import ZapsCard from "./zaps-card";
 import ChatCard from "./chat-card";

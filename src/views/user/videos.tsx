@@ -2,7 +2,7 @@ import { useOutletContext } from "react-router-dom";
 import { SimpleGrid } from "@chakra-ui/react";
 import { getEventUID } from "applesauce-core/helpers";
 
-import { useAdditionalRelayContext } from "../../providers/local/additional-relay-context";
+import { useAdditionalRelayContext } from "../../providers/local/additional-relay";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";

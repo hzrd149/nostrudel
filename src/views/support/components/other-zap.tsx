@@ -9,7 +9,7 @@ import { LightningIcon } from "../../../components/icons";
 import Timestamp from "../../../components/timestamp";
 import UserDnsIdentityIcon from "../../../components/user/user-dns-identity-icon";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
-import { TrustProvider } from "../../../providers/local/trust-provider";
+import { ContentSettingsProvider } from "../../../providers/local/content-settings";
 import ZapReceiptMenu from "../../../components/zap/zap-receipt-menu";
 
 export function OtherZap({ zap }: { zap: NostrEvent }) {
@@ -42,9 +42,9 @@ export function OtherZap({ zap }: { zap: NostrEvent }) {
 
       {request.content && (
         <CardBody px="4" pt="0" pb="4">
-          <TrustProvider event={request}>
+          <ContentSettingsProvider event={request}>
             <TextNoteContents event={request} />
-          </TrustProvider>
+          </ContentSettingsProvider>
         </CardBody>
       )}
     </Card>

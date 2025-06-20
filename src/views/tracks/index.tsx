@@ -9,7 +9,7 @@ import { useReadRelays } from "../../hooks/use-client-relays";
 import useClientSideMuteFilter from "../../hooks/use-client-side-mute-filter";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
-import { AdditionalRelayProvider, useAdditionalRelayContext } from "../../providers/local/additional-relay-context";
+import { AdditionalRelayProvider, useAdditionalRelayContext } from "../../providers/local/additional-relay";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
 import TrackCard from "./components/track-card";

@@ -6,7 +6,6 @@ import { Photo } from "react-photo-album";
 import { isImageURL } from "../../../helpers/url";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
 import { useBreakpointValue } from "../../../providers/global/breakpoint-provider";
-import { TrustProvider } from "../../../providers/local/trust-provider";
 import { GalleryImage } from "../../content/components/gallery";
 import { EmbeddedImageProps } from "../../content/links";
 import { LightboxProvider } from "../../lightbox-provider";
@@ -52,9 +51,7 @@ export default function MediaTimeline({ timeline }: { timeline: NostrEvent[] }) 
 
   return (
     <LightboxProvider>
-      <TrustProvider trust>
-        <ImageGallery images={images} />
-      </TrustProvider>
+      <ImageGallery images={images} />
     </LightboxProvider>
   );
 }

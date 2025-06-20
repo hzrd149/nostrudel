@@ -1,7 +1,7 @@
 import { Button, ButtonProps, Link, useDisclosure } from "@chakra-ui/react";
 import { Link as NastLink } from "applesauce-content/nast";
 
-import { useMediaOwnerContext } from "../../../providers/local/media-owner-provider";
+import { useMediaOwnerContext } from "../../../providers/local/media-owner";
 import { BlobDetailsModal } from "../../blob-details-modal";
 import OpenGraphCard from "../../open-graph/open-graph-card";
 import OpenGraphLink from "../../open-graph/open-graph-link";

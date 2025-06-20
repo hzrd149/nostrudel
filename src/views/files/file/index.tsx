@@ -31,7 +31,7 @@ import { formatBytes } from "../../../helpers/number";
 import useMaxPageWidth from "../../../hooks/use-max-page-width";
 import useParamsEventPointer from "../../../hooks/use-params-event-pointer";
 import useSingleEvent from "../../../hooks/use-single-event";
-import { TrustProvider } from "../../../providers/local/trust-provider";
+import { ContentSettingsProvider } from "../../../providers/local/content-settings";
 import FileDownloadButton from "../components/download-button";
 import FileMenu from "../components/file-menu";
 import FilePreview from "./preview";
@@ -72,9 +72,9 @@ function FileDetailsPage({ file }: { file: NostrEvent }) {
         justifyContent="center"
         overflow="hidden"
       >
-        <TrustProvider event={file}>
+        <ContentSettingsProvider event={file}>
           <FilePreview file={file} />
-        </TrustProvider>
+        </ContentSettingsProvider>
       </Flex>
 
       <Flex mx="auto" maxW={maxWidth} w="full" gap="2" direction="column">

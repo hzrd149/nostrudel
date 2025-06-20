@@ -21,7 +21,7 @@ import { humanReadableSats } from "../../../helpers/lightning";
 import { getPubkeysFromList } from "../../../helpers/nostr/lists";
 import useEventCount from "../../../hooks/use-event-count";
 import useUserContactList from "../../../hooks/use-user-contact-list";
-import { useAdditionalRelayContext } from "../../../providers/local/additional-relay-context";
+import { useAdditionalRelayContext } from "../../../providers/local/additional-relay";
 import trustedUserStatsService from "../../../services/trusted-user-stats";
 
 export default function UserStatsAccordion({ pubkey }: { pubkey: string }) {

@@ -27,7 +27,7 @@ import {
   renderNostrAppWebLink,
 } from "../../content/links";
 import { LightboxProvider } from "../../lightbox-provider";
-import MediaOwnerProvider from "../../../providers/local/media-owner-provider";
+import MediaOwnerProvider from "../../../providers/local/media-owner";
 import { components } from "../../content";
 import { nipDefinitions } from "../../content/transform/nip-notation";
 import { bipDefinitions } from "../../content/transform/bip-notation";

@@ -4,7 +4,7 @@ import { useOutletContext } from "react-router-dom";
 import { ErrorBoundary } from "../../components/error-boundary";
 import SimpleView from "../../components/layout/presets/simple-view";
 import useUserContactList from "../../hooks/use-user-contact-list";
-import { useAdditionalRelayContext } from "../../providers/local/additional-relay-context";
+import { useAdditionalRelayContext } from "../../providers/local/additional-relay";
 import { UserCard } from "./components/user-card";
 import { getProfilePointersFromList } from "applesauce-core/helpers";
 import { sortByDistanceAndConnections } from "../../services/social-graph";

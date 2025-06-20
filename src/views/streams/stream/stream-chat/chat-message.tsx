@@ -4,7 +4,7 @@ import { NostrEvent } from "nostr-tools";
 
 import UserAvatar from "../../../../components/user/user-avatar";
 import UserLink from "../../../../components/user/user-link";
-import { TrustProvider } from "../../../../providers/local/trust-provider";
+import { ContentSettingsProvider } from "../../../../providers/local/content-settings";
 import ChatMessageContent from "./chat-message-content";
 import EventZapButton from "../../../../components/zap/event-zap-button";
 import useEventIntersectionRef from "../../../../hooks/use-event-intersection-ref";
@@ -15,7 +15,7 @@ function ChatMessage({ event, stream }: { event: NostrEvent; stream: NostrEvent 
   const host = getStreamHost(stream);
 
   return (
-    <TrustProvider event={event}>
+    <ContentSettingsProvider event={event}>
       <Box>
         <Box overflow="hidden" maxH="lg" ref={ref}>
           <UserAvatar pubkey={event.pubkey} size="xs" display="inline-block" mr="2" />
@@ -35,7 +35,7 @@ function ChatMessage({ event, stream }: { event: NostrEvent; stream: NostrEvent 
           <ChatMessageContent event={event} />
         </Box>
       </Box>
-    </TrustProvider>
+    </ContentSettingsProvider>
   );
 }
 

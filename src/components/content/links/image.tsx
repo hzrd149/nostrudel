@@ -10,19 +10,17 @@ import { forwardRef, MouseEventHandler, useCallback, useEffect, useRef } from "r
 
 import { buildImageProxyURL } from "../../../helpers/image";
 import { isImageURL } from "../../../helpers/url";
-import useElementTrustBlur from "../../../hooks/use-element-trust-blur";
-import useAppSettings from "../../../hooks/use-user-app-settings";
-import { useMediaOwnerContext } from "../../../providers/local/media-owner-provider";
+import useMediaBlur from "../../../hooks/use-media-blur";
+import { useMediaOwnerContext } from "../../../providers/local/media-owner";
 import { eventStore } from "../../../services/event-store";
 import { useRegisterSlide } from "../../lightbox-provider";
-import ExpandableEmbed from "../components/expandable-embed";
+import ExpandableEmbed from "../components/content-embed";
 import { BlobDetailsButton } from "./common";
 
 export type TrustImageProps = ImageProps;
 
 export const TrustImage = forwardRef<HTMLImageElement, TrustImageProps>((props, ref) => {
-  const { blurImages } = useAppSettings();
-  const { onClick, style } = useElementTrustBlur();
+  const { onClick, style } = useMediaBlur();
 
   const handleClick = useCallback<MouseEventHandler<HTMLImageElement>>(
     (e) => {
@@ -34,8 +32,7 @@ export const TrustImage = forwardRef<HTMLImageElement, TrustImageProps>((props, 
     [onClick, props.onClick],
   );
 
-  if (!blurImages) return <Image {...props} ref={ref} />;
-  else return <Image {...props} onClick={handleClick} style={{ ...style, ...props.style }} ref={ref} />;
+  return <Image {...props} onClick={handleClick} style={{ ...style, ...props.style }} ref={ref} />;
 });
 
 export type EmbeddedImageProps = Omit<LinkProps, "children" | "href" | "onClick"> & {

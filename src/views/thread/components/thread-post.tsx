@@ -28,7 +28,7 @@ import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
 import useThreadColorLevelProps from "../../../hooks/use-thread-color-level-props";
 import useAppSettings from "../../../hooks/use-user-app-settings";
 import { useBreakpointValue } from "../../../providers/global/breakpoint-provider";
-import { TrustProvider } from "../../../providers/local/trust-provider";
+import { ContentSettingsProvider } from "../../../providers/local/content-settings";
 import { getSharableEventAddress } from "../../../services/relay-hints";
 import DetailsTabs from "./details-tabs";
 import ReplyForm from "./reply-form";
@@ -95,14 +95,16 @@ function ThreadPost({ post, initShowReplies, focusId, level = -1 }: ThreadItemPr
   );
 
   const renderContent = () => {
+    const override = focusId === post.event.id ? false : undefined;
+
     return isMuted && !alwaysShow ? (
       muteAlert
     ) : (
       <>
         <NoteCommunityMetadata event={post.event} pl="2" />
-        <TrustProvider trust={focusId === post.event.id ? true : undefined} event={post.event}>
+        <ContentSettingsProvider blurMedia={override} hideEmbeds={override} event={post.event}>
           <TextNoteContents event={post.event} pl="2" />
-        </TrustProvider>
+        </ContentSettingsProvider>
       </>
     );
   };

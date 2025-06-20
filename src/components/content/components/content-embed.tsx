@@ -2,8 +2,8 @@ import { PropsWithChildren, ReactNode } from "react";
 import EmbedActions from "./embed-actions";
 import { Link, useDisclosure } from "@chakra-ui/react";
 
-import useAppSettings from "../../../hooks/use-user-app-settings";
 import OpenGraphCard from "../../open-graph/open-graph-card";
+import { useContentSettings } from "../../../providers/local/content-settings";
 
 export default function ExpandableEmbed({
   children,
@@ -21,9 +21,9 @@ export default function ExpandableEmbed({
   raw?: ReactNode;
   card?: boolean;
 }>) {
-  const { autoShowMedia } = useAppSettings();
-  const expanded = useDisclosure({ defaultIsOpen: autoShowMedia });
-  const showActions = hideOnDefaultOpen && autoShowMedia ? false : true;
+  const { hideEmbeds } = useContentSettings();
+  const expanded = useDisclosure({ defaultIsOpen: !hideEmbeds });
+  const showActions = hideOnDefaultOpen && !hideEmbeds ? false : true;
 
   return (
     <>

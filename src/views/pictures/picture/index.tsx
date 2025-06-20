@@ -13,7 +13,7 @@ import UserLink from "~/components/user/user-link";
 import useParamsEventPointer from "~/hooks/use-params-event-pointer";
 import useSingleEvent from "~/hooks/use-single-event";
 import { useBreakpointValue } from "~/providers/global/breakpoint-provider";
-import { TrustProvider } from "~/providers/local/trust-provider";
+import { ContentSettingsProvider } from "~/providers/local/content-settings";
 import SimpleView from "../../../components/layout/presets/simple-view";
 import NoteReactions from "../../../components/note/timeline-note/components/note-reactions";
 import PicturePostMenu from "../../../components/picture-post/picture-menu";
@@ -121,9 +121,9 @@ function PicturePostPage({ post }: { post: NostrEvent }) {
   const Layout = useBreakpointValue({ base: VerticalLayout, xl: HorizontalLayout }) || VerticalLayout;
 
   return (
-    <TrustProvider trust>
+    <ContentSettingsProvider blurMedia={false}>
       <Layout post={post} />
-    </TrustProvider>
+    </ContentSettingsProvider>
   );
 }
 

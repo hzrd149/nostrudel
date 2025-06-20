@@ -103,15 +103,6 @@ export default function PerformanceSettings() {
       </FormControl>
       <FormControl>
         <Flex alignItems="center">
-          <FormLabel htmlFor="autoShowMedia" mb="0">
-            Show embeds
-          </FormLabel>
-          <Switch id="autoShowMedia" {...register("autoShowMedia")} />
-        </Flex>
-        <FormHelperText>Disabled: Embeds will show an expandable button</FormHelperText>
-      </FormControl>
-      <FormControl>
-        <Flex alignItems="center">
           <FormLabel htmlFor="showReactions" mb="0">
             Show reactions
           </FormLabel>

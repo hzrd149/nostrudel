@@ -9,13 +9,7 @@ import { addressLoader } from "../services/loaders";
 /** A model that loads an addressable event */
 export function AddressableQuery(pointer: AddressPointerWithoutD): Model<NostrEvent | undefined> {
   return (events) =>
-    defer(() => {
-      if (pointer.kind === kinds.Application) {
-        console.log(pointer, eventStore.hasReplaceable(pointer.kind, pointer.pubkey, pointer.identifier));
-      }
-
-      return eventStore.hasReplaceable(pointer.kind, pointer.pubkey, pointer.identifier)
-        ? EMPTY
-        : addressLoader(pointer);
-    }).pipe(ignoreElements(), mergeWith(events.replaceable(pointer.kind, pointer.pubkey, pointer.identifier)));
+    defer(() =>
+      eventStore.hasReplaceable(pointer.kind, pointer.pubkey, pointer.identifier) ? EMPTY : addressLoader(pointer),
+    ).pipe(ignoreElements(), mergeWith(events.replaceable(pointer.kind, pointer.pubkey, pointer.identifier)));
 }

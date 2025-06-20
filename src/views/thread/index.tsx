@@ -22,7 +22,7 @@ import useSingleEvent from "../../hooks/use-single-event";
 import useThreadTimelineLoader from "../../hooks/use-thread-timeline-loader";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
-import { TrustProvider } from "../../providers/local/trust-provider";
+import { ContentSettingsProvider } from "../../providers/local/content-settings";
 import { getSharableEventAddress } from "../../services/relay-hints";
 import { ExpandableToggleButton } from "../notifications/components/notification-item";
 import ThreadPost from "./components/thread-post";
@@ -62,10 +62,10 @@ function ParentNote({ note, level = 0 }: { note: NostrEvent; level?: number }) {
         </Link>
       </Box>
       {more.isOpen ? (
-        <TrustProvider trust>
+        <ContentSettingsProvider blurMedia={false}>
           <br />
           <TextNoteContents event={note} aria-expanded="true" />
-        </TrustProvider>
+        </ContentSettingsProvider>
       ) : (
         <Link
           as={RouterLink}

@@ -5,7 +5,7 @@ import { NostrEvent } from "nostr-tools";
 import { ErrorBoundary } from "../../../components/error-boundary";
 import { ChevronDownIcon, ChevronUpIcon } from "../../../components/icons";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
-import { TrustProvider } from "../../../providers/local/trust-provider";
+import { ContentSettingsProvider } from "../../../providers/local/content-settings";
 import { CategorizedEvent, NotificationType, NotificationTypeSymbol } from "../../../services/notifications";
 import MentionNotification from "./mention-notification";
 import MessageNotification from "./message-notification";
@@ -78,7 +78,7 @@ const NotificationItem = ({
     <Flex ref={ref} overflow="hidden" flexShrink={0} {...props}>
       {content && (
         <ErrorBoundary>
-          <TrustProvider event={event}>{content}</TrustProvider>
+          <ContentSettingsProvider event={event}>{content}</ContentSettingsProvider>
         </ErrorBoundary>
       )}
     </Flex>

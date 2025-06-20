@@ -6,7 +6,7 @@ import { useActiveAccount, useEventFactory } from "applesauce-react/hooks";
 import { getEventReactionScore, groupReactions } from "../../helpers/nostr/reactions";
 import useEventReactions from "../../hooks/use-event-reactions";
 import { usePublishEvent } from "../../providers/global/publish-provider";
-import { useAdditionalRelayContext } from "../../providers/local/additional-relay-context";
+import { useAdditionalRelayContext } from "../../providers/local/additional-relay";
 import { ChevronDownIcon, ChevronUpIcon, DislikeIcon, LikeIcon } from "../icons";
 
 export default function EventVoteButtons({

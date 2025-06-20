@@ -14,7 +14,7 @@ import useFavoriteStreams from "../../hooks/use-favorite-streams";
 import { useRouteStateBoolean } from "../../hooks/use-route-state-value";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
-import { AdditionalRelayProvider, useAdditionalRelayContext } from "../../providers/local/additional-relay-context";
+import { AdditionalRelayProvider, useAdditionalRelayContext } from "../../providers/local/additional-relay";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
 import { NostrEvent } from "nostr-tools";

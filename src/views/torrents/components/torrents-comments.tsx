@@ -33,7 +33,7 @@ import useThreadTimelineLoader from "../../../hooks/use-thread-timeline-loader";
 import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
 import useAppSettings from "../../../hooks/use-user-app-settings";
 import IntersectionObserverProvider from "../../../providers/local/intersection-observer";
-import { TrustProvider } from "../../../providers/local/trust-provider";
+import { ContentSettingsProvider } from "../../../providers/local/content-settings";
 import ReplyForm from "../../thread/components/reply-form";
 import TorrentCommentMenu from "./torrent-comment-menu";
 import { useEventModel } from "applesauce-react/hooks";
@@ -89,9 +89,9 @@ export const ThreadPost = memo(({ post, level = -1 }: { post: ThreadItem; level?
       muteAlert
     ) : (
       <>
-        <TrustProvider event={post.event}>
+        <ContentSettingsProvider event={post.event}>
           <TextNoteContents event={post.event} pl="2" />
-        </TrustProvider>
+        </ContentSettingsProvider>
       </>
     );
   };

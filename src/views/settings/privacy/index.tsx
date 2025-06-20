@@ -47,7 +47,7 @@ export default function PrivacySettings() {
   const { register, submit, formState } = useSettingsForm();
 
   const proactivelyAuthenticate = useObservableEagerState(localSettings.proactivelyAuthenticate);
-  const debugApi = useObservableEagerState(localSettings.debugApi);
+  const debugApi = useObservableEagerState(localSettings.enableDebugApi);
 
   return (
     <SimpleView
@@ -219,7 +219,7 @@ export default function PrivacySettings() {
           <Switch
             id="debugApi"
             isChecked={debugApi}
-            onChange={(e) => localSettings.debugApi.next(e.currentTarget.checked)}
+            onChange={(e) => localSettings.enableDebugApi.next(e.currentTarget.checked)}
           />
         </Flex>
         <FormHelperText>

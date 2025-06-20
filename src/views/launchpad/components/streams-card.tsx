@@ -1,20 +1,19 @@
-import { useCallback, useMemo } from "react";
 import { Button, Card, CardBody, CardHeader, CardProps, Flex, Heading, Link, LinkBox } from "@chakra-ui/react";
-import { Link as RouterLink, useNavigate } from "react-router-dom";
-import { Filter, kinds, NostrEvent } from "nostr-tools";
 import { getEventUID } from "nostr-idb";
+import { Filter, kinds, NostrEvent } from "nostr-tools";
+import { useCallback, useMemo } from "react";
+import { Link as RouterLink } from "react-router-dom";
 
-import { useReadRelays } from "../../../hooks/use-client-relays";
-import useClientSideMuteFilter from "../../../hooks/use-client-side-mute-filter";
-import useTimelineLoader from "../../../hooks/use-timeline-loader";
-import PeopleListProvider, { usePeopleListContext } from "../../../providers/local/people-list-provider";
+import { ErrorBoundary } from "../../../components/error-boundary";
+import HoverLinkOverlay from "../../../components/hover-link-overlay";
 import UserAvatar from "../../../components/user/user-avatar";
 import UserName from "../../../components/user/user-name";
-import HoverLinkOverlay from "../../../components/hover-link-overlay";
-import useShareableEventAddress from "../../../hooks/use-shareable-event-address";
-import KeyboardShortcut from "../../../components/keyboard-shortcut";
-import { ErrorBoundary } from "../../../components/error-boundary";
 import { getStreamHost, getStreamStatus, getStreamTitle } from "../../../helpers/nostr/stream";
+import { useReadRelays } from "../../../hooks/use-client-relays";
+import useClientSideMuteFilter from "../../../hooks/use-client-side-mute-filter";
+import useShareableEventAddress from "../../../hooks/use-shareable-event-address";
+import useTimelineLoader from "../../../hooks/use-timeline-loader";
+import PeopleListProvider, { usePeopleListContext } from "../../../providers/local/people-list-provider";
 
 function LiveStream({ stream }: { stream: NostrEvent }) {
   const naddr = useShareableEventAddress(stream);
@@ -33,7 +32,6 @@ function LiveStream({ stream }: { stream: NostrEvent }) {
 }
 
 function StreamsCardContent({ ...props }: Omit<CardProps, "children">) {
-  const navigate = useNavigate();
   const relays = useReadRelays();
   const userMuteFilter = useClientSideMuteFilter();
 
@@ -66,7 +64,6 @@ function StreamsCardContent({ ...props }: Omit<CardProps, "children">) {
             Streams
           </Link>
         </Heading>
-        <KeyboardShortcut letter="l" requireMeta ml="auto" onPress={() => navigate("/streams")} />
       </CardHeader>
       <CardBody overflowX="hidden" overflowY="auto" pt="4" display="flex" gap="2" flexDirection="column" maxH="50vh">
         {streams?.map((stream) => (

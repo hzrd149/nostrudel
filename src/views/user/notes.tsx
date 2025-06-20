@@ -10,7 +10,7 @@ import TimelineViewType from "../../components/timeline-page/timeline-view-type"
 import { isReply, isRepost } from "../../helpers/nostr/event";
 import { useRouteStateBoolean } from "../../hooks/use-route-state-value";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
-import { useAdditionalRelayContext } from "../../providers/local/additional-relay-context";
+import { useAdditionalRelayContext } from "../../providers/local/additional-relay";
 
 export default function UserNotesTab() {
   const { pubkey } = useOutletContext() as { pubkey: string };

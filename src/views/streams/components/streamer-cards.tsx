@@ -6,7 +6,7 @@ import { NostrEvent } from "nostr-tools";
 import { TextNoteContents } from "../../../components/note/timeline-note/text-note-contents";
 import OpenGraphCard from "../../../components/open-graph/open-graph-card";
 import { StreamCardsQuery } from "../../../models/stream";
-import { useAdditionalRelayContext } from "../../../providers/local/additional-relay-context";
+import { useAdditionalRelayContext } from "../../../providers/local/additional-relay";
 
 export const STREAMER_CARDS_TYPE = 17777;
 export const STREAMER_CARD_TYPE = 37777;

@@ -1,10 +1,15 @@
-import { useMemo, useState } from "react";
 import { Button, Card, CardBody, CardHeader, CardProps, Flex, Heading, Link, LinkBox, Text } from "@chakra-ui/react";
-import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { nip19 } from "nostr-tools";
+import { useMemo, useState } from "react";
+import { Link as RouterLink } from "react-router-dom";
 
-import KeyboardShortcut from "../../../components/keyboard-shortcut";
 import { useActiveAccount } from "applesauce-react/hooks";
+import { NostrEvent } from "nostr-tools";
+import HoverLinkOverlay from "../../../components/hover-link-overlay";
+import Timestamp from "../../../components/timestamp";
+import UserAvatar from "../../../components/user/user-avatar";
+import UserDnsIdentity from "../../../components/user/user-dns-identity";
+import UserName from "../../../components/user/user-name";
 import {
   KnownConversation,
   groupIntoConversations,
@@ -12,12 +17,6 @@ import {
   identifyConversation,
   sortConversationsByLastReceived,
 } from "../../../helpers/nostr/dms";
-import { NostrEvent } from "nostr-tools";
-import UserAvatar from "../../../components/user/user-avatar";
-import HoverLinkOverlay from "../../../components/hover-link-overlay";
-import UserName from "../../../components/user/user-name";
-import UserDnsIdentity from "../../../components/user/user-dns-identity";
-import Timestamp from "../../../components/timestamp";
 import { useLegacyMessagePlaintext } from "../../../hooks/use-kind4-decryption";
 import decryptionCacheService from "../../../services/decryption-cache";
 import { useDirectMessagesTimeline } from "../../messages";
@@ -48,7 +47,6 @@ function Conversation({ conversation }: { conversation: KnownConversation }) {
 }
 
 export default function DMsCard({ ...props }: Omit<CardProps, "children">) {
-  const navigate = useNavigate();
   const account = useActiveAccount()!;
 
   const { timeline: messages } = useDirectMessagesTimeline(account.pubkey);
@@ -97,7 +95,6 @@ export default function DMsCard({ ...props }: Omit<CardProps, "children">) {
         <Button variant="link" isLoading={loading} ml="auto" onClick={decrypt}>
           Decrypt
         </Button>
-        <KeyboardShortcut letter="m" requireMeta onPress={() => navigate("/dm")} />
       </CardHeader>
       <CardBody overflow="hidden" pt="0" display="flex" flexDirection="column" px="0">
         {conversations.slice(0, 4).map((conversation) => (

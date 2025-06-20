@@ -2,7 +2,7 @@ import { Card, CardProps, Flex, LinkBox, Spacer, Text } from "@chakra-ui/react";
 import { NostrEvent } from "nostr-tools";
 
 import { nip25 } from "nostr-tools";
-import { TrustProvider } from "../../../providers/local/trust-provider";
+import { ContentSettingsProvider } from "../../../providers/local/content-settings";
 import DebugEventButton from "../../debug-modal/debug-event-button";
 import ReactionIcon from "../../event-reactions/reaction-icon";
 import { NoteLink } from "../../note/note-link";
@@ -14,7 +14,7 @@ export default function EmbeddedReaction({ event, ...props }: Omit<CardProps, "c
   const pointer = nip25.getReactedEventPointer(event);
 
   return (
-    <TrustProvider event={event}>
+    <ContentSettingsProvider event={event}>
       <Card as={LinkBox} {...props}>
         <Flex p="2" gap="2" alignItems="center">
           <UserAvatarLink pubkey={event.pubkey} size="xs" />
@@ -28,6 +28,6 @@ export default function EmbeddedReaction({ event, ...props }: Omit<CardProps, "c
           <DebugEventButton event={event} variant="ghost" size="xs" />
         </Flex>
       </Card>
-    </TrustProvider>
+    </ContentSettingsProvider>
   );
 }

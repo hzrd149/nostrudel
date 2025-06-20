@@ -30,7 +30,7 @@ import UserDnsIdentity from "../../../components/user/user-dns-identity";
 import ChannelJoinButton from "./channel-join-button";
 import { ExternalLinkIcon } from "../../../components/icons";
 import { useReadRelays } from "../../../hooks/use-client-relays";
-import { useAdditionalRelayContext } from "../../../providers/local/additional-relay-context";
+import { useAdditionalRelayContext } from "../../../providers/local/additional-relay";
 
 function UserCard({ pubkey }: { pubkey: string }) {
   return (

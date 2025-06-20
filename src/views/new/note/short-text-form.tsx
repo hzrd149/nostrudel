@@ -41,7 +41,7 @@ import useTextAreaUploadFile, { useTextAreaInsertTextWithForm } from "../../../h
 import useAppSettings from "../../../hooks/use-user-app-settings";
 import { useContextEmojis } from "../../../providers/global/emoji-provider";
 import { PublishLogEntry, usePublishEvent } from "../../../providers/global/publish-provider";
-import { TrustProvider } from "../../../providers/local/trust-provider";
+import { ContentSettingsProvider } from "../../../providers/local/content-settings";
 import { eventStore } from "../../../services/event-store";
 import localSettings from "../../../services/local-settings";
 import { PublishLogEntryDetails } from "../../task-manager/publish-log/entry-details";
@@ -182,9 +182,9 @@ export default function ShortTextNoteForm({
             <Heading size="sm">Preview:</Heading>
             <Box borderWidth={1} borderRadius="md" p="2">
               <ErrorBoundary>
-                <TrustProvider trust>
+                <ContentSettingsProvider blurMedia={false}>
                   <TextNoteContents event={getValues("content")} />
-                </TrustProvider>
+                </ContentSettingsProvider>
               </ErrorBoundary>
             </Box>
           </Box>

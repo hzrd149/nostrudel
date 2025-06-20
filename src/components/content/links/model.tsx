@@ -15,7 +15,7 @@ import {
 import { Suspense, lazy } from "react";
 import { ErrorBoundary } from "../../error-boundary";
 import { DownloadIcon, ThingsIcon } from "../../icons";
-import ExpandableEmbed from "../components/expandable-embed";
+import ExpandableEmbed from "../components/content-embed";
 
 const STLViewer = lazy(() => import("../../stl-viewer"));
 

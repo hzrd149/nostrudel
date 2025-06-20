@@ -1,5 +1,5 @@
 import { AspectRatio } from "@chakra-ui/react";
-import ExpandableEmbed from "../components/expandable-embed";
+import ExpandableEmbed from "../components/content-embed";
 import useAppSettings from "../../../hooks/use-user-app-settings";
 
 // copied from https://github.com/SimonBrazell/privacy-redirect/blob/master/src/assets/javascripts/helpers/youtube.js

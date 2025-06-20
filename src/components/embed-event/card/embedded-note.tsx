@@ -3,7 +3,7 @@ import { NostrEvent } from "nostr-tools";
 import { MouseEventHandler, useCallback } from "react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 
-import { TrustProvider } from "../../../providers/local/trust-provider";
+import { ContentSettingsProvider } from "../../../providers/local/content-settings";
 import { getSharableEventAddress } from "../../../services/relay-hints";
 import { CompactNoteContent } from "../../compact-note-content";
 import HoverLinkOverlay from "../../hover-link-overlay";
@@ -25,7 +25,7 @@ export default function EmbeddedNote({ event, ...props }: Omit<CardProps, "child
   );
 
   return (
-    <TrustProvider event={event}>
+    <ContentSettingsProvider event={event}>
       <Card as={LinkBox} {...props}>
         <Flex p="2" gap="2" alignItems="center">
           <UserAvatarLink pubkey={event.pubkey} size="sm" />
@@ -38,6 +38,6 @@ export default function EmbeddedNote({ event, ...props }: Omit<CardProps, "child
         </Flex>
         <CompactNoteContent px="2" event={event} maxLength={96} />
       </Card>
-    </TrustProvider>
+    </ContentSettingsProvider>
   );
 }

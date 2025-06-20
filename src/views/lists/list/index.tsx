@@ -30,7 +30,7 @@ import {
 import useParamsAddressPointer from "../../../hooks/use-params-address-pointer";
 import useReplaceableEvent from "../../../hooks/use-replaceable-event";
 import useSingleEvent from "../../../hooks/use-single-event";
-import { TrustProvider } from "../../../providers/local/trust-provider";
+import { ContentSettingsProvider } from "../../../providers/local/content-settings";
 import ListEditModal from "../components/list-edit-modal";
 import ListFavoriteButton from "../components/list-favorite-button";
 import ListMenu from "../components/list-menu";
@@ -100,7 +100,7 @@ function FallbackListPage({ list }: { list: NostrEvent }) {
   const references = getReferencesFromList(list);
 
   return (
-    <TrustProvider trust>
+    <ContentSettingsProvider blurMedia={false}>
       <SimpleView
         title={title}
         maxW="6xl"
@@ -182,7 +182,7 @@ function FallbackListPage({ list }: { list: NostrEvent }) {
 
         {edit.isOpen && <ListEditModal isOpen list={list} onClose={edit.onClose} />}
       </SimpleView>
-    </TrustProvider>
+    </ContentSettingsProvider>
   );
 }
 

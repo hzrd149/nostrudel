@@ -11,7 +11,7 @@ import UserAvatarLink from "../../../../components/user/user-avatar-link";
 import UserLink from "../../../../components/user/user-link";
 import ZapReceiptMenu from "../../../../components/zap/zap-receipt-menu";
 import { humanReadableSats } from "../../../../helpers/lightning";
-import { TrustProvider } from "../../../../providers/local/trust-provider";
+import { ContentSettingsProvider } from "../../../../providers/local/content-settings";
 
 const ZapEvent = memo(({ zap }: { zap: NostrEvent }) => {
   const request = getZapRequest(zap);
@@ -20,7 +20,7 @@ const ZapEvent = memo(({ zap }: { zap: NostrEvent }) => {
   if (!payment?.amount) return null;
 
   return (
-    <TrustProvider event={request}>
+    <ContentSettingsProvider event={request}>
       <Flex gap="2">
         <Flex direction="column" alignItems="center" minW="10">
           <LightningIcon color="yellow.500" boxSize={5} />
@@ -38,7 +38,7 @@ const ZapEvent = memo(({ zap }: { zap: NostrEvent }) => {
           <ZapReceiptMenu zap={zap} aria-label="More Options" />
         </ButtonGroup>
       </Flex>
-    </TrustProvider>
+    </ContentSettingsProvider>
   );
 });
 

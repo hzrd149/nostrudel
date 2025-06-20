@@ -6,7 +6,7 @@ import { memo, useEffect } from "react";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
 import useSingleEvent from "../../../hooks/use-single-event";
 import useUserMuteFilter from "../../../hooks/use-user-mute-filter";
-import { TrustProvider } from "../../../providers/local/trust-provider";
+import { ContentSettingsProvider } from "../../../providers/local/content-settings";
 import { eventStore } from "../../../services/event-store";
 import { EmbedEventCard } from "../../embed-event/card";
 import LoadingNostrLink from "../../loading-nostr-link";
@@ -33,7 +33,7 @@ function ShareEvent({ event }: { event: NostrEvent }) {
   if ((note && muteFilter(note)) || !pointer) return null;
 
   return (
-    <TrustProvider event={event}>
+    <ContentSettingsProvider event={event}>
       <Flex gap="2" direction="column" ref={ref}>
         <Flex gap="2" alignItems="center" pl="1">
           <UserAvatar pubkey={event.pubkey} size="xs" />
@@ -53,7 +53,7 @@ function ShareEvent({ event }: { event: NostrEvent }) {
           <EmbedEventCard event={note} />
         )}
       </Flex>
-    </TrustProvider>
+    </ContentSettingsProvider>
   );
 }
 

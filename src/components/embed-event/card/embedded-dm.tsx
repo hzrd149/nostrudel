@@ -3,7 +3,7 @@ import { useActiveAccount } from "applesauce-react/hooks";
 import { NostrEvent } from "nostr-tools";
 
 import { getDMRecipient, getDMSender } from "../../../helpers/nostr/dms";
-import { TrustProvider } from "../../../providers/local/trust-provider";
+import { ContentSettingsProvider } from "../../../providers/local/content-settings";
 import DecryptPlaceholder from "../../../views/messages/components/decrypt-placeholder";
 import DirectMessageContent from "../../../views/messages/components/direct-message-content";
 import DebugEventButton from "../../debug-modal/debug-event-button";
@@ -19,7 +19,7 @@ export default function EmbeddedDM({ dm, ...props }: Omit<CardProps, "children">
   if (!receiver) return "Broken DM";
 
   return (
-    <TrustProvider event={dm}>
+    <ContentSettingsProvider event={dm}>
       <Card as={LinkBox} variant="outline" {...props}>
         <CardHeader display="flex" gap="2" p="2" alignItems="center">
           <UserAvatarLink pubkey={sender} size="xs" />
@@ -38,6 +38,6 @@ export default function EmbeddedDM({ dm, ...props }: Omit<CardProps, "children">
           </CardBody>
         )}
       </Card>
-    </TrustProvider>
+    </ContentSettingsProvider>
   );
 }
