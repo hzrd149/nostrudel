@@ -1,15 +1,31 @@
 import { SerializedSocialGraph, SocialGraph } from "nostr-social-graph";
-import { kinds } from "nostr-tools";
-import { BehaviorSubject, combineLatest, firstValueFrom, skip, take, tap, throttleTime } from "rxjs";
+import { kinds, NostrEvent } from "nostr-tools";
+import {
+  BehaviorSubject,
+  combineLatest,
+  exhaustMap,
+  finalize,
+  firstValueFrom,
+  map,
+  Observable,
+  scan,
+  skip,
+  take,
+  tap,
+  throttleTime,
+} from "rxjs";
 
 import { SOCIAL_GRAPH_DOWNLOAD_URL, SOCIAL_GRAPH_FALLBACK_PUBKEY } from "../const";
 import { logger } from "../helpers/debug";
 import accounts from "./accounts";
 import idbKeyValueStore from "./database/kv";
 import { eventStore } from "./event-store";
+import { socialGraphLoader } from "./loaders";
 
 const log = logger.extend("SocialGraph");
 const cacheKey = "social-graph";
+
+log("Social graph initializing...");
 
 // Load the social graph from the cache
 const cached = await idbKeyValueStore.getItem<SerializedSocialGraph>(cacheKey);
@@ -33,25 +49,29 @@ combineLatest([socialGraph$, accounts.active$]).subscribe(([graph, account]) => 
 });
 
 // Update the social graph with all contacts and mutelist events
-combineLatest([
-  // Take the first value so re don't get recursive updates
-  socialGraph$.pipe(take(1)),
-  eventStore.filters({ kinds: [kinds.Contacts, kinds.Mutelist] }),
-])
+eventStore
+  .filters({ kinds: [kinds.Contacts, kinds.Mutelist] })
   .pipe(
     // Add event to graph
-    tap(([graph, event]) => graph.handleEvent(event)),
-    // Only update the graph every 1 second
-    throttleTime(1000),
+    tap((event) => socialGraph$.value.handleEvent(event)),
+    // Only update the graph every 30s
+    throttleTime(30_000),
   )
-  .subscribe(([graph]) => {
+  .subscribe(() => {
+    const graph = socialGraph$.value;
     graph.recalculateFollowDistances();
     // Notify subscribers of the updated graph
     socialGraph$.next(graph);
   });
 
 // Save the active users social graph at most every 10 seconds
-socialGraph$.pipe(skip(1), throttleTime(10_000)).subscribe(saveSocialGraph);
+socialGraph$
+  .pipe(
+    skip(1),
+    throttleTime(10_000),
+    exhaustMap((graph) => saveSocialGraph(graph)),
+  )
+  .subscribe();
 
 /** Save the social graph to the cache */
 export async function saveSocialGraph(graph: SocialGraph) {
@@ -62,6 +82,7 @@ export async function saveSocialGraph(graph: SocialGraph) {
 
   log(`Saving social graph (${size.users} users, ${size.mutes} mutes)`);
   await idbKeyValueStore.setItem(cacheKey, graph.serialize());
+  log("Saved social graph to cache");
 }
 
 /** Exports the social graph to a file */
@@ -88,25 +109,48 @@ export function importGraph() {
   input.onchange = () => {
     if (input.files?.length) {
       const file = input.files[0];
-      file.text().then(async (json) => {
-        try {
-          const graph = await firstValueFrom(socialGraph$);
-          const data = JSON.parse(json);
-          graph.merge(new SocialGraph(graph.getRoot(), data));
-          saveSocialGraph(graph);
-        } catch (e) {
+      file
+        .text()
+        .then(async (json) => {
+          const data = JSON.parse(json) as SerializedSocialGraph;
+          if (!Reflect.has(data, "uniqueIds") || !Reflect.has(data, "followLists") || !Reflect.has(data, "muteLists"))
+            throw new Error("Invalid graph data");
+
+          replaceSocialGraph(data);
+        })
+        .catch((e) => {
           console.error("failed to load social graph from file:", e);
-        }
-      });
+        });
     }
   };
   input.click();
 }
 
-/** Replaces the social graph with a new one */
+/**
+ * Replaces the social graph with a new one
+ * TODO: this should merge the graph once there are not bugs
+ */
 export async function replaceSocialGraph(data: SerializedSocialGraph) {
   const graph = await firstValueFrom(socialGraph$);
   socialGraph$.next(new SocialGraph(graph.getRoot(), data));
+}
+
+/** Updates the social graph out to a given distance */
+export function updateSocialGraph(distance = 2): Observable<string> {
+  const root = socialGraph$.value.getRoot();
+
+  log(`Updating social graph out to ${distance} degrees`);
+  return socialGraphLoader({ pubkey: root, distance }).pipe(
+    scan((acc, events) => acc.concat(events), [] as NostrEvent[]),
+    map((events) => {
+      for (const event of events) socialGraph$.value.handleEvent(event);
+      return `Loaded ${events.length} follow lists`;
+    }),
+    finalize(() => {
+      const size = socialGraph$.value.size();
+      return `Social graph update complete (${size.users} users, ${size.mutes} mutes)`;
+    }),
+  );
 }
 
 /** Replaces the social graph with a new one from a URL */
@@ -118,6 +162,7 @@ export async function loadSocialGraphFromUrl(url: string) {
   await replaceSocialGraph(data);
 }
 
+/** Sort an array of things by their authors distance from the root */
 export function sortByDistanceAndConnections(keys: string[]): string[];
 export function sortByDistanceAndConnections<T>(keys: T[], getKey: (d: T) => string): T[];
 export function sortByDistanceAndConnections<T>(keys: T[], getKey?: (d: T) => string): T[] {
@@ -138,6 +183,7 @@ export function sortByDistanceAndConnections<T>(keys: T[], getKey?: (d: T) => st
   });
 }
 
+/** Compare the distance of two pubkeys from the root */
 export function sortComparePubkeys(a: string, b: string) {
   const graph = socialGraph$.value;
   const aDist = graph.getFollowDistance(a);

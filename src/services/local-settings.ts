@@ -62,6 +62,11 @@ const relayAuthenticationMode = new ArrayLocalStorageEntry<{ relay: string; mode
   [],
 );
 
+// Social Graph
+const updateSocialGraphDistance = new NumberLocalStorageEntry("update-social-graph-distance", 2);
+const updateSocialGraphInterval = new NumberLocalStorageEntry("update-social-graph-interval", 1000 * 60 * 60 * 24); // 1 day
+const lastUpdatedSocialGraph = new NumberLocalStorageEntry("last-updated-social-graph", 0);
+
 // Cache Relay
 const cacheRelayURL = new LocalStorageEntry("cache-relay-url", "");
 
@@ -88,6 +93,11 @@ const localSettings = {
   enableDebugApi,
   cacheRelayURL,
   alwaysAuthUpload,
+
+  // Social Graph
+  updateSocialGraphDistance,
+  updateSocialGraphInterval,
+  lastUpdatedSocialGraph,
 
   hideEventsOutsideSocialGraph,
   blurMediaOutsideSocialGraph,

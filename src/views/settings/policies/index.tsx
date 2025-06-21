@@ -11,11 +11,13 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { useObservableEagerState } from "applesauce-react/hooks";
-import { useId } from "react";
+import { useId, useMemo } from "react";
 
 import SimpleView from "../../../components/layout/presets/simple-view";
 import { useAppTitle } from "../../../hooks/use-app-title";
 import localSettings from "../../../services/local-settings";
+import { socialGraph$ } from "../../../services/social-graph";
+import { humanReadableSats } from "../../../helpers/lightning";
 
 function SocialGraphSlider({
   value,
@@ -30,13 +32,24 @@ function SocialGraphSlider({
 }) {
   const id = useId();
   const labels = ["Just you", "Friends", "Friends of Friends", "3rd degree", "4th degree", "5th degree", "Everyone"];
+  const graph = useObservableEagerState(socialGraph$);
+
+  const count = useMemo(() => {
+    if (value === null) return null;
+
+    let total = 0;
+    for (let i = 0; i <= value; i++) {
+      total += graph.getUsersByFollowDistance(i).size;
+    }
+    return total;
+  }, [value]);
 
   return (
     <FormControl pb="6">
       <FormLabel htmlFor={id}>
         {label}:{" "}
         <Text size="sm" as="span" fontWeight="bold">
-          {labels[value ?? 6]}
+          {count !== null ? `${labels[value ?? 6]} (${humanReadableSats(count)})` : labels[value ?? 6]}
         </Text>
       </FormLabel>
       <FormHelperText>{helper}</FormHelperText>
