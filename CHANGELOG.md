@@ -1,5 +1,19 @@
 # nostrudel
 
+## 0.44.0
+
+### Minor Changes
+
+- 605905f: Detect `naddr1` and `nevent` links in normal web links
+- ebf622e: Improve blossom URL verify modal
+- 5027e92: Add setting to hide events based on social graph
+- 5027e92: Add option to hide media and embeds based on social graph
+- 5027e92: Remove keyboard shortcuts
+
+### Patch Changes
+
+- 124345b: Fix new note view spamming `getPublicKey`
+
 ## 0.43.0
 
 ### Minor Changes
