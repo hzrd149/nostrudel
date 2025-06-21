@@ -112,6 +112,8 @@ export default function ShortTextNoteForm({
     return unsigned;
   };
 
+  const preview = useThrottle(getValues("content"), 500);
+
   const textAreaRef = useRef<RefType | null>(null);
   const insertText = useTextAreaInsertTextWithForm(textAreaRef, getValues, setValue);
   const { onPaste } = useTextAreaUploadFile(insertText);
@@ -154,8 +156,6 @@ export default function ShortTextNoteForm({
       </Flex>
     );
   }
-
-  const preview = useThrottle(getValues("content"), 500);
 
   const showAdvanced =
     advanced.isOpen || formState.dirtyFields.difficulty || formState.dirtyFields.nsfw || formState.dirtyFields.split;
