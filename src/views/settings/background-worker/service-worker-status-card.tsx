@@ -10,11 +10,6 @@ export default function ServiceWorkerStatusCard() {
   // Check service worker status
   useEffect(() => {
     const checkServiceWorkerStatus = () => {
-      if (!("serviceWorker" in navigator)) {
-        setServiceWorkerState("not-supported");
-        return;
-      }
-
       if (navigator.serviceWorker.controller) {
         setServiceWorkerState("active");
       } else {
@@ -40,30 +35,18 @@ export default function ServiceWorkerStatusCard() {
 
   // Check for service worker updates
   const checkForUpdate = async () => {
-    if (!("serviceWorker" in navigator)) {
-      toast({
-        title: "Service workers not supported",
-        description: "Your browser doesn't support service workers",
-        status: "error",
-        duration: 3000,
-      });
-      return;
-    }
-
     setIsCheckingForUpdate(true);
 
     try {
       const registration = await navigator.serviceWorker.getRegistration();
 
-      if (!registration) {
-        toast({
+      if (!registration)
+        return toast({
           title: "No service worker found",
           description: "No service worker registration found",
           status: "warning",
           duration: 3000,
         });
-        return;
-      }
 
       // Check for update
       await registration.update();
@@ -100,8 +83,6 @@ export default function ServiceWorkerStatusCard() {
 
   // Apply the waiting service worker and refresh
   const applyUpdate = async () => {
-    if (!("serviceWorker" in navigator)) return;
-
     try {
       const registration = await navigator.serviceWorker.getRegistration();
 
@@ -128,8 +109,6 @@ export default function ServiceWorkerStatusCard() {
 
   // Listen for service worker updates
   useEffect(() => {
-    if (!("serviceWorker" in navigator)) return;
-
     const handleUpdateFound = async () => {
       const registration = await navigator.serviceWorker.getRegistration();
       if (registration?.waiting) {
@@ -150,8 +129,6 @@ export default function ServiceWorkerStatusCard() {
         return <Badge colorScheme="green">Active</Badge>;
       case "inactive":
         return <Badge colorScheme="red">Inactive</Badge>;
-      case "not-supported":
-        return <Badge colorScheme="gray">Not Supported</Badge>;
       default:
         return <Badge colorScheme="yellow">Unknown</Badge>;
     }
@@ -183,12 +160,6 @@ export default function ServiceWorkerStatusCard() {
         {serviceWorkerState === "inactive" && (
           <Text fontSize="sm" color="gray.600" _dark={{ color: "gray.400" }}>
             Service worker is not currently active
-          </Text>
-        )}
-
-        {serviceWorkerState === "not-supported" && (
-          <Text fontSize="sm" color="gray.600" _dark={{ color: "gray.400" }}>
-            Service workers are not supported in this browser
           </Text>
         )}
 
