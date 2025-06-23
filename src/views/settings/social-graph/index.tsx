@@ -16,10 +16,9 @@ import {
   useToast,
   VStack,
 } from "@chakra-ui/react";
-import { useObservableEagerMemo, useObservableEagerState, useObservableState } from "applesauce-react/hooks";
-import { useMemo, useState } from "react";
-import { useUnmount } from "react-use";
-import { map, Subscription } from "rxjs";
+import { useObservableEagerMemo, useObservableEagerState } from "applesauce-react/hooks";
+import { useState } from "react";
+import { map } from "rxjs";
 
 import SimpleView from "../../../components/layout/presets/simple-view";
 import Timestamp from "../../../components/timestamp";
@@ -34,11 +33,11 @@ import { useBreakpointValue } from "../../../providers/global/breakpoint-provide
 import { updateSocialGraphCron } from "../../../services/cron";
 import localSettings from "../../../services/local-settings";
 import {
+  clearSocialGraph,
   exportGraph,
   importGraph,
   loadSocialGraphFromUrl,
   socialGraph$,
-  updateSocialGraph,
 } from "../../../services/social-graph";
 
 function FollowDistanceGroup({ distance, max, label }: { distance: number; max: number; label: string }) {
@@ -47,8 +46,11 @@ function FollowDistanceGroup({ distance, max, label }: { distance: number; max: 
     [distance],
   );
 
+  // Don't show empty groups
+  if (users?.size === 0) return null;
+
   return (
-    <Flex key={distance} direction="row" justify="space-between" align="center" minH="16" gap={4}>
+    <Flex key={distance} direction="row" justify="space-between" align="center" minH="16" gap={4} wrap="wrap">
       <Box fontWeight="bold">
         <Text>{label}</Text>
         <Text color="gray.500" fontSize="lg">
@@ -164,9 +166,10 @@ function SocialGraphCronSettings() {
 export default function SocialGraphSettings() {
   useAppTitle("Social Graph");
   const toast = useToast();
-  const socialGraph = useObservableState(socialGraph$);
-  const root = useMemo(() => socialGraph?.getRoot(), [socialGraph]);
-  const size = useMemo(() => socialGraph?.size(), [socialGraph]);
+  const root = useObservableEagerMemo(() => socialGraph$.pipe(map((graph) => graph.getRoot())), []);
+  const size = useObservableEagerMemo(() => socialGraph$.pipe(map((graph) => graph.size())), []);
+
+  const updating = useObservableEagerState(updateSocialGraphCron.running);
 
   const [downloadUrl, setDownloadUrl] = useState(SOCIAL_GRAPH_DOWNLOAD_URL);
 
@@ -185,6 +188,14 @@ export default function SocialGraphSettings() {
 
   const displayMaxPeople = useBreakpointValue({ base: 4, lg: 5, xl: 10 }) || 4;
 
+  const clearGraph = useAsyncAction(async () => {
+    await clearSocialGraph();
+    toast({
+      title: "Social graph cleared",
+      status: "success",
+    });
+  }, []);
+
   return (
     <SimpleView title="Social Graph" maxW="container.xl">
       {root && (
@@ -198,14 +209,31 @@ export default function SocialGraphSettings() {
                 <UserDnsIdentity pubkey={root} fontSize="md" color="gray.500" />
               </Box>
             </Flex>
+            <HStack spacing={2} ms="auto">
+              <Text fontSize="sm" color="gray.500" display="flex" alignItems="center">
+                {size ? `${humanReadableSats(size.users)} users` : "0 users"}
+              </Text>
+              <Button
+                size="sm"
+                colorScheme="red"
+                variant="outline"
+                onClick={clearGraph.run}
+                isLoading={clearGraph.loading}
+              >
+                Reset Graph
+              </Button>
+            </HStack>
           </Card>
           <Card direction="column" gap={4} p={4} rounded="md">
             <Heading size="md" mt={4}>
               Your graph by follow distance
             </Heading>
-            {!size || size.users + size.mutes === 0 ? (
-              <Flex p={4} align="center" justify="center">
-                None
+            {!size || size.users <= 1 ? (
+              <Flex p={4} align="center" justify="center" direction="column" gap={2}>
+                <Text fontSize="lg">Your graph is empty.</Text>
+                <Button colorScheme="primary" onClick={() => updateSocialGraphCron.run()} isLoading={updating}>
+                  Update Graph
+                </Button>
               </Flex>
             ) : (
               <>
@@ -242,10 +270,8 @@ export default function SocialGraphSettings() {
               </Text>
             </Flex>
             <ButtonGroup>
-              <Button onClick={() => exportGraph()} isDisabled={!socialGraph}>
-                Export
-              </Button>
-              <Button colorScheme="primary" onClick={() => importGraph()} isDisabled={!socialGraph}>
+              <Button onClick={exportGraph}>Export</Button>
+              <Button colorScheme="primary" onClick={importGraph}>
                 Import
               </Button>
             </ButtonGroup>

@@ -14,7 +14,7 @@ import {
   throttleTime,
 } from "rxjs";
 
-import { SOCIAL_GRAPH_DOWNLOAD_URL, SOCIAL_GRAPH_FALLBACK_PUBKEY } from "../const";
+import { SOCIAL_GRAPH_FALLBACK_PUBKEY } from "../const";
 import { logger } from "../helpers/debug";
 import accounts from "./accounts";
 import idbKeyValueStore from "./database/kv";
@@ -38,8 +38,8 @@ if (cached) {
   const size = socialGraph$.value.size();
   log(`Loaded social graph from cache (${size.users} users, ${size.mutes} mutes)`);
 } else {
-  log(`Setting up social graph, downloading from ${SOCIAL_GRAPH_DOWNLOAD_URL}`);
-  loadSocialGraphFromUrl(SOCIAL_GRAPH_DOWNLOAD_URL);
+  // log(`Setting up social graph, downloading from ${SOCIAL_GRAPH_DOWNLOAD_URL}`);
+  // loadSocialGraphFromUrl(SOCIAL_GRAPH_DOWNLOAD_URL);
 }
 
 // Set the social graph root to the active account pubkey
@@ -53,8 +53,8 @@ eventStore
   .pipe(
     // Add event to graph
     tap((event) => socialGraph$.value.handleEvent(event)),
-    // Only update the graph every 30s
-    throttleTime(30_000),
+    // Only update the graph every 15s
+    throttleTime(15_000),
   )
   .subscribe(() => {
     const graph = socialGraph$.value;
@@ -141,8 +141,13 @@ export function updateSocialGraph(distance = 2): Observable<string> {
   log(`Updating social graph out to ${distance} degrees`);
   return socialGraphLoader({ pubkey: root, distance }).pipe(
     scan((acc, events) => acc.concat(events), [] as NostrEvent[]),
+    // Only update the graph every 10 seconds
+    throttleTime(10_000),
     map((events) => {
-      for (const event of events) socialGraph$.value.handleEvent(event);
+      log("Updating social graph");
+      // Notify subscribers of the updated graph
+      socialGraph$.next(socialGraph$.value);
+
       return `Loaded ${events.length} follow lists`;
     }),
     finalize(() => {
@@ -159,6 +164,14 @@ export async function loadSocialGraphFromUrl(url: string) {
   if (!Reflect.has(data, "uniqueIds") || !Reflect.has(data, "followLists") || !Reflect.has(data, "muteLists"))
     throw new Error("Invalid graph data");
   await replaceSocialGraph(data);
+}
+
+/** Clears the social graph */
+export async function clearSocialGraph() {
+  const root = socialGraph$.value.getRoot();
+  const emptyGraph = new SocialGraph(root);
+  socialGraph$.next(emptyGraph);
+  await idbKeyValueStore.deleteItem(cacheKey);
 }
 
 /** Sort an array of things by their authors distance from the root */

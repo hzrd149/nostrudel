@@ -22,7 +22,6 @@ import { useForm } from "react-hook-form";
 
 import { OutboxIcon } from "../../components/icons";
 import SimpleView from "../../components/layout/presets/simple-view";
-import { DEFAULT_LOOKUP_RELAYS } from "../../const";
 import { isLNURL } from "../../helpers/lnurl";
 import { useReadRelays } from "../../hooks/use-client-relays";
 import { useInputUploadFileWithForm } from "../../hooks/use-input-upload-file";
@@ -31,6 +30,7 @@ import { usePublishEvent } from "../../providers/global/publish-provider";
 import dnsIdentityLoader from "../../services/dns-identity-loader";
 import lnurlMetadataService from "../../services/lnurl-metadata";
 import { profileLoader } from "../../services/loaders";
+import localSettings from "../../services/local-settings";
 
 const isEmail =
   /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -321,7 +321,7 @@ export const ProfileEditView = () => {
       tags: [],
     };
 
-    await publish("Update Profile", draft, DEFAULT_LOOKUP_RELAYS);
+    await publish("Update Profile", draft, localSettings.lookupRelays.value);
   };
 
   return <MetadataForm defaultValues={defaultValues} onSubmit={handleSubmit} />;
