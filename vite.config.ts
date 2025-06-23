@@ -19,7 +19,15 @@ export default defineConfig({
     react(),
     tsconfigPaths(),
     VitePWA({
+      strategies: "injectManifest",
+      srcDir: "src/sw/worker",
+      filename: "index.ts",
       registerType: "autoUpdate",
+      devOptions: {
+        enabled: true,
+        type: "module",
+        navigateFallback: "index.html",
+      },
       injectManifest: {
         minify: false,
         sourcemap: true,
