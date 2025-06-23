@@ -1,5 +1,11 @@
 # nostrudel
 
+## 0.44.1
+
+### Patch Changes
+
+- 9a714ab: Correct `applesauce` and `blossom-client-sdk` package versions
+
 ## 0.44.0
 
 ### Minor Changes
