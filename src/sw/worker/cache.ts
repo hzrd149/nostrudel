@@ -30,10 +30,13 @@ export const initializeCache = () => {
   // Clean up outdated caches and precache assets
   cleanupOutdatedCaches();
 
+  // NOTE: ensure there is only one instance of "__WB_MANIFEST" so that it can be injected into the worker
+  const manifest = self.__WB_MANIFEST;
+
   // Only precache if manifest is available (not in dev mode)
-  if (self.__WB_MANIFEST && self.__WB_MANIFEST.length > 0) {
-    precacheAndRoute(self.__WB_MANIFEST);
-    log("Precaching enabled with", self.__WB_MANIFEST.length, "assets");
+  if (manifest && manifest.length > 0) {
+    precacheAndRoute(manifest);
+    log("Precaching enabled with", manifest.length, "assets");
   } else {
     log("Precaching disabled (dev mode or no manifest)");
   }
