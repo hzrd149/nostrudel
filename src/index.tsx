@@ -1,10 +1,11 @@
 import "./polyfill";
 
 import { GlobalProviders } from "./providers/global";
+import { registerServiceWorker } from "./services/worker";
 
+import "./services/debug-api";
 import "./services/lifecycle";
 import "./services/username-search";
-import "./services/debug-api";
 
 // setup bitcoin connect
 import { init, onConnected } from "@getalby/bitcoin-connect-react";
@@ -24,8 +25,8 @@ window.addEventListener("unload", () => {
 
 // setup dayjs
 import dayjs from "dayjs";
-import relativeTimePlugin from "dayjs/plugin/relativeTime";
 import localizedFormat from "dayjs/plugin/localizedFormat";
+import relativeTimePlugin from "dayjs/plugin/relativeTime";
 dayjs.extend(relativeTimePlugin);
 dayjs.extend(localizedFormat);
 
@@ -41,8 +42,8 @@ if (import.meta.env.PROD) {
 
 // mount react app
 import { createRoot } from "react-dom/client";
-import { logger } from "./helpers/debug";
 import { App } from "./app";
+import { logger } from "./helpers/debug";
 
 logger("Rendering app");
 const root = document.getElementById("root")!;
@@ -52,11 +53,5 @@ createRoot(root).render(
   </GlobalProviders>,
 );
 
-// if web, register service worker
-import { CAP_IS_WEB } from "./env";
-import { registerServiceWorker } from "./services/worker";
-if (CAP_IS_WEB) {
-  logger("Loading service worker");
-  // const { registerServiceWorker } = await import("./services/worker");
-  registerServiceWorker();
-}
+// Register service worker if supported
+if ("serviceWorker" in navigator) registerServiceWorker();

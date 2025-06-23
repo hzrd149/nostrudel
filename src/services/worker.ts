@@ -15,10 +15,6 @@ export async function registerServiceWorker() {
     immediate: true,
     onRegisteredSW: (s, r) => {
       if (r) serviceWorkerRegistration.next(r);
-      if (import.meta.env.DEV) {
-        // @ts-expect-error
-        window.serviceWorker = r;
-      }
     },
     onOfflineReady() {
       log("Offline ready");
