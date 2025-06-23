@@ -1,6 +1,10 @@
 /// <reference lib="webworker" />
 import { setupErrorHandling } from "./error-handler";
 import { initializeCache, registerCacheHandlers } from "./cache";
+import debug from "debug";
+
+// Enable all debug logs for worker
+debug.enable("noStrudel:*");
 
 declare let self: ServiceWorkerGlobalScope;
 

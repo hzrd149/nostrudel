@@ -35,6 +35,7 @@ export default function ErrorLogsCard() {
       setErrorLogs(logs);
     } catch (error) {
       console.error("Failed to load error logs:", error);
+      setErrorLogs([]);
       toast({
         title: "Failed to load error logs",
         description: "Could not retrieve error logs from service worker",
@@ -50,18 +51,14 @@ export default function ErrorLogsCard() {
   const handleClearLogs = async () => {
     setIsClearingLogs(true);
     try {
-      const success = await clearServiceWorkerErrorLogs();
-      if (success) {
-        setErrorLogs([]);
-        toast({
-          title: "Error logs cleared",
-          description: "All error logs have been cleared successfully",
-          status: "success",
-          duration: 3000,
-        });
-      } else {
-        throw new Error("Clear operation failed");
-      }
+      await clearServiceWorkerErrorLogs();
+      setErrorLogs([]);
+      toast({
+        title: "Error logs cleared",
+        description: "All error logs have been cleared successfully",
+        status: "success",
+        duration: 3000,
+      });
     } catch (error) {
       console.error("Failed to clear error logs:", error);
       toast({

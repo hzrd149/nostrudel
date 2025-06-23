@@ -1,5 +1,5 @@
 /// <reference lib="webworker" />
-import { precacheAndRoute, cleanupOutdatedCaches, getCacheKeyForURL } from "workbox-precaching";
+import { precacheAndRoute, cleanupOutdatedCaches, getCacheKeyForURL, precache } from "workbox-precaching";
 import { clientsClaim } from "workbox-core";
 import { rpcServer } from "./rpc";
 import { logger } from "../../helpers/debug";
@@ -23,15 +23,15 @@ export interface CacheInfo {
   files: CachedFile[];
 }
 
+// NOTE: ensure there is only one instance of "__WB_MANIFEST" so that it can be injected into the worker
+const manifest = self.__WB_MANIFEST;
+
 // Initialize workbox caching
 export const initializeCache = () => {
   log("Initializing cache management...");
 
   // Clean up outdated caches and precache assets
   cleanupOutdatedCaches();
-
-  // NOTE: ensure there is only one instance of "__WB_MANIFEST" so that it can be injected into the worker
-  const manifest = self.__WB_MANIFEST;
 
   // Only precache if manifest is available (not in dev mode)
   if (manifest && manifest.length > 0) {
@@ -136,14 +136,16 @@ export const getCachedFilesByCache = async (cacheName: string): Promise<CachedFi
 };
 
 // Clear a specific cache
-export const clearCache = async (cacheName: string): Promise<boolean> => {
+export const clearCache = async (cacheName: string): Promise<void> => {
   const success = await caches.delete(cacheName);
-  log(`Cache ${cacheName} ${success ? "cleared" : "not found"}`);
-  return success;
+  if (!success) {
+    throw new Error(`Cache "${cacheName}" not found or could not be deleted`);
+  }
+  log(`Cache ${cacheName} cleared`);
 };
 
 // Clear all caches
-export const clearAllCaches = async (): Promise<{ success: boolean; clearedCaches: string[] }> => {
+export const clearAllCaches = async (): Promise<string[]> => {
   const cacheNames = await caches.keys();
   const clearedCaches: string[] = [];
 
@@ -155,7 +157,7 @@ export const clearAllCaches = async (): Promise<{ success: boolean; clearedCache
   }
 
   log(`Cleared ${clearedCaches.length} caches:`, clearedCaches);
-  return { success: true, clearedCaches };
+  return clearedCaches;
 };
 
 // Get cache statistics
@@ -170,6 +172,24 @@ export const getCacheStats = async (): Promise<{
   const totalSize = cacheInfos.reduce((sum, cache) => sum + cache.size, 0);
 
   return { totalCaches, totalFiles, totalSize };
+};
+
+// Refresh/recreate the offline cache
+export const refreshOfflineCache = async (): Promise<number> => {
+  log("Refreshing offline cache...");
+
+  if (!manifest || manifest.length === 0)
+    throw new Error("No manifest available, cannot refresh cache. This feature only works in production builds.");
+
+  // Force re-cache all precache assets
+  // This will update existing cached files and add any new ones
+  precache(manifest);
+
+  // Clean up any outdated caches
+  cleanupOutdatedCaches();
+
+  log(`Offline cache refreshed with ${manifest.length} assets`);
+  return manifest.length;
 };
 
 // Register RPC handlers for cache management
@@ -194,6 +214,9 @@ export const registerCacheHandlers = () => {
 
   // Get cache statistics
   rpcServer.register("cache.getStats", getCacheStats);
+
+  // Refresh offline cache
+  rpcServer.register("cache.refresh", refreshOfflineCache);
 
   log("Cache RPC handlers registered");
 };

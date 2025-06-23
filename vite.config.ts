@@ -56,28 +56,6 @@ export default defineConfig({
         lang: "en",
         start_url: "/",
         scope: "/",
-        shortcuts: [
-          {
-            name: "Notes",
-            url: "/",
-            description: "",
-          },
-          {
-            name: "Notifications",
-            url: "/notifications",
-            description: "",
-          },
-          {
-            name: "Messages",
-            url: "/messages",
-            description: "",
-          },
-          {
-            name: "Streams",
-            url: "/streams",
-            description: "",
-          },
-        ],
         protocol_handlers: [
           {
             protocol: "web+nostr",

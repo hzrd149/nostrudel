@@ -26,6 +26,7 @@ import {
   getAllCachedFiles,
   clearCache,
   clearAllCaches,
+  refreshOfflineCache,
   formatFileSize,
   formatCacheName,
 } from "../../../sw/client/cache";
@@ -35,6 +36,7 @@ export default function CachedFilesCard() {
   const [cacheInfos, setCacheInfos] = useState<CacheInfo[]>([]);
   const [isLoadingCaches, setIsLoadingCaches] = useState(false);
   const [isClearingCache, setIsClearingCache] = useState<string | null>(null);
+  const [isRefreshingCache, setIsRefreshingCache] = useState(false);
   const [expandedCaches, setExpandedCaches] = useState<Set<string>>(new Set());
   const toast = useToast();
 
@@ -46,6 +48,7 @@ export default function CachedFilesCard() {
       setCacheInfos(caches);
     } catch (error) {
       console.error("Failed to load cached files:", error);
+      setCacheInfos([]);
       toast({
         title: "Failed to load cached files",
         description: "Could not retrieve cached files from service worker",
@@ -61,19 +64,15 @@ export default function CachedFilesCard() {
   const handleClearCache = async (cacheName: string) => {
     setIsClearingCache(cacheName);
     try {
-      const success = await clearCache(cacheName);
-      if (success) {
-        // Remove the cleared cache from the list
-        setCacheInfos((prev) => prev.filter((cache) => cache.name !== cacheName));
-        toast({
-          title: "Cache cleared",
-          description: `Cache "${formatCacheName(cacheName)}" has been cleared successfully`,
-          status: "success",
-          duration: 3000,
-        });
-      } else {
-        throw new Error("Clear operation failed");
-      }
+      await clearCache(cacheName);
+      // Remove the cleared cache from the list
+      setCacheInfos((prev) => prev.filter((cache) => cache.name !== cacheName));
+      toast({
+        title: "Cache cleared",
+        description: `Cache "${formatCacheName(cacheName)}" has been cleared successfully`,
+        status: "success",
+        duration: 3000,
+      });
     } catch (error) {
       console.error(`Failed to clear cache ${cacheName}:`, error);
       toast({
@@ -91,18 +90,14 @@ export default function CachedFilesCard() {
   const handleClearAllCaches = async () => {
     setIsClearingCache("all");
     try {
-      const result = await clearAllCaches();
-      if (result.success) {
-        setCacheInfos([]);
-        toast({
-          title: "All caches cleared",
-          description: `Cleared ${result.clearedCaches.length} caches successfully`,
-          status: "success",
-          duration: 3000,
-        });
-      } else {
-        throw new Error("Clear all operation failed");
-      }
+      const clearedCaches = await clearAllCaches();
+      setCacheInfos([]);
+      toast({
+        title: "All caches cleared",
+        description: `Cleared ${clearedCaches.length} caches successfully`,
+        status: "success",
+        duration: 3000,
+      });
     } catch (error) {
       console.error("Failed to clear all caches:", error);
       toast({
@@ -113,6 +108,32 @@ export default function CachedFilesCard() {
       });
     } finally {
       setIsClearingCache(null);
+    }
+  };
+
+  // Refresh offline cache
+  const handleRefreshCache = async () => {
+    setIsRefreshingCache(true);
+    try {
+      const cachedFiles = await refreshOfflineCache();
+      // Reload the cached files list to show updated cache
+      await loadCachedFiles();
+      toast({
+        title: "Offline cache updated",
+        description: `Successfully cached ${cachedFiles} files for offline use`,
+        status: "success",
+        duration: 3000,
+      });
+    } catch (error) {
+      console.error("Failed to refresh offline cache:", error);
+      toast({
+        title: "Failed to update offline cache",
+        description: "Could not refresh the offline cache. Check if app is built for production.",
+        status: "error",
+        duration: 3000,
+      });
+    } finally {
+      setIsRefreshingCache(false);
     }
   };
 
@@ -146,19 +167,32 @@ export default function CachedFilesCard() {
       </Badge>
     ) : null;
 
-  const expandedActions =
-    cacheInfos.length > 0 ? (
+  const expandedActions = (
+    <HStack spacing={2}>
       <Button
         size="sm"
-        colorScheme="red"
+        colorScheme="blue"
         variant="outline"
-        onClick={handleClearAllCaches}
-        isLoading={isClearingCache === "all"}
-        loadingText="Clearing..."
+        onClick={handleRefreshCache}
+        isLoading={isRefreshingCache}
+        loadingText="Updating..."
       >
-        Clear All
+        Update offline cache
       </Button>
-    ) : null;
+      {cacheInfos.length > 0 && (
+        <Button
+          size="sm"
+          colorScheme="red"
+          variant="outline"
+          onClick={handleClearAllCaches}
+          isLoading={isClearingCache === "all"}
+          loadingText="Clearing..."
+        >
+          Clear All
+        </Button>
+      )}
+    </HStack>
+  );
 
   return (
     <ExpandableCard

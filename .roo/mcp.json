@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "nostr": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@nostrbook/mcp@latest"]
+    }
+  }
+}

@@ -80,10 +80,9 @@ export const getErrorLogsByContext = async (context: string): Promise<ServiceWor
 };
 
 // Clear all error logs
-export const clearAllErrorLogs = async (): Promise<{ success: boolean }> => {
+export const clearAllErrorLogs = async (): Promise<void> => {
   const database = await initDB();
   await database.clear("errors");
-  return { success: true };
 };
 
 // Set up global error handlers

@@ -5,52 +5,32 @@ import { firstValueFrom } from "rxjs";
 
 // Get all cached files from all caches
 export const getAllCachedFiles = async (): Promise<CacheInfo[]> => {
-  try {
-    return await firstValueFrom(serviceWorkerRPC.call("cache.getAll", void 0));
-  } catch (error) {
-    console.warn("Failed to get all cached files:", error);
-    return [];
-  }
+  return await firstValueFrom(serviceWorkerRPC.call("cache.getAll", void 0));
 };
 
 // Get cached files for a specific cache
 export const getCachedFilesByName = async (cacheName: string): Promise<CachedFile[]> => {
-  try {
-    return await firstValueFrom(serviceWorkerRPC.call("cache.getByName", { cacheName }));
-  } catch (error) {
-    console.warn(`Failed to get cached files for cache ${cacheName}:`, error);
-    return [];
-  }
+  return await firstValueFrom(serviceWorkerRPC.call("cache.getByName", { cacheName }));
 };
 
 // Clear a specific cache
-export const clearCache = async (cacheName: string): Promise<boolean> => {
-  try {
-    return await firstValueFrom(serviceWorkerRPC.call("cache.clear", { cacheName }));
-  } catch (error) {
-    console.warn(`Failed to clear cache ${cacheName}:`, error);
-    return false;
-  }
+export const clearCache = async (cacheName: string): Promise<void> => {
+  return await firstValueFrom(serviceWorkerRPC.call("cache.clear", { cacheName }));
 };
 
 // Clear all caches
-export const clearAllCaches = async (): Promise<{ success: boolean; clearedCaches: string[] }> => {
-  try {
-    return await firstValueFrom(serviceWorkerRPC.call("cache.clearAll", void 0));
-  } catch (error) {
-    console.warn("Failed to clear all caches:", error);
-    return { success: false, clearedCaches: [] };
-  }
+export const clearAllCaches = async (): Promise<string[]> => {
+  return await firstValueFrom(serviceWorkerRPC.call("cache.clearAll", void 0));
 };
 
 // Get cache statistics
 export const getCacheStats = async (): Promise<{ totalCaches: number; totalFiles: number; totalSize: number }> => {
-  try {
-    return await firstValueFrom(serviceWorkerRPC.call("cache.getStats", void 0));
-  } catch (error) {
-    console.warn("Failed to get cache stats:", error);
-    return { totalCaches: 0, totalFiles: 0, totalSize: 0 };
-  }
+  return await firstValueFrom(serviceWorkerRPC.call("cache.getStats", void 0));
+};
+
+// Refresh offline cache
+export const refreshOfflineCache = async (): Promise<number> => {
+  return await firstValueFrom(serviceWorkerRPC.call("cache.refresh", void 0));
 };
 
 // Helper function to format file size

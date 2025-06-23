@@ -5,33 +5,17 @@ import { firstValueFrom } from "rxjs";
 
 // Get all error logs from the service worker
 export const getServiceWorkerErrorLogs = async (): Promise<ServiceWorkerErrorLog[]> => {
-  try {
-    return await firstValueFrom(serviceWorkerRPC.call("errors.getAll", void 0));
-  } catch (error) {
-    console.warn("Failed to get service worker error logs:", error);
-    return [];
-  }
+  return await firstValueFrom(serviceWorkerRPC.call("errors.getAll", void 0));
 };
 
 // Clear error logs from the service worker
-export const clearServiceWorkerErrorLogs = async (): Promise<boolean> => {
-  try {
-    const result = await firstValueFrom(serviceWorkerRPC.call("errors.clear", void 0));
-    return result.success;
-  } catch (error) {
-    console.warn("Failed to clear service worker error logs:", error);
-    return false;
-  }
+export const clearServiceWorkerErrorLogs = async (): Promise<void> => {
+  return await firstValueFrom(serviceWorkerRPC.call("errors.clear", void 0));
 };
 
 // Get error logs by context from the service worker
 export const getServiceWorkerErrorLogsByContext = async (context: string): Promise<ServiceWorkerErrorLog[]> => {
-  try {
-    return await firstValueFrom(serviceWorkerRPC.call("errors.getByContext", { context }));
-  } catch (error) {
-    console.warn("Failed to get service worker error logs by context:", error);
-    return [];
-  }
+  return await firstValueFrom(serviceWorkerRPC.call("errors.getByContext", { context }));
 };
 
 // Log error logs to console (for debugging)
@@ -81,6 +65,6 @@ export const logServiceWorkerErrorsByContext = async (context: string): Promise<
 // Development helper: Log and clear errors
 export const debugServiceWorkerErrors = async (): Promise<void> => {
   await logServiceWorkerErrors();
-  const cleared = await clearServiceWorkerErrorLogs();
-  console.log(cleared ? "Error logs cleared" : "Failed to clear error logs");
+  await clearServiceWorkerErrorLogs();
+  console.log("Error logs cleared");
 };

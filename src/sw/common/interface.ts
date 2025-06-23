@@ -59,7 +59,7 @@ export interface ClientWorkerCommands extends RPCCommandDirectory {
   };
   "errors.clear": {
     payload: void;
-    result: { success: boolean };
+    result: void;
   };
   "errors.getByContext": {
     payload: { context: string };
@@ -75,15 +75,19 @@ export interface ClientWorkerCommands extends RPCCommandDirectory {
   };
   "cache.clear": {
     payload: { cacheName: string };
-    result: boolean;
+    result: void;
   };
   "cache.clearAll": {
     payload: void;
-    result: { success: boolean; clearedCaches: string[] };
+    result: string[];
   };
   "cache.getStats": {
     payload: void;
     result: { totalCaches: number; totalFiles: number; totalSize: number };
+  };
+  "cache.refresh": {
+    payload: void;
+    result: number;
   };
 }
 
