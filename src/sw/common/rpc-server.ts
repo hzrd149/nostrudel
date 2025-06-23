@@ -30,13 +30,13 @@ export class RPCServer<Commands extends RPCCommandDirectory = {}> {
   /** Register a handler for a specific command */
   register<T extends keyof RPCHandlerRegistry<Commands>>(command: T, handler: RPCHandlerRegistry<Commands>[T]): void {
     this.handlers[command] = handler;
-    log(`[RPC] Registered handler for command: ${String(command)}`);
+    log(`Registered handler for command: ${String(command)}`);
   }
 
   /** Unregister a handler for a specific command */
   unregister<T extends keyof RPCHandlerRegistry<Commands>>(command: T): void {
     delete this.handlers[command];
-    log(`[RPC] Unregistered handler for command: ${String(command)}`);
+    log(`Unregistered handler for command: ${String(command)}`);
   }
 
   // Listen on an incoming port and return a stream of all outgoing messages
@@ -77,10 +77,10 @@ export class RPCServer<Commands extends RPCCommandDirectory = {}> {
       source.pipe(
         // Make to response object
         map((value) => ({ type: "RESULT", id, value }) satisfies RPCResponseResult),
-        tap((response) => log(`[RPC] Response:`, response)),
+        tap((response) => log(`Response:`, response)),
         // Catche errors
         catchError((error) => {
-          log("[RPC] Error", error);
+          log("Error", error);
           return of({
             type: "ERROR",
             id,

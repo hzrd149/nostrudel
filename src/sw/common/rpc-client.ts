@@ -19,28 +19,26 @@ export class RPCClient<Commands extends RPCCommandDirectory = {}> {
   call<C extends keyof Commands>(command: C, payload: Commands[C]["payload"]): Observable<Commands[C]["result"]> {
     return new Observable((observer) => {
       const id = nanoid(8);
+      const callLog = log.extend(id);
 
-      log("[RPC] Calling command", id, command, payload);
-      this.outgoing({
-        type: "CALL",
-        id,
-        command: String(command),
-        payload,
-      });
+      callLog("Calling", command, payload);
+      this.outgoing({ type: "CALL", id, command: String(command), payload });
 
       // Return an observable that listens for the results
       return this.incoming
         .pipe(
           filter((r) => r.id === id),
-          tap((r) => log("[RPC] Received", r)),
+          tap((r) => callLog("Received", r)),
           takeWhile((r) => r.type !== "COMPLETE"),
           map((r) => {
             if (r.type === "ERROR") throw new Error(r.error);
-            log("[RPC] Received", r.type, r.id, r.value);
             return r.value;
           }),
           takeUntil(fromEvent(window, "beforeunload")),
-          finalize(() => this.outgoing({ type: "CLOSE", id })),
+          finalize(() => {
+            callLog("Closing");
+            this.outgoing({ type: "CLOSE", id });
+          }),
         )
         .subscribe(observer);
     });

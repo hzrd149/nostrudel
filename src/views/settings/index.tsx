@@ -15,6 +15,7 @@ import {
   VerifiedIcon,
 } from "../../components/icons";
 import CheckCircleBroken from "../../components/icons/check-circle-broken";
+import CpuChip01 from "../../components/icons/cpu-chip-01";
 import Database01 from "../../components/icons/database-01";
 import FilterFunnel02 from "../../components/icons/filter-funnel-02";
 import Image01 from "../../components/icons/image-01";
@@ -95,6 +96,9 @@ export default function SettingsView() {
       </SimpleNavItem>
       <SimpleNavItem to="/settings/privacy" leftIcon={<SpyIcon boxSize={5} />}>
         Privacy
+      </SimpleNavItem>
+      <SimpleNavItem to="/settings/background-worker" leftIcon={<CpuChip01 boxSize={5} />}>
+        Background Worker
       </SimpleNavItem>
       <SimpleNavItem to="/relays/cache/database" leftIcon={<DatabaseIcon boxSize={5} />}>
         Database Tools

@@ -4,6 +4,7 @@ import RequireActiveAccount from "../../components/router/require-active-account
 import SettingsView from ".";
 import AccountSettings from "./accounts";
 import AuthenticationSettingsView from "./authentication";
+import BackgroundWorkerSettings from "./background-worker";
 import CacheRelayView from "./cache";
 import DisplaySettings from "./display";
 import DnsIdentityView from "./dns-identity";
@@ -47,6 +48,7 @@ export default [
       { path: "privacy", Component: PrivacySettings },
       { path: "lightning", Component: LightningSettings },
       { path: "performance", Component: PerformanceSettings },
+      { path: "background-worker", Component: BackgroundWorkerSettings },
     ],
   },
 ] satisfies RouteObject[];
