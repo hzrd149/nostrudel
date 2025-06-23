@@ -18,4 +18,4 @@ export const serviceWorkerRPC = new RPCClient<ClientWorkerCommands>(
 );
 
 // Define RxJS observables that can be subscribed to to get data from the service worker
-export const config$ = defer(() => serviceWorkerRPC.call("getConfig", void 0)).pipe(shareReplay(1));
+export const errors$ = defer(() => serviceWorkerRPC.call("errors.getAll", void 0)).pipe(shareReplay(1));

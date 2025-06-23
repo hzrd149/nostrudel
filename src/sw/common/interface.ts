@@ -1,5 +1,6 @@
 import type { Observable } from "rxjs";
 import type { ServiceWorkerErrorLog } from "../worker/error-handler";
+import type { CachedFile, CacheInfo } from "../worker/cache";
 
 // Base RPC message types
 export type RPCMessageCall<T extends unknown = any> = {
@@ -63,6 +64,26 @@ export interface ClientWorkerCommands extends RPCCommandDirectory {
   "errors.getByContext": {
     payload: { context: string };
     result: ServiceWorkerErrorLog[];
+  };
+  "cache.getAll": {
+    payload: void;
+    result: CacheInfo[];
+  };
+  "cache.getByName": {
+    payload: { cacheName: string };
+    result: CachedFile[];
+  };
+  "cache.clear": {
+    payload: { cacheName: string };
+    result: boolean;
+  };
+  "cache.clearAll": {
+    payload: void;
+    result: { success: boolean; clearedCaches: string[] };
+  };
+  "cache.getStats": {
+    payload: void;
+    result: { totalCaches: number; totalFiles: number; totalSize: number };
   };
 }
 

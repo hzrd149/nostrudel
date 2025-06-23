@@ -1,7 +1,6 @@
 /// <reference lib="webworker" />
-import { precacheAndRoute, cleanupOutdatedCaches } from "workbox-precaching";
-import { clientsClaim } from "workbox-core";
 import { setupErrorHandling } from "./error-handler";
+import { initializeCache, registerCacheHandlers } from "./cache";
 
 declare let self: ServiceWorkerGlobalScope;
 
@@ -10,17 +9,15 @@ setupErrorHandling();
 
 console.log("Service worker initializing...");
 
-// Clean up outdated caches and precache assets
-cleanupOutdatedCaches();
-precacheAndRoute(self.__WB_MANIFEST);
+// Initialize cache management
+initializeCache();
+
+// Register cache RPC handlers
+registerCacheHandlers();
 
 // Check if we're in development mode for fetch handling
 const isDev = self.location.hostname === "localhost" || self.location.hostname === "127.0.0.1";
 console.log("Development mode:", isDev);
-
-// Auto-update behavior: take control of all pages immediately
-self.skipWaiting();
-clientsClaim();
 
 // Handle messages from the main thread
 self.addEventListener("message", (event) => {
