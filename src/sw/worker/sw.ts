@@ -1,7 +1,9 @@
 /// <reference lib="webworker" />
-import { setupErrorHandling } from "./error-handler";
-import { initializeCache, registerCacheHandlers } from "./cache";
 import debug from "debug";
+import { createHandlerBoundToURL } from "workbox-precaching";
+import { NavigationRoute, registerRoute } from "workbox-routing";
+import { initializeCache, registerCacheHandlers } from "./cache";
+import { setupErrorHandling } from "./error-handler";
 
 // Enable all debug logs for worker
 debug.enable("noStrudel:*");
@@ -19,9 +21,15 @@ initializeCache();
 // Register cache RPC handlers
 registerCacheHandlers();
 
-// Check if we're in development mode for fetch handling
-const isDev = self.location.hostname === "localhost" || self.location.hostname === "127.0.0.1";
-console.log("Development mode:", isDev);
+// Register navigation route for SPA fallback
+// Only allow the root path in development to avoid intercepting all routes
+let allowlist: undefined | RegExp[];
+if (import.meta.env.DEV) {
+  allowlist = [/^\/$/];
+}
+
+// Handle navigation requests - fallback to index.html for React Router
+registerRoute(new NavigationRoute(createHandlerBoundToURL("index.html"), { allowlist }));
 
 // Handle messages from the main thread
 self.addEventListener("message", (event) => {

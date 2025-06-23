@@ -21,7 +21,7 @@ export default defineConfig({
     VitePWA({
       strategies: "injectManifest",
       srcDir: "src/sw/worker",
-      filename: "index.ts",
+      filename: "sw.ts",
       registerType: "autoUpdate",
       devOptions: {
         enabled: true,
@@ -31,11 +31,13 @@ export default defineConfig({
       injectManifest: {
         minify: false,
         sourcemap: true,
-        // This increase the cache limit to 4mB
+        // This increase the cache limit to 8mB
         maximumFileSizeToCacheInBytes: 1024 * 1024 * 8,
+        // Ensure index.html is included in the manifest
+        globPatterns: ["**/*.{js,css,html,ico,png,svg,json,woff,woff2}"],
       },
       workbox: {
-        // This increase the cache limit to 4mB
+        // This increase the cache limit to 8mB
         maximumFileSizeToCacheInBytes: 1024 * 1024 * 8,
       },
       manifest: {
