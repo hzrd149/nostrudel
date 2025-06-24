@@ -21,7 +21,7 @@ export function useLegacyMessagePlaintext(event: NostrEvent) {
     [event.id, eventStore],
   );
 
-  const requestDecrypt = useCallback(async () => {
+  const unlock = useCallback(async () => {
     try {
       setError(undefined);
       await unlockLegacyMessage(event, account.pubkey, account);
@@ -30,5 +30,5 @@ export function useLegacyMessagePlaintext(event: NostrEvent) {
     }
   }, [event, account]);
 
-  return { error, plaintext, requestDecrypt };
+  return { error, plaintext, unlock };
 }

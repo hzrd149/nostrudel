@@ -23,7 +23,7 @@ import { ContentSettingsProvider } from "../../../providers/local/content-settin
 import { LightboxProvider } from "../../../components/lightbox-provider";
 import { renderAudioUrl } from "../../../components/content/links/audio";
 import { components } from "../../../components/content";
-import { useLegacyMessagePlaintext } from "../../../hooks/use-kind4-decryption";
+import { useLegacyMessagePlaintext } from "../../../hooks/use-legacy-message-plaintext";
 
 const DirectMessageContentSymbol = Symbol.for("direct-message-content");
 const linkRenderers = [

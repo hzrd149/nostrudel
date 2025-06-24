@@ -27,7 +27,6 @@ import { eventStore } from "../../services/event-store";
 import lnurlMetadataService from "../../services/lnurl-metadata";
 import { getEventRelayHints } from "../../services/relay-hints";
 import relayScoreboardService from "../../services/relay-scoreboard";
-import signingService from "../../services/signing";
 import { EmbedProps } from "../embed-event/card";
 import UserLink from "../user/user-link";
 import InputStep from "./input-step";
@@ -108,7 +107,7 @@ export async function getPayRequestForPubkey(
 
   // TODO: move this out to a separate step so the user can choose when to sign
   if (!account) throw new Error("No Account");
-  const signed = await signingService.requestSignature(zapRequest, account);
+  const signed = await account.signEvent(zapRequest);
 
   // build LNURL callback url
   const callback = new URL(lnurlMetadata.callback);

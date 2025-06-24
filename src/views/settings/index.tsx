@@ -83,7 +83,7 @@ export default function SettingsView() {
         Authentication
       </SimpleNavItem>
       <SimpleNavItem to="/settings/cache" leftIcon={<Database01 boxSize={5} />}>
-        Cache
+        Event Cache
       </SimpleNavItem>
       <SimpleNavItem to="/settings/post" leftIcon={<NotesIcon boxSize={5} />}>
         Posts
@@ -96,6 +96,9 @@ export default function SettingsView() {
       </SimpleNavItem>
       <SimpleNavItem to="/settings/privacy" leftIcon={<SpyIcon boxSize={5} />}>
         Privacy
+      </SimpleNavItem>
+      <SimpleNavItem to="/settings/messages" leftIcon={<Mail02 boxSize={5} />}>
+        Messages
       </SimpleNavItem>
       <SimpleNavItem to="/settings/background-worker" leftIcon={<CpuChip01 boxSize={5} />}>
         Background Worker

@@ -86,6 +86,7 @@
     "leaflet": "^1.9.4",
     "leaflet.locatecontrol": "^0.79.0",
     "light-bolt11-decoder": "^3.2.0",
+    "localforage": "^1.10.0",
     "lodash.throttle": "^4.1.1",
     "match-sorter": "^8.0.3",
     "nanoid": "^5.1.5",

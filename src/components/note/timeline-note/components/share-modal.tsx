@@ -1,4 +1,3 @@
-import { useMemo, useState } from "react";
 import {
   Button,
   Center,
@@ -15,17 +14,17 @@ import {
   Text,
   useToast,
 } from "@chakra-ui/react";
-import { NostrEvent } from "nostr-tools";
-import { useActiveAccount, useEventFactory } from "applesauce-react/hooks";
-import { getMediaAttachments } from "applesauce-core/helpers";
 import { getMediaAttachmentURLsFromContent } from "applesauce-content/helpers";
+import { getMediaAttachments } from "applesauce-core/helpers";
+import { useActiveAccount, useEventFactory } from "applesauce-react/hooks";
 import { BlossomClient } from "blossom-client-sdk";
+import { EventTemplate, NostrEvent } from "nostr-tools";
+import { useCallback, useMemo, useState } from "react";
 
-import { useSigningContext } from "../../../../providers/global/signing-provider";
-import { usePublishEvent } from "../../../../providers/global/publish-provider";
-import { EmbedEventCard } from "../../../embed-event/card";
 import useAppSettings from "../../../../hooks/use-user-app-settings";
 import useUsersMediaServers from "../../../../hooks/use-user-media-servers";
+import { usePublishEvent } from "../../../../providers/global/publish-provider";
+import { EmbedEventCard } from "../../../embed-event/card";
 
 export default function ShareModal({
   event,
@@ -39,7 +38,6 @@ export default function ShareModal({
   const factory = useEventFactory();
   const toast = useToast();
 
-  const { requestSignature } = useSigningContext();
   const servers = useUsersMediaServers(account?.pubkey) || [];
   const [mirror, setMirror] = useState(mirrorBlobsOnShare);
   const mediaAttachments = useMemo(() => {
@@ -57,13 +55,21 @@ export default function ShareModal({
 
   const canMirror = servers.length > 0 && mediaAttachments.length > 0;
 
+  const signer = useCallback(
+    async (draft: EventTemplate) => {
+      if (!account) throw new Error("No account");
+      return await account.signEvent(draft);
+    },
+    [account],
+  );
+
   const [loading, setLoading] = useState("");
   const share = async () => {
     if (mirror && canMirror) {
       try {
         setLoading("Requesting signature for mirroring...");
         const auth = await BlossomClient.createUploadAuth(
-          requestSignature,
+          signer,
           mediaAttachments.filter((m) => !!m.sha256).map((m) => m.sha256!),
         );
 

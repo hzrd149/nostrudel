@@ -31,7 +31,6 @@ import RequireActiveAccount from "../../../components/router/require-active-acco
 import UserAvatar from "../../../components/user/user-avatar";
 import useRouteStateValue from "../../../hooks/use-route-state-value";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
-import { useSigningContext } from "../../../providers/global/signing-provider";
 import EventTemplateEditor from "./components/event-template-editor";
 import EventJsonEditor from "./components/json-editor";
 import VariableEditor from "./components/variable-editor";
@@ -41,7 +40,6 @@ import { TEMPLATES } from "./templates";
 function EventPublisherPage({ initDraft }: { initDraft?: LooseEventTemplate }) {
   const toast = useToast();
   const [loading, setLoading] = useState(false);
-  const { requestSignature } = useSigningContext();
   const publish = usePublishEvent();
   const account = useActiveAccount()!;
   const customRelay = useDisclosure();
@@ -88,7 +86,7 @@ function EventPublisherPage({ initDraft }: { initDraft?: LooseEventTemplate }) {
   const sign = async () => {
     if (!finalized) return;
     try {
-      setFinalized(await requestSignature(finalized));
+      setFinalized(await account.signEvent(finalized));
     } catch (e) {
       if (e instanceof Error) toast({ description: e.message, status: "error" });
     }
@@ -101,7 +99,7 @@ function EventPublisherPage({ initDraft }: { initDraft?: LooseEventTemplate }) {
       let event: NostrEvent;
 
       if ((finalized as NostrEvent).sig) event = finalized as NostrEvent;
-      else event = await requestSignature(processEvent(finalized, variables, account));
+      else event = await account.signEvent(processEvent(finalized, variables, account));
 
       const valid = verifyEvent(event);
       if (!valid) throw new Error("Invalid event");

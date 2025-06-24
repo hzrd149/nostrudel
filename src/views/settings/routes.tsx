@@ -11,14 +11,15 @@ import DnsIdentityView from "./dns-identity";
 import LightningSettings from "./lightning";
 import MailboxesView from "./mailboxes";
 import MediaServersView from "./media-servers";
+import MessagesSettings from "./messages";
+import MutesSettings from "./mutes";
 import PerformanceSettings from "./performance";
+import ContentPoliciesSettings from "./policies";
 import PostSettings from "./post";
 import PrivacySettings from "./privacy";
 import AppRelaysView from "./relays";
 import SearchRelaysView from "./search";
 import SocialGraphView from "./social-graph";
-import ContentPoliciesSettings from "./policies";
-import MutesSettings from "./mutes";
 
 export default [
   {
@@ -48,6 +49,7 @@ export default [
       { path: "privacy", Component: PrivacySettings },
       { path: "lightning", Component: LightningSettings },
       { path: "performance", Component: PerformanceSettings },
+      { path: "messages", Component: MessagesSettings },
       { path: "background-worker", Component: BackgroundWorkerSettings },
     ],
   },

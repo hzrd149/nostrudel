@@ -6,6 +6,7 @@ import { registerServiceWorker } from "./services/worker";
 import "./services/debug-api";
 import "./services/lifecycle";
 import "./services/username-search";
+import "./services/decryption-cache";
 
 // setup bitcoin connect
 import { init, onConnected } from "@getalby/bitcoin-connect-react";

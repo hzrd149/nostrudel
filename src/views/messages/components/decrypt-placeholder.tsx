@@ -1,11 +1,12 @@
-import { useEffect, useState } from "react";
 import { Alert, AlertDescription, AlertIcon, Button, ButtonProps } from "@chakra-ui/react";
+import { useObservableEagerState } from "applesauce-react/hooks";
 import { NostrEvent } from "nostr-tools";
+import { useEffect, useState } from "react";
 
-import { UnlockIcon } from "../../../components/icons";
 import DebugEventButton from "../../../components/debug-modal/debug-event-button";
-import useAppSettings from "../../../hooks/use-user-app-settings";
-import { useLegacyMessagePlaintext } from "../../../hooks/use-kind4-decryption";
+import { UnlockIcon } from "../../../components/icons";
+import { useLegacyMessagePlaintext } from "../../../hooks/use-legacy-message-plaintext";
+import localSettings from "../../../services/local-settings";
 
 export default function DecryptPlaceholder({
   children,
@@ -15,29 +16,29 @@ export default function DecryptPlaceholder({
   children: (decrypted: string) => JSX.Element;
   message: NostrEvent;
 } & Omit<ButtonProps, "children">): JSX.Element {
-  const { autoDecryptDMs } = useAppSettings();
+  const autoDecryptMessages = useObservableEagerState(localSettings.autoDecryptMessages);
   const [loading, setLoading] = useState(false);
-  const { requestDecrypt, plaintext, error } = useLegacyMessagePlaintext(message);
+  const { unlock, plaintext, error } = useLegacyMessagePlaintext(message);
 
   const decrypt = async () => {
     setLoading(true);
     try {
-      await requestDecrypt();
+      await unlock();
     } catch (e) {}
     setLoading(false);
   };
 
   // auto decrypt
   useEffect(() => {
-    if (autoDecryptDMs && !plaintext && !error) {
+    if (autoDecryptMessages && !plaintext && !error) {
       setLoading(true);
-      requestDecrypt()
+      unlock()
         .catch(() => {})
         .finally(() => {
           setLoading(false);
         });
     }
-  }, [autoDecryptDMs, error, plaintext]);
+  }, [autoDecryptMessages, error, plaintext]);
 
   if (plaintext) {
     return children(plaintext);

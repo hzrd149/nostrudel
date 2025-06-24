@@ -3,6 +3,7 @@ import { nip19 } from "nostr-tools";
 import { useMemo, useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
 
+import { unlockLegacyMessage } from "applesauce-core/helpers";
 import { useActiveAccount } from "applesauce-react/hooks";
 import { NostrEvent } from "nostr-tools";
 import HoverLinkOverlay from "../../../components/hover-link-overlay";
@@ -17,8 +18,7 @@ import {
   identifyConversation,
   sortConversationsByLastReceived,
 } from "../../../helpers/nostr/dms";
-import { useLegacyMessagePlaintext } from "../../../hooks/use-kind4-decryption";
-import decryptionCacheService from "../../../services/decryption-cache";
+import { useLegacyMessagePlaintext } from "../../../hooks/use-legacy-message-plaintext";
 import { useDirectMessagesTimeline } from "../../messages";
 
 function MessagePreview({ message, pubkey }: { message: NostrEvent; pubkey: string }) {
@@ -70,13 +70,7 @@ export default function DMsCard({ ...props }: Omit<CardProps, "children">) {
         const last = conversation.messages.find((m) => m.pubkey === conversation.correspondent);
         if (!last) return;
 
-        const container = decryptionCacheService.getOrCreateContainer(
-          last.id,
-          "nip04",
-          conversation.correspondent,
-          last.content,
-        );
-        return decryptionCacheService.requestDecrypt(container);
+        return unlockLegacyMessage(last, account.pubkey, account);
       })
       .filter(Boolean);
 

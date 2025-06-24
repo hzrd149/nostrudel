@@ -1,10 +1,10 @@
 import { Button, ButtonGroup, Flex, IconButton } from "@chakra-ui/react";
-import { mergeRelaySets } from "applesauce-core/helpers";
+import { isLegacyMessageLocked, mergeRelaySets, unlockLegacyMessage } from "applesauce-core/helpers";
+import { useActiveAccount, useObservableEagerState } from "applesauce-react/hooks";
 import { NostrEvent, kinds } from "nostr-tools";
-import { memo, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { memo, useCallback, useContext, useEffect, useMemo } from "react";
 import { UNSAFE_DataRouterContext, useLocation, useNavigate } from "react-router-dom";
 
-import { useActiveAccount } from "applesauce-react/hooks";
 import { ThreadIcon } from "../../components/icons";
 import SimpleView from "../../components/layout/presets/simple-view";
 import RequireActiveAccount from "../../components/router/require-active-account";
@@ -14,16 +14,16 @@ import UserDnsIdentityIcon from "../../components/user/user-dns-identity-icon";
 import UserLink from "../../components/user/user-link";
 import { groupMessages } from "../../helpers/nostr/dms";
 import { truncateId } from "../../helpers/string";
+import useAsyncAction from "../../hooks/use-async-action";
 import useParamsProfilePointer from "../../hooks/use-params-pubkey-pointer";
 import useRouterMarker from "../../hooks/use-router-marker";
 import useScrollRestoreRef from "../../hooks/use-scroll-restore";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
-import useAppSettings from "../../hooks/use-user-app-settings";
 import useUserMailboxes from "../../hooks/use-user-mailboxes";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import ThreadsProvider from "../../providers/local/thread-provider";
-import decryptionCacheService from "../../services/decryption-cache";
+import localSettings from "../../services/local-settings";
 import DirectMessageBlock from "./components/direct-message-block";
 import SendMessageForm from "./components/send-message-form";
 import ThreadDrawer from "./components/thread-drawer";
@@ -47,9 +47,9 @@ const ChatLog = memo(({ messages }: { messages: NostrEvent[] }) => {
 
 function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
   const account = useActiveAccount()!;
-  const { autoDecryptDMs } = useAppSettings();
   const navigate = useNavigate();
   const location = useLocation();
+  const autoDecryptMessages = useObservableEagerState(localSettings.autoDecryptMessages);
 
   const { router } = useContext(UNSAFE_DataRouterContext)!;
   const marker = useRouterMarker(router);
@@ -97,18 +97,13 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
     { eventFilter },
   );
 
-  const [loading, setLoading] = useState(false);
-  const decryptAll = async () => {
-    const promises = messages
-      .map((message) => {
-        const container = decryptionCacheService.getOrCreateContainer(message.id, "nip04", pubkey, message.content);
-        return decryptionCacheService.requestDecrypt(container);
-      })
-      .filter(Boolean);
-
-    setLoading(true);
-    Promise.all(promises).finally(() => setLoading(false));
-  };
+  const decryptAll = useAsyncAction(async () => {
+    for (const message of messages) {
+      if (isLegacyMessageLocked(message)) {
+        await unlockLegacyMessage(message, account.pubkey, account);
+      }
+    }
+  }, [messages, pubkey]);
 
   const callback = useTimelineCurserIntersectionCallback(loader);
 
@@ -128,8 +123,8 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
           }
           actions={
             <ButtonGroup ml="auto">
-              {!autoDecryptDMs && (
-                <Button onClick={decryptAll} isLoading={loading}>
+              {!autoDecryptMessages && (
+                <Button onClick={decryptAll.run} isLoading={decryptAll.loading}>
                   Decrypt All
                 </Button>
               )}

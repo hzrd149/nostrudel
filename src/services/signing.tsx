@@ -68,6 +68,7 @@ class SigningService {
   }
 }
 
+/** @deprecated use AccountManager.active instead */
 const signingService = new SigningService();
 
 export default signingService;

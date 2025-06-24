@@ -75,6 +75,13 @@ const hideEventsOutsideSocialGraph = new NullableNumberLocalStorageEntry("hide-e
 const blurMediaOutsideSocialGraph = new NullableNumberLocalStorageEntry("blur-media-outside-social-graph", 3);
 const hideEmbedsOutsideSocialGraph = new NullableNumberLocalStorageEntry("hide-embeds-outside-social-graph", 4);
 
+// Decryption cache
+const encryptDecryptionCache = new BooleanLocalStorageEntry("encrypt-decryption-cache", true);
+
+// Direct messages
+const enableDecryptionCache = new BooleanLocalStorageEntry("enable-decryption-cache", true);
+const autoDecryptMessages = new BooleanLocalStorageEntry("auto-decrypt-messages", true);
+
 const localSettings = {
   readRelays,
   writeRelays,
@@ -102,6 +109,13 @@ const localSettings = {
   hideEventsOutsideSocialGraph,
   blurMediaOutsideSocialGraph,
   hideEmbedsOutsideSocialGraph,
+
+  // Decryption cache
+  encryptDecryptionCache,
+
+  // Direct messages
+  autoDecryptMessages,
+  enableDecryptionCache,
 };
 
 if (import.meta.env.DEV) {

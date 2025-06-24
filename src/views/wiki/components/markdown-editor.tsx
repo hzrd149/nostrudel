@@ -1,9 +1,10 @@
 import { VisuallyHidden } from "@chakra-ui/react";
 import { Global, css } from "@emotion/react";
-import { useMemo, useRef, useState } from "react";
+import { useActiveAccount } from "applesauce-react/hooks";
+import { EventTemplate } from "nostr-tools";
+import { useCallback, useMemo, useRef, useState } from "react";
 import ReactDOMServer from "react-dom/server";
 import SimpleMDE, { SimpleMDEReactProps } from "react-simplemde-editor";
-import { useActiveAccount } from "applesauce-react/hooks";
 
 import EasyMDE from "easymde";
 import "easymde/dist/easymde.min.css";
@@ -14,7 +15,6 @@ import useUsersMediaServers from "../../../hooks/use-user-media-servers";
 import { CharkaMarkdown } from "../../../components/markdown/markdown";
 import { stripSensitiveMetadataOnFile } from "../../../helpers/image";
 import { simpleMultiServerUpload } from "../../../helpers/media-upload/blossom";
-import { useSigningContext } from "../../../providers/global/signing-provider";
 
 const fixCodeMirrorFont = css`
   .EasyMDEContainer .CodeMirror {
@@ -24,9 +24,16 @@ const fixCodeMirrorFont = css`
 
 export default function MarkdownEditor({ options, ...props }: SimpleMDEReactProps) {
   const account = useActiveAccount();
-  const { requestSignature } = useSigningContext();
   const { mediaUploadService } = useAppSettings();
   const servers = useUsersMediaServers(account?.pubkey);
+
+  const signer = useCallback(
+    async (draft: EventTemplate) => {
+      if (!account) throw new Error("No account");
+      return await account.signEvent(draft);
+    },
+    [account],
+  );
 
   const [_, setPreview] = useState<HTMLElement>();
   const previewRef = useRef<HTMLDivElement | null>(null);
@@ -36,7 +43,7 @@ export default function MarkdownEditor({ options, ...props }: SimpleMDEReactProp
       if (!servers) return onError("No media servers set");
       try {
         const safeFile = await stripSensitiveMetadataOnFile(file);
-        const blob = await simpleMultiServerUpload(servers, safeFile, requestSignature);
+        const blob = await simpleMultiServerUpload(servers, safeFile, signer);
 
         if (blob) onSuccess(blob.url);
       } catch (error) {
@@ -85,7 +92,7 @@ export default function MarkdownEditor({ options, ...props }: SimpleMDEReactProp
         return previewRef.current?.innerHTML || ReactDOMServer.renderToString(<CharkaMarkdown>{text}</CharkaMarkdown>);
       },
     } satisfies SimpleMDEReactProps["options"];
-  }, [servers, requestSignature, setPreview]);
+  }, [servers, setPreview, signer]);
 
   return (
     <>

@@ -11,7 +11,6 @@ import buildTheme from "../../theme";
 import BreakpointProvider from "./breakpoint-provider";
 import { UserEmojiProvider } from "./emoji-provider";
 import PublishProvider from "./publish-provider";
-import { SigningProvider } from "./signing-provider";
 
 function ThemeProviders({ children }: { children: React.ReactNode }) {
   const { theme: themeName, primaryColor } = useAppSettings();
@@ -32,11 +31,9 @@ export const GlobalProviders = ({ children }: { children: React.ReactNode }) => 
         <ActionsProvider actionHub={actions}>
           <FactoryProvider factory={factory}>
             <ThemeProviders>
-              <SigningProvider>
-                <PublishProvider>
-                  <UserEmojiProvider>{children}</UserEmojiProvider>
-                </PublishProvider>
-              </SigningProvider>
+              <PublishProvider>
+                <UserEmojiProvider>{children}</UserEmojiProvider>
+              </PublishProvider>
             </ThemeProviders>
           </FactoryProvider>
         </ActionsProvider>

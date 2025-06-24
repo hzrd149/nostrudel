@@ -1,9 +1,9 @@
-import dayjs from "dayjs";
-import { EventTemplate, kinds } from "nostr-tools";
+import { Button, ButtonGroup, Flex, FlexProps, Heading } from "@chakra-ui/react";
+import { SendLegacyMessage } from "applesauce-actions/actions";
+import { useActionHub } from "applesauce-react/hooks";
 import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 
-import { Button, ButtonGroup, Flex, FlexProps, Heading } from "@chakra-ui/react";
 import InsertGifButton from "../../../components/gif/insert-gif-button";
 import MagicTextArea, { RefType } from "../../../components/magic-textarea";
 import InsertReactionButton from "../../../components/reactions/insert-reaction-button";
@@ -11,8 +11,6 @@ import useCacheForm from "../../../hooks/use-cache-form";
 import useTextAreaUploadFile, { useTextAreaInsertTextWithForm } from "../../../hooks/use-textarea-upload-file";
 import useUserMailboxes from "../../../hooks/use-user-mailboxes";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
-import { useSigningContext } from "../../../providers/global/signing-provider";
-import decryptionCacheService from "../../../services/decryption-cache";
 
 export default function SendMessageForm({
   pubkey,
@@ -20,7 +18,7 @@ export default function SendMessageForm({
   ...props
 }: { pubkey: string; rootId?: string } & Omit<FlexProps, "children">) {
   const publish = usePublishEvent();
-  const { requestEncrypt } = useSigningContext();
+  const actions = useActionHub();
 
   const [loadingMessage, setLoadingMessage] = useState("");
   const { getValues, setValue, watch, handleSubmit, formState, reset } = useForm({
@@ -43,35 +41,22 @@ export default function SendMessageForm({
   const userMailboxes = useUserMailboxes(pubkey);
   const sendMessage = handleSubmit(async (values) => {
     if (!values.content) return;
-    setLoadingMessage("Encrypting...");
-    const encrypted = await requestEncrypt(values.content, pubkey);
+    setLoadingMessage("Sending...");
 
-    const draft: EventTemplate = {
-      kind: kinds.EncryptedDirectMessage,
-      content: encrypted,
-      tags: [["p", pubkey]],
-      created_at: dayjs().unix(),
-    };
+    try {
+      // Send direct message to users inbox
+      await actions
+        .exec(SendLegacyMessage, pubkey, values.content)
+        .forEach((e) => publish("Send message", e, userMailboxes?.inboxes));
 
-    if (rootId) {
-      draft.tags.push(["e", rootId, "", "root"]);
-    }
-
-    setLoadingMessage("Signing...");
-    const pub = await publish("Send DM", draft, userMailboxes?.inboxes);
-
-    if (pub) {
+      // Reset form
       clearCache();
       reset({ content: "" });
 
-      // add plaintext to decryption context
-      decryptionCacheService
-        .getOrCreateContainer(pub.event.id, "nip04", pubkey, encrypted)
-        .plaintext.next(values.content);
-
       // refocus input
       setTimeout(() => textAreaRef.current?.focus(), 50);
-    }
+    } catch (error) {}
+
     setLoadingMessage("");
   });
 

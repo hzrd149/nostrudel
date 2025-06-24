@@ -1,4 +1,3 @@
-import { useState } from "react";
 import {
   Button,
   Card,
@@ -19,16 +18,18 @@ import {
 } from "@chakra-ui/react";
 import { NostrEvent } from "nostr-tools";
 
+import { isLegacyMessageLocked, unlockLegacyMessage } from "applesauce-core/helpers";
+import { useActiveAccount } from "applesauce-react/hooks";
+import ThreadButton from "../../../components/message/thread-button";
+import Timestamp from "../../../components/timestamp";
 import UserAvatar from "../../../components/user/user-avatar";
 import UserLink from "../../../components/user/user-link";
-import DecryptPlaceholder from "./decrypt-placeholder";
-import Timestamp from "../../../components/timestamp";
-import { Thread, useThreadsContext } from "../../../providers/local/thread-provider";
-import ThreadButton from "../../../components/message/thread-button";
-import SendMessageForm from "./send-message-form";
 import { groupMessages } from "../../../helpers/nostr/dms";
+import useAsyncAction from "../../../hooks/use-async-action";
+import { Thread, useThreadsContext } from "../../../providers/local/thread-provider";
+import DecryptPlaceholder from "./decrypt-placeholder";
 import DirectMessageBlock from "./direct-message-block";
-import decryptionCacheService from "../../../services/decryption-cache";
+import SendMessageForm from "./send-message-form";
 
 function MessagePreview({ message, ...props }: { message: NostrEvent } & Omit<TextProps, "children">) {
   return (
@@ -102,32 +103,24 @@ export default function ThreadDrawer({
   ...props
 }: Omit<DrawerProps, "children"> & { threadId: string; pubkey: string }) {
   const { threads, getRoot } = useThreadsContext();
+  const account = useActiveAccount();
 
   const thread = threads[threadId];
-  const [loading, setLoading] = useState(false);
-  const decryptAll = async () => {
-    if (!thread) return <Spinner />;
+  const decryptAll = useAsyncAction(async () => {
+    if (!thread || !account) return;
 
-    const promises = thread.messages
-      .map((message) => {
-        const container = decryptionCacheService.getOrCreateContainer(message.id, "nip04", pubkey, message.content);
-        if (container.plaintext.value === undefined) return decryptionCacheService.requestDecrypt(container);
-      })
-      .filter(Boolean);
-
+    // Decrypt root message
     if (thread.root) {
-      const rootContainer = decryptionCacheService.getOrCreateContainer(
-        thread.root.id,
-        "nip04",
-        pubkey,
-        thread.root.content,
-      );
-      if (rootContainer.plaintext.value === undefined) decryptionCacheService.requestDecrypt(rootContainer);
+      await unlockLegacyMessage(thread.root, account.pubkey, account);
     }
 
-    setLoading(true);
-    Promise.all(promises).finally(() => setLoading(false));
-  };
+    // Decrypt all messages
+    for (const message of thread.messages) {
+      if (isLegacyMessageLocked(message)) {
+        await unlockLegacyMessage(message, account.pubkey, account);
+      }
+    }
+  }, [thread, account]);
 
   const renderContent = () => {
     if (threadId === "list") return <ListThreads />;
@@ -143,7 +136,7 @@ export default function ThreadDrawer({
         <DrawerCloseButton />
         <DrawerHeader p="2" display="flex" gap="4">
           <Text>Threads</Text>
-          <Button size="sm" onClick={decryptAll} isLoading={loading}>
+          <Button size="sm" onClick={decryptAll.run} isLoading={decryptAll.loading}>
             Decrypt All
           </Button>
         </DrawerHeader>

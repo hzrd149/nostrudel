@@ -1,122 +1,119 @@
-import _throttle from "lodash.throttle";
-import { BehaviorSubject } from "rxjs";
-import { createDefer, Deferred } from "applesauce-core/promise";
+import { defined } from "applesauce-core/observable";
+import { persistEncryptedContent } from "applesauce-core/helpers";
+import localforage from "localforage";
+import {
+  distinctUntilChanged,
+  filter,
+  interval,
+  map,
+  Observable,
+  of,
+  pairwise,
+  shareReplay,
+  startWith,
+  switchMap,
+} from "rxjs";
 
-import signingService from "./signing";
-import { logger } from "../helpers/debug";
-import accounts from "./accounts";
+import EncryptedStorage from "../classes/encrypted-storage";
+import { eventStore } from "./event-store";
+import localSettings from "./local-settings";
 
-type EncryptionType = "nip04" | "nip44";
+export const decryptionCache$ = localSettings.enableDecryptionCache.pipe(
+  switchMap((enable) => {
+    if (!enable) return of(null);
 
-class DecryptionContainer {
-  /** event id */
-  id: string;
-  type: "nip04" | "nip44";
-  pubkey: string;
-  cipherText: string;
+    // If enabled create a database instance
+    return localSettings.encryptDecryptionCache.pipe(
+      map((encrypt) => {
+        const kv = localforage.createInstance({ name: "decryption-cache" });
 
-  plaintext = new BehaviorSubject<string | undefined>(undefined);
-  error = new BehaviorSubject<Error | undefined>(undefined);
+        if (encrypt) return new EncryptedStorage(kv);
+        else return kv;
+      }),
+      switchMap((cache) => {
+        if (cache instanceof EncryptedStorage) {
+          // Create an observable that polls for when the cache is unlocked
+          return interval(1000).pipe(
+            startWith(cache),
+            map(() => cache.unlocked),
+            distinctUntilChanged(),
+            map(() => cache),
+          );
+        }
+        return of(cache);
+      }),
+    );
+  }),
+  shareReplay(1),
+);
 
-  constructor(id: string, type: EncryptionType = "nip04", pubkey: string, cipherText: string) {
-    this.id = id;
-    this.pubkey = pubkey;
-    this.cipherText = cipherText;
-    this.type = type;
-  }
-}
+// Keep decryption cache active
+decryptionCache$.subscribe();
 
-class DecryptionCache {
-  containers = new Map<string, DecryptionContainer>();
-  log = logger.extend("DecryptionCache");
+// Clear cache when encryption setting changes
+localSettings.encryptDecryptionCache
+  .pipe(
+    pairwise(),
+    filter(([prev, curr]) => prev !== curr),
+    switchMap(() => decryptionCache$),
+    defined(),
+  )
+  .subscribe((cache) => cache.clear());
 
-  getContainer(id: string) {
-    return this.containers.get(id);
-  }
-  getOrCreateContainer(id: string, type: EncryptionType, pubkey: string, cipherText: string) {
-    let container = this.containers.get(id);
-    if (!container) {
-      container = new DecryptionContainer(id, type, pubkey, cipherText);
-      this.containers.set(id, container);
-    }
-    return container;
-  }
+// Clear cache when its disabled
+decryptionCache$.pipe(pairwise()).subscribe(([prev, curr]) => {
+  if (curr === null && prev) prev.clear();
+});
 
-  private async decryptContainer(container: DecryptionContainer) {
-    const account = accounts.active;
-    if (!account) throw new Error("Missing account");
+// Observable for decryption cache statistics
+export const decryptionCacheStats$ = localSettings.encryptDecryptionCache.pipe(
+  switchMap(() => decryptionCache$),
+  defined(),
+  switchMap(async (cache) => {
+    // Get the underlying localforage instance
+    const kv = cache instanceof EncryptedStorage ? cache.database : cache;
+    const keys = await kv.keys();
+    const totalEntries = keys.length;
 
-    switch (container.type) {
-      case "nip04":
-        return await signingService.nip04Decrypt(container.cipherText, container.pubkey, account);
-      case "nip44":
-        return await signingService.nip44Decrypt(container.cipherText, container.pubkey, account);
-    }
-  }
+    // Estimate size by checking a sample of entries
+    let estimatedSize = 0;
+    const sampleSize = Math.min(10, keys.length);
 
-  promises = new Map<DecryptionContainer, Deferred<string>>();
-
-  private decryptQueue: DecryptionContainer[] = [];
-  private decryptQueueRunning = false;
-  private async decryptNext() {
-    const container = this.decryptQueue.pop();
-    if (!container) {
-      this.decryptQueueRunning = false;
-      this.decryptQueue = [];
-      return;
-    }
-
-    const promise = this.promises.get(container)!;
-
-    try {
-      if (!container.plaintext.value) {
-        const plaintext = await this.decryptContainer(container);
-
-        // set plaintext
-        container.plaintext.next(plaintext);
-        promise.resolve(plaintext);
-
-        // remove promise
-        this.promises.delete(container);
-      }
-
-      setTimeout(() => this.decryptNext(), 100);
-    } catch (e) {
-      if (e instanceof Error) {
-        // set error
-        container.error.next(e);
-        promise.reject(e);
-
-        // clear queue
-        this.decryptQueueRunning = false;
-        this.decryptQueue = [];
+    for (let i = 0; i < sampleSize; i++) {
+      try {
+        const value = await kv.getItem(keys[i]);
+        if (value) {
+          const serialized = JSON.stringify(value);
+          estimatedSize += new Blob([serialized]).size;
+        }
+      } catch (e) {
+        // Skip encrypted entries we can't read
       }
     }
-  }
 
-  startDecryptionQueue() {
-    if (!this.decryptQueueRunning) {
-      this.decryptQueueRunning = true;
-      this.decryptNext();
+    // Scale up the estimate
+    if (sampleSize > 0 && totalEntries > 0) {
+      estimatedSize = Math.round((estimatedSize / sampleSize) * totalEntries);
     }
-  }
 
-  requestDecrypt(container: DecryptionContainer) {
-    if (container.plaintext.value) return Promise.resolve(container.plaintext.value);
+    // Check encryption and lock status
+    const isEncrypted = cache instanceof EncryptedStorage;
+    const isLocked = cache instanceof EncryptedStorage ? !cache.unlocked : false;
 
-    let p = this.promises.get(container);
-    if (!p) {
-      p = createDefer<string>();
-      this.promises.set(container, p);
+    return {
+      totalEntries,
+      estimatedSize,
+      isEncrypted,
+      isLocked,
+    };
+  }),
+  shareReplay(1),
+);
 
-      this.decryptQueue.unshift(container);
-      this.startDecryptionQueue();
-    }
-    return p;
-  }
-}
-
-/** @deprecated use eventStore.update to track decryption updates */
-const decryptionCacheService = new DecryptionCache();
-
-export default decryptionCacheService;
+// Save all encrypted content to the cache
+decryptionCache$
+  .pipe(
+    defined(),
+    switchMap((cache) => new Observable(() => persistEncryptedContent(eventStore, cache))),
+  )
+  .subscribe();

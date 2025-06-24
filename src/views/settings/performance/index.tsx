@@ -5,6 +5,7 @@ import {
   FormErrorMessage,
   FormHelperText,
   FormLabel,
+  Heading,
   Input,
   Link,
   Select,
@@ -40,6 +41,28 @@ function VerifyEventSettings() {
         <FormHelperText>None: Only Profiles, Follows, and replaceable event signatures are checked</FormHelperText>
       </FormControl>
     </>
+  );
+}
+
+function DecryptionCacheSettings() {
+  const encryptDecryptionCache = useObservableEagerState(localSettings.encryptDecryptionCache);
+
+  return (
+    <FormControl>
+      <Flex alignItems="center">
+        <FormLabel htmlFor="encryptDecryptionCache" mb="0">
+          Encrypt decryption cache
+        </FormLabel>
+        <Switch
+          id="encryptDecryptionCache"
+          isChecked={encryptDecryptionCache}
+          onChange={(e) => localSettings.encryptDecryptionCache.next(e.target.checked)}
+        />
+      </Flex>
+      <FormHelperText>
+        <span>Whether to encrypt the direct messages with a password when they are stored locally</span>
+      </FormHelperText>
+    </FormControl>
   );
 }
 
@@ -110,16 +133,13 @@ export default function PerformanceSettings() {
         </Flex>
         <FormHelperText>Enabled: Show reactions on notes</FormHelperText>
       </FormControl>
-      <FormControl>
-        <Flex alignItems="center">
-          <FormLabel htmlFor="autoDecryptDMs" mb="0">
-            Automatically decrypt DMs
-          </FormLabel>
-          <Switch id="autoDecryptDMs" {...register("autoDecryptDMs")} />
-        </Flex>
-        <FormHelperText>Enabled: automatically decrypt direct messages</FormHelperText>
-      </FormControl>
+
       <VerifyEventSettings />
+
+      <Heading size="md" mt="4">
+        Decryption cache
+      </Heading>
+      <DecryptionCacheSettings />
     </SimpleView>
   );
 }

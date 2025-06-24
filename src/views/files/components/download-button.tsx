@@ -1,13 +1,13 @@
-import { useState } from "react";
 import { Button, ButtonProps, useToast } from "@chakra-ui/react";
-import { NostrEvent } from "nostr-tools";
 import { getTagValue } from "applesauce-core/helpers";
+import { useActiveAccount } from "applesauce-react/hooks";
 import { BlossomClient } from "blossom-client-sdk";
 import { saveAs } from "file-saver";
+import { EventTemplate, NostrEvent } from "nostr-tools";
+import { useCallback, useState } from "react";
 
-import useUsersMediaServers from "../../../hooks/use-user-media-servers";
-import { useSigningContext } from "../../../providers/global/signing-provider";
 import { DownloadIcon } from "../../../components/icons";
+import useUsersMediaServers from "../../../hooks/use-user-media-servers";
 
 export default function FileDownloadButton({
   file,
@@ -16,13 +16,20 @@ export default function FileDownloadButton({
 }: Omit<ButtonProps, "onClick"> & { file: NostrEvent }) {
   const [loading, setLoading] = useState(false);
   const toast = useToast();
+  const account = useActiveAccount();
 
   const servers = useUsersMediaServers(file.pubkey) || [];
   const url = getTagValue(file, "url");
   const sha256 = getTagValue(file, "x");
   const name = getTagValue(file, "name");
 
-  const { requestSignature } = useSigningContext();
+  const signer = useCallback(
+    async (draft: EventTemplate) => {
+      if (!account) throw new Error("No account");
+      return await account.signEvent(draft);
+    },
+    [account],
+  );
 
   const download = async () => {
     setLoading(true);
@@ -54,7 +61,7 @@ export default function FileDownloadButton({
       if (!blob && servers.length > 0 && sha256) {
         for (const server of servers) {
           blob = await BlossomClient.downloadBlob(server, sha256, {
-            onAuth: (server, hash) => BlossomClient.createGetAuth(requestSignature, hash),
+            onAuth: (server, hash) => BlossomClient.createGetAuth(signer, hash),
           }).then(
             (res) => res.blob(),
             () => undefined,
