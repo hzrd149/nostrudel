@@ -5,9 +5,11 @@ import { memo, useCallback } from "react";
 
 import { ReplyIcon } from "../../../components/icons";
 import DotsHorizontal from "../../../components/icons/dots-horizontal";
-import MessageSlackBlock, { MessageSlackBlockProps } from "../../../components/message/message-slack-block";
+import MessagesGroup, { MessageGroupProps } from "../../../components/message/message-group";
+import AddReactionButton from "../../../components/note/timeline-note/components/add-reaction-button";
+import EventZapButton from "../../../components/zap/event-zap-button";
 import { useLegacyMessagePlaintext } from "../../../hooks/use-legacy-message-plaintext";
-import DecryptPlaceholderSlack from "./decrypt-placeholder-slack";
+import DecryptPlaceholder from "./decrypt-placeholder";
 import DirectMessageContent from "./direct-message-content";
 
 function DirectMessageActions({
@@ -55,8 +57,8 @@ function DirectMessageActions({
   return (
     <ButtonGroup size="xs" variant="ghost" gap="0">
       <IconButton aria-label="Reply" icon={<ReplyIcon />} onClick={handleReply} size="xs" />
-      {/* <AddReactionButton event={message} size="xs" /> */}
-      {/* <EventZapButton event={message} size="xs" /> */}
+      <AddReactionButton event={message} size="xs" />
+      <EventZapButton event={message} size="xs" />
       <Menu>
         <MenuButton as={IconButton} aria-label="More actions" icon={<DotsHorizontal />} size="xs" />
         <MenuList fontSize="sm">
@@ -72,10 +74,10 @@ function DirectMessageActions({
   );
 }
 
-function DirectMessageSlackBlock({
+function DirectMessageGroup({
   onReply,
   ...props
-}: Omit<MessageSlackBlockProps, "renderContent"> & {
+}: Omit<MessageGroupProps, "renderContent"> & {
   onReply?: (message: NostrEvent) => void;
 }) {
   const account = useActiveAccount()!;
@@ -83,9 +85,9 @@ function DirectMessageSlackBlock({
 
   const renderContent = useCallback(
     (message: NostrEvent) => (
-      <DecryptPlaceholderSlack message={message}>
+      <DecryptPlaceholder message={message}>
         {(plaintext) => <DirectMessageContent event={message} text={plaintext} />}
-      </DecryptPlaceholderSlack>
+      </DecryptPlaceholder>
     ),
     [],
   );
@@ -97,7 +99,7 @@ function DirectMessageSlackBlock({
     [account, toast],
   );
 
-  return <MessageSlackBlock renderContent={renderContent} renderActions={renderActions} {...props} />;
+  return <MessagesGroup renderContent={renderContent} renderActions={renderActions} {...props} />;
 }
 
-export default memo(DirectMessageSlackBlock);
+export default memo(DirectMessageGroup);

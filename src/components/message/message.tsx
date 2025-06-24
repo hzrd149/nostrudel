@@ -8,14 +8,14 @@ import EventReactionButtons from "../event-reactions/event-reactions";
 import Timestamp from "../timestamp";
 import UserLink from "../user/user-link";
 
-export type MessageSlackProps = {
+export type MessageProps = {
   message: NostrEvent;
   showHeader?: boolean;
   renderContent: (message: NostrEvent) => ReactNode;
   renderActions?: (message: NostrEvent, onReply?: (message: NostrEvent) => void) => ReactNode;
 };
 
-export default function MessageSlack({ message, showHeader = true, renderContent, renderActions }: MessageSlackProps) {
+export default function Message({ message, showHeader = true, renderContent, renderActions }: MessageProps) {
   const reactions = useEventReactions(message) ?? [];
   const hasReactions = reactions.length > 0;
   const ref = useEventIntersectionRef(message);

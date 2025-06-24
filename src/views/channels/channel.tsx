@@ -45,7 +45,7 @@ const ChannelChatLog = memo(({ channel }: { channel: NostrEvent }) => {
   return (
     <>
       {grouped.map((group) => (
-        <ChannelMessageBlock key={group.id} messages={group.events} reverse />
+        <ChannelMessageBlock key={group[0].id} messages={group} reverse />
       ))}
     </>
   );

@@ -1,4 +1,4 @@
-import { Alert, AlertDescription, AlertIcon, Button, ButtonProps } from "@chakra-ui/react";
+import { Alert, AlertDescription, AlertIcon, Button } from "@chakra-ui/react";
 import { useObservableEagerState } from "applesauce-react/hooks";
 import { NostrEvent } from "nostr-tools";
 import { useEffect, useState } from "react";
@@ -11,11 +11,10 @@ import localSettings from "../../../services/local-settings";
 export default function DecryptPlaceholder({
   children,
   message,
-  ...props
 }: {
   children: (decrypted: string) => JSX.Element;
   message: NostrEvent;
-} & Omit<ButtonProps, "children">): JSX.Element {
+}): JSX.Element {
   const autoDecryptMessages = useObservableEagerState(localSettings.autoDecryptMessages);
   const [loading, setLoading] = useState(false);
   const { unlock, plaintext, error } = useLegacyMessagePlaintext(message);
@@ -43,21 +42,32 @@ export default function DecryptPlaceholder({
   if (plaintext) {
     return children(plaintext);
   }
+
   if (error) {
     return (
-      <Alert status="error">
+      <Alert status="error" borderRadius="md" maxW="lg">
         <AlertIcon />
-        <AlertDescription>{error.message}</AlertDescription>
-        <DebugEventButton event={message} size="sm" ml="auto" mr="2" />
+        <AlertDescription flex="1">{error.message}</AlertDescription>
+        <DebugEventButton event={message} size="sm" mr="2" />
         <Button isLoading={loading} leftIcon={<UnlockIcon />} onClick={decrypt} size="sm">
           Try again
         </Button>
       </Alert>
     );
   }
+
   return (
-    <Button onClick={decrypt} isLoading={loading} leftIcon={<UnlockIcon />} width="full" {...props}>
-      Decrypt
+    <Button
+      onClick={decrypt}
+      isLoading={loading}
+      leftIcon={<UnlockIcon />}
+      size="sm"
+      variant="ghost"
+      border="1px dashed"
+      w="full"
+      maxW="lg"
+    >
+      Decrypt message
     </Button>
   );
 }

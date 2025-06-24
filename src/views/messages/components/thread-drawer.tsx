@@ -28,12 +28,12 @@ import { groupMessages } from "../../../helpers/nostr/dms";
 import useAsyncAction from "../../../hooks/use-async-action";
 import { Thread, useThreadsContext } from "../../../providers/local/thread-provider";
 import DecryptPlaceholder from "./decrypt-placeholder";
-import DirectMessageBlock from "./direct-message-block";
+import DirectMessageGroup from "./direct-message-group";
 import SendMessageForm from "./send-message-form";
 
 function MessagePreview({ message, ...props }: { message: NostrEvent } & Omit<TextProps, "children">) {
   return (
-    <DecryptPlaceholder message={message} variant="link" py="4" px="6rem" zIndex={1}>
+    <DecryptPlaceholder message={message}>
       {(plaintext) => (
         <Text isTruncated {...props}>
           {plaintext}
@@ -87,9 +87,9 @@ function ThreadMessages({ thread, pubkey }: { thread: Thread; pubkey: string }) 
   return (
     <>
       <Flex h="0" flex={1} overflowX="hidden" overflowY="scroll" direction="column" gap="2">
-        {thread.root && <DirectMessageBlock messages={[thread.root]} showThreadButton={false} />}
+        {thread.root && <DirectMessageGroup messages={[thread.root]} />}
         {grouped.map((group) => (
-          <DirectMessageBlock key={group[0].id} messages={group} showThreadButton={false} />
+          <DirectMessageGroup key={group[0].id} messages={group} />
         ))}
       </Flex>
       <SendMessageForm flexShrink={0} pubkey={pubkey} rootId={thread.rootId} />

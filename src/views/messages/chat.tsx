@@ -24,8 +24,7 @@ import useUserMailboxes from "../../hooks/use-user-mailboxes";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import ThreadsProvider from "../../providers/local/thread-provider";
 import localSettings from "../../services/local-settings";
-import DirectMessageBlock from "./components/direct-message-block";
-import DirectMessageSlackBlock from "./components/direct-message-slack-block";
+import DirectMessageGroup from "./components/direct-message-group";
 import SendMessageForm from "./components/send-message-form";
 import ThreadDrawer from "./components/thread-drawer";
 
@@ -40,7 +39,7 @@ const ChatLog = memo(({ messages }: { messages: NostrEvent[] }) => {
   return (
     <>
       {grouped.map((group) => (
-        <DirectMessageSlackBlock key={group[0].id} messages={group} reverse />
+        <DirectMessageGroup key={group[0].id} messages={group} reverse />
       ))}
     </>
   );

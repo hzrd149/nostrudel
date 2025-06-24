@@ -2,21 +2,16 @@ import { Box, Flex } from "@chakra-ui/react";
 import { NostrEvent } from "nostr-tools";
 
 import UserAvatarLink from "../user/user-avatar-link";
-import MessageSlack, { MessageSlackProps } from "./message-slack";
+import Message, { MessageProps } from "./message";
 
-export type MessageSlackBlockProps = {
+export type MessageGroupProps = {
   messages: NostrEvent[];
   reverse?: boolean;
-  renderContent: MessageSlackProps["renderContent"];
-  renderActions?: MessageSlackProps["renderActions"];
+  renderContent: MessageProps["renderContent"];
+  renderActions?: MessageProps["renderActions"];
 };
 
-export default function MessageSlackBlock({
-  messages,
-  reverse = false,
-  renderContent,
-  renderActions,
-}: MessageSlackBlockProps) {
+export default function MessagesGroup({ messages, reverse = false, renderContent, renderActions }: MessageGroupProps) {
   const lastEvent = messages[messages.length - 1];
 
   return (
@@ -28,8 +23,7 @@ export default function MessageSlackBlock({
       }}
       transition="background-color 0.1s ease"
       borderRadius="md"
-      px="3"
-      py="2"
+      p="2"
       position="relative"
     >
       <Flex direction="row" gap="2" alignItems="flex-start" width="100%">
@@ -41,7 +35,7 @@ export default function MessageSlackBlock({
         {/* Messages container */}
         <Flex direction={reverse ? "column-reverse" : "column"} gap="2" flex={1}>
           {messages.map((message, i, arr) => (
-            <MessageSlack
+            <Message
               key={message.id}
               message={message}
               showHeader={reverse ? i === arr.length - 1 : i === 0}
