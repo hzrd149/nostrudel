@@ -82,14 +82,14 @@ function ListThreads() {
 }
 
 function ThreadMessages({ thread, pubkey }: { thread: Thread; pubkey: string }) {
-  const grouped = groupMessages(thread.messages, 5, true);
+  const grouped = groupMessages(thread.messages, 5);
 
   return (
     <>
       <Flex h="0" flex={1} overflowX="hidden" overflowY="scroll" direction="column" gap="2">
         {thread.root && <DirectMessageBlock messages={[thread.root]} showThreadButton={false} />}
         {grouped.map((group) => (
-          <DirectMessageBlock key={group.id} messages={group.events} showThreadButton={false} />
+          <DirectMessageBlock key={group[0].id} messages={group} showThreadButton={false} />
         ))}
       </Flex>
       <SendMessageForm flexShrink={0} pubkey={pubkey} rootId={thread.rootId} />

@@ -1,11 +1,11 @@
 import { Button, ButtonGroup, Flex, IconButton, LinkBox, LinkOverlay, Text } from "@chakra-ui/react";
-import { kinds, nip19 } from "nostr-tools";
+import { useActiveAccount } from "applesauce-react/hooks";
+import { NostrEvent, kinds, nip19 } from "nostr-tools";
 import { useMemo } from "react";
 import { Link as RouterLink, useLocation } from "react-router-dom";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { FixedSizeList, ListChildComponentProps } from "react-window";
 
-import { useActiveAccount } from "applesauce-react/hooks";
 import { CheckIcon, SettingsIcon } from "../../components/icons";
 import SimpleParentView from "../../components/layout/presets/simple-parent-view";
 import RequireActiveAccount from "../../components/router/require-active-account";
@@ -25,7 +25,6 @@ import useUserContacts from "../../hooks/use-user-contacts";
 import useUserMailboxes from "../../hooks/use-user-mailboxes";
 import useUserMutes from "../../hooks/use-user-mutes";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
-import { NostrEvent } from "nostr-tools";
 import RequireDecryptionCache from "../../providers/route/require-decryption-cache";
 
 export function useDirectMessagesTimeline(pubkey?: string) {

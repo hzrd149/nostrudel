@@ -1,0 +1,6 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+When writing async actions or callbacks in a component use the `useAsyncAction` hook instead of using `try/catch`. the hook is cleaner and handles errors by showing a toast

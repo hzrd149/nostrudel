@@ -22,7 +22,7 @@ import {
   useToast,
   VStack,
 } from "@chakra-ui/react";
-import { useObservableState } from "applesauce-react/hooks";
+import { useObservableEagerState, useObservableState } from "applesauce-react/hooks";
 import { useCallback, useRef, useState } from "react";
 import { firstValueFrom } from "rxjs";
 
@@ -33,14 +33,14 @@ import localSettings from "../../services/local-settings";
 
 export default function RequireDecryptionCache({ children }: { children: JSX.Element }) {
   const stats = useObservableState(decryptionCacheStats$);
-  const cache = useObservableState(decryptionCache$);
+  const cache = useObservableEagerState(decryptionCache$);
   const [password, setPassword] = useState("");
   const toast = useToast();
   const disableEncryptionModal = useDisclosure();
   const disableCacheModal = useDisclosure();
   const cancelRef = useRef<HTMLButtonElement>(null);
 
-  const { loading: isUnlocking, run: unlockCache } = useAsyncAction(async () => {
+  const unlockCache = useAsyncAction(async () => {
     if (!password.trim()) {
       toast({
         title: "Password required",
@@ -69,7 +69,7 @@ export default function RequireDecryptionCache({ children }: { children: JSX.Ele
     }
   }, [password, cache, toast]);
 
-  const { loading: isDisablingCache, run: runDisableMessageCache } = useAsyncAction(async () => {
+  const disableCache = useAsyncAction(async () => {
     // Clear the cache first
     const cache = await firstValueFrom(decryptionCache$);
     if (cache) await cache.clear();
@@ -99,12 +99,8 @@ export default function RequireDecryptionCache({ children }: { children: JSX.Ele
     disableEncryptionModal.onClose();
   }, [toast]);
 
-  const disableMessageCache = useCallback(() => {
-    runDisableMessageCache();
-  }, [runDisableMessageCache]);
-
   // If cache is not encrypted or is already unlocked, render children
-  if (!stats?.isEncrypted || !stats?.isLocked || !cache) {
+  if (stats?.isEncrypted === false || stats?.isLocked === false || cache === null) {
     return children;
   }
 
@@ -133,7 +129,7 @@ export default function RequireDecryptionCache({ children }: { children: JSX.Ele
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                onKeyPress={(e) => e.key === "Enter" && !isUnlocking && unlockCache()}
+                onKeyPress={(e) => e.key === "Enter" && !unlockCache.loading && unlockCache.run()}
                 placeholder="Enter current password or new password"
                 autoFocus
               />
@@ -153,8 +149,8 @@ export default function RequireDecryptionCache({ children }: { children: JSX.Ele
             <Button
               colorScheme="primary"
               w="full"
-              onClick={unlockCache}
-              isLoading={isUnlocking}
+              onClick={unlockCache.run}
+              isLoading={unlockCache.loading}
               loadingText="Unlocking..."
             >
               Unlock Cache
@@ -228,9 +224,9 @@ export default function RequireDecryptionCache({ children }: { children: JSX.Ele
               </Button>
               <Button
                 colorScheme="orange"
-                onClick={disableMessageCache}
+                onClick={disableCache.run}
                 ml={3}
-                isLoading={isDisablingCache}
+                isLoading={disableCache.loading}
                 loadingText="Disabling..."
               >
                 Disable Message Cache

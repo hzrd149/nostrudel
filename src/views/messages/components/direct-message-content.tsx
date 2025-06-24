@@ -1,7 +1,8 @@
+import React from "react";
 import { Box, BoxProps } from "@chakra-ui/react";
 import { useRenderedContent } from "applesauce-react/hooks";
-
 import { NostrEvent } from "nostr-tools";
+
 import {
   renderAppleMusicUrl,
   renderGenericUrl,
@@ -50,7 +51,7 @@ export default function DirectMessageContent({
   text,
   children,
   ...props
-}: { event: NostrEvent; text: string } & BoxProps) {
+}: { event: NostrEvent; text: string; children?: React.ReactNode } & BoxProps) {
   const { plaintext } = useLegacyMessagePlaintext(event);
   const content = useRenderedContent(plaintext, components, { linkRenderers, cacheKey: DirectMessageContentSymbol });
 
