@@ -60,7 +60,7 @@ type AppSettingsV13 = Omit<AppSettingsV12, "version" | "mutedWords" | "autoShowM
   version: 13;
 };
 
-type AppSettingsV14 = Omit<AppSettingsV13, "version" | "autoDecryptDMs"> & {
+type AppSettingsV14 = Omit<AppSettingsV13, "version" | "autoDecryptDMs" | "proxyUserMedia"> & {
   version: 14;
 };
 
@@ -82,7 +82,6 @@ export const DEFAULT_APP_SETTINGS: AppSettings = {
 
   // posting
   noteDifficulty: null,
-  proxyUserMedia: false,
   mirrorBlobsOnShare: false,
 
   // performance

@@ -6,6 +6,7 @@ import useUserProfile from "../../hooks/use-user-profile";
 import { components } from "../content";
 import { NostrMentionLink } from "../content/components/mention";
 import { renderGenericUrl } from "../content/links";
+import { ProfileContent } from "applesauce-core/helpers";
 
 const aboutComponents = {
   ...components,
@@ -16,8 +17,13 @@ const linkRenderers = [renderGenericUrl];
 
 const ProfileAboutContentSymbol = Symbol.for("profile-about-content");
 
-export default function UserAboutContent({ pubkey, ...props }: { pubkey: string } & Omit<BoxProps, "children">) {
-  const profile = useUserProfile(pubkey);
+export default function UserAboutContent({
+  pubkey,
+  profile,
+  ...props
+}: { pubkey?: string; profile?: ProfileContent } & Omit<BoxProps, "children">) {
+  profile = profile || useUserProfile(pubkey);
+
   const content = useRenderedContent(profile?.about, aboutComponents, {
     transformers,
     linkRenderers,

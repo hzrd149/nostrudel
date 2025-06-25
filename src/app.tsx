@@ -17,7 +17,6 @@ import NostrLinkView from "./views/link";
 import HomeView from "./views/home";
 import ThreadView from "./views/thread";
 import SupportView from "./views/support";
-import ProfileView from "./views/profile";
 import SearchView from "./views/search";
 import LaunchpadView from "./views/launchpad";
 import NotificationsView from "./views/notifications";
@@ -96,7 +95,6 @@ const router = createBrowserRouter(
         { path: "notes", Component: HomeView },
         { path: "new", children: newRoutes },
         { path: "launchpad", Component: LaunchpadView },
-        { path: "profile", Component: ProfileView },
         { path: "messages", children: messagesRoutes },
         { path: "user/:pubkey", children: userRoutes },
         { path: "u/:pubkey", children: userRoutes },

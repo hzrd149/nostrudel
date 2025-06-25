@@ -1,17 +1,30 @@
 import { pbkdf2 } from "@noble/hashes/pbkdf2";
 import { sha256 } from "@noble/hashes/sha2";
 import { cbc } from "@noble/ciphers/aes";
-import { hexToBytes, utf8ToBytes, bytesToUtf8 } from "@noble/hashes/utils";
+import { hexToBytes, utf8ToBytes, bytesToUtf8, bytesToHex } from "@noble/hashes/utils";
 import "localforage";
 
-// Salt for key derivation (in a real app, you might want to store this securely)
-const SALT = hexToBytes(
-  "02dcd24986c3186b6a2d2d933abed906ceb109ce4b0d2463c644e24471238dcf82f8ed0caa1a159413d3b3d1f3911fc9",
-);
+const SALT_KEY = "encryption_salt";
+let SALT: Uint8Array;
+// Try to get existing salt from localStorage
+const storedSalt = localStorage.getItem(SALT_KEY);
+
+if (storedSalt) {
+  // Use existing salt
+  SALT = hexToBytes(storedSalt);
+} else {
+  // Generate new random salt (48 bytes for good entropy)
+  SALT = crypto.getRandomValues(new Uint8Array(48));
+
+  // Store the salt in localStorage for future use
+  localStorage.setItem(SALT_KEY, bytesToHex(SALT));
+}
 
 // Encryption utility class
 export default class SecureStorage {
   private key: Uint8Array | null = null;
+  private salt = SALT;
+
   get unlocked() {
     return this.key !== null;
   }
@@ -19,13 +32,13 @@ export default class SecureStorage {
   constructor(public database: LocalForageDbMethods) {}
 
   // Generate encryption key from password
-  private static deriveKey(pass: string): Uint8Array {
+  private async deriveKey(pass: string): Promise<Uint8Array> {
     // Convert password to bytes
     const passBytes = utf8ToBytes(pass);
 
     // Use PBKDF2 to derive a key from the password
     // 32 bytes key for AES-256, with 10000 iterations
-    const key = pbkdf2(sha256, passBytes, SALT, { c: 10000, dkLen: 32 });
+    const key = pbkdf2(sha256, passBytes, this.salt, { c: 10000, dkLen: 32 });
 
     return key;
   }
@@ -97,7 +110,7 @@ export default class SecureStorage {
   // Verify if a password can decrypt stored data
   async unlock(pass: string, testKey: string = "_pass_test_"): Promise<boolean> {
     // Create a key from the password
-    const key = SecureStorage.deriveKey(pass);
+    const key = await this.deriveKey(pass);
 
     try {
       // Try to get a known test value with this password
@@ -107,11 +120,11 @@ export default class SecureStorage {
       if (testValue === null) {
         // First setup
         await this.setItem(testKey, "password verification data", key);
-        this.key = SecureStorage.deriveKey(pass);
+        this.key = await this.deriveKey(pass);
         return true;
       } else if (testValue === "password verification data") {
         // Save the key for later
-        this.key = SecureStorage.deriveKey(pass);
+        this.key = await this.deriveKey(pass);
         return true;
       }
     } catch (error) {

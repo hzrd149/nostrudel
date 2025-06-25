@@ -89,22 +89,19 @@ export type MetadataAvatarProps = Omit<AvatarProps, "src"> & {
 };
 export const MetadataAvatar = forwardRef<HTMLDivElement, MetadataAvatarProps>(
   ({ pubkey, metadata, noProxy, children, square = true, ...props }, ref) => {
-    const { imageProxy, proxyUserMedia, hideUsernames, showPubkeyColor } = useAppSettings();
+    const { imageProxy, hideUsernames, showPubkeyColor } = useAppSettings();
     const account = useActiveAccount();
     const picture = useMemo(() => {
       if (hideUsernames && pubkey && pubkey !== account?.pubkey) return undefined;
       if (metadata?.picture) {
         const src = safeUrl(metadata?.picture);
-        if (src) {
+        if (src && !noProxy) {
           const proxyURL = buildImageProxyURL(src, RESIZE_PROFILE_SIZE);
           if (proxyURL) return proxyURL;
-        } else if (!noProxy && proxyUserMedia && pubkey) {
-          const last4 = String(pubkey).slice(pubkey.length - 4, pubkey.length);
-          return `https://media.nostr.band/thumbs/${last4}/${pubkey}-picture-64`;
         }
         return src;
       }
-    }, [metadata?.picture, imageProxy, proxyUserMedia, hideUsernames, account]);
+    }, [metadata?.picture, imageProxy, hideUsernames, account]);
 
     const color = pubkey ? "#" + pubkey.slice(0, 6) : undefined;
 

@@ -44,28 +44,6 @@ function VerifyEventSettings() {
   );
 }
 
-function DecryptionCacheSettings() {
-  const encryptDecryptionCache = useObservableEagerState(localSettings.encryptDecryptionCache);
-
-  return (
-    <FormControl>
-      <Flex alignItems="center">
-        <FormLabel htmlFor="encryptDecryptionCache" mb="0">
-          Encrypt decryption cache
-        </FormLabel>
-        <Switch
-          id="encryptDecryptionCache"
-          isChecked={encryptDecryptionCache}
-          onChange={(e) => localSettings.encryptDecryptionCache.next(e.target.checked)}
-        />
-      </Flex>
-      <FormHelperText>
-        <span>Whether to encrypt the direct messages with a password when they are stored locally</span>
-      </FormHelperText>
-    </FormControl>
-  );
-}
-
 export default function PerformanceSettings() {
   const { register, submit, formState } = useSettingsForm();
 
@@ -89,19 +67,6 @@ export default function PerformanceSettings() {
         </Button>
       }
     >
-      <FormControl>
-        <Flex alignItems="center">
-          <FormLabel htmlFor="proxy-user-media" mb="0">
-            Proxy user media
-          </FormLabel>
-          <Switch id="proxy-user-media" {...register("proxyUserMedia")} />
-        </Flex>
-        <FormHelperText>
-          <span>Enabled: Use media.nostr.band to get smaller profile pictures (saves ~50Mb of data)</span>
-          <br />
-          <span>Side Effect: Some user pictures may not load or may be outdated</span>
-        </FormHelperText>
-      </FormControl>
       <FormControl>
         <FormLabel htmlFor="imageProxy" mb="0">
           Image proxy service
@@ -135,11 +100,6 @@ export default function PerformanceSettings() {
       </FormControl>
 
       <VerifyEventSettings />
-
-      <Heading size="md" mt="4">
-        Decryption cache
-      </Heading>
-      <DecryptionCacheSettings />
     </SimpleView>
   );
 }

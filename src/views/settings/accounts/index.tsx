@@ -77,7 +77,7 @@ export default function AccountSettings() {
         </Box>
 
         <ButtonGroup ms="auto">
-          <Button as={RouterLink} to="/profile" variant="ghost">
+          <Button as={RouterLink} to="/settings/profile" variant="ghost">
             Edit Profile
           </Button>
           <Button onClick={signout}>Signout</Button>

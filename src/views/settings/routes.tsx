@@ -20,6 +20,7 @@ import PrivacySettings from "./privacy";
 import AppRelaysView from "./relays";
 import SearchRelaysView from "./search";
 import SocialGraphView from "./social-graph";
+import ProfileSettingsView from "./profile";
 
 export default [
   {
@@ -32,6 +33,14 @@ export default [
         element: (
           <RequireActiveAccount>
             <AccountSettings />
+          </RequireActiveAccount>
+        ),
+      },
+      {
+        path: "profile",
+        element: (
+          <RequireActiveAccount>
+            <ProfileSettingsView />
           </RequireActiveAccount>
         ),
       },

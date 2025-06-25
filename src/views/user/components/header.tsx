@@ -41,7 +41,7 @@ export default function Header({
             title="Edit profile"
             size="sm"
             colorScheme="primary"
-            onClick={() => navigate("/profile")}
+            onClick={() => navigate("/settings/profile")}
           />
         )}
         {showExtraButtons && !isSelf && <UserFollowButton pubkey={pubkey} size="sm" />}

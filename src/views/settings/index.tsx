@@ -25,6 +25,7 @@ import SimpleNavItem from "../../components/layout/presets/simple-nav-item";
 import SimpleParentView from "../../components/layout/presets/simple-parent-view";
 import UserAvatar from "../../components/user/user-avatar";
 import VersionButton from "../../components/version-button";
+import User01 from "../../components/icons/user-01";
 
 function DividerHeader({ title }: { title: string }) {
   return (
@@ -47,6 +48,9 @@ export default function SettingsView() {
         <>
           <SimpleNavItem to="/settings/accounts" leftIcon={<UserAvatar size="xs" pubkey={account.pubkey} />}>
             Accounts
+          </SimpleNavItem>
+          <SimpleNavItem to="/settings/profile" leftIcon={<User01 boxSize={5} />}>
+            Profile
           </SimpleNavItem>
           <SimpleNavItem to="/settings/mailboxes" leftIcon={<Mail02 boxSize={5} />}>
             Mailboxes
