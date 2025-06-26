@@ -1,5 +1,5 @@
 import { Grid, GridItem, Text, VStack } from "@chakra-ui/react";
-import { UpdateProfile } from "applesauce-actions/actions";
+import { CreateProfile, UpdateProfile } from "applesauce-actions/actions";
 import { ProfileContent } from "applesauce-core/helpers";
 import { useActionHub, useActiveAccount, useObservableMemo } from "applesauce-react/hooks";
 import { nip19 } from "nostr-tools";
@@ -18,6 +18,7 @@ import { profileLoader } from "../../../services/loaders";
 import localSettings from "../../../services/local-settings";
 import ProfileEditForm from "./components/profile-edit-form";
 import ProfilePreview from "./components/profile-preview";
+import { eventStore } from "../../../services/event-store";
 
 export type ProfileFormData = Omit<ProfileContent, "picture" | "banner"> & {
   picture?: string | File;
@@ -107,9 +108,15 @@ export default function ProfileSettingsView() {
         }
 
         setUploadStatus("Signing and publishing...");
-        await actions
-          .exec(UpdateProfile, newMetadata)
-          .forEach((e) => publish("Update Profile", e, localSettings.lookupRelays.value));
+        if (eventStore.hasReplaceable(0, account.pubkey)) {
+          await actions
+            .exec(UpdateProfile, newMetadata)
+            .forEach((e) => publish("Update profile", e, localSettings.lookupRelays.value));
+        } else {
+          await actions
+            .exec(CreateProfile, newMetadata)
+            .forEach((e) => publish("Create profile", e, localSettings.lookupRelays.value));
+        }
 
         // Navigate to user profile
         const npub = nip19.npubEncode(account.pubkey);

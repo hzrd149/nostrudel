@@ -30,6 +30,7 @@ import EncryptedStorage from "../../classes/encrypted-storage";
 import useAsyncAction from "../../hooks/use-async-action";
 import { decryptionCache$, decryptionCacheStats$ } from "../../services/decryption-cache";
 import localSettings from "../../services/local-settings";
+import useForceUpdate from "../../hooks/use-force-update";
 
 export default function RequireDecryptionCache({ children }: { children: JSX.Element }) {
   const stats = useObservableState(decryptionCacheStats$);
@@ -53,11 +54,6 @@ export default function RequireDecryptionCache({ children }: { children: JSX.Ele
     if (cache instanceof EncryptedStorage) {
       const success = await cache.unlock(password);
       if (success) {
-        toast({
-          title: "Message cache unlocked",
-          description: "Your encrypted messages are now accessible",
-          status: "success",
-        });
         setPassword("");
       } else {
         toast({
@@ -80,7 +76,7 @@ export default function RequireDecryptionCache({ children }: { children: JSX.Ele
     toast({
       title: "Message cache disabled",
       description: "The message cache has been cleared and disabled",
-      status: "success",
+      status: "info",
     });
 
     disableCacheModal.onClose();
@@ -100,7 +96,7 @@ export default function RequireDecryptionCache({ children }: { children: JSX.Ele
   }, [toast]);
 
   // If cache is not encrypted or is already unlocked, render children
-  if (stats?.isEncrypted === false || stats?.isLocked === false || cache === null) {
+  if (cache === null || (cache instanceof EncryptedStorage ? cache.unlocked : true)) {
     return children;
   }
 

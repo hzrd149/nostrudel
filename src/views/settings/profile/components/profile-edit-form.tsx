@@ -4,11 +4,13 @@ import {
   Collapse,
   FormControl,
   FormErrorMessage,
+  FormHelperText,
   FormLabel,
   IconButton,
   Input,
   InputGroup,
   InputRightElement,
+  Link,
   Text,
   Textarea,
   useDisclosure,
@@ -134,6 +136,10 @@ function ProfileImageInput({ label, placeholder, fieldName, register, onFileChan
         </InputRightElement>
         <input type="file" accept="image/*" ref={inputRef} onChange={handleFileSelect} style={{ display: "none" }} />
       </InputGroup>
+      <FormHelperText>
+        Enter a URL or paste/upload an image file. You can also click the upload button to select a file from your
+        device.
+      </FormHelperText>
     </FormControl>
   );
 }
@@ -167,14 +173,17 @@ export default function ProfileEditForm({
         </Text>
 
         <FormControl isInvalid={!!errors.name} isRequired>
-          <FormLabel>Username</FormLabel>
+          <FormLabel>Name</FormLabel>
           <Input
             autoComplete="off"
-            placeholder="your_username"
+            placeholder="Your name or nickname"
             {...register("name", {
-              required: "Username is required",
+              required: "Name is required",
             })}
           />
+          <FormHelperText>
+            A nickname for your profile. It does not need to be unique so call yourself whatever you want.
+          </FormHelperText>
           <FormErrorMessage>{errors.name?.message}</FormErrorMessage>
         </FormControl>
 
@@ -215,7 +224,13 @@ export default function ProfileEditForm({
 
         <FormControl isInvalid={!!errors.website}>
           <FormLabel>Website</FormLabel>
-          <Input type="url" placeholder="https://example.com" {...register("website", { maxLength: 300 })} />
+          <Input
+            type="url"
+            placeholder="https://example.com"
+            autoComplete="off"
+            {...register("website", { maxLength: 300 })}
+          />
+          <FormHelperText>Your personal website or blog.</FormHelperText>
         </FormControl>
 
         <FormControl isInvalid={!!errors.lud16}>
@@ -226,6 +241,7 @@ export default function ProfileEditForm({
               validate: validateLightningAddress,
             })}
           />
+          <FormHelperText>Your Lightning address for receiving zaps.</FormHelperText>
           <FormErrorMessage>{errors.lud16?.message}</FormErrorMessage>
         </FormControl>
 
@@ -239,6 +255,13 @@ export default function ProfileEditForm({
               validate: (address) => validateNip05(address, account.pubkey),
             })}
           />
+          <FormHelperText>
+            Your{" "}
+            <Link href="https://github.com/nostr-protocol/nips/blob/master/05.md" isExternal>
+              NIP-05
+            </Link>{" "}
+            address. This is a verifiable identifier that proves you control a domain.
+          </FormHelperText>
           <FormErrorMessage>{errors.nip05?.message}</FormErrorMessage>
         </FormControl>
       </VStack>
