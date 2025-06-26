@@ -1,5 +1,3 @@
-import { load } from "cheerio";
-
 import fallback from "./fallback";
 import fields from "./fields";
 import mediaSetup from "./media";
@@ -16,14 +14,20 @@ import type { OgObjectInteral } from "./types";
  */
 export default function extractMetaTags(body: string, useFallbacks = true) {
   let ogObject: OgObjectInteral = {};
-  const $ = load(body);
+
+  // Parse HTML using DOMParser
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(body, "text/html");
   const metaFields = fields;
 
   // find all of the open graph info in the meta tags
-  $("meta").each((index, meta) => {
-    if (!meta.attribs || (!meta.attribs.property && !meta.attribs.name)) return;
-    const property = meta.attribs.property || meta.attribs.name;
-    const content = meta.attribs.content || meta.attribs.value;
+  const metaTags = doc.querySelectorAll("meta");
+  metaTags.forEach((meta) => {
+    const property = meta.getAttribute("property") || meta.getAttribute("name");
+    const content = meta.getAttribute("content") || meta.getAttribute("value");
+
+    if (!property) return;
+
     metaFields.forEach((item) => {
       if (item && property.toLowerCase() === item.property.toLowerCase()) {
         if (!item.multiple) {
@@ -47,7 +51,7 @@ export default function extractMetaTags(body: string, useFallbacks = true) {
 
   // if onlyGetOpenGraphInfo isn't set, run the open graph fallbacks
   if (useFallbacks) {
-    ogObject = fallback(ogObject, $);
+    ogObject = fallback(ogObject, doc);
   }
 
   return ogObject;

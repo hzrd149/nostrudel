@@ -1,168 +1,186 @@
-import type { CheerioAPI } from "cheerio";
-
 import { findImageTypeFromUrl, isImageTypeValid, isUrlValid } from "./utils";
 import type { ImageObject, OgObjectInteral } from "./types";
 
-const doesElementExist = (selector: string, attribute: string, $: CheerioAPI) =>
-  $(selector).attr(attribute) && ($(selector).attr(attribute)?.length || 0) > 0;
+const doesElementExist = (selector: string, attribute: string, doc: Document) => {
+  const element = doc.querySelector(selector);
+  return element?.getAttribute(attribute) && (element.getAttribute(attribute)?.length || 0) > 0;
+};
 
 /**
  * ogs fallbacks
  *
  * @param {object} ogObject - the current ogObject
- * @param {object} $ - cheerio.load() of the current html
+ * @param {Document} doc - Document from DOMParser of the current html
  * @return {object} object with ogs results with updated fallback values
  *
  */
-export function fallback(ogObject: OgObjectInteral, $: CheerioAPI) {
+export function fallback(ogObject: OgObjectInteral, doc: Document) {
   // title fallback
   if (!ogObject.ogTitle) {
-    if ($("title").text() && $("title").text().length > 0) {
-      ogObject.ogTitle = $("title").first().text();
-    } else if (
-      $('head > meta[name="title"]').attr("content") &&
-      ($('head > meta[name="title"]').attr("content")?.length || 0) > 0
-    ) {
-      ogObject.ogTitle = $('head > meta[name="title"]').attr("content");
-    } else if ($(".post-title").text() && $(".post-title").text().length > 0) {
-      ogObject.ogTitle = $(".post-title").text();
-    } else if ($(".entry-title").text() && $(".entry-title").text().length > 0) {
-      ogObject.ogTitle = $(".entry-title").text();
-    } else if ($('h1[class*="title" i] a').text() && $('h1[class*="title" i] a').text().length > 0) {
-      ogObject.ogTitle = $('h1[class*="title" i] a').text();
-    } else if ($('h1[class*="title" i]').text() && $('h1[class*="title" i]').text().length > 0) {
-      ogObject.ogTitle = $('h1[class*="title" i]').text();
+    const titleElement = doc.querySelector("title");
+    if (titleElement?.textContent && titleElement.textContent.length > 0) {
+      ogObject.ogTitle = titleElement.textContent;
+    } else if (doesElementExist('head > meta[name="title"]', "content", doc)) {
+      ogObject.ogTitle = doc.querySelector('head > meta[name="title"]')?.getAttribute("content") || undefined;
+    } else {
+      const postTitle = doc.querySelector(".post-title");
+      if (postTitle?.textContent && postTitle.textContent.length > 0) {
+        ogObject.ogTitle = postTitle.textContent;
+      } else {
+        const entryTitle = doc.querySelector(".entry-title");
+        if (entryTitle?.textContent && entryTitle.textContent.length > 0) {
+          ogObject.ogTitle = entryTitle.textContent;
+        } else {
+          const h1TitleA = doc.querySelector('h1[class*="title" i] a');
+          if (h1TitleA?.textContent && h1TitleA.textContent.length > 0) {
+            ogObject.ogTitle = h1TitleA.textContent;
+          } else {
+            const h1Title = doc.querySelector('h1[class*="title" i]');
+            if (h1Title?.textContent && h1Title.textContent.length > 0) {
+              ogObject.ogTitle = h1Title.textContent;
+            }
+          }
+        }
+      }
     }
   }
 
   // Get meta description tag if og description was not provided
   if (!ogObject.ogDescription) {
-    if (doesElementExist('head > meta[name="description"]', "content", $)) {
-      ogObject.ogDescription = $('head > meta[name="description"]').attr("content");
-    } else if (doesElementExist('head > meta[itemprop="description"]', "content", $)) {
-      ogObject.ogDescription = $('head > meta[itemprop="description"]').attr("content");
-    } else if ($("#description").text() && $("#description").text().length > 0) {
-      ogObject.ogDescription = $("#description").text();
+    if (doesElementExist('head > meta[name="description"]', "content", doc)) {
+      ogObject.ogDescription =
+        doc.querySelector('head > meta[name="description"]')?.getAttribute("content") || undefined;
+    } else if (doesElementExist('head > meta[itemprop="description"]', "content", doc)) {
+      ogObject.ogDescription =
+        doc.querySelector('head > meta[itemprop="description"]')?.getAttribute("content") || undefined;
+    } else {
+      const descElement = doc.querySelector("#description");
+      if (descElement?.textContent && descElement.textContent.length > 0) {
+        ogObject.ogDescription = descElement.textContent;
+      }
     }
   }
 
   // Get all of images if there is no og:image info
   if (!ogObject.ogImage) {
     ogObject.ogImage = [];
-    $("img").map((index, imageElement) => {
-      const source: string = $(imageElement).attr("src") || "";
-      if (!source) return false;
+    const images = doc.querySelectorAll("img");
+    images.forEach((imageElement) => {
+      const source: string = imageElement.getAttribute("src") || "";
+      if (!source) return;
       const type = findImageTypeFromUrl(source);
-      if (!isUrlValid(source) || !isImageTypeValid(type)) return false;
+      if (!isUrlValid(source) || !isImageTypeValid(type)) return;
       const fallbackImage: ImageObject = {
         url: source,
         type,
       };
-      if ($(imageElement).attr("width") && Number($(imageElement).attr("width")))
-        fallbackImage.width = Number($(imageElement).attr("width"));
-      if ($(imageElement).attr("height") && Number($(imageElement).attr("height")))
-        fallbackImage.height = Number($(imageElement).attr("height"));
+      const width = imageElement.getAttribute("width");
+      const height = imageElement.getAttribute("height");
+      if (width && Number(width)) fallbackImage.width = Number(width);
+      if (height && Number(height)) fallbackImage.height = Number(height);
       ogObject.ogImage?.push(fallbackImage);
-      return false;
     });
     ogObject.ogImage = ogObject.ogImage
       .filter((value) => value.url !== undefined && value.url !== "")
       .filter((value, index) => index < 10);
     if (ogObject.ogImage.length === 0) delete ogObject.ogImage;
   } else if (ogObject.ogImage) {
-    ogObject.ogImage.map((image) => {
+    ogObject.ogImage.forEach((image) => {
       if (image.url && !image.type) {
         const type = findImageTypeFromUrl(image.url);
         if (isImageTypeValid(type)) image.type = type;
       }
-      return false;
     });
   }
 
   // audio fallback
   if (!ogObject.ogAudioURL && !ogObject.ogAudioSecureURL) {
-    const audioElementValue: string = $("audio").attr("src") || "";
-    const audioSourceElementValue: string = $("audio > source").attr("src") || "";
-    if (doesElementExist("audio", "src", $)) {
+    const audioElement = doc.querySelector("audio");
+    const audioSourceElement = doc.querySelector("audio > source");
+    const audioElementValue: string = audioElement?.getAttribute("src") || "";
+    const audioSourceElementValue: string = audioSourceElement?.getAttribute("src") || "";
+
+    if (doesElementExist("audio", "src", doc)) {
       if (audioElementValue.startsWith("https")) {
         ogObject.ogAudioSecureURL = audioElementValue;
       } else {
         ogObject.ogAudioURL = audioElementValue;
       }
-      const audioElementTypeValue: string = $("audio").attr("type") || "";
-      if (!ogObject.ogAudioType && doesElementExist("audio", "type", $)) ogObject.ogAudioType = audioElementTypeValue;
-    } else if (doesElementExist("audio > source", "src", $)) {
+      const audioElementTypeValue: string = audioElement?.getAttribute("type") || "";
+      if (!ogObject.ogAudioType && doesElementExist("audio", "type", doc)) ogObject.ogAudioType = audioElementTypeValue;
+    } else if (doesElementExist("audio > source", "src", doc)) {
       if (audioSourceElementValue.startsWith("https")) {
         ogObject.ogAudioSecureURL = audioSourceElementValue;
       } else {
         ogObject.ogAudioURL = audioSourceElementValue;
       }
-      const audioSourceElementTypeValue: string = $("audio > source").attr("type") || "";
-      if (!ogObject.ogAudioType && doesElementExist("audio > source", "type", $))
+      const audioSourceElementTypeValue: string = audioSourceElement?.getAttribute("type") || "";
+      if (!ogObject.ogAudioType && doesElementExist("audio > source", "type", doc))
         ogObject.ogAudioType = audioSourceElementTypeValue;
     }
   }
 
   // locale fallback
   if (!ogObject.ogLocale) {
-    if (doesElementExist("html", "lang", $)) {
-      ogObject.ogLocale = $("html").attr("lang");
-    } else if (doesElementExist('head > meta[itemprop="inLanguage"]', "content", $)) {
-      ogObject.ogLocale = $('head > meta[itemprop="inLanguage"]').attr("content");
+    if (doesElementExist("html", "lang", doc)) {
+      ogObject.ogLocale = doc.querySelector("html")?.getAttribute("lang") || undefined;
+    } else if (doesElementExist('head > meta[itemprop="inLanguage"]', "content", doc)) {
+      ogObject.ogLocale = doc.querySelector('head > meta[itemprop="inLanguage"]')?.getAttribute("content") || undefined;
     }
   }
 
   // logo fallback
   if (!ogObject.ogLogo) {
-    if (doesElementExist('meta[itemprop="logo"]', "content", $)) {
-      ogObject.ogLogo = $('meta[itemprop="logo"]').attr("content");
-    } else if (doesElementExist('img[itemprop="logo"]', "src", $)) {
-      ogObject.ogLogo = $('img[itemprop="logo"]').attr("src");
+    if (doesElementExist('meta[itemprop="logo"]', "content", doc)) {
+      ogObject.ogLogo = doc.querySelector('meta[itemprop="logo"]')?.getAttribute("content") || undefined;
+    } else if (doesElementExist('img[itemprop="logo"]', "src", doc)) {
+      ogObject.ogLogo = doc.querySelector('img[itemprop="logo"]')?.getAttribute("src") || undefined;
     }
   }
 
   // url fallback
   if (!ogObject.ogUrl) {
-    if (doesElementExist('link[rel="canonical"]', "href", $)) {
-      ogObject.ogUrl = $('link[rel="canonical"]').attr("href");
-    } else if (doesElementExist('link[rel="alternate"][hreflang="x-default"]', "href", $)) {
-      ogObject.ogUrl = $('link[rel="alternate"][hreflang="x-default"]').attr("href");
+    if (doesElementExist('link[rel="canonical"]', "href", doc)) {
+      ogObject.ogUrl = doc.querySelector('link[rel="canonical"]')?.getAttribute("href") || undefined;
+    } else if (doesElementExist('link[rel="alternate"][hreflang="x-default"]', "href", doc)) {
+      ogObject.ogUrl =
+        doc.querySelector('link[rel="alternate"][hreflang="x-default"]')?.getAttribute("href") || undefined;
     }
   }
 
   // date fallback
   if (!ogObject.ogDate) {
-    if (doesElementExist('head > meta[name="date"]', "content", $)) {
-      ogObject.ogDate = $('head > meta[name="date"]').attr("content");
-    } else if (doesElementExist('[itemprop*="datemodified" i]', "content", $)) {
-      ogObject.ogDate = $('[itemprop*="datemodified" i]').attr("content");
-    } else if (doesElementExist('[itemprop="datepublished" i]', "content", $)) {
-      ogObject.ogDate = $('[itemprop="datepublished" i]').attr("content");
-    } else if (doesElementExist('[itemprop*="date" i]', "content", $)) {
-      ogObject.ogDate = $('[itemprop*="date" i]').attr("content");
-    } else if (doesElementExist('time[itemprop*="date" i]', "datetime", $)) {
-      ogObject.ogDate = $('time[itemprop*="date" i]').attr("datetime");
-    } else if (doesElementExist("time[datetime]", "datetime", $)) {
-      ogObject.ogDate = $("time[datetime]").attr("datetime");
+    if (doesElementExist('head > meta[name="date"]', "content", doc)) {
+      ogObject.ogDate = doc.querySelector('head > meta[name="date"]')?.getAttribute("content") || undefined;
+    } else if (doesElementExist('[itemprop*="datemodified" i]', "content", doc)) {
+      ogObject.ogDate = doc.querySelector('[itemprop*="datemodified" i]')?.getAttribute("content") || undefined;
+    } else if (doesElementExist('[itemprop="datepublished" i]', "content", doc)) {
+      ogObject.ogDate = doc.querySelector('[itemprop="datepublished" i]')?.getAttribute("content") || undefined;
+    } else if (doesElementExist('[itemprop*="date" i]', "content", doc)) {
+      ogObject.ogDate = doc.querySelector('[itemprop*="date" i]')?.getAttribute("content") || undefined;
+    } else if (doesElementExist('time[itemprop*="date" i]', "datetime", doc)) {
+      ogObject.ogDate = doc.querySelector('time[itemprop*="date" i]')?.getAttribute("datetime") || undefined;
+    } else if (doesElementExist("time[datetime]", "datetime", doc)) {
+      ogObject.ogDate = doc.querySelector("time[datetime]")?.getAttribute("datetime") || undefined;
     }
   }
 
   // favicon fallback
   if (!ogObject.favicon) {
-    if (doesElementExist('link[rel="shortcut icon"]', "href", $)) {
-      ogObject.favicon = $('link[rel="shortcut icon"]').attr("href");
-    } else if (doesElementExist('link[rel="icon"]', "href", $)) {
-      ogObject.favicon = $('link[rel="icon"]').attr("href");
-    } else if (doesElementExist('link[rel="mask-icon"]', "href", $)) {
-      ogObject.favicon = $('link[rel="mask-icon"]').attr("href");
-    } else if (doesElementExist('link[rel="apple-touch-icon"]', "href", $)) {
-      ogObject.favicon = $('link[rel="apple-touch-icon"]').attr("href");
-    } else if (doesElementExist('link[type="image/png"]', "href", $)) {
-      ogObject.favicon = $('link[type="image/png"]').attr("href");
-    } else if (doesElementExist('link[type="image/ico"]', "href", $)) {
-      ogObject.favicon = $('link[type="image/ico"]').attr("href");
-    } else if (doesElementExist('link[type="image/x-icon"]', "href", $)) {
-      ogObject.favicon = $('link[type="image/x-icon"]').attr("href");
+    if (doesElementExist('link[rel="shortcut icon"]', "href", doc)) {
+      ogObject.favicon = doc.querySelector('link[rel="shortcut icon"]')?.getAttribute("href") || undefined;
+    } else if (doesElementExist('link[rel="icon"]', "href", doc)) {
+      ogObject.favicon = doc.querySelector('link[rel="icon"]')?.getAttribute("href") || undefined;
+    } else if (doesElementExist('link[rel="mask-icon"]', "href", doc)) {
+      ogObject.favicon = doc.querySelector('link[rel="mask-icon"]')?.getAttribute("href") || undefined;
+    } else if (doesElementExist('link[rel="apple-touch-icon"]', "href", doc)) {
+      ogObject.favicon = doc.querySelector('link[rel="apple-touch-icon"]')?.getAttribute("href") || undefined;
+    } else if (doesElementExist('link[type="image/png"]', "href", doc)) {
+      ogObject.favicon = doc.querySelector('link[type="image/png"]')?.getAttribute("href") || undefined;
+    } else if (doesElementExist('link[type="image/ico"]', "href", doc)) {
+      ogObject.favicon = doc.querySelector('link[type="image/ico"]')?.getAttribute("href") || undefined;
+    } else if (doesElementExist('link[type="image/x-icon"]', "href", doc)) {
+      ogObject.favicon = doc.querySelector('link[type="image/x-icon"]')?.getAttribute("href") || undefined;
     }
   }
 
