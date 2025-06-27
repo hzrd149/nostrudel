@@ -6,11 +6,11 @@ import { memo, useCallback, useContext, useEffect, useMemo } from "react";
 import { UNSAFE_DataRouterContext, useLocation, useNavigate } from "react-router-dom";
 
 import { ThreadIcon } from "../../components/icons";
+import InfoCircle from "../../components/icons/info-circle";
 import SimpleView from "../../components/layout/presets/simple-view";
 import RequireActiveAccount from "../../components/router/require-active-account";
 import TimelineActionAndStatus from "../../components/timeline/timeline-action-and-status";
 import UserAvatarLink from "../../components/user/user-avatar-link";
-import UserDnsIdentityIcon from "../../components/user/user-dns-identity-icon";
 import UserLink from "../../components/user/user-link";
 import { groupMessages } from "../../helpers/nostr/dms";
 import { truncateId } from "../../helpers/string";
@@ -25,6 +25,7 @@ import IntersectionObserverProvider from "../../providers/local/intersection-obs
 import ThreadsProvider from "../../providers/local/thread-provider";
 import localSettings from "../../services/local-settings";
 import DirectMessageGroup from "./components/direct-message-group";
+import InfoDrawer from "./components/info-drawer";
 import SendMessageForm from "./components/send-message-form";
 import ThreadDrawer from "./components/thread-drawer";
 
@@ -65,10 +66,14 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
     navigate(".", { state: { thread: "list" } });
   }, [marker, navigate]);
 
+  const openInfoDrawer = useCallback(() => {
+    navigate(".", { state: { info: true } });
+  }, [navigate]);
+
   const closeDrawer = useCallback(() => {
     if (marker.index.current !== null && marker.index.current > 0) {
       navigate(-marker.index.current);
-    } else navigate(".", { state: { thread: undefined } });
+    } else navigate(".", { state: { thread: undefined, info: undefined } });
     marker.reset();
   }, [marker, navigate]);
 
@@ -118,7 +123,6 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
             <Flex gap="2" alignItems="center">
               <UserAvatarLink pubkey={pubkey} size="sm" />
               <UserLink pubkey={pubkey} fontWeight="bold" />
-              <UserDnsIdentityIcon pubkey={pubkey} />
             </Flex>
           }
           actions={
@@ -128,6 +132,12 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
                   Decrypt All
                 </Button>
               )}
+              <IconButton
+                aria-label="Info"
+                title="Conversation Info"
+                icon={<InfoCircle boxSize={5} />}
+                onClick={openInfoDrawer}
+              />
               <IconButton
                 aria-label="Threads"
                 title="Threads"
@@ -156,8 +166,14 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
           <SendMessageForm flexShrink={0} pubkey={pubkey} px="2" pb="2" />
 
           {location.state?.thread && (
-            <ThreadDrawer isOpen onClose={closeDrawer} threadId={location.state.thread} pubkey={pubkey} />
+            <ThreadDrawer
+              isOpen={!!location.state?.thread}
+              onClose={closeDrawer}
+              threadId={location.state.thread}
+              pubkey={pubkey}
+            />
           )}
+          <InfoDrawer isOpen={!!location.state?.info} onClose={closeDrawer} otherUserPubkey={pubkey} />
         </SimpleView>
       </IntersectionObserverProvider>
     </ThreadsProvider>
