@@ -1,30 +1,16 @@
-import {
-  Alert,
-  AlertDescription,
-  AlertIcon,
-  AlertTitle,
-  Box,
-  Button,
-  ButtonGroup,
-  Flex,
-  IconButton,
-  Link,
-  Text,
-  useToast,
-} from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router-dom";
-import { EventTemplate, kinds } from "nostr-tools";
-import dayjs from "dayjs";
-import { CloseIcon } from "@chakra-ui/icons";
+import { Alert, AlertDescription, AlertIcon, AlertTitle, Box, Button, Text } from "@chakra-ui/react";
+import { addRelayTag, removeRelayTag } from "applesauce-factory/operations/tag";
+import { useActiveAccount, useEventFactory } from "applesauce-react/hooks";
+import { kinds } from "nostr-tools";
 
-import useUserSearchRelayList from "../../../hooks/use-user-search-relay-list";
-import { useActiveAccount } from "applesauce-react/hooks";
-import { cloneList, getRelaysFromList, listAddRelay, listRemoveRelay } from "../../../helpers/nostr/lists";
-import { usePublishEvent } from "../../../providers/global/publish-provider";
-import RelayFavicon from "../../../components/relay-favicon";
-import AddRelayForm from "../relays/add-relay-form";
-import { useRelayInfo } from "../../../hooks/use-relay-info";
 import SimpleView from "../../../components/layout/presets/simple-view";
+import { getRelaysFromList } from "../../../helpers/nostr/lists";
+import { useRelayInfo } from "../../../hooks/use-relay-info";
+import useAsyncAction from "../../../hooks/use-async-action";
+import useUserSearchRelayList from "../../../hooks/use-user-search-relay-list";
+import { usePublishEvent } from "../../../providers/global/publish-provider";
+import AddRelayForm from "../relays/add-relay-form";
+import RelayControl from "../relays/relay-control";
 
 function RelayEntry({
   url,
@@ -40,23 +26,8 @@ function RelayEntry({
   const { info } = useRelayInfo(url);
 
   return (
-    <Flex
-      key={url}
-      gap="2"
-      alignItems="center"
-      p="2"
-      borderWidth="1px"
-      borderRadius="lg"
-      borderColor={isDefault ? "primary.500" : undefined}
-    >
-      <RelayFavicon relay={url} size="sm" outline="2px solid" />
-      <Box overflow="hidden">
-        <Link as={RouterLink} to={`/relays/${encodeURIComponent(url)}`} isTruncated>
-          {url}
-        </Link>
-        {info?.supported_nips && !info?.supported_nips.includes(50) && <Text color="red">Search not supported</Text>}
-      </Box>
-      <ButtonGroup size="sm" ml="auto">
+    <Box>
+      <RelayControl url={url} onRemove={onRemove}>
         <Button
           onClick={() => onMakeDefault()}
           variant={isDefault ? "solid" : "ghost"}
@@ -65,62 +36,54 @@ function RelayEntry({
         >
           Default
         </Button>
-        <IconButton
-          aria-label="Remove relay"
-          icon={<CloseIcon />}
-          colorScheme="red"
-          onClick={() => onRemove()}
-          variant="ghost"
-        />
-      </ButtonGroup>
-    </Flex>
+      </RelayControl>
+      {info?.supported_nips && !info?.supported_nips.includes(50) && (
+        <Text color="red" fontSize="sm" mt="1" ml="2">
+          Search not supported
+        </Text>
+      )}
+    </Box>
   );
 }
 
-function emptySearchRelayList(): EventTemplate {
-  return {
-    kind: kinds.SearchRelaysList,
-    tags: [],
-    content: "",
-    created_at: dayjs().unix(),
-  };
-}
-
-export default function SearchRelaysView() {
-  const toast = useToast();
+export default function SearchSettings() {
   const publish = usePublishEvent();
   const account = useActiveAccount();
+  const factory = useEventFactory();
   const searchRelayList = useUserSearchRelayList(account && { pubkey: account.pubkey });
 
   const searchRelays = searchRelayList ? getRelaysFromList(searchRelayList) : [];
 
-  const addRelay = async (url: string) => {
-    try {
-      const draft = listAddRelay(searchRelayList || emptySearchRelayList(), url);
-      await publish("Add search relay", draft);
-    } catch (error) {
-      if (error instanceof Error) toast({ status: "error", description: error.message });
-    }
-  };
+  const addRelay = useAsyncAction(async (url: string) => {
+    const draft = await factory.modifyTags(
+      searchRelayList || {
+        kind: kinds.SearchRelaysList,
+        content: "",
+        tags: [],
+        created_at: Math.floor(Date.now() / 1000),
+      },
+      addRelayTag(url),
+    );
+    const signed = await factory.sign(draft);
+    await publish("Add search relay", signed);
+  });
 
-  const makeDefault = async (url: string) => {
-    try {
-      const draft = searchRelayList ? cloneList(searchRelayList) : emptySearchRelayList();
-      draft.tags = Array.from(draft.tags).sort((a, b) => (a[1] === url ? -1 : 1));
-      await publish("Set default search relay", draft);
-    } catch (error) {
-      if (error instanceof Error) toast({ status: "error", description: error.message });
-    }
-  };
+  const makeDefault = useAsyncAction(async (url: string) => {
+    if (!searchRelayList) throw new Error("Missing search relay list");
 
-  const removeRelay = async (url: string) => {
-    try {
-      const draft = listRemoveRelay(searchRelayList || emptySearchRelayList(), url);
-      await publish("Remove search relay", draft);
-    } catch (error) {
-      if (error instanceof Error) toast({ status: "error", description: error.message });
-    }
-  };
+    const draft = await factory.modifyTags(searchRelayList, (tags) =>
+      Array.from(tags).sort((a, b) => (a[1] === url ? -1 : 1)),
+    );
+    const signed = await factory.sign(draft);
+    await publish("Set default search relay", signed);
+  });
+
+  const removeRelay = useAsyncAction(async (url: string) => {
+    if (!searchRelayList) return;
+    const draft = await factory.modifyTags(searchRelayList, removeRelayTag(url));
+    const signed = await factory.sign(draft);
+    await publish("Remove search relay", signed);
+  });
 
   return (
     <SimpleView title="Search Settings" maxW="4xl">
@@ -145,7 +108,7 @@ export default function SearchRelaysView() {
           <AlertDescription maxWidth="sm">
             You need to set at least one search relay to be able to use search
           </AlertDescription>
-          <Button mt="2" onClick={() => addRelay("wss://relay.nostr.band/")}>
+          <Button mt="2" onClick={() => addRelay.run("wss://relay.nostr.band/")}>
             Use nostr.band relay
           </Button>
         </Alert>
@@ -155,13 +118,13 @@ export default function SearchRelaysView() {
         <RelayEntry
           key={url}
           url={url}
-          onMakeDefault={() => makeDefault(url)}
-          onRemove={() => removeRelay(url)}
+          onMakeDefault={() => makeDefault.run(url)}
+          onRemove={() => removeRelay.run(url)}
           isDefault={searchRelays[0] === url}
         />
       ))}
 
-      <AddRelayForm onSubmit={(relay) => addRelay(relay)} supportedNips={[50]} />
+      <AddRelayForm onSubmit={addRelay.run} supportedNips={[50]} />
     </SimpleView>
   );
 }

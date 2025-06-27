@@ -102,7 +102,7 @@ export function SearchPage() {
             type="button"
             aria-label="Advanced"
             icon={<SettingsIcon boxSize={5} />}
-            to="/relays/search"
+            to="/settings/search"
           />
         </ButtonGroup>
       </Flex>

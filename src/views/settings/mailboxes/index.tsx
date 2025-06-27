@@ -1,58 +1,66 @@
-import { Flex, Heading, IconButton, Link, Text } from "@chakra-ui/react";
-import { CloseIcon } from "@chakra-ui/icons";
-import { Link as RouterLink } from "react-router-dom";
-import { kinds } from "nostr-tools";
-import { useActionHub, useActiveAccount } from "applesauce-react/hooks";
+import { Alert, AlertIcon, Flex, Heading, Link, Text } from "@chakra-ui/react";
 import {
   AddInboxRelay,
   AddOutboxRelay,
   RemoveInboxRelay,
   RemoveOutboxRelay,
 } from "applesauce-actions/actions/mailboxes";
+import { useActionHub, useActiveAccount } from "applesauce-react/hooks";
+import { kinds } from "nostr-tools";
 
-import RequireActiveAccount from "../../../components/router/require-active-account";
-import useUserMailboxes from "../../../hooks/use-user-mailboxes";
+import DebugEventButton from "../../../components/debug-modal/debug-event-button";
 import { InboxIcon, OutboxIcon } from "../../../components/icons";
-import MediaServerFavicon from "../../../components/favicon/media-server-favicon";
-import { NostrEvent } from "nostr-tools";
+import SimpleView from "../../../components/layout/presets/simple-view";
+import RequireActiveAccount from "../../../components/router/require-active-account";
 import useAsyncAction from "../../../hooks/use-async-action";
+import { useRelayInfo } from "../../../hooks/use-relay-info";
+import useReplaceableEvent from "../../../hooks/use-replaceable-event";
+import useUserMailboxes from "../../../hooks/use-user-mailboxes";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
 import AddRelayForm from "../relays/add-relay-form";
-import DebugEventButton from "../../../components/debug-modal/debug-event-button";
-import useReplaceableEvent from "../../../hooks/use-replaceable-event";
-import SimpleView from "../../../components/layout/presets/simple-view";
-import { RelayMode } from "../../../services/app-relays";
+import RelayControl from "../relays/relay-control";
 
-function RelayCard({ relay, mode, list }: { relay: string; mode: RelayMode; list?: NostrEvent }) {
+function InboxRelay({ url }: { url: string }) {
   const publish = usePublishEvent();
   const actions = useActionHub();
+  const { info } = useRelayInfo(url);
 
   const remove = useAsyncAction(async () => {
-    if (mode === RelayMode.READ) {
-      await actions.exec(RemoveInboxRelay, relay).forEach((e) => publish("Remove inbox relay", e));
-    } else if (mode === RelayMode.WRITE) {
-      await actions.exec(RemoveOutboxRelay, relay).forEach((e) => publish("Remove outbox relay", e));
-    }
+    await actions.exec(RemoveInboxRelay, url).forEach((e) => publish("Remove inbox relay", e));
   });
 
   return (
-    <Flex key={relay} gap="2" alignItems="center" overflow="hidden">
-      <MediaServerFavicon server={relay} size="xs" />
-      <Link as={RouterLink} to={`/relays/${encodeURIComponent(relay)}`} isTruncated>
-        {relay}
-      </Link>
-      <IconButton
-        aria-label="Remove Relay"
-        icon={<CloseIcon />}
-        size="xs"
-        ml="auto"
-        colorScheme="red"
-        variant="ghost"
-        onClick={remove.run}
-        isLoading={remove.loading}
-      />
-    </Flex>
+    <RelayControl
+      url={url}
+      onRemove={remove.run}
+      details={
+        <>
+          {info?.limitation?.restricted_writes && (
+            <Text color="orange.500" fontSize="sm">
+              Restricted writes: May cause issues with other users sending you notes
+            </Text>
+          )}
+          {info?.limitation?.payment_required && (
+            <Text color="red.500" fontSize="sm">
+              Payment required: Paid relays dont make good inbox relays
+            </Text>
+          )}
+        </>
+      }
+    />
   );
+}
+
+function OutboxRelay({ url }: { url: string }) {
+  const publish = usePublishEvent();
+  const actions = useActionHub();
+  const { info } = useRelayInfo(url);
+
+  const remove = useAsyncAction(async () => {
+    await actions.exec(RemoveOutboxRelay, url).forEach((e) => publish("Remove outbox relay", e));
+  });
+
+  return <RelayControl url={url} onRemove={remove.run} />;
 }
 
 function MailboxesPage() {
@@ -86,29 +94,41 @@ function MailboxesPage() {
 
       <Flex gap="2" mt="2">
         <InboxIcon boxSize={5} />
-        <Heading size="md">Inbox</Heading>
+        <Heading size="md">Inbox relays</Heading>
       </Flex>
       <Text fontStyle="italic" mt="-2">
-        These relays are used by other users to send DMs and notes to you
+        These relays are used by other users to send notes to you
       </Text>
+      {(mailboxes?.inboxes?.length ?? 0) > 4 && (
+        <Alert status="warning" variant="subtle" mt="2">
+          <AlertIcon />
+          Having too many inbox relays will make it difficult for other users to send you notes
+        </Alert>
+      )}
       {Array.from(mailboxes?.inboxes ?? [])
         .sort()
         .map((url) => (
-          <RelayCard key={url} relay={url} mode={RelayMode.READ} list={event ?? undefined} />
+          <InboxRelay key={url} url={url} />
         ))}
       <AddRelayForm onSubmit={addInboxRelay.run} />
 
       <Flex gap="2" mt="4">
         <OutboxIcon boxSize={5} />
-        <Heading size="md">Outbox</Heading>
+        <Heading size="md">Outbox relays</Heading>
       </Flex>
       <Text fontStyle="italic" mt="-2">
-        noStrudel will always publish to these relays so other users can find your notes
+        These relays are used to publish all your notes and events
       </Text>
+      {(mailboxes?.outboxes?.length ?? 0) > 4 && (
+        <Alert status="warning" variant="subtle" mt="2">
+          <AlertIcon />
+          Having too many outbox relays will make it difficult for other users to find your notes
+        </Alert>
+      )}
       {Array.from(mailboxes?.outboxes ?? [])
         .sort()
         .map((url) => (
-          <RelayCard key={url} relay={url} mode={RelayMode.WRITE} list={event ?? undefined} />
+          <OutboxRelay key={url} url={url} />
         ))}
       <AddRelayForm onSubmit={addOutboxRelay.run} />
     </SimpleView>

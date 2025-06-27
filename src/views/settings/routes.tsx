@@ -18,7 +18,7 @@ import ContentPoliciesSettings from "./policies";
 import PostSettings from "./post";
 import PrivacySettings from "./privacy";
 import AppRelaysView from "./relays";
-import SearchRelaysView from "./search";
+import SearchSettings from "./search";
 import SocialGraphView from "./social-graph";
 import ProfileSettingsView from "./profile";
 
@@ -48,7 +48,7 @@ export default [
       { path: "identity", Component: DnsIdentityView },
       { path: "authentication", Component: AuthenticationSettingsView },
       { path: "media-servers", Component: MediaServersView },
-      { path: "search-relays", Component: SearchRelaysView },
+      { path: "search", Component: SearchSettings },
       { path: "relays", Component: AppRelaysView },
       { path: "social-graph", Component: SocialGraphView },
       { path: "mutes", Component: MutesSettings },

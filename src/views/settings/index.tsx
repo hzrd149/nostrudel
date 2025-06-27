@@ -58,7 +58,7 @@ export default function SettingsView() {
           <SimpleNavItem to="/settings/media-servers" leftIcon={<Image01 boxSize={5} />}>
             Media Servers
           </SimpleNavItem>
-          <SimpleNavItem to="/settings/search-relays" leftIcon={<SearchIcon boxSize={5} />}>
+          <SimpleNavItem to="/settings/search" leftIcon={<SearchIcon boxSize={5} />}>
             Search
           </SimpleNavItem>
           <SimpleNavItem to="/settings/identity" leftIcon={<VerifiedIcon boxSize={5} />}>

@@ -7,7 +7,7 @@ import CacheRelayView from "../settings/cache";
 import DatabaseView from "../settings/cache/database";
 import MailboxesView from "../settings/mailboxes";
 import MediaServersView from "../settings/media-servers";
-import SearchRelaysView from "../settings/search";
+import SearchSettings from "../settings/search";
 import NIP05RelaysView from "./nip05";
 import ContactListRelaysView from "./contact-list";
 const WebRtcRelaysView = lazy(() => import("./webrtc"));
@@ -31,7 +31,7 @@ export default [
         ],
       },
       { path: "mailboxes", element: <MailboxesView /> },
-      { path: "search", element: <SearchRelaysView /> },
+      { path: "search", element: <SearchSettings /> },
       { path: "media-servers", element: <MediaServersView /> },
       { path: "nip05", element: <NIP05RelaysView /> },
       { path: "contacts", element: <ContactListRelaysView /> },
