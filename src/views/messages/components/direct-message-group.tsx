@@ -9,6 +9,7 @@ import MessagesGroup, { MessageGroupProps } from "../../../components/message/me
 import AddReactionButton from "../../../components/note/timeline-note/components/add-reaction-button";
 import EventZapButton from "../../../components/zap/event-zap-button";
 import { useLegacyMessagePlaintext } from "../../../hooks/use-legacy-message-plaintext";
+import { useDeleteEventContext } from "../../../providers/route/delete-event-provider";
 import DecryptPlaceholder from "./decrypt-placeholder";
 import DirectMessageContent from "./direct-message-content";
 
@@ -24,6 +25,7 @@ function DirectMessageActions({
   toast: any;
 }) {
   const { plaintext } = useLegacyMessagePlaintext(message);
+  const { deleteEvent } = useDeleteEventContext();
   const isOwnMessage = message.pubkey === account.pubkey;
 
   const handleReply = () => {
@@ -49,10 +51,9 @@ function DirectMessageActions({
     }
   };
 
-  const handleDelete = () => {
-    // TODO: Implement delete functionality
-    console.log("Delete message:", message.id);
-  };
+  const handleDelete = useCallback(() => {
+    deleteEvent(message);
+  }, [deleteEvent, message]);
 
   return (
     <ButtonGroup size="xs" variant="ghost" gap="0">
