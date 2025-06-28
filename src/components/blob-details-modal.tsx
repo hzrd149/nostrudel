@@ -97,14 +97,14 @@ function BlobVerificationCard({ url, hash }: { url: string; hash: string }) {
       </Flex>
 
       <Box>
-        <Text fontSize="sm" color="gray.500">
+        <Text fontSize="sm" color="GrayText">
           Original:{" "}
           <Text fontFamily="monospace" wordBreak="break-all">
             {hash}
           </Text>
         </Text>
         {downloaded && (
-          <Text fontSize="sm" color="gray.500">
+          <Text fontSize="sm" color="GrayText">
             Downloaded:{" "}
             <Text fontFamily="monospace" wordBreak="break-all">
               {downloaded}

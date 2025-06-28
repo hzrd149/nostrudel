@@ -80,7 +80,7 @@ export default function InfoDrawer({ isOpen, onClose, otherUserPubkey }: InfoDra
             <VStack spacing={2} align="stretch">
               <Box>
                 <Heading size="md">Shared Inboxes</Heading>
-                <Text color="gray.500">
+                <Text color="GrayText">
                   Relays that both you and <UserName pubkey={otherUserPubkey} fontWeight="normal" /> use for receiving
                   messages
                 </Text>
@@ -94,7 +94,7 @@ export default function InfoDrawer({ isOpen, onClose, otherUserPubkey }: InfoDra
           <VStack spacing={2} align="stretch">
             <Box>
               <Heading size="md">Your Inboxes</Heading>
-              <Text color="gray.500">Relays that only you use for receiving messages</Text>
+              <Text color="GrayText">Relays that only you use for receiving messages</Text>
             </Box>
             {yourInboxes.map((relay) => (
               <ConversationRelay key={relay} relay={relay} />
@@ -116,7 +116,7 @@ export default function InfoDrawer({ isOpen, onClose, otherUserPubkey }: InfoDra
                 <UserName pubkey={otherUserPubkey} />
                 's Inboxes
               </Heading>
-              <Text color="gray.500">
+              <Text color="GrayText">
                 Relays that only <UserName pubkey={otherUserPubkey} fontWeight="normal" /> uses for receiving messages
               </Text>
             </Box>
@@ -132,7 +132,7 @@ export default function InfoDrawer({ isOpen, onClose, otherUserPubkey }: InfoDra
           </VStack>
 
           {sharedInboxes.length === 0 && yourInboxes.length === 0 && theirInboxes.length === 0 && (
-            <Text color="gray.500" textAlign="center">
+            <Text color="GrayText" textAlign="center">
               No relay information available
             </Text>
           )}

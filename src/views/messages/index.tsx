@@ -1,5 +1,7 @@
 import { Button, ButtonGroup, Flex, IconButton, LinkBox, LinkOverlay, Text } from "@chakra-ui/react";
-import { useActiveAccount } from "applesauce-react/hooks";
+import { mergeRelaySets } from "applesauce-core/helpers";
+import { GiftWrapsModel } from "applesauce-core/models";
+import { useActiveAccount, useEventModel } from "applesauce-react/hooks";
 import { NostrEvent, kinds, nip19 } from "nostr-tools";
 import { useMemo } from "react";
 import { Link as RouterLink, useLocation } from "react-router-dom";
@@ -14,7 +16,6 @@ import UserAvatar from "../../components/user/user-avatar";
 import UserDnsIdentity from "../../components/user/user-dns-identity";
 import UserName from "../../components/user/user-name";
 import { KnownConversation, groupIntoConversations, hasResponded, identifyConversation } from "../../helpers/nostr/dms";
-import { truncateId } from "../../helpers/string";
 import useEventIntersectionRef from "../../hooks/use-event-intersection-ref";
 import { useLegacyMessagePlaintext } from "../../hooks/use-legacy-message-plaintext";
 import useRouteStateValue from "../../hooks/use-route-state-value";
@@ -24,19 +25,24 @@ import useTimelineLoader from "../../hooks/use-timeline-loader";
 import useUserContacts from "../../hooks/use-user-contacts";
 import useUserMailboxes from "../../hooks/use-user-mailboxes";
 import useUserMutes from "../../hooks/use-user-mutes";
+import { DirectMessageRelays } from "../../models/messages";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import RequireDecryptionCache from "../../providers/route/require-decryption-cache";
 
+/** use a timeline to load NIP-04 DMs and NIP-17 gift wraps */
 export function useDirectMessagesTimeline(pubkey?: string) {
   const mailboxes = useUserMailboxes(pubkey);
+  const dmRelays = useEventModel(DirectMessageRelays, pubkey ? [pubkey] : undefined);
+
+  const relays = useMemo(() => mergeRelaySets(mailboxes?.inboxes, dmRelays), [mailboxes?.inboxes, dmRelays]);
 
   return useTimelineLoader(
-    `${truncateId(pubkey ?? "anon")}-dms`,
-    mailboxes?.inboxes ?? [],
+    `${pubkey ?? "anon"}-dms`,
+    relays,
     pubkey
       ? [
           { authors: [pubkey], kinds: [kinds.EncryptedDirectMessage] },
-          { "#p": [pubkey], kinds: [kinds.EncryptedDirectMessage] },
+          { "#p": [pubkey], kinds: [kinds.EncryptedDirectMessage, kinds.GiftWrap] },
         ]
       : undefined,
   );
@@ -88,6 +94,8 @@ function MessagesHomePage() {
 
   const { timeline: messages, loader } = useDirectMessagesTimeline(account.pubkey);
 
+  const locked = useEventModel(GiftWrapsModel, [account.pubkey, true]);
+
   const conversations = useMemo(() => {
     const conversations = groupIntoConversations(messages).map((c) => identifyConversation(c, account.pubkey));
 
@@ -119,14 +127,19 @@ function MessagesHomePage() {
       title="Messages"
       scroll={false}
       actions={
-        <IconButton
-          as={RouterLink}
-          to="/settings/messages"
-          aria-label="Settings"
-          icon={<SettingsIcon boxSize={5} />}
-          variant="ghost"
-          ms="auto"
-        />
+        <ButtonGroup variant="ghost" ms="auto">
+          {locked && locked.length > 0 && (
+            <Button as={RouterLink} to="/messages/inbox" variant="outline" colorScheme="green">
+              Inbox ({locked.length})
+            </Button>
+          )}
+          <IconButton
+            as={RouterLink}
+            to="/settings/messages"
+            aria-label="Settings"
+            icon={<SettingsIcon boxSize={5} />}
+          />
+        </ButtonGroup>
       }
     >
       <ButtonGroup p="2" size="sm" variant="outline">
