@@ -28,6 +28,7 @@ export default function Message({ message, showHeader = true, renderContent, ren
       width="full"
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
+      minH="24.5px"
     >
       {/* Quick Actions - float right in message */}
       {hover && renderActions && (

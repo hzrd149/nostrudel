@@ -14,9 +14,11 @@ import {
   CardHeader,
   Flex,
   FormControl,
+  FormHelperText,
   FormLabel,
   Heading,
   Input,
+  Switch,
   Text,
   useDisclosure,
   useToast,
@@ -35,6 +37,7 @@ import useForceUpdate from "../../hooks/use-force-update";
 export default function RequireDecryptionCache({ children }: { children: JSX.Element }) {
   const stats = useObservableState(decryptionCacheStats$);
   const cache = useObservableEagerState(decryptionCache$);
+  const autoDecryptMessages = useObservableEagerState(localSettings.autoDecryptMessages);
   const [password, setPassword] = useState("");
   const toast = useToast();
   const disableEncryptionModal = useDisclosure();
@@ -129,6 +132,20 @@ export default function RequireDecryptionCache({ children }: { children: JSX.Ele
                 placeholder="Enter current password or new password"
                 autoFocus
               />
+            </FormControl>
+
+            <FormControl>
+              <Flex alignItems="center">
+                <FormLabel htmlFor="autoDecryptMessages" mb="0">
+                  Automatically decrypt messages
+                </FormLabel>
+                <Switch
+                  id="autoDecryptMessages"
+                  isChecked={autoDecryptMessages}
+                  onChange={(e) => localSettings.autoDecryptMessages.next(e.target.checked)}
+                />
+              </Flex>
+              <FormHelperText>Automatically decrypt direct messages when they are loaded or received.</FormHelperText>
             </FormControl>
 
             {stats && (
