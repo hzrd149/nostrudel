@@ -1,6 +1,14 @@
+import {
+  getLegacyMessageCorraspondant,
+  isPTag,
+  persistEncryptedContent,
+  unlockGiftWrap,
+  unlockLegacyMessage,
+} from "applesauce-core/helpers";
 import { defined } from "applesauce-core/observable";
-import { persistEncryptedContent } from "applesauce-core/helpers";
 import localforage from "localforage";
+import { NostrEvent } from "nostr-social-graph";
+import { kinds } from "nostr-tools";
 import {
   distinctUntilChanged,
   filter,
@@ -15,6 +23,7 @@ import {
 } from "rxjs";
 
 import EncryptedStorage from "../classes/encrypted-storage";
+import accounts from "./accounts";
 import { eventStore } from "./event-store";
 import localSettings from "./local-settings";
 
@@ -110,10 +119,27 @@ export const decryptionCacheStats$ = localSettings.encryptDecryptionCache.pipe(
   shareReplay(1),
 );
 
+// Fallback method for auto decrypting messages
+async function autoDecryptMessagesFallback(event: NostrEvent) {
+  if (localSettings.autoDecryptMessages.value === false || !accounts.active) return;
+  const account = accounts.active;
+
+  // Unlock legacy messages
+  if (event.kind === kinds.EncryptedDirectMessage && getLegacyMessageCorraspondant(event, account.pubkey)) {
+    return unlockLegacyMessage(event, account.pubkey, account);
+  }
+
+  // Unlock gift wraps to user
+  if (event.kind === kinds.GiftWrap && event.tags.find(isPTag)?.[1] === account.pubkey) {
+    return unlockGiftWrap(event, account);
+  }
+}
+
 // Save all encrypted content to the cache
 decryptionCache$
   .pipe(
     defined(),
-    switchMap((cache) => new Observable(() => persistEncryptedContent(eventStore, cache))),
+    // NOTE: Wrap this in a new Observable so the "stop" method returned from persistEncryptedContent will be called when cache changes
+    switchMap((cache) => new Observable(() => persistEncryptedContent(eventStore, cache, autoDecryptMessagesFallback))),
   )
   .subscribe();

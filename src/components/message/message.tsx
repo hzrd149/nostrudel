@@ -1,6 +1,6 @@
 import { Box, ButtonGroup, Flex } from "@chakra-ui/react";
 import { NostrEvent } from "nostr-tools";
-import { ReactNode } from "react";
+import { ReactNode, useState } from "react";
 
 import useEventIntersectionRef from "../../hooks/use-event-intersection-ref";
 import useEventReactions from "../../hooks/use-event-reactions";
@@ -19,11 +19,18 @@ export default function Message({ message, showHeader = true, renderContent, ren
   const reactions = useEventReactions(message) ?? [];
   const hasReactions = reactions.length > 0;
   const ref = useEventIntersectionRef(message);
+  const [hover, setHover] = useState(false);
 
   return (
-    <Box ref={ref} position="relative" width="full">
+    <Box
+      ref={ref}
+      position="relative"
+      width="full"
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+    >
       {/* Quick Actions - float right in message */}
-      {renderActions && (
+      {hover && renderActions && (
         <Box
           className="message-actions"
           opacity="0"

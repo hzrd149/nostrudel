@@ -1,12 +1,10 @@
 import { Alert, AlertDescription, AlertIcon, Button } from "@chakra-ui/react";
-import { useObservableEagerState } from "applesauce-react/hooks";
 import { NostrEvent } from "nostr-tools";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import DebugEventButton from "../../../components/debug-modal/debug-event-button";
 import { UnlockIcon } from "../../../components/icons";
 import { useLegacyMessagePlaintext } from "../../../hooks/use-legacy-message-plaintext";
-import localSettings from "../../../services/local-settings";
 
 export default function DecryptPlaceholder({
   children,
@@ -15,7 +13,6 @@ export default function DecryptPlaceholder({
   children: (decrypted: string) => JSX.Element;
   message: NostrEvent;
 }): JSX.Element {
-  const autoDecryptMessages = useObservableEagerState(localSettings.autoDecryptMessages);
   const [loading, setLoading] = useState(false);
   const { unlock, plaintext, error } = useLegacyMessagePlaintext(message);
 
@@ -26,18 +23,6 @@ export default function DecryptPlaceholder({
     } catch (e) {}
     setLoading(false);
   };
-
-  // auto decrypt
-  useEffect(() => {
-    if (autoDecryptMessages && !plaintext && !error) {
-      setLoading(true);
-      unlock()
-        .catch(() => {})
-        .finally(() => {
-          setLoading(false);
-        });
-    }
-  }, [autoDecryptMessages, error, plaintext]);
 
   if (plaintext) {
     return children(plaintext);

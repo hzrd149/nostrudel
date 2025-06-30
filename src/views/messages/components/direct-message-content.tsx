@@ -1,8 +1,10 @@
-import React from "react";
 import { Box, BoxProps } from "@chakra-ui/react";
 import { useRenderedContent } from "applesauce-react/hooks";
 import { NostrEvent } from "nostr-tools";
+import React from "react";
 
+import { isRumor, Rumor } from "applesauce-core/helpers";
+import { components } from "../../../components/content";
 import {
   renderAppleMusicUrl,
   renderGenericUrl,
@@ -20,11 +22,11 @@ import {
   renderWavlakeUrl,
   renderYoutubeURL,
 } from "../../../components/content/links";
-import { ContentSettingsProvider } from "../../../providers/local/content-settings";
-import { LightboxProvider } from "../../../components/lightbox-provider";
 import { renderAudioUrl } from "../../../components/content/links/audio";
-import { components } from "../../../components/content";
+import { LightboxProvider } from "../../../components/lightbox-provider";
 import { useLegacyMessagePlaintext } from "../../../hooks/use-legacy-message-plaintext";
+import { ContentSettingsProvider } from "../../../providers/local/content-settings";
+import DecryptPlaceholder from "./decrypt-placeholder";
 
 const DirectMessageContentSymbol = Symbol.for("direct-message-content");
 const linkRenderers = [
@@ -46,17 +48,17 @@ const linkRenderers = [
   renderGenericUrl,
 ];
 
-export default function DirectMessageContent({
-  event,
+function LegacyDirectMessageContent({
+  message,
   text,
   children,
   ...props
-}: { event: NostrEvent; text: string; children?: React.ReactNode } & BoxProps) {
-  const { plaintext } = useLegacyMessagePlaintext(event);
+}: { message: NostrEvent; text: string; children?: React.ReactNode } & BoxProps) {
+  const plaintext = useLegacyMessagePlaintext(message).plaintext;
   const content = useRenderedContent(plaintext, components, { linkRenderers, cacheKey: DirectMessageContentSymbol });
 
   return (
-    <ContentSettingsProvider event={event}>
+    <ContentSettingsProvider event={message}>
       <LightboxProvider>
         <Box whiteSpace="pre-wrap" {...props}>
           {content}
@@ -65,4 +67,39 @@ export default function DirectMessageContent({
       </LightboxProvider>
     </ContentSettingsProvider>
   );
+}
+
+function WrappedDirectMessageContent({
+  message,
+  children,
+  ...props
+}: { message: Rumor; children?: React.ReactNode } & BoxProps) {
+  const content = useRenderedContent(message, components, { linkRenderers, cacheKey: DirectMessageContentSymbol });
+
+  return (
+    <ContentSettingsProvider event={message as NostrEvent}>
+      <LightboxProvider>
+        <Box whiteSpace="pre-wrap" {...props}>
+          {content}
+          {children}
+        </Box>
+      </LightboxProvider>
+    </ContentSettingsProvider>
+  );
+}
+
+export default function DirectMessageContent({
+  message,
+  children,
+  ...props
+}: { message: NostrEvent | Rumor; children?: React.ReactNode } & BoxProps) {
+  if (isRumor(message)) {
+    return <WrappedDirectMessageContent message={message} children={children} {...props} />;
+  } else {
+    return (
+      <DecryptPlaceholder message={message}>
+        {(text) => <LegacyDirectMessageContent message={message} text={text} children={children} {...props} />}
+      </DecryptPlaceholder>
+    );
+  }
 }

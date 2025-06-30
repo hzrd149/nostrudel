@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef } from "react";
-import { createMemoryRouter } from "react-router-dom";
+import { createMemoryRouter, useNavigate } from "react-router-dom";
 
 type Router = ReturnType<typeof createMemoryRouter>;
 

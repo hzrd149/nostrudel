@@ -1,6 +1,6 @@
 import { useRef } from "react";
-import { getEventUID } from "nostr-idb";
 import { NostrEvent } from "nostr-tools";
+import { getEventUID } from "applesauce-core/helpers";
 
 import { useIntersectionEntityDetails } from "../providers/local/intersection-observer";
 

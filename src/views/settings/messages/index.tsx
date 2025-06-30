@@ -25,7 +25,7 @@ export default function MessagesSettings() {
             onChange={(e) => localSettings.autoDecryptMessages.next(e.target.checked)}
           />
         </Flex>
-        <FormHelperText>Enabled: automatically decrypt direct messages when they are loaded</FormHelperText>
+        <FormHelperText>Automatically decrypt direct messages when they are loaded or received.</FormHelperText>
       </FormControl>
 
       <DirectMessageRelaysSection />

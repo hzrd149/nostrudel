@@ -104,7 +104,7 @@ export type CustomAddressPointer = Omit<AddressPointer, "identifier"> & {
 
 export { parseCoordinate } from "applesauce-core/helpers/pointers";
 
-export function sortByDate(a: NostrEvent, b: NostrEvent) {
+export function sortByDate<T extends { created_at: number }>(a: T, b: T) {
   return b.created_at - a.created_at;
 }
 

@@ -4,7 +4,6 @@ import { NostrEvent } from "nostr-tools";
 
 import { getDMRecipient, getDMSender } from "../../../helpers/nostr/dms";
 import { ContentSettingsProvider } from "../../../providers/local/content-settings";
-import DecryptPlaceholder from "../../../views/messages/components/decrypt-placeholder";
 import DirectMessageContent from "../../../views/messages/components/direct-message-content";
 import DebugEventButton from "../../debug-modal/debug-event-button";
 import Timestamp from "../../timestamp";
@@ -32,9 +31,7 @@ export default function EmbeddedDM({ dm, ...props }: Omit<CardProps, "children">
         </CardHeader>
         {(sender === account?.pubkey || receiver === account?.pubkey) && (
           <CardBody px="2" pt="0" pb="2">
-            <DecryptPlaceholder message={dm}>
-              {(plaintext) => <DirectMessageContent event={dm} text={plaintext} />}
-            </DecryptPlaceholder>
+            <DirectMessageContent message={dm} />
           </CardBody>
         )}
       </Card>

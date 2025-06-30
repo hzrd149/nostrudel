@@ -1,4 +1,5 @@
 import { ButtonGroup, IconButton, Menu, MenuButton, MenuItem, MenuList, useToast } from "@chakra-ui/react";
+import { Rumor } from "applesauce-core/helpers";
 import { useActiveAccount } from "applesauce-react/hooks";
 import { NostrEvent } from "nostr-tools";
 import { memo, useCallback } from "react";
@@ -10,7 +11,6 @@ import AddReactionButton from "../../../components/note/timeline-note/components
 import EventZapButton from "../../../components/zap/event-zap-button";
 import { useLegacyMessagePlaintext } from "../../../hooks/use-legacy-message-plaintext";
 import { useDeleteEventContext } from "../../../providers/route/delete-event-provider";
-import DecryptPlaceholder from "./decrypt-placeholder";
 import DirectMessageContent from "./direct-message-content";
 
 function DirectMessageActions({
@@ -77,21 +77,16 @@ function DirectMessageActions({
 
 function DirectMessageGroup({
   onReply,
+  messages,
   ...props
-}: Omit<MessageGroupProps, "renderContent"> & {
-  onReply?: (message: NostrEvent) => void;
+}: Omit<MessageGroupProps, "renderContent" | "messages"> & {
+  messages: (NostrEvent | Rumor)[];
+  onReply?: (message: NostrEvent | Rumor) => void;
 }) {
   const account = useActiveAccount()!;
   const toast = useToast();
 
-  const renderContent = useCallback(
-    (message: NostrEvent) => (
-      <DecryptPlaceholder message={message}>
-        {(plaintext) => <DirectMessageContent event={message} text={plaintext} />}
-      </DecryptPlaceholder>
-    ),
-    [],
-  );
+  const renderContent = useCallback((message: NostrEvent | Rumor) => <DirectMessageContent message={message} />, []);
 
   const renderActions = useCallback(
     (message: NostrEvent) => {
@@ -100,7 +95,14 @@ function DirectMessageGroup({
     [account, toast],
   );
 
-  return <MessagesGroup renderContent={renderContent} renderActions={renderActions} {...props} />;
+  return (
+    <MessagesGroup
+      renderContent={renderContent}
+      renderActions={renderActions}
+      messages={messages as NostrEvent[]}
+      {...props}
+    />
+  );
 }
 
 export default memo(DirectMessageGroup);
