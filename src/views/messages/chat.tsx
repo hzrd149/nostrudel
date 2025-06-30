@@ -33,7 +33,7 @@ import IntersectionObserverProvider from "../../providers/local/intersection-obs
 import localSettings from "../../services/local-settings";
 import DirectMessageGroup from "./components/direct-message-group";
 import InfoDrawer from "./components/info-drawer";
-import PendingLockedAlert from "./components/pending-locked-alert";
+import PendingLockedAlert from "./components/pending-decryption-alert";
 import SendMessageForm from "./components/send-message-form";
 
 /** This is broken out from DirectMessageChatPage for performance reasons. Don't use outside of file */
@@ -98,8 +98,13 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
     [
       {
         kinds: [kinds.EncryptedDirectMessage],
-        "#p": [account.pubkey, pubkey],
-        authors: [pubkey, account.pubkey],
+        "#p": [account.pubkey],
+        authors: [pubkey],
+      },
+      {
+        kinds: [kinds.EncryptedDirectMessage],
+        "#p": [pubkey],
+        authors: [account.pubkey],
       },
     ],
     { eventFilter },
@@ -184,11 +189,11 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
           overflowY="auto"
           ref={scroll}
         >
+          {!autoDecryptMessages && <PendingLockedAlert />}
           <ChatLog messages={messages} />
           <TimelineActionAndStatus loader={loader} />
         </Flex>
 
-        {!autoDecryptMessages && <PendingLockedAlert />}
         <SendMessageForm flexShrink={0} pubkey={pubkey} px="2" pb="2" />
 
         {/* {location.state?.thread && (

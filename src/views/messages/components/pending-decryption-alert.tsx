@@ -29,7 +29,7 @@ export default function PendingLockedAlert() {
   if (!locked || locked.length === 0) return null;
 
   return (
-    <Alert status="warning" variant="subtle">
+    <Alert status="warning" variant="subtle" flexShrink={0}>
       <AlertIcon />
       <Flex align="center" justify="space-between" width="100%">
         <Text>
@@ -42,9 +42,9 @@ export default function PendingLockedAlert() {
           isLoading={decryptAll.loading}
           colorScheme="orange"
           variant="solid"
-          loadingText="Unlocking..."
+          loadingText="Decrypting..."
         >
-          Unlock All
+          Decrypt All
         </Button>
       </Flex>
     </Alert>

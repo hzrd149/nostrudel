@@ -109,7 +109,7 @@ importers:
         version: 2.0.0(typescript@5.8.3)
       applesauce-core:
         specifier: next
-        version: 0.0.0-next-20250630153459(typescript@5.8.3)
+        version: 0.0.0-next-20250630164258(typescript@5.8.3)
       applesauce-factory:
         specifier: ^2.0.0
         version: 2.0.0(typescript@5.8.3)
@@ -2173,8 +2173,8 @@ packages:
   applesauce-content@2.0.0:
     resolution: {integrity: sha512-Ir5xVAjHXC5ui6BrOA6IZt7pY198ialBdcJNkrdXSSm2Ueksc4SGKqXKIEqbrgoZ/E1NVgabWiwRlQjxzBWSXA==}
 
-  applesauce-core@0.0.0-next-20250630153459:
-    resolution: {integrity: sha512-lKYgQqeZn+AiTdz/DEEUdz6KrrcikMBtJRx7Xtw8GViG2ACwoff9XaFQaaszbQD0YdPrjBo8rLO+kDVPM+wkoA==}
+  applesauce-core@0.0.0-next-20250630164258:
+    resolution: {integrity: sha512-mFjmrxOPZFbjbsAOOYnh1/k4Z2ufEZOIfEJb3NEPHgvtNPb3nr8JxYwGeiKQw6DjgYMv6FX9EU7Ed+C2sm4S3w==}
 
   applesauce-core@2.1.1:
     resolution: {integrity: sha512-AA7Ga5szaMKTBhC+xoU8D0r0AuordcWq1PFTD4maTq1Ggy2XP3P/9TMzpx2Q4SDNoAB3O3+xlEN8wATgvNVr3w==}
@@ -8021,7 +8021,7 @@ snapshots:
       - supports-color
       - typescript
 
-  applesauce-core@0.0.0-next-20250630153459(typescript@5.8.3):
+  applesauce-core@0.0.0-next-20250630164258(typescript@5.8.3):
     dependencies:
       '@noble/hashes': 1.8.0
       '@scure/base': 1.2.6
