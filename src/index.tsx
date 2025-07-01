@@ -45,6 +45,7 @@ if (import.meta.env.PROD) {
 import { createRoot } from "react-dom/client";
 import { App } from "./app";
 import { logger } from "./helpers/debug";
+import { CAP_IS_WEB } from "./env";
 
 logger("Rendering app");
 const root = document.getElementById("root")!;
@@ -55,4 +56,4 @@ createRoot(root).render(
 );
 
 // Register service worker if supported
-if ("serviceWorker" in navigator) registerServiceWorker();
+if (CAP_IS_WEB && "serviceWorker" in navigator) registerServiceWorker();

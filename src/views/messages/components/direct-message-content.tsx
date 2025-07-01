@@ -1,6 +1,6 @@
 import { Box, BoxProps } from "@chakra-ui/react";
 import { useRenderedContent } from "applesauce-react/hooks";
-import { NostrEvent } from "nostr-tools";
+import { kinds, NostrEvent } from "nostr-tools";
 import React from "react";
 
 import { isRumor, Rumor } from "applesauce-core/helpers";
@@ -26,7 +26,7 @@ import { renderAudioUrl } from "../../../components/content/links/audio";
 import { LightboxProvider } from "../../../components/lightbox-provider";
 import { useLegacyMessagePlaintext } from "../../../hooks/use-legacy-message-plaintext";
 import { ContentSettingsProvider } from "../../../providers/local/content-settings";
-import DecryptPlaceholder from "./decrypt-placeholder";
+import DecryptPlaceholder from "../chat/components/decrypt-placeholder";
 
 const DirectMessageContentSymbol = Symbol.for("direct-message-content");
 const linkRenderers = [
@@ -88,12 +88,16 @@ function WrappedDirectMessageContent({
   );
 }
 
+function isWrappedMessage(message: NostrEvent | Rumor): message is Rumor {
+  return message.kind === kinds.PrivateDirectMessage;
+}
+
 export default function DirectMessageContent({
   message,
   children,
   ...props
 }: { message: NostrEvent | Rumor; children?: React.ReactNode } & BoxProps) {
-  if (isRumor(message)) {
+  if (isWrappedMessage(message)) {
     return <WrappedDirectMessageContent message={message} children={children} {...props} />;
   } else {
     return (

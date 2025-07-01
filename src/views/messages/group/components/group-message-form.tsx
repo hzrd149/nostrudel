@@ -1,26 +1,25 @@
 import { Button, ButtonGroup, Flex, FlexProps, Heading } from "@chakra-ui/react";
-import { SendLegacyMessage } from "applesauce-actions/actions";
-import { useActionHub } from "applesauce-react/hooks";
-import { useRef, useState } from "react";
+import { SendWrappedMessage } from "applesauce-actions/actions";
+import { getConversationParticipants, getDisplayName, getTagValue } from "applesauce-core/helpers";
+import { useActionHub, useEventModel } from "applesauce-react/hooks";
+import { useMemo, useRef } from "react";
 import { useForm } from "react-hook-form";
 
-import InsertGifButton from "../../../components/gif/insert-gif-button";
-import MagicTextArea, { RefType } from "../../../components/magic-textarea";
-import InsertReactionButton from "../../../components/reactions/insert-reaction-button";
-import useCacheForm from "../../../hooks/use-cache-form";
-import useTextAreaUploadFile, { useTextAreaInsertTextWithForm } from "../../../hooks/use-textarea-upload-file";
-import useUserMailboxes from "../../../hooks/use-user-mailboxes";
-import { usePublishEvent } from "../../../providers/global/publish-provider";
+import InsertGifButton from "../../../../components/gif/insert-gif-button";
+import MagicTextArea, { RefType } from "../../../../components/magic-textarea";
+import InsertReactionButton from "../../../../components/reactions/insert-reaction-button";
+import useCacheForm from "../../../../hooks/use-cache-form";
+import useTextAreaUploadFile, { useTextAreaInsertTextWithForm } from "../../../../hooks/use-textarea-upload-file";
+import { GroupMessageInboxes } from "../../../../models/messages";
+import { usePublishEvent } from "../../../../providers/global/publish-provider";
+import { eventStore } from "../../../../services/event-store";
+import { kinds } from "nostr-tools";
 
-export default function SendMessageForm({
-  pubkey,
-  rootId,
-  ...props
-}: { pubkey: string; rootId?: string } & Omit<FlexProps, "children">) {
+export default function GroupMessageForm({ group, ...props }: { group: string } & Omit<FlexProps, "children">) {
   const publish = usePublishEvent();
   const actions = useActionHub();
+  const pubkeys = useMemo(() => getConversationParticipants(group), [group]);
 
-  const [loadingMessage, setLoadingMessage] = useState("");
   const { getValues, setValue, watch, handleSubmit, formState, reset } = useForm({
     defaultValues: {
       content: "",
@@ -29,7 +28,7 @@ export default function SendMessageForm({
   });
   watch("content");
 
-  const clearCache = useCacheForm<{ content: string }>(`dm-${pubkey}`, getValues, reset, formState, {
+  const clearCache = useCacheForm<{ content: string }>(`${group}-message`, getValues, reset, formState, {
     clearOnKeyChange: true,
   });
 
@@ -38,16 +37,22 @@ export default function SendMessageForm({
   const insertText = useTextAreaInsertTextWithForm(autocompleteRef, getValues, setValue);
   const { onPaste } = useTextAreaUploadFile(insertText);
 
-  const userMailboxes = useUserMailboxes(pubkey);
+  const inboxes = useEventModel(GroupMessageInboxes, [group]);
   const sendMessage = handleSubmit(async (values) => {
     if (!values.content) return;
-    setLoadingMessage("Sending...");
 
     try {
       // Send direct message to users inbox
-      await actions
-        .exec(SendLegacyMessage, pubkey, values.content)
-        .forEach((e) => publish("Send message", e, userMailboxes?.inboxes));
+      await actions.exec(SendWrappedMessage, pubkeys, values.content).forEach((e) => {
+        const pubkey = getTagValue(e, "p");
+        if (!pubkey) return;
+        const relays = inboxes?.[pubkey];
+        const profile = eventStore.getReplaceable(kinds.Metadata, pubkey);
+
+        const label = `Send message to ${getDisplayName(profile)}`;
+        if (!relays) return publish(label, e, [], false);
+        else return publish(label, e, relays, false, true);
+      });
 
       // Reset form
       clearCache();
@@ -56,17 +61,15 @@ export default function SendMessageForm({
       // refocus input
       setTimeout(() => textAreaRef.current?.focus(), 50);
     } catch (error) {}
-
-    setLoadingMessage("");
   });
 
   const formRef = useRef<HTMLFormElement | null>(null);
 
   return (
     <Flex as="form" gap="2" onSubmit={sendMessage} ref={formRef} {...props}>
-      {loadingMessage ? (
+      {formState.isSubmitting ? (
         <Heading size="md" mx="auto" my="4">
-          {loadingMessage}
+          Sending...
         </Heading>
       ) : (
         <>

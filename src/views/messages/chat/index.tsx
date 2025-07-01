@@ -7,34 +7,34 @@ import {
   unlockGiftWrap,
   unlockLegacyMessage,
 } from "applesauce-core/helpers";
+import { GiftWrapsModel, LegacyMessagesGroup, WrappedMessagesGroup } from "applesauce-core/models";
 import { useActiveAccount, useEventModel, useObservableEagerState } from "applesauce-react/hooks";
 import { kinds, NostrEvent } from "nostr-tools";
 import { memo, useCallback, useContext, useEffect, useMemo, useRef } from "react";
-import { UNSAFE_DataRouterContext, useLocation, useNavigate } from "react-router-dom";
+import { Navigate, UNSAFE_DataRouterContext, useLocation, useNavigate, useParams } from "react-router-dom";
 
-import { GiftWrapsModel, LegacyMessagesGroup, WrappedMessagesGroup } from "applesauce-core/models";
-import InfoCircle from "../../components/icons/info-circle";
-import SimpleView from "../../components/layout/presets/simple-view";
-import RequireActiveAccount from "../../components/router/require-active-account";
-import TimelineActionAndStatus from "../../components/timeline/timeline-action-and-status";
-import UserAvatarLink from "../../components/user/user-avatar-link";
-import UserLink from "../../components/user/user-link";
-import { groupMessages } from "../../helpers/nostr/dms";
-import { sortByDate } from "../../helpers/nostr/event";
-import { truncateId } from "../../helpers/string";
-import useAsyncAction from "../../hooks/use-async-action";
-import useParamsProfilePointer from "../../hooks/use-params-pubkey-pointer";
-import useRouterMarker from "../../hooks/use-router-marker";
-import useScrollRestoreRef from "../../hooks/use-scroll-restore";
-import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
-import useTimelineLoader from "../../hooks/use-timeline-loader";
-import useUserMailboxes from "../../hooks/use-user-mailboxes";
-import IntersectionObserverProvider from "../../providers/local/intersection-observer";
-import localSettings from "../../services/local-settings";
-import DirectMessageGroup from "./components/direct-message-group";
-import InfoDrawer from "./components/info-drawer";
-import PendingLockedAlert from "./components/pending-decryption-alert";
-import SendMessageForm from "./components/send-message-form";
+import { SettingsIcon } from "../../../components/icons";
+import SimpleView from "../../../components/layout/presets/simple-view";
+import RequireActiveAccount from "../../../components/router/require-active-account";
+import TimelineActionAndStatus from "../../../components/timeline/timeline-action-and-status";
+import UserAvatarLink from "../../../components/user/user-avatar-link";
+import UserLink from "../../../components/user/user-link";
+import { groupMessages } from "../../../helpers/nostr/dms";
+import { sortByDate } from "../../../helpers/nostr/event";
+import { truncateId } from "../../../helpers/string";
+import useAsyncAction from "../../../hooks/use-async-action";
+import useParamsProfilePointer from "../../../hooks/use-params-pubkey-pointer";
+import useRouterMarker from "../../../hooks/use-router-marker";
+import useScrollRestoreRef from "../../../hooks/use-scroll-restore";
+import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
+import useTimelineLoader from "../../../hooks/use-timeline-loader";
+import { useUserInbox } from "../../../hooks/use-user-mailboxes";
+import IntersectionObserverProvider from "../../../providers/local/intersection-observer";
+import localSettings from "../../../services/local-settings";
+import DirectMessageGroup from "../components/direct-message-group";
+import PendingLockedAlert from "../components/pending-decryption-alert";
+import SendMessageForm from "./components/direct-message-form";
+import DirectMessageSettingsDrawer from "./components/direct-settings-drawer";
 
 /** This is broken out from DirectMessageChatPage for performance reasons. Don't use outside of file */
 const ChatLog = memo(({ messages }: { messages: (Rumor | NostrEvent)[] }) => {
@@ -57,26 +57,21 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
   const { router } = useContext(UNSAFE_DataRouterContext)!;
   const marker = useRouterMarker(router);
   useEffect(() => {
-    if (location.state?.thread && marker.index.current === null) {
+    if (marker.index.current === null) {
       // the drawer just open, set the marker
       marker.set(1);
     }
   }, [location]);
 
-  // const openDrawerList = useCallback(() => {
-  //   marker.set(0);
-  //   navigate(".", { state: { thread: "list" } });
-  // }, [marker, navigate]);
-
-  const openInfoDrawer = useCallback(() => {
+  const openSettingsDrawer = useCallback(() => {
     marker.set(0);
-    navigate(".", { state: { info: true } });
+    navigate(".", { state: { settings: true } });
   }, [navigate]);
 
   const closeDrawer = useCallback(() => {
     if (marker.index.current !== null && marker.index.current > 0) {
       navigate(-marker.index.current);
-    } else navigate(".", { state: { thread: undefined, info: undefined } });
+    } else navigate(".", { state: { settings: undefined } });
     marker.reset();
   }, [marker, navigate]);
 
@@ -90,11 +85,11 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
     [account, pubkey],
   );
 
-  const otherMailboxes = useUserMailboxes(pubkey);
-  const mailboxes = useUserMailboxes(account.pubkey);
+  const otherInbox = useUserInbox(pubkey);
+  const inboxes = useUserInbox(account.pubkey);
   const { loader } = useTimelineLoader(
     `${truncateId(pubkey)}-${truncateId(account.pubkey)}-messages`,
-    mergeRelaySets(mailboxes?.inboxes, mailboxes?.outboxes, otherMailboxes?.inboxes, otherMailboxes?.outboxes),
+    mergeRelaySets(inboxes, otherInbox),
     [
       {
         kinds: [kinds.EncryptedDirectMessage],
@@ -163,17 +158,11 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
               </Button>
             )}
             <IconButton
-              aria-label="Info"
-              title="Conversation Info"
-              icon={<InfoCircle boxSize={5} />}
-              onClick={openInfoDrawer}
+              aria-label="Settings"
+              title="Conversation Settings"
+              icon={<SettingsIcon boxSize={5} />}
+              onClick={openSettingsDrawer}
             />
-            {/* <IconButton
-                aria-label="Threads"
-                title="Threads"
-                icon={<ThreadIcon boxSize={5} />}
-                onClick={openDrawerList}
-              /> */}
           </ButtonGroup>
         }
         scroll={false}
@@ -189,28 +178,29 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
           overflowY="auto"
           ref={scroll}
         >
-          {!autoDecryptMessages && <PendingLockedAlert />}
+          <PendingLockedAlert />
           <ChatLog messages={messages} />
           <TimelineActionAndStatus loader={loader} />
         </Flex>
 
         <SendMessageForm flexShrink={0} pubkey={pubkey} px="2" pb="2" />
 
-        {/* {location.state?.thread && (
-            <ThreadDrawer
-              isOpen={!!location.state?.thread}
-              onClose={closeDrawer}
-              threadId={location.state.thread}
-              pubkey={pubkey}
-            />
-          )} */}
-        <InfoDrawer isOpen={!!location.state?.info} onClose={closeDrawer} otherUserPubkey={pubkey} />
+        <DirectMessageSettingsDrawer
+          isOpen={!!location.state?.settings}
+          onClose={closeDrawer}
+          otherUserPubkey={pubkey}
+        />
       </SimpleView>
     </IntersectionObserverProvider>
   );
 }
 
 export default function DirectMessageChatView() {
+  const params = useParams();
+  if (params.pubkey?.includes(":")) {
+    return <Navigate to={`/messages/group/${params.pubkey}`} replace />;
+  }
+
   const { pubkey } = useParamsProfilePointer();
 
   return (

@@ -2,9 +2,9 @@ import { Alert, AlertDescription, AlertIcon, Button } from "@chakra-ui/react";
 import { NostrEvent } from "nostr-tools";
 import { useState } from "react";
 
-import DebugEventButton from "../../../components/debug-modal/debug-event-button";
-import { UnlockIcon } from "../../../components/icons";
-import { useLegacyMessagePlaintext } from "../../../hooks/use-legacy-message-plaintext";
+import DebugEventButton from "../../../../components/debug-modal/debug-event-button";
+import { UnlockIcon } from "../../../../components/icons";
+import { useLegacyMessagePlaintext } from "../../../../hooks/use-legacy-message-plaintext";
 
 export default function DecryptPlaceholder({
   children,

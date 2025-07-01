@@ -30,7 +30,7 @@ export class PublishLogEntry extends BehaviorSubject<PublishResults> {
   ) {
     super({ packets: [], relays: {} });
 
-    pool.event(mergeRelaySets(localSettings.writeRelays.value, relays), event).subscribe({
+    pool.event(relays, event).subscribe({
       next: (result) => {
         if (result.ok) {
           addSeenRelay(event, result.from);
@@ -95,7 +95,7 @@ export default function PublishProvider({ children }: PropsWithChildren) {
   const toast = useToast();
   const [log, setLog] = useState<PublishLogEntry[]>([]);
   const account = useActiveAccount();
-  const outBoxes = useUserOutbox(account?.pubkey);
+  const outbox = useUserOutbox(account?.pubkey);
   const writeRelays = useWriteRelays();
   const factory = useEventFactory();
 
@@ -114,11 +114,8 @@ export default function PublishProvider({ children }: PropsWithChildren) {
     ) => {
       try {
         let relays;
-        if (onlyAdditionalRelays) {
-          relays = mergeRelaySets(additionalRelays ?? []);
-        } else {
-          relays = mergeRelaySets(writeRelays, outBoxes, additionalRelays);
-        }
+        if (onlyAdditionalRelays) relays = mergeRelaySets(additionalRelays ?? []);
+        else relays = mergeRelaySets(writeRelays, outbox, additionalRelays);
 
         // add pubkey to event
         if (!Reflect.has(event, "pubkey")) event = await finalizeDraft(event);
@@ -143,7 +140,7 @@ export default function PublishProvider({ children }: PropsWithChildren) {
         if (!quite) throw e;
       }
     },
-    [toast, setLog, account, finalizeDraft, outBoxes, writeRelays],
+    [toast, setLog, account, finalizeDraft, outbox, writeRelays],
   ) as PublishContextType["publishEvent"];
 
   const context = useMemo<PublishContextType>(

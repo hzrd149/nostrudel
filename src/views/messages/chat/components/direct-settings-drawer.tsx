@@ -15,14 +15,14 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { useActiveAccount } from "applesauce-react/hooks";
-import RelayFavicon from "../../../components/relay-favicon";
-import RelayStatusBadge from "../../../components/relays/relay-status";
-import RouterLink from "../../../components/router-link";
-import UserAvatarLink from "../../../components/user/user-avatar-link";
-import UserDnsIdentity from "../../../components/user/user-dns-identity";
-import UserLink from "../../../components/user/user-link";
-import UserName from "../../../components/user/user-name";
-import useUserMailboxes from "../../../hooks/use-user-mailboxes";
+import RelayFavicon from "../../../../components/relay-favicon";
+import RelayStatusBadge from "../../../../components/relays/relay-status";
+import RouterLink from "../../../../components/router-link";
+import UserAvatarLink from "../../../../components/user/user-avatar-link";
+import UserDnsIdentity from "../../../../components/user/user-dns-identity";
+import UserLink from "../../../../components/user/user-link";
+import UserName from "../../../../components/user/user-name";
+import useUserMailboxes from "../../../../hooks/use-user-mailboxes";
 
 function ConversationHeader({ other }: { other: string }) {
   return (
@@ -54,7 +54,7 @@ interface InfoDrawerProps {
   otherUserPubkey: string;
 }
 
-export default function InfoDrawer({ isOpen, onClose, otherUserPubkey }: InfoDrawerProps) {
+export default function DirectMessageSettingsDrawer({ isOpen, onClose, otherUserPubkey }: InfoDrawerProps) {
   const account = useActiveAccount()!;
   const userMailboxes = useUserMailboxes(account.pubkey);
   const otherUserMailboxes = useUserMailboxes(otherUserPubkey);

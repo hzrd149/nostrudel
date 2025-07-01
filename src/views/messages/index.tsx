@@ -13,6 +13,7 @@ import { Rumor, mergeRelaySets } from "applesauce-core/helpers";
 import { GiftWrapsModel, LegacyMessagesGroups, WrappedMessagesGroups } from "applesauce-core/models";
 import { useActiveAccount, useEventModel, useObservableEagerState } from "applesauce-react/hooks";
 import { NostrEvent, kinds } from "nostr-tools";
+import { npubEncode } from "nostr-tools/nip19";
 import { useEffect, useMemo } from "react";
 import { Link as RouterLink, useLocation } from "react-router-dom";
 import AutoSizer from "react-virtualized-auto-sizer";
@@ -78,7 +79,7 @@ function ConversationCard({ index, style, data }: ListChildComponentProps<(Legac
       </AvatarGroup>
       <Flex direction="column" gap="1" overflow="hidden" flex={1} py="2" alignItems="flex-start">
         <Flex gap="2" alignItems="center" overflow="hidden" w="full">
-          <Text fontSize="sm">
+          <Text fontSize="sm" isTruncated>
             {others.map((pubkey, index) => (
               <span key={pubkey}>
                 <UserName pubkey={pubkey} />
@@ -96,7 +97,14 @@ function ConversationCard({ index, style, data }: ListChildComponentProps<(Legac
           </Text>
         )}
       </Flex>
-      <LinkOverlay as={RouterLink} to={`/messages/${others.join(":")}` + location.search} />
+      <LinkOverlay
+        as={RouterLink}
+        to={
+          others.length > 1
+            ? `/messages/group/${others.map(npubEncode).join(":")}`
+            : `/messages/${others.map(npubEncode).join(":")}` + location.search
+        }
+      />
     </LinkBox>
   );
 }
@@ -142,6 +150,7 @@ function Groups() {
               itemKey={(i, data) => data[i].id}
               itemSize={64}
               innerRef={scroll}
+              overscanCount={10}
             >
               {ConversationCard}
             </FixedSizeList>

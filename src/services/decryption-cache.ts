@@ -125,12 +125,18 @@ async function autoDecryptMessagesFallback(event: NostrEvent) {
   const account = accounts.active;
 
   // Unlock legacy messages
-  if (event.kind === kinds.EncryptedDirectMessage && getLegacyMessageCorraspondant(event, account.pubkey)) {
+  if (
+    event.kind === kinds.EncryptedDirectMessage &&
+    (event.pubkey === account.pubkey || getLegacyMessageCorraspondant(event, account.pubkey))
+  ) {
     return unlockLegacyMessage(event, account.pubkey, account);
   }
 
   // Unlock gift wraps to user
-  if (event.kind === kinds.GiftWrap && event.tags.find(isPTag)?.[1] === account.pubkey) {
+  if (
+    event.kind === kinds.GiftWrap &&
+    (event.pubkey === account.pubkey || event.tags.find(isPTag)?.[1] === account.pubkey)
+  ) {
     return unlockGiftWrap(event, account);
   }
 }

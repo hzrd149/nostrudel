@@ -27,9 +27,9 @@ import UserLink from "../../../components/user/user-link";
 import { groupMessages } from "../../../helpers/nostr/dms";
 import useAsyncAction from "../../../hooks/use-async-action";
 import { Thread, useThreadsContext } from "../../../providers/local/thread-provider";
-import DecryptPlaceholder from "./decrypt-placeholder";
+import DecryptPlaceholder from "../chat/components/decrypt-placeholder";
 import DirectMessageGroup from "./direct-message-group";
-import SendMessageForm from "./send-message-form";
+import SendMessageForm from "../chat/components/direct-message-form";
 
 function MessagePreview({ message, ...props }: { message: NostrEvent } & Omit<TextProps, "children">) {
   return (

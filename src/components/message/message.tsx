@@ -36,10 +36,9 @@ export default function Message({ message, showHeader = true, renderContent, ren
           className="message-actions"
           opacity="0"
           transition="opacity 0.1s ease"
-          float="right"
-          ml="2"
-          mt="-1"
-          mr="-1"
+          position="absolute"
+          top="0"
+          right="0"
         >
           {renderActions(message)}
         </Box>
