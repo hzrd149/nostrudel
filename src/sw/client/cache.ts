@@ -3,34 +3,42 @@ import type { CachedFile, CacheInfo } from "../worker/cache";
 import { serviceWorkerRPC } from "./rpc";
 import { firstValueFrom } from "rxjs";
 
+const client = serviceWorkerRPC;
+
 // Get all cached files from all caches
 export const getAllCachedFiles = async (): Promise<CacheInfo[]> => {
-  return await firstValueFrom(serviceWorkerRPC.call("cache.getAll", void 0));
+  if (!client) throw new Error("Service worker not available");
+  return await firstValueFrom(client.call("cache.getAll", void 0));
 };
 
 // Get cached files for a specific cache
 export const getCachedFilesByName = async (cacheName: string): Promise<CachedFile[]> => {
-  return await firstValueFrom(serviceWorkerRPC.call("cache.getByName", { cacheName }));
+  if (!client) throw new Error("Service worker not available");
+  return await firstValueFrom(client.call("cache.getByName", { cacheName }));
 };
 
 // Clear a specific cache
 export const clearCache = async (cacheName: string): Promise<void> => {
-  return await firstValueFrom(serviceWorkerRPC.call("cache.clear", { cacheName }));
+  if (!client) throw new Error("Service worker not available");
+  return await firstValueFrom(client.call("cache.clear", { cacheName }));
 };
 
 // Clear all caches
 export const clearAllCaches = async (): Promise<string[]> => {
-  return await firstValueFrom(serviceWorkerRPC.call("cache.clearAll", void 0));
+  if (!client) throw new Error("Service worker not available");
+  return await firstValueFrom(client.call("cache.clearAll", void 0));
 };
 
 // Get cache statistics
 export const getCacheStats = async (): Promise<{ totalCaches: number; totalFiles: number; totalSize: number }> => {
-  return await firstValueFrom(serviceWorkerRPC.call("cache.getStats", void 0));
+  if (!client) throw new Error("Service worker not available");
+  return await firstValueFrom(client.call("cache.getStats", void 0));
 };
 
 // Refresh offline cache
 export const refreshOfflineCache = async (): Promise<number> => {
-  return await firstValueFrom(serviceWorkerRPC.call("cache.refresh", void 0));
+  if (!client) throw new Error("Service worker not available");
+  return await firstValueFrom(client.call("cache.refresh", void 0));
 };
 
 // Helper function to format file size

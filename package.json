@@ -128,7 +128,7 @@
     "workbox-core": "7.0.0",
     "workbox-precaching": "7.0.0",
     "workbox-routing": "7.0.0",
-    "yet-another-react-lightbox": "^3.23.4"
+    "yet-another-react-lightbox": "^3.24.0"
   },
   "devDependencies": {
     "@capacitor-mlkit/barcode-scanning": "^6.2.0",
