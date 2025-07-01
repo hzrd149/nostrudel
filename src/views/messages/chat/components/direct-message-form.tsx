@@ -1,9 +1,10 @@
 import { Button, ButtonGroup, Flex, FlexProps, Heading } from "@chakra-ui/react";
 import { SendLegacyMessage } from "applesauce-actions/actions";
-import { useActionHub } from "applesauce-react/hooks";
-import { useRef, useState } from "react";
+import { useActionHub, useObservableEagerState } from "applesauce-react/hooks";
+import { useRef } from "react";
 import { useForm } from "react-hook-form";
 
+import { unixNow } from "applesauce-core/helpers";
 import InsertGifButton from "../../../../components/gif/insert-gif-button";
 import MagicTextArea, { RefType } from "../../../../components/magic-textarea";
 import InsertReactionButton from "../../../../components/reactions/insert-reaction-button";
@@ -11,6 +12,7 @@ import useCacheForm from "../../../../hooks/use-cache-form";
 import useTextAreaUploadFile, { useTextAreaInsertTextWithForm } from "../../../../hooks/use-textarea-upload-file";
 import useUserMailboxes from "../../../../hooks/use-user-mailboxes";
 import { usePublishEvent } from "../../../../providers/global/publish-provider";
+import localSettings from "../../../../services/local-settings";
 
 export default function SendMessageForm({
   pubkey,
@@ -19,8 +21,8 @@ export default function SendMessageForm({
 }: { pubkey: string; rootId?: string } & Omit<FlexProps, "children">) {
   const publish = usePublishEvent();
   const actions = useActionHub();
+  const defaultMessageExpiration = useObservableEagerState(localSettings.defaultMessageExpiration);
 
-  const [loadingMessage, setLoadingMessage] = useState("");
   const { getValues, setValue, watch, handleSubmit, formState, reset } = useForm({
     defaultValues: {
       content: "",
@@ -41,32 +43,29 @@ export default function SendMessageForm({
   const userMailboxes = useUserMailboxes(pubkey);
   const sendMessage = handleSubmit(async (values) => {
     if (!values.content) return;
-    setLoadingMessage("Sending...");
 
-    try {
-      // Send direct message to users inbox
-      await actions
-        .exec(SendLegacyMessage, pubkey, values.content)
-        .forEach((e) => publish("Send message", e, userMailboxes?.inboxes));
+    const expiration = defaultMessageExpiration ? unixNow() + defaultMessageExpiration : undefined;
 
-      // Reset form
-      clearCache();
-      reset({ content: "" });
+    // Send direct message to users inbox
+    await actions
+      .exec(SendLegacyMessage, pubkey, values.content, { expiration })
+      .forEach((e) => publish("Send message", e, userMailboxes?.inboxes));
 
-      // refocus input
-      setTimeout(() => textAreaRef.current?.focus(), 50);
-    } catch (error) {}
+    // Reset form
+    clearCache();
+    reset({ content: "" });
 
-    setLoadingMessage("");
+    // refocus input
+    setTimeout(() => textAreaRef.current?.focus(), 50);
   });
 
   const formRef = useRef<HTMLFormElement | null>(null);
 
   return (
     <Flex as="form" gap="2" onSubmit={sendMessage} ref={formRef} {...props}>
-      {loadingMessage ? (
+      {formState.isSubmitting ? (
         <Heading size="md" mx="auto" my="4">
-          {loadingMessage}
+          Sending...
         </Heading>
       ) : (
         <>

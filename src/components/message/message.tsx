@@ -7,6 +7,7 @@ import useEventReactions from "../../hooks/use-event-reactions";
 import EventReactionButtons from "../event-reactions/event-reactions";
 import Timestamp from "../timestamp";
 import UserLink from "../user/user-link";
+import { getExpirationTimestamp } from "applesauce-core/helpers";
 
 export type MessageProps = {
   message: NostrEvent;
@@ -20,6 +21,8 @@ export default function Message({ message, showHeader = true, renderContent, ren
   const hasReactions = reactions.length > 0;
   const ref = useEventIntersectionRef(message);
   const [hover, setHover] = useState(false);
+
+  const expirationTimestamp = getExpirationTimestamp(message);
 
   return (
     <Box
@@ -37,8 +40,13 @@ export default function Message({ message, showHeader = true, renderContent, ren
           opacity="0"
           transition="opacity 0.1s ease"
           position="absolute"
-          top="0"
+          top="-4"
           right="0"
+          borderWidth={1}
+          borderRadius="md"
+          bg="var(--chakra-colors-chakra-body-bg)"
+          px="2"
+          py="1"
         >
           {renderActions(message)}
         </Box>
@@ -52,6 +60,12 @@ export default function Message({ message, showHeader = true, renderContent, ren
       )}
 
       {renderContent(message)}
+
+      {expirationTimestamp && (
+        <Flex align="center" gap="1" mt="1">
+          <Timestamp timestamp={expirationTimestamp} fontSize="xs" color="orange.500" prefix="Expires: " />
+        </Flex>
+      )}
 
       {hasReactions && (
         <ButtonGroup size="xs" variant="outline" spacing="2">

@@ -1,10 +1,11 @@
 import { Button, ButtonGroup, Flex, FlexProps, Heading } from "@chakra-ui/react";
 import { SendWrappedMessage } from "applesauce-actions/actions";
-import { getConversationParticipants, getDisplayName, getTagValue } from "applesauce-core/helpers";
-import { useActionHub, useEventModel } from "applesauce-react/hooks";
+import { getConversationParticipants, getDisplayName, getTagValue, unixNow } from "applesauce-core/helpers";
+import { useActionHub, useEventModel, useObservableEagerState } from "applesauce-react/hooks";
 import { useMemo, useRef } from "react";
 import { useForm } from "react-hook-form";
 
+import { kinds } from "nostr-tools";
 import InsertGifButton from "../../../../components/gif/insert-gif-button";
 import MagicTextArea, { RefType } from "../../../../components/magic-textarea";
 import InsertReactionButton from "../../../../components/reactions/insert-reaction-button";
@@ -13,12 +14,13 @@ import useTextAreaUploadFile, { useTextAreaInsertTextWithForm } from "../../../.
 import { GroupMessageInboxes } from "../../../../models/messages";
 import { usePublishEvent } from "../../../../providers/global/publish-provider";
 import { eventStore } from "../../../../services/event-store";
-import { kinds } from "nostr-tools";
+import localSettings from "../../../../services/local-settings";
 
 export default function GroupMessageForm({ group, ...props }: { group: string } & Omit<FlexProps, "children">) {
   const publish = usePublishEvent();
   const actions = useActionHub();
   const pubkeys = useMemo(() => getConversationParticipants(group), [group]);
+  const defaultMessageExpiration = useObservableEagerState(localSettings.defaultMessageExpiration);
 
   const { getValues, setValue, watch, handleSubmit, formState, reset } = useForm({
     defaultValues: {
@@ -41,9 +43,10 @@ export default function GroupMessageForm({ group, ...props }: { group: string } 
   const sendMessage = handleSubmit(async (values) => {
     if (!values.content) return;
 
-    try {
+    const expiration = defaultMessageExpiration ? unixNow() + defaultMessageExpiration : undefined;
+
       // Send direct message to users inbox
-      await actions.exec(SendWrappedMessage, pubkeys, values.content).forEach((e) => {
+      await actions.exec(SendWrappedMessage, pubkeys, values.content, { expiration }).forEach((e) => {
         const pubkey = getTagValue(e, "p");
         if (!pubkey) return;
         const relays = inboxes?.[pubkey];
@@ -60,7 +63,6 @@ export default function GroupMessageForm({ group, ...props }: { group: string } 
 
       // refocus input
       setTimeout(() => textAreaRef.current?.focus(), 50);
-    } catch (error) {}
   });
 
   const formRef = useRef<HTMLFormElement | null>(null);

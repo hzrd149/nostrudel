@@ -1,16 +1,17 @@
 import { ButtonGroup, IconButton, Menu, MenuButton, MenuItem, MenuList, useToast } from "@chakra-ui/react";
 import { Rumor } from "applesauce-core/helpers";
 import { useActiveAccount } from "applesauce-react/hooks";
-import { NostrEvent } from "nostr-tools";
+import { kinds, NostrEvent } from "nostr-tools";
 import { memo, useCallback } from "react";
 
-import { ReplyIcon } from "../../../components/icons";
+import DebugEventMenuItem from "../../../components/debug-modal/debug-event-menu-item";
+import { CopyToClipboardIcon, ReplyIcon } from "../../../components/icons";
 import DotsHorizontal from "../../../components/icons/dots-horizontal";
+import DeleteEventMenuItem from "../../../components/menu/delete-event";
 import MessagesGroup, { MessageGroupProps } from "../../../components/message/message-group";
 import AddReactionButton from "../../../components/note/timeline-note/components/add-reaction-button";
 import EventZapButton from "../../../components/zap/event-zap-button";
 import { useLegacyMessagePlaintext } from "../../../hooks/use-legacy-message-plaintext";
-import { useDeleteEventContext } from "../../../providers/route/delete-event-provider";
 import DirectMessageContent from "./direct-message-content";
 
 function DirectMessageActions({
@@ -25,8 +26,8 @@ function DirectMessageActions({
   toast: any;
 }) {
   const { plaintext } = useLegacyMessagePlaintext(message);
-  const { deleteEvent } = useDeleteEventContext();
   const isOwnMessage = message.pubkey === account.pubkey;
+  const canDelete = isOwnMessage && message.kind === kinds.EncryptedDirectMessage;
 
   const handleReply = () => {
     onReply?.(message);
@@ -51,10 +52,6 @@ function DirectMessageActions({
     }
   };
 
-  const handleDelete = useCallback(() => {
-    deleteEvent(message);
-  }, [deleteEvent, message]);
-
   return (
     <ButtonGroup size="xs" variant="ghost" gap="0">
       <IconButton aria-label="Reply" icon={<ReplyIcon />} onClick={handleReply} size="xs" />
@@ -63,12 +60,11 @@ function DirectMessageActions({
       <Menu>
         <MenuButton as={IconButton} aria-label="More actions" icon={<DotsHorizontal />} size="xs" />
         <MenuList fontSize="sm">
-          <MenuItem onClick={handleCopyText}>Copy text</MenuItem>
-          {isOwnMessage && (
-            <MenuItem color="red.500" onClick={handleDelete}>
-              Delete
-            </MenuItem>
-          )}
+          <MenuItem icon={<CopyToClipboardIcon />} onClick={handleCopyText}>
+            Copy text
+          </MenuItem>
+          {canDelete && <DeleteEventMenuItem event={message} />}
+          <DebugEventMenuItem event={message} />
         </MenuList>
       </Menu>
     </ButtonGroup>

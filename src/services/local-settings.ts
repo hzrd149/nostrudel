@@ -81,6 +81,7 @@ const encryptDecryptionCache = new BooleanLocalStorageEntry("encrypt-decryption-
 // Direct messages
 const enableDecryptionCache = new BooleanLocalStorageEntry("enable-decryption-cache", true);
 const autoDecryptMessages = new BooleanLocalStorageEntry("auto-decrypt-messages", true);
+const defaultMessageExpiration = new NullableNumberLocalStorageEntry("default-message-expiration", null);
 
 const localSettings = {
   readRelays,
@@ -116,6 +117,7 @@ const localSettings = {
   // Direct messages
   autoDecryptMessages,
   enableDecryptionCache,
+  defaultMessageExpiration,
 };
 
 if (import.meta.env.DEV) {
