@@ -1,9 +1,10 @@
-import { Box, BoxProps } from "@chakra-ui/react";
+import { Box, BoxProps, Text } from "@chakra-ui/react";
 import { useRenderedContent } from "applesauce-react/hooks";
 import { kinds, NostrEvent } from "nostr-tools";
-import React from "react";
+import React, { useMemo } from "react";
 
-import { isRumor, Rumor } from "applesauce-core/helpers";
+import { getExpirationTimestamp, getRumorGiftWraps, Rumor } from "applesauce-core/helpers";
+import dayjs from "dayjs";
 import { components } from "../../../components/content";
 import {
   renderAppleMusicUrl,
@@ -57,6 +58,8 @@ function LegacyDirectMessageContent({
   const plaintext = useLegacyMessagePlaintext(message).plaintext;
   const content = useRenderedContent(plaintext, components, { linkRenderers, cacheKey: DirectMessageContentSymbol });
 
+  const expirationTimestamp = getExpirationTimestamp(message);
+
   return (
     <ContentSettingsProvider event={message}>
       <LightboxProvider>
@@ -64,6 +67,12 @@ function LegacyDirectMessageContent({
           {content}
           {children}
         </Box>
+
+        {expirationTimestamp && (
+          <Text fontSize="xs" color="orange.500">
+            Expires: {dayjs.unix(expirationTimestamp).fromNow()}
+          </Text>
+        )}
       </LightboxProvider>
     </ContentSettingsProvider>
   );
@@ -75,6 +84,14 @@ function WrappedDirectMessageContent({
   ...props
 }: { message: Rumor; children?: React.ReactNode } & BoxProps) {
   const content = useRenderedContent(message, components, { linkRenderers, cacheKey: DirectMessageContentSymbol });
+  const expirationTimestamp = useMemo(() => {
+    const giftWraps = getRumorGiftWraps(message);
+    for (const giftWrap of giftWraps) {
+      const ts = getExpirationTimestamp(giftWrap);
+      if (ts) return ts;
+    }
+    return undefined;
+  }, [message]);
 
   return (
     <ContentSettingsProvider event={message as NostrEvent}>
@@ -83,6 +100,12 @@ function WrappedDirectMessageContent({
           {content}
           {children}
         </Box>
+
+        {expirationTimestamp && (
+          <Text fontSize="xs" color="orange.500">
+            Expires: {dayjs.unix(expirationTimestamp).fromNow()}
+          </Text>
+        )}
       </LightboxProvider>
     </ContentSettingsProvider>
   );

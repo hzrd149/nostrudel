@@ -6,9 +6,8 @@ import useEventIntersectionRef from "../../hooks/use-event-intersection-ref";
 import useEventReactions from "../../hooks/use-event-reactions";
 import EventReactionButtons from "../event-reactions/event-reactions";
 import Timestamp from "../timestamp";
-import UserLink from "../user/user-link";
-import { getExpirationTimestamp } from "applesauce-core/helpers";
 import UserAvatarLink from "../user/user-avatar-link";
+import UserLink from "../user/user-link";
 
 export type MessageProps = Omit<FlexProps, "children"> & {
   message: NostrEvent;
@@ -22,8 +21,6 @@ export default function Message({ message, showHeader = true, renderContent, ren
   const hasReactions = reactions.length > 0;
   const ref = useEventIntersectionRef(message);
   const [hover, setHover] = useState(false);
-
-  const expirationTimestamp = getExpirationTimestamp(message);
 
   return (
     <Flex
@@ -75,12 +72,6 @@ export default function Message({ message, showHeader = true, renderContent, ren
         )}
 
         {renderContent(message)}
-
-        {expirationTimestamp && (
-          <Flex align="center" gap="1" mt="1">
-            <Timestamp timestamp={expirationTimestamp} fontSize="xs" color="orange.500" prefix="Expires: " />
-          </Flex>
-        )}
 
         {hasReactions && (
           <ButtonGroup size="xs" variant="outline" spacing="2">
