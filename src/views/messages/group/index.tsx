@@ -34,6 +34,7 @@ import PendingLockedAlert from "../components/pending-decryption-alert";
 import GroupMessageForm from "./components/group-message-form";
 import GroupSettingsDrawer from "./components/group-settings-drawer";
 import { SettingsIcon } from "../../../components/icons";
+import GroupRelayConnectionsButton from "./components/group-relay-connections";
 
 /** This is broken out from DirectMessageChatPage for performance reasons. Don't use outside of file */
 const ChatLog = memo(({ messages }: { messages: (Rumor | NostrEvent)[] }) => {
@@ -133,6 +134,7 @@ function DirectMessageChatPage({ group }: { group: string }) {
                 Decrypt All
               </Button>
             )}
+            <GroupRelayConnectionsButton group={group} variant="ghost" onClick={openSettings} />
             <IconButton
               aria-label="Settings"
               title="Group settings"

@@ -1,12 +1,30 @@
-import { Button, ButtonGroup, Flex, FlexProps, Heading } from "@chakra-ui/react";
+import {
+  Button,
+  ButtonGroup,
+  Flex,
+  FlexProps,
+  Heading,
+  IconButton,
+  IconButtonProps,
+  Link,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalHeader,
+  ModalOverlay,
+  Text,
+  useDisclosure,
+} from "@chakra-ui/react";
 import { SendWrappedMessage } from "applesauce-actions/actions";
 import { getConversationParticipants, getDisplayName, getTagValue, unixNow } from "applesauce-core/helpers";
 import { useActionHub, useEventModel, useObservableEagerState } from "applesauce-react/hooks";
-import { useMemo, useRef } from "react";
+import { kinds } from "nostr-tools";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 
-import { kinds } from "nostr-tools";
 import InsertGifButton from "../../../../components/gif/insert-gif-button";
+import Lock01 from "../../../../components/icons/lock-01";
 import MagicTextArea, { RefType } from "../../../../components/magic-textarea";
 import InsertReactionButton from "../../../../components/reactions/insert-reaction-button";
 import useCacheForm from "../../../../hooks/use-cache-form";
@@ -15,12 +33,56 @@ import { GroupMessageInboxes } from "../../../../models/messages";
 import { usePublishEvent } from "../../../../providers/global/publish-provider";
 import { eventStore } from "../../../../services/event-store";
 import localSettings from "../../../../services/local-settings";
+import ExpirationToggleButton from "../../components/expiration-toggle-button";
 
-export default function GroupMessageForm({ group, ...props }: { group: string } & Omit<FlexProps, "children">) {
+function GroupMessageTypeButton({ ...props }: Omit<IconButtonProps, "children" | "aria-label" | "colorScheme">) {
+  const modal = useDisclosure();
+
+  return (
+    <>
+      <IconButton
+        icon={<Lock01 boxSize={6} />}
+        onClick={modal.onOpen}
+        aria-label="Message type"
+        variant="ghost"
+        colorScheme="green"
+        {...props}
+      />
+      <Modal isOpen={modal.isOpen} onClose={modal.onClose} isCentered>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader p="4">Private messages</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody px="4" pb="2" pt="0">
+            <Text>
+              Group messages only use{" "}
+              <Link href="https://github.com/nostr-protocol/nips/blob/master/17.md" isExternal color="blue.500">
+                NIP-17
+              </Link>{" "}
+              private direct messages. which are encrypted and hide the sender and receiver from third parties.
+            </Text>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+    </>
+  );
+}
+
+export default function GroupMessageForm({
+  group,
+  initialExpiration,
+  ...props
+}: { group: string; initialExpiration?: number } & Omit<FlexProps, "children">) {
   const publish = usePublishEvent();
   const actions = useActionHub();
   const pubkeys = useMemo(() => getConversationParticipants(group), [group]);
   const defaultMessageExpiration = useObservableEagerState(localSettings.defaultMessageExpiration);
+  const [expiration, setExpiration] = useState<number | null>(initialExpiration ?? defaultMessageExpiration);
+
+  // Reset the expiration when initial expiration changes
+  useEffect(() => {
+    setExpiration(initialExpiration ?? defaultMessageExpiration);
+  }, [initialExpiration, defaultMessageExpiration]);
 
   const { getValues, setValue, watch, handleSubmit, formState, reset } = useForm({
     defaultValues: {
@@ -43,10 +105,12 @@ export default function GroupMessageForm({ group, ...props }: { group: string } 
   const sendMessage = handleSubmit(async (values) => {
     if (!values.content) return;
 
-    const expiration = defaultMessageExpiration ? unixNow() + defaultMessageExpiration : undefined;
+    const expirationTimestamp = expiration ? unixNow() + expiration : undefined;
 
-      // Send direct message to users inbox
-      await actions.exec(SendWrappedMessage, pubkeys, values.content, { expiration }).forEach((e) => {
+    // Send direct message to users inbox
+    await actions
+      .exec(SendWrappedMessage, pubkeys, values.content, { expiration: expirationTimestamp })
+      .forEach((e) => {
         const pubkey = getTagValue(e, "p");
         if (!pubkey) return;
         const relays = inboxes?.[pubkey];
@@ -57,26 +121,29 @@ export default function GroupMessageForm({ group, ...props }: { group: string } 
         else return publish(label, e, relays, false, true);
       });
 
-      // Reset form
-      clearCache();
-      reset({ content: "" });
+    // Reset form
+    clearCache();
+    reset({ content: "" });
 
-      // refocus input
-      setTimeout(() => textAreaRef.current?.focus(), 50);
+    // refocus input
+    setTimeout(() => textAreaRef.current?.focus(), 50);
   });
 
   const formRef = useRef<HTMLFormElement | null>(null);
 
   return (
-    <Flex as="form" gap="2" onSubmit={sendMessage} ref={formRef} {...props}>
+    <Flex as="form" onSubmit={sendMessage} ref={formRef} gap="2" {...props}>
       {formState.isSubmitting ? (
         <Heading size="md" mx="auto" my="4">
           Sending...
         </Heading>
       ) : (
         <>
+          <Flex direction="column" gap="2">
+            <ExpirationToggleButton value={expiration} onChange={setExpiration} variant="ghost" />
+            <GroupMessageTypeButton />
+          </Flex>
           <MagicTextArea
-            mb="2"
             value={getValues().content}
             onChange={(e) => setValue("content", e.target.value, { shouldDirty: true, shouldTouch: true })}
             rows={2}
@@ -88,8 +155,8 @@ export default function GroupMessageForm({ group, ...props }: { group: string } 
               if ((e.ctrlKey || e.metaKey) && e.key === "Enter" && formRef.current) formRef.current.requestSubmit();
             }}
           />
-          <Flex gap="2" direction="column">
-            <ButtonGroup size="sm">
+          <Flex direction="column" gap="2">
+            <ButtonGroup variant="ghost">
               <InsertGifButton onSelectURL={insertText} aria-label="Add gif" />
               <InsertReactionButton onSelect={insertText} aria-label="Add emoji" />
             </ButtonGroup>

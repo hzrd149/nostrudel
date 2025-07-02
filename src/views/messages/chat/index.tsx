@@ -35,6 +35,7 @@ import DirectMessageGroup from "../components/direct-message-group";
 import PendingLockedAlert from "../components/pending-decryption-alert";
 import SendMessageForm from "./components/direct-message-form";
 import DirectMessageSettingsDrawer from "./components/direct-settings-drawer";
+import DirectMessageRelayConnectionsButton from "./components/direct-message-relay-connections";
 
 /** This is broken out from DirectMessageChatPage for performance reasons. Don't use outside of file */
 const ChatLog = memo(({ messages }: { messages: (Rumor | NostrEvent)[] }) => {
@@ -135,6 +136,12 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
     }
   }, [legacyMessages, locked, account]);
 
+  // Get the last message from the other user or self
+  const lastMessage = useMemo<NostrEvent | Rumor | undefined>(
+    () => messages.find((m) => m.pubkey === pubkey) || messages[0],
+    [messages, pubkey],
+  );
+
   // Callback to timeline loading
   const callback = useTimelineCurserIntersectionCallback(loader);
 
@@ -157,6 +164,7 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
                 Decrypt All
               </Button>
             )}
+            <DirectMessageRelayConnectionsButton other={pubkey} variant="ghost" onClick={openSettingsDrawer} />
             <IconButton
               aria-label="Settings"
               title="Conversation Settings"
@@ -183,7 +191,13 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
           <TimelineActionAndStatus loader={loader} />
         </Flex>
 
-        <SendMessageForm flexShrink={0} pubkey={pubkey} px="2" pb="2" />
+        <SendMessageForm
+          flexShrink={0}
+          pubkey={pubkey}
+          px="2"
+          pb="2"
+          initialType={lastMessage?.kind === kinds.EncryptedDirectMessage ? "nip04" : "nip17"}
+        />
 
         <DirectMessageSettingsDrawer
           isOpen={!!location.state?.settings}
