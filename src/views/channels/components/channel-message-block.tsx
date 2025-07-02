@@ -3,14 +3,17 @@ import { useActiveAccount } from "applesauce-react/hooks";
 import { NostrEvent } from "nostr-tools";
 import { memo, useCallback } from "react";
 
+import DebugEventMenuItem from "../../../components/debug-modal/debug-event-menu-item";
+import { CopyToClipboardIcon } from "../../../components/icons";
 import DotsHorizontal from "../../../components/icons/dots-horizontal";
+import DeleteEventMenuItem from "../../../components/menu/delete-event";
 import MessagesGroup, { MessageGroupProps } from "../../../components/message/message-group";
 import AddReactionButton from "../../../components/note/timeline-note/components/add-reaction-button";
 import EventZapButton from "../../../components/zap/event-zap-button";
 import ChannelMessageContent from "./channel-message-content";
 
-function ChannelMessageActions({ message, account, toast }: { message: NostrEvent; account: any; toast: any }) {
-  const isOwnMessage = message.pubkey === account.pubkey;
+function ChannelMessageActions({ message }: { message: NostrEvent }) {
+  const toast = useToast();
 
   const handleCopyText = async () => {
     try {
@@ -18,20 +21,13 @@ function ChannelMessageActions({ message, account, toast }: { message: NostrEven
       toast({
         title: "Text copied to clipboard",
         status: "success",
-        duration: 2000,
       });
     } catch (error) {
       toast({
         title: "Failed to copy text",
         status: "error",
-        duration: 2000,
       });
     }
-  };
-
-  const handleDelete = () => {
-    // TODO: Implement delete functionality
-    console.log("Delete message:", message.id);
   };
 
   return (
@@ -41,12 +37,11 @@ function ChannelMessageActions({ message, account, toast }: { message: NostrEven
       <Menu>
         <MenuButton as={IconButton} aria-label="More actions" icon={<DotsHorizontal />} size="xs" />
         <MenuList fontSize="sm">
-          <MenuItem onClick={handleCopyText}>Copy text</MenuItem>
-          {isOwnMessage && (
-            <MenuItem color="red.500" onClick={handleDelete}>
-              Delete
-            </MenuItem>
-          )}
+          <MenuItem onClick={handleCopyText} icon={<CopyToClipboardIcon />}>
+            Copy text
+          </MenuItem>
+          <DeleteEventMenuItem event={message} />
+          <DebugEventMenuItem event={message} />
         </MenuList>
       </Menu>
     </ButtonGroup>
@@ -61,7 +56,7 @@ function ChannelMessageBlock(props: Omit<MessageGroupProps, "renderContent">) {
 
   const renderActions = useCallback(
     (message: NostrEvent) => {
-      return <ChannelMessageActions message={message} account={account} toast={toast} />;
+      return <ChannelMessageActions message={message} />;
     },
     [account, toast],
   );
