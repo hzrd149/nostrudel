@@ -1,10 +1,9 @@
 import { Button, ButtonProps } from "@chakra-ui/react";
-import { mergeRelaySets } from "applesauce-core/helpers";
-import { useActiveAccount, useEventModel, useObservableEagerState } from "applesauce-react/hooks";
+import { useActiveAccount, useEventModel, useObservableState } from "applesauce-react/hooks";
 import { useMemo } from "react";
 
 import { RelayIcon } from "../../../../components/icons";
-import { DirectMessageRelays, GroupMessageInboxes } from "../../../../models/messages";
+import { DirectMessageRelays } from "../../../../models/messages";
 import { connections$ } from "../../../../services/pool";
 
 export default function GroupRelayConnectionsButton({
@@ -13,7 +12,7 @@ export default function GroupRelayConnectionsButton({
 }: Omit<ButtonProps, "children" | "colorScheme"> & { group: string }) {
   const account = useActiveAccount()!;
   const relays = useEventModel(DirectMessageRelays, [account.pubkey]);
-  const connections = useObservableEagerState(connections$);
+  const connections = useObservableState(connections$) ?? {};
 
   const color = useMemo(() => {
     if (!relays) return "red";

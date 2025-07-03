@@ -1,6 +1,5 @@
 import {
   Alert,
-  AlertIcon,
   Button,
   ButtonGroup,
   Flex,
@@ -18,10 +17,18 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { SendLegacyMessage, SendWrappedMessage } from "applesauce-actions/actions";
-import { createConversationIdentifier, mergeRelaySets, unixNow } from "applesauce-core/helpers";
+import {
+  createConversationIdentifier,
+  getDisplayName,
+  getTagValue,
+  mergeRelaySets,
+  unixNow,
+} from "applesauce-core/helpers";
 import { useActionHub, useActiveAccount, useEventModel, useObservableEagerState } from "applesauce-react/hooks";
-import { useEffect, useRef, useState } from "react";
+import { kinds } from "nostr-tools";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
+import { lastValueFrom, toArray } from "rxjs";
 
 import InsertGifButton from "../../../../components/gif/insert-gif-button";
 import EyeOff from "../../../../components/icons/eye-off";
@@ -32,9 +39,11 @@ import useCacheForm from "../../../../hooks/use-cache-form";
 import useTextAreaUploadFile, { useTextAreaInsertTextWithForm } from "../../../../hooks/use-textarea-upload-file";
 import { useUserInbox } from "../../../../hooks/use-user-mailboxes";
 import { GroupMessageInboxes } from "../../../../models/messages";
-import { usePublishEvent } from "../../../../providers/global/publish-provider";
+import { PublishLogEntry, usePublishEvent } from "../../../../providers/global/publish-provider";
+import { eventStore } from "../../../../services/event-store";
 import localSettings from "../../../../services/local-settings";
 import ExpirationToggleButton from "../../components/expiration-toggle-button";
+import SendingStatus from "../../components/sending-status";
 
 function MessageTypeToggleButton({
   value,
@@ -116,21 +125,28 @@ export default function SendMessageForm({
   pubkey,
   rootId,
   initialType = "nip04",
+  initialExpiration,
   ...props
-}: { pubkey: string; rootId?: string; initialType?: MessageType } & Omit<FlexProps, "children">) {
+}: { pubkey: string; rootId?: string; initialType?: MessageType; initialExpiration?: number } & Omit<
+  FlexProps,
+  "children"
+>) {
   const account = useActiveAccount()!;
   const publish = usePublishEvent();
   const actions = useActionHub();
   const defaultMessageExpiration = useObservableEagerState(localSettings.defaultMessageExpiration);
 
   // These values are managed outside of the form because they are options the user toggles
-  const [expiration, setExpiration] = useState<number | null>(defaultMessageExpiration);
+  const [expiration, setExpiration] = useState<number | null>(initialExpiration ?? defaultMessageExpiration);
   const [type, setType] = useState<MessageType>(initialType);
 
-  // Reset the type when initial type changes
+  // Reset the type when initial values change
   useEffect(() => {
     setType(initialType);
   }, [initialType]);
+  useEffect(() => {
+    if (initialExpiration) setExpiration(initialExpiration);
+  }, [initialExpiration]);
 
   const { getValues, setValue, watch, handleSubmit, formState, reset } = useForm({
     defaultValues: {
@@ -149,27 +165,52 @@ export default function SendMessageForm({
   const insertText = useTextAreaInsertTextWithForm(autocompleteRef, getValues, setValue);
   const { onPaste } = useTextAreaUploadFile(insertText);
 
+  const [sending, setSending] = useState<PublishLogEntry[] | null>(null);
   const otherInboxes = useUserInbox(pubkey);
   const selfInboxes = useUserInbox(account.pubkey);
-  const inboxes = useEventModel(GroupMessageInboxes, [createConversationIdentifier(account.pubkey, pubkey)]);
+  const inboxes = useEventModel(GroupMessageInboxes, [createConversationIdentifier(account.pubkey, pubkey), false]);
   const sendMessage = handleSubmit(async (values) => {
     if (!values.content) return;
 
     const expirationTimestamp = expiration ? unixNow() + expiration : undefined;
 
+    // Publish all wrapped message events
+    const publishes: PublishLogEntry[] = [];
     if (type === "nip04") {
-      // Send legacy direct message to both users NIP-65 inboxes
-      await actions
-        .exec(SendLegacyMessage, pubkey, values.content, { expiration: expirationTimestamp })
-        .forEach((e) => publish("Send message", e, mergeRelaySets(otherInboxes, selfInboxes), false, true));
+      // Create legacy direct message events
+      const events = await lastValueFrom(
+        actions.exec(SendLegacyMessage, pubkey, values.content, { expiration: expirationTimestamp }).pipe(toArray()),
+      );
+
+      // Send legacy direct messages to both users NIP-65 inboxes
+      for (let event of events) {
+        publishes.push(await publish("Send message", event, mergeRelaySets(otherInboxes, selfInboxes), false, true));
+      }
     } else {
       if (!inboxes) throw new Error("Missing both users inboxes");
 
-      // Send private direct message to both users NIP-17 inboxes
-      await actions
-        .exec(SendWrappedMessage, [account.pubkey, pubkey], values.content, { expiration: expirationTimestamp })
-        .forEach((e) => publish("Send message", e, mergeRelaySets(...Object.values(inboxes ?? {})), false, true));
+      // Create all wrapped message events
+      const events = await lastValueFrom(
+        actions
+          .exec(SendWrappedMessage, [account.pubkey, pubkey], values.content, { expiration: expirationTimestamp })
+          .pipe(toArray()),
+      );
+      for (let e of events) {
+        const pubkey = getTagValue(e, "p");
+        if (!pubkey) return;
+        const relays = inboxes?.[pubkey];
+        const profile = eventStore.getReplaceable(kinds.Metadata, pubkey);
+
+        const label = `Send message to ${getDisplayName(profile)}`;
+        if (!relays) publishes.push(await publish(label, e, [], false));
+        else publishes.push(await publish(label, e, relays, false, true));
+      }
     }
+    setSending(publishes);
+
+    // Wait for all messages to be published
+    await Promise.all(publishes.map((e) => lastValueFrom(e.publish$)));
+    setSending(null);
 
     // Reset form
     clearCache();
@@ -179,14 +220,29 @@ export default function SendMessageForm({
     setTimeout(() => textAreaRef.current?.focus(), 50);
   });
 
+  const skipPublishing = useCallback(() => {
+    setSending(null);
+
+    // Reset form
+    clearCache();
+    reset({ content: "" });
+
+    // refocus input
+    setTimeout(() => textAreaRef.current?.focus(), 50);
+  }, [reset]);
+
   const formRef = useRef<HTMLFormElement | null>(null);
 
   return (
     <Flex as="form" gap="2" onSubmit={sendMessage} ref={formRef} {...props}>
       {formState.isSubmitting ? (
-        <Heading size="md" mx="auto" my="4">
-          Sending...
-        </Heading>
+        sending ? (
+          <SendingStatus entries={sending} onSkip={skipPublishing} />
+        ) : (
+          <Heading size="md" mx="auto" my="4">
+            Signing message...
+          </Heading>
+        )
       ) : (
         <>
           <Flex gap="2" direction="column">

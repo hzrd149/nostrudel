@@ -2,6 +2,7 @@ import {
   Alert,
   AlertIcon,
   Box,
+  Button,
   Drawer,
   DrawerBody,
   DrawerCloseButton,
@@ -14,42 +15,18 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
-import { useActiveAccount, useEventModel } from "applesauce-react/hooks";
 import { getConversationParticipants } from "applesauce-core/helpers";
+import { useActiveAccount, useEventModel } from "applesauce-react/hooks";
 import RelayFavicon from "../../../../components/relay-favicon";
-import RelayStatusBadge from "../../../../components/relays/relay-status";
 import RouterLink from "../../../../components/router-link";
 import UserAvatarLink from "../../../../components/user/user-avatar-link";
 import UserDnsIdentity from "../../../../components/user/user-dns-identity";
 import UserLink from "../../../../components/user/user-link";
 import UserName from "../../../../components/user/user-name";
-import { GroupMessageInboxes } from "../../../../models/messages";
+import { DirectMessageRelays, GroupMessageInboxes } from "../../../../models/messages";
+import InboxesStatusSection from "../../components/inboxes-status-section";
 
-function ParticipantHeader({ pubkey }: { pubkey: string }) {
-  return (
-    <Flex gap="2" alignItems="flex-start">
-      <UserAvatarLink pubkey={pubkey} size="md" />
-      <Flex direction="column" overflow="hidden">
-        <UserLink pubkey={pubkey} fontSize="lg" fontWeight="bold" />
-        <UserDnsIdentity pubkey={pubkey} />
-      </Flex>
-    </Flex>
-  );
-}
-
-function RelayItem({ relay }: { relay: string }) {
-  return (
-    <Flex gap="2" alignItems="center" w="full" overflow="hidden">
-      <RelayFavicon relay={relay} size="xs" />
-      <Link as={RouterLink} to={`/relays/${encodeURIComponent(relay)}`} isTruncated>
-        {relay}
-      </Link>
-      <RelayStatusBadge relay={relay} ms="auto" />
-    </Flex>
-  );
-}
-
-function ParticipantSection({
+function ParticipantInboxesSection({
   pubkey,
   relays,
   isCurrentUser,
@@ -60,12 +37,23 @@ function ParticipantSection({
 }) {
   return (
     <VStack spacing={2} align="stretch">
-      <ParticipantHeader pubkey={pubkey} />
+      <Flex gap="2" alignItems="flex-start">
+        <UserAvatarLink pubkey={pubkey} size="sm" />
+        <Flex direction="column" overflow="hidden">
+          <UserLink pubkey={pubkey} fontSize="lg" fontWeight="bold" />
+          <UserDnsIdentity pubkey={pubkey} />
+        </Flex>
+      </Flex>
 
       {relays && relays.length > 0 ? (
         <VStack spacing={2} align="stretch">
           {relays.map((relay) => (
-            <RelayItem key={relay} relay={relay} />
+            <Flex gap="2" alignItems="center" w="full" overflow="hidden" key={relay}>
+              <RelayFavicon relay={relay} size="xs" />
+              <Link as={RouterLink} to={`/relays/${encodeURIComponent(relay)}`} isTruncated>
+                {relay}
+              </Link>
+            </Flex>
           ))}
         </VStack>
       ) : (
@@ -101,6 +89,7 @@ interface GroupSettingsDrawerProps {
 export default function GroupSettingsDrawer({ isOpen, onClose, group }: GroupSettingsDrawerProps) {
   const account = useActiveAccount()!;
   const participants = getConversationParticipants(group);
+  const inboxes = useEventModel(DirectMessageRelays, [account.pubkey]);
   const groupInboxes = useEventModel(GroupMessageInboxes, [group]);
 
   // Filter out current user and get other participants
@@ -112,12 +101,33 @@ export default function GroupSettingsDrawer({ isOpen, onClose, group }: GroupSet
       <DrawerOverlay />
       <DrawerContent>
         <DrawerCloseButton />
-        <DrawerHeader>Group Settings</DrawerHeader>
+        <DrawerHeader p="4">Settings</DrawerHeader>
         <DrawerBody gap="6" display="flex" flexDirection="column" px="4" pb="8" pt="0">
-          <ParticipantSection pubkey={account.pubkey} relays={currentUserRelays} isCurrentUser={true} />
-          {others.map((pubkey) => (
-            <ParticipantSection key={pubkey} pubkey={pubkey} relays={groupInboxes?.[pubkey]} isCurrentUser={false} />
-          ))}
+          {inboxes && (
+            <VStack spacing={2} align="stretch">
+              <Heading size="md">Inbox relays</Heading>
+              {inboxes.length > 0 ? (
+                <InboxesStatusSection relays={inboxes} />
+              ) : (
+                <Button variant="link" as={RouterLink} to="/settings/mailboxes" colorScheme="primary">
+                  Setup message inboxes
+                </Button>
+              )}
+            </VStack>
+          )}
+
+          <VStack spacing={4} align="stretch">
+            <Heading size="md">Group inboxes</Heading>
+            <ParticipantInboxesSection pubkey={account.pubkey} relays={currentUserRelays} isCurrentUser={true} />
+            {others.map((pubkey) => (
+              <ParticipantInboxesSection
+                key={pubkey}
+                pubkey={pubkey}
+                relays={groupInboxes?.[pubkey]}
+                isCurrentUser={false}
+              />
+            ))}
+          </VStack>
         </DrawerBody>
       </DrawerContent>
     </Drawer>

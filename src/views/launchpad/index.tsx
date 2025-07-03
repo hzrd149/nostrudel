@@ -5,7 +5,6 @@ import RequireActiveAccount from "../../components/router/require-active-account
 import { ErrorBoundary } from "../../components/error-boundary";
 import FeedsCard from "./components/feeds-card";
 import SearchForm from "./components/search-form";
-import DMsCard from "./components/messages-card";
 import NotificationsCard from "./components/notifications-card";
 import ToolsCard from "./components/tools-card";
 import StreamsCard from "./components/streams-card";
@@ -19,10 +18,7 @@ function LaunchpadPage() {
         <FeedsCard w="full" />
       </ErrorBoundary>
       <ErrorBoundary>
-        <NotificationsCard w={{ base: "full", md: "calc(60% - 1rem)" }} maxH="40vh" />
-      </ErrorBoundary>
-      <ErrorBoundary>
-        <DMsCard w={{ base: "full", md: "40%" }} />
+        <NotificationsCard w="full" maxH="40vh" />
       </ErrorBoundary>
       <ErrorBoundary>
         <StreamsCard w={{ base: "full", md: "40%" }} />

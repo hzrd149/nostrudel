@@ -70,7 +70,7 @@ function LegacyDirectMessageContent({
 
         {expirationTimestamp && (
           <Text fontSize="xs" color="orange.500">
-            Expires: {dayjs.unix(expirationTimestamp).fromNow()}
+            Disappears: {dayjs.unix(expirationTimestamp).fromNow()}
           </Text>
         )}
       </LightboxProvider>
@@ -103,7 +103,7 @@ function WrappedDirectMessageContent({
 
         {expirationTimestamp && (
           <Text fontSize="xs" color="orange.500">
-            Expires: {dayjs.unix(expirationTimestamp).fromNow()}
+            Disappears: {dayjs.unix(expirationTimestamp).fromNow()}
           </Text>
         )}
       </LightboxProvider>

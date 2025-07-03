@@ -9,9 +9,9 @@ import {
   LinkOverlay,
   Text,
 } from "@chakra-ui/react";
-import { Rumor, mergeRelaySets } from "applesauce-core/helpers";
+import { mergeRelaySets, Rumor } from "applesauce-core/helpers";
 import { GiftWrapsModel, LegacyMessagesGroups, WrappedMessagesGroups } from "applesauce-core/models";
-import { useActiveAccount, useEventModel, useObservableEagerState } from "applesauce-react/hooks";
+import { useActiveAccount, useEventModel, useObservableEagerState, useObservableState } from "applesauce-react/hooks";
 import { NostrEvent, kinds } from "nostr-tools";
 import { npubEncode } from "nostr-tools/nip19";
 import { useEffect, useMemo } from "react";
@@ -30,30 +30,13 @@ import { useLegacyMessagePlaintext } from "../../hooks/use-legacy-message-plaint
 import useScrollRestoreRef from "../../hooks/use-scroll-restore";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
-import useUserMailboxes from "../../hooks/use-user-mailboxes";
-import { DirectMessageRelays } from "../../models/messages";
+import { useUserInbox } from "../../hooks/use-user-mailboxes";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import RequireDecryptionCache from "../../providers/route/require-decryption-cache";
+import { legacyMessageSubscription, wrappedMessageSubscription } from "../../services/lifecycle";
 import localSettings from "../../services/local-settings";
-
-/** use a timeline to load NIP-04 DMs and NIP-17 gift wraps */
-export function useDirectMessagesTimeline(pubkey?: string) {
-  const mailboxes = useUserMailboxes(pubkey);
-  const dmRelays = useEventModel(DirectMessageRelays, pubkey ? [pubkey] : undefined);
-
-  const relays = useMemo(() => mergeRelaySets(mailboxes?.inboxes, dmRelays), [mailboxes?.inboxes, dmRelays]);
-
-  return useTimelineLoader(
-    `${pubkey ?? "anon"}-dms`,
-    relays,
-    pubkey
-      ? [
-          { authors: [pubkey], kinds: [kinds.EncryptedDirectMessage] },
-          { "#p": [pubkey], kinds: [kinds.EncryptedDirectMessage, kinds.GiftWrap] },
-        ]
-      : undefined,
-  );
-}
+import { DirectMessageRelays } from "../../models/messages";
+import ReadAuthRequiredAlert from "./components/read-auth-required-alert";
 
 function MessagePreview({ message }: { message: NostrEvent }) {
   const { plaintext } = useLegacyMessagePlaintext(message);
@@ -115,7 +98,23 @@ type WrappedGroup = NonNullable<{ id: string; participants: string[]; lastMessag
 function Groups() {
   const account = useActiveAccount()!;
 
-  const { loader } = useDirectMessagesTimeline(account.pubkey);
+  // Subscribe to incoming messages
+  useObservableState(legacyMessageSubscription);
+  useObservableState(wrappedMessageSubscription);
+
+  // Create a timeline loader for legacy messages
+  const legacyInboxes = useUserInbox(account.pubkey);
+  const messagesInboxes = useEventModel(DirectMessageRelays, [account.pubkey]);
+  const inboxes = useMemo(() => mergeRelaySets(legacyInboxes, messagesInboxes), [legacyInboxes, messagesInboxes]);
+  const { loader } = useTimelineLoader(`${account.pubkey}-legacy-messages`, legacyInboxes ?? [], [
+    { authors: [account.pubkey], kinds: [kinds.EncryptedDirectMessage] },
+    { "#p": [account.pubkey], kinds: [kinds.EncryptedDirectMessage] },
+  ]);
+
+  // Start the legacy messages timeline
+  useEffect(() => {
+    loader?.();
+  }, [loader]);
 
   const legacyGroups = useEventModel(LegacyMessagesGroups, [account.pubkey]);
   const wrappedGroups = useEventModel(WrappedMessagesGroups, [account.pubkey]);
@@ -139,6 +138,7 @@ function Groups() {
 
   return (
     <IntersectionObserverProvider callback={callback}>
+      <ReadAuthRequiredAlert relays={inboxes} flexShrink={0} />
       <Flex flex={1} overflow="hidden" position="relative">
         <AutoSizer>
           {({ width, height }) => (
@@ -163,11 +163,6 @@ function Groups() {
 
 function MessagesHomePage() {
   const account = useActiveAccount()!;
-
-  const { loader } = useDirectMessagesTimeline(account.pubkey);
-  useEffect(() => {
-    loader?.();
-  }, [loader]);
 
   // Automatically decrypt new wrapped messages
   const autoDecryptMessages = useObservableEagerState(localSettings.autoDecryptMessages);

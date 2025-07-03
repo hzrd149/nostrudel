@@ -23,18 +23,21 @@ import {
 import { getGiftWrapRumor, isGiftWrapLocked, Rumor, unlockGiftWrap } from "applesauce-core/helpers/gift-wraps";
 import { getConversationParticipants } from "applesauce-core/helpers/messages";
 import { GiftWrapsModel } from "applesauce-core/models";
-import { useActiveAccount, useEventModel } from "applesauce-react/hooks";
+import { useActiveAccount, useEventModel, useObservableState } from "applesauce-react/hooks";
 import { kinds } from "nostr-tools";
 import { useEffect, useMemo, useRef } from "react";
 import { Link as RouterLink } from "react-router-dom";
 
-import { useDirectMessagesTimeline } from ".";
 import { UnlockIcon } from "../../components/icons";
 import SimpleView from "../../components/layout/presets/simple-view";
 import Timestamp from "../../components/timestamp";
 import UserAvatar from "../../components/user/user-avatar";
 import UserName from "../../components/user/user-name";
+import { useAppTitle } from "../../hooks/use-app-title";
 import useAsyncAction from "../../hooks/use-async-action";
+import { legacyMessageSubscription, wrappedMessageSubscription } from "../../services/lifecycle";
+import { DirectMessageRelays } from "../../models/messages";
+import ReadAuthRequiredAlert from "./components/read-auth-required-alert";
 
 interface GroupInfo {
   id: string;
@@ -145,11 +148,13 @@ function MiscEventsTable({ events }: { events: Rumor[] }) {
 
 export default function InboxView() {
   const account = useActiveAccount()!;
+  useAppTitle("Messages inbox");
 
-  const { loader } = useDirectMessagesTimeline(account.pubkey);
-  useEffect(() => {
-    loader?.();
-  }, [loader]);
+  // Keep a subscription open for NIP-04 and NIP-17 messages
+  useObservableState(legacyMessageSubscription);
+  useObservableState(wrappedMessageSubscription);
+
+  const inboxes = useEventModel(DirectMessageRelays, [account.pubkey]);
 
   // Get all gift wraps for the account
   const initiallyLockedIds = useRef<Set<string>>(new Set());
@@ -257,6 +262,8 @@ export default function InboxView() {
             </Flex>
           </Card>
         </Box>
+
+        {inboxes && <ReadAuthRequiredAlert relays={inboxes} />}
 
         {/* Conversation groups section */}
         {groups.length > 0 && (

@@ -2,7 +2,6 @@ import { RelayPool } from "applesauce-relay";
 import { Filter, NostrEvent } from "nostr-tools";
 import { BehaviorSubject, combineLatest, interval, map, merge, Observable, shareReplay, switchMap } from "rxjs";
 
-import authenticationSigner from "./authentication-signer";
 import { nanoid } from "nanoid";
 
 export type ConnectionState = "connecting" | "connected" | "retrying" | "dormant" | "error";

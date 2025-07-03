@@ -1,11 +1,26 @@
 import { IAccount } from "applesauce-accounts";
-import { defined } from "applesauce-core/observable";
+import { defined, mapEventsToStore } from "applesauce-core/observable";
 import { USER_BLOSSOM_SERVER_LIST_KIND } from "blossom-client-sdk";
 import { kinds, nip42 } from "nostr-tools";
-import { combineLatest, distinct, distinctUntilChanged, map, merge, NEVER, of, switchMap, tap } from "rxjs";
+import {
+  combineLatest,
+  distinct,
+  distinctUntilChanged,
+  ignoreElements,
+  map,
+  merge,
+  NEVER,
+  of,
+  share,
+  switchMap,
+  tap,
+  timer,
+} from "rxjs";
 
+import { onlyEvents } from "applesauce-relay";
 import { APP_SETTING_IDENTIFIER, APP_SETTINGS_KIND } from "../helpers/app-settings";
 import { MailboxesQuery } from "../models";
+import { DirectMessageRelays } from "../models/messages";
 import accounts from "./accounts";
 import authenticationSigner from "./authentication-signer";
 import { eventStore } from "./event-store";
@@ -90,3 +105,44 @@ pool.relays$
     ),
   )
   .subscribe();
+
+// Observable to subscribe to NIP-65 inboxes for legacy messages
+export const legacyMessageSubscription = accounts.active$.pipe(
+  switchMap((account) => {
+    if (!account) return NEVER;
+    const inboxes = eventStore.model(MailboxesQuery, account.pubkey).pipe(
+      defined(),
+      map((m) => m?.inboxes),
+    );
+    return combineLatest([of(account), inboxes]);
+  }),
+  // Open a subscription to all relays for incoming messages
+  switchMap(([account, inboxes]) =>
+    pool
+      .subscription(inboxes, { kinds: [kinds.EncryptedDirectMessage], "#p": [account.pubkey] })
+      .pipe(onlyEvents(), mapEventsToStore(eventStore)),
+  ),
+  // Ingore all updates since subscribes will get the events from the store
+  ignoreElements(),
+  // Ensure only one subscription is created and keep it alive for 30 seconds after last subscriber
+  share({ resetOnRefCountZero: () => timer(30_000) }),
+);
+
+// Observable to subscribe to NIP-65 inboxes for wrapped messages
+export const wrappedMessageSubscription = accounts.active$.pipe(
+  switchMap((account) => {
+    if (!account) return NEVER;
+    const inboxes = eventStore.model(DirectMessageRelays, account.pubkey).pipe(defined());
+    return combineLatest([of(account), inboxes]);
+  }),
+  // Open a subscription to all relays for incoming messages
+  switchMap(([account, inboxes]) =>
+    pool
+      .subscription(inboxes, { kinds: [kinds.GiftWrap], "#p": [account.pubkey] })
+      .pipe(onlyEvents(), mapEventsToStore(eventStore)),
+  ),
+  // Ingore all updates since subscribes will get the events from the store
+  ignoreElements(),
+  // Ensure only one subscription is created and keep it alive for 30 seconds after last subscriber
+  share({ resetOnRefCountZero: () => timer(30_000) }),
+);

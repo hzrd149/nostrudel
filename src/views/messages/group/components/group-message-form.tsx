@@ -20,7 +20,7 @@ import { SendWrappedMessage } from "applesauce-actions/actions";
 import { getConversationParticipants, getDisplayName, getTagValue, unixNow } from "applesauce-core/helpers";
 import { useActionHub, useEventModel, useObservableEagerState } from "applesauce-react/hooks";
 import { kinds } from "nostr-tools";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 
 import InsertGifButton from "../../../../components/gif/insert-gif-button";
@@ -30,10 +30,12 @@ import InsertReactionButton from "../../../../components/reactions/insert-reacti
 import useCacheForm from "../../../../hooks/use-cache-form";
 import useTextAreaUploadFile, { useTextAreaInsertTextWithForm } from "../../../../hooks/use-textarea-upload-file";
 import { GroupMessageInboxes } from "../../../../models/messages";
-import { usePublishEvent } from "../../../../providers/global/publish-provider";
+import { PublishLogEntry, usePublishEvent } from "../../../../providers/global/publish-provider";
 import { eventStore } from "../../../../services/event-store";
 import localSettings from "../../../../services/local-settings";
 import ExpirationToggleButton from "../../components/expiration-toggle-button";
+import { lastValueFrom, toArray } from "rxjs";
+import SendingStatus from "../../components/sending-status";
 
 function GroupMessageTypeButton({ ...props }: Omit<IconButtonProps, "children" | "aria-label" | "colorScheme">) {
   const modal = useDisclosure();
@@ -79,10 +81,10 @@ export default function GroupMessageForm({
   const defaultMessageExpiration = useObservableEagerState(localSettings.defaultMessageExpiration);
   const [expiration, setExpiration] = useState<number | null>(initialExpiration ?? defaultMessageExpiration);
 
-  // Reset the expiration when initial expiration changes
+  // Reset the expiration when initial values change
   useEffect(() => {
     setExpiration(initialExpiration ?? defaultMessageExpiration);
-  }, [initialExpiration, defaultMessageExpiration]);
+  }, [initialExpiration]);
 
   const { getValues, setValue, watch, handleSubmit, formState, reset } = useForm({
     defaultValues: {
@@ -101,25 +103,35 @@ export default function GroupMessageForm({
   const insertText = useTextAreaInsertTextWithForm(autocompleteRef, getValues, setValue);
   const { onPaste } = useTextAreaUploadFile(insertText);
 
-  const inboxes = useEventModel(GroupMessageInboxes, [group]);
+  const [sending, setSending] = useState<PublishLogEntry[] | null>(null);
+  const inboxes = useEventModel(GroupMessageInboxes, [group, false]);
   const sendMessage = handleSubmit(async (values) => {
     if (!values.content) return;
 
     const expirationTimestamp = expiration ? unixNow() + expiration : undefined;
 
-    // Send direct message to users inbox
-    await actions
-      .exec(SendWrappedMessage, pubkeys, values.content, { expiration: expirationTimestamp })
-      .forEach((e) => {
-        const pubkey = getTagValue(e, "p");
-        if (!pubkey) return;
-        const relays = inboxes?.[pubkey];
-        const profile = eventStore.getReplaceable(kinds.Metadata, pubkey);
+    // Create all wrapped message events
+    const events = await lastValueFrom(
+      actions.exec(SendWrappedMessage, pubkeys, values.content, { expiration: expirationTimestamp }).pipe(toArray()),
+    );
 
-        const label = `Send message to ${getDisplayName(profile)}`;
-        if (!relays) return publish(label, e, [], false);
-        else return publish(label, e, relays, false, true);
-      });
+    // Publish all wrapped message events
+    const publishes: PublishLogEntry[] = [];
+    for (let e of events) {
+      const pubkey = getTagValue(e, "p");
+      if (!pubkey) return;
+      const relays = inboxes?.[pubkey];
+      const profile = eventStore.getReplaceable(kinds.Metadata, pubkey);
+
+      const label = `Send message to ${getDisplayName(profile)}`;
+      if (!relays) publishes.push(await publish(label, e, [], false));
+      else publishes.push(await publish(label, e, relays, false, true));
+    }
+    setSending(publishes);
+
+    // Wait for all messages to be published
+    await Promise.all(publishes.map((e) => lastValueFrom(e.publish$)));
+    setSending(null);
 
     // Reset form
     clearCache();
@@ -129,14 +141,29 @@ export default function GroupMessageForm({
     setTimeout(() => textAreaRef.current?.focus(), 50);
   });
 
+  const skipPublishing = useCallback(() => {
+    setSending(null);
+
+    // Reset form
+    clearCache();
+    reset({ content: "" });
+
+    // refocus input
+    setTimeout(() => textAreaRef.current?.focus(), 50);
+  }, [reset]);
+
   const formRef = useRef<HTMLFormElement | null>(null);
 
   return (
     <Flex as="form" onSubmit={sendMessage} ref={formRef} gap="2" {...props}>
       {formState.isSubmitting ? (
-        <Heading size="md" mx="auto" my="4">
-          Sending...
-        </Heading>
+        sending ? (
+          <SendingStatus entries={sending} onSkip={skipPublishing} />
+        ) : (
+          <Heading size="md" mx="auto" my="4">
+            Signing message...
+          </Heading>
+        )
       ) : (
         <>
           <Flex direction="column" gap="2">

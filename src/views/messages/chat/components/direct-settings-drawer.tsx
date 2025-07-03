@@ -2,6 +2,7 @@ import {
   Alert,
   AlertIcon,
   Box,
+  Button,
   Drawer,
   DrawerBody,
   DrawerCloseButton,
@@ -14,7 +15,9 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
-import { useActiveAccount } from "applesauce-react/hooks";
+import { isLegacyMessageLocked, mergeRelaySets, unlockLegacyMessage } from "applesauce-core/helpers";
+import { useActiveAccount, useEventModel } from "applesauce-react/hooks";
+
 import RelayFavicon from "../../../../components/relay-favicon";
 import RelayStatusBadge from "../../../../components/relays/relay-status";
 import RouterLink from "../../../../components/router-link";
@@ -22,7 +25,12 @@ import UserAvatarLink from "../../../../components/user/user-avatar-link";
 import UserDnsIdentity from "../../../../components/user/user-dns-identity";
 import UserLink from "../../../../components/user/user-link";
 import UserName from "../../../../components/user/user-name";
-import useUserMailboxes from "../../../../hooks/use-user-mailboxes";
+import { useUserInbox } from "../../../../hooks/use-user-mailboxes";
+import { DirectMessageRelays } from "../../../../models/messages";
+import InboxesStatusSection from "../../components/inboxes-status-section";
+import { LegacyMessagesGroup } from "applesauce-core/models";
+import useAsyncAction from "../../../../hooks/use-async-action";
+import { useMemo } from "react";
 
 function ConversationHeader({ other }: { other: string }) {
   return (
@@ -48,6 +56,53 @@ function ConversationRelay({ relay }: { relay: string }) {
   );
 }
 
+function LegacyMessagesSection({ other }: { other: string }) {
+  const account = useActiveAccount()!;
+  const messages = useEventModel(LegacyMessagesGroup, [account.pubkey, other]);
+
+  // Action to decrypt all messages
+  const decryptAll = useAsyncAction(async () => {
+    if (!messages) return;
+
+    for (const message of messages) {
+      if (isLegacyMessageLocked(message)) {
+        unlockLegacyMessage(message, account.pubkey, account);
+      }
+    }
+  }, [messages, account]);
+
+  const locked = useMemo(() => {
+    if (!messages) return [];
+    return messages.filter(isLegacyMessageLocked);
+  }, [messages]);
+
+  return (
+    <VStack spacing={2} align="stretch">
+      <Box>
+        <Heading size="md">Legacy Messages</Heading>
+        <Text color="GrayText">Old encrypted direct messages that may need decryption.</Text>
+      </Box>
+      <Box>
+        <Text>Total legacy messages: {messages?.length || 0}</Text>
+        <Text>Encrypted messages: {locked.length}</Text>
+      </Box>
+      {locked.length > 0 && (
+        <Box display="flex" justifyContent="flex-end">
+          <Button
+            size="sm"
+            colorScheme="blue"
+            onClick={decryptAll.run}
+            isLoading={decryptAll.loading}
+            loadingText="Decrypting..."
+          >
+            Decrypt All
+          </Button>
+        </Box>
+      )}
+    </VStack>
+  );
+}
+
 interface InfoDrawerProps {
   isOpen: boolean;
   onClose: () => void;
@@ -56,74 +111,46 @@ interface InfoDrawerProps {
 
 export default function DirectMessageSettingsDrawer({ isOpen, onClose, otherUserPubkey }: InfoDrawerProps) {
   const account = useActiveAccount()!;
-  const userMailboxes = useUserMailboxes(account.pubkey);
-  const otherUserMailboxes = useUserMailboxes(otherUserPubkey);
-
-  const userInboxes = new Set(userMailboxes?.inboxes || []);
-  const otherUserInboxes = new Set(otherUserMailboxes?.inboxes || []);
+  const legacyInboxes = useUserInbox(account.pubkey);
+  const messageInboxes = useEventModel(DirectMessageRelays, [account.pubkey]);
+  const otherLegacyInboxes = useUserInbox(otherUserPubkey);
+  const otherMessageInboxes = useEventModel(DirectMessageRelays, [otherUserPubkey]);
 
   // Group relays by their relationship type
-  const sharedInboxes = Array.from(userInboxes).filter((relay) => otherUserInboxes.has(relay));
-  const yourInboxes = Array.from(userInboxes).filter((relay) => !otherUserInboxes.has(relay));
-  const theirInboxes = Array.from(otherUserInboxes).filter((relay) => !userInboxes.has(relay));
+  const yourInboxes = mergeRelaySets(legacyInboxes, messageInboxes);
+  const theirInboxes = mergeRelaySets(otherLegacyInboxes, otherMessageInboxes);
 
   return (
     <Drawer isOpen={isOpen} onClose={onClose} placement="right" size="md">
       <DrawerOverlay />
       <DrawerContent>
         <DrawerCloseButton />
-        <DrawerHeader>Conversation Info</DrawerHeader>
+        <DrawerHeader p="4">Settings</DrawerHeader>
         <DrawerBody gap="6" display="flex" flexDirection="column" px="4" pb="8" pt="0">
           <ConversationHeader other={otherUserPubkey} />
 
-          {sharedInboxes.length > 0 && (
-            <VStack spacing={2} align="stretch">
-              <Box>
-                <Heading size="md">Shared Inboxes</Heading>
-                <Text color="GrayText">
-                  Relays that both you and <UserName pubkey={otherUserPubkey} fontWeight="normal" /> use for receiving
-                  messages
-                </Text>
-              </Box>
-              {sharedInboxes.map((relay) => (
-                <ConversationRelay key={relay} relay={relay} />
-              ))}
-            </VStack>
-          )}
-
           <VStack spacing={2} align="stretch">
             <Box>
-              <Heading size="md">Your Inboxes</Heading>
-              <Text color="GrayText">Relays that only you use for receiving messages</Text>
+              <Heading size="md">Your inboxes</Heading>
+              <Text color="GrayText">The relays that you use to receive messages.</Text>
             </Box>
-            {yourInboxes.map((relay) => (
-              <ConversationRelay key={relay} relay={relay} />
-            ))}
-            {userInboxes.size === 0 && (
-              <Alert status="warning">
-                <AlertIcon />
-                You do not have any inboxes configured.{" "}
-                <Link as={RouterLink} to="/settings/mailboxes">
-                  Configure your inboxes
-                </Link>
-              </Alert>
-            )}
+            <InboxesStatusSection relays={yourInboxes} />
           </VStack>
 
           <VStack spacing={2} align="stretch">
             <Box>
               <Heading size="md">
                 <UserName pubkey={otherUserPubkey} />
-                's Inboxes
+                's message inboxes
               </Heading>
               <Text color="GrayText">
-                Relays that only <UserName pubkey={otherUserPubkey} fontWeight="normal" /> uses for receiving messages
+                The relays that <UserName pubkey={otherUserPubkey} /> uses to receive messages
               </Text>
             </Box>
             {theirInboxes.map((relay) => (
               <ConversationRelay key={relay} relay={relay} />
             ))}
-            {otherUserInboxes.size === 0 && (
+            {theirInboxes.length === 0 && (
               <Alert status="warning">
                 <AlertIcon />
                 The other user does not have any inboxes configured. Your messages might not be delivered.
@@ -131,11 +158,7 @@ export default function DirectMessageSettingsDrawer({ isOpen, onClose, otherUser
             )}
           </VStack>
 
-          {sharedInboxes.length === 0 && yourInboxes.length === 0 && theirInboxes.length === 0 && (
-            <Text color="GrayText" textAlign="center">
-              No relay information available
-            </Text>
-          )}
+          <LegacyMessagesSection other={otherUserPubkey} />
         </DrawerBody>
       </DrawerContent>
     </Drawer>

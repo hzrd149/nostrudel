@@ -4,43 +4,48 @@ import { useActiveAccount, useEventFactory } from "applesauce-react/hooks";
 import { PublishResponse } from "applesauce-relay";
 import { nanoid } from "nanoid";
 import { EventTemplate, NostrEvent, UnsignedEvent } from "nostr-tools";
-import { PropsWithChildren, createContext, useCallback, useContext, useMemo, useState } from "react";
-import { BehaviorSubject } from "rxjs";
+import { createContext, PropsWithChildren, useCallback, useContext, useMemo, useState } from "react";
+import { BehaviorSubject, map, Observable, share } from "rxjs";
 
+import { scanToArray } from "../../helpers/observable";
 import { useWriteRelays } from "../../hooks/use-client-relays";
 import { useUserOutbox } from "../../hooks/use-user-mailboxes";
 import { getCacheRelay } from "../../services/cache-relay";
 import { eventStore } from "../../services/event-store";
-import localSettings from "../../services/local-settings";
 import pool from "../../services/pool";
 
 export type PublishResults = { packets: PublishResponse[]; relays: Record<string, PublishResponse> };
 
-export class PublishLogEntry extends BehaviorSubject<PublishResults> {
+export class PublishLogEntry {
   public id = nanoid();
 
   public done = false;
-  public packets: PublishResponse[] = [];
-  public relay: Record<string, PublishResponse> = {};
+  public publish$: Observable<PublishResponse>;
+  public results$ = new BehaviorSubject<PublishResponse[]>([]);
+  public relayStatus$: Observable<Record<string, PublishResponse | undefined>>;
 
   constructor(
     public label: string,
     public event: NostrEvent,
     public relays: string[],
   ) {
-    super({ packets: [], relays: {} });
+    this.publish$ = pool.publish(relays, event).pipe(share());
 
-    pool.event(relays, event).subscribe({
+    // Save all results to an array
+    this.publish$.pipe(scanToArray()).subscribe((r) => this.results$.next(r));
+
+    // Create a directory of relay statuses
+    this.relayStatus$ = this.results$.pipe(
+      map((results) => Object.fromEntries(relays.map((relay) => [relay, results.find((r) => r.from === relay)]))),
+    );
+
+    // Update the event store and add seen relays
+    this.publish$.subscribe({
       next: (result) => {
         if (result.ok) {
           addSeenRelay(event, result.from);
           eventStore.update(event);
         }
-
-        this.packets.push(result);
-        this.relay[result.from] = result;
-
-        this.next({ packets: this.packets, relays: this.relay });
       },
       complete: () => {
         this.done = true;

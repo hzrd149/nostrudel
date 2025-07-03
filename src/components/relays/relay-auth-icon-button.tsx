@@ -1,29 +1,33 @@
-import { useCallback } from "react";
 import { IconButton, IconButtonProps, useToast } from "@chakra-ui/react";
+import { useCallback } from "react";
 
-import PasscodeLock from "../icons/passcode-lock";
+import { useObservableEagerMemo, useObservableState } from "applesauce-react/hooks";
 import authenticationSigner from "../../services/authentication-signer";
-import useRelayAuthState from "../../hooks/use-relay-auth-state";
+import pool from "../../services/pool";
+import { ErrorIcon } from "../icons";
 import CheckCircleBroken from "../icons/check-circle-broken";
+import PasscodeLock from "../icons/passcode-lock";
 
 export function RelayAuthIconButton({
   relay,
   ...props
 }: { relay: string } & Omit<IconButtonProps, "icon" | "aria-label" | "title">) {
   const toast = useToast();
-  const authState = useRelayAuthState(relay);
+  const connected = useObservableEagerMemo(() => pool.relay(relay).connected$, [relay]);
+  const challenge = useObservableEagerMemo(() => pool.relay(relay).challenge$, [relay]);
+  const response = useObservableEagerMemo(() => pool.relay(relay).authenticationResponse$, [relay]);
+  const signing = useObservableState(authenticationSigner.relayState$)?.[relay];
 
   const authenticate = useCallback(async () => {
     try {
       await authenticationSigner.authenticate(relay);
-      toast({ description: "Success", status: "success" });
     } catch (error) {
       if (error instanceof Error) toast({ status: "error", description: error.message });
     }
   }, [relay]);
 
-  switch (authState?.status) {
-    case "success":
+  switch (response?.ok) {
+    case true:
       return (
         <IconButton
           icon={<CheckCircleBroken boxSize={6} />}
@@ -33,20 +37,28 @@ export function RelayAuthIconButton({
           {...props}
         />
       );
-    case "signing":
-    case "requested":
+    case false:
+      return (
+        <IconButton
+          icon={<ErrorIcon boxSize={6} />}
+          onClick={authenticate}
+          aria-label="Try again"
+          title="Failed"
+          colorScheme="red"
+          {...props}
+        />
+      );
+    default:
       return (
         <IconButton
           icon={<PasscodeLock boxSize={6} />}
           onClick={authenticate}
-          isLoading={authState.status === "signing"}
+          isLoading={signing?.status === "signing"}
           aria-label="Authenticate with relay"
           title="Authenticate"
+          isDisabled={!connected || !challenge}
           {...props}
         />
       );
-
-    default:
-      return null;
   }
 }

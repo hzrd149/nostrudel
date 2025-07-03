@@ -1,6 +1,6 @@
 import { Alert, AlertDescription, AlertIcon, Heading, Link, Text, VStack } from "@chakra-ui/react";
 import { addRelayTag, removeRelayTag } from "applesauce-factory/operations/tag";
-import { useActiveAccount, useEventFactory } from "applesauce-react/hooks";
+import { useActiveAccount, useEventFactory, useObservableMemo } from "applesauce-react/hooks";
 import { kinds } from "nostr-tools";
 
 import { getRelaysFromList } from "../../../helpers/nostr/lists";
@@ -10,8 +10,11 @@ import { useRelayInfo } from "../../../hooks/use-relay-info";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
 import AddRelayForm from "../relays/add-relay-form";
 import RelayControl from "../relays/relay-control";
+import pool from "../../../services/pool";
 
 function RelayEntry({ url, onRemove }: { url: string; onRemove: () => void }) {
+  const authRequiredForPublishing = useObservableMemo(() => pool.relay(url).authRequiredForPublish$, [url]);
+  const authRequiredForReading = useObservableMemo(() => pool.relay(url).authRequiredForRead$, [url]);
   const { info } = useRelayInfo(url);
 
   return (
@@ -19,11 +22,23 @@ function RelayEntry({ url, onRemove }: { url: string; onRemove: () => void }) {
       url={url}
       onRemove={onRemove}
       details={
-        info?.limitation?.auth_required && (
-          <Text color="green.500" fontSize="sm">
-            Authentication required for reading messages
-          </Text>
-        )
+        <>
+          {authRequiredForReading && (
+            <Text color="green.500" fontSize="sm">
+              Authentication required for reading (Protects your privacy)
+            </Text>
+          )}
+          {authRequiredForPublishing && (
+            <Text color="red.500" fontSize="sm">
+              Authentication required for publishing (This may prevent users from sending you messages)
+            </Text>
+          )}
+          {info?.supported_nips.includes(40) && (
+            <Text color="green.500" fontSize="sm">
+              Supports disappearing messages
+            </Text>
+          )}
+        </>
       }
     />
   );
