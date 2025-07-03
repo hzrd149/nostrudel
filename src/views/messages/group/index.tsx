@@ -36,7 +36,7 @@ import GroupSettingsDrawer from "./components/group-settings-drawer";
 import { SettingsIcon } from "../../../components/icons";
 import GroupRelayConnectionsButton from "./components/group-relay-connections";
 
-/** This is broken out from DirectMessageChatPage for performance reasons. Don't use outside of file */
+/** This is broken out from DirectMessageGroupPage for performance reasons. Don't use outside of file */
 const ChatLog = memo(({ messages }: { messages: (Rumor | NostrEvent)[] }) => {
   const grouped = useMemo(() => groupMessages(messages), [messages]);
 
@@ -49,7 +49,7 @@ const ChatLog = memo(({ messages }: { messages: (Rumor | NostrEvent)[] }) => {
   );
 });
 
-function DirectMessageChatPage({ group }: { group: string }) {
+function DirectMessageGroupPage({ group }: { group: string }) {
   const account = useActiveAccount()!;
   const navigate = useNavigate();
   const location = useLocation();
@@ -186,7 +186,7 @@ export default function DirectMessageGroupView() {
 
   return (
     <RequireActiveAccount>
-      <DirectMessageChatPage group={groupId} />
+      <DirectMessageGroupPage group={groupId} />
     </RequireActiveAccount>
   );
 }

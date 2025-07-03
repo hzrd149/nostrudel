@@ -127,7 +127,7 @@ async function autoDecryptMessagesFallback(event: NostrEvent) {
   // Unlock legacy messages
   if (
     event.kind === kinds.EncryptedDirectMessage &&
-    (event.pubkey === account.pubkey || getLegacyMessageCorraspondant(event, account.pubkey))
+    (event.pubkey === account.pubkey || getLegacyMessageCorraspondant(event, account.pubkey) === account.pubkey)
   ) {
     return unlockLegacyMessage(event, account.pubkey, account);
   }
