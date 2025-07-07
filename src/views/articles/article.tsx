@@ -39,7 +39,7 @@ function ArticlePage({ article }: { article: NostrEvent }) {
     <VerticalPageLayout pt={{ base: "2", lg: "8" }} pb="32" role="main" aria-label="Article Content">
       <article>
         <Box as="header" mx="auto" maxW="4xl" w="full" mb="2" role="heading">
-          <ArticleMenu article={article} aria-label="Article Options" float="right" />
+          <ArticleMenu article={article} aria-label="Article Options" float="right" variant="ghost" />
           <Heading as="h1" size="xl">
             {title}
           </Heading>
@@ -72,7 +72,14 @@ function ArticlePage({ article }: { article: NostrEvent }) {
         </Box>
 
         {image && (
-          <Image src={image} maxW="6xl" w="full" mx="auto" maxH="60vh" alt="Article featured image" loading="lazy" />
+          <Image
+            src={image}
+            alt="Article featured image"
+            loading="lazy"
+            maxW="min(var(--chakra-sizes-6xl), 100%)"
+            maxH="60vh"
+            mx="auto"
+          />
         )}
 
         <Box mx="auto" maxW="4xl" w="full" mb="8" as="section" role="article" mt="4">
