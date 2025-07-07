@@ -50,13 +50,13 @@
     "@webscopeio/react-textarea-autocomplete": "^4.9.2",
     "ansi-to-html": "^0.7.2",
     "applesauce-accounts": "^2.0.0",
-    "applesauce-actions": "next",
+    "applesauce-actions": "^2.3",
     "applesauce-content": "^2.0.0",
-    "applesauce-core": "next",
-    "applesauce-factory": "next",
+    "applesauce-core": "^2.3",
+    "applesauce-factory": "^2.3",
     "applesauce-loaders": "^2.1.0",
     "applesauce-react": "^2.1.0",
-    "applesauce-relay": "next",
+    "applesauce-relay": "^2.3",
     "applesauce-signers": "^2.0.0",
     "applesauce-wallet": "^2.0.0",
     "bech32": "^2.0.0",
@@ -167,12 +167,6 @@
     "vite-tsconfig-paths": "^5.1.4",
     "workbox-build": "^7.3.0",
     "workbox-window": "^7.3.0"
-  },
-  "resolutions": {
-    "applesauce-actions": "0.0.0-next-20250703183032",
-    "applesauce-core": "0.0.0-next-20250703183032",
-    "applesauce-factory": "0.0.0-next-20250703183032",
-    "applesauce-relay": "0.0.0-next-20250703183032"
   },
   "funding": {
     "type": "lightning",
