@@ -44,15 +44,6 @@ const ChatLog = memo(({ messages }: { messages: (Rumor | NostrEvent)[] }) => {
   );
 });
 
-const BothReadAuthRequiredAlert = () => {
-  const account = useActiveAccount()!;
-  const legacyInboxes = useUserInbox(account.pubkey);
-  const messageInboxes = useEventModel(DirectMessageRelays, [account.pubkey]);
-  const relays = useMemo(() => mergeRelaySets(legacyInboxes, messageInboxes), [legacyInboxes, messageInboxes]);
-
-  return <ReadAuthRequiredAlert relays={relays} />;
-};
-
 function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
   const account = useActiveAccount()!;
   const navigate = useNavigate();
@@ -83,21 +74,17 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
     marker.reset();
   }, [marker, navigate]);
 
-  const eventFilter = useCallback(
-    (event: NostrEvent) => {
-      const from = event.pubkey;
-      const to = event.tags.find((t) => t[0] === "p")?.[1];
-
-      return (from === account.pubkey && to === pubkey) || (from === pubkey && to === account.pubkey);
-    },
-    [account, pubkey],
+  // NOTE: its probably not a great idea to read from the other users inboxes, but it does help load missing messages
+  const otherLegacyInboxes = useUserInbox(pubkey);
+  const selfLegacyInboxes = useUserInbox(account.pubkey);
+  const legacyInboxes = useMemo(
+    () => mergeRelaySets(selfLegacyInboxes, otherLegacyInboxes),
+    [selfLegacyInboxes, otherLegacyInboxes],
   );
 
-  const otherInbox = useUserInbox(pubkey);
-  const inboxes = useUserInbox(account.pubkey);
   const { loader } = useTimelineLoader(
     `${truncateId(pubkey)}-${truncateId(account.pubkey)}-messages`,
-    mergeRelaySets(inboxes, otherInbox),
+    legacyInboxes,
     [
       {
         kinds: [kinds.EncryptedDirectMessage],
@@ -110,8 +97,11 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
         authors: [account.pubkey],
       },
     ],
-    { eventFilter },
+    {},
   );
+
+  const inboxes = useEventModel(DirectMessageRelays, [account.pubkey]);
+  const allReadRelays = useMemo(() => mergeRelaySets(legacyInboxes, inboxes), [legacyInboxes, inboxes]);
 
   const legacyMessages = useEventModel(LegacyMessagesGroup, [account.pubkey, pubkey]);
   const wrappedMessages = useEventModel(WrappedMessagesGroup, [account.pubkey, pubkey]);
@@ -176,7 +166,7 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
           <TimelineActionAndStatus loader={loader} />
         </Flex>
 
-        <BothReadAuthRequiredAlert />
+        <ReadAuthRequiredAlert relays={allReadRelays} />
         <SendMessageForm
           flexShrink={0}
           pubkey={pubkey}

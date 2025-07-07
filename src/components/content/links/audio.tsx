@@ -1,5 +1,6 @@
 import styled from "@emotion/styled";
 import { isAudioURL } from "../../../helpers/url";
+import ExpandableEmbed from "../components/content-embed";
 
 const StyledAudio = styled.audio`
   max-width: 30rem;
@@ -13,8 +14,10 @@ export function renderAudioUrl(match: URL) {
   if (!isAudioURL(match)) return null;
 
   return (
-    <StyledAudio controls>
-      <source src={match.toString()} />
-    </StyledAudio>
+    <ExpandableEmbed label="Audio" url={match}>
+      <StyledAudio controls>
+        <source src={match.toString()} />
+      </StyledAudio>
+    </ExpandableEmbed>
   );
 }

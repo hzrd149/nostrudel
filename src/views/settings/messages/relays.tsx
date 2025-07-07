@@ -79,7 +79,7 @@ export default function DirectMessageRelaysSection() {
   return (
     <VStack spacing="4" align="stretch">
       <VStack spacing="1" align="start">
-        <Heading size="md">Direct message relays</Heading>
+        <Heading size="md">Message inbox relays</Heading>
         <Text fontSize="sm" color="gray.500">
           Relays where your encrypted direct messages will be sent and received according to{" "}
           <Link

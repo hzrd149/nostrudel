@@ -1,7 +1,6 @@
 import {
   Alert,
   AlertIcon,
-  Box,
   Button,
   Drawer,
   DrawerBody,
@@ -13,14 +12,13 @@ import {
   Heading,
   Link,
   Text,
-  VStack,
+  VStack
 } from "@chakra-ui/react";
 import { getConversationParticipants } from "applesauce-core/helpers";
 import { useActiveAccount, useEventModel } from "applesauce-react/hooks";
 import RelayFavicon from "../../../../components/relay-favicon";
 import RouterLink from "../../../../components/router-link";
 import UserAvatarLink from "../../../../components/user/user-avatar-link";
-import UserDnsIdentity from "../../../../components/user/user-dns-identity";
 import UserLink from "../../../../components/user/user-link";
 import UserName from "../../../../components/user/user-name";
 import { DirectMessageRelays, GroupMessageInboxes } from "../../../../models/messages";
@@ -37,12 +35,9 @@ function ParticipantInboxesSection({
 }) {
   return (
     <VStack spacing={2} align="stretch">
-      <Flex gap="2" alignItems="flex-start">
+      <Flex gap="2" alignItems="center">
         <UserAvatarLink pubkey={pubkey} size="sm" />
-        <Flex direction="column" overflow="hidden">
-          <UserLink pubkey={pubkey} fontSize="lg" fontWeight="bold" />
-          <UserDnsIdentity pubkey={pubkey} />
-        </Flex>
+        <UserLink pubkey={pubkey} fontSize="lg" fontWeight="bold" />
       </Flex>
 
       {relays && relays.length > 0 ? (

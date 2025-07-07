@@ -15,7 +15,7 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
-import { isLegacyMessageLocked, mergeRelaySets, unlockLegacyMessage } from "applesauce-core/helpers";
+import { isLegacyMessageLocked, unlockLegacyMessage } from "applesauce-core/helpers";
 import { useActiveAccount, useEventModel } from "applesauce-react/hooks";
 
 import RelayFavicon from "../../../../components/relay-favicon";
@@ -56,7 +56,45 @@ function ConversationRelay({ relay }: { relay: string }) {
   );
 }
 
-function LegacyMessagesSection({ other }: { other: string }) {
+function WrappedMessagesSection({ messageInboxes }: { messageInboxes: string[] }) {
+  return (
+    <VStack spacing={2} align="stretch">
+      <Box>
+        <Heading size="md">Wrapped messages</Heading>
+        <Text color="GrayText">
+          Your inbox relays for receiving wrapped messages (
+          <Link isExternal href="https://github.com/nostr-protocol/nips/blob/master/17.md" color="blue.500">
+            NIP-17
+          </Link>
+          ).
+        </Text>
+      </Box>
+      {messageInboxes.length > 0 ? (
+        <InboxesStatusSection relays={messageInboxes} />
+      ) : (
+        <Alert status="warning">
+          <AlertIcon />
+          <Box>
+            <Text>You don't have any message inboxes configured.</Text>
+            <Link as={RouterLink} to="/settings/messages" color="blue.500">
+              Set up your message inboxes →
+            </Link>
+          </Box>
+        </Alert>
+      )}
+    </VStack>
+  );
+}
+
+function LegacyMessagesSection({
+  other,
+  userLegacyInboxes,
+  otherLegacyInboxes,
+}: {
+  other: string;
+  userLegacyInboxes: string[];
+  otherLegacyInboxes: string[];
+}) {
   const account = useActiveAccount()!;
   const messages = useEventModel(LegacyMessagesGroup, [account.pubkey, other]);
 
@@ -77,28 +115,76 @@ function LegacyMessagesSection({ other }: { other: string }) {
   }, [messages]);
 
   return (
-    <VStack spacing={2} align="stretch">
+    <VStack spacing={4} align="stretch">
       <Box>
-        <Heading size="md">Legacy Messages</Heading>
-        <Text color="GrayText">Old encrypted direct messages that may need decryption.</Text>
+        <Heading size="md">Legacy messages</Heading>
+        <Text color="GrayText">
+          The legacy direct messages{" "}
+          <Link isExternal href="https://github.com/nostr-protocol/nips/blob/master/04.md" color="blue.500">
+            NIP-04
+          </Link>{" "}
+          relies on the inbox relays in{" "}
+          <Link isExternal href="https://github.com/nostr-protocol/nips/blob/master/65.md" color="blue.500">
+            NIP-65
+          </Link>
+        </Text>
       </Box>
-      <Box>
-        <Text>Total legacy messages: {messages?.length || 0}</Text>
-        <Text>Encrypted messages: {locked.length}</Text>
-      </Box>
-      {locked.length > 0 && (
-        <Box display="flex" justifyContent="flex-end">
-          <Button
-            size="sm"
-            colorScheme="blue"
-            onClick={decryptAll.run}
-            isLoading={decryptAll.loading}
-            loadingText="Decrypting..."
-          >
-            Decrypt All
-          </Button>
+
+      <VStack spacing={2} align="stretch">
+        <Box>
+          <Heading size="sm">Your inboxes</Heading>
+          <Text color="GrayText" fontSize="sm">
+            Relays you use to receive messages.
+          </Text>
         </Box>
-      )}
+        {userLegacyInboxes.length > 0 ? (
+          userLegacyInboxes.map((relay) => <ConversationRelay key={relay} relay={relay} />)
+        ) : (
+          <Text fontSize="sm" color="GrayText">
+            No legacy inboxes configured.
+          </Text>
+        )}
+      </VStack>
+
+      <VStack spacing={2} align="stretch">
+        <Box>
+          <Heading size="sm">
+            <UserName pubkey={other} />
+            's inboxes
+          </Heading>
+          <Text color="GrayText" fontSize="sm">
+            Relays that <UserName pubkey={other} /> uses to receive messages.
+          </Text>
+        </Box>
+        {otherLegacyInboxes.length > 0 ? (
+          otherLegacyInboxes.map((relay) => <ConversationRelay key={relay} relay={relay} />)
+        ) : (
+          <Text fontSize="sm" color="GrayText">
+            No legacy inboxes configured.
+          </Text>
+        )}
+      </VStack>
+
+      <VStack spacing={2} align="stretch">
+        <Box>
+          <Heading size="sm">Message Statistics</Heading>
+          <Text fontSize="sm">Total legacy messages: {messages?.length || 0}</Text>
+          <Text fontSize="sm">Encrypted messages: {locked.length}</Text>
+        </Box>
+        {locked.length > 0 && (
+          <Box display="flex" justifyContent="flex-end">
+            <Button
+              size="sm"
+              colorScheme="blue"
+              onClick={decryptAll.run}
+              isLoading={decryptAll.loading}
+              loadingText="Decrypting..."
+            >
+              Decrypt All
+            </Button>
+          </Box>
+        )}
+      </VStack>
     </VStack>
   );
 }
@@ -114,11 +200,6 @@ export default function DirectMessageSettingsDrawer({ isOpen, onClose, otherUser
   const legacyInboxes = useUserInbox(account.pubkey);
   const messageInboxes = useEventModel(DirectMessageRelays, [account.pubkey]);
   const otherLegacyInboxes = useUserInbox(otherUserPubkey);
-  const otherMessageInboxes = useEventModel(DirectMessageRelays, [otherUserPubkey]);
-
-  // Group relays by their relationship type
-  const yourInboxes = mergeRelaySets(legacyInboxes, messageInboxes);
-  const theirInboxes = mergeRelaySets(otherLegacyInboxes, otherMessageInboxes);
 
   return (
     <Drawer isOpen={isOpen} onClose={onClose} placement="right" size="md">
@@ -129,36 +210,13 @@ export default function DirectMessageSettingsDrawer({ isOpen, onClose, otherUser
         <DrawerBody gap="6" display="flex" flexDirection="column" px="4" pb="8" pt="0">
           <ConversationHeader other={otherUserPubkey} />
 
-          <VStack spacing={2} align="stretch">
-            <Box>
-              <Heading size="md">Your inboxes</Heading>
-              <Text color="GrayText">The relays that you use to receive messages.</Text>
-            </Box>
-            <InboxesStatusSection relays={yourInboxes} />
-          </VStack>
+          <WrappedMessagesSection messageInboxes={messageInboxes || []} />
 
-          <VStack spacing={2} align="stretch">
-            <Box>
-              <Heading size="md">
-                <UserName pubkey={otherUserPubkey} />
-                's message inboxes
-              </Heading>
-              <Text color="GrayText">
-                The relays that <UserName pubkey={otherUserPubkey} /> uses to receive messages
-              </Text>
-            </Box>
-            {theirInboxes.map((relay) => (
-              <ConversationRelay key={relay} relay={relay} />
-            ))}
-            {theirInboxes.length === 0 && (
-              <Alert status="warning">
-                <AlertIcon />
-                The other user does not have any inboxes configured. Your messages might not be delivered.
-              </Alert>
-            )}
-          </VStack>
-
-          <LegacyMessagesSection other={otherUserPubkey} />
+          <LegacyMessagesSection
+            other={otherUserPubkey}
+            userLegacyInboxes={legacyInboxes || []}
+            otherLegacyInboxes={otherLegacyInboxes || []}
+          />
         </DrawerBody>
       </DrawerContent>
     </Drawer>

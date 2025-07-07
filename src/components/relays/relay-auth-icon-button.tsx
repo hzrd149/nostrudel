@@ -26,6 +26,9 @@ export function RelayAuthIconButton({
     }
   }, [relay]);
 
+  // If the relay is not connected or has no challenge, don't show the button
+  if (!connected || !challenge) return null;
+
   switch (response?.ok) {
     case true:
       return (
@@ -56,7 +59,6 @@ export function RelayAuthIconButton({
           isLoading={signing?.status === "signing"}
           aria-label="Authenticate with relay"
           title="Authenticate"
-          isDisabled={!connected || !challenge}
           {...props}
         />
       );

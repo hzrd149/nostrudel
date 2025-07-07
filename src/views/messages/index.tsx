@@ -176,11 +176,9 @@ function MessagesHomePage() {
       scroll={false}
       actions={
         <ButtonGroup variant="ghost" ms="auto">
-          {!autoDecryptMessages && locked && locked.length > 0 && (
-            <Button as={RouterLink} to="/messages/inbox" variant="outline" colorScheme="green">
-              Inbox ({locked.length})
-            </Button>
-          )}
+          <Button as={RouterLink} to="/messages/inbox" variant="ghost">
+            Inbox{locked && locked.length > 0 && ` (${locked.length})`}
+          </Button>
           <IconButton
             as={RouterLink}
             to="/settings/messages"

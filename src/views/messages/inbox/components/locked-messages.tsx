@@ -28,16 +28,16 @@ import { kinds } from "nostr-tools";
 import { useEffect, useMemo, useRef } from "react";
 import { Link as RouterLink } from "react-router-dom";
 
-import { UnlockIcon } from "../../components/icons";
-import SimpleView from "../../components/layout/presets/simple-view";
-import Timestamp from "../../components/timestamp";
-import UserAvatar from "../../components/user/user-avatar";
-import UserName from "../../components/user/user-name";
-import { useAppTitle } from "../../hooks/use-app-title";
-import useAsyncAction from "../../hooks/use-async-action";
-import { legacyMessageSubscription, wrappedMessageSubscription } from "../../services/lifecycle";
-import { DirectMessageRelays } from "../../models/messages";
-import ReadAuthRequiredAlert from "./components/read-auth-required-alert";
+import { UnlockIcon } from "../../../../components/icons";
+import SimpleView from "../../../../components/layout/presets/simple-view";
+import Timestamp from "../../../../components/timestamp";
+import UserAvatar from "../../../../components/user/user-avatar";
+import UserName from "../../../../components/user/user-name";
+import { useAppTitle } from "../../../../hooks/use-app-title";
+import useAsyncAction from "../../../../hooks/use-async-action";
+import { legacyMessageSubscription, wrappedMessageSubscription } from "../../../../services/lifecycle";
+import { DirectMessageRelays } from "../../../../models/messages";
+import ReadAuthRequiredAlert from "../../components/read-auth-required-alert";
 
 interface GroupInfo {
   id: string;
@@ -146,13 +146,8 @@ function MiscEventsTable({ events }: { events: Rumor[] }) {
   );
 }
 
-export default function InboxView() {
+export default function LockedMessagesSection() {
   const account = useActiveAccount()!;
-  useAppTitle("Messages inbox");
-
-  // Keep a subscription open for NIP-04 and NIP-17 messages
-  useObservableState(legacyMessageSubscription);
-  useObservableState(wrappedMessageSubscription);
 
   const inboxes = useEventModel(DirectMessageRelays, [account.pubkey]);
 
@@ -228,68 +223,66 @@ export default function InboxView() {
   }, [locked, account]);
 
   return (
-    <SimpleView title="Inbox">
-      <VStack spacing={6} align="stretch">
-        {/* Summary section */}
-        <Box>
-          <Heading size="md" mb={3}>
-            Encrypted Messages
-          </Heading>
-          <Card variant="outline" p={4}>
-            <Flex align="center" justify="space-between" wrap="wrap" gap="2">
-              <VStack align="start" spacing={1}>
-                <Text fontSize="lg" fontWeight="medium">
-                  {locked?.length} encrypted message{locked?.length !== 1 ? "s" : ""}
-                </Text>
-                <Text color="GrayText" fontSize="sm">
-                  {locked?.length === 0
-                    ? "All messages have been decrypted"
-                    : "Click to decrypt all messages and see your conversations"}
-                </Text>
-              </VStack>
-
-              {locked && locked.length > 0 && (
-                <Button
-                  leftIcon={<UnlockIcon boxSize={5} />}
-                  onClick={decryptAll.run}
-                  isLoading={decryptAll.loading}
-                  colorScheme="primary"
-                  loadingText="Decrypting..."
-                >
-                  Decrypt All
-                </Button>
-              )}
-            </Flex>
-          </Card>
-        </Box>
-
-        {inboxes && <ReadAuthRequiredAlert relays={inboxes} />}
-
-        {/* Conversation groups section */}
-        {groups.length > 0 && (
-          <Box>
-            <Heading size="md" mb={4}>
-              New Messages by Conversation ({groups.length})
-            </Heading>
-            <VStack spacing={3} align="stretch">
-              {groups.map((group) => (
-                <GroupCard key={group.id} group={group} />
-              ))}
+    <VStack spacing={6} align="stretch">
+      {/* Summary section */}
+      <Box>
+        <Heading size="md" mb={3}>
+          Encrypted Messages
+        </Heading>
+        <Card variant="outline" p={4}>
+          <Flex align="center" justify="space-between" wrap="wrap" gap="2">
+            <VStack align="start" spacing={1}>
+              <Text fontSize="lg" fontWeight="medium">
+                {locked?.length} encrypted message{locked?.length !== 1 ? "s" : ""}
+              </Text>
+              <Text color="GrayText" fontSize="sm">
+                {locked?.length === 0
+                  ? "All messages have been decrypted"
+                  : "Click to decrypt all messages and see your conversations"}
+              </Text>
             </VStack>
-          </Box>
-        )}
 
-        {/* Misc events section */}
-        {miscEvents.length > 0 && <MiscEventsTable events={miscEvents} />}
+            {locked && locked.length > 0 && (
+              <Button
+                leftIcon={<UnlockIcon boxSize={5} />}
+                onClick={decryptAll.run}
+                isLoading={decryptAll.loading}
+                colorScheme="primary"
+                loadingText="Decrypting..."
+              >
+                Decrypt All
+              </Button>
+            )}
+          </Flex>
+        </Card>
+      </Box>
 
-        {/* Empty state */}
-        {messages.length === 0 && locked?.length === 0 && (
-          <Alert status="info">
-            <AlertIcon />
-            No encrypted messages found. New encrypted messages will appear here when received.
-          </Alert>
-        )}
-      </VStack>
-    </SimpleView>
+      {inboxes && <ReadAuthRequiredAlert relays={inboxes} />}
+
+      {/* Conversation groups section */}
+      {groups.length > 0 && (
+        <Box>
+          <Heading size="md" mb={4}>
+            New Messages by Conversation ({groups.length})
+          </Heading>
+          <VStack spacing={3} align="stretch">
+            {groups.map((group) => (
+              <GroupCard key={group.id} group={group} />
+            ))}
+          </VStack>
+        </Box>
+      )}
+
+      {/* Misc events section */}
+      {miscEvents.length > 0 && <MiscEventsTable events={miscEvents} />}
+
+      {/* Empty state */}
+      {messages.length === 0 && locked?.length === 0 && (
+        <Alert status="info">
+          <AlertIcon />
+          No encrypted messages found. New encrypted messages will appear here when received.
+        </Alert>
+      )}
+    </VStack>
   );
 }
