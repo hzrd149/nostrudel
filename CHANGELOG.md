@@ -1,5 +1,23 @@
 # nostrudel
 
+## 0.45.0
+
+### Minor Changes
+
+- da4935f: Add setting for NIP-17 DM relays
+- c18959f: Add messages cache for direct messages
+- e555ff2: Support NIP-17 group messages
+- 98ee868: Show NIP-17 messages in direct message view
+- 4f9c5b9: Add profile editor to settings
+- 2ea2ebc: Add NIP-17 message inbox for decrypting messages
+- 4f592dc: Add DM conversation info drawer
+- 403315c: Redesign direct messages
+- 4f9c5b9: Add preview to porfile editor
+
+### Patch Changes
+
+- 5d533bc: Remove unused dependencies
+
 ## 0.44.1
 
 ### Patch Changes
