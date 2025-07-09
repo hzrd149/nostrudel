@@ -13,13 +13,14 @@ import MailboxesView from "./mailboxes";
 import MediaServersView from "./media-servers";
 import MessagesSettings from "./messages";
 import MutesSettings from "./mutes";
-import ContentPoliciesSettings from "./policies";
+import ContentPoliciesSettings from "./content";
 import PostSettings from "./post";
 import PrivacySettings from "./privacy";
 import AppRelaysView from "./relays";
 import SearchSettings from "./search";
 import SocialGraphView from "./social-graph";
 import ProfileSettingsView from "./profile";
+import PerformanceSettings from "./performance";
 
 export default [
   {
@@ -51,7 +52,8 @@ export default [
       { path: "relays", Component: AppRelaysView },
       { path: "social-graph", Component: SocialGraphView },
       { path: "mutes", Component: MutesSettings },
-      { path: "policies", Component: ContentPoliciesSettings },
+      { path: "content", Component: ContentPoliciesSettings },
+      { path: "performance", Component: PerformanceSettings },
       { path: "cache", Component: CacheRelayView },
       { path: "post", Component: PostSettings },
       { path: "privacy", Component: PrivacySettings },

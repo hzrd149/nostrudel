@@ -88,7 +88,7 @@ export default function SettingsView() {
       <SimpleNavItem to="/settings/display" leftIcon={<AppearanceIcon boxSize={5} />}>
         Display
       </SimpleNavItem>
-      <SimpleNavItem to="/settings/policies" leftIcon={<FilterFunnel02 boxSize={5} />}>
+      <SimpleNavItem to="/settings/content" leftIcon={<FilterFunnel02 boxSize={5} />}>
         Content Policies
       </SimpleNavItem>
       <SimpleNavItem to="/settings/post" leftIcon={<NotesIcon boxSize={5} />}>
@@ -102,6 +102,9 @@ export default function SettingsView() {
       </SimpleNavItem>
       <SimpleNavItem to="/settings/cache" leftIcon={<Database01 boxSize={5} />}>
         Event Cache
+      </SimpleNavItem>
+      <SimpleNavItem to="/settings/performance" leftIcon={<CpuChip01 boxSize={5} />}>
+        Performance
       </SimpleNavItem>
 
       <DividerHeader title="Debug" />

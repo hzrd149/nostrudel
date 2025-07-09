@@ -68,6 +68,29 @@ export default function PrivacySettings() {
         </Button>
       }
     >
+      <FormControl>
+        <FormLabel htmlFor="imageProxy" mb="0">
+          Image proxy service
+        </FormLabel>
+        <Input
+          id="imageProxy"
+          maxW="sm"
+          type="url"
+          {...register("imageProxy", {
+            setValueAs: (v) => safeUrl(v) || v,
+          })}
+        />
+        {formState.errors.imageProxy && <FormErrorMessage>{formState.errors.imageProxy.message}</FormErrorMessage>}
+        <FormHelperText>
+          <span>
+            A URL to an instance of{" "}
+            <Link href="https://github.com/willnorris/imageproxy" isExternal target="_blank">
+              willnorris/imageproxy
+            </Link>{" "}
+            that will be used to resize images.
+          </span>
+        </FormHelperText>
+      </FormControl>
       <FormControl isInvalid={!!formState.errors.twitterRedirect}>
         <FormLabel>Nitter instance</FormLabel>
         <Input
