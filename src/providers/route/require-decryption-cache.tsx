@@ -131,6 +131,7 @@ export default function RequireDecryptionCache({ children }: { children: JSX.Ele
                 onKeyPress={(e) => e.key === "Enter" && !unlockCache.loading && unlockCache.run()}
                 placeholder="Enter current password or new password"
                 autoFocus
+                autoComplete="off"
               />
             </FormControl>
 
