@@ -13,7 +13,6 @@ import MailboxesView from "./mailboxes";
 import MediaServersView from "./media-servers";
 import MessagesSettings from "./messages";
 import MutesSettings from "./mutes";
-import PerformanceSettings from "./performance";
 import ContentPoliciesSettings from "./policies";
 import PostSettings from "./post";
 import PrivacySettings from "./privacy";
@@ -57,7 +56,6 @@ export default [
       { path: "post", Component: PostSettings },
       { path: "privacy", Component: PrivacySettings },
       { path: "lightning", Component: LightningSettings },
-      { path: "performance", Component: PerformanceSettings },
       { path: "messages", Component: MessagesSettings },
       { path: "background-worker", Component: BackgroundWorkerSettings },
     ],

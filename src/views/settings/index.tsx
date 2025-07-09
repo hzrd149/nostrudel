@@ -8,7 +8,6 @@ import {
   LightningIcon,
   MuteIcon,
   NotesIcon,
-  PerformanceIcon,
   RelayIcon,
   SearchIcon,
   SpyIcon,
@@ -21,11 +20,12 @@ import FilterFunnel02 from "../../components/icons/filter-funnel-02";
 import Image01 from "../../components/icons/image-01";
 import Mail02 from "../../components/icons/mail-02";
 import Share07 from "../../components/icons/share-07";
+import User01 from "../../components/icons/user-01";
 import SimpleNavItem from "../../components/layout/presets/simple-nav-item";
 import SimpleParentView from "../../components/layout/presets/simple-parent-view";
 import UserAvatar from "../../components/user/user-avatar";
 import VersionButton from "../../components/version-button";
-import User01 from "../../components/icons/user-01";
+import { IS_SERVICE_WORKER_SUPPORTED } from "../../env";
 
 function DividerHeader({ title }: { title: string }) {
   return (
@@ -58,19 +58,30 @@ export default function SettingsView() {
           <SimpleNavItem to="/settings/media-servers" leftIcon={<Image01 boxSize={5} />}>
             Media Servers
           </SimpleNavItem>
-          <SimpleNavItem to="/settings/search" leftIcon={<SearchIcon boxSize={5} />}>
-            Search
-          </SimpleNavItem>
           <SimpleNavItem to="/settings/identity" leftIcon={<VerifiedIcon boxSize={5} />}>
             DNS Identity
+          </SimpleNavItem>
+          <SimpleNavItem to="/settings/messages" leftIcon={<Mail02 boxSize={5} />}>
+            Messages
+          </SimpleNavItem>
+          <SimpleNavItem to="/settings/mutes" leftIcon={<MuteIcon boxSize={5} />}>
+            Mutes
           </SimpleNavItem>
         </>
       )}
       <SimpleNavItem to="/settings/social-graph" leftIcon={<Share07 boxSize={5} />}>
         Social Graph
       </SimpleNavItem>
-      <SimpleNavItem to="/settings/mutes" leftIcon={<MuteIcon boxSize={5} />}>
-        Mutes
+
+      <DividerHeader title="Network" />
+      <SimpleNavItem to="/settings/relays" leftIcon={<RelayIcon boxSize={5} />}>
+        Relays
+      </SimpleNavItem>
+      <SimpleNavItem to="/settings/search" leftIcon={<SearchIcon boxSize={5} />}>
+        Search
+      </SimpleNavItem>
+      <SimpleNavItem to="/settings/authentication" leftIcon={<CheckCircleBroken boxSize={5} />}>
+        Authentication
       </SimpleNavItem>
 
       <DividerHeader title="App" />
@@ -80,20 +91,8 @@ export default function SettingsView() {
       <SimpleNavItem to="/settings/policies" leftIcon={<FilterFunnel02 boxSize={5} />}>
         Content Policies
       </SimpleNavItem>
-      <SimpleNavItem to="/settings/relays" leftIcon={<RelayIcon boxSize={5} />}>
-        Relays
-      </SimpleNavItem>
-      <SimpleNavItem to="/settings/authentication" leftIcon={<CheckCircleBroken boxSize={5} />}>
-        Authentication
-      </SimpleNavItem>
-      <SimpleNavItem to="/settings/cache" leftIcon={<Database01 boxSize={5} />}>
-        Event Cache
-      </SimpleNavItem>
       <SimpleNavItem to="/settings/post" leftIcon={<NotesIcon boxSize={5} />}>
         Posts
-      </SimpleNavItem>
-      <SimpleNavItem to="/settings/performance" leftIcon={<PerformanceIcon boxSize={5} />}>
-        Performance
       </SimpleNavItem>
       <SimpleNavItem to="/settings/lightning" leftIcon={<LightningIcon boxSize={5} />}>
         Lightning
@@ -101,12 +100,16 @@ export default function SettingsView() {
       <SimpleNavItem to="/settings/privacy" leftIcon={<SpyIcon boxSize={5} />}>
         Privacy
       </SimpleNavItem>
-      <SimpleNavItem to="/settings/messages" leftIcon={<Mail02 boxSize={5} />}>
-        Messages
+      <SimpleNavItem to="/settings/cache" leftIcon={<Database01 boxSize={5} />}>
+        Event Cache
       </SimpleNavItem>
-      <SimpleNavItem to="/settings/background-worker" leftIcon={<CpuChip01 boxSize={5} />}>
-        Background Worker
-      </SimpleNavItem>
+
+      <DividerHeader title="Debug" />
+      {IS_SERVICE_WORKER_SUPPORTED && (
+        <SimpleNavItem to="/settings/background-worker" leftIcon={<CpuChip01 boxSize={5} />}>
+          Background Worker
+        </SimpleNavItem>
+      )}
       <SimpleNavItem to="/relays/cache/database" leftIcon={<DatabaseIcon boxSize={5} />}>
         Database Tools
       </SimpleNavItem>

@@ -37,7 +37,6 @@ if (import.meta.env.PROD) {
     navigator.registerProtocolHandler("web+nostr", new URL("/l/%s", location.origin).toString());
   } catch (e) {
     console.log("Failed to register handler");
-    console.log(e);
   }
 }
 
@@ -45,7 +44,7 @@ if (import.meta.env.PROD) {
 import { createRoot } from "react-dom/client";
 import { App } from "./app";
 import { logger } from "./helpers/debug";
-import { CAP_IS_WEB } from "./env";
+import { IS_SERVICE_WORKER_SUPPORTED } from "./env";
 
 logger("Rendering app");
 const root = document.getElementById("root")!;
@@ -56,4 +55,4 @@ createRoot(root).render(
 );
 
 // Register service worker if supported
-if (CAP_IS_WEB && "serviceWorker" in navigator) registerServiceWorker();
+if (IS_SERVICE_WORKER_SUPPORTED) registerServiceWorker();

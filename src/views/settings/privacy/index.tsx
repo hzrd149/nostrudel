@@ -46,7 +46,6 @@ async function validateRequestProxy(url?: string) {
 export default function PrivacySettings() {
   const { register, submit, formState } = useSettingsForm();
 
-  const proactivelyAuthenticate = useObservableEagerState(localSettings.proactivelyAuthenticate);
   const debugApi = useObservableEagerState(localSettings.enableDebugApi);
 
   return (
@@ -69,28 +68,6 @@ export default function PrivacySettings() {
         </Button>
       }
     >
-      <FormControl>
-        <FormLabel>Default authorization behavior</FormLabel>
-        <DefaultAuthModeSelect w="xs" rounded="md" flexShrink={0} />
-        <FormHelperText>How should the app handle relays requesting identification</FormHelperText>
-      </FormControl>
-
-      <FormControl>
-        <Flex alignItems="center">
-          <FormLabel htmlFor="proactivelyAuthenticate" mb="0">
-            Proactively authenticate to relays
-          </FormLabel>
-          <Switch
-            id="proactivelyAuthenticate"
-            isChecked={proactivelyAuthenticate}
-            onChange={(e) => localSettings.proactivelyAuthenticate.next(e.currentTarget.checked)}
-          />
-        </Flex>
-        <FormHelperText>
-          <span>Authenticate to relays as soon as they send the authentication challenge</span>
-        </FormHelperText>
-      </FormControl>
-
       <FormControl isInvalid={!!formState.errors.twitterRedirect}>
         <FormLabel>Nitter instance</FormLabel>
         <Input

@@ -2,6 +2,7 @@ import {
   Button,
   Flex,
   FormControl,
+  FormErrorMessage,
   FormHelperText,
   FormLabel,
   Input,
@@ -16,6 +17,7 @@ import { Link as RouterLink } from "react-router-dom";
 import SimpleView from "../../../components/layout/presets/simple-view";
 import localSettings from "../../../services/local-settings";
 import useSettingsForm from "../use-settings-form";
+import { safeUrl } from "../../../helpers/parse";
 
 export default function DisplaySettings() {
   const { register, submit, formState } = useSettingsForm();
@@ -86,6 +88,28 @@ export default function DisplaySettings() {
         </FormHelperText>
       </FormControl>
       <FormControl>
+        <FormLabel htmlFor="imageProxy" mb="0">
+          Image proxy service
+        </FormLabel>
+        <Input
+          id="imageProxy"
+          maxW="sm"
+          type="url"
+          {...register("imageProxy", {
+            setValueAs: (v) => safeUrl(v) || v,
+          })}
+        />
+        {formState.errors.imageProxy && <FormErrorMessage>{formState.errors.imageProxy.message}</FormErrorMessage>}
+        <FormHelperText>
+          <span>
+            A URL to an instance of{" "}
+            <Link href="https://github.com/willnorris/imageproxy" isExternal target="_blank">
+              willnorris/imageproxy
+            </Link>
+          </span>
+        </FormHelperText>
+      </FormControl>
+      <FormControl>
         <FormLabel htmlFor="maxPageWidth" mb="0">
           Show user pubkey key color
         </FormLabel>
@@ -107,7 +131,7 @@ export default function DisplaySettings() {
         </Flex>
         <FormHelperText>
           <span>
-            Enabled: hides usernames and pictures.{" "}
+            Hides usernames and pictures on notes.{" "}
             <Link
               as={RouterLink}
               color="blue.500"
@@ -126,7 +150,7 @@ export default function DisplaySettings() {
           <Switch id="removeEmojisInUsernames" {...register("removeEmojisInUsernames")} />
         </Flex>
         <FormHelperText>
-          <span>Enabled: Removes all emojis in other users usernames and display names</span>
+          <span>Removes all emojis in other users usernames and display names</span>
         </FormHelperText>
       </FormControl>
       <FormControl>
@@ -141,7 +165,7 @@ export default function DisplaySettings() {
           />
         </Flex>
         <FormHelperText>
-          <span>Enabled: Hides individual zaps on notes in the timeline</span>
+          <span>Hides individual zaps on notes in the timeline</span>
         </FormHelperText>
       </FormControl>
       <FormControl>
@@ -152,8 +176,17 @@ export default function DisplaySettings() {
           <Switch id="show-content-warning" {...register("showContentWarning")} />
         </Flex>
         <FormHelperText>
-          <span>Enabled: shows a warning for notes with NIP-36 Content Warning</span>
+          <span>Shows a warning for notes with NIP-36 Content Warning</span>
         </FormHelperText>
+      </FormControl>
+      <FormControl>
+        <Flex alignItems="center">
+          <FormLabel htmlFor="showReactions" mb="0">
+            Show reactions
+          </FormLabel>
+          <Switch id="showReactions" {...register("showReactions")} />
+        </Flex>
+        <FormHelperText>Show reactions on notes</FormHelperText>
       </FormControl>
     </SimpleView>
   );
