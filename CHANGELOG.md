@@ -1,5 +1,11 @@
 # nostrudel
 
+## 0.45.1
+
+### Patch Changes
+
+- 50d7153: Fix recalculating the social graph every 15s
+
 ## 0.45.0
 
 ### Minor Changes
