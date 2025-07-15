@@ -76,7 +76,7 @@ export const NIP_89_CLIENT_APP: EventFactoryClient = {
 };
 
 export const SOCIAL_GRAPH_DOWNLOAD_URL =
-  "https://raw.githubusercontent.com/mmalmi/nostr-social-graph/refs/heads/master/data/socialGraph.json";
+  "https://github.com/mmalmi/nostr-social-graph/releases/download/v1.0.5/large_social_graph.json";
 export const SOCIAL_GRAPH_FALLBACK_PUBKEY = "713978c3094081b34fcf2f5491733b0c22728cd3b7a6946519d40f5f08598af8";
 export const SUPPORT_PUBKEY = "713978c3094081b34fcf2f5491733b0c22728cd3b7a6946519d40f5f08598af8";
 

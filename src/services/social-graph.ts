@@ -57,10 +57,8 @@ eventStore
     throttleTime(15_000),
   )
   .subscribe(() => {
-    const graph = socialGraph$.value;
-    graph.recalculateFollowDistances();
     // Notify subscribers of the updated graph
-    socialGraph$.next(graph);
+    socialGraph$.next(socialGraph$.value);
   });
 
 // Save the active users social graph at most every 10 seconds
