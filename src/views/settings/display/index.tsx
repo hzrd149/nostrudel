@@ -23,6 +23,7 @@ export default function DisplaySettings() {
   const { register, submit, formState } = useSettingsForm();
 
   const hideZapBubbles = useObservableEagerState(localSettings.hideZapBubbles);
+  const hideUsernames = useObservableEagerState(localSettings.hideUsernames);
 
   return (
     <SimpleView
@@ -105,7 +106,11 @@ export default function DisplaySettings() {
           <FormLabel htmlFor="hideUsernames" mb="0">
             Hide usernames (anon mode)
           </FormLabel>
-          <Switch id="hideUsernames" {...register("hideUsernames")} />
+          <Switch
+            id="hideUsernames"
+            isChecked={hideUsernames}
+            onChange={() => localSettings.hideUsernames.next(!hideUsernames)}
+          />
         </Flex>
         <FormHelperText>
           <span>
@@ -139,7 +144,7 @@ export default function DisplaySettings() {
           <Switch
             id="hideZapBubbles"
             isChecked={hideZapBubbles}
-            onChange={() => localSettings.hideZapBubbles.next(!localSettings.hideZapBubbles.value)}
+            onChange={() => localSettings.hideZapBubbles.next(!hideZapBubbles)}
           />
         </Flex>
         <FormHelperText>

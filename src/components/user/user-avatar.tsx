@@ -1,7 +1,7 @@
 import { Avatar, AvatarProps } from "@chakra-ui/react";
 import styled from "@emotion/styled";
 import { ProfileContent } from "applesauce-core/helpers";
-import { useActiveAccount } from "applesauce-react/hooks";
+import { useActiveAccount, useObservableEagerState } from "applesauce-react/hooks";
 import { ProfilePointer } from "nostr-tools/nip19";
 import { forwardRef, memo, useMemo } from "react";
 import { useAsync } from "react-use";
@@ -14,6 +14,7 @@ import useAppSettings from "../../hooks/use-user-app-settings";
 import useUserMuteList from "../../hooks/use-user-mute-list";
 import useUserProfile from "../../hooks/use-user-profile";
 import UserDnsIdentityIcon from "./user-dns-identity-icon";
+import localSettings from "../../services/local-settings";
 
 export const UserIdenticon = memo(({ pubkey }: { pubkey: string }) => {
   const { value: identicon } = useAsync(() => getIdenticon(pubkey), [pubkey]);
@@ -89,7 +90,8 @@ export type MetadataAvatarProps = Omit<AvatarProps, "src"> & {
 };
 export const MetadataAvatar = forwardRef<HTMLDivElement, MetadataAvatarProps>(
   ({ pubkey, metadata, noProxy, children, square = true, ...props }, ref) => {
-    const { imageProxy, hideUsernames, showPubkeyColor } = useAppSettings();
+    const { imageProxy, showPubkeyColor } = useAppSettings();
+    const hideUsernames = useObservableEagerState(localSettings.hideUsernames);
     const account = useActiveAccount();
     const picture = useMemo(() => {
       if (hideUsernames && pubkey && pubkey !== account?.pubkey) return undefined;

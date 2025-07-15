@@ -22,6 +22,7 @@ const wasmPersistForDays = new NullableNumberLocalStorageEntry("wasm-relay-oldes
 
 // Display
 const hideZapBubbles = new BooleanLocalStorageEntry("hide-zap-bubbles", false);
+const hideUsernames = new BooleanLocalStorageEntry("hide-usernames", false);
 
 // WebRTC Relay
 const webRtcLocalIdentity = new LocalStorageEntry(
@@ -89,7 +90,11 @@ const localSettings = {
   lookupRelays,
   idbMaxEvents,
   wasmPersistForDays,
+
+  // Display
   hideZapBubbles,
+  hideUsernames,
+
   webRtcLocalIdentity,
   webRtcSignalingRelays,
   webRtcRecentConnections,

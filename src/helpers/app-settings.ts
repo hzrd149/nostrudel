@@ -64,10 +64,14 @@ type AppSettingsV14 = Omit<AppSettingsV13, "version" | "autoDecryptDMs" | "proxy
   version: 14;
 };
 
-export type AppSettings = AppSettingsV14;
+type AppSettingsV15 = Omit<AppSettingsV14, "version" | "hideUsernames"> & {
+  version: 15;
+};
+
+export type AppSettings = AppSettingsV15;
 
 export const DEFAULT_APP_SETTINGS: AppSettings = {
-  version: 14,
+  version: 15,
 
   // display
   theme: "default",
@@ -75,7 +79,6 @@ export const DEFAULT_APP_SETTINGS: AppSettings = {
   primaryColor: "#8DB600",
   maxPageWidth: "none",
   showPubkeyColor: "avatar",
-  hideUsernames: false,
   removeEmojisInUsernames: false,
   showContentWarning: true,
   loadOpenGraphData: true,
