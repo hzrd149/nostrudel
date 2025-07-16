@@ -1,15 +1,16 @@
 import { Share } from "@capacitor/share";
 import { MenuItem, useToast } from "@chakra-ui/react";
+import { getTagValue } from "applesauce-core/helpers";
 import { NostrEvent } from "nostr-tools";
 import { useCallback } from "react";
 
+import { DEFAULT_SHARE_SERVICE } from "../../const";
 import { CAP_IS_NATIVE } from "../../env";
 import { getDisplayName } from "../../helpers/nostr/profile";
 import useShareableEventAddress from "../../hooks/use-shareable-event-address";
+import useAppSettings from "../../hooks/use-user-app-settings";
 import useUserProfile from "../../hooks/use-user-profile";
 import { ShareIcon } from "../icons";
-import useAppSettings from "../../hooks/use-user-app-settings";
-import { DEFAULT_SHARE_SERVICE } from "../../const";
 
 export default function ShareLinkMenuItem({ event }: { event: NostrEvent }) {
   const toast = useToast();
@@ -19,8 +20,8 @@ export default function ShareLinkMenuItem({ event }: { event: NostrEvent }) {
 
   const handleClick = useCallback(async () => {
     const data: ShareData = {
-      url: (shareService ?? DEFAULT_SHARE_SERVICE) + address,
-      title: event.tags.find((t) => t[0] === "title")?.[1] || "Nostr note by " + getDisplayName(metadata, event.pubkey),
+      url: (shareService || DEFAULT_SHARE_SERVICE) + address,
+      title: getTagValue(event, "title") || "Nostr note by " + getDisplayName(metadata, event.pubkey),
     };
 
     if (event.content.length <= 256) data.text = event.content;

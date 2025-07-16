@@ -176,9 +176,9 @@ export default function AppHandlerModal({
           <FormControl px="4">
             <FormLabel>Share URL</FormLabel>
             <Flex gap="2" overflow="hidden">
-              <Input readOnly value={(shareService ?? DEFAULT_SHARE_SERVICE) + address} size="sm" />
+              <Input readOnly value={(shareService || DEFAULT_SHARE_SERVICE) + address} size="sm" />
               <CopyIconButton
-                value={(shareService ?? DEFAULT_SHARE_SERVICE) + address}
+                value={(shareService || DEFAULT_SHARE_SERVICE) + address}
                 size="sm"
                 aria-label="Copy embed code"
               />
