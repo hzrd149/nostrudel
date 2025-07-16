@@ -1,11 +1,11 @@
 import { Button, Flex, Heading, SimpleGrid, useDisclosure } from "@chakra-ui/react";
 import { encodeGroupPointer } from "applesauce-core/helpers/groups";
 
-import { useAdditionalRelayContext } from "../../../providers/local/additional-relay";
 import { ErrorBoundary } from "../../../components/error-boundary";
-import { useBreakpointValue } from "../../../providers/global/breakpoint-provider";
+import GroupCard from "../../../components/groups/group-card";
 import useUserGroupsList from "../../../hooks/use-user-groups-list";
-import RouterLink from "../../../components/router-link";
+import { useBreakpointValue } from "../../../providers/global/breakpoint-provider";
+import { useAdditionalRelayContext } from "../../../providers/local/additional-relay";
 
 export default function UserJoinedGroups({ pubkey }: { pubkey: string }) {
   const contextRelays = useAdditionalRelayContext();
@@ -21,11 +21,9 @@ export default function UserJoinedGroups({ pubkey }: { pubkey: string }) {
         Joined Groups ({groups.length})
       </Heading>
       <SimpleGrid spacing="4" columns={columns}>
-        {(showAll.isOpen ? groups : groups.slice(0, columns * 2)).map((pointer) => (
-          <ErrorBoundary key={pointer.id}>
-            <Button as={RouterLink} to={`/groups/${encodeGroupPointer(pointer)}`}>
-              {encodeGroupPointer(pointer)}
-            </Button>
+        {(showAll.isOpen ? groups : groups.slice(0, columns * 2)).map((group) => (
+          <ErrorBoundary key={encodeGroupPointer(group)}>
+            <GroupCard group={group} />
           </ErrorBoundary>
         ))}
       </SimpleGrid>

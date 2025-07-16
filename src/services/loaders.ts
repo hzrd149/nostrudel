@@ -58,6 +58,11 @@ export const channelMetadataLoader = createTagValueLoader(pool, "e", {
   extraRelays: localSettings.readRelays,
 });
 
+// A loader to load the group info from the relays
+export const groupInfoLoader = createTagValueLoader(pool, "d", {
+  kinds: [39000],
+});
+
 /** Loader for loading a users social graph */
 export const socialGraphLoader = createSocialGraphLoader(profileLoader, {
   eventStore,

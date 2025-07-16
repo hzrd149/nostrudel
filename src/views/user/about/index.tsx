@@ -246,6 +246,7 @@ export default function UserAboutTab() {
           Nostree page
         </Button>
       </Flex>
+      <UserJoinedGroups pubkey={pubkey} />
       <UserJoinedChannels pubkey={pubkey} />
 
       <Modal isOpen={colorModal.isOpen} onClose={colorModal.onClose} size="2xl">
