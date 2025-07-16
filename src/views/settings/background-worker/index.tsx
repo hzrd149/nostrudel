@@ -1,4 +1,4 @@
-import { Alert, AlertTitle, AlertIcon, Text, AlertDescription } from "@chakra-ui/react";
+import { Alert, AlertDescription, AlertIcon, AlertTitle } from "@chakra-ui/react";
 
 import SimpleView from "../../../components/layout/presets/simple-view";
 import { CAP_IS_WEB } from "../../../env";
@@ -13,9 +13,13 @@ export default function BackgroundWorkerSettings() {
 
   return (
     <SimpleView title="Background Worker">
-      <Text fontStyle="italic" mt="-2" px={{ base: "2", lg: 0 }}>
-        Monitor and manage the background service worker that handles caching and offline functionality
-      </Text>
+      <Alert status="info">
+        <AlertIcon />
+        <AlertDescription>
+          The background worker is used to handle caching and offline functionality. If your not a developer you can
+          ignore everything here.
+        </AlertDescription>
+      </Alert>
 
       {supported ? (
         <>
