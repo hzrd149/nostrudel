@@ -35,6 +35,8 @@ import { useBreakpointValue } from "../../providers/global/breakpoint-provider";
 import { CopyIconButton } from "../copy-icon-button";
 import useEventIntersectionRef from "../../hooks/use-event-intersection-ref";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
+import useAppSettings from "../../hooks/use-user-app-settings";
+import { DEFAULT_SHARE_SERVICE } from "../../const";
 
 function useEventFromDecode(decoded: DecodeResult) {
   switch (decoded.type) {
@@ -90,6 +92,7 @@ export default function AppHandlerModal({
   isOpen,
   onClose,
 }: { decoded: DecodeResult } & Omit<ModalProps, "children">) {
+  const { shareService } = useAppSettings();
   const readRelays = useReadRelays();
   const event = useEventFromDecode(decoded);
   const kind = event?.kind ?? getKindFromDecoded(decoded);
@@ -173,8 +176,12 @@ export default function AppHandlerModal({
           <FormControl px="4">
             <FormLabel>Share URL</FormLabel>
             <Flex gap="2" overflow="hidden">
-              <Input readOnly value={"https://njump.me/" + address} size="sm" />
-              <CopyIconButton value={"https://njump.me/" + address} size="sm" aria-label="Copy embed code" />
+              <Input readOnly value={(shareService ?? DEFAULT_SHARE_SERVICE) + address} size="sm" />
+              <CopyIconButton
+                value={(shareService ?? DEFAULT_SHARE_SERVICE) + address}
+                size="sm"
+                aria-label="Copy embed code"
+              />
             </Flex>
           </FormControl>
         </ModalBody>

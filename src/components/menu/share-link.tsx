@@ -8,15 +8,18 @@ import { getDisplayName } from "../../helpers/nostr/profile";
 import useShareableEventAddress from "../../hooks/use-shareable-event-address";
 import useUserProfile from "../../hooks/use-user-profile";
 import { ShareIcon } from "../icons";
+import useAppSettings from "../../hooks/use-user-app-settings";
+import { DEFAULT_SHARE_SERVICE } from "../../const";
 
 export default function ShareLinkMenuItem({ event }: { event: NostrEvent }) {
   const toast = useToast();
+  const { shareService } = useAppSettings();
   const address = useShareableEventAddress(event);
   const metadata = useUserProfile(event.pubkey);
 
   const handleClick = useCallback(async () => {
     const data: ShareData = {
-      url: "https://njump.me/" + address,
+      url: (shareService ?? DEFAULT_SHARE_SERVICE) + address,
       title: event.tags.find((t) => t[0] === "title")?.[1] || "Nostr note by " + getDisplayName(metadata, event.pubkey),
     };
 

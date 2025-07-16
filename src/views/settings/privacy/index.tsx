@@ -19,6 +19,7 @@ import useSettingsForm from "../use-settings-form";
 import localSettings from "../../../services/local-settings";
 import DefaultAuthModeSelect from "../../../components/settings/default-auth-mode-select";
 import SimpleView from "../../../components/layout/presets/simple-view";
+import { DEFAULT_SHARE_SERVICE } from "../../../const";
 
 async function validateInvidiousUrl(url?: string) {
   if (!url) return true;
@@ -192,6 +193,27 @@ export default function PrivacySettings() {
           <Code fontSize="0.9em">{`<url>`}</Code> or <Code fontSize="0.9em">{`<encoded_url>`}</Code> can be used to
           inject the raw or the encoded url into the proxy url ( example:{" "}
           <Code fontSize="0.9em" userSelect="all">{`https://corsproxy.io/?<encoded_url>`}</Code> )
+        </FormHelperText>
+      </FormControl>
+      <FormControl>
+        <FormLabel>Share service</FormLabel>
+        <Input
+          type="url"
+          maxW="sm"
+          placeholder={DEFAULT_SHARE_SERVICE}
+          {...register("shareService")}
+          list="share-services"
+        />
+        <datalist id="share-services">
+          <option value="https://njump.me/" />
+        </datalist>
+        {formState.errors.shareService && <FormErrorMessage>{formState.errors.shareService.message}</FormErrorMessage>}
+        <FormHelperText>
+          A URL to an instance of{" "}
+          <Link href="https://github.com/fiatjaf/njump" isExternal color="blue.500">
+            njump
+          </Link>{" "}
+          that will be used to share nostr links.
         </FormHelperText>
       </FormControl>
       <FormControl>

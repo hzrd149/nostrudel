@@ -6,6 +6,8 @@ function normalizeRelayURLs(relays: string[]) {
   return relays.filter(isSafeRelayURL).map(normalizeURL);
 }
 
+export const DEFAULT_SHARE_SERVICE = "https://njump.me/";
+
 export const DEFAULT_SEARCH_RELAYS = normalizeRelayURLs([
   "wss://relay.nostr.band",
   "wss://search.nos.today",

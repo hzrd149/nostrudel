@@ -66,6 +66,7 @@ type AppSettingsV14 = Omit<AppSettingsV13, "version" | "autoDecryptDMs" | "proxy
 
 type AppSettingsV15 = Omit<AppSettingsV14, "version" | "hideUsernames"> & {
   version: 15;
+  shareService?: string;
 };
 
 export type AppSettings = AppSettingsV15;
@@ -99,6 +100,7 @@ export const DEFAULT_APP_SETTINGS: AppSettings = {
   // privacy
   imageProxy: "",
   corsProxy: "",
+  shareService: "https://njump.me/",
   twitterRedirect: undefined,
   redditRedirect: undefined,
   youtubeRedirect: undefined,
