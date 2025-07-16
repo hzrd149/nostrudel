@@ -26,6 +26,7 @@ import EventQuoteButton from "../../components/note/event-quote-button";
 import { GenericComments } from "../../components/comment/generic-comments";
 import GenericCommentForm from "../../components/comment/generic-comment-form";
 import EventShareButton from "../../components/note/timeline-note/components/event-share-button";
+import ArticleReader from "./components/article-reader";
 
 function ArticlePage({ article }: { article: NostrEvent }) {
   const image = getArticleImage(article);
@@ -90,6 +91,8 @@ function ArticlePage({ article }: { article: NostrEvent }) {
             <EventQuoteButton event={article} size="sm" variant="ghost" aria-label="Quote article" />
             <NoteReactions event={article} size="sm" variant="ghost" aria-label="React to article" />
           </Flex>
+
+          <ArticleReader markdown={article.content} mt="2" />
 
           <Box fontSize="lg" as="div" className="article-content">
             <MarkdownContent event={article} />

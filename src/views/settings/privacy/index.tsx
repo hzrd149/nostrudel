@@ -206,6 +206,9 @@ export default function PrivacySettings() {
         />
         <datalist id="share-services">
           <option value="https://njump.me/" />
+          <option value="https://nostr.com/" />
+          <option value="https://nostr.at/" />
+          <option value="https://nostr.eu/" />
         </datalist>
         {formState.errors.shareService && <FormErrorMessage>{formState.errors.shareService.message}</FormErrorMessage>}
         <FormHelperText>
