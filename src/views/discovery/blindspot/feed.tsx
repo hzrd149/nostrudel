@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from "react";
-import { Flex, Heading, Spacer, Spinner, useDisclosure } from "@chakra-ui/react";
+import { Flex, Heading, Spacer, Spinner, Text, useDisclosure } from "@chakra-ui/react";
 import { Navigate } from "react-router-dom";
 import { kinds, NostrEvent } from "nostr-tools";
 
@@ -20,6 +20,8 @@ import BackButton from "../../../components/router/back-button";
 import UserLink from "../../../components/user/user-link";
 import useClientSideMuteFilter from "../../../hooks/use-client-side-mute-filter";
 import { isReply, isRepost } from "../../../helpers/nostr/event";
+import SimpleView from "../../../components/layout/presets/simple-view";
+import UserName from "../../../components/user/user-name";
 
 function BlindspotFeedPage({ pubkey }: { pubkey: string }) {
   const account = useActiveAccount()!;
@@ -75,19 +77,15 @@ function BlindspotFeedPage({ pubkey }: { pubkey: string }) {
     );
 
   return (
-    <VerticalPageLayout>
-      <Flex gap="2" alignItems="center">
-        <BackButton />
-        <Telescope boxSize={6} />
-        <UserAvatarLink size="sm" pubkey={pubkey} />
-        <UserLink pubkey={pubkey} isTruncated fontWeight="bold" />
-        <NoteFilterTypeButtons showReplies={showReplies} showReposts={showReposts} />
-        <Spacer />
-        <TimelineViewTypeButtons />
-      </Flex>
-
+    <SimpleView
+      title={
+        <Text>
+          Blindspot with <UserName pubkey={pubkey} />
+        </Text>
+      }
+    >
       <TimelinePage loader={loader} timeline={timeline} />
-    </VerticalPageLayout>
+    </SimpleView>
   );
 }
 

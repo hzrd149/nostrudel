@@ -1,20 +1,32 @@
-import FeedStatus from "./feed-status";
+import { Flex, List, ListItem, Spinner, Text } from "@chakra-ui/react";
 import { AddressPointer } from "nostr-tools/nip19";
-import { getEventUID } from "applesauce-core/helpers";
+import FeedStatus from "./feed-status";
 
+import GenericNoteTimeline from "../../../../components/timeline-page/generic-note-timeline";
 import { ChainedDVMJob, getEventIdsFromJobs } from "../../../../helpers/nostr/dvm";
 import useSingleEvents from "../../../../hooks/use-single-events";
-import TimelineItem from "../../../../components/timeline-page/generic-note-timeline/timeline-item";
 
-function FeedEvents({ chain }: { chain: ChainedDVMJob[] }) {
+function FeedEvents({ chain, relays }: { chain: ChainedDVMJob[]; relays?: string[] }) {
   const eventIds = getEventIdsFromJobs(chain);
-  const events = useSingleEvents(eventIds);
+  const events = useSingleEvents(eventIds, relays);
 
   return (
     <>
-      {events.map((event) => (
-        <TimelineItem key={getEventUID(event)} event={event} visible />
-      ))}
+      <GenericNoteTimeline timeline={events} />
+
+      {eventIds.length > 0 && events.length === 0 && (
+        <Flex direction="column" mx="auto" mt="4" gap="4">
+          <Flex fontWeight="bold" fontSize="lg" gap="2">
+            <Spinner /> Loading events from relays...
+          </Flex>
+
+          <List>
+            {relays?.map((relay) => (
+              <ListItem key={relay}>{relay}</ListItem>
+            ))}
+          </List>
+        </Flex>
+      )}
     </>
   );
 }
@@ -22,7 +34,7 @@ function FeedEvents({ chain }: { chain: ChainedDVMJob[] }) {
 export default function Feed({ chain, pointer }: { chain: ChainedDVMJob[]; pointer: AddressPointer }) {
   return (
     <>
-      {chain.length > 0 && <FeedEvents chain={chain} />}
+      {chain.length > 0 && <FeedEvents chain={chain} relays={pointer.relays} />}
       <FeedStatus chain={chain} pointer={pointer} />
     </>
   );

@@ -150,19 +150,23 @@ export function RelayPaidTag({ url }: { url: string }) {
   );
 }
 
-export default function RelayCard({ url, ...props }: { url: string } & Omit<CardProps, "children">) {
+export default function RelayCard({
+  relay,
+  to,
+  ...props
+}: { relay: string; to?: string } & Omit<CardProps, "children">) {
   return (
     <>
       <Card variant="outline" {...props}>
         <CardHeader display="flex" gap="2" alignItems="center" p="2">
-          <RelayFavicon relay={url} size="sm" />
+          <RelayFavicon relay={relay} size="sm" />
           <Heading size="md" isTruncated>
-            <RouterLink to={`/relays/${encodeURIComponent(url)}`}>{url}</RouterLink>
-            <RelayPaidTag url={url} />
+            <RouterLink to={to || `/relays/${encodeURIComponent(relay)}`}>{relay}</RouterLink>
+            <RelayPaidTag url={relay} />
           </Heading>
         </CardHeader>
         <CardBody px="2" py="0" display="flex" flexDirection="column" gap="2">
-          <RelayMetadata url={url} />
+          <RelayMetadata url={relay} />
         </CardBody>
         <CardFooter p="2" as={Flex} gap="2">
           {/* <RelayJoinAction url={url} size="sm" /> */}

@@ -6,12 +6,14 @@ import DiscoveryHomeView from ".";
 import DVMFeedView from "./dvm-feed/feed";
 import BlindspotHomeView from "./blindspot";
 import BlindspotFeedView from "./blindspot/feed";
+import RelayFeedView from "./relay-feed";
 const RelayDiscoveryView = lazy(() => import("./relays"));
 
 export default [
   { index: true, Component: DiscoveryHomeView },
   { path: "dvm/:addr", Component: DVMFeedView },
   { path: "relays", Component: RelayDiscoveryView },
+  { path: "relay/:relay", Component: RelayFeedView },
   {
     path: "blindspot",
     element: (

@@ -43,7 +43,6 @@ import NoteProxyLink from "./components/note-proxy-link";
 import NoteReactions from "./components/note-reactions";
 import ReplyContext from "./components/reply-context";
 import ZapBubbles from "./components/zap-bubbles";
-import NoteCommunityMetadata from "./note-community-metadata";
 import NoteContentWithWarning from "./note-content-with-warning";
 
 export type TimelineNoteProps = Omit<CardProps, "children"> & {
@@ -105,7 +104,6 @@ export function TimelineNote({
                 <NotePublishedUsing event={event} />
                 <Flex grow={1} />
               </Flex>
-              <NoteCommunityMetadata event={event} />
               {showReplyLine && <ReplyContext event={event} />}
             </CardHeader>
             <CardBody as={ShowMoreContainer} px="2">

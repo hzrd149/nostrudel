@@ -1,23 +1,29 @@
-import { useCallback } from "react";
-import { Card, Flex, Heading, Link, LinkBox, SimpleGrid, Text } from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router-dom";
-import { getEventUID } from "applesauce-core/helpers";
+import { Card, CardProps, Flex, Heading, Link, LinkBox, SimpleGrid, Text } from "@chakra-ui/react";
+import { getEventUID, getRelaysFromList } from "applesauce-core/helpers";
 import { kinds, NostrEvent } from "nostr-tools";
+import { useCallback, useMemo } from "react";
+import { Link as RouterLink } from "react-router-dom";
 
-import VerticalPageLayout from "../../components/vertical-page-layout";
-import DVMCard from "./dvm-feed/components/dvm-card";
-import { DVM_CONTENT_DISCOVERY_JOB_KIND } from "../../helpers/nostr/dvm";
-import useTimelineLoader from "../../hooks/use-timeline-loader";
-import { useReadRelays } from "../../hooks/use-client-relays";
-import RequireActiveAccount from "../../components/router/require-active-account";
-import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
-import IntersectionObserverProvider from "../../providers/local/intersection-observer";
-import Telescope from "../../components/icons/telescope";
+import { useActiveAccount } from "applesauce-react/hooks";
+import DebugEventButton from "../../components/debug-modal/debug-event-button";
+import { ErrorBoundary } from "../../components/error-boundary";
 import HoverLinkOverlay from "../../components/hover-link-overlay";
 import { RelayIcon } from "../../components/icons";
-import useFavoriteFeeds from "../../hooks/use-favorite-feeds";
+import Telescope from "../../components/icons/telescope";
+import RequireActiveAccount from "../../components/router/require-active-account";
+import VerticalPageLayout from "../../components/vertical-page-layout";
+import { DVM_CONTENT_DISCOVERY_JOB_KIND } from "../../helpers/nostr/dvm";
 import { isEventInList } from "../../helpers/nostr/lists";
-import { ErrorBoundary } from "../../components/error-boundary";
+import useAddressableEvent from "../../hooks/use-addressable-event";
+import { useReadRelays } from "../../hooks/use-client-relays";
+import useFavoriteFeeds from "../../hooks/use-favorite-feeds";
+import { useRelayInfo } from "../../hooks/use-relay-info";
+import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
+import useTimelineLoader from "../../hooks/use-timeline-loader";
+import IntersectionObserverProvider from "../../providers/local/intersection-observer";
+import RelayCard from "../relays/components/relay-card";
+import DVMCard from "./dvm-feed/components/dvm-card";
+import RelayFavicon from "../../components/relay-favicon";
 
 function DVMFeeds() {
   const readRelays = useReadRelays();
@@ -76,6 +82,47 @@ function DVMFeeds() {
   );
 }
 
+function RelayFeedCard({ relay, ...props }: { relay: string } & Omit<CardProps, "children">) {
+  const { info } = useRelayInfo(relay);
+
+  return (
+    <Card as={LinkBox} display="block" p="4" {...props}>
+      <Flex gap="2" float="right" zIndex={1}>
+        {/* Favorite button goes here */}
+      </Flex>
+      <RelayFavicon relay={relay} float="left" mr="4" mb="2" />
+      <Heading size="md">
+        <HoverLinkOverlay as={RouterLink} to={`/discovery/relay/${encodeURIComponent(relay)}`}>
+          {new URL(relay).hostname}
+        </HoverLinkOverlay>
+      </Heading>
+      <Text noOfLines={2}>{info?.description}</Text>
+    </Card>
+  );
+}
+
+function FavoriteRelays() {
+  const account = useActiveAccount()!;
+  const favorites = useAddressableEvent({ kind: 10012, pubkey: account.pubkey });
+  const relays = useMemo(() => favorites && getRelaysFromList(favorites), [favorites]);
+
+  if (!relays) return null;
+
+  return (
+    <>
+      <Heading size="md" mt="4">
+        Favorite Relays
+      </Heading>
+
+      <SimpleGrid columns={{ base: 1, md: 1, lg: 2, xl: 3, "2xl": 4 }} spacing="2">
+        {relays.map((relay) => (
+          <RelayFeedCard key={relay} relay={relay} />
+        ))}
+      </SimpleGrid>
+    </>
+  );
+}
+
 function DiscoveryHomePage() {
   return (
     <VerticalPageLayout>
@@ -103,6 +150,7 @@ function DiscoveryHomePage() {
           </Flex>
         </Card>
       </SimpleGrid>
+      <FavoriteRelays />
       <DVMFeeds />
     </VerticalPageLayout>
   );

@@ -14,7 +14,6 @@ import EventShareButton from "../../../components/note/timeline-note/components/
 import NoteProxyLink from "../../../components/note/timeline-note/components/note-proxy-link";
 import NoteReactions from "../../../components/note/timeline-note/components/note-reactions";
 import ZapBubbles from "../../../components/note/timeline-note/components/zap-bubbles";
-import NoteCommunityMetadata from "../../../components/note/timeline-note/note-community-metadata";
 import { TextNoteContents } from "../../../components/note/timeline-note/text-note-contents";
 import POWIcon from "../../../components/pow/pow-icon";
 import Timestamp from "../../../components/timestamp";
@@ -100,12 +99,9 @@ function ThreadPost({ post, initShowReplies, focusId, level = -1 }: ThreadItemPr
     return isMuted && !alwaysShow ? (
       muteAlert
     ) : (
-      <>
-        <NoteCommunityMetadata event={post.event} pl="2" />
-        <ContentSettingsProvider blurMedia={override} hideEmbeds={override} event={post.event}>
-          <TextNoteContents event={post.event} pl="2" />
-        </ContentSettingsProvider>
-      </>
+      <ContentSettingsProvider blurMedia={override} hideEmbeds={override} event={post.event}>
+        <TextNoteContents event={post.event} pl="2" />
+      </ContentSettingsProvider>
     );
   };
 

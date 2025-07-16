@@ -5,6 +5,7 @@ import {
   AlertTitle,
   Box,
   Card,
+  Flex,
   Heading,
   Select,
   SimpleGrid,
@@ -21,6 +22,7 @@ import UserName from "../../../components/user/user-name";
 import VerticalPageLayout from "../../../components/vertical-page-layout";
 import useUserContactList from "../../../hooks/use-user-contact-list";
 import { socialGraph$ } from "../../../services/social-graph";
+import SimpleView from "../../../components/layout/presets/simple-view";
 
 const UserCard = memo(({ pubkey, blindspot }: { pubkey: string; blindspot: string[] }) => {
   return (
@@ -72,15 +74,14 @@ export default function BlindspotHomeView() {
   }, [account.pubkey, pubkeys, graph, sort]);
 
   return (
-    <VerticalPageLayout>
-      <Box>
-        <Heading>Blind spots</Heading>
-        <Text fontStyle="italic">Pick another user and see what they are seeing that your not.</Text>
-      </Box>
-      <Select ml="auto" maxW="48" value={sort} onChange={(e) => setSort(e.target.value)}>
-        <option value="quality">Quality</option>
-        <option value="follows">Follows</option>
-      </Select>
+    <SimpleView title="Blindspots" center maxW="container.xl">
+      <Flex direction={{ base: "column", md: "row" }} gap="2" alignItems="center">
+        <Text>Pick another user and see what they are seeing that your not.</Text>
+        <Select ml="auto" maxW="48" value={sort} onChange={(e) => setSort(e.target.value)}>
+          <option value="quality">Quality</option>
+          <option value="follows">Follows</option>
+        </Select>
+      </Flex>
 
       {blindspots.length > 0 ? (
         <SimpleGrid columns={{ base: 1, md: 2, xl: 3 }} spacing="4">
@@ -107,6 +108,6 @@ export default function BlindspotHomeView() {
           </AlertDescription>
         </Alert>
       )}
-    </VerticalPageLayout>
+    </SimpleView>
   );
 }
