@@ -1,5 +1,6 @@
 import "./polyfill";
 
+import { CAP_IS_WEB, IS_SERVICE_WORKER_SUPPORTED } from "./env";
 import { GlobalProviders } from "./providers/global";
 import { registerServiceWorker } from "./services/worker";
 
@@ -32,7 +33,7 @@ dayjs.extend(relativeTimePlugin);
 dayjs.extend(localizedFormat);
 
 // register nostr: protocol handler
-if (import.meta.env.PROD) {
+if (import.meta.env.PROD && CAP_IS_WEB) {
   try {
     navigator.registerProtocolHandler("web+nostr", new URL("/l/%s", location.origin).toString());
   } catch (e) {
@@ -44,7 +45,6 @@ if (import.meta.env.PROD) {
 import { createRoot } from "react-dom/client";
 import { App } from "./app";
 import { logger } from "./helpers/debug";
-import { IS_SERVICE_WORKER_SUPPORTED } from "./env";
 
 logger("Rendering app");
 const root = document.getElementById("root")!;

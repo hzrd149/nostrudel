@@ -1,11 +1,14 @@
 import { IAccount } from "applesauce-accounts";
+import { isFromCache } from "applesauce-core/helpers";
 import { defined, mapEventsToStore } from "applesauce-core/observable";
+import { onlyEvents } from "applesauce-relay";
 import { USER_BLOSSOM_SERVER_LIST_KIND } from "blossom-client-sdk";
 import { kinds, nip42 } from "nostr-tools";
 import {
   combineLatest,
   distinct,
   distinctUntilChanged,
+  filter,
   ignoreElements,
   map,
   merge,
@@ -17,16 +20,19 @@ import {
   timer,
 } from "rxjs";
 
-import { onlyEvents } from "applesauce-relay";
 import { APP_SETTING_IDENTIFIER, APP_SETTINGS_KIND } from "../helpers/app-settings";
 import { MailboxesQuery } from "../models";
 import { DirectMessageRelays } from "../models/messages";
 import accounts from "./accounts";
 import authenticationSigner from "./authentication-signer";
+import { writeEvent } from "./event-cache";
 import { eventStore } from "./event-store";
 import { addressLoader } from "./loaders";
-import localSettings from "./preferences";
 import pool from "./pool";
+import localSettings from "./preferences";
+
+// watch for new events and send them to the cache relay
+eventStore.insert$.pipe(filter((event) => !isFromCache(event))).subscribe(writeEvent);
 
 const addressable = (account: IAccount, relays: Iterable<string>, kind: number, d?: string) => {
   return addressLoader({ relays: [...relays], kind, pubkey: account.pubkey, identifier: d, cache: false });

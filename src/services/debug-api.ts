@@ -1,4 +1,5 @@
 import accounts from "./accounts";
+import { eventCache$ } from "./event-cache";
 import { eventStore } from "./event-store";
 import {
   addressLoader,
@@ -9,8 +10,8 @@ import {
   userSetsLoader,
   zapsLoader,
 } from "./loaders";
-import localSettings from "./preferences";
 import pool from "./pool";
+import localSettings from "./preferences";
 import readStatusService from "./read-status";
 import relayInfoService from "./relay-info";
 import timelineCacheService from "./timeline-cache";
@@ -28,6 +29,10 @@ const noStrudel = {
 
   /** Account management */
   accounts,
+
+  get eventCache() {
+    return eventCache$.value;
+  },
 
   // other internal services
   profileLoader,

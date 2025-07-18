@@ -1,34 +1,36 @@
-import { useState } from "react";
 import { Button, Card, CardBody, CardFooter, CardHeader, Heading, Text } from "@chakra-ui/react";
-import { CacheRelay, clearDB } from "nostr-idb";
 import { Link as RouterLink } from "react-router-dom";
 
-import { localDatabase, setCacheRelayURL } from "../../../../services/cache-relay";
+import { useObservableEagerState } from "applesauce-react/hooks";
+import useAsyncAction from "../../../../hooks/use-async-action";
+import { changeEventCache, eventCache$ } from "../../../../services/event-cache";
 import EnableWithDelete from "./enable-with-delete";
-import useCacheRelay from "../../../../hooks/use-cache-relay";
 
-export default function InternalRelayCard() {
-  const cacheRelay = useCacheRelay();
-  const enabled = cacheRelay instanceof CacheRelay;
+export default function IndexeddbCard() {
+  const eventCache = useObservableEagerState(eventCache$);
+  const enabled = eventCache?.type === "nostr-idb";
 
-  const [enabling, setEnabling] = useState(false);
-  const enable = async () => {
-    try {
-      setEnabling(true);
-      await setCacheRelayURL("nostr-idb://internal");
-    } catch (error) {}
-    setEnabling(false);
-  };
+  const enable = useAsyncAction(async () => {
+    await changeEventCache("nostr-idb");
+  });
 
   const wipe = async () => {
-    await clearDB(localDatabase);
+    const { default: cache } = await import("../../../../services/event-cache/nostr-idb");
+    await cache.clear?.();
   };
 
   return (
     <Card borderColor={enabled ? "primary.500" : undefined} variant="outline">
       <CardHeader p="4" display="flex" gap="2" alignItems="center">
         <Heading size="md">Browser Cache</Heading>
-        <EnableWithDelete size="sm" ml="auto" enable={enable} enabled={enabled} wipe={wipe} isLoading={enabling} />
+        <EnableWithDelete
+          size="sm"
+          ml="auto"
+          enable={enable.run}
+          enabled={enabled}
+          wipe={wipe}
+          isLoading={enable.loading}
+        />
       </CardHeader>
       <CardBody p="4" pt="0">
         <Text mb="2">Use the browsers built-in database to cache events.</Text>

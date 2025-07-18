@@ -15,7 +15,6 @@ import {
   SchemaV13,
 } from "./schema";
 import { logger } from "../../helpers/debug";
-import { localDatabase } from "../cache-relay";
 
 const log = logger.extend("Database");
 
@@ -219,9 +218,6 @@ const db = await openDB<SchemaV13>(dbName, version, {
 log("Open");
 
 export async function clearCacheData() {
-  log("Clearing nostr-idb");
-  await clearDB(localDatabase);
-
   log("Clearing userSearch");
   await db.clear("userSearch");
 
@@ -242,7 +238,6 @@ export async function deleteDatabase() {
   db.close();
   log("Deleting");
   await deleteDB(dbName);
-  localDatabase.close();
   await nostrIDBDelete();
   window.location.reload();
 }

@@ -1,8 +1,9 @@
 import { Button, ButtonProps, IconButton, useDisclosure } from "@chakra-ui/react";
-import { useActiveAccount } from "applesauce-react/hooks";
+import { useActiveAccount, useEventModel } from "applesauce-react/hooks";
 import { kinds, NostrEvent } from "nostr-tools";
 
-import useEventCount from "../../../../hooks/use-event-count";
+import { TimelineModel } from "applesauce-core/models";
+import { useMemo } from "react";
 import { RepostIcon } from "../../../icons";
 import ShareModal from "./share-modal";
 
@@ -14,14 +15,15 @@ export default function EventShareButton({
   const { isOpen, onClose, onOpen } = useDisclosure();
 
   const account = useActiveAccount();
-  const shared = useEventCount(
-    account ? { "#e": [event.id], kinds: [kinds.Repost, kinds.GenericRepost], authors: [account.pubkey] } : undefined,
+  const shares = useEventModel(
+    TimelineModel,
+    account ? [{ "#e": [event.id], kinds: [kinds.Repost, kinds.GenericRepost], authors: [account.pubkey] }] : undefined,
   );
-  const shareCount = useEventCount({ "#e": [event.id], kinds: [kinds.Repost, kinds.GenericRepost] });
+  const shared = useMemo(() => shares?.some((e) => e.pubkey === account?.pubkey), [shares, account?.pubkey]);
 
   return (
     <>
-      {shareCount !== undefined && shareCount > 0 ? (
+      {shares !== undefined && shares.length > 0 ? (
         <Button
           leftIcon={<RepostIcon />}
           onClick={onOpen}
@@ -29,7 +31,7 @@ export default function EventShareButton({
           colorScheme={shared ? "primary" : undefined}
           {...props}
         >
-          {shareCount}
+          {shares.length}
         </Button>
       ) : (
         <IconButton

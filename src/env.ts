@@ -12,3 +12,5 @@ export const IS_SERVICE_WORKER_SUPPORTED = CAP_IS_WEB && "serviceWorker" in navi
 
 export const PAYWALL_NIP05 = import.meta.env.VITE_PAYWALL_NIP05 as string | undefined;
 export const PAYWALL_MESSAGE = import.meta.env.VITE_PAYWALL_MESSAGE as string | undefined;
+
+export const WASM_RELAY_SUPPORTED = "WebAssembly" in self && "Worker" in self && "storage" in navigator;

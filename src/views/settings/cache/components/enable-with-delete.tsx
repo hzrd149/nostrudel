@@ -34,7 +34,7 @@ export default function EnableWithDelete({
 
   return (
     <ButtonGroup isAttached {...props}>
-      <Button colorScheme="primary" onClick={enable} isDisabled={enabled}>
+      <Button colorScheme="primary" onClick={enable} isDisabled={enabled} isLoading={isLoading}>
         {enabled ? "Enabled" : "Enable"}
       </Button>
       <Menu>

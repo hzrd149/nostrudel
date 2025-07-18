@@ -6,7 +6,7 @@ import { Filter, kinds, NostrEvent } from "nostr-tools";
 import { useEffect, useMemo, useState } from "react";
 import { Observable } from "rxjs";
 
-import { cacheRequest } from "../../../services/cache-relay";
+import { eventCache$ } from "../../../services/event-cache";
 import { eventStore } from "../../../services/event-store";
 import pool from "../../../services/pool";
 import ArticleSearchResults from "./article-results";
@@ -16,7 +16,12 @@ import ProfileSearchResults from "./profile-results";
 export function createSearchAction(relays?: string[]): (filters: Filter[]) => Observable<NostrEvent> {
   return (filters: Filter[]) => {
     // search local
-    if (!relays || relays.length === 0) return cacheRequest(filters).pipe(mapEventsToStore(eventStore));
+    if (!relays || relays.length === 0) {
+      if (!eventCache$.value) throw new Error("No event cache");
+      if (!eventCache$.value.search) throw new Error("Event cache does not support search");
+
+      return eventCache$.value.search(filters).pipe(mapEventsToStore(eventStore));
+    }
 
     // search remote
     return pool.request(relays, filters).pipe(onlyEvents(), mapEventsToStore(eventStore));

@@ -1,20 +1,16 @@
-import { useActiveAccount } from "applesauce-react/hooks";
+import { useActiveAccount, useObservableEagerState } from "applesauce-react/hooks";
 
-import { AbstractRelay } from "nostr-tools/abstract-relay";
-import { DEFAULT_SEARCH_RELAYS } from "../const";
+import { DEFAULT_SEARCH_RELAYS, LOCAL_RELAY_URL } from "../const";
 import { getRelaysFromList } from "../helpers/nostr/lists";
-import WasmRelay from "../services/wasm-relay";
-import useCacheRelay from "./use-cache-relay";
+import { eventCache$ } from "../services/event-cache";
 import { useRelayInfo } from "./use-relay-info";
 import useUserSearchRelayList from "./use-user-search-relay-list";
 
 export function useCacheRelaySupportsSearch(): boolean {
-  const cacheRelay = useCacheRelay();
-  const { info: cacheRelayInfo } = useRelayInfo(cacheRelay instanceof AbstractRelay ? cacheRelay.url : undefined, true);
-  return (
-    cacheRelay instanceof WasmRelay ||
-    (cacheRelay instanceof AbstractRelay && !!cacheRelayInfo?.supported_nips?.includes(50))
-  );
+  const eventCache = useObservableEagerState(eventCache$);
+
+  const { info } = useRelayInfo(eventCache?.type === "local-relay" ? LOCAL_RELAY_URL : undefined, true);
+  return eventCache ? eventCache.type === "wasm-worker" || !!info?.supported_nips.includes(50) : false;
 }
 
 export default function useSearchRelays(): string[] {

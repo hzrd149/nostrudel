@@ -21,26 +21,39 @@ import { useAsync } from "react-use";
 
 import EventKindsPieChart from "../../../../components/charts/event-kinds-pie-chart";
 import EventKindsTable from "../../../../components/charts/event-kinds-table";
-import { localDatabase } from "../../../../services/cache-relay";
 import { clearCacheData, deleteDatabase } from "../../../../services/database";
 import localSettings from "../../../../services/preferences";
 import ExportEventsButton from "./components/export-events-button";
 import ImportEventsButton from "./components/import-events-button";
 
+async function getDatabase() {
+  const { database } = await import("../../../../services/event-cache/nostr-idb");
+  return database;
+}
+
 async function importEvents(events: NostrEvent[]) {
-  await addEvents(localDatabase, events);
+  const database = await getDatabase();
+  await addEvents(database, events);
   await updateUsed(
-    localDatabase,
+    database,
     events.map((e) => getEventUID(e)),
   );
 }
 async function exportEvents() {
-  return (await localDatabase.getAll("events")).map((row) => row.event);
+  const database = await getDatabase();
+
+  return (await database.getAll("events")).map((row) => row.event);
 }
 
 export default function InternalDatabasePage() {
-  const { value: count } = useAsync(async () => await countEvents(localDatabase), []);
-  const { value: kinds } = useAsync(async () => await countEventsByKind(localDatabase), []);
+  const { value: count } = useAsync(async () => {
+    const database = await getDatabase();
+    return await countEvents(database);
+  }, []);
+  const { value: kinds } = useAsync(async () => {
+    const database = await getDatabase();
+    return await countEventsByKind(database);
+  }, []);
 
   const maxEvents = useObservableEagerState(localSettings.idbMaxEvents);
 

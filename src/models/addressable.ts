@@ -1,6 +1,6 @@
 import { Model } from "applesauce-core";
 import { AddressPointerWithoutD } from "applesauce-core/helpers";
-import { kinds, NostrEvent } from "nostr-tools";
+import { NostrEvent } from "nostr-tools";
 import { defer, EMPTY, ignoreElements, mergeWith } from "rxjs";
 
 import { eventStore } from "../services/event-store";

@@ -1,10 +1,10 @@
 import { bytesToHex, hexToBytes } from "@noble/hashes/utils";
 import { generateSecretKey } from "nostr-tools";
+import { type SerializedAccount } from "applesauce-accounts";
 
+import { type RelayAuthMode } from "./authentication-signer";
 import { PreferenceSubject } from "../classes/preference-subject";
 import { DEFAULT_LOOKUP_RELAYS, DEFAULT_SIGNAL_RELAYS } from "../const";
-import { type RelayAuthMode } from "./authentication-signer";
-import { SerializedAccount } from "applesauce-accounts";
 
 // Accounts
 const accounts = await PreferenceSubject.array<SerializedAccount<any, any>>("accounts", []);
@@ -59,7 +59,7 @@ const updateSocialGraphInterval = await PreferenceSubject.number("update-social-
 const lastUpdatedSocialGraph = await PreferenceSubject.number("last-updated-social-graph", 0);
 
 // Cache Relay
-const cacheRelayURL = await PreferenceSubject.string("cache-relay-url", "");
+const eventCache = await PreferenceSubject.stringNullable("cache-relay-url", "nostr-idb");
 
 // Content Policies
 const hideEventsOutsideSocialGraph = await PreferenceSubject.numberNullable("hide-events-outside-social-graph", null);
@@ -110,7 +110,7 @@ const localSettings = {
   proactivelyAuthenticate,
   relayAuthenticationMode,
   enableDebugApi,
-  cacheRelayURL,
+  eventCache,
   alwaysAuthUpload,
 
   // Social Graph

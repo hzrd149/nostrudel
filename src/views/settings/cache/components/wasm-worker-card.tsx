@@ -1,32 +1,27 @@
-import { useState } from "react";
 import { Button, Card, CardBody, CardFooter, CardHeader, Heading, Link, Text } from "@chakra-ui/react";
+import { useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
 
-import WasmRelay from "../../../../services/wasm-relay";
+import { useObservableEagerState } from "applesauce-react/hooks";
+import { eventCache$, changeEventCache } from "../../../../services/event-cache";
 import EnableWithDelete from "./enable-with-delete";
-import useCacheRelay from "../../../../hooks/use-cache-relay";
-import { setCacheRelayURL } from "../../../../services/cache-relay";
+import useAsyncAction from "../../../../hooks/use-async-action";
 
-export default function WasmRelayCard() {
-  const cacheRelay = useCacheRelay();
-  const enabled = cacheRelay instanceof WasmRelay;
-  const [enabling, setEnabling] = useState(false);
-  const enable = async () => {
-    try {
-      setEnabling(true);
-      await setCacheRelayURL("nostr-idb://wasm-worker");
-    } catch (error) {}
-    setEnabling(false);
-  };
+export default function WasmWorkerCard() {
+  const eventCache = useObservableEagerState(eventCache$);
+  const enabled = eventCache?.type === "wasm-worker";
+  const enable = useAsyncAction(async () => {
+    await changeEventCache("wasm-worker");
+  });
 
-  const wipe = async () => {
-    if (cacheRelay instanceof WasmRelay) {
-      await cacheRelay.wipe();
+  const clear = async () => {
+    if (eventCache?.type === "wasm-worker") {
+      await eventCache.clear?.();
     } else {
       // import and delete database
       console.log("Importing worker to wipe database");
-      const { default: worker } = await import("../../../../services/wasm-relay/worker");
-      await worker.wipe();
+      const { default: worker } = await import("../../../../services/event-cache/wasm-worker");
+      await worker.clear?.();
     }
   };
 
@@ -34,7 +29,14 @@ export default function WasmRelayCard() {
     <Card borderColor={enabled ? "primary.500" : undefined} variant="outline">
       <CardHeader p="4" display="flex" gap="2" alignItems="center">
         <Heading size="md">Internal SQLite Cache</Heading>
-        <EnableWithDelete size="sm" ml="auto" enable={enable} enabled={enabled} wipe={wipe} isLoading={enabling} />
+        <EnableWithDelete
+          size="sm"
+          ml="auto"
+          enable={enable.run}
+          enabled={enabled}
+          wipe={clear}
+          isLoading={enable.loading}
+        />
       </CardHeader>
       <CardBody p="4" pt="0">
         <Text mb="2">

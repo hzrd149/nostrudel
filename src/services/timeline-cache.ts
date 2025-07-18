@@ -3,7 +3,7 @@ import { TimelessFilter } from "applesauce-loaders";
 import { createTimelineLoader, TimelineLoader } from "applesauce-loaders/loaders";
 
 import { logger } from "../helpers/debug";
-import { cacheRequest } from "./cache-relay";
+import { cacheRequest } from "./event-cache";
 import { eventStore } from "./event-store";
 import pool from "./pool";
 

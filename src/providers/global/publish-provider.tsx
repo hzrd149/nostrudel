@@ -10,7 +10,7 @@ import { BehaviorSubject, map, Observable, share } from "rxjs";
 import { scanToArray } from "../../helpers/observable";
 import { useWriteRelays } from "../../hooks/use-client-relays";
 import { useUserOutbox } from "../../hooks/use-user-mailboxes";
-import { getCacheRelay } from "../../services/cache-relay";
+import { writeEvent } from "../../services/event-cache";
 import { eventStore } from "../../services/event-store";
 import pool from "../../services/pool";
 
@@ -133,9 +133,7 @@ export default function PublishProvider({ children }: PropsWithChildren) {
 
         setLog((arr) => arr.concat(entry));
 
-        // send it to the local relay
-        const cacheRelay = getCacheRelay();
-        if (cacheRelay) cacheRelay.publish(signed);
+        await writeEvent(signed);
 
         // add it to the event store
         eventStore.add(signed);

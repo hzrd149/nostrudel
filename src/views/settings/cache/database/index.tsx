@@ -3,15 +3,15 @@ import { Link, Text } from "@chakra-ui/react";
 import { CacheRelay } from "nostr-idb";
 import { Link as RouterLink } from "react-router-dom";
 
-import WasmRelay from "../../../../services/wasm-relay";
 import SimpleView from "../../../../components/layout/presets/simple-view";
-import useCacheRelay from "../../../../hooks/use-cache-relay";
+import { useObservableEagerState } from "applesauce-react/hooks";
+import { eventCache$ } from "../../../../services/event-cache";
 
 const WasmDatabasePage = lazy(() => import("./wasm"));
 const InternalDatabasePage = lazy(() => import("./internal"));
 
 export default function DatabaseView() {
-  const cacheRelay = useCacheRelay();
+  const eventCache = useObservableEagerState(eventCache$);
 
   let content = (
     <Text>
@@ -22,8 +22,8 @@ export default function DatabaseView() {
     </Text>
   );
 
-  if (cacheRelay instanceof WasmRelay) content = <WasmDatabasePage />;
-  else if (cacheRelay instanceof CacheRelay) content = <InternalDatabasePage />;
+  if (eventCache?.type === "wasm-worker") content = <WasmDatabasePage />;
+  else if (eventCache?.type === "nostr-idb") content = <InternalDatabasePage />;
 
   return <SimpleView title="Event Cache">{content}</SimpleView>;
 }

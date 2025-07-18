@@ -22,14 +22,14 @@ import { useLocation, useSearchParams } from "react-router-dom";
 import { useLocalStorage } from "react-use";
 import { Subscription } from "rxjs";
 
+import { onlyEvents } from "applesauce-relay";
 import { DownloadIcon, ShareIcon } from "../../../components/icons";
 import ClockRewind from "../../../components/icons/clock-rewind";
 import HelpCircle from "../../../components/icons/help-circle";
 import Play from "../../../components/icons/play";
 import SimpleView from "../../../components/layout/presets/simple-view";
 import { RelayUrlInput } from "../../../components/relay-url-input";
-import useCacheRelay from "../../../hooks/use-cache-relay";
-import { cacheRequest } from "../../../services/cache-relay";
+import { getEvents } from "../../../services/event-cache";
 import { eventStore } from "../../../services/event-store";
 import pool from "../../../services/pool";
 import EventRow from "./event-row";
@@ -37,7 +37,6 @@ import FilterEditor from "./filter-editor";
 import HelpModal from "./help-modal";
 import HistoryDrawer from "./history-drawer";
 import { processFilter } from "./process";
-import { onlyEvents } from "applesauce-relay";
 
 const EventTimeline = memo(({ events }: { events: NostrEvent[] }) => {
   return (
@@ -50,7 +49,6 @@ const EventTimeline = memo(({ events }: { events: NostrEvent[] }) => {
 });
 
 export default function EventConsoleView() {
-  const cacheRelay = useCacheRelay();
   const [params, setParams] = useSearchParams();
   const location = useLocation();
   const historyDrawer = useDisclosure();
@@ -112,15 +110,14 @@ export default function EventConsoleView() {
         setSub(sub);
       } else {
         // query cache relay
-        if (!cacheRelay) throw new Error("Local relay disabled");
-        const sub = cacheRequest([filter]).subscribe(handleEvent);
+        const sub = getEvents([filter]).subscribe(handleEvent);
         setSub(sub);
       }
     } catch (e) {
       if (e instanceof Error) setError(e.message);
     }
     setLoading(false);
-  }, [queryRelay.isOpen, query, relay, relay, sub, cacheRelay]);
+  }, [queryRelay.isOpen, query, relay, relay, sub]);
 
   const submitRef = useRef(loadEvents);
   submitRef.current = loadEvents;

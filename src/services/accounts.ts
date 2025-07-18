@@ -55,7 +55,7 @@ const lastAccount = lastPubkey && accounts.getAccountForPubkey(lastPubkey);
 if (lastAccount) accounts.setActive(lastAccount);
 
 // save last active
-accounts.active$.subscribe((account) => {
+accounts.active$.pipe(skip(1)).subscribe((account) => {
   if (localSettings.activeAccount.value === (account?.id ?? null)) return;
 
   if (account) localSettings.activeAccount.next(account.pubkey);

@@ -1,24 +1,20 @@
-import { useState } from "react";
-import { useAsync } from "react-use";
 import { Button, Card, CardBody, CardHeader, Heading, Link, Text } from "@chakra-ui/react";
+import { useObservableEagerState } from "applesauce-react/hooks";
+import { useAsync } from "react-use";
 
-import { NOSTR_RELAY_TRAY_URL, checkNostrRelayTray, setCacheRelayURL } from "../../../../services/cache-relay";
-import useCacheRelay from "../../../../hooks/use-cache-relay";
+import useAsyncAction from "../../../../hooks/use-async-action";
+import { changeEventCache, eventCache$ } from "../../../../services/event-cache";
+import { checkLocalRelay } from "../../../../services/local-relay";
 
 export default function CitrineRelayCard() {
-  const { value: available, loading: checking } = useAsync(checkNostrRelayTray);
+  const { value: available, loading: checking } = useAsync(checkLocalRelay);
 
-  const cacheRelay = useCacheRelay();
-  const enabled = cacheRelay?.url.startsWith(NOSTR_RELAY_TRAY_URL);
+  const eventCache = useObservableEagerState(eventCache$);
+  const enabled = eventCache?.type === "local-relay";
 
-  const [enabling, setEnabling] = useState(false);
-  const enable = async () => {
-    try {
-      setEnabling(true);
-      await setCacheRelayURL(NOSTR_RELAY_TRAY_URL);
-    } catch (error) {}
-    setEnabling(false);
-  };
+  const enable = useAsyncAction(async () => {
+    await changeEventCache("local-relay");
+  });
 
   return (
     <Card borderColor={enabled ? "primary.500" : undefined} variant="outline">
@@ -32,8 +28,8 @@ export default function CitrineRelayCard() {
             size="sm"
             colorScheme="primary"
             ml="auto"
-            isLoading={checking || enabling}
-            onClick={enable}
+            isLoading={checking || enable.loading}
+            onClick={enable.run}
             isDisabled={enabled}
           >
             {enabled ? "Enabled" : "Enable"}

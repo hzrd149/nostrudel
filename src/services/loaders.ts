@@ -8,7 +8,7 @@ import {
   createZapsLoader,
 } from "applesauce-loaders/loaders";
 import { kinds } from "nostr-tools";
-import { cacheRequest } from "./cache-relay";
+import { cacheRequest } from "./event-cache";
 import { eventStore } from "./event-store";
 import localSettings from "./preferences";
 import pool from "./pool";
