@@ -92,7 +92,7 @@ function ArticlePage({ article }: { article: NostrEvent }) {
             <NoteReactions event={article} size="sm" variant="ghost" aria-label="React to article" />
           </Flex>
 
-          <ArticleReader markdown={article.content} mt="2" />
+          {"speechSynthesis" in window && <ArticleReader markdown={article.content} mt="2" />}
 
           <Box fontSize="lg" as="div" className="article-content">
             <MarkdownContent event={article} />

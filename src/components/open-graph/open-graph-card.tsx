@@ -1,6 +1,7 @@
-import { Box, Card, CardBody, CardProps, Heading, Image, Link, LinkBox, LinkOverlay, Text } from "@chakra-ui/react";
+import { Box, Card, CardBody, CardProps, Heading, Link, LinkBox, LinkOverlay, Text } from "@chakra-ui/react";
 import useOpenGraphData from "../../hooks/use-open-graph-data";
 import { useBreakpointValue } from "../../providers/global/breakpoint-provider";
+import { TrustImage } from "../content/links";
 
 export default function OpenGraphCard({ url, ...props }: { url: URL } & Omit<CardProps, "children">) {
   const { value: data } = useOpenGraphData(url);
@@ -26,7 +27,7 @@ export default function OpenGraphCard({ url, ...props }: { url: URL } & Omit<Car
         flexDirection={{ base: "column", md: "row" }}
       >
         {data.ogImage?.length === 1 && (
-          <Image
+          <TrustImage
             key={data.ogImage[0].url}
             src={new URL(data.ogImage[0].url, url).toString()}
             borderRadius="md"

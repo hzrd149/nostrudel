@@ -1,5 +1,5 @@
 import { AccountManager } from "applesauce-accounts";
-import { AmberClipboardAccount, registerCommonAccountTypes } from "applesauce-accounts/accounts";
+import { AmberClipboardAccount, PasswordAccount, registerCommonAccountTypes } from "applesauce-accounts/accounts";
 import { NostrConnectSigner } from "applesauce-signers";
 import { skip } from "rxjs";
 
@@ -18,6 +18,13 @@ const log = logger.extend("Accounts");
 const accounts = new AccountManager();
 registerCommonAccountTypes(accounts);
 accounts.registerType(AmberClipboardAccount);
+
+// Setup password unlock prompt
+PasswordAccount.requestUnlockPassword = async (account: PasswordAccount<any>) => {
+  const password = window.prompt("Account unlock password");
+  if (!password) throw new Error("Password required");
+  return password;
+};
 
 // add android signer if native
 if (CAP_IS_NATIVE) accounts.registerType(AndroidSignerAccount);
