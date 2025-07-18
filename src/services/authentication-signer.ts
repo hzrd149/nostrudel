@@ -7,7 +7,7 @@ import * as Nostr from "nostr-typedef";
 
 import accounts from "./accounts";
 import { logger } from "../helpers/debug";
-import localSettings from "./local-settings";
+import localSettings from "./preferences";
 import { ConnectionState } from "./pool";
 
 export type RelayAuthMode = "always" | "ask" | "never";

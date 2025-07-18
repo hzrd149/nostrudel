@@ -4,7 +4,7 @@ import { useObservableEagerState, useObservableState } from "applesauce-react/ho
 import SimpleView from "../../../components/layout/presets/simple-view";
 import RelayAuthCard from "../../../components/relays/relay-auth-card";
 import DefaultAuthModeSelect from "../../../components/settings/default-auth-mode-select";
-import localSettings from "../../../services/local-settings";
+import localSettings from "../../../services/preferences";
 import { connections$ } from "../../../services/pool";
 
 export default function AuthenticationSettingsView() {

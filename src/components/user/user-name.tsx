@@ -5,7 +5,7 @@ import { memo } from "react";
 import { getDisplayName } from "../../helpers/nostr/profile";
 import useAppSettings from "../../hooks/use-user-app-settings";
 import useUserProfile from "../../hooks/use-user-profile";
-import localSettings from "../../services/local-settings";
+import localSettings from "../../services/preferences";
 
 function UserName({ pubkey, ...props }: Omit<TextProps, "children"> & { pubkey: string }) {
   const metadata = useUserProfile(pubkey);

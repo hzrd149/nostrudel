@@ -6,7 +6,7 @@ import { Link as RouterLink } from "react-router-dom";
 import { getDisplayName } from "../../helpers/nostr/profile";
 import useAppSettings from "../../hooks/use-user-app-settings";
 import useUserProfile from "../../hooks/use-user-profile";
-import localSettings from "../../services/local-settings";
+import localSettings from "../../services/preferences";
 
 export type UserLinkProps = LinkProps & {
   pubkey: string;

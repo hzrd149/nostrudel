@@ -10,7 +10,7 @@ import {
 import { kinds } from "nostr-tools";
 import { cacheRequest } from "./cache-relay";
 import { eventStore } from "./event-store";
-import localSettings from "./local-settings";
+import localSettings from "./preferences";
 import pool from "./pool";
 
 /** Loader for replaceable events based on coordinate */

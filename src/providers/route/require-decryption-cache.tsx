@@ -31,7 +31,7 @@ import { firstValueFrom } from "rxjs";
 import EncryptedStorage from "../../classes/encrypted-storage";
 import useAsyncAction from "../../hooks/use-async-action";
 import { decryptionCache$, decryptionCacheStats$ } from "../../services/decryption-cache";
-import localSettings from "../../services/local-settings";
+import localSettings from "../../services/preferences";
 import useForceUpdate from "../../hooks/use-force-update";
 
 export default function RequireDecryptionCache({ children }: { children: JSX.Element }) {

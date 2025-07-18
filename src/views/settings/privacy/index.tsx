@@ -16,7 +16,7 @@ import { useObservable, useObservableEagerState } from "applesauce-react/hooks";
 import { safeUrl } from "../../../helpers/parse";
 import { createRequestProxyUrl } from "../../../helpers/request";
 import useSettingsForm from "../use-settings-form";
-import localSettings from "../../../services/local-settings";
+import localSettings from "../../../services/preferences";
 import DefaultAuthModeSelect from "../../../components/settings/default-auth-mode-select";
 import SimpleView from "../../../components/layout/presets/simple-view";
 import { DEFAULT_SHARE_SERVICE } from "../../../const";

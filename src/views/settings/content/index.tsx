@@ -17,7 +17,7 @@ import { useId, useMemo } from "react";
 import SimpleView from "../../../components/layout/presets/simple-view";
 import { humanReadableSats } from "../../../helpers/lightning";
 import { useAppTitle } from "../../../hooks/use-app-title";
-import localSettings from "../../../services/local-settings";
+import localSettings from "../../../services/preferences";
 import { socialGraph$ } from "../../../services/social-graph";
 
 function SocialGraphSlider({

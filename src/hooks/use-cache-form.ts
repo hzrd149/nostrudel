@@ -4,6 +4,9 @@ import { useBeforeUnload } from "react-router-dom";
 
 import { logger } from "../helpers/debug";
 
+// TODO: Use localforage to cache forms so blobs are supported
+// const storage = localforage.createInstance({ name: "cached-forms" });
+
 export default function useCacheForm<TFieldValues extends FieldValues = FieldValues>(
   key: string | null,
   getValues: UseFormGetValues<TFieldValues>,

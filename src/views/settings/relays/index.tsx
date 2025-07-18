@@ -12,7 +12,7 @@ import useUserContactRelays from "../../../hooks/use-user-contact-relays";
 import { useUserDNSIdentity } from "../../../hooks/use-user-dns-identity";
 import useUserMailboxes from "../../../hooks/use-user-mailboxes";
 import { addAppRelay, RelayMode, removeAppRelay, toggleAppRelay } from "../../../services/app-relays";
-import localSettings from "../../../services/local-settings";
+import localSettings from "../../../services/preferences";
 import AddRelayForm from "./add-relay-form";
 import RelayControl from "./relay-control";
 

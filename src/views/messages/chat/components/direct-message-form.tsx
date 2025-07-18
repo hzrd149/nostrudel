@@ -41,7 +41,7 @@ import { useUserInbox } from "../../../../hooks/use-user-mailboxes";
 import { GroupMessageInboxes } from "../../../../models/messages";
 import { PublishLogEntry, usePublishEvent } from "../../../../providers/global/publish-provider";
 import { eventStore } from "../../../../services/event-store";
-import localSettings from "../../../../services/local-settings";
+import localSettings from "../../../../services/preferences";
 import ExpirationToggleButton from "../../components/expiration-toggle-button";
 import SendingStatus from "../../components/sending-status";
 

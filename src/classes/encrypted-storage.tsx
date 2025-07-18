@@ -1,29 +1,15 @@
+import { cbc } from "@noble/ciphers/aes";
 import { pbkdf2 } from "@noble/hashes/pbkdf2";
 import { sha256 } from "@noble/hashes/sha2";
-import { cbc } from "@noble/ciphers/aes";
-import { hexToBytes, utf8ToBytes, bytesToUtf8, bytesToHex } from "@noble/hashes/utils";
+import { bytesToUtf8, utf8ToBytes } from "@noble/hashes/utils";
 import "localforage";
 
-const SALT_KEY = "encryption_salt";
-let SALT: Uint8Array;
-// Try to get existing salt from localStorage
-const storedSalt = localStorage.getItem(SALT_KEY);
-
-if (storedSalt) {
-  // Use existing salt
-  SALT = hexToBytes(storedSalt);
-} else {
-  // Generate new random salt (48 bytes for good entropy)
-  SALT = crypto.getRandomValues(new Uint8Array(48));
-
-  // Store the salt in localStorage for future use
-  localStorage.setItem(SALT_KEY, bytesToHex(SALT));
-}
+import localSettings from "../services/preferences";
 
 // Encryption utility class
 export default class SecureStorage {
   private key: Uint8Array | null = null;
-  private salt = SALT;
+  private salt = localSettings.encryptionSalt.value;
 
   get unlocked() {
     return this.key !== null;

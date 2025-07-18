@@ -23,7 +23,7 @@ import useAppSettings from "../../../hooks/use-user-app-settings";
 import { useBreakpointValue } from "../../../providers/global/breakpoint-provider";
 import { ExpandProvider } from "../../../providers/local/expanded";
 import { ContentSettingsProvider } from "../../../providers/local/content-settings";
-import localSettings from "../../../services/local-settings";
+import localSettings from "../../../services/preferences";
 import { getSharableEventAddress } from "../../../services/relay-hints";
 import ReplyForm from "../../../views/thread/components/reply-form";
 import HoverLinkOverlay from "../../hover-link-overlay";

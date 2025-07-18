@@ -34,7 +34,7 @@ import { useUserInbox } from "../../hooks/use-user-mailboxes";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import RequireDecryptionCache from "../../providers/route/require-decryption-cache";
 import { legacyMessageSubscription, wrappedMessageSubscription } from "../../services/lifecycle";
-import localSettings from "../../services/local-settings";
+import localSettings from "../../services/preferences";
 import { DirectMessageRelays } from "../../models/messages";
 import ReadAuthRequiredAlert from "./components/read-auth-required-alert";
 

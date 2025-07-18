@@ -25,7 +25,7 @@ import accounts from "./accounts";
 import authenticationSigner from "./authentication-signer";
 import { eventStore } from "./event-store";
 import { addressLoader } from "./loaders";
-import localSettings from "./local-settings";
+import localSettings from "./preferences";
 import pool from "./pool";
 
 const addressable = (account: IAccount, relays: Iterable<string>, kind: number, d?: string) => {

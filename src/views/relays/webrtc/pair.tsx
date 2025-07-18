@@ -31,7 +31,7 @@ import UserName from "../../../components/user/user-name";
 import useForceUpdate from "../../../hooks/use-force-update";
 import useUserProfile from "../../../hooks/use-user-profile";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
-import localSettings from "../../../services/local-settings";
+import localSettings from "../../../services/preferences";
 import webRtcRelaysService from "../../../services/webrtc-relays";
 
 function NameForm() {

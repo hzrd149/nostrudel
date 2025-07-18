@@ -1,5 +1,5 @@
 import { NostrEvent } from "nostr-social-graph";
-import localSettings from "./local-settings";
+import localSettings from "./preferences";
 import { socialGraph$ } from "./social-graph";
 
 /** Checks if an event should be hidden based on the social graph distance */

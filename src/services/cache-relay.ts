@@ -7,7 +7,7 @@ import dayjs from "dayjs";
 
 import { logger } from "../helpers/debug";
 import WasmRelay from "./wasm-relay";
-import localSettings from "./local-settings";
+import localSettings from "./preferences";
 import { eventStore } from "./event-store";
 
 export const NOSTR_RELAY_TRAY_URL = "ws://localhost:4869/";

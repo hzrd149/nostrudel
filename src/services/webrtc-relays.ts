@@ -8,7 +8,7 @@ import WebRtcRelayClient from "../classes/webrtc/webrtc-relay-client";
 import WebRtcRelayServer from "../classes/webrtc/webrtc-relay-server";
 import NostrWebRTCPeer from "../classes/webrtc/nostr-webrtc-peer";
 import verifyEventMethod from "./verify-event";
-import localSettings from "./local-settings";
+import localSettings from "./preferences";
 import { DEFAULT_ICE_SERVERS } from "../const";
 
 class WebRtcRelaysService {

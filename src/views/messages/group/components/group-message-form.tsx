@@ -32,7 +32,7 @@ import useTextAreaUploadFile, { useTextAreaInsertTextWithForm } from "../../../.
 import { GroupMessageInboxes } from "../../../../models/messages";
 import { PublishLogEntry, usePublishEvent } from "../../../../providers/global/publish-provider";
 import { eventStore } from "../../../../services/event-store";
-import localSettings from "../../../../services/local-settings";
+import localSettings from "../../../../services/preferences";
 import ExpirationToggleButton from "../../components/expiration-toggle-button";
 import { lastValueFrom, toArray } from "rxjs";
 import SendingStatus from "../../components/sending-status";

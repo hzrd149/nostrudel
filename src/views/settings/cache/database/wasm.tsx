@@ -20,7 +20,7 @@ import { useCallback, useEffect, useState } from "react";
 import EventKindsPieChart from "../../../../components/charts/event-kinds-pie-chart";
 import EventKindsTable from "../../../../components/charts/event-kinds-table";
 import { cacheRelay$ } from "../../../../services/cache-relay";
-import localSettings from "../../../../services/local-settings";
+import localSettings from "../../../../services/preferences";
 import WasmRelay from "../../../../services/wasm-relay";
 import ExportEventsButton from "./components/export-events-button";
 import ImportEventsButton from "./components/import-events-button";

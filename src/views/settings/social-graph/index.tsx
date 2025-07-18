@@ -31,7 +31,7 @@ import { useAppTitle } from "../../../hooks/use-app-title";
 import useAsyncAction from "../../../hooks/use-async-action";
 import { useBreakpointValue } from "../../../providers/global/breakpoint-provider";
 import { updateSocialGraphCron } from "../../../services/cron";
-import localSettings from "../../../services/local-settings";
+import localSettings from "../../../services/preferences";
 import {
   clearSocialGraph,
   exportGraph,

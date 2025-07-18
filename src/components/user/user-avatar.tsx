@@ -14,7 +14,7 @@ import useAppSettings from "../../hooks/use-user-app-settings";
 import useUserMuteList from "../../hooks/use-user-mute-list";
 import useUserProfile from "../../hooks/use-user-profile";
 import UserDnsIdentityIcon from "./user-dns-identity-icon";
-import localSettings from "../../services/local-settings";
+import localSettings from "../../services/preferences";
 
 export const UserIdenticon = memo(({ pubkey }: { pubkey: string }) => {
   const { value: identicon } = useAsync(() => getIdenticon(pubkey), [pubkey]);

@@ -29,7 +29,7 @@ import { getThreadReferences, isReply, isRepost } from "../helpers/nostr/event";
 import { TORRENT_COMMENT_KIND } from "../helpers/nostr/torrents";
 import accounts from "./accounts";
 import { eventStore } from "./event-store";
-import localSettings from "./local-settings";
+import localSettings from "./preferences";
 import { MuteModel } from "applesauce-core/models";
 import { eventLoader } from "./loaders";
 

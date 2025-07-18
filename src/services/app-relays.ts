@@ -1,4 +1,4 @@
-import localSettings from "./local-settings";
+import localSettings from "./preferences";
 
 export enum RelayMode {
   NONE = 0,

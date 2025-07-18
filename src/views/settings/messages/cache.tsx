@@ -18,7 +18,7 @@ import { useCallback, useState } from "react";
 import { firstValueFrom } from "rxjs";
 
 import { decryptionCache$, decryptionCacheStats$ } from "../../../services/decryption-cache";
-import localSettings from "../../../services/local-settings";
+import localSettings from "../../../services/preferences";
 
 function formatBytes(bytes: number): string {
   if (bytes === 0) return "0 Bytes";

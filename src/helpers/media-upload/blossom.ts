@@ -1,6 +1,6 @@
 import { BlobDescriptor, createUploadAuth, ServerType, Signer } from "blossom-client-sdk";
 import { multiServerUpload, MultiServerUploadOptions } from "blossom-client-sdk/actions/multi-server";
-import localSettings from "../../services/local-settings";
+import localSettings from "../../services/preferences";
 
 export async function simpleMultiServerUpload<T extends ServerType = ServerType>(
   servers: T[],

@@ -15,7 +15,7 @@ import { useObservableEagerState } from "applesauce-react/hooks";
 import { Link as RouterLink } from "react-router-dom";
 
 import SimpleView from "../../../components/layout/presets/simple-view";
-import localSettings from "../../../services/local-settings";
+import localSettings from "../../../services/preferences";
 import useSettingsForm from "../use-settings-form";
 import { safeUrl } from "../../../helpers/parse";
 

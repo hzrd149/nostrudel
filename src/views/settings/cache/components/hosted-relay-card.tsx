@@ -1,7 +1,7 @@
 import { Button, Card, CardBody, CardHeader, Heading, Text } from "@chakra-ui/react";
 
 import useCacheRelay from "../../../../hooks/use-cache-relay";
-import localSettings from "../../../../services/local-settings";
+import localSettings from "../../../../services/preferences";
 
 export default function HostedRelayCard() {
   const cacheRelay = useCacheRelay();

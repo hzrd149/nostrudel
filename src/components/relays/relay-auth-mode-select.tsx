@@ -2,7 +2,7 @@ import { Select, SelectProps } from "@chakra-ui/react";
 import { useObservableEagerState } from "applesauce-react/hooks";
 
 import { RelayAuthMode } from "../../services/authentication-signer";
-import localSettings from "../../services/local-settings";
+import localSettings from "../../services/preferences";
 
 export function setRelayAuthMode(relay: string, mode: RelayAuthMode | null) {
   const modes = localSettings.relayAuthenticationMode.value;

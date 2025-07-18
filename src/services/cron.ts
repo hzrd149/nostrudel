@@ -2,7 +2,7 @@ import { Debugger } from "debug";
 import { BehaviorSubject, filter, identity, interval, Observable, startWith, Subscription } from "rxjs";
 
 import { logger } from "../helpers/debug";
-import localSettings from "./local-settings";
+import localSettings from "./preferences";
 import { socialGraph$, updateSocialGraph } from "./social-graph";
 
 export class CronTask {

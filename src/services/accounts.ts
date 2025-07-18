@@ -1,13 +1,14 @@
-import { AccountManager } from "applesauce-accounts";
+import { AccountManager, SerializedAccount } from "applesauce-accounts";
 import { AmberClipboardAccount, PasswordAccount, registerCommonAccountTypes } from "applesauce-accounts/accounts";
 import { NostrConnectSigner } from "applesauce-signers";
 import { skip } from "rxjs";
 
-import db from "./database";
-import { CAP_IS_NATIVE } from "../env";
-import { logger } from "../helpers/debug";
 import AndroidSignerAccount from "../classes/accounts/android-signer-account";
+import { CAP_IS_NATIVE } from "../env";
 import { nostrConnectPublish, nostrConnectSubscription } from "../helpers/applesauce";
+import { logger } from "../helpers/debug";
+import db from "./database";
+import localSettings from "./preferences";
 
 // Setup nostr connect signer
 NostrConnectSigner.subscriptionMethod = nostrConnectSubscription;
@@ -29,31 +30,36 @@ PasswordAccount.requestUnlockPassword = async (account: PasswordAccount<any>) =>
 // add android signer if native
 if (CAP_IS_NATIVE) accounts.registerType(AndroidSignerAccount);
 
+// TEMP: Migrate accounts from local storage to preferences
+const legacyAccounts = (await db.getAll("accounts")) as SerializedAccount<any, any>[];
+if (legacyAccounts.length) {
+  log("Migrating accounts...");
+  await localSettings.accounts.next(legacyAccounts);
+  await db.clear("accounts");
+  log("Migrated", legacyAccounts.length, "accounts to preferences");
+}
+
 // load all accounts
 log("Loading accounts...");
-accounts.fromJSON(await db.getAll("accounts"), true);
+accounts.fromJSON(localSettings.accounts.value, true);
 
 // save accounts to database when they change
 accounts.accounts$.pipe(skip(1)).subscribe(async () => {
   const json = accounts.toJSON();
-  for (const account of json) await db.put("accounts", account);
-
-  // remove old accounts
-  const existing = await db.getAll("accounts");
-  for (const { id } of existing) {
-    if (!accounts.getAccount(id)) await db.delete("accounts", id);
-  }
+  await localSettings.accounts.next(json);
 });
 
 // load last active account
-const lastPubkey = localStorage.getItem("active-account");
+const lastPubkey = localSettings.activeAccount.value;
 const lastAccount = lastPubkey && accounts.getAccountForPubkey(lastPubkey);
 if (lastAccount) accounts.setActive(lastAccount);
 
-// save last active to localstorage
-accounts.active$.pipe(skip(1)).subscribe((account) => {
-  if (account) localStorage.setItem("active-account", account.pubkey);
-  else localStorage.removeItem("active-account");
+// save last active
+accounts.active$.subscribe((account) => {
+  if (localSettings.activeAccount.value === (account?.id ?? null)) return;
+
+  if (account) localSettings.activeAccount.next(account.pubkey);
+  else localSettings.activeAccount.clear();
 });
 
 if (import.meta.env.DEV) {

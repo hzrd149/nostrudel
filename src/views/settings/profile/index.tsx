@@ -15,7 +15,7 @@ import useUploadFile from "../../../hooks/use-upload-file";
 import useUserProfile from "../../../hooks/use-user-profile";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
 import { profileLoader } from "../../../services/loaders";
-import localSettings from "../../../services/local-settings";
+import localSettings from "../../../services/preferences";
 import ProfileEditForm from "./components/profile-edit-form";
 import ProfilePreview from "./components/profile-preview";
 import { eventStore } from "../../../services/event-store";

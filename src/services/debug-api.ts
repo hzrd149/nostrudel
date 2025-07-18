@@ -9,7 +9,7 @@ import {
   userSetsLoader,
   zapsLoader,
 } from "./loaders";
-import localSettings from "./local-settings";
+import localSettings from "./preferences";
 import pool from "./pool";
 import readStatusService from "./read-status";
 import relayInfoService from "./relay-info";
@@ -41,7 +41,7 @@ const noStrudel = {
   readStatusService,
   relayInfoService,
   timelineCacheService,
-  localSettings,
+  localSettings: localSettings,
 };
 
 localSettings.enableDebugApi.subscribe((enabled) => {

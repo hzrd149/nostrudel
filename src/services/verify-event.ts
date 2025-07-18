@@ -4,7 +4,7 @@ import { fakeVerifyEvent } from "applesauce-core/helpers/event";
 import { distinctUntilChanged } from "rxjs";
 
 import { logger } from "../helpers/debug";
-import localSettings from "./local-settings";
+import localSettings from "./preferences";
 
 const log = logger.extend("VerifyEvent");
 let verifyEventMethod: typeof internalVerifyEvent;

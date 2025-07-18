@@ -9,7 +9,7 @@ import QRCodeScannerButton from "../../../components/qr-code/qr-code-scanner-but
 import UserAvatar from "../../../components/user/user-avatar";
 import UserName from "../../../components/user/user-name";
 import useForceUpdate from "../../../hooks/use-force-update";
-import localSettings from "../../../services/local-settings";
+import localSettings from "../../../services/preferences";
 import webRtcRelaysService from "../../../services/webrtc-relays";
 
 export default function WebRtcConnectView() {

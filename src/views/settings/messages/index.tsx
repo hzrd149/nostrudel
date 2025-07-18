@@ -2,7 +2,7 @@ import { Flex, FormControl, FormHelperText, FormLabel, Select, Switch } from "@c
 import { useObservableEagerState } from "applesauce-react/hooks";
 
 import SimpleView from "../../../components/layout/presets/simple-view";
-import localSettings from "../../../services/local-settings";
+import localSettings from "../../../services/preferences";
 import MessageCacheSection from "./cache";
 import DirectMessageRelaysSection from "./relays";
 

@@ -23,7 +23,7 @@ import EventKindsPieChart from "../../../../components/charts/event-kinds-pie-ch
 import EventKindsTable from "../../../../components/charts/event-kinds-table";
 import { localDatabase } from "../../../../services/cache-relay";
 import { clearCacheData, deleteDatabase } from "../../../../services/database";
-import localSettings from "../../../../services/local-settings";
+import localSettings from "../../../../services/preferences";
 import ExportEventsButton from "./components/export-events-button";
 import ImportEventsButton from "./components/import-events-button";
 

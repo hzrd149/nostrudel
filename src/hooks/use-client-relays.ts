@@ -1,6 +1,6 @@
 import { useObservableEagerState } from "applesauce-react/hooks";
 import { unique } from "../helpers/array";
-import localSettings from "../services/local-settings";
+import localSettings from "../services/preferences";
 
 export function useReadRelays(additional?: Iterable<string>) {
   const relays = useObservableEagerState(localSettings.readRelays);

@@ -25,7 +25,7 @@ import {
 import EncryptedStorage from "../classes/encrypted-storage";
 import accounts from "./accounts";
 import { eventStore } from "./event-store";
-import localSettings from "./local-settings";
+import localSettings from "./preferences";
 
 export const decryptionCache$ = localSettings.enableDecryptionCache.pipe(
   switchMap((enable) => {
