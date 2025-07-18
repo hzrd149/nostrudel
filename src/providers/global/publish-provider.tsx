@@ -29,7 +29,8 @@ export class PublishLogEntry {
     public event: NostrEvent,
     public relays: string[],
   ) {
-    this.publish$ = pool.publish(relays, event).pipe(share());
+    // Build a custom publish observable so the responses can be streamed back to the UI
+    this.publish$ = pool.event(relays, event).pipe(share());
 
     // Save all results to an array
     this.publish$.pipe(scanToArray()).subscribe((r) => this.results$.next(r));

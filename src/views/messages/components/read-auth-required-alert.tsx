@@ -57,7 +57,7 @@ export default function ReadAuthRequiredAlert({ relays, ...props }: { relays: st
         authRequiredRelays.map(async (url) => {
           try {
             const relay = pool.relay(url);
-            const response = await lastValueFrom(relay.authenticate(account));
+            const response = await relay.authenticate(account);
             if (!response.ok) throw new Error(response.message);
           } catch (error) {
             if (error instanceof Error) {

@@ -1,13 +1,13 @@
-import { EventTemplate, getEventHash, nip19, NostrEvent, UnsignedEvent, verifyEvent } from "nostr-tools";
-import { Nip07Interface } from "applesauce-signers";
+import { ISigner } from "applesauce-signers";
 import { NostrSignerPlugin } from "nostr-signer-capacitor-plugin";
+import { EventTemplate, getEventHash, nip19, NostrEvent, UnsignedEvent, verifyEvent } from "nostr-tools";
 
 type Permission = {
   type: "string";
   kind?: number;
 };
 
-export default class AndroidNativeSigner implements Nip07Interface {
+export default class AndroidNativeSigner implements ISigner {
   packageName: string;
   connected = false;
 
@@ -17,12 +17,12 @@ export default class AndroidNativeSigner implements Nip07Interface {
   verifyEvent: typeof verifyEvent = verifyEvent;
 
   nip04: {
-    encrypt: (pubkey: string, plaintext: string) => Promise<string> | string;
-    decrypt: (pubkey: string, ciphertext: string) => Promise<string> | string;
+    encrypt: (pubkey: string, plaintext: string) => Promise<string>;
+    decrypt: (pubkey: string, ciphertext: string) => Promise<string>;
   };
   nip44: {
-    encrypt: (pubkey: string, plaintext: string) => Promise<string> | string;
-    decrypt: (pubkey: string, ciphertext: string) => Promise<string> | string;
+    encrypt: (pubkey: string, plaintext: string) => Promise<string>;
+    decrypt: (pubkey: string, ciphertext: string) => Promise<string>;
   };
 
   constructor(packageName: string) {

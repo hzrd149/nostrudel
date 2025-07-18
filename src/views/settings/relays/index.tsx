@@ -7,12 +7,7 @@ import { MouseEventHandler, useCallback, useMemo } from "react";
 import { useActiveAccount, useObservableEagerState } from "applesauce-react/hooks";
 import HoverLinkOverlay from "../../../components/hover-link-overlay";
 import SimpleView from "../../../components/layout/presets/simple-view";
-import {
-  DEFAULT_LOOKUP_RELAYS,
-  RECOMMENDED_JAPANESE_RELAYS,
-  RECOMMENDED_RELAYS,
-} from "../../../const";
-import { getRelaysFromExt } from "../../../helpers/nip07";
+import { DEFAULT_LOOKUP_RELAYS, RECOMMENDED_JAPANESE_RELAYS, RECOMMENDED_RELAYS } from "../../../const";
 import useUserContactRelays from "../../../hooks/use-user-contact-relays";
 import { useUserDNSIdentity } from "../../../hooks/use-user-dns-identity";
 import useUserMailboxes from "../../../hooks/use-user-mailboxes";
@@ -93,17 +88,6 @@ export default function AppRelaysView() {
         Set from
       </Heading>
       <Flex wrap="wrap" gap="2">
-        {window.nostr && (
-          <Button
-            onClick={async () => {
-              const { read, write } = await getRelaysFromExt();
-              localSettings.readRelays.next(Array.from(read));
-              localSettings.writeRelays.next(Array.from(write));
-            }}
-          >
-            Extension
-          </Button>
-        )}
         {mailboxes && (
           <Button
             onClick={() => {

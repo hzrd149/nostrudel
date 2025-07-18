@@ -92,15 +92,18 @@ export default function SendingStatus({ entries, onSkip }: { entries: PublishLog
     // Authenticate all relays in parallel
     await Promise.all(
       authRequiredRelays.map((url) =>
-        lastValueFrom(pool.relay(url).authenticate(account)).catch((error) => {
-          if (error instanceof Error) {
-            toast({
-              title: "Authentication failed",
-              description: error.message,
-              status: "error",
-            });
-          }
-        }),
+        pool
+          .relay(url)
+          .authenticate(account)
+          .catch((error) => {
+            if (error instanceof Error) {
+              toast({
+                title: "Authentication failed",
+                description: error.message,
+                status: "error",
+              });
+            }
+          }),
       ),
     );
   }, [authRequiredRelays, account]);
