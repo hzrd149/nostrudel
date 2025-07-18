@@ -11,9 +11,9 @@ const accounts = await PreferenceSubject.array<SerializedAccount<any, any>>("acc
 const activeAccount = await PreferenceSubject.stringNullable("active-account", null);
 
 // Relays
-const readRelays = await PreferenceSubject.array("read-relays", []);
-const writeRelays = await PreferenceSubject.array("write-relays", []);
-const lookupRelays = await PreferenceSubject.array("lookup-relays", DEFAULT_LOOKUP_RELAYS);
+const readRelays = await PreferenceSubject.array<string>("read-relays", []);
+const writeRelays = await PreferenceSubject.array<string>("write-relays", []);
+const lookupRelays = await PreferenceSubject.array<string>("lookup-relays", DEFAULT_LOOKUP_RELAYS);
 
 // Event cache
 const idbMaxEvents = await PreferenceSubject.number("nostr-idb-max-events", 10_000);
@@ -29,8 +29,11 @@ const webRtcLocalIdentity = await PreferenceSubject.create<Uint8Array>("nostr-we
   encode: (key) => bytesToHex(key),
   saveDefault: true,
 });
-const webRtcSignalingRelays = await PreferenceSubject.array("nostr-webrtc-signaling-relays", DEFAULT_SIGNAL_RELAYS);
-const webRtcRecentConnections = await PreferenceSubject.array("nostr-webrtc-recent-connections", []);
+const webRtcSignalingRelays = await PreferenceSubject.array<string>(
+  "nostr-webrtc-signaling-relays",
+  DEFAULT_SIGNAL_RELAYS,
+);
+const webRtcRecentConnections = await PreferenceSubject.array<string>("nostr-webrtc-recent-connections", []);
 
 // Posting
 const addClientTag = await PreferenceSubject.boolean("add-client-tag", false);
