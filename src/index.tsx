@@ -1,13 +1,15 @@
 import "./polyfill";
 
-import { CAP_IS_WEB, IS_SERVICE_WORKER_SUPPORTED } from "./env";
+import { CAP_IS_NATIVE, CAP_IS_WEB, IS_SERVICE_WORKER_SUPPORTED } from "./env";
 import { GlobalProviders } from "./providers/global";
 import { registerServiceWorker } from "./services/worker";
+import { logger } from "./helpers/debug";
+import { URLOpenListenerEvent, App as CapacitorApp } from "@capacitor/app";
 
 import "./services/debug-api";
+import "./services/decryption-cache";
 import "./services/lifecycle";
 import "./services/username-search";
-import "./services/decryption-cache";
 
 // setup bitcoin connect
 import { init, onConnected } from "@getalby/bitcoin-connect-react";
@@ -32,6 +34,10 @@ import relativeTimePlugin from "dayjs/plugin/relativeTime";
 dayjs.extend(relativeTimePlugin);
 dayjs.extend(localizedFormat);
 
+// Import react components
+import { createRoot } from "react-dom/client";
+import { App, router } from "./app";
+
 // register nostr: protocol handler
 if (import.meta.env.PROD && CAP_IS_WEB) {
   try {
@@ -41,10 +47,14 @@ if (import.meta.env.PROD && CAP_IS_WEB) {
   }
 }
 
-// mount react app
-import { createRoot } from "react-dom/client";
-import { App } from "./app";
-import { logger } from "./helpers/debug";
+// Handle native nostr: links
+if (CAP_IS_NATIVE) {
+  CapacitorApp.addListener("appUrlOpen", (event: URLOpenListenerEvent) => {
+    if (event.url.startsWith("nostr:")) {
+      router.navigate("/l/" + event.url.replace(/^nostr:/, ""));
+    }
+  });
+}
 
 logger("Rendering app");
 const root = document.getElementById("root")!;

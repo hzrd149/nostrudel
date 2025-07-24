@@ -15,6 +15,15 @@ const config: CapacitorConfig = {
     CapacitorHttp: {
       enabled: true,
     },
+    CapacitorSQLite: {
+      iosDatabaseLocation: "Library/noStrudel",
+      iosIsEncryption: false,
+      androidIsEncryption: false,
+      electronIsEncryption: false,
+      electronWindowsLocation: "C:\\ProgramData\\noStrudel",
+      electronMacLocation: "/Volumes/Development_Lacie/Development/noStrudel",
+      electronLinuxLocation: "noStrudel",
+    },
   },
 };
 

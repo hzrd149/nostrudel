@@ -59,7 +59,7 @@ const updateSocialGraphInterval = await PreferenceSubject.number("update-social-
 const lastUpdatedSocialGraph = await PreferenceSubject.number("last-updated-social-graph", 0);
 
 // Cache Relay
-const eventCache = await PreferenceSubject.stringNullable("cache-relay-url", "nostr-idb");
+const eventCache = await PreferenceSubject.stringNullable("event-cache", null);
 
 // Content Policies
 const hideEventsOutsideSocialGraph = await PreferenceSubject.numberNullable("hide-events-outside-social-graph", null);

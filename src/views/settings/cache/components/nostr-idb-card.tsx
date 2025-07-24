@@ -6,7 +6,7 @@ import useAsyncAction from "../../../../hooks/use-async-action";
 import { changeEventCache, eventCache$ } from "../../../../services/event-cache";
 import EnableWithDelete from "./enable-with-delete";
 
-export default function IndexeddbCard() {
+export default function NostrIdbCard() {
   const eventCache = useObservableEagerState(eventCache$);
   const enabled = eventCache?.type === "nostr-idb";
 

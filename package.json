@@ -19,6 +19,7 @@
     "cap-sync-version": "pnpm dlx capacitor-set-version . -v $(jq -r .version package.json) -b 1"
   },
   "dependencies": {
+    "@capacitor-community/sqlite": "^7.0.1",
     "@capacitor/share": "^7.0.1",
     "@cashu/cashu-ts": "^2.5.2",
     "@chakra-ui/anatomy": "^2.3.4",
@@ -37,8 +38,8 @@
     "@emoji-mart/react": "^1.1.1",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
-    "@getalby/bitcoin-connect": "^3.8.2",
-    "@getalby/bitcoin-connect-react": "^3.8.2",
+    "@getalby/bitcoin-connect": "^3.9.0",
+    "@getalby/bitcoin-connect-react": "^3.9.0",
     "@noble/ciphers": "^1.3.0",
     "@noble/curves": "^1.9.4",
     "@noble/hashes": "^1.8.0",
@@ -82,6 +83,7 @@
     "idb": "^8.0.3",
     "identicon.js": "^2.3.3",
     "iso-language-codes": "^2.0.0",
+    "jeep-sqlite": "^2.8.0",
     "json-schema": "^0.4.0",
     "json-stringify-deterministic": "^1.0.12",
     "leaflet": "^1.9.4",
@@ -94,7 +96,7 @@
     "ngeohash": "^0.6.3",
     "nostr-idb": "^2.4.0",
     "nostr-signer-capacitor-plugin": "^0.0.3",
-    "nostr-social-graph": "^1.0.25",
+    "nostr-social-graph": "^1.0.29",
     "nostr-tools": "~2.13.3",
     "nostr-typedef": "^0.11.0",
     "nostr-wasm": "^0.1.0",
@@ -120,6 +122,7 @@
     "remark-gfm": "^4.0.1",
     "remark-wiki-link": "^2.0.1",
     "rxjs": "^7.8.2",
+    "sql.js": "^1.13.0",
     "strip-markdown": "^6.0.0",
     "three": "^0.170.0",
     "three-stdlib": "^2.36.0",
@@ -130,7 +133,7 @@
     "workbox-core": "7.0.0",
     "workbox-precaching": "7.0.0",
     "workbox-routing": "7.0.0",
-    "yet-another-react-lightbox": "^3.24.0"
+    "yet-another-react-lightbox": "^3.25.0"
   },
   "devDependencies": {
     "@capacitor-mlkit/barcode-scanning": "^6.2.0",
@@ -161,7 +164,7 @@
     "@types/webscopeio__react-textarea-autocomplete": "^4.7.5",
     "@vitejs/plugin-react": "^4.7.0",
     "camelcase": "^8.0.0",
-    "cheerio": "^1.1.0",
+    "cheerio": "^1.1.2",
     "prettier": "^3.6.2",
     "typescript": "^5.8.3",
     "vite": "^5.4.19",

@@ -1,6 +1,7 @@
 import { lazy, Suspense } from "react";
 import { Spinner } from "@chakra-ui/react";
 import { createBrowserRouter, matchRoutes, Outlet, RouterProvider } from "react-router-dom";
+import { App as CapacitorApp, URLOpenListenerEvent } from "@capacitor/app";
 
 import GlobalStyles from "./styles";
 
@@ -52,6 +53,7 @@ import goalsRoutes from "./views/goals/routes";
 import badgesRoutes from "./views/badges/routes";
 import emojisRoutes from "./views/emojis/routes";
 import walletRoutes from "./views/wallet/routes";
+import { CAP_IS_NATIVE } from "./env";
 
 // Redirect old hash routing
 const hashPath = window.location.hash.match(/^#(\/.+)/);
@@ -75,7 +77,7 @@ const NoLayoutPage = () => {
   );
 };
 
-const router = createBrowserRouter(
+export const router = createBrowserRouter(
   [
     { path: "*", Component: NoteFoundView },
     {

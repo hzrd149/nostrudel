@@ -4,12 +4,12 @@ import { useObservableEagerState } from "applesauce-react/hooks";
 import useAsyncAction from "../../../../hooks/use-async-action";
 import { changeEventCache, eventCache$ } from "../../../../services/event-cache";
 
-export default function NoRelayCard() {
+export default function NoCacheCard() {
   const eventCache = useObservableEagerState(eventCache$);
   const enabled = eventCache === null;
 
   const enable = useAsyncAction(async () => {
-    await changeEventCache(null);
+    await changeEventCache("none");
   });
 
   return (
