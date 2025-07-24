@@ -64,7 +64,7 @@ async function createEventCache(type: string | null): Promise<EventCache | null>
 
 log("Initializing event cache");
 export const eventCache$ = new BehaviorSubject<EventCache | null>(
-  await wrapInTimeout(createEventCache(localSettings.eventCache.value), 3_000, "Opening event cache timedout").catch(
+  await wrapInTimeout(createEventCache(localSettings.eventCache.value), 10_000, "Opening event cache timedout").catch(
     (err) => {
       console.error(err);
       return null;
@@ -79,7 +79,7 @@ localSettings.eventCache.next(eventCache$.value?.type ?? "none");
 localSettings.eventCache.pipe(filter((type) => type !== null && type !== eventCache$.value?.type)).subscribe((type) => {
   log(`Changing event cache to: ${type}`);
 
-  wrapInTimeout(createEventCache(type), 2_000, "Opening event cache timedout")
+  wrapInTimeout(createEventCache(type), 10_000, "Opening event cache timedout")
     .then((cache) => eventCache$.next(cache))
     .catch((err) => {
       log("Failed to create event cache", err);

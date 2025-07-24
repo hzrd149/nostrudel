@@ -3,3 +3,4 @@ node_modules
 stats.html
 exe/bin
 .env
+keystore.jks

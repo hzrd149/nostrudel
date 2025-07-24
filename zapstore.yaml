@@ -1,0 +1,14 @@
+identifier: ninja.nostrudel
+name: noStrudel
+tags: nostr
+changelog: CHANGELOG.md
+homepage: https://nostrudel.ninja
+description: A sandbox for exploring nostr
+icon: public/icon-512-maskable.png
+repository: https://github.com/hzrd149/nostrudel
+license: MIT
+blossom_servers:
+  - https://cdn.zapstore.dev
+  - https://cdn.hzrd149.com
+assets:
+  - android/app/build/outputs/apk/release/app-release-signed.apk
