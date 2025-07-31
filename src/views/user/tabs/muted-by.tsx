@@ -1,19 +1,20 @@
 import { Flex, Heading, Link, SimpleGrid } from "@chakra-ui/react";
 import { kinds, NostrEvent } from "nostr-tools";
 import { memo, useMemo } from "react";
-import { Link as RouterLink, useOutletContext } from "react-router-dom";
+import { Link as RouterLink } from "react-router-dom";
 
-import SuperMap from "../../classes/super-map";
-import UserAvatarLink from "../../components/user/user-avatar-link";
-import UserLink from "../../components/user/user-link";
-import VerticalPageLayout from "../../components/vertical-page-layout";
-import { getListTitle, getPubkeysFromList } from "../../helpers/nostr/lists";
-import { useReadRelays } from "../../hooks/use-client-relays";
-import useEventIntersectionRef from "../../hooks/use-event-intersection-ref";
-import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
-import useTimelineLoader from "../../hooks/use-timeline-loader";
-import IntersectionObserverProvider from "../../providers/local/intersection-observer";
-import { createListLink } from "../lists/components/fallback-list-card";
+import SuperMap from "../../../classes/super-map";
+import UserAvatarLink from "../../../components/user/user-avatar-link";
+import UserLink from "../../../components/user/user-link";
+import { getListTitle, getPubkeysFromList } from "../../../helpers/nostr/lists";
+import { useReadRelays } from "../../../hooks/use-client-relays";
+import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
+import useParamsProfilePointer from "../../../hooks/use-params-pubkey-pointer";
+import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
+import useTimelineLoader from "../../../hooks/use-timeline-loader";
+import IntersectionObserverProvider from "../../../providers/local/intersection-observer";
+import { createListLink } from "../../lists/components/fallback-list-card";
+import UserLayout from "../components/layout";
 
 function ListLink({ list }: { list: NostrEvent }) {
   const ref = useEventIntersectionRef<HTMLAnchorElement>(list);
@@ -39,12 +40,12 @@ const User = memo(({ pubkey, lists }: { pubkey: string; lists: NostrEvent[] }) =
 });
 
 export default function UserMutedByTab() {
-  const { pubkey } = useOutletContext() as { pubkey: string };
-
+  const user = useParamsProfilePointer("pubkey");
   const readRelays = useReadRelays();
-  const { loader, timeline: lists } = useTimelineLoader(`${pubkey}-muted-by`, readRelays, [
-    { kinds: [kinds.Mutelist], "#p": [pubkey] },
-    { kinds: [kinds.Followsets], "#d": ["mute"], "#p": [pubkey] },
+
+  const { loader, timeline: lists } = useTimelineLoader(`${user.pubkey}-muted-by`, readRelays, [
+    { kinds: [kinds.Mutelist], "#p": [user.pubkey] },
+    { kinds: [kinds.Followsets], "#d": ["mute"], "#p": [user.pubkey] },
   ]);
 
   const pubkeys = useMemo(() => {
@@ -58,8 +59,8 @@ export default function UserMutedByTab() {
   const callback = useTimelineCurserIntersectionCallback(loader);
 
   return (
-    <IntersectionObserverProvider callback={callback}>
-      <VerticalPageLayout>
+    <UserLayout title="Muted by">
+      <IntersectionObserverProvider callback={callback}>
         <SimpleGrid spacing="2" columns={{ base: 1, sm: 2, lg: 3, xl: 4 }}>
           {pubkeys.map(({ pubkey, lists }) => (
             <User key={pubkey} pubkey={pubkey} lists={lists} />
@@ -70,7 +71,7 @@ export default function UserMutedByTab() {
             Looks like no one has muted this user yet
           </Heading>
         )}
-      </VerticalPageLayout>
-    </IntersectionObserverProvider>
+      </IntersectionObserverProvider>
+    </UserLayout>
   );
 }

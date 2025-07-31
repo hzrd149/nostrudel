@@ -1,40 +1,43 @@
 import { lazy } from "react";
-import { RouteObject } from "react-router-dom";
-import UserView from ".";
-import UserAboutTab from "./about";
-import UserNotesTab from "./notes";
-import UserArticlesTab from "./articles";
-import UserPicturePostsTab from "./media-posts";
+import { Outlet, RouteObject } from "react-router-dom";
+import useParamsProfilePointer from "../../hooks/use-params-pubkey-pointer";
+import UserAboutView from "./about";
+import UserArticlesTab from "./tabs/articles";
+import UserPicturePostsTab from "./tabs/media";
+import UserNotesTab from "./tabs/notes";
 
 // other stuff
-const UserStreamsTab = lazy(() => import("./streams"));
-const UserTracksTab = lazy(() => import("./tracks"));
-const UserFilesTab = lazy(() => import("./files"));
-const UserVideosTab = lazy(() => import("./videos"));
-const UserZapsTab = lazy(() => import("./zaps"));
-const UserReactionsTab = lazy(() => import("./reactions"));
-const UserListsTab = lazy(() => import("./lists"));
-const UserFollowersTab = lazy(() => import("./followers"));
-const UserFollowingTab = lazy(() => import("./following"));
-const UserGoalsTab = lazy(() => import("./goals"));
-const UserEmojiPacksTab = lazy(() => import("./emoji-packs"));
-const UserRelaysTab = lazy(() => import("./relays"));
-const UserReportsTab = lazy(() => import("./reports"));
-const UserMutedByTab = lazy(() => import("./muted-by"));
-const UserMessagesTab = lazy(() => import("./messages"));
-const UserTorrentsTab = lazy(() => import("./torrents"));
+const UserStreamsTab = lazy(() => import("./tabs/streams"));
+const UserFilesTab = lazy(() => import("./tabs/files"));
+const UserVideosTab = lazy(() => import("./tabs/videos"));
+const UserZapsTab = lazy(() => import("./tabs/zaps"));
+const UserReactionsTab = lazy(() => import("./tabs/reactions"));
+const UserListsTab = lazy(() => import("./tabs/lists"));
+const UserFollowersTab = lazy(() => import("./tabs/followers"));
+const UserFollowingTab = lazy(() => import("./tabs/following"));
+const UserGoalsTab = lazy(() => import("./tabs/goals"));
+const UserEmojiPacksTab = lazy(() => import("./tabs/emoji-packs"));
+const UserRelaysTab = lazy(() => import("./tabs/relays"));
+const UserReportsTab = lazy(() => import("./tabs/reports"));
+const UserMutedByTab = lazy(() => import("./tabs/muted-by"));
+const UserMessagesTab = lazy(() => import("./tabs/messages"));
+const UserTorrentsTab = lazy(() => import("./tabs/torrents"));
+
+function UserViewProvider() {
+  const user = useParamsProfilePointer("pubkey");
+  return <Outlet context={{ pubkey: user.pubkey, user }} />;
+}
 
 export default [
   {
-    Component: UserView,
+    Component: UserViewProvider,
     children: [
-      { index: true, Component: UserAboutTab },
-      { path: "about", Component: UserAboutTab },
+      { index: true, Component: UserAboutView },
+
       { path: "notes", Component: UserNotesTab },
       { path: "articles", Component: UserArticlesTab },
       { path: "media", Component: UserPicturePostsTab },
       { path: "streams", Component: UserStreamsTab },
-      { path: "tracks", Component: UserTracksTab },
       { path: "videos", Component: UserVideosTab },
       { path: "files", Component: UserFilesTab },
       { path: "zaps", Component: UserZapsTab },

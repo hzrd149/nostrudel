@@ -4,27 +4,27 @@ import { useRenderedContent } from "applesauce-react/hooks";
 import dayjs from "dayjs";
 import { NostrEvent } from "nostr-tools";
 import { ReactNode, useCallback, useState } from "react";
-import { useOutletContext } from "react-router-dom";
 
-import { components } from "../../components/content";
-import { renderGenericUrl } from "../../components/content/links/common";
-import { EmbedEventPointerCard } from "../../components/embed-event/card";
-import { ErrorBoundary } from "../../components/error-boundary";
-import { LightningIcon } from "../../components/icons";
-import TimelineActionAndStatus from "../../components/timeline/timeline-action-and-status";
-import Timestamp from "../../components/timestamp";
-import UserAvatarLink from "../../components/user/user-avatar-link";
-import UserLink from "../../components/user/user-link";
-import VerticalPageLayout from "../../components/vertical-page-layout";
-import { humanReadableSats } from "../../helpers/lightning";
-import { parseCoordinate } from "../../helpers/nostr/event";
-import { isNoteZap, isProfileZap, totalZaps } from "../../helpers/nostr/zaps";
-import { useReadRelays } from "../../hooks/use-client-relays";
-import useEventIntersectionRef from "../../hooks/use-event-intersection-ref";
-import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
-import useTimelineLoader from "../../hooks/use-timeline-loader";
-import { useAdditionalRelayContext } from "../../providers/local/additional-relay";
-import IntersectionObserverProvider from "../../providers/local/intersection-observer";
+import { components } from "../../../components/content";
+import { renderGenericUrl } from "../../../components/content/links/common";
+import { EmbedEventPointerCard } from "../../../components/embed-event/card";
+import { ErrorBoundary } from "../../../components/error-boundary";
+import { LightningIcon } from "../../../components/icons";
+import TimelineActionAndStatus from "../../../components/timeline/timeline-action-and-status";
+import Timestamp from "../../../components/timestamp";
+import UserAvatarLink from "../../../components/user/user-avatar-link";
+import UserLink from "../../../components/user/user-link";
+import { humanReadableSats } from "../../../helpers/lightning";
+import { parseCoordinate } from "../../../helpers/nostr/event";
+import { isNoteZap, isProfileZap, totalZaps } from "../../../helpers/nostr/zaps";
+import { useReadRelays } from "../../../hooks/use-client-relays";
+import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
+import useParamsProfilePointer from "../../../hooks/use-params-pubkey-pointer";
+import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
+import useTimelineLoader from "../../../hooks/use-timeline-loader";
+import useUserMailboxes from "../../../hooks/use-user-mailboxes";
+import IntersectionObserverProvider from "../../../providers/local/intersection-observer";
+import UserLayout from "../components/layout";
 
 const ZapContentSymbol = Symbol.for("zap-content");
 const linkRenderers = [renderGenericUrl];
@@ -79,11 +79,11 @@ const Zap = ({ zap }: { zap: NostrEvent }) => {
   );
 };
 
-const UserZapsTab = () => {
-  const { pubkey } = useOutletContext() as { pubkey: string };
+export default function UserZapsTab() {
+  const user = useParamsProfilePointer("pubkey");
+  const mailboxes = useUserMailboxes(user);
+  const readRelays = useReadRelays();
   const [filter, setFilter] = useState("both");
-  const contextRelays = useAdditionalRelayContext();
-  const relays = useReadRelays(contextRelays);
 
   const eventFilter = useCallback(
     (event: NostrEvent) => {
@@ -99,17 +99,17 @@ const UserZapsTab = () => {
   );
 
   const { loader, timeline: zaps } = useTimelineLoader(
-    `${pubkey}-zaps`,
-    relays,
-    { "#p": [pubkey], kinds: [9735] },
+    `${user.pubkey}-zaps`,
+    mailboxes?.outboxes || readRelays,
+    { "#p": [user.pubkey], kinds: [9735] },
     { eventFilter },
   );
 
   const callback = useTimelineCurserIntersectionCallback(loader);
 
   return (
-    <IntersectionObserverProvider callback={callback}>
-      <VerticalPageLayout maxW="4xl" mx="auto">
+    <UserLayout maxW="6xl" center>
+      <IntersectionObserverProvider callback={callback}>
         <Flex gap="2" alignItems="center" wrap="wrap">
           <Select value={filter} onChange={(e) => setFilter(e.target.value)} maxW="md">
             <option value="both">Note & Profile Zaps</option>
@@ -133,9 +133,7 @@ const UserZapsTab = () => {
         ))}
 
         <TimelineActionAndStatus loader={loader} />
-      </VerticalPageLayout>
-    </IntersectionObserverProvider>
+      </IntersectionObserverProvider>
+    </UserLayout>
   );
-};
-
-export default UserZapsTab;
+}

@@ -1,23 +1,23 @@
 import { Heading, SimpleGrid } from "@chakra-ui/react";
 import { getEventUID } from "applesauce-core/helpers";
 import { kinds } from "nostr-tools";
-import { useOutletContext } from "react-router-dom";
 
-import Users01 from "../../components/icons/users-01";
-import SimpleView from "../../components/layout/presets/simple-view";
-import { isJunkList } from "../../helpers/nostr/lists";
-import useUserContacts from "../../hooks/use-user-contacts";
-import useUserSets from "../../hooks/use-user-lists";
-import useUserMutes from "../../hooks/use-user-mutes";
-import FallbackListCard from "../lists/components/fallback-list-card";
-import ListTypeCard from "../lists/components/list-type-card";
-import PeopleListCard from "../lists/components/people-list-card";
+import Users01 from "../../../components/icons/users-01";
+import useParamsProfilePointer from "../../../hooks/use-params-pubkey-pointer";
+import useUserContacts from "../../../hooks/use-user-contacts";
+import useUserSets from "../../../hooks/use-user-lists";
+import useUserMutes from "../../../hooks/use-user-mutes";
+import FallbackListCard from "../../lists/components/fallback-list-card";
+import ListTypeCard from "../../lists/components/list-type-card";
+import PeopleListCard from "../../lists/components/people-list-card";
+import UserLayout from "../components/layout";
 
 export default function UserListsTab() {
-  const { pubkey } = useOutletContext() as { pubkey: string };
-  const sets = useUserSets(pubkey) ?? [];
+  const user = useParamsProfilePointer("pubkey");
+  const sets = useUserSets(user.pubkey) ?? [];
+  const pubkey = user.pubkey;
 
-  const contacts = useUserContacts(pubkey);
+  const contacts = useUserContacts(user.pubkey);
   const muted = useUserMutes(pubkey);
   const followSets = sets.filter((event) => event.pubkey === pubkey && event.kind === kinds.Followsets);
   const genericSets = sets.filter((event) => event.pubkey === pubkey && event.kind === kinds.Genericlists);
@@ -26,7 +26,7 @@ export default function UserListsTab() {
   const columns = { base: 1, xl: 2 };
 
   return (
-    <SimpleView title="Lists" maxW="6xl" center>
+    <UserLayout title="Lists" maxW="6xl" center>
       <SimpleGrid columns={{ base: 1, xl: 2 }} spacing="2">
         <ListTypeCard title="Following" path={`/u/${pubkey}/following`} icon={Users01} people={contacts} />
         {/* {muted && <ListTypeCard title="Muted" path={`/u/${pubkey}/muted`} icon={MuteIcon} />} */}
@@ -71,6 +71,6 @@ export default function UserListsTab() {
           </SimpleGrid>
         </>
       )}
-    </SimpleView>
+    </UserLayout>
   );
 }

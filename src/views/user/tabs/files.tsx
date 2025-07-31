@@ -1,18 +1,20 @@
 import { Link, Table, TableContainer, Tbody, Td, Th, Thead, Tr } from "@chakra-ui/react";
 import { getTagValue } from "applesauce-core/helpers";
 import { kinds, NostrEvent } from "nostr-tools";
-import { Link as RouterLink, useOutletContext } from "react-router-dom";
+import { Link as RouterLink } from "react-router-dom";
 
-import SimpleView from "../../components/layout/presets/simple-view";
-import TimelineActionAndStatus from "../../components/timeline/timeline-action-and-status";
-import Timestamp from "../../components/timestamp";
-import { formatBytes } from "../../helpers/number";
-import useEventIntersectionRef from "../../hooks/use-event-intersection-ref";
-import useShareableEventAddress from "../../hooks/use-shareable-event-address";
-import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
-import useTimelineLoader from "../../hooks/use-timeline-loader";
-import { useAdditionalRelayContext } from "../../providers/local/additional-relay";
-import IntersectionObserverProvider from "../../providers/local/intersection-observer";
+import TimelineActionAndStatus from "../../../components/timeline/timeline-action-and-status";
+import Timestamp from "../../../components/timestamp";
+import { formatBytes } from "../../../helpers/number";
+import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
+import useParamsProfilePointer from "../../../hooks/use-params-pubkey-pointer";
+import useShareableEventAddress from "../../../hooks/use-shareable-event-address";
+import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
+import useTimelineLoader from "../../../hooks/use-timeline-loader";
+import useUserMailboxes from "../../../hooks/use-user-mailboxes";
+import { useAdditionalRelayContext } from "../../../providers/local/additional-relay";
+import IntersectionObserverProvider from "../../../providers/local/intersection-observer";
+import UserLayout from "../components/layout";
 
 function FileRow({ file }: { file: NostrEvent }) {
   const ref = useEventIntersectionRef<HTMLTableRowElement>(file);
@@ -39,19 +41,20 @@ function FileRow({ file }: { file: NostrEvent }) {
 }
 
 export default function UserFilesTab() {
-  const { pubkey } = useOutletContext() as { pubkey: string };
+  const user = useParamsProfilePointer("pubkey");
   const readRelays = useAdditionalRelayContext();
+  const mailboxes = useUserMailboxes(user);
 
-  const { loader, timeline: files } = useTimelineLoader(pubkey + "-files", readRelays, [
+  const { loader, timeline: files } = useTimelineLoader(user.pubkey + "-files", mailboxes?.outboxes || readRelays, [
     {
-      authors: [pubkey],
+      authors: [user.pubkey],
       kinds: [kinds.FileMetadata],
     },
   ]);
   const callback = useTimelineCurserIntersectionCallback(loader);
 
   return (
-    <SimpleView title="Files">
+    <UserLayout title="Files">
       <IntersectionObserverProvider callback={callback}>
         <TableContainer>
           <Table size="sm">
@@ -72,6 +75,6 @@ export default function UserFilesTab() {
         </TableContainer>
         <TimelineActionAndStatus loader={loader} />
       </IntersectionObserverProvider>
-    </SimpleView>
+    </UserLayout>
   );
 }

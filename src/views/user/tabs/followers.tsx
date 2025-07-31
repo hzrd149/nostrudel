@@ -1,17 +1,18 @@
-import { useMemo } from "react";
 import { Flex, SimpleGrid } from "@chakra-ui/react";
-import { useOutletContext } from "react-router-dom";
 import { Event, kinds } from "nostr-tools";
+import { useMemo } from "react";
 
-import { useReadRelays } from "../../hooks/use-client-relays";
-import useTimelineLoader from "../../hooks/use-timeline-loader";
-import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
-import IntersectionObserverProvider from "../../providers/local/intersection-observer";
-import TimelineActionAndStatus from "../../components/timeline/timeline-action-and-status";
-import UserLink from "../../components/user/user-link";
-import UserAvatarLink from "../../components/user/user-avatar-link";
-import useEventIntersectionRef from "../../hooks/use-event-intersection-ref";
-import SimpleView from "../../components/layout/presets/simple-view";
+import TimelineActionAndStatus from "../../../components/timeline/timeline-action-and-status";
+import UserAvatarLink from "../../../components/user/user-avatar-link";
+import UserLink from "../../../components/user/user-link";
+import { useReadRelays } from "../../../hooks/use-client-relays";
+import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
+import useParamsProfilePointer from "../../../hooks/use-params-pubkey-pointer";
+import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
+import useTimelineLoader from "../../../hooks/use-timeline-loader";
+import useUserMailboxes from "../../../hooks/use-user-mailboxes";
+import IntersectionObserverProvider from "../../../providers/local/intersection-observer";
+import UserLayout from "../components/layout";
 
 function FollowerItem({ event }: { event: Event }) {
   const ref = useEventIntersectionRef(event);
@@ -25,11 +26,11 @@ function FollowerItem({ event }: { event: Event }) {
 }
 
 export default function UserFollowersTab() {
-  const { pubkey } = useOutletContext() as { pubkey: string };
+  const user = useParamsProfilePointer("pubkey");
   const readRelays = useReadRelays();
 
-  const { loader, timeline: events } = useTimelineLoader(`${pubkey}-followers`, readRelays, {
-    "#p": [pubkey],
+  const { loader, timeline: events } = useTimelineLoader(`${user.pubkey}-followers`, readRelays, {
+    "#p": [user.pubkey],
     kinds: [kinds.Contacts],
   });
 
@@ -44,7 +45,7 @@ export default function UserFollowersTab() {
   }, [events]);
 
   return (
-    <SimpleView title="Followers">
+    <UserLayout>
       <IntersectionObserverProvider callback={callback}>
         <SimpleGrid columns={{ base: 1, md: 2, lg: 3, xl: 4 }} spacing="2">
           {followers.map((event) => (
@@ -53,6 +54,6 @@ export default function UserFollowersTab() {
         </SimpleGrid>
         <TimelineActionAndStatus loader={loader} />
       </IntersectionObserverProvider>
-    </SimpleView>
+    </UserLayout>
   );
 }

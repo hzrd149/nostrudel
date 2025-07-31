@@ -87,17 +87,20 @@ export default function UserProfileBadges({ pubkey, ...props }: Omit<FlexProps, 
   if (!badges || badges.length === 0) return null;
 
   return (
-    <Flex gap="2" wrap="wrap" alignItems="center" {...props}>
-      {(limit !== null ? badges.slice(0, limit) : badges)
-        .filter((b) => !!b.badge && !!b.award)
-        .map(({ badge, award, badgePointer }) => (
-          <Badge key={getCoordinateFromAddressPointer(badgePointer)} badge={badge!} award={award!} />
-        ))}
-      {limit !== null && badges.length > limit && (
-        <Button variant="outline" onClick={() => setLimit(null)}>
-          Show More
-        </Button>
-      )}
+    <Flex direction="column" gap="2" {...props}>
+      <Heading size="md">Badges</Heading>
+      <Flex gap="2" wrap="wrap" alignItems="center">
+        {(limit !== null ? badges.slice(0, limit) : badges)
+          .filter((b) => !!b.badge && !!b.award)
+          .map(({ badge, award, badgePointer }) => (
+            <Badge key={getCoordinateFromAddressPointer(badgePointer)} badge={badge!} award={award!} />
+          ))}
+        {limit !== null && badges.length > limit && (
+          <Button variant="outline" onClick={() => setLimit(null)}>
+            Show More
+          </Button>
+        )}
+      </Flex>
     </Flex>
   );
 }

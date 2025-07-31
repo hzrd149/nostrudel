@@ -27,7 +27,6 @@ import { PICTURE_POST_KIND } from "applesauce-core/helpers";
 type KnownKind = {
   kind: number;
   name?: string;
-  hidden?: boolean;
   icon?: ComponentWithAs<"svg", IconProps>;
   link?: (events: NostrEvent[], pubkey: string) => LinkNav | undefined;
   single?: (event: NostrEvent, pubkey: string) => LinkNav | undefined;
@@ -65,7 +64,6 @@ const KnownKinds: KnownKind[] = [
     kind: kinds.GenericRepost,
     name: "Generic Repost",
     icon: RepostIcon,
-    hidden: true,
     link: (_e, p) => `/u/${npubEncode(p)}/notes`,
   },
 
@@ -114,25 +112,25 @@ const KnownKinds: KnownKind[] = [
   { kind: kinds.LiveChatMessage, icon: MessageSquare02, name: "Stream Chat" },
 
   // common kinds
-  { kind: kinds.Metadata, hidden: true },
-  { kind: kinds.Contacts, hidden: true },
-  { kind: kinds.EventDeletion, hidden: true },
-  { kind: kinds.Reaction, hidden: true },
+  { kind: kinds.Metadata, name: "Metadata" },
+  { kind: kinds.Contacts, name: "Contacts" },
+  { kind: kinds.EventDeletion, name: "Deletion" },
+  { kind: kinds.Reaction, name: "Reaction" },
 
   // NIP-51 lists
-  { kind: kinds.RelayList, hidden: true },
-  { kind: kinds.BookmarkList, hidden: true },
-  { kind: kinds.InterestsList, hidden: true },
-  { kind: kinds.Pinlist, hidden: true },
-  { kind: kinds.UserEmojiList, hidden: true },
-  { kind: kinds.Mutelist, hidden: true },
-  { kind: kinds.CommunitiesList, hidden: true },
-  { kind: kinds.SearchRelaysList, hidden: true },
-  { kind: kinds.BlockedRelaysList, hidden: true },
+  { kind: kinds.RelayList, name: "Relay List" },
+  { kind: kinds.BookmarkList, name: "Bookmark List" },
+  { kind: kinds.InterestsList, name: "Interests List" },
+  { kind: kinds.Pinlist, name: "Pin List" },
+  { kind: kinds.UserEmojiList, name: "User Emoji List" },
+  { kind: kinds.Mutelist, name: "Mute List" },
+  { kind: kinds.CommunitiesList, name: "Communities List" },
+  { kind: kinds.SearchRelaysList, name: "Search Relays List" },
+  { kind: kinds.BlockedRelaysList, name: "Blocked Relays List" },
 
-  { kind: 30008, hidden: true, name: "Badges" }, // profile badges
+  { kind: 30008, name: "Badges" }, // profile badges
 
-  { kind: kinds.Application, name: "App data", hidden: true },
+  { kind: kinds.Application, name: "App data" },
 ];
 
 function EventKindButton({
@@ -203,7 +201,7 @@ export default function UserRecentEvents({ pubkey }: { pubkey: string }) {
     <Flex gap="2" wrap="wrap">
       {byKind &&
         Object.entries(byKind)
-          .filter(([_, { known }]) => (!!known || all.isOpen) && (known ? known.hidden !== true : true))
+          .filter(([_, { known }]) => !!known || all.isOpen)
           .sort((a, b) => parseInt(a[0]) - parseInt(b[0]))
           .map(([kind, { events, known }]) => (
             <EventKindButton key={kind} kind={parseInt(kind)} events={events} pubkey={pubkey} known={known} />

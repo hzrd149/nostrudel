@@ -32,7 +32,7 @@ setInterval(() => {
 
 async function readEvents(filters: Filter[]): Promise<NostrEvent[]> {
   const id = nanoid();
-  return worker.query(["REQ", id, ...filters]);
+  return worker.query(["REQ", id, ...filters]).catch(() => []);
 }
 
 const wasmWorkerCache: EventCache = {
