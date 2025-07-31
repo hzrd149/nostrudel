@@ -16,7 +16,7 @@
     "build-native-icons": "pnpm dlx @capacitor/assets generate --android --ios --iconBackgroundColor '#171819' --iconBackgroundColorDark '#171819' --splashBackgroundColor '#ffffff' --splashBackgroundColorDark '#171819'",
     "analyze": "pnpm dlx vite-bundle-visualizer -o ./stats.html",
     "format": "prettier --ignore-path .prettierignore -w .",
-    "cap-sync-version": "pnpm dlx capacitor-set-version . -v $(jq -r .version package.json) -b 1"
+    "cap-sync-version": "pnpm dlx capacitor-set-version . -v $(jq -r .version package.json)"
   },
   "dependencies": {
     "@capacitor-community/sqlite": "^7.0.1",
