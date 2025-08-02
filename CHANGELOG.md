@@ -1,5 +1,20 @@
 # nostrudel
 
+## 0.46.0
+
+### Minor Changes
+
+- 61ec618: Add option for custom share service (njump.me)
+- e4befec: Add article reader component using native web TTS API
+- b114c2a: Show favorite relays in discovery view
+- b114c2a: Add relay feed to discovery view
+- 5df6134: Redesign user profile navigation
+
+### Patch Changes
+
+- 9219f47: Fix open graph link images not being blured
+- 9219f47: Fix ncrypsec accounts not prompting for decryption password
+
 ## 0.45.1
 
 ### Patch Changes
