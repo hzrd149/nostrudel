@@ -22,6 +22,7 @@ const UserReportsTab = lazy(() => import("./tabs/reports"));
 const UserMutedByTab = lazy(() => import("./tabs/muted-by"));
 const UserMessagesTab = lazy(() => import("./tabs/messages"));
 const UserTorrentsTab = lazy(() => import("./tabs/torrents"));
+const UserAdvancedTab = lazy(() => import("./tabs/advanced"));
 
 function UserViewProvider() {
   const user = useParamsProfilePointer("pubkey");
@@ -52,6 +53,7 @@ export default [
       { path: "muted-by", Component: UserMutedByTab },
       { path: "dms", Component: UserMessagesTab },
       { path: "torrents", Component: UserTorrentsTab },
+      { path: "advanced", Component: UserAdvancedTab },
     ],
   },
 ] satisfies RouteObject[];

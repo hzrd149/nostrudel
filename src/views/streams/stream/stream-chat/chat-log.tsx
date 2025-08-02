@@ -1,10 +1,11 @@
-import { forwardRef } from "react";
-import { kinds, NostrEvent } from "nostr-tools";
 import { Flex, FlexProps } from "@chakra-ui/react";
 import { css } from "@emotion/react";
+import { kinds, NostrEvent } from "nostr-tools";
+import { forwardRef } from "react";
 
-import useStreamChatTimeline from "./use-stream-chat-timeline";
+import { ErrorBoundary } from "../../../../components/error-boundary";
 import ChatMessage from "./chat-message";
+import useStreamChatTimeline from "./use-stream-chat-timeline";
 import ZapMessage from "./zap-message";
 
 const hideScrollbarCss = css`
@@ -31,13 +32,15 @@ const StreamChatLog = forwardRef<
       css={hideScrollbar && hideScrollbarCss}
       {...props}
     >
-      {events.map((event) =>
-        event.kind === kinds.LiveChatMessage ? (
-          <ChatMessage key={event.id} event={event} stream={stream} />
-        ) : (
-          <ZapMessage key={event.id} zap={event} />
-        ),
-      )}
+      {events.map((event) => (
+        <ErrorBoundary key={event.id} event={event}>
+          {event.kind === kinds.LiveChatMessage ? (
+            <ChatMessage key={event.id} event={event} stream={stream} />
+          ) : (
+            <ZapMessage key={event.id} zap={event} />
+          )}
+        </ErrorBoundary>
+      ))}
     </Flex>
   );
 });

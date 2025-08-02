@@ -35,6 +35,7 @@ import {
   FollowIcon as UserPlus01Icon,
   VideoIcon,
 } from "../../../components/icons";
+import { SettingsIcon } from "../../../components/icons";
 import DotsGrid from "../../../components/icons/dots-grid";
 import SimpleHeader from "../../../components/layout/presets/simple-header";
 import RouterLink from "../../../components/router-link";
@@ -62,6 +63,7 @@ const tabs: { label: string; path: string; icon: ComponentWithAs<"svg", IconProp
   { label: "Reports", path: "reports", icon: ErrorIcon },
   { label: "Followers", path: "followers", icon: UserPlus01Icon },
   { label: "Muted by", path: "muted-by", icon: MuteIcon },
+  { label: "Advanced", path: "advanced", icon: SettingsIcon },
 ];
 
 export function UserLayoutTabs({ user, ...props }: { user: ProfilePointer } & Omit<FlexProps, "children">) {

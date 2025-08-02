@@ -13,8 +13,10 @@ export default function StreamTopZappers({ stream, ...props }: FlexProps & { str
   const zaps = timeline.filter((e) => e.kind === kinds.Zap);
 
   const totals = zaps?.reduce<Record<string, number>>((dir, z) => {
-    const sender = getZapSender(z);
-    dir[sender] = (dir[sender] ?? 0) + (getZapPayment(z)?.amount ?? 0);
+    try {
+      const sender = getZapSender(z);
+      dir[sender] = (dir[sender] ?? 0) + (getZapPayment(z)?.amount ?? 0);
+    } catch (error) {}
     return dir;
   }, {});
 
