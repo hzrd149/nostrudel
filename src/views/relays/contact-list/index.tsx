@@ -4,13 +4,14 @@ import { Link as RouterLink } from "react-router-dom";
 import { EventTemplate } from "nostr-tools";
 import dayjs from "dayjs";
 
-import RelayFavicon from "../../../components/relay-favicon";
+import RelayFavicon from "../../../components/relay/relay-favicon";
 import useUserContactRelays from "../../../hooks/use-user-contact-relays";
 import { CheckIcon } from "../../../components/icons";
 import { useCallback, useState } from "react";
 import useUserContactList from "../../../hooks/use-user-contact-list";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
 import SimpleView from "../../../components/layout/presets/simple-view";
+import RelayLink from "../../../components/relay/relay-link";
 
 export default function ContactListRelaysView() {
   const account = useActiveAccount();
@@ -69,9 +70,7 @@ export default function ContactListRelaysView() {
           {relays.inbox.map((relay) => (
             <Flex key={relay} gap="2" alignItems="center" overflow="hidden">
               <RelayFavicon relay={relay} size="xs" />
-              <Link as={RouterLink} to={`/relays/${encodeURIComponent(relay)}`} isTruncated>
-                {relay}
-              </Link>
+              <RelayLink relay={relay} isTruncated />
             </Flex>
           ))}
 
@@ -81,9 +80,7 @@ export default function ContactListRelaysView() {
           {relays.outbox.map((relay) => (
             <Flex key={relay} gap="2" alignItems="center" overflow="hidden">
               <RelayFavicon relay={relay} size="xs" />
-              <Link as={RouterLink} to={`/relays/${encodeURIComponent(relay)}`} isTruncated>
-                {relay}
-              </Link>
+              <RelayLink relay={relay} isTruncated />
             </Flex>
           ))}
         </>

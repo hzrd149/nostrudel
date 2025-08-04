@@ -27,7 +27,7 @@ import UserLink from "./user/user-link";
 import { AppHandlerContext } from "../providers/route/app-handler-provider";
 import { addressLoader, eventLoader } from "../services/loaders";
 import { connections$ } from "../services/pool";
-import RelayFavicon from "./relay-favicon";
+import RelayFavicon from "./relay/relay-favicon";
 
 function SearchOnRelaysModal({ isOpen, onClose, decode }: Omit<ModalProps, "children"> & { decode: DecodeResult }) {
   const [loading, setLoading] = useState(false);

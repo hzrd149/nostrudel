@@ -2,6 +2,7 @@ import { Flex, SimpleGrid } from "@chakra-ui/react";
 import { Event, kinds } from "nostr-tools";
 import { useMemo } from "react";
 
+import ScrollLayout from "../../../components/layout/presets/scroll-layout";
 import TimelineActionAndStatus from "../../../components/timeline/timeline-action-and-status";
 import UserAvatarLink from "../../../components/user/user-avatar-link";
 import UserLink from "../../../components/user/user-link";
@@ -10,9 +11,7 @@ import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
 import useParamsProfilePointer from "../../../hooks/use-params-pubkey-pointer";
 import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
 import useTimelineLoader from "../../../hooks/use-timeline-loader";
-import useUserMailboxes from "../../../hooks/use-user-mailboxes";
 import IntersectionObserverProvider from "../../../providers/local/intersection-observer";
-import UserLayout from "../components/layout";
 
 function FollowerItem({ event }: { event: Event }) {
   const ref = useEventIntersectionRef(event);
@@ -45,7 +44,7 @@ export default function UserFollowersTab() {
   }, [events]);
 
   return (
-    <UserLayout>
+    <ScrollLayout>
       <IntersectionObserverProvider callback={callback}>
         <SimpleGrid columns={{ base: 1, md: 2, lg: 3, xl: 4 }} spacing="2">
           {followers.map((event) => (
@@ -54,6 +53,6 @@ export default function UserFollowersTab() {
         </SimpleGrid>
         <TimelineActionAndStatus loader={loader} />
       </IntersectionObserverProvider>
-    </UserLayout>
+    </ScrollLayout>
   );
 }

@@ -12,11 +12,12 @@ import {
   Heading,
   Link,
   Text,
-  VStack
+  VStack,
 } from "@chakra-ui/react";
 import { getConversationParticipants } from "applesauce-core/helpers";
 import { useActiveAccount, useEventModel } from "applesauce-react/hooks";
-import RelayFavicon from "../../../../components/relay-favicon";
+import RelayFavicon from "../../../../components/relay/relay-favicon";
+import RelayLink from "../../../../components/relay/relay-link";
 import RouterLink from "../../../../components/router-link";
 import UserAvatarLink from "../../../../components/user/user-avatar-link";
 import UserLink from "../../../../components/user/user-link";
@@ -45,9 +46,7 @@ function ParticipantInboxesSection({
           {relays.map((relay) => (
             <Flex gap="2" alignItems="center" w="full" overflow="hidden" key={relay}>
               <RelayFavicon relay={relay} size="xs" />
-              <Link as={RouterLink} to={`/relays/${encodeURIComponent(relay)}`} isTruncated>
-                {relay}
-              </Link>
+              <RelayLink relay={relay} isTruncated />
             </Flex>
           ))}
         </VStack>

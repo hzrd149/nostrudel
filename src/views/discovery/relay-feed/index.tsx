@@ -14,7 +14,9 @@ import useAsyncAction from "../../../hooks/use-async-action";
 import authenticationSigner from "../../../services/authentication-signer";
 import { eventStore } from "../../../services/event-store";
 import pool from "../../../services/pool";
-import RelayFavicon from "../../../components/relay-favicon";
+import RelayFavicon from "../../../components/relay/relay-favicon";
+import RelayList from "../relays/components/relay-list";
+import RelayLink from "../../../components/relay/relay-link";
 
 function RelayAuthAlert({ relay }: { relay: string }) {
   const account = useActiveAccount();
@@ -80,16 +82,11 @@ function RelayFeedPage({ relay }: { relay: string }) {
       title={
         <Flex gap="2" alignItems="center">
           <RelayFavicon relay={relay} size="sm" />
-          <Text fontWeight="bold">{relay}</Text>
+          <RelayLink relay={relay} fontWeight="bold" isTruncated />
         </Flex>
       }
       center
       maxW="container.xl"
-      actions={
-        <Button variant="ghost" as={RouterLink} to={`/relays/${encodeURIComponent(relay)}`} ms="auto">
-          Details
-        </Button>
-      }
     >
       <RelayAuthAlert relay={relay} />
 

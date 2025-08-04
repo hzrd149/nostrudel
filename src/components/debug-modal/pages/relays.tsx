@@ -4,7 +4,7 @@ import { Button, Text } from "@chakra-ui/react";
 import { getSeenRelays } from "applesauce-core/helpers";
 
 import { usePublishEvent } from "../../../providers/global/publish-provider";
-import RelayFavicon from "../../relay-favicon";
+import RelayFavicon from "../../relay/relay-favicon";
 
 export default function DebugEventRelaysPage({ event }: { event: NostrEvent }) {
   const publish = usePublishEvent();

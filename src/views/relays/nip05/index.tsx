@@ -4,7 +4,7 @@ import { useActiveAccount } from "applesauce-react/hooks";
 import { Link as RouterLink } from "react-router-dom";
 
 import SimpleView from "../../../components/layout/presets/simple-view";
-import RelayFavicon from "../../../components/relay-favicon";
+import RelayFavicon from "../../../components/relay/relay-favicon";
 import { useUserDNSIdentity } from "../../../hooks/use-user-dns-identity";
 
 function RelayItem({ url }: { url: string }) {

@@ -3,7 +3,7 @@ import { Box, ButtonGroup, Flex, IconButton, Link, Text } from "@chakra-ui/react
 import { PropsWithChildren, ReactNode, useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
 
-import RelayFavicon from "../../../components/relay-favicon";
+import RelayFavicon from "../../../components/relay/relay-favicon";
 import { useRelayInfo } from "../../../hooks/use-relay-info";
 
 export default function RelayControl({

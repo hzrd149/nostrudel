@@ -4,6 +4,7 @@ import { memo, useMemo } from "react";
 import { Link as RouterLink } from "react-router-dom";
 
 import SuperMap from "../../../classes/super-map";
+import ScrollLayout from "../../../components/layout/presets/scroll-layout";
 import UserAvatarLink from "../../../components/user/user-avatar-link";
 import UserLink from "../../../components/user/user-link";
 import { getListTitle, getPubkeysFromList } from "../../../helpers/nostr/lists";
@@ -14,7 +15,6 @@ import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeli
 import useTimelineLoader from "../../../hooks/use-timeline-loader";
 import IntersectionObserverProvider from "../../../providers/local/intersection-observer";
 import { createListLink } from "../../lists/components/fallback-list-card";
-import UserLayout from "../components/layout";
 
 function ListLink({ list }: { list: NostrEvent }) {
   const ref = useEventIntersectionRef<HTMLAnchorElement>(list);
@@ -59,7 +59,7 @@ export default function UserMutedByTab() {
   const callback = useTimelineCurserIntersectionCallback(loader);
 
   return (
-    <UserLayout title="Muted by">
+    <ScrollLayout>
       <IntersectionObserverProvider callback={callback}>
         <SimpleGrid spacing="2" columns={{ base: 1, sm: 2, lg: 3, xl: 4 }}>
           {pubkeys.map(({ pubkey, lists }) => (
@@ -72,6 +72,6 @@ export default function UserMutedByTab() {
           </Heading>
         )}
       </IntersectionObserverProvider>
-    </UserLayout>
+    </ScrollLayout>
   );
 }

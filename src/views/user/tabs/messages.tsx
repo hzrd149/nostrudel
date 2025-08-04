@@ -2,12 +2,12 @@ import { Flex, Table, TableContainer, Tbody, Td, Th, Thead, Tr } from "@chakra-u
 import { kinds, NostrEvent } from "nostr-tools";
 
 import SuperMap from "../../../classes/super-map";
+import ScrollLayout from "../../../components/layout/presets/scroll-layout";
 import TimelineActionAndStatus from "../../../components/timeline/timeline-action-and-status";
 import Timestamp from "../../../components/timestamp";
 import UserAvatarLink from "../../../components/user/user-avatar-link";
 import UserDnsIdentityIcon from "../../../components/user/user-dns-identity-icon";
 import UserLink from "../../../components/user/user-link";
-import VerticalPageLayout from "../../../components/vertical-page-layout";
 import { getDMRecipient, getDMSender } from "../../../helpers/nostr/dms";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
 import useParamsProfilePointer from "../../../hooks/use-params-pubkey-pointer";
@@ -16,7 +16,6 @@ import useTimelineLoader from "../../../hooks/use-timeline-loader";
 import useUserMailboxes from "../../../hooks/use-user-mailboxes";
 import { useAdditionalRelayContext } from "../../../providers/local/additional-relay";
 import IntersectionObserverProvider from "../../../providers/local/intersection-observer";
-import UserLayout from "../components/layout";
 
 function DirectMessageRow({ messages, pubkey, self }: { messages: NostrEvent[]; pubkey: string; self: string }) {
   const ref = useEventIntersectionRef<HTMLTableRowElement>(messages[0]);
@@ -67,7 +66,7 @@ export default function UserMessagesTab() {
   }
 
   return (
-    <UserLayout title="Messages">
+    <ScrollLayout>
       <IntersectionObserverProvider callback={callback}>
         <TableContainer>
           <Table size="sm">
@@ -89,6 +88,6 @@ export default function UserMessagesTab() {
         </TableContainer>
         <TimelineActionAndStatus loader={loader} />
       </IntersectionObserverProvider>
-    </UserLayout>
+    </ScrollLayout>
   );
 }

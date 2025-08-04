@@ -3,9 +3,9 @@ import dayjs from "dayjs";
 import { EventTemplate } from "nostr-tools";
 import { useForm } from "react-hook-form";
 
-import StarRating from "../../../components/star-rating";
-import { RELAY_REVIEW_LABEL, RELAY_REVIEW_LABEL_NAMESPACE, REVIEW_KIND } from "../../../helpers/nostr/reviews";
-import { usePublishEvent } from "../../../providers/global/publish-provider";
+import StarRating from "../../../../components/star-rating";
+import { RELAY_REVIEW_LABEL, RELAY_REVIEW_LABEL_NAMESPACE, REVIEW_KIND } from "../../../../helpers/nostr/reviews";
+import { usePublishEvent } from "../../../../providers/global/publish-provider";
 
 export default function RelayReviewForm({
   onClose,

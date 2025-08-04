@@ -2,6 +2,7 @@ import { Box, Flex, Spacer, Text } from "@chakra-ui/react";
 import { nip25, NostrEvent } from "nostr-tools";
 
 import { EmbedEventPointerCard } from "../../../components/embed-event/card";
+import ScrollLayout from "../../../components/layout/presets/scroll-layout";
 import NoteMenu from "../../../components/note/note-menu";
 import TimelineActionAndStatus from "../../../components/timeline/timeline-action-and-status";
 import UserAvatar from "../../../components/user/user-avatar";
@@ -14,7 +15,6 @@ import useTimelineLoader from "../../../hooks/use-timeline-loader";
 import useUserMailboxes from "../../../hooks/use-user-mailboxes";
 import { ContentSettingsProvider } from "../../../providers/local/content-settings";
 import IntersectionObserverProvider from "../../../providers/local/intersection-observer";
-import UserLayout from "../components/layout";
 
 const Reaction = ({ reaction: reaction }: { reaction: NostrEvent }) => {
   const ref = useEventIntersectionRef(reaction);
@@ -56,7 +56,7 @@ export default function UserReactionsTab() {
   const callback = useTimelineCurserIntersectionCallback(loader);
 
   return (
-    <UserLayout maxW="6xl" center>
+    <ScrollLayout maxW="6xl" center>
       <IntersectionObserverProvider callback={callback}>
         <ContentSettingsProvider blurMedia={false}>
           {reactions?.map((event) => (
@@ -66,6 +66,6 @@ export default function UserReactionsTab() {
           <TimelineActionAndStatus loader={loader} />
         </ContentSettingsProvider>
       </IntersectionObserverProvider>
-    </UserLayout>
+    </ScrollLayout>
   );
 }

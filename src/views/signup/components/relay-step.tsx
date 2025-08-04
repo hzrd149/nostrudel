@@ -2,7 +2,7 @@ import { Box, Button, Card, CardBody, Flex, Heading, SimpleGrid, Text } from "@c
 import { useSet } from "react-use";
 
 import { useRelayInfo } from "../../../hooks/use-relay-info";
-import RelayFavicon from "../../../components/relay-favicon";
+import RelayFavicon from "../../../components/relay/relay-favicon";
 import { containerProps } from "./common";
 
 function RelayButton({ url, selected, onClick }: { url: string; selected: boolean; onClick: () => void }) {

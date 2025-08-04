@@ -33,7 +33,7 @@ import useUserMailboxes from "../../../hooks/use-user-mailboxes";
 import { useWriteRelays } from "../../../hooks/use-client-relays";
 import { DEFAULT_LOOKUP_RELAYS } from "../../../const";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
-import RelayFavicon from "../../../components/relay-favicon";
+import RelayFavicon from "../../../components/relay/relay-favicon";
 import RouterLink from "../../../components/router-link";
 
 function EditableControls() {

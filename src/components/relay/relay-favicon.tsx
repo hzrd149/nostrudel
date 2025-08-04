@@ -1,10 +1,10 @@
 import React, { useMemo } from "react";
 import { Avatar, AvatarProps } from "@chakra-ui/react";
 
-import { RelayIcon } from "./icons";
-import { useRelayInfo } from "../hooks/use-relay-info";
-import useRelayConnectionState from "../hooks/use-relay-connection-state";
-import { getConnectionStateColor } from "../helpers/relay";
+import { RelayIcon } from "../icons";
+import { useRelayInfo } from "../../hooks/use-relay-info";
+import useRelayConnectionState from "../../hooks/use-relay-connection-state";
+import { getConnectionStateColor } from "../../helpers/relay";
 
 export type RelayFaviconProps = Omit<AvatarProps, "src"> & {
   relay: string;

@@ -15,14 +15,15 @@ import {
 
 import { createTimelineLoader } from "applesauce-loaders/loaders";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import EventKindsPieChart from "../../../components/charts/event-kinds-pie-chart";
-import EventKindsTable from "../../../components/charts/event-kinds-table";
-import VerticalPageLayout from "../../../components/vertical-page-layout";
-import { getSortedKinds } from "../../../helpers/nostr/event";
-import { useAppTitle } from "../../../hooks/use-app-title";
-import useForceUpdate from "../../../hooks/use-force-update";
-import { eventStore } from "../../../services/event-store";
-import pool from "../../../services/pool";
+import EventKindsPieChart from "../../../../components/charts/event-kinds-pie-chart";
+import EventKindsTable from "../../../../components/charts/event-kinds-table";
+import ScrollLayout from "../../../../components/layout/presets/scroll-layout";
+import { getSortedKinds } from "../../../../helpers/nostr/event";
+import { useAppTitle } from "../../../../hooks/use-app-title";
+import useForceUpdate from "../../../../hooks/use-force-update";
+import { eventStore } from "../../../../services/event-store";
+import pool from "../../../../services/pool";
+import useRelayUrlParam from "../use-relay-url-param";
 
 ChartJS.register(
   ArcElement,
@@ -37,8 +38,8 @@ ChartJS.register(
   Tooltip,
 );
 
-export default function RelayDetailsTab({ relay }: { relay: string }) {
-  useAppTitle(`${relay} - Details`);
+export default function RelayAdvancedView() {
+  const relay = useRelayUrlParam();
 
   const update = useForceUpdate();
   const events = useRef(new Map());
@@ -67,7 +68,7 @@ export default function RelayDetailsTab({ relay }: { relay: string }) {
   const kinds = getSortedKinds(Array.from(events.current.values()));
 
   return (
-    <VerticalPageLayout>
+    <ScrollLayout>
       <Flex gap="2" alignItems="center">
         <Text>Events loaded: {events.current.size}</Text>
         <Button size="sm" onClick={loadMore} isLoading={loading}>
@@ -85,6 +86,6 @@ export default function RelayDetailsTab({ relay }: { relay: string }) {
           <EventKindsTable kinds={kinds} />
         </Card>
       </Flex>
-    </VerticalPageLayout>
+    </ScrollLayout>
   );
 }

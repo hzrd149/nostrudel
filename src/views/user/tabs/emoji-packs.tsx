@@ -1,6 +1,7 @@
 import { Heading, SimpleGrid } from "@chakra-ui/react";
 import { kinds } from "nostr-tools";
 
+import ScrollLayout from "../../../components/layout/presets/scroll-layout";
 import { getPackCordsFromFavorites } from "../../../helpers/nostr/emoji-packs";
 import { getEventUID } from "../../../helpers/nostr/event";
 import useFavoriteEmojiPacks from "../../../hooks/use-favorite-emoji-packs";
@@ -12,7 +13,6 @@ import useUserMailboxes from "../../../hooks/use-user-mailboxes";
 import { useAdditionalRelayContext } from "../../../providers/local/additional-relay";
 import IntersectionObserverProvider from "../../../providers/local/intersection-observer";
 import EmojiPackCard from "../../emojis/components/emoji-pack-card";
-import UserLayout from "../components/layout";
 
 export default function UserEmojiPacksTab() {
   const user = useParamsProfilePointer("pubkey");
@@ -34,7 +34,7 @@ export default function UserEmojiPacksTab() {
   const callback = useTimelineCurserIntersectionCallback(loader);
 
   return (
-    <UserLayout title="Emoji Packs" maxW="6xl" center>
+    <ScrollLayout maxW="6xl" center>
       <IntersectionObserverProvider callback={callback}>
         {packs.length > 0 && (
           <>
@@ -61,6 +61,6 @@ export default function UserEmojiPacksTab() {
           </>
         )}
       </IntersectionObserverProvider>
-    </UserLayout>
+    </ScrollLayout>
   );
 }

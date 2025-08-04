@@ -3,6 +3,7 @@ import { getTagValue } from "applesauce-core/helpers";
 import { kinds, NostrEvent } from "nostr-tools";
 import { Link as RouterLink } from "react-router-dom";
 
+import ScrollLayout from "../../../components/layout/presets/scroll-layout";
 import TimelineActionAndStatus from "../../../components/timeline/timeline-action-and-status";
 import Timestamp from "../../../components/timestamp";
 import { formatBytes } from "../../../helpers/number";
@@ -14,7 +15,6 @@ import useTimelineLoader from "../../../hooks/use-timeline-loader";
 import useUserMailboxes from "../../../hooks/use-user-mailboxes";
 import { useAdditionalRelayContext } from "../../../providers/local/additional-relay";
 import IntersectionObserverProvider from "../../../providers/local/intersection-observer";
-import UserLayout from "../components/layout";
 
 function FileRow({ file }: { file: NostrEvent }) {
   const ref = useEventIntersectionRef<HTMLTableRowElement>(file);
@@ -54,7 +54,7 @@ export default function UserFilesTab() {
   const callback = useTimelineCurserIntersectionCallback(loader);
 
   return (
-    <UserLayout title="Files">
+    <ScrollLayout>
       <IntersectionObserverProvider callback={callback}>
         <TableContainer>
           <Table size="sm">
@@ -75,6 +75,6 @@ export default function UserFilesTab() {
         </TableContainer>
         <TimelineActionAndStatus loader={loader} />
       </IntersectionObserverProvider>
-    </UserLayout>
+    </ScrollLayout>
   );
 }

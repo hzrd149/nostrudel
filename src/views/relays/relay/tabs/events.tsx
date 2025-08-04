@@ -1,21 +1,22 @@
-import { useCallback } from "react";
 import { Flex, Spacer, useDisclosure } from "@chakra-ui/react";
-import { kinds } from "nostr-tools";
 import { getSeenRelays } from "applesauce-core/helpers";
+import { kinds } from "nostr-tools";
+import { useCallback } from "react";
 
-import { isReply, isRepost } from "../../../helpers/nostr/event";
-import { useAppTitle } from "../../../hooks/use-app-title";
-import useTimelineLoader from "../../../hooks/use-timeline-loader";
 import { NostrEvent } from "nostr-tools";
-import TimelinePage, { useTimelinePageEventFilter } from "../../../components/timeline-page";
-import TimelineViewTypeButtons from "../../../components/timeline-page/timeline-view-type";
-import PeopleListSelection from "../../../components/people-list-selection/people-list-selection";
-import { usePeopleListContext } from "../../../providers/local/people-list-provider";
-import useClientSideMuteFilter from "../../../hooks/use-client-side-mute-filter";
-import NoteFilterTypeButtons from "../../../components/note-filter-type-buttons";
+import NoteFilterTypeButtons from "../../../../components/note-filter-type-buttons";
+import PeopleListSelection from "../../../../components/people-list-selection/people-list-selection";
+import TimelinePage, { useTimelinePageEventFilter } from "../../../../components/timeline-page";
+import TimelineViewTypeButtons from "../../../../components/timeline-page/timeline-view-type";
+import { isReply, isRepost } from "../../../../helpers/nostr/event";
+import useClientSideMuteFilter from "../../../../hooks/use-client-side-mute-filter";
+import useTimelineLoader from "../../../../hooks/use-timeline-loader";
+import { usePeopleListContext } from "../../../../providers/local/people-list-provider";
+import useRelayUrlParam from "../use-relay-url-param";
 
-export default function RelayNotes({ relay }: { relay: string }) {
-  useAppTitle(`${relay} - Notes`);
+export default function RelayNotesView() {
+  const relay = useRelayUrlParam();
+
   const showReplies = useDisclosure();
   const showReposts = useDisclosure({ defaultIsOpen: true });
 

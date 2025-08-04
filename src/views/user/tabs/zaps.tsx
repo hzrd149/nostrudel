@@ -10,6 +10,7 @@ import { renderGenericUrl } from "../../../components/content/links/common";
 import { EmbedEventPointerCard } from "../../../components/embed-event/card";
 import { ErrorBoundary } from "../../../components/error-boundary";
 import { LightningIcon } from "../../../components/icons";
+import ScrollLayout from "../../../components/layout/presets/scroll-layout";
 import TimelineActionAndStatus from "../../../components/timeline/timeline-action-and-status";
 import Timestamp from "../../../components/timestamp";
 import UserAvatarLink from "../../../components/user/user-avatar-link";
@@ -24,7 +25,6 @@ import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeli
 import useTimelineLoader from "../../../hooks/use-timeline-loader";
 import useUserMailboxes from "../../../hooks/use-user-mailboxes";
 import IntersectionObserverProvider from "../../../providers/local/intersection-observer";
-import UserLayout from "../components/layout";
 
 const ZapContentSymbol = Symbol.for("zap-content");
 const linkRenderers = [renderGenericUrl];
@@ -108,7 +108,7 @@ export default function UserZapsTab() {
   const callback = useTimelineCurserIntersectionCallback(loader);
 
   return (
-    <UserLayout maxW="6xl" center>
+    <ScrollLayout maxW="6xl" center>
       <IntersectionObserverProvider callback={callback}>
         <Flex gap="2" alignItems="center" wrap="wrap">
           <Select value={filter} onChange={(e) => setFilter(e.target.value)} maxW="md">
@@ -134,6 +134,6 @@ export default function UserZapsTab() {
 
         <TimelineActionAndStatus loader={loader} />
       </IntersectionObserverProvider>
-    </UserLayout>
+    </ScrollLayout>
   );
 }

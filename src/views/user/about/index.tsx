@@ -52,7 +52,7 @@ import useUserProfile from "../../../hooks/use-user-profile";
 import { profileLoader } from "../../../services/loaders";
 import { socialGraph$ } from "../../../services/social-graph";
 import DNSIdentityWarning from "../../settings/dns-identity/identity-warning";
-import { UserLayoutTabs } from "../components/layout";
+import { AppTabsBar } from "../../../components/layout/presets/app-tabs-layout";
 import { QrIconButton } from "../components/share-qr-button";
 import { UserProfileMenu } from "../components/user-profile-menu";
 import UserZapButton from "../components/user-zap-button";
@@ -62,6 +62,7 @@ import UserPinnedEvents from "./user-pinned-events";
 import UserProfileBadges from "./user-profile-badges";
 import UserRecentEvents from "./user-recent-events";
 import UserStatsAccordion from "./user-stats-accordion";
+import ScrollLayout from "../../../components/layout/presets/scroll-layout";
 
 function FollowedBy({ pubkey }: { pubkey: string }) {
   const socialGraph = useObservableState(socialGraph$);
@@ -157,22 +158,12 @@ export default function UserAboutView() {
   const identity = useUserDNSIdentity(user.pubkey);
 
   return (
-    <Flex
-      overflowY="auto"
-      overflowX="hidden"
-      direction="column"
-      gap="2"
-      pt={metadata?.banner ? 0 : "2"}
-      pb="8"
-      minH="90vh"
-      w="full"
-      flex={1}
-    >
+    <ScrollLayout>
       {metadata?.banner ? (
         <Image
           src={metadata.banner}
           w="full"
-          maxH="20vh"
+          h="20vh"
           objectFit="cover"
           borderBottomWidth={3}
           borderBottomColor={pubkeyColor}
@@ -209,7 +200,7 @@ export default function UserAboutView() {
         </ButtonGroup>
       </Flex>
 
-      <UserLayoutTabs user={user} borderTop="1px solid var(--chakra-colors-chakra-border-color)" />
+      <AppTabsBar borderTop="1px solid var(--chakra-colors-chakra-border-color)" />
 
       <UserAboutContent pubkey={user.pubkey} px="2" />
 
@@ -312,6 +303,6 @@ export default function UserAboutView() {
           </ModalBody>
         </ModalContent>
       </Modal>
-    </Flex>
+    </ScrollLayout>
   );
 }

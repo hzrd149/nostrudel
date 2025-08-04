@@ -23,7 +23,7 @@ import useTimelineLoader from "../../hooks/use-timeline-loader";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import RelayCard from "../relays/components/relay-card";
 import DVMCard from "./dvm-feed/components/dvm-card";
-import RelayFavicon from "../../components/relay-favicon";
+import RelayFavicon from "../../components/relay/relay-favicon";
 
 function DVMFeeds() {
   const readRelays = useReadRelays();

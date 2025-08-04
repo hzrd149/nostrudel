@@ -1,20 +1,19 @@
 import { Flex, Text } from "@chakra-ui/react";
+import { isETag, isPTag } from "applesauce-core/helpers";
 import { kinds, NostrEvent } from "nostr-tools";
 
-import { isETag, isPTag } from "applesauce-core/helpers";
+import ScrollLayout from "../../../components/layout/presets/scroll-layout";
 import { NoteLink } from "../../../components/note/note-link";
 import TimelineActionAndStatus from "../../../components/timeline/timeline-action-and-status";
 import UserLink from "../../../components/user/user-link";
 import { filterTagsByContentRefs } from "../../../helpers/nostr/event";
+import { useReadRelays } from "../../../hooks/use-client-relays";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
 import useParamsProfilePointer from "../../../hooks/use-params-pubkey-pointer";
 import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
 import useTimelineLoader from "../../../hooks/use-timeline-loader";
-import { useAdditionalRelayContext } from "../../../providers/local/additional-relay";
-import IntersectionObserverProvider from "../../../providers/local/intersection-observer";
-import UserLayout from "../components/layout";
 import useUserMailboxes from "../../../hooks/use-user-mailboxes";
-import { useReadRelays } from "../../../hooks/use-client-relays";
+import IntersectionObserverProvider from "../../../providers/local/intersection-observer";
 
 function ReportEvent({ report }: { report: NostrEvent }) {
   const reportedEvent = report.tags.filter(isETag)[0]?.[1];
@@ -64,7 +63,7 @@ export default function UserReportsTab() {
   const callback = useTimelineCurserIntersectionCallback(loader);
 
   return (
-    <UserLayout>
+    <ScrollLayout>
       <IntersectionObserverProvider callback={callback}>
         {events?.map((report) => (
           <ReportEvent key={report.id} report={report} />
@@ -72,6 +71,6 @@ export default function UserReportsTab() {
 
         <TimelineActionAndStatus loader={loader} />
       </IntersectionObserverProvider>
-    </UserLayout>
+    </ScrollLayout>
   );
 }

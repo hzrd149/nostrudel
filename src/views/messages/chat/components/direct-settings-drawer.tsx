@@ -18,7 +18,7 @@ import {
 import { isLegacyMessageLocked, unlockLegacyMessage } from "applesauce-core/helpers";
 import { useActiveAccount, useEventModel } from "applesauce-react/hooks";
 
-import RelayFavicon from "../../../../components/relay-favicon";
+import RelayFavicon from "../../../../components/relay/relay-favicon";
 import RelayStatusBadge from "../../../../components/relays/relay-status";
 import RouterLink from "../../../../components/router-link";
 import UserAvatarLink from "../../../../components/user/user-avatar-link";
@@ -31,6 +31,7 @@ import InboxesStatusSection from "../../components/inboxes-status-section";
 import { LegacyMessagesGroup } from "applesauce-core/models";
 import useAsyncAction from "../../../../hooks/use-async-action";
 import { useMemo } from "react";
+import RelayLink from "../../../../components/relay/relay-link";
 
 function ConversationHeader({ other }: { other: string }) {
   return (
@@ -48,9 +49,7 @@ function ConversationRelay({ relay }: { relay: string }) {
   return (
     <Flex gap="2" alignItems="center" w="full" overflow="hidden">
       <RelayFavicon relay={relay} size="xs" />
-      <Link as={RouterLink} to={`/relays/${encodeURIComponent(relay)}`} isTruncated>
-        {relay}
-      </Link>
+      <RelayLink relay={relay} isTruncated />
       <RelayStatusBadge relay={relay} ms="auto" />
     </Flex>
   );

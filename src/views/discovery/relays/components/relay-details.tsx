@@ -14,20 +14,18 @@ import {
   IconButton,
   Text,
 } from "@chakra-ui/react";
+import { getTagValue } from "applesauce-core/helpers";
 import { NostrEvent } from "nostr-tools";
 import { useContext } from "react";
 import { Link as RouterLink } from "react-router-dom";
-import { getTagValue } from "applesauce-core/helpers";
 
 import DebugEventButton from "../../../../components/debug-modal/debug-event-button";
 import { ExternalLinkIcon } from "../../../../components/icons";
-import RelayFavicon from "../../../../components/relay-favicon";
+import RelayFavicon from "../../../../components/relay/relay-favicon";
 import UserAvatarLink from "../../../../components/user/user-avatar-link";
 import UserName from "../../../../components/user/user-name";
 import { getPubkeysFromList } from "../../../../helpers/nostr/lists";
-import PeopleListProvider from "../../../../providers/local/people-list-provider";
 import SupportedNIPs from "../../../relays/components/supported-nips";
-import RelayNotes from "../../../relays/relay-details/relay-notes";
 import { SelectedContext } from "../selected-context";
 
 export default function RelayStatusDetails({ event, ...props }: Omit<FlexProps, "children"> & { event: NostrEvent }) {
@@ -133,11 +131,6 @@ export default function RelayStatusDetails({ event, ...props }: Omit<FlexProps, 
           </AccordionPanel>
         </AccordionItem>
       </Accordion>
-      <PeopleListProvider initList="global">
-        <Flex overflow="auto" h="full" w="full" direction="column" gap="2">
-          {url && <RelayNotes relay={url} />}
-        </Flex>
-      </PeopleListProvider>
     </Flex>
   );
 }

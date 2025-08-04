@@ -10,7 +10,7 @@ import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import { NostrEvent } from "nostr-tools";
 import { getListTitle, getRelaysFromList } from "../../helpers/nostr/lists";
-import RelayFavicon from "../../components/relay-favicon";
+import RelayFavicon from "../../components/relay/relay-favicon";
 import TimelineActionAndStatus from "../../components/timeline/timeline-action-and-status";
 import { useReadRelays } from "../../hooks/use-client-relays";
 
@@ -51,7 +51,9 @@ function BrowseRelaySetsPage() {
         <PeopleListSelection />
       </Flex>
       <IntersectionObserverProvider callback={callback}>
-        {relaySets?.map((set) => <RelaySetCard key={getEventUID(set)} set={set} />)}
+        {relaySets?.map((set) => (
+          <RelaySetCard key={getEventUID(set)} set={set} />
+        ))}
       </IntersectionObserverProvider>
       <TimelineActionAndStatus loader={loader} />
     </VerticalPageLayout>

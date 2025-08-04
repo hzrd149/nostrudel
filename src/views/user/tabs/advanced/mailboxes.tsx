@@ -1,10 +1,10 @@
-import { Box, Flex, Heading, StackDivider, Tag, Text, VStack } from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router-dom";
+import { Box, Flex, Heading, Tag, Text, VStack } from "@chakra-ui/react";
 import { ProfilePointer } from "nostr-tools/nip19";
 
 import { CopyIconButton } from "../../../../components/copy-icon-button";
 import { ErrorBoundary } from "../../../../components/error-boundary";
-import RelayFavicon from "../../../../components/relay-favicon";
+import RelayFavicon from "../../../../components/relay/relay-favicon";
+import RelayLink from "../../../../components/relay/relay-link";
 import { useRelayInfo } from "../../../../hooks/use-relay-info";
 import useUserMailboxes from "../../../../hooks/use-user-mailboxes";
 
@@ -15,9 +15,7 @@ function RelayItem({ url }: { url: string }) {
     <Flex gap="2" alignItems="center">
       <RelayFavicon relay={url} size="xs" />
       <Box overflow="hidden" isTruncated flex={1}>
-        <Text fontSize="sm" isTruncated>
-          <RouterLink to={`/relays/${encodeURIComponent(url)}`}>{url}</RouterLink>
-        </Text>
+        <RelayLink relay={url} fontSize="sm" isTruncated />
         {info?.description && (
           <Text fontSize="xs" color="GrayText" isTruncated>
             {info.description}
@@ -48,7 +46,7 @@ export default function MailboxSection({ user }: { user: ProfilePointer }) {
           </Text>
         </Box>
         {mailboxes?.inboxes.length ? (
-          <VStack divider={<StackDivider />} align="stretch">
+          <VStack align="stretch">
             {Array.from(mailboxes.inboxes).map((url) => (
               <ErrorBoundary key={url}>
                 <RelayItem url={url} />
@@ -71,7 +69,7 @@ export default function MailboxSection({ user }: { user: ProfilePointer }) {
           </Text>
         </Box>
         {mailboxes?.outboxes.length ? (
-          <VStack divider={<StackDivider />} align="stretch">
+          <VStack align="stretch">
             {Array.from(mailboxes.outboxes).map((url) => (
               <ErrorBoundary key={url}>
                 <RelayItem url={url} />

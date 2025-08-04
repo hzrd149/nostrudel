@@ -12,7 +12,6 @@ import useParamsProfilePointer from "../../../hooks/use-params-pubkey-pointer";
 import { useRouteStateBoolean } from "../../../hooks/use-route-state-value";
 import useTimelineLoader from "../../../hooks/use-timeline-loader";
 import useUserMailboxes from "../../../hooks/use-user-mailboxes";
-import UserLayout from "../components/layout";
 
 export default function UserNotesTab() {
   const user = useParamsProfilePointer("pubkey");
@@ -50,9 +49,5 @@ export default function UserNotesTab() {
     </Flex>
   );
 
-  return (
-    <UserLayout title="Notes">
-      <TimelinePage header={header} loader={loader} timeline={timeline} p={0} />
-    </UserLayout>
-  );
+  return <TimelinePage header={header} loader={loader} timeline={timeline} p={0} />;
 }

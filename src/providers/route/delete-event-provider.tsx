@@ -26,7 +26,7 @@ import { createContext, PropsWithChildren, useCallback, useContext, useMemo, use
 
 import { EmbedEventCard } from "../../components/embed-event/card";
 import { ExternalLinkIcon } from "../../components/icons";
-import RelayFavicon from "../../components/relay-favicon";
+import RelayFavicon from "../../components/relay/relay-favicon";
 import { useWriteRelays } from "../../hooks/use-client-relays";
 import { useUserOutbox } from "../../hooks/use-user-mailboxes";
 import { eventStore } from "../../services/event-store";

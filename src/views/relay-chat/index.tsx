@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import HoverLinkOverlay from "../../components/hover-link-overlay";
 import { ChevronRightIcon } from "../../components/icons";
 import SimpleView from "../../components/layout/presets/simple-view";
-import RelayFavicon from "../../components/relay-favicon";
+import RelayFavicon from "../../components/relay/relay-favicon";
 import { RelayUrlInput } from "../../components/relay-url-input";
 import RouterLink from "../../components/router-link";
 import { useRelayInfo } from "../../hooks/use-relay-info";

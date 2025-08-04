@@ -27,7 +27,7 @@ import { nprofileEncode, ProfilePointer } from "nostr-tools/nip19";
 import { CopyIconButton } from "../../../components/copy-icon-button";
 import { CheckIcon, QrCodeIcon } from "../../../components/icons";
 import QrCodeSvg from "../../../components/qr-code/qr-code-svg";
-import RelayFavicon from "../../../components/relay-favicon";
+import RelayFavicon from "../../../components/relay/relay-favicon";
 import useUserMailboxes from "../../../hooks/use-user-mailboxes";
 
 function NprofileTab({ user }: { user: ProfilePointer }) {

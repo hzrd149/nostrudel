@@ -14,7 +14,7 @@ import {
 import { Link as RouterLink } from "react-router-dom";
 
 import relayScoreboardService from "../services/relay-scoreboard";
-import RelayFavicon from "./relay-favicon";
+import RelayFavicon from "./relay/relay-favicon";
 
 export type RelayIconStackProps = { relays: string[]; maxRelays?: number } & Omit<FlexProps, "children">;
 

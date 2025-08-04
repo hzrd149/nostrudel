@@ -1,4 +1,3 @@
-import { PropsWithChildren } from "react";
 import {
   Box,
   Card,
@@ -20,17 +19,18 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import styled from "@emotion/styled";
-import { Link as RouterLink } from "react-router-dom";
+import { PropsWithChildren } from "react";
 
-import { useRelayInfo } from "../../../hooks/use-relay-info";
-import RelayFavicon from "../../../components/relay-favicon";
+import RawJson from "../../../components/debug-modal/raw-json";
 import { CodeIcon } from "../../../components/icons";
-import UserLink from "../../../components/user/user-link";
+import RelayFavicon from "../../../components/relay/relay-favicon";
+import RelayLink from "../../../components/relay/relay-link";
 import UserAvatar from "../../../components/user/user-avatar";
 import UserDnsIdentity from "../../../components/user/user-dns-identity";
-import RawJson from "../../../components/debug-modal/raw-json";
-import useRelayStats from "../../../hooks/use-relay-stats";
+import UserLink from "../../../components/user/user-link";
 import { getNetwork } from "../../../helpers/nostr/relay-stats";
+import { useRelayInfo } from "../../../hooks/use-relay-info";
+import useRelayStats from "../../../hooks/use-relay-stats";
 
 const B = styled.span`
   font-weight: bold;
@@ -68,53 +68,6 @@ export function RelayMetadata({ url, extended }: { url: string; extended?: boole
     </Box>
   );
 }
-
-// export function RelayJoinAction({ url, ...props }: { url: string } & Omit<ButtonProps, "children" | "onClick">) {
-//   const account = useActiveAccount();
-//   const clientRelays = useClientRelays();
-//   const relayConfig = clientRelays.find((r) => r.url === url);
-
-//   return relayConfig ? (
-//     <Button
-//       colorScheme="red"
-//       variant="outline"
-//       onClick={() => clientRelaysService.removeRelay(url)}
-//       isDisabled={!account}
-//       {...props}
-//     >
-//       Leave
-//     </Button>
-//   ) : (
-//     <Button
-//       colorScheme="green"
-//       onClick={() => clientRelaysService.addRelay(url, RelayMode.ALL)}
-//       isDisabled={!account}
-//       {...props}
-//     >
-//       Join
-//     </Button>
-//   );
-// }
-
-// export function RelayModeAction({
-//   url,
-//   ...props
-// }: { url: string } & Omit<CheckboxProps, "children" | "isChecked" | "onChange">) {
-//   const clientRelays = useClientRelays();
-//   const relayConfig = clientRelays.find((r) => r.url === url);
-
-//   return relayConfig ? (
-//     <Checkbox
-//       isChecked={!!(relayConfig.mode & RelayMode.WRITE)}
-//       onChange={(e) => {
-//         clientRelaysService.updateRelay(relayConfig.url, e.target.checked ? RelayMode.WRITE : RelayMode.READ);
-//       }}
-//       {...props}
-//     >
-//       Write
-//     </Checkbox>
-//   ) : null;
-// }
 
 export function RelayDebugButton({ url, ...props }: { url: string } & Omit<IconButtonProps, "icon" | "aria-label">) {
   const { info } = useRelayInfo(url);
@@ -161,7 +114,7 @@ export default function RelayCard({
         <CardHeader display="flex" gap="2" alignItems="center" p="2">
           <RelayFavicon relay={relay} size="sm" />
           <Heading size="md" isTruncated>
-            <RouterLink to={to || `/relays/${encodeURIComponent(relay)}`}>{relay}</RouterLink>
+            <RelayLink relay={relay} isTruncated />
             <RelayPaidTag url={relay} />
           </Heading>
         </CardHeader>

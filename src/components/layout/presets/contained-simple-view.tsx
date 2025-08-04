@@ -1,8 +1,9 @@
 import { ReactNode } from "react";
 import { Flex, FlexProps } from "@chakra-ui/react";
 
-import SimpleHeader from "./simple-header";
+import SimpleHeader from "../components/simple-header";
 
+/** @deprecated use single view with scroll=false */
 export default function ContainedSimpleView({
   children,
   actions,

@@ -1,4 +1,4 @@
-import { Box, Flex, Heading, StackDivider, Text, VStack } from "@chakra-ui/react";
+import { Box, Flex, Heading, Text, VStack } from "@chakra-ui/react";
 
 import { ProfilePointer } from "nostr-tools/nip19";
 import { CopyIconButton } from "../../../../components/copy-icon-button";
@@ -40,7 +40,7 @@ export default function BlossomServersSection({ user }: { user: ProfilePointer }
           </Text>
         </Box>
         {servers?.length ? (
-          <VStack divider={<StackDivider />} align="stretch">
+          <VStack align="stretch">
             {servers.map((url) => (
               <ErrorBoundary key={url.toString()}>
                 <ServerItem url={url} />

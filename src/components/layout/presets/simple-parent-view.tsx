@@ -3,7 +3,7 @@ import { Outlet, OutletProps, useMatch } from "react-router-dom";
 import { Flex, FlexProps, Spinner } from "@chakra-ui/react";
 
 import { useBreakpointValue } from "../../../providers/global/breakpoint-provider";
-import SimpleHeader from "./simple-header";
+import SimpleHeader from "../components/simple-header";
 import { ErrorBoundary } from "../../error-boundary";
 import useScrollRestoreRef from "../../../hooks/use-scroll-restore";
 

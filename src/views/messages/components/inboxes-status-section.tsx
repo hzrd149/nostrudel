@@ -1,11 +1,12 @@
 import { Box, Flex, Link, Text, VStack } from "@chakra-ui/react";
 
-import RelayFavicon from "../../../components/relay-favicon";
+import RelayFavicon from "../../../components/relay/relay-favicon";
 import { RelayAuthIconButton } from "../../../components/relays/relay-auth-icon-button";
 import RelayStatusBadge from "../../../components/relays/relay-status";
 import RouterLink from "../../../components/router-link";
 import { useObservableEagerMemo } from "applesauce-react/hooks";
 import pool from "../../../services/pool";
+import RelayLink from "../../../components/relay/relay-link";
 
 function InboxRelayStatus({ relay }: { relay: string }) {
   const response = useObservableEagerMemo(() => pool.relay(relay).authenticationResponse$, [relay]);
@@ -14,9 +15,7 @@ function InboxRelayStatus({ relay }: { relay: string }) {
     <Flex gap="2" w="full" overflow="hidden" alignItems="flex-start">
       <RelayFavicon relay={relay} size="xs" mt="1" />
       <Box overflow="hidden" w="full">
-        <Link as={RouterLink} to={`/relays/${encodeURIComponent(relay)}`} isTruncated fontWeight="bold">
-          {relay}
-        </Link>
+        <RelayLink relay={relay} isTruncated fontWeight="bold" />
         {response && (
           <Text fontSize="sm" color={response.ok ? "green.500" : "red.500"}>
             {response.message || (response.ok ? "Authenticated" : "Failed")}

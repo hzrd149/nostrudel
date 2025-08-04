@@ -15,7 +15,7 @@ import { getEventUID, getTagValue } from "applesauce-core/helpers";
 import { NostrEvent } from "nostr-tools";
 import { useContext } from "react";
 
-import RelayFavicon from "../../../../components/relay-favicon";
+import RelayFavicon from "../../../../components/relay/relay-favicon";
 import Timestamp from "../../../../components/timestamp";
 import SupportedNIPs from "../../../relays/components/supported-nips";
 import { SelectedContext } from "../selected-context";

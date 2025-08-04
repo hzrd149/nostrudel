@@ -1,9 +1,9 @@
 import { Flex, FlexProps } from "@chakra-ui/react";
 import { ReactNode } from "react";
 
-import useScrollRestoreRef from "../../../hooks/use-scroll-restore";
 import { ErrorBoundary } from "../../error-boundary";
-import SimpleHeader from "./simple-header";
+import ScrollLayout from "./scroll-layout";
+import SimpleHeader from "../components/simple-header";
 
 export default function SimpleView({
   children,
@@ -25,7 +25,6 @@ export default function SimpleView({
   center?: boolean;
   scroll?: boolean;
 }) {
-  const ref = useScrollRestoreRef();
   const content = (
     <Flex
       direction="column"
@@ -57,15 +56,7 @@ export default function SimpleView({
         {actions}
       </SimpleHeader>
 
-      <ErrorBoundary>
-        {scroll ? (
-          <Flex flex={1} overflowY="auto" overflowX="hidden" direction="column" ref={ref}>
-            {content}
-          </Flex>
-        ) : (
-          content
-        )}
-      </ErrorBoundary>
+      <ErrorBoundary>{scroll ? <ScrollLayout>{children}</ScrollLayout> : content}</ErrorBoundary>
     </Flex>
   );
 }

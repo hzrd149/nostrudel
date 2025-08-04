@@ -2,6 +2,7 @@ import { Table, TableContainer, Tbody, Th, Thead, Tr } from "@chakra-ui/react";
 import { NostrEvent } from "nostr-tools";
 import { useCallback } from "react";
 
+import ScrollLayout from "../../../components/layout/presets/scroll-layout";
 import TimelineActionAndStatus from "../../../components/timeline/timeline-action-and-status";
 import { TORRENT_KIND, validateTorrent } from "../../../helpers/nostr/torrents";
 import { useReadRelays } from "../../../hooks/use-client-relays";
@@ -11,7 +12,6 @@ import useTimelineLoader from "../../../hooks/use-timeline-loader";
 import useUserMailboxes from "../../../hooks/use-user-mailboxes";
 import IntersectionObserverProvider from "../../../providers/local/intersection-observer";
 import TorrentTableRow from "../../torrents/components/torrent-table-row";
-import UserLayout from "../components/layout";
 
 export default function UserTorrentsTab() {
   const user = useParamsProfilePointer("pubkey");
@@ -31,7 +31,7 @@ export default function UserTorrentsTab() {
   const callback = useTimelineCurserIntersectionCallback(loader);
 
   return (
-    <UserLayout>
+    <ScrollLayout>
       <IntersectionObserverProvider callback={callback}>
         <TableContainer>
           <Table size="sm">
@@ -55,6 +55,6 @@ export default function UserTorrentsTab() {
 
         <TimelineActionAndStatus loader={loader} />
       </IntersectionObserverProvider>
-    </UserLayout>
+    </ScrollLayout>
   );
 }

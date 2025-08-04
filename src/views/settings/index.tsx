@@ -21,7 +21,7 @@ import Image01 from "../../components/icons/image-01";
 import Mail02 from "../../components/icons/mail-02";
 import Share07 from "../../components/icons/share-07";
 import User01 from "../../components/icons/user-01";
-import SimpleNavItem from "../../components/layout/presets/simple-nav-item";
+import SimpleNavItem from "../../components/layout/components/simple-nav-item";
 import SimpleParentView from "../../components/layout/presets/simple-parent-view";
 import UserAvatar from "../../components/user/user-avatar";
 import VersionButton from "../../components/version-button";

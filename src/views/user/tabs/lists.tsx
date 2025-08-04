@@ -3,6 +3,7 @@ import { getEventUID } from "applesauce-core/helpers";
 import { kinds } from "nostr-tools";
 
 import Users01 from "../../../components/icons/users-01";
+import ScrollLayout from "../../../components/layout/presets/scroll-layout";
 import useParamsProfilePointer from "../../../hooks/use-params-pubkey-pointer";
 import useUserContacts from "../../../hooks/use-user-contacts";
 import useUserSets from "../../../hooks/use-user-lists";
@@ -10,7 +11,6 @@ import useUserMutes from "../../../hooks/use-user-mutes";
 import FallbackListCard from "../../lists/components/fallback-list-card";
 import ListTypeCard from "../../lists/components/list-type-card";
 import PeopleListCard from "../../lists/components/people-list-card";
-import UserLayout from "../components/layout";
 
 export default function UserListsTab() {
   const user = useParamsProfilePointer("pubkey");
@@ -26,7 +26,7 @@ export default function UserListsTab() {
   const columns = { base: 1, xl: 2 };
 
   return (
-    <UserLayout title="Lists" maxW="6xl" center>
+    <ScrollLayout maxW="6xl" center>
       <SimpleGrid columns={{ base: 1, xl: 2 }} spacing="2">
         <ListTypeCard title="Following" path={`/u/${pubkey}/following`} icon={Users01} people={contacts} />
         {/* {muted && <ListTypeCard title="Muted" path={`/u/${pubkey}/muted`} icon={MuteIcon} />} */}
@@ -71,6 +71,6 @@ export default function UserListsTab() {
           </SimpleGrid>
         </>
       )}
-    </UserLayout>
+    </ScrollLayout>
   );
 }

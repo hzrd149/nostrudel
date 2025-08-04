@@ -7,12 +7,12 @@ import {
   PopoverContent,
   PopoverHeader,
   PopoverTrigger,
-  Text
+  Text,
 } from "@chakra-ui/react";
 import { getSeenRelays } from "applesauce-core/helpers";
 import { NostrEvent } from "nostr-tools";
 import { RelayIcon } from "../icons";
-import RelayFavicon from "../relay-favicon";
+import RelayFavicon from "../relay/relay-favicon";
 
 export default function SeenOnRelaysButton({
   event,

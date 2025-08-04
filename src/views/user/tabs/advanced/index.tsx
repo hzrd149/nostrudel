@@ -1,20 +1,20 @@
 import { Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, Box } from "@chakra-ui/react";
 
+import ScrollLayout from "../../../../components/layout/presets/scroll-layout";
 import useParamsProfilePointer from "../../../../hooks/use-params-pubkey-pointer";
 import useRouteStateValue from "../../../../hooks/use-route-state-value";
-import UserLayout from "../../components/layout";
-import MailboxSection from "./mailboxes";
-import ProfileSection from "./profile";
 import BlossomServersSection from "./blossom";
+import MailboxSection from "./mailboxes";
 import NIP05DebugSection from "./nip-05";
+import ProfileSection from "./profile";
 
 export default function UserAdvancedTab() {
   const user = useParamsProfilePointer("pubkey");
   const section = useRouteStateValue<number | number[]>("section", 0);
 
   return (
-    <UserLayout maxW="6xl" center flush>
-      <Accordion index={section.value} onChange={(v) => section.setValue(v)}>
+    <ScrollLayout maxW="6xl" center flush>
+      <Accordion index={section.value} onChange={(v) => section.setValue(v)} mb={10}>
         {/* Profile Section */}
         <AccordionItem>
           <h2>
@@ -75,6 +75,6 @@ export default function UserAdvancedTab() {
           </AccordionPanel>
         </AccordionItem>
       </Accordion>
-    </UserLayout>
+    </ScrollLayout>
   );
 }

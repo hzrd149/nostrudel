@@ -8,7 +8,7 @@ import useAppSettings from "../../hooks/use-user-app-settings";
 import useUserProfile from "../../hooks/use-user-profile";
 import localSettings from "../../services/preferences";
 
-export type UserLinkProps = LinkProps & {
+export type UserLinkProps = Omit<LinkProps, "children"> & {
   pubkey: string;
   showAt?: boolean;
   tab?: string;
