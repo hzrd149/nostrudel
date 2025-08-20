@@ -38,6 +38,11 @@ export const eventLoader = createEventLoader(pool, {
   extraRelays: localSettings.readRelays,
 });
 
+// Setup loaders on event store
+eventStore.addressableLoader = addressLoader;
+eventStore.replaceableLoader = addressLoader;
+eventStore.eventLoader = eventLoader;
+
 export const zapsLoader = createZapsLoader(pool, { cacheRequest, eventStore, extraRelays: localSettings.readRelays });
 
 export const reactionsLoader = createReactionsLoader(pool, {

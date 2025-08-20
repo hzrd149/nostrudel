@@ -2,7 +2,6 @@ import { unixNow } from "applesauce-core/helpers";
 import { createDefer, Deferred } from "applesauce-core/promise";
 import { Nip07Interface } from "applesauce-signers";
 import { EventTemplate, kinds, NostrEvent } from "nostr-tools";
-import * as Nostr from "nostr-typedef";
 import { BehaviorSubject } from "rxjs";
 
 import { logger } from "../helpers/debug";
@@ -133,7 +132,7 @@ class AuthenticationSigner {
   }
 
   /** intercept sign requests and save them for later */
-  signEvent<K extends number>(draft: Nostr.EventParameters<K>): Promise<Nostr.Event<K>> {
+  signEvent(draft: EventTemplate): Promise<NostrEvent> {
     if (draft.kind !== kinds.ClientAuth) throw new Error("Event is not a client auth request");
     if (!draft.tags) throw new Error("Missing tags");
 
@@ -162,9 +161,8 @@ class AuthenticationSigner {
 
     // add to pending
     const template: EventTemplate = {
-      tags: [],
-      created_at: unixNow(),
       ...draft,
+      created_at: unixNow(),
     };
     this.setRelayState(relay, { status: "requested", template, challenge, promise });
 
@@ -174,7 +172,6 @@ class AuthenticationSigner {
       this.authenticate(relay);
     }
 
-    // @ts-expect-error
     return promise;
   }
 

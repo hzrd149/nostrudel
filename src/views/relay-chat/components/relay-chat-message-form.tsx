@@ -1,6 +1,7 @@
 import { ButtonGroup, Flex, FlexProps, useToast } from "@chakra-ui/react";
 import { addSeenRelay } from "applesauce-core/helpers";
-import { includeSingletonTag, setContent } from "applesauce-factory/operations/event";
+import { setContent } from "applesauce-factory/operations/content";
+import { includeSingletonTag } from "applesauce-factory/operations/tags";
 import { useActiveAccount, useEventFactory } from "applesauce-react/hooks";
 import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";

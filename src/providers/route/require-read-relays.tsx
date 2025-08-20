@@ -16,13 +16,13 @@ export default function RequireReadRelays({ children }: PropsWithChildren) {
           <AlertIcon />
           <Text>
             Missing{" "}
-            <Link as={RouterLink} to="/relays/app">
+            <Link as={RouterLink} to="/settings/relays">
               app relays
             </Link>
             ! Reading and publishing notes won't work very well!
           </Text>
           <Spacer />
-          <Button as={RouterLink} to="/relays/app" size="sm" colorScheme="primary">
+          <Button as={RouterLink} to="/settings/relays" size="sm" colorScheme="primary">
             Setup Relays
           </Button>
         </Alert>

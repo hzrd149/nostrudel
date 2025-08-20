@@ -9,7 +9,7 @@ import { isEventInList } from "../../../helpers/nostr/lists";
 import useAsyncAction from "../../../hooks/use-async-action";
 import useFavoriteStreams, { FAVORITE_STREAMS_IDENTIFIER } from "../../../hooks/use-favorite-streams";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
-import { modifyPublicTags } from "applesauce-factory/operations/event";
+import { modifyPublicTags } from "applesauce-factory/operations/tags";
 
 export default function StreamFavoriteButton({
   stream,
