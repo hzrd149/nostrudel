@@ -14,6 +14,22 @@ export default defineConfig({
   build: {
     target: ["chrome89", "edge89", "firefox89", "safari15"],
     sourcemap: true,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // Bundle all Capacitor dependencies together
+          // This is to fix the issue where @capacitor/preferences causes module initialization to hang because circular promises
+          capacitor: [
+            "@capacitor/core",
+            "@capacitor/app",
+            "@capacitor/preferences",
+            "@capacitor/share",
+            "@capacitor-community/sqlite",
+            "@capacitor-mlkit/barcode-scanning",
+          ],
+        },
+      },
+    },
   },
   plugins: [
     react(),
