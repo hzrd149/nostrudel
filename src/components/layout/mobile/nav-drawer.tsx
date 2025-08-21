@@ -33,16 +33,6 @@ export default function NavDrawer({ onClose, ...props }: Omit<DrawerProps, "chil
       <DrawerOverlay />
       <DrawerContent role="navigation">
         <CollapsedContext.Provider value={false}>
-          <DrawerHeader px="4" pb="0">
-            {!account && (
-              <Flex gap="2" alignItems="center">
-                <Avatar src="/apple-touch-icon.png" size="md" aria-label="Nostrudel logo" />
-                <Text as="h1" m={0} fontSize="xl">
-                  Nostrudel
-                </Text>
-              </Flex>
-            )}
-          </DrawerHeader>
           <DrawerBody
             display="flex"
             flexDirection="column"
@@ -52,7 +42,17 @@ export default function NavDrawer({ onClose, ...props }: Omit<DrawerProps, "chil
             overflowX="hidden"
             gap="2"
             onClick={handleClickItem}
+            mt="var(--safe-top)"
+            mb="var(--safe-bottom)"
           >
+            {!account && (
+              <Flex gap="2" alignItems="center">
+                <Avatar src="/apple-touch-icon.png" size="md" aria-label="Nostrudel logo" />
+                <Text as="h1" m={0} fontSize="xl">
+                  Nostrudel
+                </Text>
+              </Flex>
+            )}
             <AccountSwitcher />
             <NavItems />
             <ButtonGroup variant="ghost" onClick={onClose} aria-label="Relay connections">

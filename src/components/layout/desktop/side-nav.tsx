@@ -26,8 +26,10 @@ export default function DesktopSideNav({ ...props }: Omit<FlexProps, "children">
         py="2"
         shrink={0}
         borderRightWidth={1}
-        pt="calc(var(--chakra-space-2) + var(--safe-top))"
-        pb="calc(var(--chakra-space-2) + var(--safe-bottom))"
+        mt="var(--safe-top)"
+        mb="var(--safe-bottom)"
+        pt="var(--chakra-space-2)"
+        pb="var(--chakra-space-2)"
         w={collapsed ? "16" : "64"}
         position="fixed"
         left="0"

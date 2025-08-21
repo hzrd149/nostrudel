@@ -17,8 +17,6 @@ export default function SimpleHeader({
       gap="2"
       minH="14"
       position="sticky"
-      top="var(--safe-top)"
-      mt="var(--safe-top)"
       backgroundColor="var(--chakra-colors-chakra-body-bg)"
       zIndex="modal"
       {...props}
