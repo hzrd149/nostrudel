@@ -10,11 +10,11 @@ android {
 apply from: "../capacitor-cordova-android-plugins/cordova.variables.gradle"
 dependencies {
     implementation project(':capacitor-community-sqlite')
+    implementation project(':capacitor-mlkit-barcode-scanning')
+    implementation project(':capacitor-preferences')
     implementation project(':capacitor-share')
     implementation project(':nostr-signer-capacitor-plugin')
-    implementation project(':capacitor-mlkit-barcode-scanning')
     implementation project(':capacitor-app')
-    implementation project(':capacitor-preferences')
 
 }
 

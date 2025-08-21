@@ -1,8 +1,9 @@
 import { IconButton, IconButtonProps } from "@chakra-ui/react";
-import { CodeIcon } from "../icons";
 import { NostrEvent } from "nostr-tools";
 import { useContext } from "react";
+
 import { DebugModalContext } from "../../providers/route/debug-modal-provider";
+import { CodeIcon } from "../icons";
 
 export default function DebugEventButton({
   event,

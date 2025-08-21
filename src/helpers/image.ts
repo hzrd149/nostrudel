@@ -1,9 +1,9 @@
-import { EMPTY, Subscription, switchMap } from "rxjs";
+import { EMPTY, switchMap } from "rxjs";
 import { fixOrientationAndStripMetadata } from "../lib/fix-image-orientation";
 import { AppSettingsQuery } from "../models";
 import accounts from "../services/accounts";
-import { AppSettings } from "./app-settings";
 import { eventStore } from "../services/event-store";
+import { type AppSettings } from "./app-settings";
 
 export type ImageSize = { width: number; height: number };
 const imageSizeCache = new Map<string, ImageSize>();

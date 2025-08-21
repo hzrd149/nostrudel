@@ -2,7 +2,7 @@ import { EMPTY, switchMap } from "rxjs";
 import { AppSettingsQuery } from "../models";
 import accounts from "../services/accounts";
 import { eventStore } from "../services/event-store";
-import { AppSettings } from "./app-settings";
+import { type AppSettings } from "./app-settings";
 import { convertToUrl } from "./url";
 
 // hack to get app settings

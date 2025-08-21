@@ -1,5 +1,5 @@
 import { Flex, FlexProps } from "@chakra-ui/react";
-import { ReactNode } from "react";
+import { type ReactNode } from "react";
 
 import { ErrorBoundary } from "../../error-boundary";
 import ScrollLayout from "./scroll-layout";
@@ -56,7 +56,15 @@ export default function SimpleView({
         {actions}
       </SimpleHeader>
 
-      <ErrorBoundary>{scroll ? <ScrollLayout>{children}</ScrollLayout> : content}</ErrorBoundary>
+      <ErrorBoundary>
+        {scroll ? (
+          <ScrollLayout maxW={maxW} center={center} flush={flush}>
+            {children}
+          </ScrollLayout>
+        ) : (
+          content
+        )}
+      </ErrorBoundary>
     </Flex>
   );
 }
