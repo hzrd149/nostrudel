@@ -1,5 +1,12 @@
 # nostrudel
 
+## 0.46.1
+
+### Patch Changes
+
+- 2e02dce: Fix issue with application hanging from capacitorjs modules
+- 8bb958c: Fix elements under nav bar on mobile
+
 ## 0.46.0
 
 ### Minor Changes
