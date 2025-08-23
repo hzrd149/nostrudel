@@ -7,7 +7,7 @@ import { EventTemplate, NostrEvent } from "nostr-tools";
 import { useCallback, useState } from "react";
 
 import { DownloadIcon } from "../../../components/icons";
-import useUsersMediaServers from "../../../hooks/use-user-media-servers";
+import useUsersMediaServers from "../../../hooks/use-user-blossom-servers";
 
 export default function FileDownloadButton({
   file,

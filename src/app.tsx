@@ -34,6 +34,7 @@ import userRoutes from "./views/user/routes";
 import newRoutes from "./views/new/routes";
 import settingsRoutes from "./views/settings/routes";
 import relaysRoutes from "./views/relays/routes";
+import blossomRoutes from "./views/blossom/routes";
 import videosRoutes from "./views/videos/routes";
 import picturesRoutes from "./views/pictures/routes";
 import streamsRoutes from "./views/streams/routes";
@@ -53,7 +54,6 @@ import goalsRoutes from "./views/goals/routes";
 import badgesRoutes from "./views/badges/routes";
 import emojisRoutes from "./views/emojis/routes";
 import walletRoutes from "./views/wallet/routes";
-import { CAP_IS_NATIVE } from "./env";
 
 // Redirect old hash routing
 const hashPath = window.location.hash.match(/^#(\/.+)/);
@@ -106,6 +106,7 @@ export const router = createBrowserRouter(
         { path: "other-stuff", Component: OtherStuffView },
         { path: "settings", children: settingsRoutes },
         { path: "relays", children: relaysRoutes },
+        { path: "blossom", children: blossomRoutes },
         { path: "notifications", Component: NotificationsView },
         { path: "pictures", children: picturesRoutes },
         { path: "streams", children: streamsRoutes },

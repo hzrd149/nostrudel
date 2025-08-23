@@ -22,7 +22,7 @@ import { EventTemplate, NostrEvent } from "nostr-tools";
 import { useCallback, useMemo, useState } from "react";
 
 import useAppSettings from "../../../../hooks/use-user-app-settings";
-import useUsersMediaServers from "../../../../hooks/use-user-media-servers";
+import useUsersMediaServers from "../../../../hooks/use-user-blossom-servers";
 import { usePublishEvent } from "../../../../providers/global/publish-provider";
 import { EmbedEventCard } from "../../../embed-event/card";
 

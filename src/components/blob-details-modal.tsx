@@ -28,15 +28,15 @@ import { useActiveAccount } from "applesauce-react/hooks";
 import { multiServerUpload } from "blossom-client-sdk/actions/multi-server";
 import { mergeBlossomServers } from "../helpers/blossom";
 import useAsyncAction from "../hooks/use-async-action";
-import useUsersMediaServers from "../hooks/use-user-media-servers";
-import MediaServerFavicon from "./favicon/media-server-favicon";
+import useUsersMediaServers from "../hooks/use-user-blossom-servers";
+import BlossomServerFavicon from "./blossom/blossom-server-favicon";
 
 function ServerBlobStatus({ server, blob }: { server: string | URL; blob: string }) {
   const check = useAsync(() => BlossomClient.hasBlob(server, blob), [server, blob]);
 
   return (
     <HStack spacing={2} width="100%">
-      <MediaServerFavicon server={server} size="xs" />
+      <BlossomServerFavicon server={server} size="xs" />
       <Text flex={1} isTruncated>
         {server.toString()}
       </Text>

@@ -30,7 +30,7 @@ export default function StarRating({
   };
 
   return (
-    <Flex gap="1" position="relative">
+    <Flex gap="1" position="relative" flexShrink={0} wrap="nowrap" w="min-content">
       {onChange && (
         <HiddenSlider
           type="range"

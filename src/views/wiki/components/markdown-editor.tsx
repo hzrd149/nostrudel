@@ -10,7 +10,7 @@ import EasyMDE from "easymde";
 import "easymde/dist/easymde.min.css";
 
 import useAppSettings from "../../../hooks/use-user-app-settings";
-import useUsersMediaServers from "../../../hooks/use-user-media-servers";
+import useUsersMediaServers from "../../../hooks/use-user-blossom-servers";
 
 import { CharkaMarkdown } from "../../../components/markdown/markdown";
 import { stripSensitiveMetadataOnFile } from "../../../helpers/image";

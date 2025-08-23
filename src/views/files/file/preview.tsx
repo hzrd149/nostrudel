@@ -3,7 +3,7 @@ import { getTagValue } from "applesauce-core/helpers";
 import { NostrEvent } from "nostr-tools";
 
 import { TrustImage, TrustVideo } from "../../../components/content/links";
-import useUsersMediaServers from "../../../hooks/use-user-media-servers";
+import useUsersMediaServers from "../../../hooks/use-user-blossom-servers";
 import STLViewer from "../../../components/stl-viewer";
 import FileDownloadButton from "../components/download-button";
 

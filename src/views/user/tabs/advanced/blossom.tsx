@@ -3,17 +3,16 @@ import { Box, Flex, Heading, Text, VStack } from "@chakra-ui/react";
 import { ProfilePointer } from "nostr-tools/nip19";
 import { CopyIconButton } from "../../../../components/copy-icon-button";
 import { ErrorBoundary } from "../../../../components/error-boundary";
-import MediaServerFavicon from "../../../../components/favicon/media-server-favicon";
-import useUsersMediaServers from "../../../../hooks/use-user-media-servers";
+import BlossomServerFavicon from "../../../../components/blossom/blossom-server-favicon";
+import useUsersMediaServers from "../../../../hooks/use-user-blossom-servers";
+import BlossomServerLink from "../../../../components/blossom/blossom-server-link";
 
 function ServerItem({ url }: { url: URL }) {
   return (
     <Flex gap="2" alignItems="center">
-      <MediaServerFavicon server={url} size="xs" />
+      <BlossomServerFavicon server={url} size="xs" />
       <Box overflow="hidden" isTruncated flex={1}>
-        <Text fontSize="sm" isTruncated>
-          {url.toString()}
-        </Text>
+        <BlossomServerLink server={url} fontSize="sm" isTruncated />
       </Box>
       <CopyIconButton
         value={url.toString()}

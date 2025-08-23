@@ -7,8 +7,6 @@ export type RelyLinkProps = Omit<LinkProps, "children"> & {
 };
 
 export default function RelayLink({ relay, ...props }: RelyLinkProps) {
-  // const { info } = useRelayInfo(relay);
-
   return (
     <Link as={RouterLink} to={`/relays/${encodeURIComponent(relay)}`} whiteSpace="nowrap" {...props}>
       {new URL(relay).hostname}

@@ -26,14 +26,15 @@ import { areServersEqual, USER_BLOSSOM_SERVER_LIST_KIND } from "blossom-client-s
 import { useForm } from "react-hook-form";
 
 import DebugEventButton from "../../../components/debug-modal/debug-event-button";
-import MediaServerFavicon from "../../../components/favicon/media-server-favicon";
+import BlossomServerFavicon from "../../../components/blossom/blossom-server-favicon";
 import SimpleView from "../../../components/layout/presets/simple-view";
 import RequireActiveAccount from "../../../components/router/require-active-account";
 import useAsyncAction from "../../../hooks/use-async-action";
 import useReplaceableEvent from "../../../hooks/use-replaceable-event";
 import useAppSettings from "../../../hooks/use-user-app-settings";
-import useUsersMediaServers from "../../../hooks/use-user-media-servers";
+import useUsersBlossomServers from "../../../hooks/use-user-blossom-servers";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
+import BlossomServerLink from "../../../components/blossom/blossom-server-link";
 
 function ServerRow({ server, index }: { server: string | URL; index: number }) {
   const actions = useActionHub();
@@ -64,10 +65,8 @@ function ServerRow({ server, index }: { server: string | URL; index: number }) {
       key={server.toString()}
       borderColor={index === 0 ? "primary.500" : undefined}
     >
-      <MediaServerFavicon server={server.toString()} size="sm" />
-      <Link href={server.toString()} target="_blank" fontSize="lg">
-        {new URL(server).hostname}
-      </Link>
+      <BlossomServerFavicon server={server} size="sm" />
+      <BlossomServerLink server={server} fontSize="lg" />
 
       <ButtonGroup size="sm" ml="auto">
         <Button
@@ -95,7 +94,7 @@ function ServerRow({ server, index }: { server: string | URL; index: number }) {
 function AddServerForm() {
   const account = useActiveAccount()!;
   const toast = useToast();
-  const servers = useUsersMediaServers(account.pubkey);
+  const servers = useUsersBlossomServers(account.pubkey);
   const publish = usePublishEvent();
   const actions = useActionHub();
 
@@ -174,7 +173,7 @@ function MissingServers() {
         <Button
           onClick={() => addServer.run("https://nostr.download/")}
           isLoading={addServer.loading}
-          leftIcon={<MediaServerFavicon server="https://nostr.download/" size="sm" />}
+          leftIcon={<BlossomServerFavicon server="https://nostr.download/" size="sm" />}
           variant="link"
           w="full"
           justifyContent="flex-start"
@@ -184,7 +183,7 @@ function MissingServers() {
         <Button
           onClick={() => addServer.run("https://blossom.primal.net/")}
           isLoading={addServer.loading}
-          leftIcon={<MediaServerFavicon server="https://blossom.primal.net/" size="sm" />}
+          leftIcon={<BlossomServerFavicon server="https://blossom.primal.net/" size="sm" />}
           variant="link"
           w="full"
           justifyContent="flex-start"
@@ -199,7 +198,7 @@ function MissingServers() {
 function MediaServersPage() {
   const account = useActiveAccount()!;
   const { mediaUploadService, updateSettings } = useAppSettings();
-  const servers = useUsersMediaServers(account.pubkey);
+  const servers = useUsersBlossomServers(account.pubkey);
   const event = useReplaceableEvent({ kind: USER_BLOSSOM_SERVER_LIST_KIND, pubkey: account.pubkey });
 
   const switchToBlossom = useAsyncAction(async () => {
@@ -239,7 +238,9 @@ function MediaServersPage() {
       {(!servers || servers.length === 0) && mediaUploadService === "blossom" && <MissingServers />}
 
       <Flex direction="column" gap="2">
-        {servers?.map((server, i) => <ServerRow key={server.toString()} server={server} index={i} />)}
+        {servers?.map((server, i) => (
+          <ServerRow key={server.toString()} server={server} index={i} />
+        ))}
       </Flex>
 
       {mediaUploadService === "blossom" && <AddServerForm />}

@@ -8,7 +8,7 @@ import { simpleMultiServerUpload } from "~/helpers/media-upload/blossom";
 import { nostrBuildUploadImage } from "~/helpers/media-upload/nostr-build";
 import useAsyncAction from "./use-async-action";
 import useAppSettings from "./use-user-app-settings";
-import useUsersMediaServers from "./use-user-media-servers";
+import useUsersMediaServers from "./use-user-blossom-servers";
 
 export default function useUploadFile() {
   const account = useActiveAccount();
