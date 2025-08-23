@@ -1,5 +1,12 @@
 # nostrudel
 
+## 0.47.0
+
+### Minor Changes
+
+- 91d280e: Add blossom servers page
+- 5de83bf: Finish NIP-29 group chat view
+
 ## 0.46.1
 
 ### Patch Changes
