@@ -1,10 +1,9 @@
 import { Model } from "applesauce-core";
-import { getTagValue, GroupPointer } from "applesauce-core/helpers";
+import { GroupPointer } from "applesauce-core/helpers";
 import { map } from "rxjs";
-import { NostrEvent } from "nostr-tools";
 
-import { groupInfoLoader } from "../services/loaders";
 import { GroupInfo, parseGroupInfo } from "../helpers/groups";
+import { groupInfoLoader } from "../services/loaders";
 
 /** A model that fetches the groups information from the relay */
 export function GroupInfoQuery(group: GroupPointer): Model<GroupInfo> {
