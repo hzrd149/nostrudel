@@ -23,7 +23,7 @@ import ChannelJoinButton from "./components/channel-join-button";
 import ChannelMenu from "./components/channel-menu";
 import ChannelMessageBlock from "./components/channel-message-block";
 import ChannelMetadataDrawer from "./components/channel-metadata-drawer";
-import ChannelMessageForm from "./components/send-message-form";
+import ChannelMessageForm from "./components/channel-message-form";
 
 const ChannelChatLog = memo(({ channel }: { channel: NostrEvent }) => {
   const messages = useEventModel(ChannelMessagesModel, [channel]) ?? [];
