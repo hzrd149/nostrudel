@@ -1,4 +1,6 @@
 import { kinds } from "nostr-tools";
+import { Divider } from "@chakra-ui/react";
+import { getEventUID } from "applesauce-core/helpers";
 
 import { ErrorBoundary } from "../../../components/error-boundary";
 import ScrollLayout from "../../../components/layout/presets/scroll-layout";
@@ -27,11 +29,12 @@ export default function UserArticlesTab() {
   const callback = useTimelineCurserIntersectionCallback(loader);
 
   return (
-    <ScrollLayout maxW="6xl" center>
+    <ScrollLayout maxW="6xl" center flush gap={0}>
       <IntersectionObserverProvider callback={callback}>
         {articles?.map((article) => (
-          <ErrorBoundary key={article.id} event={article}>
+          <ErrorBoundary key={getEventUID(article)} event={article}>
             <ArticleCard article={article} />
+            <Divider />
           </ErrorBoundary>
         ))}
         <TimelineActionAndStatus loader={loader} />

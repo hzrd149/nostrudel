@@ -1,6 +1,7 @@
-import { Box, Flex, FlexProps } from "@chakra-ui/react";
-import useScrollRestoreRef from "../../../hooks/use-scroll-restore";
 import { PropsWithChildren } from "react";
+import { Box, Flex, FlexProps } from "@chakra-ui/react";
+
+import useScrollRestoreRef from "../../../hooks/use-scroll-restore";
 
 /** A simple layout that has a vertical scrollbar and a preserves scroll position on route change */
 export default function ScrollLayout({

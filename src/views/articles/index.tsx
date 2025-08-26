@@ -1,4 +1,4 @@
-import { Box, Flex } from "@chakra-ui/react";
+import { Box, Divider, Flex } from "@chakra-ui/react";
 import { getEventUID } from "applesauce-core/helpers";
 import { Filter, kinds, NostrEvent } from "nostr-tools";
 import { useCallback, useMemo } from "react";
@@ -21,9 +21,10 @@ import { useBreakpointValue } from "../../providers/global/breakpoint-provider";
 
 function ArticleRow({ index, style, data }: ListChildComponentProps<NostrEvent[]>) {
   return (
-    <Box style={style} pb="2">
+    <Box style={style}>
       <ErrorBoundary key={getEventUID(data[index])}>
         <ArticleCard article={data[index]} h="full" mx="auto" maxW="6xl" w="full" />
+        <Divider mx="auto" maxW="6xl" w="full" />
       </ErrorBoundary>
     </Box>
   );
@@ -59,7 +60,7 @@ function ArticlesHomePage() {
 
   return (
     <IntersectionObserverProvider callback={callback}>
-      <SimpleView title="Articles" scroll={false} actions={<PeopleListSelection ms="auto" />} flush>
+      <SimpleView title="Articles" scroll={false} actions={<PeopleListSelection ms="auto" />} flush gap={0}>
         {/* Container */}
         <Flex direction="column" flex={1}>
           <AutoSizer>

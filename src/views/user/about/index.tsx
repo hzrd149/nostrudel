@@ -158,7 +158,7 @@ export default function UserAboutView() {
   const identity = useUserDNSIdentity(user.pubkey);
 
   return (
-    <ScrollLayout>
+    <ScrollLayout flush>
       {metadata?.banner ? (
         <Image
           src={metadata.banner}

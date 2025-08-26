@@ -17,6 +17,7 @@ import {
 import useShareableEventAddress from "../../../hooks/use-shareable-event-address";
 import ArticleMenu from "./article-menu";
 import ArticleTags from "./article-tags";
+import { getEventUID } from "applesauce-core/helpers";
 
 const ArticleCard = memo(({ article, ...props }: { article: NostrEvent } & Omit<CardProps, "children">) => {
   const image = getArticleImage(article);
@@ -27,15 +28,15 @@ const ArticleCard = memo(({ article, ...props }: { article: NostrEvent } & Omit<
   const naddr = useShareableEventAddress(article);
 
   return (
-    <Card as={LinkBox} display="block" p="2" position="relative" variant="ghost" overflow="hidden" {...props}>
-      <Flex gap="2" alignItems="center" mb="2">
-        <UserAvatar pubkey={article.pubkey} size="sm" />
-        <UserName pubkey={article.pubkey} />
-        <Timestamp timestamp={published ?? article.created_at} />
-        <Spacer />
-        <ArticleMenu aria-label="More Options" article={article} variant="ghost" size="sm" zIndex={10} />
-      </Flex>
-
+    <Box
+      as={LinkBox}
+      position="relative"
+      variant="ghost"
+      overflow="hidden"
+      role="article"
+      aria-labelledby={getEventUID(article) + "-title"}
+      {...props}
+    >
       {image && (
         <Box
           aspectRatio={{ base: 3, lg: 16 / 9 }}
@@ -45,23 +46,31 @@ const ArticleCard = memo(({ article, ...props }: { article: NostrEvent } & Omit<
           backgroundSize="cover"
           float={{ base: undefined, lg: "right" }}
           w={{ base: "full", lg: "initial" }}
-          mx={{ base: "auto", lg: 2 }}
-          mb={{ base: "2", lg: undefined }}
+          m={{ base: 0, lg: 2 }}
           minH="10rem"
           maxH="15rem"
         />
       )}
-      <Heading size="md">
-        <HoverLinkOverlay as={RouterLink} to={`/articles/${naddr}`}>
-          {title}
-        </HoverLinkOverlay>
-      </Heading>
-      <Text noOfLines={4}>{summary}</Text>
+      <Box isTruncated p={2}>
+        <Heading size="md" isTruncated id={getEventUID(article) + "-title"}>
+          <HoverLinkOverlay as={RouterLink} to={`/articles/${naddr}`}>
+            {title}
+          </HoverLinkOverlay>
+        </Heading>
+        <Text fontStyle="italic">
+          By: <UserName pubkey={article.pubkey} fontWeight="normal" /> Published:{" "}
+          <Timestamp timestamp={published ?? article.created_at} />
+        </Text>
+      </Box>
+      <Text noOfLines={4} px={2}>
+        {summary}
+      </Text>
 
-      <ArticleTags article={article} />
-
-      <ZapBubbles event={article} mt="2" mr="2" />
-    </Card>
+      <Flex direction="column" gap={2} p={2}>
+        <ArticleTags article={article} />
+        <ZapBubbles event={article} />
+      </Flex>
+    </Box>
   );
 });
 
