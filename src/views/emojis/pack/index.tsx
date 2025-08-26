@@ -7,12 +7,12 @@ import { useThrottle } from "react-use";
 import {
   Button,
   ButtonGroup,
+  CloseButton,
   Flex,
   Heading,
   Image,
   Input,
   SimpleGrid,
-  Spacer,
   Tag,
   TagCloseButton,
   TagLabel,
@@ -22,19 +22,18 @@ import { getEmojis, getPackName } from "applesauce-core/helpers/emoji";
 import { useActiveAccount } from "applesauce-react/hooks";
 import { EventTemplate, kinds, NostrEvent } from "nostr-tools";
 
-import { ChevronLeftIcon } from "../../components/icons";
-import EventQuoteButton from "../../components/note/event-quote-button";
-import Timestamp from "../../components/timestamp";
-import UserAvatarLink from "../../components/user/user-avatar-link";
-import UserLink from "../../components/user/user-link";
-import VerticalPageLayout from "../../components/vertical-page-layout";
-import EventZapButton from "../../components/zap/event-zap-button";
-import useParamsAddressPointer from "../../hooks/use-params-address-pointer";
-import useReplaceableEvent from "../../hooks/use-replaceable-event";
-import { usePublishEvent } from "../../providers/global/publish-provider";
-import { useDeleteEventContext } from "../../providers/route/delete-event-provider";
-import EmojiPackFavoriteButton from "./components/emoji-pack-favorite-button";
-import EmojiPackMenu from "./components/emoji-pack-menu";
+import SimpleView from "../../../components/layout/presets/simple-view";
+import EventQuoteButton from "../../../components/note/event-quote-button";
+import Timestamp from "../../../components/timestamp";
+import UserAvatarLink from "../../../components/user/user-avatar-link";
+import UserLink from "../../../components/user/user-link";
+import EventZapButton from "../../../components/zap/event-zap-button";
+import useParamsAddressPointer from "../../../hooks/use-params-address-pointer";
+import useReplaceableEvent from "../../../hooks/use-replaceable-event";
+import { usePublishEvent } from "../../../providers/global/publish-provider";
+import { useDeleteEventContext } from "../../../providers/route/delete-event-provider";
+import EmojiPackFavoriteButton from "../components/emoji-pack-favorite-button";
+import EmojiPackMenu from "../components/emoji-pack-menu";
 
 function AddEmojiForm({ onAdd }: { onAdd: (values: { shortcode: string; url: string }) => void }) {
   const { register, handleSubmit, watch, getValues, reset } = useForm({
@@ -82,7 +81,7 @@ function EmojiTag({
   scale: number;
 }) {
   return (
-    <Tag>
+    <Flex alignItems="center" gap={2} p={1}>
       <Image
         key={shortcode + url}
         src={url}
@@ -90,15 +89,11 @@ function EmojiTag({
         alt={`:${shortcode}:`}
         w={scale}
         h={scale}
-        ml="-1"
-        mr="2"
-        my="1"
-        borderRadius="md"
         overflow="hidden"
       />
-      <TagLabel flex={1}>{shortcode}</TagLabel>
-      {onRemove && <TagCloseButton onClick={onRemove} />}
-    </Tag>
+      <Text flex={1}>{shortcode}</Text>
+      {onRemove && <CloseButton size="sm" onClick={onRemove} />}
+    </Flex>
   );
 }
 
@@ -145,15 +140,10 @@ function EmojiPackPage({ pack }: { pack: NostrEvent }) {
   };
 
   return (
-    <VerticalPageLayout>
-      <Flex gap="2" alignItems="center">
-        <Button onClick={() => navigate(-1)} leftIcon={<ChevronLeftIcon />}>
-          Back
-        </Button>
-
-        <Spacer />
-
-        <ButtonGroup>
+    <SimpleView
+      title={getPackName(pack)}
+      actions={
+        <ButtonGroup ms="auto" size="sm">
           {isAuthor && (
             <>
               {!editing && (
@@ -161,22 +151,19 @@ function EmojiPackPage({ pack }: { pack: NostrEvent }) {
                   Edit
                 </Button>
               )}
-              <Button colorScheme="red" onClick={() => deleteEvent(pack).then(() => navigate("/lists"))}>
+              <Button
+                colorScheme="red"
+                onClick={() => deleteEvent(pack).then(() => navigate("/lists"))}
+                variant="ghost"
+              >
                 Delete
               </Button>
             </>
           )}
-          <EmojiPackMenu aria-label="More options" pack={pack} />
+          <EmojiPackMenu aria-label="More options" pack={pack} variant="ghost" />
         </ButtonGroup>
-      </Flex>
-
-      <Flex gap="2" alignItems="center">
-        <Heading size="lg" isTruncated>
-          {getPackName(pack)}
-        </Heading>
-        <EmojiPackFavoriteButton pack={pack} size="sm" />
-      </Flex>
-
+      }
+    >
       <Flex gap="2" alignItems="center">
         <Text>Created by:</Text>
         <UserAvatarLink pubkey={pack.pubkey} size="sm" />
@@ -210,7 +197,7 @@ function EmojiPackPage({ pack }: { pack: NostrEvent }) {
               </ButtonGroup>
             </Flex>
           )}
-          <SimpleGrid columns={{ base: 2, sm: 3, md: 2, lg: 4, xl: 6 }} gap="2">
+          <SimpleGrid columns={{ base: 2, sm: 3, md: 2, lg: 4, xl: 6 }}>
             {(editing ? draftEmojis : emojis).map(({ shortcode, url }) => (
               <EmojiTag
                 key={shortcode + url}
@@ -235,7 +222,7 @@ function EmojiPackPage({ pack }: { pack: NostrEvent }) {
           </Button>
         </Flex>
       )}
-    </VerticalPageLayout>
+    </SimpleView>
   );
 }
 
