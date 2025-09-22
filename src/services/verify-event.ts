@@ -48,6 +48,7 @@ async function updateVerifyMethod() {
         break;
       case "none":
         log("Using fake verify event method");
+        // @ts-expect-error
         verifyEventMethod = fakeVerifyEvent;
         alwaysVerifyMethod = internalVerifyEvent;
         break;

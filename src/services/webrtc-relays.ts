@@ -126,6 +126,7 @@ class WebRtcRelaysService {
 }
 
 const signer = new SimpleSigner(localSettings.webRtcLocalIdentity.value);
+// @ts-expect-error
 const broker = new NostrWebRtcBroker(signer, new SimplePool(), ["wss://nos.lol", "wss://nostrue.com"]);
 broker.iceServers = DEFAULT_ICE_SERVERS;
 

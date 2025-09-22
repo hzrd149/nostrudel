@@ -1,7 +1,7 @@
 import { Flex, Button, Text, Card, CardBody, useToast } from "@chakra-ui/react";
 import { useLocation, Navigate, useNavigate } from "react-router-dom";
 import { useActionHub } from "applesauce-react/hooks";
-import { getDecodedToken, Token } from "@cashu/cashu-ts";
+import { getDecodedToken, type Token } from "@cashu/cashu-ts";
 import { ReceiveToken } from "applesauce-wallet/actions";
 
 import SimpleView from "../../../components/layout/presets/simple-view";
@@ -19,7 +19,7 @@ export default function WalletReceiveTokenView() {
   const token: string = location.state?.token;
   if (!token) return <Navigate to="/wallet" />;
 
-  const decoded = getDecodedToken(token);
+  const decoded: Token = getDecodedToken(token);
   const originalAmount = decoded.proofs.reduce((t, p) => t + p.amount, 0);
 
   const receive = useAsyncAction(async () => {
