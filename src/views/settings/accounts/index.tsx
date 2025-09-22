@@ -1,18 +1,17 @@
 import { Box, Button, ButtonGroup, Divider, Flex, Heading, Text } from "@chakra-ui/react";
-import { useNavigate } from "react-router-dom";
-import { PasswordSigner, SerialPortSigner, SimpleSigner } from "applesauce-signers";
+import { IAccount } from "applesauce-accounts";
 import { useAccountManager, useAccounts } from "applesauce-react/hooks";
+import { PasswordSigner, SerialPortSigner, SimpleSigner } from "applesauce-signers";
+import { useNavigate } from "react-router-dom";
 
 import { useActiveAccount } from "applesauce-react/hooks";
-import UserAvatar from "../../../components/user/user-avatar";
-import UserName from "../../../components/user/user-name";
-import UserDnsIdentity from "../../../components/user/user-dns-identity";
 import AccountTypeBadge from "../../../components/accounts/account-info-badge";
-import SimpleSignerBackup from "./components/simple-signer-backup";
-import MigrateAccountToDevice from "./components/migrate-to-device";
 import SimpleView from "../../../components/layout/presets/simple-view";
 import RouterLink from "../../../components/router-link";
-import { IAccount } from "applesauce-accounts";
+import UserAvatar from "../../../components/user/user-avatar";
+import UserName from "../../../components/user/user-name";
+import MigrateAccountToDevice from "./components/migrate-to-device";
+import SimpleSignerBackup from "./components/simple-signer-backup";
 
 function AccountBackup() {
   const account = useActiveAccount()!;
@@ -40,10 +39,11 @@ function AccountCard({ account }: { account: IAccount }) {
         <AccountTypeBadge account={account} />
       </Box>
 
-      <ButtonGroup size="sm" ml="auto">
-        <Button onClick={() => manager.setActive(account)} variant="ghost">
+      <ButtonGroup ms="auto">
+        <Button onClick={() => manager.setActive(account)} px={16}>
           Switch
         </Button>
+
         <Button onClick={() => confirm("Remove account?") && manager.removeAccount(account)} colorScheme="red">
           Remove
         </Button>
