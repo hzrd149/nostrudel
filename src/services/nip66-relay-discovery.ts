@@ -12,7 +12,8 @@ import { writeEvent, cacheRequest } from "./event-cache";
 // Discovery relays for NIP-66
 const DISCOVERY_RELAYS = [
   "wss://relay.nostr.watch",
-  "wss://relaypag.es"
+  "wss://relaypag.es",
+  "wss://monitorlizard.nostr1.com"
 ];
 
 // Default monitor pubkey (can be overridden)
