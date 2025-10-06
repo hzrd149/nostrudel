@@ -1,28 +1,47 @@
-import { forwardRef } from "react";
+import { forwardRef, useEffect, useState } from "react";
 import { Input, InputProps, Text } from "@chakra-ui/react";
-import { useAsync } from "react-use";
 
 import { unique } from "../helpers/array";
+import nip66Discovery from "../services/nip66-relay-discovery";
 
 export type RelayUrlInputProps = Omit<InputProps, "type">;
 
 export const RelayUrlInput = forwardRef(({ nips, ...props }: { nips?: number[] } & Omit<InputProps, "type">, ref) => {
-  const {
-    value: relaysJson,
-    loading,
-    error,
-  } = useAsync(async () => {
-    let online = await fetch("https://api.nostr.watch/v1/online").then((res) => res.json() as Promise<string[]>);
-    if (!nips) return online;
+  const [relaysJson, setRelaysJson] = useState<string[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
 
-    for (const nip of nips) {
-      if (online.length === 0) break;
-      const supported = await fetch("https://api.nostr.watch/v1/nip/" + nip).then(
-        (res) => res.json() as Promise<string[]>,
-      );
-      online = online.filter((url) => supported.includes(url));
-    }
-    return online;
+  useEffect(() => {
+    setLoading(true);
+    setError(null);
+    
+    const subscription = nip66Discovery.fetchRelays().subscribe({
+      next: (relayMap) => {
+        try {
+          let relays: string[];
+          
+          if (nips && nips.length > 0) {
+            relays = nip66Discovery.getRelaysByNIPs(nips);
+          } else {
+            relays = nip66Discovery.getOnlineRelays();
+          }
+          
+          setRelaysJson(relays);
+          setLoading(false);
+        } catch (err) {
+          setError(err as Error);
+          setLoading(false);
+        }
+      },
+      error: (err) => {
+        setError(err);
+        setLoading(false);
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, [nips?.join("|")]);
 
   const relaySuggestions = unique(relaysJson ?? []);

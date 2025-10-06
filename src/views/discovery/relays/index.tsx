@@ -11,6 +11,7 @@ import SimpleView from "../../../components/layout/presets/simple-view";
 import useRouteStateValue from "../../../hooks/use-route-state-value";
 import { useBreakpointValue } from "../../../providers/global/breakpoint-provider";
 import pool from "../../../services/pool";
+import { writeEvent } from "../../../services/event-cache";
 import RelayStatusDetails from "./components/relay-details";
 import RelayList from "./components/relay-list";
 import RelayMap from "./components/relay-map";
@@ -51,6 +52,8 @@ export default function RelayDiscoveryView() {
       .subscribe((event) => {
         if (isReplaceable(event.kind)) {
           setEvents((arr) => ({ ...arr, [getEventUID(event)]: event }));
+          // Cache the event for NIP-66 discovery service
+          writeEvent(event);
         }
       });
 
