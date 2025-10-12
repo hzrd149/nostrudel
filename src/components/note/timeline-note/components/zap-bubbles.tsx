@@ -1,15 +1,14 @@
 import { Flex, FlexProps, Tag, TagLabel } from "@chakra-ui/react";
-import { NostrEvent } from "nostr-tools";
-import { getEventUID } from "nostr-idb";
+import { kinds, NostrEvent } from "nostr-tools";
 import styled from "@emotion/styled";
-import { getZapPayment, getZapRequest } from "applesauce-core/helpers";
+import { getZapPayment, getZapRequest, KnownEvent } from "applesauce-core/helpers";
 
 import useEventZaps from "../../../../hooks/use-event-zaps";
 import UserAvatar from "../../../user/user-avatar";
 import { humanReadableSats } from "../../../../helpers/lightning";
 import { LightningIcon } from "../../../icons";
 
-function ZapBubble({ zap }: { zap: NostrEvent }) {
+function ZapBubble({ zap }: { zap: KnownEvent<kinds.Zap> }) {
   const request = getZapRequest(zap);
   const payment = getZapPayment(zap);
 

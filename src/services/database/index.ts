@@ -1,5 +1,5 @@
 import { openDB, deleteDB, IDBPDatabase, IDBPTransaction } from "idb";
-import { clearDB, deleteDB as nostrIDBDelete } from "nostr-idb";
+import { deleteDB as nostrIDBDelete } from "nostr-idb";
 
 import {
   SchemaV1,

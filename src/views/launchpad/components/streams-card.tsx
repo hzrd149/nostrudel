@@ -1,5 +1,5 @@
 import { Button, Card, CardBody, CardHeader, CardProps, Flex, Heading, Link, LinkBox } from "@chakra-ui/react";
-import { getEventUID } from "nostr-idb";
+import { getEventUID } from "applesauce-core/helpers";
 import { Filter, kinds, NostrEvent } from "nostr-tools";
 import { useCallback, useMemo } from "react";
 import { Link as RouterLink } from "react-router-dom";

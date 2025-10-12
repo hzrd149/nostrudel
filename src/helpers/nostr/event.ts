@@ -1,6 +1,5 @@
 import { getNip10References, getOrComputeCachedValue, isDTag, isReplaceable } from "applesauce-core/helpers";
 import dayjs from "dayjs";
-import { getEventUID } from "nostr-idb";
 import { EventTemplate, kinds, NostrEvent } from "nostr-tools";
 import { AddressPointer, EventPointer } from "nostr-tools/nip19";
 
@@ -150,4 +149,4 @@ export function getSortedKinds(events: NostrEvent[]) {
     .reduce((dir, k) => ({ ...dir, [k.kind]: k.count }), {} as Record<string, number>);
 }
 
-export { getEventUID };
+export { getEventUID } from "applesauce-core/helpers";

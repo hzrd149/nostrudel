@@ -1,5 +1,5 @@
 import { Alert, AlertIcon, Button, Flex, Text } from "@chakra-ui/react";
-import { isGiftWrapLocked, unlockGiftWrap } from "applesauce-core/helpers/gift-wraps";
+import { isGiftWrapUnlocked, unlockGiftWrap } from "applesauce-core/helpers/gift-wraps";
 import { GiftWrapsModel } from "applesauce-core/models";
 import { useActiveAccount, useEventModel } from "applesauce-react/hooks";
 
@@ -14,7 +14,7 @@ export default function PendingLockedAlert() {
     if (!account || !locked) return;
 
     for (const giftWrap of locked) {
-      if (!isGiftWrapLocked(giftWrap)) continue;
+      if (isGiftWrapUnlocked(giftWrap)) continue;
 
       try {
         await unlockGiftWrap(giftWrap, account);

@@ -6,8 +6,9 @@ import {
   getZapPayment,
   getZapRequest,
   getZapSender,
+  KnownEvent,
 } from "applesauce-core/helpers";
-import { NostrEvent } from "nostr-tools";
+import { kinds, NostrEvent } from "nostr-tools";
 
 import { humanReadableSats } from "../../../helpers/lightning";
 import { EmbedEventPointerCard } from "../../../components/embed-event/card";
@@ -17,7 +18,7 @@ import NotificationIconEntry from "./notification-icon-entry";
 import ZapReceiptMenu from "../../../components/zap/zap-receipt-menu";
 import TextNoteContents from "../../../components/note/timeline-note/text-note-contents";
 
-const ZapNotification = forwardRef<HTMLDivElement, { zap: NostrEvent; onClick?: () => void }>(
+const ZapNotification = forwardRef<HTMLDivElement, { zap: KnownEvent<kinds.Zap>; onClick?: () => void }>(
   ({ zap, onClick }, ref) => {
     const payment = getZapPayment(zap);
     const request = getZapRequest(zap);

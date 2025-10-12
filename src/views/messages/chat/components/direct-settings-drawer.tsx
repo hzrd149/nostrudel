@@ -15,7 +15,7 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
-import { isLegacyMessageLocked, unlockLegacyMessage } from "applesauce-core/helpers";
+import { isLegacyMessageUnlocked, unlockLegacyMessage } from "applesauce-core/helpers";
 import { useActiveAccount, useEventModel } from "applesauce-react/hooks";
 
 import RelayFavicon from "../../../../components/relay/relay-favicon";
@@ -102,7 +102,7 @@ function LegacyMessagesSection({
     if (!messages) return;
 
     for (const message of messages) {
-      if (isLegacyMessageLocked(message)) {
+      if (isLegacyMessageUnlocked(message) === false) {
         unlockLegacyMessage(message, account.pubkey, account);
       }
     }
@@ -110,7 +110,7 @@ function LegacyMessagesSection({
 
   const locked = useMemo(() => {
     if (!messages) return [];
-    return messages.filter(isLegacyMessageLocked);
+    return messages.filter((m) => isLegacyMessageUnlocked(m) === false);
   }, [messages]);
 
   return (

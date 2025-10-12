@@ -18,7 +18,7 @@ import {
 } from "@chakra-ui/react";
 import { NostrEvent } from "nostr-tools";
 
-import { isLegacyMessageLocked, unlockLegacyMessage } from "applesauce-core/helpers";
+import { isLegacyMessageUnlocked, unlockLegacyMessage } from "applesauce-core/helpers";
 import { useActiveAccount } from "applesauce-react/hooks";
 import ThreadButton from "../../../components/message/thread-button";
 import Timestamp from "../../../components/timestamp";
@@ -116,7 +116,7 @@ export default function ThreadDrawer({
 
     // Decrypt all messages
     for (const message of thread.messages) {
-      if (isLegacyMessageLocked(message)) {
+      if (isLegacyMessageUnlocked(message) === false) {
         await unlockLegacyMessage(message, account.pubkey, account);
       }
     }

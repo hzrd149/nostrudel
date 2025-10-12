@@ -13,7 +13,7 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { useActiveAccount, useEventModel, useEventStore } from "applesauce-react/hooks";
-import { getHistoryContent, isHistoryContentLocked, unlockHistoryContent } from "applesauce-wallet/helpers";
+import { getHistoryContent, isHistoryContentUnlocked, unlockHistoryContent } from "applesauce-wallet/helpers";
 import { WalletHistoryModel } from "applesauce-wallet/models";
 import { NostrEvent } from "nostr-tools";
 
@@ -39,7 +39,7 @@ function HistoryEntry({ entry }: { entry: NostrEvent }) {
   const more = useDisclosure();
   const account = useActiveAccount()!;
   const eventStore = useEventStore();
-  const locked = isHistoryContentLocked(entry);
+  const locked = isHistoryContentUnlocked(entry) === false;
   const details = !locked ? getHistoryContent(entry) : undefined;
   useEventUpdate(entry.id);
 
@@ -133,7 +133,7 @@ export default function WalletHistoryTab() {
 
   const { run: unlock } = useAsyncAction(async () => {
     for (const entry of locked) {
-      if (!isHistoryContentLocked(entry)) continue;
+      if (isHistoryContentUnlocked(entry)) continue;
       await unlockHistoryContent(entry, account);
       eventStore.update(entry);
     }

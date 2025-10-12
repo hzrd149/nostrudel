@@ -65,9 +65,9 @@ function PageIndicators() {
 }
 
 function PictureAttachmentSlide({ media }: { media: MediaAttachment }) {
-  if (media.type?.startsWith("video/") || isVideoURL(media.url)) {
-    return <TrustVideo src={media.url} poster={media.image} aria-description={media.alt} />;
-  } else if (media.type?.startsWith("image/") || isImageURL(media.url)) {
+  if (media.type?.startsWith("video/") || isVideoURL(media.url!)) {
+    return <TrustVideo src={media.url!} poster={media.image} aria-description={media.alt} />;
+  } else if (media.type?.startsWith("image/") || isImageURL(media.url!)) {
     return <TrustImage src={media.url} alt={media.alt} maxH="full" />;
   }
 

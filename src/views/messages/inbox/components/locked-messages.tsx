@@ -20,7 +20,7 @@ import {
   Tr,
   VStack,
 } from "@chakra-ui/react";
-import { getGiftWrapRumor, isGiftWrapLocked, Rumor, unlockGiftWrap } from "applesauce-core/helpers/gift-wraps";
+import { getGiftWrapRumor, isGiftWrapUnlocked, Rumor, unlockGiftWrap } from "applesauce-core/helpers/gift-wraps";
 import { getConversationParticipants } from "applesauce-core/helpers/messages";
 import { GiftWrapsModel } from "applesauce-core/models";
 import { useActiveAccount, useEventModel, useObservableState } from "applesauce-react/hooks";
@@ -210,7 +210,7 @@ export default function LockedMessagesSection() {
     if (!account || !locked) return;
 
     for (const giftWrap of locked) {
-      if (!isGiftWrapLocked(giftWrap)) continue;
+      if (isGiftWrapUnlocked(giftWrap)) continue;
 
       try {
         await unlockGiftWrap(giftWrap, account);

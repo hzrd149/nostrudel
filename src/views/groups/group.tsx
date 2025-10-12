@@ -46,5 +46,6 @@ export default function GroupView() {
   if (!identifier) return <Navigate to="/groups" />;
 
   const pointer = decodeGroupPointer(identifier);
+  if (!pointer) return <Navigate to="/groups" />;
   return <GroupPage group={pointer} />;
 }

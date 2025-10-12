@@ -30,7 +30,7 @@ const updates = eventStore.filters([{ kinds: [kinds.Metadata] }]).pipe(
     const transaction = db.transaction("userSearch", "readwrite");
     for (const metadata of events) {
       const profile = getProfileContent(metadata);
-      const names = getSearchNames(profile);
+      const names = profile ? getSearchNames(profile) : [];
       updates[metadata.pubkey] = names;
       transaction.objectStore("userSearch").put({ pubkey: metadata.pubkey, names });
     }

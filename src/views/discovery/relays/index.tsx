@@ -1,7 +1,6 @@
 import { Flex, Select } from "@chakra-ui/react";
-import { isReplaceable, matchFilter } from "applesauce-core/helpers";
+import { getEventUID, isReplaceable, matchFilter } from "applesauce-core/helpers";
 import { onlyEvents } from "applesauce-relay";
-import { getEventUID } from "nostr-idb";
 import { Filter, NostrEvent } from "nostr-tools";
 import { useEffect, useState } from "react";
 import { useThrottle } from "react-use";
@@ -10,8 +9,8 @@ import CountyPicker from "../../../components/county-picker";
 import SimpleView from "../../../components/layout/presets/simple-view";
 import useRouteStateValue from "../../../hooks/use-route-state-value";
 import { useBreakpointValue } from "../../../providers/global/breakpoint-provider";
-import pool from "../../../services/pool";
 import { writeEvent } from "../../../services/event-cache";
+import pool from "../../../services/pool";
 import RelayStatusDetails from "./components/relay-details";
 import RelayList from "./components/relay-list";
 import RelayMap from "./components/relay-map";

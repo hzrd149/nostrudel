@@ -1,5 +1,5 @@
 import { Box, Button, Divider, Flex, Heading, Text, useDisclosure } from "@chakra-ui/react";
-import { getTagValue, getZapPayment, unixNow } from "applesauce-core/helpers";
+import { getTagValue, getZapPayment, isValidZap, unixNow } from "applesauce-core/helpers";
 import { TimelineModel } from "applesauce-core/models";
 import { useEventModel } from "applesauce-react/hooks";
 import confetti from "canvas-confetti";
@@ -63,6 +63,7 @@ export default function SupportView() {
 
   const support = zaps
     ?.filter((zap) => isProfileZap(zap))
+    .filter(isValidZap)
     .sort((a, b) => (getZapPayment(b)?.amount ?? 0) - (getZapPayment(a)?.amount ?? 0) || b.created_at - a.created_at);
 
   // close the pay request when new zap is received
@@ -128,7 +129,13 @@ export default function SupportView() {
             </Button>
           )}
 
-          {(support?.length ?? 0) > 3 && <>{support?.slice(3).map((zap) => <OtherZap key={zap.id} zap={zap} />)}</>}
+          {(support?.length ?? 0) > 3 && (
+            <>
+              {support?.slice(3).map((zap) => (
+                <OtherZap key={zap.id} zap={zap} />
+              ))}
+            </>
+          )}
         </IntersectionObserverProvider>
       </VerticalPageLayout>
     </>

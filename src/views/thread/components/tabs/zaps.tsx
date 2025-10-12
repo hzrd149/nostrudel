@@ -1,7 +1,7 @@
 import { Box, ButtonGroup, Flex, Text } from "@chakra-ui/react";
-import { getZapPayment, getZapRequest, getZapSender } from "applesauce-core/helpers";
+import { getZapPayment, getZapRequest, getZapSender, isValidZap, KnownEvent } from "applesauce-core/helpers";
 import { ThreadItem } from "applesauce-core/models";
-import { NostrEvent } from "nostr-tools";
+import { kinds, NostrEvent } from "nostr-tools";
 import { memo } from "react";
 
 import { LightningIcon } from "../../../../components/icons";
@@ -13,7 +13,7 @@ import ZapReceiptMenu from "../../../../components/zap/zap-receipt-menu";
 import { humanReadableSats } from "../../../../helpers/lightning";
 import { ContentSettingsProvider } from "../../../../providers/local/content-settings";
 
-const ZapEvent = memo(({ zap }: { zap: NostrEvent }) => {
+const ZapEvent = memo(({ zap }: { zap: KnownEvent<kinds.Zap> }) => {
   const request = getZapRequest(zap);
   const payment = getZapPayment(zap);
   const sender = getZapSender(zap);
@@ -47,6 +47,7 @@ export default function PostZapsTab({ post, zaps }: { post: ThreadItem; zaps: No
     <Flex px="2" direction="column" gap="2" mb="2">
       {Array.from(zaps)
         .sort((a, b) => (getZapPayment(b)?.amount ?? 0) - (getZapPayment(a)?.amount ?? 0))
+        .filter(isValidZap)
         .map((zap) => (
           <ZapEvent key={zap.id} zap={zap} />
         ))}

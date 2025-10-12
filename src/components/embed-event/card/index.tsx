@@ -1,5 +1,5 @@
 import { CardProps, Spinner } from "@chakra-ui/react";
-import { DecodeResult } from "applesauce-core/helpers";
+import { DecodeResult, isValidZap } from "applesauce-core/helpers";
 import { kinds, NostrEvent } from "nostr-tools";
 import { lazy, Suspense } from "react";
 
@@ -85,8 +85,6 @@ export function EmbedEventCard({
         return <EmbeddedRepost repost={event} {...cardProps} />;
       case WIKI_PAGE_KIND:
         return <EmbeddedWikiPage page={event} {...cardProps} />;
-      case kinds.Zap:
-        return <EmbeddedZapRecept zap={event} {...cardProps} />;
       case kinds.FileMetadata:
         return <EmbeddedFile file={event} {...cardProps} />;
       case kinds.Handlerinformation:
@@ -94,9 +92,11 @@ export function EmbedEventCard({
         if (event.tags.some((t) => t[0] === "k" && t[1] === String(DVM_CONTENT_DISCOVERY_JOB_KIND)))
           return <DVMCard dvm={event} />;
     }
-
-    if (SET_KINDS.includes(event.kind) || LIST_KINDS.includes(event.kind))
+    if (event.kind === kinds.Zap && isValidZap(event)) {
+      return <EmbeddedZapRecept zap={event} {...cardProps} />;
+    } else if (SET_KINDS.includes(event.kind) || LIST_KINDS.includes(event.kind)) {
       return <EmbeddedSetOrList list={event} {...cardProps} />;
+    }
 
     return <EmbeddedUnknown event={event} {...cardProps} />;
   };

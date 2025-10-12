@@ -1,18 +1,18 @@
-import { memo } from "react";
 import { Box, Flex, Text } from "@chakra-ui/react";
-import { NostrEvent } from "nostr-tools";
+import { kinds } from "nostr-tools";
+import { memo } from "react";
 
+import { getZapPayment, getZapRequest, getZapSender, KnownEvent } from "applesauce-core/helpers";
+import { LightningIcon } from "../../../../components/icons";
 import UserAvatar from "../../../../components/user/user-avatar";
 import UserLink from "../../../../components/user/user-link";
-import { LightningIcon } from "../../../../components/icons";
 import { humanReadableSats } from "../../../../helpers/lightning";
-import { ContentSettingsProvider } from "../../../../providers/local/content-settings";
-import ChatMessageContent from "./chat-message-content";
 import useClientSideMuteFilter from "../../../../hooks/use-client-side-mute-filter";
 import useEventIntersectionRef from "../../../../hooks/use-event-intersection-ref";
-import { getZapPayment, getZapRequest, getZapSender } from "applesauce-core/helpers";
+import { ContentSettingsProvider } from "../../../../providers/local/content-settings";
+import ChatMessageContent from "./chat-message-content";
 
-function ZapMessage({ zap }: { zap: NostrEvent }) {
+function ZapMessage({ zap }: { zap: KnownEvent<kinds.Zap> }) {
   const ref = useEventIntersectionRef(zap);
 
   const sender = getZapSender(zap);

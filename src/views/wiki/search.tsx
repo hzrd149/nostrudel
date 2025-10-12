@@ -1,5 +1,5 @@
 import { Button, Flex, Heading, Input, Link } from "@chakra-ui/react";
-import { getEventUID } from "nostr-idb";
+import { getEventUID } from "applesauce-core/helpers";
 import { Filter, NostrEvent } from "nostr-tools";
 import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";

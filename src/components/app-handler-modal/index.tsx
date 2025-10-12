@@ -80,7 +80,7 @@ function AppHandler({ app, decoded }: { app: NostrEvent; decoded: DecodeResult }
         <HoverLinkOverlay fontWeight="bold" href={link} isExternal>
           {getDisplayName(metadata, app.pubkey)}
         </HoverLinkOverlay>
-        <Text noOfLines={3}>{metadata.about}</Text>
+        <Text noOfLines={3}>{metadata?.about}</Text>
       </Box>
       <ArrowRight boxSize={6} ml="auto" />
     </Flex>

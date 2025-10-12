@@ -1,6 +1,6 @@
+import { fakeVerifyEvent } from "applesauce-core/helpers/event";
 import { NostrEvent, verifyEvent as internalVerifyEvent } from "nostr-tools";
 import { setNostrWasm, verifyEvent as wasmVerifyEvent } from "nostr-tools/wasm";
-import { fakeVerifyEvent } from "applesauce-core/helpers/event";
 import { distinctUntilChanged } from "rxjs";
 
 import { logger } from "../helpers/debug";
@@ -48,7 +48,6 @@ async function updateVerifyMethod() {
         break;
       case "none":
         log("Using fake verify event method");
-        // @ts-expect-error
         verifyEventMethod = fakeVerifyEvent;
         alwaysVerifyMethod = internalVerifyEvent;
         break;

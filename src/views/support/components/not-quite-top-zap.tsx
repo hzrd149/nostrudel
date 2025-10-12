@@ -1,6 +1,6 @@
 import { Card, CardBody, CardHeader, Flex, Text, TextProps } from "@chakra-ui/react";
-import { getZapPayment, getZapRequest, getZapSender } from "applesauce-core/helpers";
-import { NostrEvent } from "nostr-tools";
+import { getZapPayment, getZapRequest, getZapSender, KnownEvent } from "applesauce-core/helpers";
+import { kinds, NostrEvent } from "nostr-tools";
 
 import UserAvatar from "../../../components/user/user-avatar";
 import UserLink from "../../../components/user/user-link";
@@ -12,7 +12,7 @@ import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
 import { ContentSettingsProvider } from "../../../providers/local/content-settings";
 import ZapReceiptMenu from "../../../components/zap/zap-receipt-menu";
 
-export function NotQuiteTopZap({ zap, color }: { zap: NostrEvent; color: TextProps["color"] }) {
+export function NotQuiteTopZap({ zap, color }: { zap: KnownEvent<kinds.Zap>; color: TextProps["color"] }) {
   const sender = getZapSender(zap);
   const request = getZapRequest(zap);
   const payment = getZapPayment(zap);

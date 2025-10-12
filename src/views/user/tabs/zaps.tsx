@@ -1,8 +1,8 @@
 import { Box, Flex, Select, Text } from "@chakra-ui/react";
-import { getZapPayment, getZapRequest, isATag, isETag } from "applesauce-core/helpers";
+import { getZapPayment, getZapRequest, isATag, isETag, isValidZap, KnownEvent } from "applesauce-core/helpers";
 import { useRenderedContent } from "applesauce-react/hooks";
 import dayjs from "dayjs";
-import { NostrEvent } from "nostr-tools";
+import { kinds, NostrEvent } from "nostr-tools";
 import { ReactNode, useCallback, useState } from "react";
 
 import { components } from "../../../components/content";
@@ -29,7 +29,7 @@ import IntersectionObserverProvider from "../../../providers/local/intersection-
 const ZapContentSymbol = Symbol.for("zap-content");
 const linkRenderers = [renderGenericUrl];
 
-const Zap = ({ zap }: { zap: NostrEvent }) => {
+function Zap({ zap }: { zap: KnownEvent<kinds.Zap> }) {
   const ref = useEventIntersectionRef(zap);
 
   const request = getZapRequest(zap);
@@ -77,7 +77,7 @@ const Zap = ({ zap }: { zap: NostrEvent }) => {
       {eventJSX}
     </Box>
   );
-};
+}
 
 export default function UserZapsTab() {
   const user = useParamsProfilePointer("pubkey");
@@ -98,12 +98,14 @@ export default function UserZapsTab() {
     [filter],
   );
 
-  const { loader, timeline: zaps } = useTimelineLoader(
+  const { loader, timeline } = useTimelineLoader(
     `${user.pubkey}-zaps`,
     mailboxes?.outboxes || readRelays,
     { "#p": [user.pubkey], kinds: [9735] },
     { eventFilter },
   );
+
+  const zaps = timeline.filter(isValidZap);
 
   const callback = useTimelineCurserIntersectionCallback(loader);
 

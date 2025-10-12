@@ -75,6 +75,8 @@ export default function ShareModal({
 
         setLoading("Mirror blobs...");
         for (const media of mediaAttachments) {
+          if (!media.url) continue;
+
           // send mirror request to all servers
           await Promise.allSettled(
             servers.map((server) =>
@@ -82,7 +84,7 @@ export default function ShareModal({
                 server,
                 {
                   sha256: media.sha256!,
-                  url: media.url,
+                  url: media.url!,
                   // TODO: these are not needed and should be removed
                   uploaded: 0,
                   size: media.size ?? 0,

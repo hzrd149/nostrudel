@@ -1,38 +1,37 @@
-import { memo, ReactNode, useCallback, useMemo } from "react";
 import { Button, Divider, Flex, Text } from "@chakra-ui/react";
+import { COMMENT_KIND, getEventUID } from "applesauce-core/helpers";
+import { useActiveAccount, useObservableEagerState } from "applesauce-react/hooks";
 import dayjs, { Dayjs } from "dayjs";
-import { getEventUID } from "nostr-idb";
-import { BehaviorSubject } from "rxjs";
-import { useActiveAccount, useObservable, useObservableEagerState } from "applesauce-react/hooks";
-import { COMMENT_KIND } from "applesauce-core/helpers";
 import { kinds } from "nostr-tools";
+import { memo, ReactNode, useCallback, useMemo } from "react";
+import { BehaviorSubject } from "rxjs";
 
-import RequireActiveAccount from "../../components/router/require-active-account";
-import IntersectionObserverProvider from "../../providers/local/intersection-observer";
-import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
-import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
-import VerticalPageLayout from "../../components/vertical-page-layout";
-import NotificationItem from "./components/notification-item";
-import NotificationTypeToggles from "./notification-type-toggles";
-import useLocalStorageDisclosure from "../../hooks/use-localstorage-disclosure";
+import RequireActiveAccount from "../../components/router/require-active-account";
 import TimelineActionAndStatus from "../../components/timeline/timeline-action-and-status";
-import FocusedContext from "./focused-context";
-import readStatusService from "../../services/read-status";
-import useTimelineLocationCacheKey from "../../hooks/timeline/use-timeline-cache-key";
-import useNumberCache from "../../hooks/timeline/use-number-cache";
-import { useTimelineDates } from "../../hooks/timeline/use-timeline-dates";
-import useCacheEntryHeight from "../../hooks/timeline/use-cache-entry-height";
-import useVimNavigation from "./use-vim-navigation";
-import useTimelineLoader from "../../hooks/use-timeline-loader";
+import VerticalPageLayout from "../../components/vertical-page-layout";
 import { truncateId } from "../../helpers/string";
+import useCacheEntryHeight from "../../hooks/timeline/use-cache-entry-height";
+import useNumberCache from "../../hooks/timeline/use-number-cache";
+import useTimelineLocationCacheKey from "../../hooks/timeline/use-timeline-cache-key";
+import { useTimelineDates } from "../../hooks/timeline/use-timeline-dates";
 import { useReadRelays } from "../../hooks/use-client-relays";
+import useLocalStorageDisclosure from "../../hooks/use-localstorage-disclosure";
+import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
+import useTimelineLoader from "../../hooks/use-timeline-loader";
 import useUserMailboxes from "../../hooks/use-user-mailboxes";
+import IntersectionObserverProvider from "../../providers/local/intersection-observer";
+import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
 import notifications$, {
   CategorizedEvent,
   NotificationType,
   NotificationTypeSymbol,
 } from "../../services/notifications";
+import readStatusService from "../../services/read-status";
+import NotificationItem from "./components/notification-item";
+import FocusedContext from "./focused-context";
+import NotificationTypeToggles from "./notification-type-toggles";
+import useVimNavigation from "./use-vim-navigation";
 
 function TimeMarker({ date, ids }: { date: Dayjs; ids: string[] }) {
   const readAll = useCallback(() => {

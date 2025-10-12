@@ -1,5 +1,6 @@
 import { Flex, FlexProps } from "@chakra-ui/react";
 import { css } from "@emotion/react";
+import { isValidZap } from "applesauce-core/helpers";
 import { kinds, NostrEvent } from "nostr-tools";
 import { forwardRef } from "react";
 
@@ -36,9 +37,9 @@ const StreamChatLog = forwardRef<
         <ErrorBoundary key={event.id} event={event}>
           {event.kind === kinds.LiveChatMessage ? (
             <ChatMessage key={event.id} event={event} stream={stream} />
-          ) : (
+          ) : isValidZap(event) ? (
             <ZapMessage key={event.id} zap={event} />
-          )}
+          ) : null}
         </ErrorBoundary>
       ))}
     </Flex>

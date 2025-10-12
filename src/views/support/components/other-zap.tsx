@@ -1,18 +1,18 @@
 import { Card, CardBody, CardHeader, Flex, Text } from "@chakra-ui/react";
-import { getZapPayment, getZapRequest, getZapSender } from "applesauce-core/helpers";
-import { NostrEvent } from "nostr-tools";
+import { getZapPayment, getZapRequest, getZapSender, KnownEvent } from "applesauce-core/helpers";
+import { kinds } from "nostr-tools";
 
-import UserAvatar from "../../../components/user/user-avatar";
-import UserLink from "../../../components/user/user-link";
-import TextNoteContents from "../../../components/note/timeline-note/text-note-contents";
 import { LightningIcon } from "../../../components/icons";
+import TextNoteContents from "../../../components/note/timeline-note/text-note-contents";
 import Timestamp from "../../../components/timestamp";
+import UserAvatar from "../../../components/user/user-avatar";
 import UserDnsIdentityIcon from "../../../components/user/user-dns-identity-icon";
+import UserLink from "../../../components/user/user-link";
+import ZapReceiptMenu from "../../../components/zap/zap-receipt-menu";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
 import { ContentSettingsProvider } from "../../../providers/local/content-settings";
-import ZapReceiptMenu from "../../../components/zap/zap-receipt-menu";
 
-export function OtherZap({ zap }: { zap: NostrEvent }) {
+export function OtherZap({ zap }: { zap: KnownEvent<kinds.Zap> }) {
   const sender = getZapSender(zap);
   const request = getZapRequest(zap);
   const payment = getZapPayment(zap);

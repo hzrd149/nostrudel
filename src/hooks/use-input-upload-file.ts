@@ -16,7 +16,7 @@ export default function useInputUploadFile(setText: (text: string) => void) {
       const img = e.target.files?.[0];
       if (img) {
         const upload = await uploadFile.run(img);
-        if (upload) setText(upload.url);
+        if (upload) setText(upload.url!);
       }
     },
     [uploadFile.run, setText],
@@ -27,7 +27,7 @@ export default function useInputUploadFile(setText: (text: string) => void) {
       const imageFile = Array.from(e.clipboardData.files).find((f) => f.type.includes("image"));
       if (imageFile) {
         const upload = await uploadFile.run(imageFile);
-        if (upload) setText(upload.url);
+        if (upload) setText(upload.url!);
       }
     },
     [uploadFile.run, setText],

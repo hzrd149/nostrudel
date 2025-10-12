@@ -7,8 +7,9 @@ import {
   getZapRecipient,
   getZapRequest,
   getZapSender,
+  KnownEvent,
 } from "applesauce-core/helpers";
-import { NostrEvent } from "nostr-tools";
+import { kinds } from "nostr-tools";
 import { useMemo } from "react";
 
 import { humanReadableSats } from "../../../helpers/lightning";
@@ -20,7 +21,10 @@ import UserLink from "../../user/user-link";
 import ZapReceiptMenu from "../../zap/zap-receipt-menu";
 import { EmbedEventPointerCard } from "./index";
 
-export default function EmbeddedZapRecept({ zap, ...props }: Omit<CardProps, "children"> & { zap: NostrEvent }) {
+export default function EmbeddedZapRecept({
+  zap,
+  ...props
+}: Omit<CardProps, "children"> & { zap: KnownEvent<kinds.Zap> }) {
   const sender = getZapSender(zap);
   const recipient = getZapRecipient(zap);
   const payment = getZapPayment(zap);

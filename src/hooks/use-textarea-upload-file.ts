@@ -41,7 +41,7 @@ export default function useTextAreaUploadFile(insertText: (url: string) => void)
       const img = e.target.files?.[0];
       if (img) {
         const upload = await uploadFile.run(img);
-        if (upload) insertText(upload.url);
+        if (upload && upload.url) insertText(upload.url);
       }
     },
     [uploadFile.run],
@@ -52,7 +52,7 @@ export default function useTextAreaUploadFile(insertText: (url: string) => void)
       const imageFile = Array.from(e.clipboardData.files).find((f) => f.type.includes("image"));
       if (imageFile) {
         const upload = await uploadFile.run(imageFile);
-        if (upload) insertText(upload.url);
+        if (upload && upload.url) insertText(upload.url);
       }
     },
     [uploadFile.run],

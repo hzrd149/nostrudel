@@ -1,6 +1,5 @@
 import { lazy } from "react";
 import { Link, Text } from "@chakra-ui/react";
-import { CacheRelay } from "nostr-idb";
 import { Link as RouterLink } from "react-router-dom";
 
 import SimpleView from "../../../../components/layout/presets/simple-view";

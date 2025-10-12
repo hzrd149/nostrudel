@@ -14,10 +14,11 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { useObservableEagerState } from "applesauce-react/hooks";
-import { addEvents, countEvents, countEventsByKind, getEventUID, updateUsed } from "nostr-idb";
+import { addEvents, countEvents, countEventsByKind, updateUsed } from "nostr-idb";
 import { NostrEvent } from "nostr-tools";
 import { useState } from "react";
 import { useAsync } from "react-use";
+import { getEventUID } from "applesauce-core/helpers";
 
 import EventKindsPieChart from "../../../../components/charts/event-kinds-pie-chart";
 import EventKindsTable from "../../../../components/charts/event-kinds-table";

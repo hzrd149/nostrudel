@@ -1,17 +1,17 @@
 import { Box, Flex, Spacer, Text } from "@chakra-ui/react";
-import { getEventUID, getZapPayment, getZapRequest, getZapSender } from "applesauce-core/helpers";
-import { NostrEvent } from "nostr-tools";
+import { getZapPayment, getZapRequest, getZapSender, KnownEvent } from "applesauce-core/helpers";
+import { kinds, NostrEvent } from "nostr-tools";
 
-import { getGoalRelays } from "../../../helpers/nostr/goal";
-import useEventZaps from "../../../hooks/use-event-zaps";
+import { LightningIcon } from "../../../components/icons";
+import TextNoteContents from "../../../components/note/timeline-note/text-note-contents";
+import Timestamp from "../../../components/timestamp";
 import UserAvatarLink from "../../../components/user/user-avatar-link";
 import UserLink from "../../../components/user/user-link";
 import { humanReadableSats } from "../../../helpers/lightning";
-import { LightningIcon } from "../../../components/icons";
-import Timestamp from "../../../components/timestamp";
-import TextNoteContents from "../../../components/note/timeline-note/text-note-contents";
+import { getGoalRelays } from "../../../helpers/nostr/goal";
+import useEventZaps from "../../../hooks/use-event-zaps";
 
-function GoalZap({ zap }: { zap: NostrEvent }) {
+function GoalZap({ zap }: { zap: KnownEvent<kinds.Zap> }) {
   const request = getZapRequest(zap);
   const payment = getZapPayment(zap);
   const sender = getZapSender(zap);

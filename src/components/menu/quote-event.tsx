@@ -20,7 +20,7 @@ export default function QuoteEventMenuItem({ event }: { event: NostrEvent }) {
     // if its a zap, mention the original author
     if (event.kind === kinds.Zap) {
       const sender = getZapSender(event);
-      content += "nostr:" + nip19.npubEncode(sender) + "\n";
+      if (sender) content += "nostr:" + nip19.npubEncode(sender) + "\n";
     }
 
     content += "\nnostr:" + address;

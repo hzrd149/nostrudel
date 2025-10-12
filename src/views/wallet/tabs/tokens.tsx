@@ -15,7 +15,7 @@ import {
 } from "@chakra-ui/react";
 import { useActiveAccount, useEventModel, useEventStore } from "applesauce-react/hooks";
 import { WalletTokensModel } from "applesauce-wallet/models";
-import { getTokenContent, isTokenContentLocked, unlockTokenContent } from "applesauce-wallet/helpers";
+import { getTokenContent, isTokenContentUnlocked, unlockTokenContent } from "applesauce-wallet/helpers";
 import { NostrEvent } from "nostr-tools";
 import { getEncodedToken, ProofState } from "@cashu/cashu-ts";
 
@@ -40,7 +40,7 @@ function TokenEvent({ token }: { token: NostrEvent }) {
   useEventUpdate(token.id);
   const ref = useEventIntersectionRef(token);
 
-  const locked = isTokenContentLocked(token);
+  const locked = isTokenContentUnlocked(token) === false;
   const details = !locked ? getTokenContent(token) : undefined;
   const amount = details?.proofs.reduce((t, p) => t + p.amount, 0);
 

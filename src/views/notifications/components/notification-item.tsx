@@ -1,6 +1,7 @@
 import { Flex, FlexProps, IconButton, IconButtonProps } from "@chakra-ui/react";
 import { ReactNode, memo, useCallback } from "react";
 
+import { isValidZap } from "applesauce-core/helpers";
 import { NostrEvent } from "nostr-tools";
 import { ErrorBoundary } from "../../../components/error-boundary";
 import { ChevronDownIcon, ChevronUpIcon } from "../../../components/icons";
@@ -63,7 +64,7 @@ const NotificationItem = ({
         content = <RepostNotification event={event} onClick={onClick && handleClick} />;
         break;
       case NotificationType.Zap:
-        content = <ZapNotification zap={event} onClick={onClick && handleClick} />;
+        if (isValidZap(event)) content = <ZapNotification zap={event} onClick={onClick && handleClick} />;
         break;
       case NotificationType.Message:
         content = <MessageNotification event={event} onClick={onClick && handleClick} />;

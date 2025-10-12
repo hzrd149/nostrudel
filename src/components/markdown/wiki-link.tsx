@@ -13,7 +13,6 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
-import { getEventUID } from "nostr-idb";
 import { NostrEvent } from "nostr-tools";
 import { useMemo } from "react";
 import { ExtraProps } from "react-markdown";
@@ -24,6 +23,7 @@ import { useReadRelays } from "../../hooks/use-client-relays";
 import useWikiPages from "../../hooks/use-wiki-pages";
 import UserName from "../user/user-name";
 import { sortByDistanceAndConnections } from "../../services/social-graph";
+import { getEventUID } from "applesauce-core/helpers";
 
 export default function WikiLink({
   children,
