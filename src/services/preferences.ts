@@ -23,18 +23,6 @@ const wasmPersistForDays = await PreferenceSubject.numberNullable("wasm-relay-ol
 const hideZapBubbles = await PreferenceSubject.boolean("hide-zap-bubbles", false);
 const hideUsernames = await PreferenceSubject.boolean("hide-usernames", false);
 
-// WebRTC Relay
-const webRtcLocalIdentity = await PreferenceSubject.create<Uint8Array>("nostr-webrtc-identity", generateSecretKey(), {
-  decode: (raw) => hexToBytes(raw),
-  encode: (key) => bytesToHex(key),
-  saveDefault: true,
-});
-const webRtcSignalingRelays = await PreferenceSubject.array<string>(
-  "nostr-webrtc-signaling-relays",
-  DEFAULT_SIGNAL_RELAYS,
-);
-const webRtcRecentConnections = await PreferenceSubject.array<string>("nostr-webrtc-recent-connections", []);
-
 // Posting
 const addClientTag = await PreferenceSubject.boolean("add-client-tag", false);
 
@@ -101,9 +89,6 @@ const localSettings = {
   hideZapBubbles,
   hideUsernames,
 
-  webRtcLocalIdentity,
-  webRtcSignalingRelays,
-  webRtcRecentConnections,
   addClientTag,
   verifyEventMethod,
   defaultAuthenticationMode,
