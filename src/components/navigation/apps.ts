@@ -78,13 +78,6 @@ export const internalApps: App[] = [
     to: "/groups",
   },
   {
-    title: "Relay Chat",
-    description: "Simple dissapearing chat on relays",
-    icon: MessageChatCircle,
-    id: "relay-chat",
-    to: "/relay-chat",
-  },
-  {
     title: "Pictures",
     description: "Browser picture posts",
     icon: MediaIcon,
