@@ -1,23 +1,17 @@
+import { isReplaceable, normalizeURL } from "applesauce-core/helpers";
+import { onlyEvents } from "applesauce-relay";
 import { Filter, NostrEvent } from "nostr-tools";
 import { BehaviorSubject, Observable } from "rxjs";
-import { getEventUID } from "nostr-idb";
-import { isReplaceable } from "applesauce-core/helpers";
-import { onlyEvents } from "applesauce-relay";
 
-import { MONITOR_STATS_KIND } from "../helpers/nostr/relay-stats";
-import { getSupportedNIPs } from "../helpers/nostr/relay-stats";
+import { getSupportedNIPs, MONITOR_STATS_KIND } from "../helpers/nostr/relay-stats";
+import { cacheRequest, writeEvent } from "./event-cache";
 import pool from "./pool";
-import { writeEvent, cacheRequest } from "./event-cache";
 
 // Discovery relays for NIP-66
-const DISCOVERY_RELAYS = [
-  "wss://relay.nostr.watch",
-  "wss://relaypag.es",
-  "wss://monitorlizard.nostr1.com"
-];
+const DISCOVERY_RELAYS = ["wss://relay.nostr.watch", "wss://monitorlizard.nostr1.com"];
 
 // Default monitor pubkey (can be overridden)
-const DEFAULT_MONITORS: string[] = ["9bbbb845e5b6c831c29789900769843ab43bb5047abe697870cb50b6fc9bf923"];
+const DEFAULT_MONITORS: string[] = ["9b85d54cc4bc886d60782f80d676e41bc637ed3ecc73d2bb5aabadc499d6a340"];
 
 export interface RelayInfo {
   url: string;
@@ -37,31 +31,6 @@ class NIP66RelayDiscovery {
     this.loadCachedEvents();
   }
 
-  private normalizeRelayUrl(url: string): string {
-    try {
-      // Parse the URL
-      const parsed = new URL(url.toLowerCase());
-      
-      // Ensure wss:// protocol
-      if (parsed.protocol !== "wss:" && parsed.protocol !== "ws:") {
-        parsed.protocol = "wss:";
-      }
-      
-      // Rebuild URL without hash or search params for normalization
-      return parsed.toString();
-    } catch {
-      // If URL parsing fails, do basic normalization
-      let normalized = url.toLowerCase().trim();
-      
-      // Ensure protocol
-      if (!normalized.startsWith("ws://") && !normalized.startsWith("wss://")) {
-        normalized = "wss://" + normalized;
-      }
-      
-      return normalized;
-    }
-  }
-
   private async loadCachedEvents() {
     try {
       // Load cached 30166 events from event cache
@@ -75,10 +44,10 @@ class NIP66RelayDiscovery {
 
       cached.subscribe((event) => {
         if (event && event.kind === MONITOR_STATS_KIND) {
-          const url = event.tags.find(t => t[0] === "d")?.[1];
+          const url = event.tags.find((t) => t[0] === "d")?.[1];
           if (url) {
-            const normalizedUrl = this.normalizeRelayUrl(url);
-            
+            const normalizedUrl = normalizeURL(url);
+
             // Only keep the most recent event for each relay
             const existing = relayMap.get(normalizedUrl);
             if (!existing || existing.created_at < event.created_at) {
@@ -101,15 +70,15 @@ class NIP66RelayDiscovery {
   }
 
   private subscribe(monitors: string[] = DEFAULT_MONITORS) {
-    const since = Math.round(Date.now() / 1000) - 60 * 60 * 24
-    
+    const since = Math.round(Date.now() / 1000) - 60 * 60 * 24;
+
     if (this.subscription) {
       this.subscription.unsubscribe();
     }
 
     const filter: Filter = {
       kinds: [MONITOR_STATS_KIND],
-      since
+      since,
     };
 
     if (monitors!.length) {
@@ -121,18 +90,18 @@ class NIP66RelayDiscovery {
       .pipe(onlyEvents())
       .subscribe((event) => {
         if (isReplaceable(event.kind)) {
-          const url = event.tags.find(t => t[0] === "d")?.[1];
+          const url = event.tags.find((t) => t[0] === "d")?.[1];
           if (url) {
-            const normalizedUrl = this.normalizeRelayUrl(url);
+            const normalizedUrl = normalizeURL(url);
             const currentMap = this.relayEvents$.value;
-            
+
             // Check if we should update (either new or more recent)
             const existing = currentMap.get(normalizedUrl);
             if (!existing || existing.created_at < event.created_at) {
               const newMap = new Map(currentMap);
               newMap.set(normalizedUrl, event);
               this.relayEvents$.next(newMap);
-              
+
               // Cache the event
               writeEvent(event);
             }
@@ -141,7 +110,10 @@ class NIP66RelayDiscovery {
       });
   }
 
-  public fetchRelays(monitors: string[] = DEFAULT_MONITORS, forceRefresh: boolean = false): Observable<Map<string, NostrEvent>> {
+  public fetchRelays(
+    monitors: string[] = DEFAULT_MONITORS,
+    forceRefresh: boolean = false,
+  ): Observable<Map<string, NostrEvent>> {
     // Check if we need to refresh
     if (forceRefresh || Date.now() - this.lastFetch > this.CACHE_DURATION || !this.subscription) {
       this.subscribe(monitors);
@@ -161,8 +133,8 @@ class NIP66RelayDiscovery {
     const matching: string[] = [];
 
     for (const [url, event] of relayMap.entries()) {
-      const supportedNips = getSupportedNIPs(event)?.filter((n): n is number => typeof n === 'number' && !isNaN(n));
-      if (supportedNips && nips.every(nip => supportedNips.includes(nip))) {
+      const supportedNips = getSupportedNIPs(event)?.filter((n): n is number => typeof n === "number" && !isNaN(n));
+      if (supportedNips && nips.every((nip) => supportedNips.includes(nip))) {
         matching.push(url);
       }
     }
@@ -175,7 +147,7 @@ class NIP66RelayDiscovery {
     const matching: string[] = [];
 
     for (const [url, event] of relayMap.entries()) {
-      const relayNetwork = event.tags.find(t => t[0] === "n")?.[1];
+      const relayNetwork = event.tags.find((t) => t[0] === "n")?.[1];
       if (relayNetwork === network) {
         matching.push(url);
       }
@@ -189,7 +161,7 @@ class NIP66RelayDiscovery {
     const matching: string[] = [];
 
     for (const [url, event] of relayMap.entries()) {
-      const relayCountry = event.tags.find(t => t[0] === "l" && (t[2] === "countryCode" || !t[2]))?.[1];
+      const relayCountry = event.tags.find((t) => t[0] === "l" && (t[2] === "countryCode" || !t[2]))?.[1];
       if (relayCountry === country) {
         matching.push(url);
       }
@@ -203,26 +175,26 @@ class NIP66RelayDiscovery {
     let matching: string[] = Array.from(relayMap.keys());
 
     if (filters.network) {
-      matching = matching.filter(url => {
+      matching = matching.filter((url) => {
         const event = relayMap.get(url)!;
-        const relayNetwork = event.tags.find(t => t[0] === "n")?.[1];
+        const relayNetwork = event.tags.find((t) => t[0] === "n")?.[1];
         return relayNetwork === filters.network;
       });
     }
 
     if (filters.country) {
-      matching = matching.filter(url => {
+      matching = matching.filter((url) => {
         const event = relayMap.get(url)!;
-        const relayCountry = event.tags.find(t => t[0] === "l" && (t[2] === "countryCode" || !t[2]))?.[1];
+        const relayCountry = event.tags.find((t) => t[0] === "l" && (t[2] === "countryCode" || !t[2]))?.[1];
         return relayCountry === filters.country;
       });
     }
 
     if (filters.nips && filters.nips.length > 0) {
-      matching = matching.filter(url => {
+      matching = matching.filter((url) => {
         const event = relayMap.get(url)!;
-        const supportedNips = getSupportedNIPs(event)?.filter((n): n is number => typeof n === 'number' && !isNaN(n));
-        return supportedNips && filters.nips!.every(nip => supportedNips.includes(nip));
+        const supportedNips = getSupportedNIPs(event)?.filter((n): n is number => typeof n === "number" && !isNaN(n));
+        return supportedNips && filters.nips!.every((nip) => supportedNips.includes(nip));
       });
     }
 
@@ -238,9 +210,9 @@ class NIP66RelayDiscovery {
       relays.push({
         url,
         event,
-        supportedNips: nips?.filter((n): n is number => typeof n === 'number' && !isNaN(n)),
-        network: event.tags.find(t => t[0] === "n")?.[1],
-        country: event.tags.find(t => t[0] === "l" && t[2] === "countryCode")?.[1],
+        supportedNips: nips?.filter((n): n is number => typeof n === "number" && !isNaN(n)),
+        network: event.tags.find((t) => t[0] === "n")?.[1],
+        country: event.tags.find((t) => t[0] === "l" && t[2] === "countryCode")?.[1],
       });
     }
 

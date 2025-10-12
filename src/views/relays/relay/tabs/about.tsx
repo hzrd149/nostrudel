@@ -57,7 +57,7 @@ function RelayPage({ relay }: { relay: string }) {
 
   return (
     <ScrollLayout maxW="6xl" center>
-      <VStack spacing="6" align="stretch">
+      <VStack spacing="4" align="stretch">
         {/* Header Section */}
         <Card variant="outline">
           <CardBody>
