@@ -8,7 +8,6 @@ import {
   renderGenericUrl,
   renderImageUrl,
   renderSoundCloudUrl,
-  renderStemstrUrl,
   renderWavlakeUrl,
 } from "../../../../components/content/links";
 import { bipDefinitions } from "../../../../components/content/transform/bip-notation";
@@ -16,7 +15,7 @@ import { nipDefinitions } from "../../../../components/content/transform/nip-not
 
 const StreamChatMessageContentSymbol = Symbol.for("stream-chat-message-content");
 const transformers = [...textNoteTransformers, nipDefinitions, bipDefinitions];
-const linkRenderers = [renderImageUrl, renderWavlakeUrl, renderStemstrUrl, renderSoundCloudUrl, renderGenericUrl];
+const linkRenderers = [renderImageUrl, renderWavlakeUrl, renderSoundCloudUrl, renderGenericUrl];
 
 const ChatMessageContent = React.memo(({ event }: { event: NostrEvent }) => {
   const content = useRenderedContent(event, components, {
