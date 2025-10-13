@@ -16,7 +16,6 @@ import UserLink from "../../components/user/user-link";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import { useReadRelays } from "../../hooks/use-client-relays";
 import useEventIntersectionRef from "../../hooks/use-event-intersection-ref";
-import useMaxPageWidth from "../../hooks/use-max-page-width";
 import useParamsEventPointer from "../../hooks/use-params-event-pointer";
 import useSingleEvent from "../../hooks/use-single-event";
 import useThreadTimelineLoader from "../../hooks/use-thread-timeline-loader";
@@ -151,9 +150,8 @@ export default function ThreadView() {
 
   const callback = useTimelineCurserIntersectionCallback(timeline);
 
-  const maxWidth = useMaxPageWidth("6xl");
   return (
-    <VerticalPageLayout maxW={maxWidth} mx="auto" w="full">
+    <VerticalPageLayout maxW="6xl" mx="auto" w="full">
       {!focusedEvent && (
         <>
           <Heading my="4">

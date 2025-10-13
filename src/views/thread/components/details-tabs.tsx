@@ -16,7 +16,6 @@ import CorrectionsTab from "./tabs/corrections";
 import PostQuotesTab from "./tabs/quotes";
 import PostReactionsTab from "./tabs/reactions";
 import PostRepostsTab from "./tabs/reposts";
-import ToolsTab from "./tabs/tools";
 import UnknownTab from "./tabs/unknown";
 import PostZapsTab from "./tabs/zaps";
 import ThreadPost from "./thread-post";
@@ -124,17 +123,6 @@ export default function DetailsTabs({ post }: { post: ThreadItem }) {
       element: (
         <TabPanel key="corrections" p="0">
           <CorrectionsTab post={post} corrections={corrections} />
-        </TabPanel>
-      ),
-    },
-    {
-      id: "tools",
-      name: "Tools",
-      visible: true,
-      right: true,
-      element: (
-        <TabPanel key="tools" p="0">
-          <ToolsTab event={post.event} />
         </TabPanel>
       ),
     },

@@ -5,7 +5,6 @@ import { NostrEvent } from "nostr-tools";
 import { useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
 
-import useMaxPageWidth from "../../hooks/use-max-page-width";
 import useRouteSearchValue from "../../hooks/use-route-search-value";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
@@ -55,10 +54,9 @@ export default function TimelinePage({
     }
   };
 
-  const maxWidth = useMaxPageWidth("6xl");
   return (
     <IntersectionObserverProvider callback={callback}>
-      <VerticalPageLayout maxW={maxWidth} mx="auto" gap="4" {...props}>
+      <VerticalPageLayout mx="auto" gap="4" {...props}>
         {header}
         {renderTimeline()}
         <TimelineActionAndStatus loader={loader} />

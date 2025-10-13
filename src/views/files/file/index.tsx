@@ -5,7 +5,6 @@ import {
   Code,
   Divider,
   Flex,
-  Heading,
   Link,
   Spacer,
   Spinner,
@@ -24,11 +23,9 @@ import SimpleView from "../../../components/layout/presets/simple-view";
 import EventQuoteButton from "../../../components/note/event-quote-button";
 import EventShareButton from "../../../components/note/timeline-note/components/event-share-button";
 import NoteReactions from "../../../components/note/timeline-note/components/note-reactions";
-import BackButton from "../../../components/router/back-button";
 import UserName from "../../../components/user/user-name";
 import EventZapButton from "../../../components/zap/event-zap-button";
 import { formatBytes } from "../../../helpers/number";
-import useMaxPageWidth from "../../../hooks/use-max-page-width";
 import useParamsEventPointer from "../../../hooks/use-params-event-pointer";
 import useSingleEvent from "../../../hooks/use-single-event";
 import { ContentSettingsProvider } from "../../../providers/local/content-settings";
@@ -44,8 +41,6 @@ function FileDetailsPage({ file }: { file: NostrEvent }) {
   const size = getTagValue(file, "size");
   const sha256 = getTagValue(file, "x");
   const comment = useDisclosure();
-
-  const maxWidth = useMaxPageWidth();
 
   return (
     <SimpleView
@@ -64,7 +59,7 @@ function FileDetailsPage({ file }: { file: NostrEvent }) {
     >
       <Flex
         direction="column"
-        maxW={maxWidth}
+        maxW="6xl"
         mx="auto"
         w="full"
         maxH="2xl"
@@ -77,7 +72,7 @@ function FileDetailsPage({ file }: { file: NostrEvent }) {
         </ContentSettingsProvider>
       </Flex>
 
-      <Flex mx="auto" maxW={maxWidth} w="full" gap="2" direction="column">
+      <Flex mx="auto" maxW="6xl" w="full" gap="2" direction="column">
         <Flex gap="2">
           {type && <Text>{type}</Text>}
           {size && <Text>{formatBytes(parseInt(size))}</Text>}
@@ -92,7 +87,7 @@ function FileDetailsPage({ file }: { file: NostrEvent }) {
           </Box>
         )}
 
-        <Divider mx="auto" maxW={maxWidth} w="full" />
+        <Divider mx="auto" maxW="6xl" w="full" />
         {summary && <Text whiteSpace="pre-line">{summary}</Text>}
         <Flex gap="2" wrap="wrap">
           <ButtonGroup size="sm" variant="ghost">

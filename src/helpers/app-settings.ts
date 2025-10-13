@@ -69,16 +69,19 @@ type AppSettingsV15 = Omit<AppSettingsV14, "version" | "hideUsernames"> & {
   shareService?: string;
 };
 
-export type AppSettings = AppSettingsV15;
+type AppSettingsV16 = Omit<AppSettingsV15, "version" | "maxPageWidth"> & {
+  version: 16;
+};
+
+export type AppSettings = AppSettingsV16;
 
 export const DEFAULT_APP_SETTINGS: AppSettings = {
-  version: 15,
+  version: 16,
 
   // display
   theme: "default",
   colorMode: "system",
   primaryColor: "#8DB600",
-  maxPageWidth: "none",
   showPubkeyColor: "avatar",
   removeEmojisInUsernames: false,
   showContentWarning: true,

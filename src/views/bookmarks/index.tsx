@@ -13,7 +13,6 @@ import UserAvatarLink from "../../components/user/user-avatar-link";
 import UserName from "../../components/user/user-name";
 import useAddressableEvent from "../../hooks/use-addressable-event";
 import useAsyncAction from "../../hooks/use-async-action";
-import useMaxPageWidth from "../../hooks/use-max-page-width";
 import useParamsProfilePointer from "../../hooks/use-params-pubkey-pointer";
 import useSingleEvent from "../../hooks/use-single-event";
 import userUserBookmarksList from "../../hooks/use-user-bookmarks-list";
@@ -64,7 +63,6 @@ function BookmarkAddressItem({ pointer }: { pointer: AddressPointer }) {
 }
 
 function BookmarksPage({ pubkey }: { pubkey: string }) {
-  const maxWidth = useMaxPageWidth();
   const { list } = userUserBookmarksList(pubkey);
 
   if (!list) return <Spinner />;
@@ -81,7 +79,7 @@ function BookmarksPage({ pubkey }: { pubkey: string }) {
         </Flex>
       }
       actions={<ListMenu ml="auto" size="sm" list={list} aria-label="More options" />}
-      maxW={maxWidth}
+      maxW="6xl"
       center
     >
       {Array.from(list.tags)

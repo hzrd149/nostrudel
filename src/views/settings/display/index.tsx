@@ -73,26 +73,10 @@ export default function DisplaySettings() {
         </Flex>
       </FormControl>
       <FormControl>
-        <FormLabel htmlFor="maxPageWidth" mb="0">
-          Max Page width
-        </FormLabel>
-        <Select id="maxPageWidth" {...register("maxPageWidth")} maxW="sm">
-          <option value="none">Default</option>
-          <option value="full">Full</option>
-          <option value="sm">Small</option>
-          <option value="md">Medium</option>
-          <option value="lg">Large</option>
-          <option value="xl">Extra Large</option>
-        </Select>
-        <FormHelperText>
-          <span>Setting this will restrict the width of the timeline</span>
-        </FormHelperText>
-      </FormControl>
-      <FormControl>
-        <FormLabel htmlFor="maxPageWidth" mb="0">
+        <FormLabel htmlFor="showPubkeyColor" mb="0">
           Show user pubkey key color
         </FormLabel>
-        <Select id="maxPageWidth" maxW="sm" {...register("showPubkeyColor")}>
+        <Select id="showPubkeyColor" maxW="sm" {...register("showPubkeyColor")}>
           <option value="none">None</option>
           <option value="avatar">Avatar</option>
           <option value="underline">Underline</option>
