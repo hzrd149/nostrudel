@@ -1,4 +1,3 @@
-import { useState } from "react";
 import {
   Box,
   Button,
@@ -16,48 +15,47 @@ import {
   Spinner,
   useDisclosure,
 } from "@chakra-ui/react";
-import { useSearchParams, useNavigate } from "react-router-dom";
 import { Global, css } from "@emotion/react";
 import { NostrEvent } from "nostr-tools";
+import { useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
+import { isStreamURL, isVideoURL } from "applesauce-core/helpers";
+import { CopyIconButton } from "../../../components/copy-icon-button";
+import DebugEventButton from "../../../components/debug-modal/debug-event-button";
+import { ChevronLeftIcon, ExternalLinkIcon } from "../../../components/icons";
 import LiveVideoPlayer from "../../../components/live-video-player";
-import StreamChat, { ChatDisplayMode } from "./stream-chat";
+import EventQuoteButton from "../../../components/note/event-quote-button";
 import UserAvatarLink from "../../../components/user/user-avatar-link";
 import UserLink from "../../../components/user/user-link";
-import StreamSummaryContent from "../components/stream-summary-content";
-import { ChevronLeftIcon, ExternalLinkIcon } from "../../../components/icons";
-import useSetColorMode from "../../../hooks/use-set-color-mode";
-import { CopyIconButton } from "../../../components/copy-icon-button";
-import StreamerCards from "../components/streamer-cards";
-import { useAppTitle } from "../../../hooks/use-app-title";
-import StreamSatsPerMinute from "../components/stream-sats-per-minute";
-import { UserEmojiProvider } from "../../../providers/global/emoji-provider";
-import StreamStatusBadge from "../components/status-badge";
-import ChatMessageForm from "./stream-chat/stream-chat-form";
-import StreamChatLog from "./stream-chat/chat-log";
-import StreamTopZappers from "../components/stream-top-zappers";
-import StreamHashtags from "../components/stream-hashtags";
-import StreamZapButton from "../components/stream-zap-button";
-import StreamGoal from "../components/stream-goal";
 import VerticalPageLayout from "../../../components/vertical-page-layout";
-import { useBreakpointValue } from "../../../providers/global/breakpoint-provider";
-import { AdditionalRelayProvider } from "../../../providers/local/additional-relay";
-import DebugEventButton from "../../../components/debug-modal/debug-event-button";
-import useParamsAddressPointer from "../../../hooks/use-params-address-pointer";
-import useReplaceableEvent from "../../../hooks/use-replaceable-event";
-import EventQuoteButton from "../../../components/note/event-quote-button";
-import { ContentSettingsProvider } from "../../../providers/local/content-settings";
-import StreamOpenButton from "../components/stream-open-button";
-import StreamFavoriteButton from "../components/stream-favorite-button";
 import {
   getStreamHost,
   getStreamImage,
   getStreamRecording,
-  getStreamRelays,
   getStreamStreamingURLs,
   getStreamTitle,
 } from "../../../helpers/nostr/stream";
-import { isStreamURL, isVideoURL } from "applesauce-core/helpers";
+import { useAppTitle } from "../../../hooks/use-app-title";
+import useParamsAddressPointer from "../../../hooks/use-params-address-pointer";
+import useReplaceableEvent from "../../../hooks/use-replaceable-event";
+import useSetColorMode from "../../../hooks/use-set-color-mode";
+import { useBreakpointValue } from "../../../providers/global/breakpoint-provider";
+import { UserEmojiProvider } from "../../../providers/global/emoji-provider";
+import { ContentSettingsProvider } from "../../../providers/local/content-settings";
+import StreamStatusBadge from "../components/status-badge";
+import StreamFavoriteButton from "../components/stream-favorite-button";
+import StreamGoal from "../components/stream-goal";
+import StreamHashtags from "../components/stream-hashtags";
+import StreamOpenButton from "../components/stream-open-button";
+import StreamSatsPerMinute from "../components/stream-sats-per-minute";
+import StreamSummaryContent from "../components/stream-summary-content";
+import StreamTopZappers from "../components/stream-top-zappers";
+import StreamZapButton from "../components/stream-zap-button";
+import StreamerCards from "../components/streamer-cards";
+import StreamChat, { ChatDisplayMode } from "./stream-chat";
+import StreamChatLog from "./stream-chat/chat-log";
+import ChatMessageForm from "./stream-chat/stream-chat-form";
 
 function DesktopStreamPage({ stream }: { stream: NostrEvent }) {
   const navigate = useNavigate();
@@ -258,17 +256,14 @@ export default function StreamView() {
   const pointer = useParamsAddressPointer("naddr", true);
 
   const stream = useReplaceableEvent(pointer);
-  const relays = stream ? getStreamRelays(stream) : undefined;
 
   const displayMode = (params.get("displayMode") as ChatDisplayMode) ?? undefined;
 
   if (!stream) return <Spinner />;
   return (
     // add snort and damus relays so zap.stream will always see zaps
-    <AdditionalRelayProvider relays={relays ?? []}>
-      <UserEmojiProvider pubkey={getStreamHost(stream)}>
-        {displayMode ? <ChatWidget stream={stream} displayMode={displayMode} /> : <StreamPage stream={stream} />}
-      </UserEmojiProvider>
-    </AdditionalRelayProvider>
+    <UserEmojiProvider pubkey={getStreamHost(stream)}>
+      {displayMode ? <ChatWidget stream={stream} displayMode={displayMode} /> : <StreamPage stream={stream} />}
+    </UserEmojiProvider>
   );
 }

@@ -1,12 +1,9 @@
-import { useNavigate } from "react-router-dom";
-import { kinds } from "nostr-tools";
 import {
   Button,
   Flex,
   Heading,
   Image,
   SimpleGrid,
-  Spacer,
   Spinner,
   Tab,
   TabList,
@@ -15,31 +12,30 @@ import {
   Tabs,
   Text,
 } from "@chakra-ui/react";
+import { kinds } from "nostr-tools";
+import { useNavigate } from "react-router-dom";
 
-import { ChevronLeftIcon } from "../../components/icons";
-import useReplaceableEvent from "../../hooks/use-replaceable-event";
-import { getBadgeAwardPubkeys, getBadgeDescription, getBadgeImage, getBadgeName } from "../../helpers/nostr/badges";
-import BadgeMenu from "./components/badge-menu";
-import useTimelineLoader from "../../hooks/use-timeline-loader";
-import { useReadRelays } from "../../hooks/use-client-relays";
-import IntersectionObserverProvider from "../../providers/local/intersection-observer";
-import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
-import { NostrEvent } from "nostr-tools";
-import { getEventCoordinate } from "../../helpers/nostr/event";
-import UserAvatarLink from "../../components/user/user-avatar-link";
-import UserLink from "../../components/user/user-link";
-import Timestamp from "../../components/timestamp";
-import VerticalPageLayout from "../../components/vertical-page-layout";
-import BadgeAwardCard from "./components/badge-award-card";
-import { ErrorBoundary } from "../../components/error-boundary";
-import useParamsAddressPointer from "../../hooks/use-params-address-pointer";
-import { GenericComments } from "../../components/comment/generic-comments";
-import GenericCommentForm from "../../components/comment/generic-comment-form";
 import { useDisclosure } from "@chakra-ui/react";
 import { getReplaceableAddress } from "applesauce-core/helpers";
+import { NostrEvent } from "nostr-tools";
+import GenericCommentForm from "../../components/comment/generic-comment-form";
+import { GenericComments } from "../../components/comment/generic-comments";
+import { ErrorBoundary } from "../../components/error-boundary";
 import SimpleView from "../../components/layout/presets/simple-view";
-import UserName from "../../components/user/user-name";
+import Timestamp from "../../components/timestamp";
 import UserAvatar from "../../components/user/user-avatar";
+import UserAvatarLink from "../../components/user/user-avatar-link";
+import UserLink from "../../components/user/user-link";
+import UserName from "../../components/user/user-name";
+import { getBadgeAwardPubkeys, getBadgeDescription, getBadgeImage, getBadgeName } from "../../helpers/nostr/badges";
+import { useReadRelays } from "../../hooks/use-client-relays";
+import useParamsAddressPointer from "../../hooks/use-params-address-pointer";
+import useReplaceableEvent from "../../hooks/use-replaceable-event";
+import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
+import useTimelineLoader from "../../hooks/use-timeline-loader";
+import IntersectionObserverProvider from "../../providers/local/intersection-observer";
+import BadgeAwardCard from "./components/badge-award-card";
+import BadgeMenu from "./components/badge-menu";
 
 function BadgeActivityTab({ awards }: { awards: NostrEvent[] }) {
   return (

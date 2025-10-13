@@ -1,18 +1,17 @@
-import { useCallback, useMemo } from "react";
+import { getEventUID, getStreamRelays } from "applesauce-core/helpers";
 import { Filter, kinds, NostrEvent } from "nostr-tools";
-import { getEventUID } from "applesauce-core/helpers";
+import { useCallback, useMemo } from "react";
 
 import { getEventCoordinate } from "../../../../helpers/nostr/event";
-import useTimelineLoader from "../../../../hooks/use-timeline-loader";
-import useStreamGoal from "../../../../hooks/use-stream-goal";
-import useUserMuteFilter from "../../../../hooks/use-user-mute-filter";
-import useClientSideMuteFilter from "../../../../hooks/use-client-side-mute-filter";
-import { useReadRelays } from "../../../../hooks/use-client-relays";
-import { useAdditionalRelayContext } from "../../../../providers/local/additional-relay";
 import { getStreamEndTime, getStreamHost, getStreamStartTime } from "../../../../helpers/nostr/stream";
+import { useReadRelays } from "../../../../hooks/use-client-relays";
+import useClientSideMuteFilter from "../../../../hooks/use-client-side-mute-filter";
+import useStreamGoal from "../../../../hooks/use-stream-goal";
+import useTimelineLoader from "../../../../hooks/use-timeline-loader";
+import useUserMuteFilter from "../../../../hooks/use-user-mute-filter";
 
 export default function useStreamChatTimeline(stream: NostrEvent) {
-  const streamRelays = useReadRelays(useAdditionalRelayContext());
+  const readRelays = useReadRelays(getStreamRelays(stream));
 
   const host = getStreamHost(stream);
   const starts = getStreamStartTime(stream);
@@ -47,5 +46,5 @@ export default function useStreamChatTimeline(stream: NostrEvent) {
     return streamQuery;
   }, [stream, goal]);
 
-  return useTimelineLoader(`${getEventUID(stream)}-chat`, streamRelays, query, { eventFilter });
+  return useTimelineLoader(`${getEventUID(stream)}-chat`, readRelays, query, { eventFilter });
 }

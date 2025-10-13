@@ -19,12 +19,10 @@ import Timestamp from "../../../components/timestamp";
 import { humanReadableSats } from "../../../helpers/lightning";
 import { getPubkeysFromList } from "../../../helpers/nostr/lists";
 import useUserContactList from "../../../hooks/use-user-contact-list";
-import { useAdditionalRelayContext } from "../../../providers/local/additional-relay";
 import trustedUserStatsService from "../../../services/trusted-user-stats";
 
 export default function UserStatsAccordion({ pubkey }: { pubkey: string }) {
-  const contextRelays = useAdditionalRelayContext();
-  const contacts = useUserContactList({ pubkey, relays: contextRelays });
+  const contacts = useUserContactList({ pubkey });
 
   const { value: stats } = useAsync(() => trustedUserStatsService.getUserStats(pubkey), [pubkey]);
 

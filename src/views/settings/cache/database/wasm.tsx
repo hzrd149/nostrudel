@@ -16,16 +16,16 @@ import {
 import { useObservableEagerState } from "applesauce-react/hooks";
 import { NostrEvent } from "nostr-tools";
 import { useCallback, useEffect, useState } from "react";
-
 import { Navigate } from "react-router-dom";
+import { useAsync } from "react-use";
+
 import EventKindsPieChart from "../../../../components/charts/event-kinds-pie-chart";
 import EventKindsTable from "../../../../components/charts/event-kinds-table";
+import useAsyncAction from "../../../../hooks/use-async-action";
 import { eventCache$ } from "../../../../services/event-cache";
 import localSettings from "../../../../services/preferences";
 import ExportEventsButton from "./components/export-events-button";
 import ImportEventsButton from "./components/import-events-button";
-import useAsyncAction from "../../../../hooks/use-async-action";
-import { useAsync } from "react-use";
 
 export default function WasmDatabasePage() {
   const eventCache = useObservableEagerState(eventCache$);

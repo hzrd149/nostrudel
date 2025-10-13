@@ -19,18 +19,17 @@ import {
 import { kinds } from "nostr-tools";
 
 import { NostrEvent } from "nostr-tools";
-import useChannelMetadata from "../../../hooks/use-channel-metadata";
-import useTimelineLoader from "../../../hooks/use-timeline-loader";
-import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
-import IntersectionObserverProvider from "../../../providers/local/intersection-observer";
-import UserLink from "../../../components/user/user-link";
 import HoverLinkOverlay from "../../../components/hover-link-overlay";
+import { ExternalLinkIcon } from "../../../components/icons";
 import UserAvatar from "../../../components/user/user-avatar";
 import UserDnsIdentity from "../../../components/user/user-dns-identity";
-import ChannelJoinButton from "./channel-join-button";
-import { ExternalLinkIcon } from "../../../components/icons";
+import UserLink from "../../../components/user/user-link";
+import useChannelMetadata from "../../../hooks/use-channel-metadata";
 import { useReadRelays } from "../../../hooks/use-client-relays";
-import { useAdditionalRelayContext } from "../../../providers/local/additional-relay";
+import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
+import useTimelineLoader from "../../../hooks/use-timeline-loader";
+import IntersectionObserverProvider from "../../../providers/local/intersection-observer";
+import ChannelJoinButton from "./channel-join-button";
 
 function UserCard({ pubkey }: { pubkey: string }) {
   return (
@@ -51,7 +50,9 @@ function ChannelMembers({ channel, relays }: { channel: NostrEvent; relays: stri
   return (
     <IntersectionObserverProvider callback={callback}>
       <Flex gap="2" direction="column">
-        {userLists?.map((list) => <UserCard key={list.pubkey} pubkey={list.pubkey} />)}
+        {userLists?.map((list) => (
+          <UserCard key={list.pubkey} pubkey={list.pubkey} />
+        ))}
       </Flex>
     </IntersectionObserverProvider>
   );
@@ -64,7 +65,7 @@ export default function ChannelMetadataDrawer({
   ...props
 }: Omit<DrawerProps, "children"> & { channel: NostrEvent }) {
   const metadata = useChannelMetadata(channel);
-  const relays = useReadRelays(useAdditionalRelayContext());
+  const relays = useReadRelays();
 
   return (
     <Drawer isOpen={isOpen} placement="right" onClose={onClose} {...props}>

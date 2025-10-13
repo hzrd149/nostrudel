@@ -1,5 +1,5 @@
 import { Heading, SimpleGrid } from "@chakra-ui/react";
-import { getEventUID } from "applesauce-core/helpers";
+import { addRelayHintsToPointer, getEventUID } from "applesauce-core/helpers";
 import { kinds } from "nostr-tools";
 
 import Users01 from "../../../components/icons/users-01";
@@ -11,10 +11,14 @@ import useUserMutes from "../../../hooks/use-user-mutes";
 import FallbackListCard from "../../lists/components/fallback-list-card";
 import ListTypeCard from "../../lists/components/list-type-card";
 import PeopleListCard from "../../lists/components/people-list-card";
+import useUserMailboxes from "../../../hooks/use-user-mailboxes";
+import { useReadRelays } from "../../../hooks/use-client-relays";
 
 export default function UserListsTab() {
   const user = useParamsProfilePointer("pubkey");
-  const sets = useUserSets(user.pubkey) ?? [];
+  const mailboxes = useUserMailboxes(user);
+  const readRelays = useReadRelays();
+  const sets = useUserSets(addRelayHintsToPointer(user, mailboxes?.outboxes || readRelays)) ?? [];
   const pubkey = user.pubkey;
 
   const contacts = useUserContacts(user.pubkey);

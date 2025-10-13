@@ -6,7 +6,6 @@ import { useActiveAccount, useEventFactory } from "applesauce-react/hooks";
 import { getEventReactionScore, groupReactions } from "../../helpers/nostr/reactions";
 import useEventReactions from "../../hooks/use-event-reactions";
 import { usePublishEvent } from "../../providers/global/publish-provider";
-import { useAdditionalRelayContext } from "../../providers/local/additional-relay";
 import { ChevronDownIcon, ChevronUpIcon, DislikeIcon, LikeIcon } from "../icons";
 
 export default function EventVoteButtons({
@@ -24,7 +23,6 @@ export default function EventVoteButtons({
   const account = useActiveAccount();
   const publish = usePublishEvent();
   const reactions = useEventReactions(event);
-  const additionalRelays = useAdditionalRelayContext();
   const factory = useEventFactory();
 
   const grouped = useMemo(() => groupReactions(reactions ?? []), [reactions]);
@@ -38,10 +36,10 @@ export default function EventVoteButtons({
     async (vote: string) => {
       setLoading(true);
       const draft = await factory.reaction(event, vote);
-      await publish("Vote", draft, additionalRelays);
+      await publish("Vote", draft);
       setLoading(false);
     },
-    [event, publish, additionalRelays, factory],
+    [event, publish, factory],
   );
 
   const upIcon = chevrons ? <ChevronUpIcon boxSize={6} /> : <LikeIcon />;

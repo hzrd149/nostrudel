@@ -1,14 +1,12 @@
 import { Button, Flex, Heading, SimpleGrid, useDisclosure } from "@chakra-ui/react";
 
-import { useAdditionalRelayContext } from "../../../providers/local/additional-relay";
 import { ErrorBoundary } from "../../../components/error-boundary";
-import { useBreakpointValue } from "../../../providers/global/breakpoint-provider";
 import useUserChannelsList from "../../../hooks/use-user-channels-list";
+import { useBreakpointValue } from "../../../providers/global/breakpoint-provider";
 import { PointerChannelCard } from "../../channels/components/channel-card";
 
 export default function UserJoinedChannels({ pubkey }: { pubkey: string }) {
-  const contextRelays = useAdditionalRelayContext();
-  const { pointers: channels } = useUserChannelsList({ pubkey, relays: contextRelays });
+  const { pointers: channels } = useUserChannelsList({ pubkey });
   const columns = useBreakpointValue({ base: 1, lg: 2, xl: 3 }) ?? 1;
   const showAll = useDisclosure();
 

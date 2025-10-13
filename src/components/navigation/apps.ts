@@ -2,37 +2,26 @@ import { ComponentWithAs, IconProps } from "@chakra-ui/react";
 
 import {
   ArticleIcon,
-  BadgeIcon,
   BookmarkIcon,
   ChannelsIcon,
   DirectMessagesIcon,
   EmojiPacksIcon,
-  GoalIcon,
-  ListsIcon,
   LiveStreamIcon,
-  MapIcon,
   MediaIcon,
-  MuteIcon,
   NotesIcon,
   NotificationsIcon,
   SearchIcon,
   TorrentIcon,
-  TrackIcon,
   VideoIcon,
   WikiIcon,
 } from "../icons";
-import ShieldOff from "../icons/shield-off";
-import MessageQuestionSquare from "../icons/message-question-square";
-import UploadCloud01 from "../icons/upload-cloud-01";
-import Edit04 from "../icons/edit-04";
-import Users03 from "../icons/users-03";
 import FileAttachment01 from "../icons/file-attachment-01";
-import Rocket02 from "../icons/rocket-02";
 import PuzzlePiece01 from "../icons/puzzle-piece-01";
+import Rocket02 from "../icons/rocket-02";
+import UploadCloud01 from "../icons/upload-cloud-01";
+import Users01 from "../icons/users-01";
 import Users02 from "../icons/users-02";
 import Wallet02 from "../icons/wallet-02";
-import Users01 from "../icons/users-01";
-import MessageChatCircle from "../icons/message-chat-circle";
 
 export type App = {
   icon?: ComponentWithAs<"svg", IconProps>;
@@ -92,8 +81,6 @@ export const internalApps: App[] = [
     id: "channels",
     to: "/channels",
   },
-  { title: "Badges", description: "Create and manage badges", icon: BadgeIcon, id: "badges", to: "/badges" },
-  { title: "Goals", description: "Browse and create goals", icon: GoalIcon, id: "goals", to: "/goals" },
   { title: "Torrents", description: "Browse torrents on nostr", icon: TorrentIcon, id: "torrents", to: "/torrents" },
   { title: "Emojis", description: "Create custom emoji packs", icon: EmojiPacksIcon, id: "emojis", to: "/emojis" },
   { title: "Bookmarks", description: "Manage your bookmarks", icon: BookmarkIcon, id: "bookmarks", to: "/bookmarks" },
@@ -104,8 +91,6 @@ export const internalApps: App[] = [
     id: "lists",
     to: "/lists",
   },
-  { title: "Tracks", description: "Browse stemstr tracks", icon: TrackIcon, id: "tracks", to: "/tracks" },
-  { title: "Videos", description: "Browse videos", icon: VideoIcon, id: "videos", to: "/videos" },
   { title: "Articles", description: "Browse articles", icon: ArticleIcon, id: "articles", to: "/articles" },
   { title: "Files", description: "Browse files", icon: FileAttachment01, id: "files", to: "/files" },
   { title: "Wallet", description: "Receive and send cashu tokens", icon: Wallet02, id: "wallet", to: "/wallet" },
@@ -214,6 +199,14 @@ export const externalTools: App[] = [
     description: "Manage your blobs on multiple servers",
     to: "https://bouquet.slidestr.net/",
     image: "https://bouquet.slidestr.net/bouquet.png",
+    isExternal: true,
+  },
+  {
+    id: "hzrd149.wifistr",
+    title: "Wifi Networks",
+    description: "Discover free wifi networks",
+    to: "https://hzrd149.github.io/wifistr",
+    image: "https://hzrd149.github.io/wifistr/favicon.ico",
     isExternal: true,
   },
 ];

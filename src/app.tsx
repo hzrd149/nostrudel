@@ -33,7 +33,6 @@ import newRoutes from "./views/new/routes";
 import settingsRoutes from "./views/settings/routes";
 import relaysRoutes from "./views/relays/routes";
 import blossomRoutes from "./views/blossom/routes";
-import videosRoutes from "./views/videos/routes";
 import picturesRoutes from "./views/pictures/routes";
 import streamsRoutes from "./views/streams/routes";
 import toolsRoutes from "./views/tools/routes";
@@ -120,7 +119,6 @@ export const router = createBrowserRouter(
         { path: "bookmarks", children: bookmarksRoutes },
         { path: "lists", children: listsRoutes },
         { path: "files", children: filesRoutes },
-        { path: "videos", children: videosRoutes },
         { path: "torrents", children: torrentsRoutes },
         { path: "channels", children: channelsRoutes },
         { path: "goals", children: goalsRoutes },

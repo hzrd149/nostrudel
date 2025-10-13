@@ -3,6 +3,7 @@ import { getEventUID, isStreamURL } from "applesauce-core/helpers";
 import { Filter, kinds } from "nostr-tools";
 import { useCallback, useMemo } from "react";
 
+import { NostrEvent } from "nostr-tools";
 import SimpleView from "../../components/layout/presets/simple-view";
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
 import TimelineActionAndStatus from "../../components/timeline/timeline-action-and-status";
@@ -14,15 +15,13 @@ import useFavoriteStreams from "../../hooks/use-favorite-streams";
 import { useRouteStateBoolean } from "../../hooks/use-route-state-value";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
-import { AdditionalRelayProvider, useAdditionalRelayContext } from "../../providers/local/additional-relay";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
-import { NostrEvent } from "nostr-tools";
 import StreamCard from "./components/stream-card";
 
 function StreamsPage() {
   useAppTitle("Streams");
-  const relays = useReadRelays(useAdditionalRelayContext());
+  const relays = useReadRelays();
   const userMuteFilter = useClientSideMuteFilter();
   const showEnded = useRouteStateBoolean("ended", false);
 
@@ -112,12 +111,8 @@ function StreamsPage() {
 }
 export default function StreamHomeView() {
   return (
-    <AdditionalRelayProvider
-      relays={["wss://nos.lol", "wss://relay.damus.io", "wss://relay.snort.social", "wss://nostr.wine"]}
-    >
-      <PeopleListProvider>
-        <StreamsPage />
-      </PeopleListProvider>
-    </AdditionalRelayProvider>
+    <PeopleListProvider>
+      <StreamsPage />
+    </PeopleListProvider>
   );
 }

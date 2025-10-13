@@ -1,13 +1,11 @@
 import { Button, Flex, Heading, useDisclosure } from "@chakra-ui/react";
 import { getCoordinateFromAddressPointer, isEventPointer } from "applesauce-core/helpers";
 
-import { useAdditionalRelayContext } from "../../../providers/local/additional-relay";
-import useUserPinList from "../../../hooks/use-user-pin-list";
 import { EmbedEventPointerCard } from "../../../components/embed-event/card";
+import useUserPinList from "../../../hooks/use-user-pin-list";
 
 export default function UserPinnedEvents({ pubkey }: { pubkey: string }) {
-  const contextRelays = useAdditionalRelayContext();
-  const { pointers } = useUserPinList(pubkey, contextRelays, true);
+  const { pointers } = useUserPinList(pubkey);
   const showAll = useDisclosure();
 
   if (pointers.length === 0) return null;

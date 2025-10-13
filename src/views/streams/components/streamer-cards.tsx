@@ -6,7 +6,6 @@ import { NostrEvent } from "nostr-tools";
 import { TextNoteContents } from "../../../components/note/timeline-note/text-note-contents";
 import OpenGraphCard from "../../../components/open-graph/open-graph-card";
 import { StreamCardsQuery } from "../../../models/stream";
-import { useAdditionalRelayContext } from "../../../providers/local/additional-relay";
 
 export const STREAMER_CARDS_TYPE = 17777;
 export const STREAMER_CARD_TYPE = 37777;
@@ -45,9 +44,13 @@ function StreamerCard({ card, ...props }: { card: NostrEvent } & CardProps) {
 }
 
 export default function StreamerCards({ pubkey, ...props }: Omit<CardProps, "children"> & { pubkey: string }) {
-  const contextRelays = useAdditionalRelayContext();
+  const cards = useEventModel(StreamCardsQuery, [{ pubkey }]);
 
-  const cards = useEventModel(StreamCardsQuery, [{ pubkey, relays: contextRelays }]);
-
-  return <>{cards?.map((card) => <StreamerCard key={getEventUID(card)} card={card} {...props} />)}</>;
+  return (
+    <>
+      {cards?.map((card) => (
+        <StreamerCard key={getEventUID(card)} card={card} {...props} />
+      ))}
+    </>
+  );
 }

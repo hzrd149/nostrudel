@@ -1,25 +1,24 @@
-import { useState } from "react";
 import { Button, Flex, Select } from "@chakra-ui/react";
-import { useNavigate } from "react-router-dom";
-import { kinds, NostrEvent } from "nostr-tools";
 import { getEventUID } from "applesauce-core/helpers";
+import { kinds, NostrEvent } from "nostr-tools";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import { Mosaic, MosaicNode, MosaicWindow } from "react-mosaic-component";
-import "./styles.css";
 import "react-mosaic-component/react-mosaic-component.css";
+import "./styles.css";
 
-import useTimelineLoader from "../../../hooks/use-timeline-loader";
-import RequireActiveAccount from "../../../components/router/require-active-account";
 import { useActiveAccount } from "applesauce-react/hooks";
-import { getEventCoordinate } from "../../../helpers/nostr/event";
-import { useReadRelays } from "../../../hooks/use-client-relays";
 import { ChevronLeftIcon } from "../../../components/icons";
-import { AdditionalRelayProvider } from "../../../providers/local/additional-relay";
-import UsersCard from "./users-card";
-import ZapsCard from "./zaps-card";
+import RequireActiveAccount from "../../../components/router/require-active-account";
+import { getEventCoordinate } from "../../../helpers/nostr/event";
+import { getStreamStatus, getStreamTitle } from "../../../helpers/nostr/stream";
+import { useReadRelays } from "../../../hooks/use-client-relays";
+import useTimelineLoader from "../../../hooks/use-timeline-loader";
 import ChatCard from "./chat-card";
+import UsersCard from "./users-card";
 import VideoCard from "./video-card";
-import { getStreamRelays, getStreamStatus, getStreamTitle } from "../../../helpers/nostr/stream";
+import ZapsCard from "./zaps-card";
 
 const defaultLayout: MosaicNode<string> = {
   direction: "row",
@@ -101,11 +100,7 @@ function StreamModerationPage() {
           ))}
         </Select>
       </Flex>
-      {selected && (
-        <AdditionalRelayProvider relays={getStreamRelays(selected) ?? []}>
-          <StreamModerationDashboard stream={selected} />
-        </AdditionalRelayProvider>
-      )}
+      {selected && <StreamModerationDashboard stream={selected} />}
     </Flex>
   );
 }
