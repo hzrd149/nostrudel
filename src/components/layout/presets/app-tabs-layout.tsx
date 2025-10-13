@@ -13,15 +13,9 @@ import {
   ModalHeader,
   ModalOverlay,
 } from "@chakra-ui/react";
-import { ProfilePointer } from "nostr-tools/nip19";
-import useParamsProfilePointer from "../../../hooks/use-params-pubkey-pointer";
-import useScrollRestoreRef from "../../../hooks/use-scroll-restore";
 import { ErrorBoundary } from "../../error-boundary";
 import DotsGrid from "../../icons/dots-grid";
 import RouterLink from "../../router-link";
-import UserAvatar from "../../user/user-avatar";
-import UserLink from "../../user/user-link";
-import SimpleHeader from "../components/simple-header";
 
 const TabsContext = createContext<AppTabs[]>([]);
 

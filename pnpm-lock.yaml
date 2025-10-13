@@ -137,9 +137,6 @@ importers:
       blossom-client-sdk:
         specifier: ^4.1.0
         version: 4.1.0
-      blurhash:
-        specifier: ^2.0.5
-        version: 2.0.5
       canvas-confetti:
         specifier: ^1.9.3
         version: 1.9.3
@@ -2406,9 +2403,6 @@ packages:
   blossom-client-sdk@4.1.0:
     resolution: {integrity: sha512-IEjX3/e6EYnEonlog8qbd1/7qYIatOKEAQMWGkPCPjTO/b9fsrSnoELwOam52a5U3M83XLvYFhf6qE9MmlmJuQ==}
     engines: {node: '>=18'}
-
-  blurhash@2.0.5:
-    resolution: {integrity: sha512-cRygWd7kGBQO3VEhPiTgq4Wc43ctsM+o46urrmPOiuAe+07fzlSB9OJVdpgDL0jPqXUVQ9ht7aq7kxOeJHRK+w==}
 
   boolbase@1.0.0:
     resolution: {integrity: sha512-JZOSA7Mo9sNGB8+UjSgzdLtokWAky1zbztM3WRLCbZ70/3cTANmQmOdR7y2g+J0e2WXywy1yS468tY+IruqEww==}
@@ -8353,8 +8347,6 @@ snapshots:
     dependencies:
       '@cashu/cashu-ts': 2.7.2
       '@noble/hashes': 1.8.0
-
-  blurhash@2.0.5: {}
 
   boolbase@1.0.0: {}
 

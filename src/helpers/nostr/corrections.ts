@@ -1,1 +1,0 @@
-export const CORRECTION_EVENT_KIND = 1010;

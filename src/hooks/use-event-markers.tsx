@@ -3,7 +3,7 @@ import { NostrEvent } from "nostr-tools";
 import L from "leaflet";
 import ngeohash from "ngeohash";
 
-import iconUrl from "../marker-icon.svg";
+import iconUrl from "../assets/marker-icon.svg";
 const pinIcon = L.icon({ iconUrl, iconSize: [32, 32], iconAnchor: [16, 32] });
 
 export function getEventGeohash(event: NostrEvent) {

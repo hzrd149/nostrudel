@@ -1,18 +1,15 @@
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/react";
 import styled from "@emotion/styled";
-import { getEventUID } from "applesauce-core/helpers";
 import { ThreadItem } from "applesauce-core/models";
 import { kinds } from "nostr-tools";
 import { ReactNode } from "react";
 
-import { CORRECTION_EVENT_KIND } from "../../../helpers/nostr/corrections";
 import { getContentTagRefs } from "../../../helpers/nostr/event";
 import { repliesByDate } from "../../../helpers/thread";
 import { useReadRelays } from "../../../hooks/use-client-relays";
 import useEventZaps from "../../../hooks/use-event-zaps";
 import useRouteSearchValue from "../../../hooks/use-route-search-value";
 import useTimelineLoader from "../../../hooks/use-timeline-loader";
-import CorrectionsTab from "./tabs/corrections";
 import PostQuotesTab from "./tabs/quotes";
 import PostReactionsTab from "./tabs/reactions";
 import PostRepostsTab from "./tabs/reposts";
@@ -48,9 +45,6 @@ export default function DetailsTabs({ post }: { post: ThreadItem }) {
       getContentTagRefs(e.content, e.tags).some((t) => t[0] === "e" && t[1] === post.event.id)
     );
   });
-  const corrections = events.filter((e) => {
-    return e.kind === CORRECTION_EVENT_KIND && e.pubkey === post.event.pubkey;
-  });
 
   const unknown = events.filter(
     (e) =>
@@ -59,8 +53,7 @@ export default function DetailsTabs({ post }: { post: ThreadItem }) {
       e.kind !== kinds.Zap &&
       !reactions.includes(e) &&
       !reposts.includes(e) &&
-      !quotes.includes(e) &&
-      !corrections.includes(e),
+      !quotes.includes(e),
   );
 
   const tabs: { id: string; name: string; element: ReactNode; visible: boolean; right?: boolean }[] = [
@@ -113,16 +106,6 @@ export default function DetailsTabs({ post }: { post: ThreadItem }) {
       element: (
         <TabPanel key="reactions" p="0">
           <PostReactionsTab post={post} reactions={reactions} />
-        </TabPanel>
-      ),
-    },
-    {
-      id: "corrections",
-      name: `Corrections (${corrections.length})`,
-      visible: corrections.length > 0,
-      element: (
-        <TabPanel key="corrections" p="0">
-          <CorrectionsTab post={post} corrections={corrections} />
         </TabPanel>
       ),
     },

@@ -60,7 +60,6 @@ import Download01 from "./icons/download-01";
 import Repeat01 from "./icons/repeat-01";
 import ReverseLeft from "./icons/reverse-left";
 import Pin01 from "./icons/pin-01";
-import Translate01 from "./icons/translate-01";
 import MessageChatSquare from "./icons/message-chat-square";
 import Package from "./icons/package";
 import Magnet from "./icons/magnet";
@@ -234,7 +233,6 @@ export const ECashIcon = BankNote01;
 export const WalletIcon = Wallet02;
 export const DownloadIcon = Download01;
 
-export const TranslateIcon = Translate01;
 export const ChannelsIcon = MessageChatSquare;
 export const ThreadIcon = MessageChatSquare;
 export const ThingsIcon = Package;

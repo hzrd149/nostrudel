@@ -16,12 +16,12 @@ import EmbeddedNote from "./embedded-note";
 import { DVM_CONTENT_DISCOVERY_JOB_KIND } from "../../../helpers/nostr/dvm";
 import DVMCard from "../../../views/discovery/dvm-feed/components/dvm-card";
 import LoadingNostrLink from "../../loading-nostr-link";
-import EmbeddedDM from "./embedded-dm";
-import EmbeddedSetOrList from "./embedded-list";
-import EmbeddedReaction from "./embedded-reaction";
-import EmbeddedRepost from "./embedded-repost";
-import EmbeddedUnknown from "./embedded-unknown";
 
+const EmbeddedDM = lazy(() => import("./embedded-dm"));
+const EmbeddedSetOrList = lazy(() => import("./embedded-list"));
+const EmbeddedReaction = lazy(() => import("./embedded-reaction"));
+const EmbeddedRepost = lazy(() => import("./embedded-repost"));
+const EmbeddedUnknown = lazy(() => import("./embedded-unknown"));
 const EmbeddedGoal = lazy(() => import("./embedded-goal"));
 const EmbeddedArticle = lazy(() => import("./embedded-article"));
 const EmbeddedCommunity = lazy(() => import("./embedded-community"));

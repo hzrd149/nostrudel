@@ -4,12 +4,6 @@ import { NostrEvent } from "nostr-tools";
 
 export const DVM_STATUS_KIND = 7000;
 
-export const DVM_TRANSLATE_JOB_KIND = 5002;
-export const DVM_TRANSLATE_RESULT_KIND = 6002;
-
-export const DVM_TTS_JOB_KIND = 5250;
-export const DVM_TTS_RESULT_KIND = 6250;
-
 export const DVM_CONTENT_DISCOVERY_JOB_KIND = 5300;
 export const DVM_CONTENT_DISCOVERY_RESULT_KIND = 6300;
 

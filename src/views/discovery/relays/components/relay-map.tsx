@@ -3,8 +3,8 @@ import { BoxProps } from "@chakra-ui/react";
 import { NostrEvent } from "nostr-tools";
 import L from "leaflet";
 
-import LeafletMap from "../../../map/components/leaflet-map";
-import useEventMarkers, { getEventLatLng } from "../../../map/hooks/use-event-markers";
+import LeafletMap from "../../../../components/map/leaflet-map";
+import useEventMarkers, { getEventLatLng } from "../../../../hooks/use-event-markers";
 import { getEventUID } from "../../../../helpers/nostr/event";
 import { SelectedContext } from "../selected-context";
 
