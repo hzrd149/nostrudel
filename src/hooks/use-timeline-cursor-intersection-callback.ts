@@ -13,15 +13,15 @@ export function useTimelineCurserIntersectionCallback(loader?: TimelineLoader) {
   useEffect(() => {
     if (loader)
       setTimeout(() => {
-        loader(-Infinity);
+        loader(-Infinity).subscribe();
       }, 100);
   }, [loader]);
 
   // if the cursor is set too far ahead and the last block did not overlap with the cursor
   // we need to keep loading blocks until the timeline is complete or the blocks pass the cursor
   useInterval(() => {
-    if (oldest.current) loader?.(oldest.current.created_at - 1);
-    else loader?.(-Infinity);
+    if (oldest.current) loader?.(oldest.current.created_at - 1).subscribe();
+    else loader?.(-Infinity).subscribe();
   }, 1000);
 
   return useCachedIntersectionMapCallback(
@@ -36,7 +36,7 @@ export function useTimelineCurserIntersectionCallback(loader?: TimelineLoader) {
         }
       }
 
-      if (oldest.current) loader?.(oldest.current.created_at);
+      if (oldest.current) loader?.(oldest.current.created_at).subscribe();
     },
     [loader],
   );

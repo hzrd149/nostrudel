@@ -9,11 +9,11 @@ import { mergeRelaySets } from "applesauce-core/helpers";
 import { ReadonlySigner } from "applesauce-signers";
 import { useDebounce } from "react-use";
 
-import dnsIdentityLoader from "../../../services/dns-identity-loader";
-import { CheckIcon } from "../../../components/icons";
-import { NOSTR_CONNECT_PERMISSIONS } from "../../../const";
-import { getMatchSimpleEmail } from "../../../helpers/regexp";
-import QRCodeScannerButton from "../../../components/qr-code/qr-code-scanner-button";
+import dnsIdentityLoader from "../../services/dns-identity-loader";
+import { CheckIcon } from "../../components/icons";
+import { NOSTR_CONNECT_PERMISSIONS } from "../../const";
+import { getMatchSimpleEmail } from "../../helpers/regexp";
+import QRCodeScannerButton from "../../components/qr-code/qr-code-scanner-button";
 
 export default function SigninNostrAddressView() {
   const navigate = useNavigate();
@@ -139,11 +139,6 @@ export default function SigninNostrAddressView() {
         <Button variant="link" onClick={() => navigate("../")} mr="auto">
           Back
         </Button>
-        {!loading && (
-          <Button colorScheme="primary" as={RouterLink} to="/signin/address/create" variant="link" p="2">
-            Find Provider
-          </Button>
-        )}
         <Button colorScheme="primary" type="submit" isLoading={!!loading} isDisabled={!nip05}>
           Connect
         </Button>

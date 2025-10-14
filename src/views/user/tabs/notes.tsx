@@ -1,6 +1,6 @@
 import { Flex, Spacer } from "@chakra-ui/react";
 import { NostrEvent, kinds } from "nostr-tools";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 
 import NoteFilterTypeButtons from "../../../components/note-filter-type-buttons";
 import { RelayIconStack } from "../../../components/relay-icon-stack";
@@ -12,11 +12,13 @@ import useParamsProfilePointer from "../../../hooks/use-params-pubkey-pointer";
 import { useRouteStateBoolean } from "../../../hooks/use-route-state-value";
 import useTimelineLoader from "../../../hooks/use-timeline-loader";
 import useUserMailboxes from "../../../hooks/use-user-mailboxes";
+import SeenOnRelaysButton from "../../../components/note/seen-on-relays-button";
 
 export default function UserNotesTab() {
   const user = useParamsProfilePointer("pubkey");
   const mailboxes = useUserMailboxes(user);
   const readRelays = useReadRelays();
+  const relays = useMemo(() => mailboxes?.outboxes || readRelays, [mailboxes, readRelays]);
 
   const showReplies = useRouteStateBoolean("show-replies", false);
   const showReposts = useRouteStateBoolean("show-reposts", true);
@@ -32,7 +34,7 @@ export default function UserNotesTab() {
   );
   const { loader, timeline } = useTimelineLoader(
     user.pubkey + "-notes",
-    mailboxes?.outboxes || readRelays,
+    relays,
     {
       authors: [user.pubkey],
       kinds: [kinds.ShortTextNote, kinds.Repost, kinds.GenericRepost, 2],
@@ -44,10 +46,10 @@ export default function UserNotesTab() {
     <Flex gap="2" alignItems="center">
       <NoteFilterTypeButtons showReplies={showReplies} showReposts={showReposts} />
       <Spacer />
-      <RelayIconStack relays={readRelays} direction="row-reverse" maxRelays={4} />
+      <RelayIconStack title="Reading from outboxes" relays={relays} direction="row-reverse" />
       <TimelineViewType />
     </Flex>
   );
 
-  return <TimelinePage header={header} loader={loader} timeline={timeline} p={0} />;
+  return <TimelinePage header={header} loader={loader} timeline={timeline} maxW="6xl" />;
 }

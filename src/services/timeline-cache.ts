@@ -14,10 +14,12 @@ class TimelineCacheService {
   protected timelines = new LRU<TimelineLoader>(MAX_CACHE);
   protected log = logger.extend("TimelineCacheService");
 
-  createTimeline(key: string, relays: string[], filters: TimelessFilter[]) {
+  createTimeline(key: string, relays: string[], filters: TimelessFilter[]): TimelineLoader {
     let timeline = this.timelines.get(key);
 
-    if (!timeline && relays.length > 0 && filters.length > 0) {
+    if (!timeline) {
+      if (relays.length === 0 || filters.length === 0) throw new Error("Relays and filters are required");
+
       this.log(`Creating ${key}`);
       timeline = createTimelineLoader(pool, relays, filters, {
         limit: BATCH_LIMIT,

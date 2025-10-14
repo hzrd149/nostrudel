@@ -6,15 +6,15 @@ import { Filter, kinds } from "nostr-tools";
 import useReplaceableEvent from "../../hooks/use-replaceable-event";
 import { NostrEvent } from "nostr-tools";
 import useRouteSearchValue from "../../hooks/use-route-search-value";
+import { ProfilePointer } from "nostr-tools/nip19";
 
 export type ListId = "following" | "global" | "self" | string;
-export type Person = { pubkey: string; relay?: string };
 
 export type PeopleListContextType = {
   selected: ListId;
   listId?: string;
   listEvent?: NostrEvent;
-  people: Person[] | undefined;
+  people: ProfilePointer[] | undefined;
   setSelected: (list: ListId) => void;
   filter: Filter | undefined;
 };

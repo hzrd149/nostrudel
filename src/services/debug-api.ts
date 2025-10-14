@@ -2,7 +2,7 @@ import accounts from "./accounts";
 import { eventCache$ } from "./event-cache";
 import { eventStore } from "./event-store";
 import {
-  addressLoader,
+  replaceableLoader,
   channelMetadataLoader,
   eventLoader,
   profileLoader,
@@ -36,7 +36,7 @@ const noStrudel = {
 
   // other internal services
   profileLoader,
-  addressLoader,
+  addressLoader: replaceableLoader,
   eventLoader,
   zapsLoader,
   reactionsLoader,

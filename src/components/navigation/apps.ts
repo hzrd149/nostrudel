@@ -178,14 +178,6 @@ export const externalTools: App[] = [
     isExternal: true,
   },
   {
-    id: "w3.do",
-    title: "URL Shortener",
-    description: "Shorten URLs and store on nostr",
-    to: "https://w3.do/",
-    image: "https://w3.do/favicon.ico",
-    isExternal: true,
-  },
-  {
     id: "nosbin.com",
     title: "nosbin",
     description: "Upload code snippets to nostr",

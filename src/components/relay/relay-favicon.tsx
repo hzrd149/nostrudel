@@ -37,6 +37,5 @@ const RelayFavicon = React.memo(({ relay, showStatus, ...props }: RelayFaviconPr
     />
   );
 });
-RelayFavicon.displayName = "RelayFavicon";
 
 export default RelayFavicon;

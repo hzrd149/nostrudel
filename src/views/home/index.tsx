@@ -1,30 +1,32 @@
-import { useCallback, useEffect } from "react";
-import { Flex, Spacer, useDisclosure } from "@chakra-ui/react";
-import { kinds } from "nostr-tools";
+import { Flex, Spacer } from "@chakra-ui/react";
+import { includeMailboxes } from "applesauce-core";
+import { groupPubkeysByRelay, selectOptimalRelays } from "applesauce-core/helpers";
+import { TimelessFilter } from "applesauce-loaders";
+import { TimelineLoader } from "applesauce-loaders/loaders";
+import { useObservableEagerMemo } from "applesauce-react/hooks";
+import hash_sum from "hash-sum";
+import { Filter, kinds, NostrEvent } from "nostr-tools";
+import { useCallback, useEffect, useMemo, useRef } from "react";
+import { combineLatestWith, map, merge, of, throttleTime } from "rxjs";
 
-import { isReply, isRepost } from "../../helpers/nostr/event";
-import useTimelineLoader from "../../hooks/use-timeline-loader";
-import { NostrEvent } from "nostr-tools";
+import NoteFilterTypeButtons from "../../components/note-filter-type-buttons";
+import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
 import TimelinePage, { useTimelinePageEventFilter } from "../../components/timeline-page";
 import TimelineViewTypeButtons from "../../components/timeline-page/timeline-view-type";
-import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
-import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
+import { isReply, isRepost } from "../../helpers/nostr/event";
 import useClientSideMuteFilter from "../../hooks/use-client-side-mute-filter";
-import NoteFilterTypeButtons from "../../components/note-filter-type-buttons";
+import useLocalStorageDisclosure from "../../hooks/use-localstorage-disclosure";
 import KindSelectionProvider, { useKindSelectionContext } from "../../providers/local/kind-selection-provider";
-import { useReadRelays } from "../../hooks/use-client-relays";
+import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
+import { eventStore } from "../../services/event-store";
+import localSettings from "../../services/preferences";
+import timelineCacheService from "../../services/timeline-cache";
 
 const defaultKinds = [kinds.ShortTextNote, kinds.Repost, kinds.GenericRepost];
 
 function HomePage() {
-  const showReplies = useDisclosure({ defaultIsOpen: localStorage.getItem("show-replies") === "true" });
-  const showReposts = useDisclosure({ defaultIsOpen: localStorage.getItem("show-reposts") !== "false" });
-
-  // save toggles to localStorage when changed
-  useEffect(() => {
-    localStorage.setItem("show-replies", String(showReplies.isOpen));
-    localStorage.setItem("show-reposts", String(showReposts.isOpen));
-  }, [showReplies.isOpen, showReposts.isOpen]);
+  const showReplies = useLocalStorageDisclosure("show-replies", true);
+  const showReposts = useLocalStorageDisclosure("show-reposts", false);
 
   const timelinePageEventFilter = useTimelinePageEventFilter();
   const muteFilter = useClientSideMuteFilter();
@@ -38,17 +40,75 @@ function HomePage() {
     [timelinePageEventFilter, showReplies.isOpen, showReposts.isOpen, muteFilter],
   );
 
-  const relays = useReadRelays();
-  const { listId, filter } = usePeopleListContext();
+  const { listId, filter, people } = usePeopleListContext();
   const { kinds } = useKindSelectionContext();
+  const outboxes = useObservableEagerMemo(() => {
+    if (!people) return undefined;
 
-  const { loader, timeline } = useTimelineLoader(
-    `${listId}-home-feed`,
-    relays,
-    filter ? { ...filter, kinds } : undefined,
-    {
-      eventFilter,
-    },
+    return of(people).pipe(
+      // Add users outbox relays
+      includeMailboxes(eventStore, "outbox"),
+      // Get the extra relays
+      combineLatestWith(localSettings.readRelays),
+      // Add the extra relays to every user
+      map(([users, fallbackRelays]) =>
+        users.map((user) => {
+          if (!user.relays || user.relays.length === 0) return { ...user, relays: fallbackRelays };
+          else return user;
+        }),
+      ),
+      // Get connection settings
+      combineLatestWith(localSettings.maxConnections, localSettings.maxRelaysPerUser),
+      // Only recalculate every 200ms
+      throttleTime(200),
+      // Select optimal relays
+      map(([users, maxConnections, maxRelaysPerUser]) => {
+        console.log(`Selecting relays for ${users.length} users`, {
+          connections: maxConnections,
+          maxPerUser: maxRelaysPerUser,
+        });
+
+        const selection = selectOptimalRelays(users, { maxConnections, maxRelaysPerUser });
+        const outboxes = groupPubkeysByRelay(selection);
+
+        if (import.meta.env.DEV) {
+          console.table(
+            Object.entries(outboxes)
+              .map(([relay, users]) => ({ relay, users: users.length }))
+              .sort((a, b) => b.users - a.users),
+          );
+        }
+
+        return outboxes;
+      }),
+    );
+  }, [people]);
+
+  // Create loaders for each relay
+  const loaders = useRef<TimelineLoader[]>([]);
+  useEffect(() => {
+    loaders.current = [];
+
+    if (!outboxes) return;
+    for (const [relay, users] of Object.entries(outboxes)) {
+      const filter: TimelessFilter = { kinds, authors: users.map((u) => u.pubkey) };
+
+      loaders.current.push(
+        timelineCacheService.createTimeline(`home-${listId}-${relay}-${hash_sum(filter)}`, [relay], [filter]),
+      );
+    }
+  }, [outboxes, listId, kinds]);
+
+  // Merge all loaders
+  const loader: TimelineLoader = useMemo(() => {
+    return (since?: number) => merge(...loaders.current.map((l) => l(since)));
+  }, []);
+
+  // Subscribe to event store for timeline events
+  const filters: Filter[] = useMemo(() => (filter ? [{ ...filter, kinds }] : []), [filter, kinds]);
+  const timeline = useObservableEagerMemo(
+    () => (filters ? eventStore.timeline(filters).pipe(map((events) => events.filter(eventFilter))) : of([])),
+    [filters, eventFilter],
   );
 
   const header = (
@@ -60,7 +120,7 @@ function HomePage() {
     </Flex>
   );
 
-  return <TimelinePage loader={loader} timeline={timeline} header={header} pt="2" pb="12" px="2" />;
+  return <TimelinePage loader={loader} timeline={timeline} header={header} pt="2" pb="12" px="2" maxW="6xl" />;
 }
 
 export default function HomeView() {

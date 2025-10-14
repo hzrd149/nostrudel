@@ -1,145 +1,30 @@
 import { WarningIcon } from "@chakra-ui/icons";
-import { Button, Card, CardBody, CardHeader, Flex, Heading, SimpleGrid, Text } from "@chakra-ui/react";
-import { mergeRelaySets } from "applesauce-core/helpers";
-import { IdentityStatus } from "applesauce-loaders/helpers/dns-identity";
-import { MouseEventHandler, useCallback, useMemo } from "react";
+import { Button, Flex, Heading, Text } from "@chakra-ui/react";
+import { useObservableEagerState } from "applesauce-react/hooks";
 
-import { useActiveAccount, useObservableEagerState } from "applesauce-react/hooks";
-import HoverLinkOverlay from "../../../components/hover-link-overlay";
+import { relaySet } from "applesauce-core/helpers";
 import SimpleView from "../../../components/layout/presets/simple-view";
-import { DEFAULT_LOOKUP_RELAYS, RECOMMENDED_JAPANESE_RELAYS, RECOMMENDED_RELAYS } from "../../../const";
-import useUserContactRelays from "../../../hooks/use-user-contact-relays";
-import { useUserDNSIdentity } from "../../../hooks/use-user-dns-identity";
-import useUserMailboxes from "../../../hooks/use-user-mailboxes";
-import { addAppRelay, RelayMode, removeAppRelay, toggleAppRelay } from "../../../services/app-relays";
+import NipLink from "../../../components/nip-link";
+import RelayFavicon from "../../../components/relay/relay-favicon";
+import RelayName from "../../../components/relay/relay-name";
+import { RECOMMENDED_LOOKUP_RELAYS } from "../../../const";
 import localSettings from "../../../services/preferences";
 import AddRelayForm from "./add-relay-form";
 import RelayControl from "./relay-control";
 
-function RelaySetCard({ label, read, write }: { label: string; read: Iterable<string>; write: Iterable<string> }) {
-  const handleClick = useCallback<MouseEventHandler>((e) => {
-    e.preventDefault();
-    localSettings.readRelays.next(Array.from(read));
-    localSettings.writeRelays.next(Array.from(write));
-  }, []);
-
-  return (
-    <Card w="full" variant="outline">
-      <CardHeader px="4" pt="4" pb="2">
-        <Heading size="sm">
-          <HoverLinkOverlay href="#" onClick={handleClick}>
-            {label}:
-          </HoverLinkOverlay>
-        </Heading>
-      </CardHeader>
-      <CardBody px="4" pt="0" pb="4">
-        {mergeRelaySets(read, write).map((url) => (
-          <Text key={url} whiteSpace="pre" isTruncated>
-            {url}
-          </Text>
-        ))}
-      </CardBody>
-    </Card>
-  );
-}
-
 export default function AppRelaysView() {
-  const account = useActiveAccount();
   const readRelays = useObservableEagerState(localSettings.readRelays);
   const writeRelays = useObservableEagerState(localSettings.writeRelays);
   const lookupRelays = useObservableEagerState(localSettings.lookupRelays);
-  const mailboxes = useUserMailboxes(account?.pubkey);
-  const nip05 = useUserDNSIdentity(account?.pubkey);
-  const contactRelays = useUserContactRelays(account?.pubkey);
 
-  const sorted = useMemo(() => mergeRelaySets(readRelays, writeRelays).sort(), [readRelays, writeRelays]);
+  const recommendedLookupRelays = RECOMMENDED_LOOKUP_RELAYS.filter((url) => lookupRelays.includes(url) === false);
 
   return (
-    <SimpleView title="App Relays" maxW="6xl">
-      <Text fontStyle="italic" px="2" mt="-2">
-        These relays are stored locally and are used for everything in the app
-      </Text>
-
-      {sorted.map((url) => (
-        <RelayControl key={url} url={url} onRemove={() => removeAppRelay(url, RelayMode.BOTH)}>
-          <Button
-            variant={writeRelays.includes(url) ? "solid" : "ghost"}
-            colorScheme={writeRelays.includes(url) ? "green" : "gray"}
-            onClick={() => toggleAppRelay(url, RelayMode.WRITE)}
-            title="Toggle Write"
-          >
-            {writeRelays.includes(url) ? "Read / Publish" : "Read only"}
-          </Button>
-        </RelayControl>
-      ))}
-      <AddRelayForm
-        onSubmit={(url) => {
-          addAppRelay(url, RelayMode.BOTH);
-        }}
-      />
-
-      {writeRelays.length === 0 && (
-        <Text color="yellow.500">
-          <WarningIcon /> There are no write relays set, any note you create might not be saved
-        </Text>
-      )}
-
-      <Heading size="md" mt="2">
-        Set from
-      </Heading>
-      <Flex wrap="wrap" gap="2">
-        {mailboxes && (
-          <Button
-            onClick={() => {
-              localSettings.readRelays.next(mailboxes.inboxes);
-              localSettings.writeRelays.next(mailboxes.outboxes);
-            }}
-          >
-            NIP-65 (Mailboxes)
-          </Button>
-        )}
-        {nip05?.status === IdentityStatus.Found && (
-          <Button
-            onClick={() => {
-              if (!nip05.relays) return;
-              localSettings.readRelays.next(Array.from(nip05.relays));
-              localSettings.writeRelays.next(Array.from(nip05.relays));
-            }}
-          >
-            NIP-05
-          </Button>
-        )}
-        {contactRelays && (
-          <Button
-            onClick={() => {
-              localSettings.readRelays.next(contactRelays.inbox);
-              localSettings.writeRelays.next(contactRelays.outbox);
-            }}
-          >
-            Contact List (Legacy)
-          </Button>
-        )}
-      </Flex>
-
-      {/* Relay presets */}
-      <Heading size="md" mt="2">
-        Presets
-      </Heading>
-      <Text fontStyle="italic" color="gray.500">
-        These are the recommended relays presets for the app. They are used for everything in the app.
-      </Text>
-      <SimpleGrid columns={{ base: 1, lg: 2, xl: 3 }} spacing="2">
-        <RelaySetCard label="Popular Relays" read={RECOMMENDED_RELAYS} write={RECOMMENDED_RELAYS} />
-        <RelaySetCard label="Japanese relays" read={RECOMMENDED_JAPANESE_RELAYS} write={RECOMMENDED_JAPANESE_RELAYS} />
-      </SimpleGrid>
-
+    <SimpleView title="Relay Settings" maxW="6xl">
       {/* Index Relays */}
-      <Heading size="md" mt="4">
-        Index Relays
-      </Heading>
-      <Text fontStyle="italic" color="gray.500">
-        Index (or lookup) relays are special indexing relays that are used to find user profiles, user mailboxes, and
-        other important information
+      <Heading size="md">Lookup Relays</Heading>
+      <Text color="GrayText">
+        Lookup relays are special indexing relays that are used to find user profiles and user mailboxes.
       </Text>
 
       {lookupRelays.map((url) => (
@@ -153,27 +38,80 @@ export default function AppRelaysView() {
       ))}
       <AddRelayForm
         onSubmit={(url) => {
-          if (!lookupRelays.includes(url)) {
-            localSettings.lookupRelays.next([...lookupRelays, url]);
-          }
+          localSettings.lookupRelays.next(relaySet(lookupRelays, url));
         }}
       />
-      <Button
-        ms="auto"
-        size="sm"
-        variant="link"
-        onClick={() => {
-          localSettings.lookupRelays.next(Array.from(DEFAULT_LOOKUP_RELAYS));
-        }}
-      >
-        Reset to defaults
-      </Button>
+
+      {recommendedLookupRelays.length > 0 && (
+        <Flex gap="2" alignItems="center" wrap="wrap">
+          <Text>Recommended:</Text>
+          {RECOMMENDED_LOOKUP_RELAYS.filter((url) => lookupRelays.includes(url) === false).map((url) => (
+            <Button
+              variant="ghost"
+              size="sm"
+              leftIcon={<RelayFavicon relay={url} size="xs" />}
+              onClick={() => {
+                localSettings.lookupRelays.next(relaySet(lookupRelays, url));
+              }}
+            >
+              <RelayName relay={url} />
+            </Button>
+          ))}
+        </Flex>
+      )}
 
       {lookupRelays.length === 0 && (
         <Text color="yellow.500">
           <WarningIcon /> There are no index relays set, profile lookup and other features may not work properly
         </Text>
       )}
+
+      {/* Fallback read relays */}
+      <Heading size="md" mt="4">
+        Fallback Relays
+      </Heading>
+      <Text color="GrayText">
+        Fallback relays are used to load events from users who have not published a{" "}
+        <NipLink nip={65} color="blue.500">
+          NIP-65
+        </NipLink>
+      </Text>
+
+      {readRelays.map((url) => (
+        <RelayControl
+          key={url}
+          url={url}
+          onRemove={() => {
+            localSettings.readRelays.next(readRelays.filter((r) => r !== url));
+          }}
+        />
+      ))}
+      <AddRelayForm
+        onSubmit={(url) => {
+          localSettings.readRelays.next(relaySet(readRelays, url));
+        }}
+      />
+
+      {/* Additional write relays */}
+      <Heading size="md" mt="4">
+        Additional publishing relays
+      </Heading>
+      <Text color="GrayText">Extra relays you always want to publish events to.</Text>
+
+      {writeRelays.map((url) => (
+        <RelayControl
+          key={url}
+          url={url}
+          onRemove={() => {
+            localSettings.writeRelays.next(writeRelays.filter((r) => r !== url));
+          }}
+        />
+      ))}
+      <AddRelayForm
+        onSubmit={(url) => {
+          localSettings.writeRelays.next(relaySet(writeRelays, url));
+        }}
+      />
     </SimpleView>
   );
 }

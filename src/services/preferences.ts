@@ -1,10 +1,9 @@
 import { bytesToHex, hexToBytes } from "@noble/hashes/utils";
-import { generateSecretKey } from "nostr-tools";
 import { type SerializedAccount } from "applesauce-accounts";
 
-import { type RelayAuthMode } from "./authentication-signer";
 import { PreferenceSubject } from "../classes/preference-subject";
-import { DEFAULT_LOOKUP_RELAYS, DEFAULT_SIGNAL_RELAYS } from "../const";
+import { DEFAULT_LOOKUP_RELAYS } from "../const";
+import { type RelayAuthMode } from "./authentication-signer";
 
 // Accounts
 const accounts = await PreferenceSubject.array<SerializedAccount<any, any>>("accounts", []);
@@ -71,6 +70,10 @@ const enableDecryptionCache = await PreferenceSubject.boolean("enable-decryption
 const autoDecryptMessages = await PreferenceSubject.boolean("auto-decrypt-messages", true);
 const defaultMessageExpiration = await PreferenceSubject.numberNullable("default-message-expiration", null);
 
+// Relay Selection
+const maxConnections = await PreferenceSubject.number("max-connections", 30);
+const maxRelaysPerUser = await PreferenceSubject.number("max-relays-per-user", 8);
+
 const localSettings = {
   // Accounts
   accounts,
@@ -115,6 +118,10 @@ const localSettings = {
   autoDecryptMessages,
   enableDecryptionCache,
   defaultMessageExpiration,
+
+  // Relay Selection
+  maxConnections,
+  maxRelaysPerUser,
 } satisfies Record<string, PreferenceSubject<any>>;
 
 // Migrate legacy local storage settings

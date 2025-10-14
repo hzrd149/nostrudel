@@ -32,8 +32,19 @@ import { useMemo } from "react";
 import { Link as RouterLink } from "react-router-dom";
 
 import { CopyIconButton } from "../../../components/copy-icon-button";
-import { ChevronDownIcon, ExternalLinkIcon, KeyIcon, LightningIcon, VerifiedIcon } from "../../../components/icons";
+import {
+  ChevronDownIcon,
+  DirectMessagesIcon,
+  ExternalLinkIcon,
+  KeyIcon,
+  LightningIcon,
+  VerifiedIcon,
+} from "../../../components/icons";
 import Share07 from "../../../components/icons/share-07";
+import { AppTabsBar } from "../../../components/layout/presets/app-tabs-layout";
+import ScrollLayout from "../../../components/layout/presets/scroll-layout";
+import NipLink from "../../../components/nip-link";
+import { RelayIconStack } from "../../../components/relay-icon-stack";
 import UserAboutContent from "../../../components/user/user-about-content";
 import UserAvatar from "../../../components/user/user-avatar";
 import UserAvatarLink from "../../../components/user/user-avatar-link";
@@ -52,7 +63,6 @@ import useUserProfile from "../../../hooks/use-user-profile";
 import { profileLoader } from "../../../services/loaders";
 import { socialGraph$ } from "../../../services/social-graph";
 import DNSIdentityWarning from "../../settings/dns-identity/identity-warning";
-import { AppTabsBar } from "../../../components/layout/presets/app-tabs-layout";
 import { QrIconButton } from "../components/share-qr-button";
 import { UserProfileMenu } from "../components/user-profile-menu";
 import UserZapButton from "../components/user-zap-button";
@@ -62,7 +72,6 @@ import UserPinnedEvents from "./user-pinned-events";
 import UserProfileBadges from "./user-profile-badges";
 import UserRecentEvents from "./user-recent-events";
 import UserStatsAccordion from "./user-stats-accordion";
-import ScrollLayout from "../../../components/layout/presets/scroll-layout";
 
 function FollowedBy({ pubkey }: { pubkey: string }) {
   const socialGraph = useObservableState(socialGraph$);
@@ -119,6 +128,38 @@ function FollowedBy({ pubkey }: { pubkey: string }) {
         </ModalContent>
       </Modal>
     </>
+  );
+}
+
+function PublishesToRelays({ pubkey }: { pubkey: string }) {
+  const mailboxes = useUserMailboxes(pubkey);
+  const outboxes = mailboxes?.outboxes ?? [];
+
+  if (outboxes.length === 0)
+    return (
+      <Flex gap="2">
+        <DirectMessagesIcon boxSize="1.2em" />
+        <Text color="orange.500">
+          This user has setup their list of{" "}
+          <NipLink nip={65} color="blue.500">
+            outboxes
+          </NipLink>
+        </Text>
+      </Flex>
+    );
+
+  return (
+    <Flex gap="2" direction="column" alignItems="flex-start">
+      <Flex gap="2">
+        <DirectMessagesIcon boxSize="1.2em" />
+        <Text>
+          Publishes to {outboxes.length} relay{outboxes.length !== 1 ? "s" : ""}
+        </Text>
+      </Flex>
+      <Flex direction="column" ps="4" w="auto">
+        <RelayIconStack relays={outboxes} />
+      </Flex>
+    </Flex>
   );
 }
 
@@ -247,6 +288,8 @@ export default function UserAboutView() {
         </Flex>
 
         <FollowedBy pubkey={user.pubkey} />
+
+        <PublishesToRelays pubkey={user.pubkey} />
       </Flex>
 
       <UserProfileBadges pubkey={user.pubkey} px="2" />

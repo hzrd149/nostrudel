@@ -27,7 +27,7 @@ import accounts from "./accounts";
 import authenticationSigner from "./authentication-signer";
 import { writeEvent } from "./event-cache";
 import { eventStore } from "./event-store";
-import { addressLoader } from "./loaders";
+import { replaceableLoader } from "./loaders";
 import pool from "./pool";
 import localSettings from "./preferences";
 
@@ -35,7 +35,7 @@ import localSettings from "./preferences";
 eventStore.insert$.pipe(filter((event) => !isFromCache(event))).subscribe(writeEvent);
 
 const addressable = (account: IAccount, relays: Iterable<string>, kind: number, d?: string) => {
-  return addressLoader({ relays: [...relays], kind, pubkey: account.pubkey, identifier: d, cache: false });
+  return replaceableLoader({ relays: [...relays], kind, pubkey: account.pubkey, identifier: d, cache: false });
 };
 
 // listen for account changes and load users events

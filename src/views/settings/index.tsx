@@ -77,9 +77,16 @@ export default function SettingsView() {
       <SimpleNavItem to="/settings/relays" leftIcon={<RelayIcon boxSize={5} />}>
         Relays
       </SimpleNavItem>
-      <SimpleNavItem to="/settings/search" leftIcon={<SearchIcon boxSize={5} />}>
-        Search
-      </SimpleNavItem>
+      {account && (
+        <>
+          <SimpleNavItem to="/settings/outbox-selection" leftIcon={<RelayIcon boxSize={5} />}>
+            Outbox Selection
+          </SimpleNavItem>
+          <SimpleNavItem to="/settings/search" leftIcon={<SearchIcon boxSize={5} />}>
+            Search
+          </SimpleNavItem>
+        </>
+      )}
       <SimpleNavItem to="/settings/authentication" leftIcon={<CheckCircleBroken boxSize={5} />}>
         Authentication
       </SimpleNavItem>

@@ -48,8 +48,8 @@ export default function ListTypeCard({
 
           {people?.length && (
             <AvatarGroup size="sm">
-              {people.slice(0, 10).map((p) => (
-                <UserAvatar pubkey={p.pubkey} />
+              {people.slice(0, 10).map((user) => (
+                <UserAvatar user={user} showNip05={false} />
               ))}
             </AvatarGroup>
           )}

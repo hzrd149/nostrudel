@@ -4,7 +4,6 @@ import DeleteEventProvider from "./delete-event-provider";
 import InvoiceModalProvider from "./invoice-modal-provider";
 import MuteModalProvider from "./mute-modal-provider";
 import PostModalProvider from "./post-modal-provider";
-import RequireReadRelays from "./require-read-relays";
 
 /** Providers that provide functionality to pages (needs to be rendered under a router) */
 export function RouteProviders({ children }: { children: React.ReactNode }) {
@@ -14,9 +13,7 @@ export function RouteProviders({ children }: { children: React.ReactNode }) {
         <DebugModalProvider>
           <InvoiceModalProvider>
             <PostModalProvider>
-              <RequireReadRelays>
-                <AppHandlerProvider>{children}</AppHandlerProvider>
-              </RequireReadRelays>
+              <AppHandlerProvider>{children}</AppHandlerProvider>
             </PostModalProvider>
           </InvoiceModalProvider>
         </DebugModalProvider>

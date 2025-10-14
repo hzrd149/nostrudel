@@ -22,7 +22,11 @@ export default function useTimelineLoader(
   useSimpleSubscription(relays, filters);
 
   const loader = useMemo(() => {
-    if (filters) return timelineCacheService.createTimeline(key, relays, Array.isArray(filters) ? filters : [filters]);
+    const filtersArray = filters && (Array.isArray(filters) ? filters : [filters]);
+
+    if (filtersArray && filtersArray.length > 0 && relays.length > 0)
+      return timelineCacheService.createTimeline(key, relays, Array.isArray(filters) ? filters : [filters]);
+    else return undefined;
   }, [key, sum(filters), relays.join(",")]);
 
   const timeline = useEventModel(TimelineModel, filters && [filters]) ?? [];

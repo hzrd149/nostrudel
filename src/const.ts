@@ -7,7 +7,6 @@ function normalizeRelayURLs(relays: string[]) {
 }
 
 export const DEFAULT_SHARE_SERVICE = "https://njump.me/";
-
 export const DEFAULT_SEARCH_RELAYS = normalizeRelayURLs([
   "wss://relay.nostr.band",
   "wss://search.nos.today",
@@ -16,44 +15,8 @@ export const DEFAULT_SEARCH_RELAYS = normalizeRelayURLs([
 ]);
 export const WIKI_RELAYS = normalizeRelayURLs(["wss://relay.wikifreedia.xyz/"]);
 export const DEFAULT_LOOKUP_RELAYS = normalizeRelayURLs(["wss://purplepag.es/"]);
-
-export const DEFAULT_SIGNAL_RELAYS = normalizeRelayURLs(["wss://nostrue.com/", "wss://relay.damus.io"]);
+export const RECOMMENDED_LOOKUP_RELAYS = normalizeRelayURLs(["wss://purplepag.es/", "wss://index.hzrd149.com"]);
 export const DEFAULT_NOSTR_CONNECT_RELAY = normalizeURL("wss://relay.nsec.app/");
-
-export const DEFAULT_ICE_SERVERS: RTCIceServer[] = [
-  {
-    urls: ["stun:freeturn.net:3479"],
-  },
-  {
-    urls: ["turn:freeturn.net:3479"],
-    username: "free",
-    credential: "free",
-  },
-  {
-    urls: ["stun:stun.l.google.com:19302"],
-  },
-  {
-    urls: ["turn:172.234.18.173:3478"],
-    username: "free",
-    credential: "free",
-  },
-];
-
-export const RECOMMENDED_RELAYS = normalizeRelayURLs([
-  "wss://relay.damus.io/",
-  "wss://nostr.wine/",
-  "wss://relay.snort.social/",
-  "wss://nos.lol/",
-  "wss://nostr.land/",
-]);
-
-export const RECOMMENDED_JAPANESE_RELAYS = normalizeRelayURLs([
-  "wss://r.kojira.io",
-  "wss://nrelay-jp.c-stellar.net",
-  "wss://nostr.fediverse.jp",
-  "wss://nostr.holybea.com",
-  "wss://relay-jp.nostr.wirednet.jp",
-]);
 
 export const NOSTR_CONNECT_PERMISSIONS = [
   "get_public_key",

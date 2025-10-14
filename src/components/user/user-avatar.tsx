@@ -36,7 +36,7 @@ export type UserAvatarProps = Omit<MetadataAvatarProps, "pubkey" | "metadata"> &
   user?: ProfilePointer;
 };
 export const UserAvatar = forwardRef<HTMLDivElement, UserAvatarProps>(
-  ({ user, pubkey, relay, noProxy, size, ...props }, ref) => {
+  ({ user, pubkey, relay, noProxy, size, showNip05, ...props }, ref) => {
     const profile = useUserProfile(user ? user : { pubkey: pubkey!, relays: relay ? [relay] : [] });
     const account = useActiveAccount();
     const muteList = useUserMuteList(account?.pubkey);
@@ -52,7 +52,7 @@ export const UserAvatar = forwardRef<HTMLDivElement, UserAvatarProps>(
         size={size}
         {...props}
       >
-        {size !== "xs" && (
+        {size !== "xs" && showNip05 !== false && (
           <UserDnsIdentityIcon
             pubkey={user?.pubkey ?? pubkey!}
             position="absolute"
@@ -87,9 +87,10 @@ export type MetadataAvatarProps = Omit<AvatarProps, "src"> & {
   pubkey?: string;
   noProxy?: boolean;
   square?: boolean;
+  showNip05?: boolean;
 };
 export const MetadataAvatar = forwardRef<HTMLDivElement, MetadataAvatarProps>(
-  ({ pubkey, metadata, noProxy, children, square = true, ...props }, ref) => {
+  ({ pubkey, metadata, noProxy, showNip05, children, square = true, ...props }, ref) => {
     const { imageProxy, showPubkeyColor } = useAppSettings();
     const hideUsernames = useObservableEagerState(localSettings.hideUsernames);
     const account = useActiveAccount();
@@ -115,7 +116,7 @@ export const MetadataAvatar = forwardRef<HTMLDivElement, MetadataAvatarProps>(
       <AvatarComponent
         ref={ref}
         src={picture}
-        icon={pubkey ? <UserIdenticon pubkey={pubkey} /> : undefined}
+        icon={pubkey && showNip05 !== false ? <UserIdenticon pubkey={pubkey} /> : undefined}
         // overflow="hidden"
         title={getDisplayName(metadata, pubkey ?? "")}
         borderColor={showColor ? color : undefined}

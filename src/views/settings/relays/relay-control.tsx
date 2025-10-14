@@ -5,6 +5,7 @@ import { Link as RouterLink } from "react-router-dom";
 
 import RelayFavicon from "../../../components/relay/relay-favicon";
 import { useRelayInfo } from "../../../hooks/use-relay-info";
+import RelayLink from "../../../components/relay/relay-link";
 
 export default function RelayControl({
   url,
@@ -31,9 +32,7 @@ export default function RelayControl({
     <Flex gap="2" pl="2">
       <RelayFavicon relay={url} size="sm" mt="2" />
       <Box overflow="hidden">
-        <Link as={RouterLink} to={`/relays/${encodeURIComponent(url)}`} isTruncated>
-          {url}
-        </Link>
+        <RelayLink relay={url} isTruncated />
         <Text fontSize="sm" color="gray.500" noOfLines={1}>
           {info?.description}
         </Text>

@@ -7,12 +7,12 @@ import {
   PopoverContent,
   PopoverHeader,
   PopoverTrigger,
-  Text,
 } from "@chakra-ui/react";
 import { getSeenRelays } from "applesauce-core/helpers";
 import { NostrEvent } from "nostr-tools";
 import { RelayIcon } from "../icons";
 import RelayFavicon from "../relay/relay-favicon";
+import RelayLink from "../relay/relay-link";
 
 export default function SeenOnRelaysButton({
   event,
@@ -33,7 +33,7 @@ export default function SeenOnRelaysButton({
               Array.from(relays).map((relay) => (
                 <Flex key={relay} alignItems="center" gap="2">
                   <RelayFavicon relay={relay} size="xs" />
-                  <Text>{new URL(relay).hostname}</Text>
+                  <RelayLink relay={relay} isTruncated />
                 </Flex>
               ))}
           </PopoverBody>

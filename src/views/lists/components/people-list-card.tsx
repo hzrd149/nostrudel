@@ -55,7 +55,7 @@ export default function PeopleListCard({ list }: { list: NostrEvent }) {
 
         <AvatarGroup size="sm" m="2">
           {people.slice(0, 15).map((p) => (
-            <UserAvatar pubkey={p.pubkey} />
+            <UserAvatar pubkey={p.pubkey} showNip05={false} />
           ))}
         </AvatarGroup>
       </CardBody>

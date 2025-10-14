@@ -25,7 +25,7 @@ import { ExternalLinkIcon, SearchIcon } from "./icons";
 import UserLink from "./user/user-link";
 
 import { AppHandlerContext } from "../providers/route/app-handler-provider";
-import { addressLoader, eventLoader } from "../services/loaders";
+import { replaceableLoader, eventLoader } from "../services/loaders";
 import { connections$ } from "../services/pool";
 import RelayFavicon from "./relay/relay-favicon";
 
@@ -44,7 +44,7 @@ function SearchOnRelaysModal({ isOpen, onClose, decode }: Omit<ModalProps, "chil
     setLoading(true);
     switch (decode.type) {
       case "naddr":
-        addressLoader({
+        replaceableLoader({
           ...decode.data,
           relays: [...relays, ...(decode.data.relays ?? [])],
           cache: false,

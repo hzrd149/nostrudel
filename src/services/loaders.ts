@@ -1,4 +1,5 @@
 import {
+  AddressPointerLoader,
   createAddressLoader,
   createEventLoader,
   createReactionsLoader,
@@ -12,9 +13,10 @@ import { cacheRequest } from "./event-cache";
 import { eventStore } from "./event-store";
 import localSettings from "./preferences";
 import pool from "./pool";
+import { BLOSSOM_SERVER_LIST_KIND } from "applesauce-core/helpers";
 
 /** Loader for replaceable events based on coordinate */
-export const addressLoader = createAddressLoader(pool, {
+export const replaceableLoader = createAddressLoader(pool, {
   cacheRequest,
   eventStore,
   bufferTime: 500,
@@ -29,6 +31,18 @@ export const profileLoader = createAddressLoader(pool, {
   extraRelays: localSettings.readRelays,
   lookupRelays: localSettings.lookupRelays,
 });
+
+/** Address loader that switches based on kind */
+export const addressLoader: AddressPointerLoader = (pointer) => {
+  if (
+    pointer.kind === kinds.Metadata ||
+    pointer.kind === kinds.RelayList ||
+    pointer.kind === kinds.Metadata ||
+    pointer.kind === BLOSSOM_SERVER_LIST_KIND
+  )
+    return profileLoader(pointer);
+  else return replaceableLoader(pointer);
+};
 
 /** Loader for single events based on id */
 export const eventLoader = createEventLoader(pool, {
@@ -79,7 +93,7 @@ if (import.meta.env.DEV) {
   // @ts-expect-error
   window.profileLoader = profileLoader;
   // @ts-expect-error
-  window.addressLoader = addressLoader;
+  window.addressLoader = replaceableLoader;
   // @ts-expect-error
   window.eventLoader = eventLoader;
   // @ts-expect-error
