@@ -44,7 +44,7 @@ combineLatest([
     defined(),
     distinct((a) => a?.pubkey),
   ),
-  localSettings.readRelays,
+  localSettings.fallbackRelays,
 ])
   .pipe(
     switchMap(([account, relays]) =>

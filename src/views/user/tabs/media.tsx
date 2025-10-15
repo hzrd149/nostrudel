@@ -2,17 +2,15 @@ import { PICTURE_POST_KIND } from "applesauce-core/helpers";
 
 import ScrollLayout from "../../../components/layout/presets/scroll-layout";
 import TimelinePage from "../../../components/timeline-page";
-import { useReadRelays } from "../../../hooks/use-client-relays";
 import useParamsProfilePointer from "../../../hooks/use-params-pubkey-pointer";
 import useTimelineLoader from "../../../hooks/use-timeline-loader";
-import useUserMailboxes from "../../../hooks/use-user-mailboxes";
+import { useUserOutbox } from "../../../hooks/use-user-mailboxes";
 
 export default function UserPicturePostsTab() {
   const user = useParamsProfilePointer("pubkey");
-  const mailboxes = useUserMailboxes(user);
-  const readRelays = useReadRelays();
+  const relays = useUserOutbox(user) || [];
 
-  const { loader, timeline } = useTimelineLoader(user.pubkey + "-picture-posts", mailboxes?.outboxes || readRelays, {
+  const { loader, timeline } = useTimelineLoader(user.pubkey + "-picture-posts", relays, {
     authors: [user.pubkey],
     kinds: [PICTURE_POST_KIND],
   });

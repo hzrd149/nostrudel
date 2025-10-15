@@ -20,7 +20,7 @@ export const replaceableLoader = createAddressLoader(pool, {
   cacheRequest,
   eventStore,
   bufferTime: 500,
-  extraRelays: localSettings.readRelays,
+  extraRelays: localSettings.fallbackRelays,
 });
 
 /** Loader for replaceable events based on coordinate */
@@ -28,7 +28,7 @@ export const profileLoader = createAddressLoader(pool, {
   cacheRequest,
   eventStore,
   bufferTime: 200,
-  extraRelays: localSettings.readRelays,
+  extraRelays: localSettings.fallbackRelays,
   lookupRelays: localSettings.lookupRelays,
 });
 
@@ -49,7 +49,7 @@ export const eventLoader = createEventLoader(pool, {
   cacheRequest,
   eventStore,
   bufferTime: 500,
-  extraRelays: localSettings.readRelays,
+  extraRelays: localSettings.fallbackRelays,
 });
 
 // Setup loaders on event store
@@ -57,24 +57,28 @@ eventStore.addressableLoader = addressLoader;
 eventStore.replaceableLoader = addressLoader;
 eventStore.eventLoader = eventLoader;
 
-export const zapsLoader = createZapsLoader(pool, { cacheRequest, eventStore, extraRelays: localSettings.readRelays });
+export const zapsLoader = createZapsLoader(pool, {
+  cacheRequest,
+  eventStore,
+  extraRelays: localSettings.fallbackRelays,
+});
 
 export const reactionsLoader = createReactionsLoader(pool, {
   cacheRequest,
   eventStore,
-  extraRelays: localSettings.readRelays,
+  extraRelays: localSettings.fallbackRelays,
 });
 
 export const userSetsLoader = createUserListsLoader(pool, {
   cacheRequest,
   eventStore,
-  extraRelays: localSettings.readRelays,
+  extraRelays: localSettings.fallbackRelays,
 });
 
 export const channelMetadataLoader = createTagValueLoader(pool, "e", {
   kinds: [kinds.ChannelMetadata],
   cacheRequest,
-  extraRelays: localSettings.readRelays,
+  extraRelays: localSettings.fallbackRelays,
 });
 
 // A loader to load the group info from the relays
@@ -85,7 +89,7 @@ export const groupInfoLoader = createTagValueLoader(pool, "d", {
 /** Loader for loading a users social graph */
 export const socialGraphLoader = createSocialGraphLoader(profileLoader, {
   eventStore,
-  extraRelays: localSettings.readRelays,
+  extraRelays: localSettings.fallbackRelays,
   hints: false,
 });
 

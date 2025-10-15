@@ -7,12 +7,11 @@ import { NoteLink } from "../../../components/note/note-link";
 import TimelineActionAndStatus from "../../../components/timeline/timeline-action-and-status";
 import UserLink from "../../../components/user/user-link";
 import { filterTagsByContentRefs } from "../../../helpers/nostr/event";
-import { useReadRelays } from "../../../hooks/use-client-relays";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
 import useParamsProfilePointer from "../../../hooks/use-params-pubkey-pointer";
 import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
 import useTimelineLoader from "../../../hooks/use-timeline-loader";
-import useUserMailboxes from "../../../hooks/use-user-mailboxes";
+import { useUserOutbox } from "../../../hooks/use-user-mailboxes";
 import IntersectionObserverProvider from "../../../providers/local/intersection-observer";
 
 function ReportEvent({ report }: { report: NostrEvent }) {
@@ -47,10 +46,9 @@ function ReportEvent({ report }: { report: NostrEvent }) {
 
 export default function UserReportsTab() {
   const user = useParamsProfilePointer("pubkey");
-  const mailboxes = useUserMailboxes(user);
-  const readRelays = useReadRelays();
+  const relays = useUserOutbox(user) || [];
 
-  const { loader, timeline: events } = useTimelineLoader(`${user.pubkey}-reports`, mailboxes?.outboxes || readRelays, [
+  const { loader, timeline: events } = useTimelineLoader(`${user.pubkey}-reports`, relays, [
     {
       authors: [user.pubkey],
       kinds: [kinds.Report],

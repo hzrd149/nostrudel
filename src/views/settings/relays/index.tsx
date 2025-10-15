@@ -13,8 +13,8 @@ import AddRelayForm from "./add-relay-form";
 import RelayControl from "./relay-control";
 
 export default function AppRelaysView() {
-  const readRelays = useObservableEagerState(localSettings.readRelays);
-  const writeRelays = useObservableEagerState(localSettings.writeRelays);
+  const readRelays = useObservableEagerState(localSettings.fallbackRelays);
+  const writeRelays = useObservableEagerState(localSettings.extraPublishRelays);
   const lookupRelays = useObservableEagerState(localSettings.lookupRelays);
 
   const recommendedLookupRelays = RECOMMENDED_LOOKUP_RELAYS.filter((url) => lookupRelays.includes(url) === false);
@@ -82,13 +82,13 @@ export default function AppRelaysView() {
           key={url}
           url={url}
           onRemove={() => {
-            localSettings.readRelays.next(readRelays.filter((r) => r !== url));
+            localSettings.fallbackRelays.next(readRelays.filter((r) => r !== url));
           }}
         />
       ))}
       <AddRelayForm
         onSubmit={(url) => {
-          localSettings.readRelays.next(relaySet(readRelays, url));
+          localSettings.fallbackRelays.next(relaySet(readRelays, url));
         }}
       />
 
@@ -103,13 +103,13 @@ export default function AppRelaysView() {
           key={url}
           url={url}
           onRemove={() => {
-            localSettings.writeRelays.next(writeRelays.filter((r) => r !== url));
+            localSettings.extraPublishRelays.next(writeRelays.filter((r) => r !== url));
           }}
         />
       ))}
       <AddRelayForm
         onSubmit={(url) => {
-          localSettings.writeRelays.next(relaySet(writeRelays, url));
+          localSettings.extraPublishRelays.next(relaySet(writeRelays, url));
         }}
       />
     </SimpleView>

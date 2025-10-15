@@ -144,7 +144,7 @@ async function handleTextNote(event: NostrEvent) {
   for (const pointer of quotes) {
     eventLoader({
       id: pointer.id,
-      relays: mergeRelaySets(localSettings.readRelays.value, pointer.relays),
+      relays: mergeRelaySets(localSettings.fallbackRelays.value, pointer.relays),
     }).subscribe();
   }
 
@@ -157,7 +157,7 @@ async function handleTextNote(event: NostrEvent) {
   for (const pointer of pointers) {
     eventLoader({
       id: pointer.id,
-      relays: mergeRelaySets(localSettings.readRelays.value, pointer.relays),
+      relays: mergeRelaySets(localSettings.fallbackRelays.value, pointer.relays),
     }).subscribe();
   }
 }
@@ -167,7 +167,7 @@ async function handleShare(event: NostrEvent) {
   for (const pointer of pointers) {
     eventLoader({
       id: pointer.id,
-      relays: mergeRelaySets(localSettings.readRelays.value, pointer.relays),
+      relays: mergeRelaySets(localSettings.fallbackRelays.value, pointer.relays),
     }).subscribe();
   }
 }

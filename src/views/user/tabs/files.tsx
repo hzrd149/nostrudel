@@ -12,9 +12,8 @@ import useParamsProfilePointer from "../../../hooks/use-params-pubkey-pointer";
 import useShareableEventAddress from "../../../hooks/use-shareable-event-address";
 import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
 import useTimelineLoader from "../../../hooks/use-timeline-loader";
-import useUserMailboxes from "../../../hooks/use-user-mailboxes";
+import { useUserOutbox } from "../../../hooks/use-user-mailboxes";
 import IntersectionObserverProvider from "../../../providers/local/intersection-observer";
-import { useReadRelays } from "../../../hooks/use-client-relays";
 
 function FileRow({ file }: { file: NostrEvent }) {
   const ref = useEventIntersectionRef<HTMLTableRowElement>(file);
@@ -42,10 +41,9 @@ function FileRow({ file }: { file: NostrEvent }) {
 
 export default function UserFilesTab() {
   const user = useParamsProfilePointer("pubkey");
-  const mailboxes = useUserMailboxes(user);
-  const readRelays = useReadRelays(mailboxes?.outboxes);
+  const relays = useUserOutbox(user) || [];
 
-  const { loader, timeline: files } = useTimelineLoader(user.pubkey + "-files", mailboxes?.outboxes || readRelays, [
+  const { loader, timeline: files } = useTimelineLoader(user.pubkey + "-files", relays, [
     {
       authors: [user.pubkey],
       kinds: [kinds.FileMetadata],

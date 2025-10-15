@@ -7,18 +7,16 @@ import ScrollLayout from "../../../components/layout/presets/scroll-layout";
 import useParamsProfilePointer from "../../../hooks/use-params-pubkey-pointer";
 import useUserContacts from "../../../hooks/use-user-contacts";
 import useUserSets from "../../../hooks/use-user-lists";
+import { useUserOutbox } from "../../../hooks/use-user-mailboxes";
 import useUserMutes from "../../../hooks/use-user-mutes";
 import FallbackListCard from "../../lists/components/fallback-list-card";
 import ListTypeCard from "../../lists/components/list-type-card";
 import PeopleListCard from "../../lists/components/people-list-card";
-import useUserMailboxes from "../../../hooks/use-user-mailboxes";
-import { useReadRelays } from "../../../hooks/use-client-relays";
 
 export default function UserListsTab() {
   const user = useParamsProfilePointer("pubkey");
-  const mailboxes = useUserMailboxes(user);
-  const readRelays = useReadRelays();
-  const sets = useUserSets(addRelayHintsToPointer(user, mailboxes?.outboxes || readRelays)) ?? [];
+  const relays = useUserOutbox(user) || [];
+  const sets = useUserSets(addRelayHintsToPointer(user, relays)) ?? [];
   const pubkey = user.pubkey;
 
   const contacts = useUserContacts(user.pubkey);

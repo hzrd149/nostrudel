@@ -1,5 +1,5 @@
 import { Flex, Spacer } from "@chakra-ui/react";
-import { includeMailboxes } from "applesauce-core";
+import { includeFallbackRelays, includeMailboxes } from "applesauce-core";
 import { groupPubkeysByRelay, selectOptimalRelays } from "applesauce-core/helpers";
 import { TimelessFilter } from "applesauce-loaders";
 import { TimelineLoader } from "applesauce-loaders/loaders";
@@ -9,6 +9,7 @@ import { Filter, kinds, NostrEvent } from "nostr-tools";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { combineLatestWith, map, merge, of, throttleTime } from "rxjs";
 
+import { ignoreUnhealthyRelaysOnPointers } from "applesauce-relay";
 import NoteFilterTypeButtons from "../../components/note-filter-type-buttons";
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
 import TimelinePage, { useTimelinePageEventFilter } from "../../components/timeline-page";
@@ -19,14 +20,15 @@ import useLocalStorageDisclosure from "../../hooks/use-localstorage-disclosure";
 import KindSelectionProvider, { useKindSelectionContext } from "../../providers/local/kind-selection-provider";
 import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
 import { eventStore } from "../../services/event-store";
+import { liveness } from "../../services/pool";
 import localSettings from "../../services/preferences";
 import timelineCacheService from "../../services/timeline-cache";
 
 const defaultKinds = [kinds.ShortTextNote, kinds.Repost, kinds.GenericRepost];
 
 function HomePage() {
-  const showReplies = useLocalStorageDisclosure("show-replies", true);
-  const showReposts = useLocalStorageDisclosure("show-reposts", false);
+  const showReplies = useLocalStorageDisclosure("show-replies", false);
+  const showReposts = useLocalStorageDisclosure("show-reposts", true);
 
   const timelinePageEventFilter = useTimelinePageEventFilter();
   const muteFilter = useClientSideMuteFilter();
@@ -49,18 +51,13 @@ function HomePage() {
       // Add users outbox relays
       includeMailboxes(eventStore, "outbox"),
       // Get the extra relays
-      combineLatestWith(localSettings.readRelays),
-      // Add the extra relays to every user
-      map(([users, fallbackRelays]) =>
-        users.map((user) => {
-          if (!user.relays || user.relays.length === 0) return { ...user, relays: fallbackRelays };
-          else return user;
-        }),
-      ),
+      includeFallbackRelays(localSettings.fallbackRelays),
+      // Ignore unhealthy relays
+      ignoreUnhealthyRelaysOnPointers(liveness),
       // Get connection settings
       combineLatestWith(localSettings.maxConnections, localSettings.maxRelaysPerUser),
       // Only recalculate every 200ms
-      throttleTime(200),
+      throttleTime(500),
       // Select optimal relays
       map(([users, maxConnections, maxRelaysPerUser]) => {
         console.log(`Selecting relays for ${users.length} users`, {

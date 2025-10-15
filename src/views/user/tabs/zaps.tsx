@@ -18,12 +18,11 @@ import UserLink from "../../../components/user/user-link";
 import { humanReadableSats } from "../../../helpers/lightning";
 import { parseCoordinate } from "../../../helpers/nostr/event";
 import { isNoteZap, isProfileZap, totalZaps } from "../../../helpers/nostr/zaps";
-import { useReadRelays } from "../../../hooks/use-client-relays";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
 import useParamsProfilePointer from "../../../hooks/use-params-pubkey-pointer";
 import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
 import useTimelineLoader from "../../../hooks/use-timeline-loader";
-import useUserMailboxes from "../../../hooks/use-user-mailboxes";
+import { useUserOutbox } from "../../../hooks/use-user-mailboxes";
 import IntersectionObserverProvider from "../../../providers/local/intersection-observer";
 
 const ZapContentSymbol = Symbol.for("zap-content");
@@ -81,8 +80,7 @@ function Zap({ zap }: { zap: KnownEvent<kinds.Zap> }) {
 
 export default function UserZapsTab() {
   const user = useParamsProfilePointer("pubkey");
-  const mailboxes = useUserMailboxes(user);
-  const readRelays = useReadRelays();
+  const relays = useUserOutbox(user) || [];
   const [filter, setFilter] = useState("both");
 
   const eventFilter = useCallback(
@@ -100,7 +98,7 @@ export default function UserZapsTab() {
 
   const { loader, timeline } = useTimelineLoader(
     `${user.pubkey}-zaps`,
-    mailboxes?.outboxes || readRelays,
+    relays,
     { "#p": [user.pubkey], kinds: [9735] },
     { eventFilter },
   );

@@ -10,8 +10,8 @@ const accounts = await PreferenceSubject.array<SerializedAccount<any, any>>("acc
 const activeAccount = await PreferenceSubject.stringNullable("active-account", null);
 
 // Relays
-const readRelays = await PreferenceSubject.array<string>("read-relays", []);
-const writeRelays = await PreferenceSubject.array<string>("write-relays", []);
+const fallbackRelays = await PreferenceSubject.array<string>("read-relays", []);
+const extraPublishRelays = await PreferenceSubject.array<string>("write-relays", []);
 const lookupRelays = await PreferenceSubject.array<string>("lookup-relays", DEFAULT_LOOKUP_RELAYS);
 
 // Event cache
@@ -80,8 +80,8 @@ const localSettings = {
   activeAccount,
 
   // Relays
-  readRelays,
-  writeRelays,
+  fallbackRelays,
+  extraPublishRelays,
   lookupRelays,
 
   // Event cache

@@ -5,27 +5,21 @@ import { kinds } from "nostr-tools";
 import { ErrorBoundary } from "../../../components/error-boundary";
 import ScrollLayout from "../../../components/layout/presets/scroll-layout";
 import TimelineActionAndStatus from "../../../components/timeline/timeline-action-and-status";
-import { useReadRelays } from "../../../hooks/use-client-relays";
 import useParamsProfilePointer from "../../../hooks/use-params-pubkey-pointer";
 import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
 import useTimelineLoader from "../../../hooks/use-timeline-loader";
-import useUserMailboxes from "../../../hooks/use-user-mailboxes";
+import { useUserOutbox } from "../../../hooks/use-user-mailboxes";
 import IntersectionObserverProvider from "../../../providers/local/intersection-observer";
 import ArticleCard from "../../articles/components/article-card";
 
 export default function UserArticlesTab() {
   const user = useParamsProfilePointer("pubkey");
-  const mailboxes = useUserMailboxes(user);
-  const readRelays = useReadRelays(mailboxes?.outboxes);
+  const relays = useUserOutbox(user) || [];
 
-  const { loader, timeline: articles } = useTimelineLoader(
-    user.pubkey + "-articles",
-    mailboxes?.outboxes || readRelays,
-    {
-      authors: [user.pubkey],
-      kinds: [kinds.LongFormArticle],
-    },
-  );
+  const { loader, timeline: articles } = useTimelineLoader(user.pubkey + "-articles", relays, {
+    authors: [user.pubkey],
+    kinds: [kinds.LongFormArticle],
+  });
   const callback = useTimelineCurserIntersectionCallback(loader);
 
   return (

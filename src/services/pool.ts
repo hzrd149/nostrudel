@@ -1,4 +1,4 @@
-import { RelayPool } from "applesauce-relay";
+import { RelayLiveness, RelayPool } from "applesauce-relay";
 import { Filter, NostrEvent } from "nostr-tools";
 import { BehaviorSubject, combineLatest, interval, map, merge, Observable, shareReplay, switchMap } from "rxjs";
 
@@ -6,7 +6,25 @@ import { nanoid } from "nanoid";
 
 export type ConnectionState = "connecting" | "connected" | "retrying" | "dormant" | "error";
 
+// Create a single relay pool for all relay connections
 const pool = new RelayPool();
+
+// Create a liveness tracker for relays
+export const liveness = new RelayLiveness({
+  storage: {
+    setItem: (key, value) => {
+      localStorage.setItem("liveness|" + key, JSON.stringify(value));
+    },
+    getItem: (key) => {
+      const value = localStorage.getItem("liveness|" + key);
+      return value ? JSON.parse(value) : null;
+    },
+  },
+});
+liveness.load();
+
+// Connect to the pool and listen for connection states
+liveness.connectToPool(pool);
 
 // NOTE: hack to set default relay props
 interval(1000).subscribe(() => {

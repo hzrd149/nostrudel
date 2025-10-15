@@ -7,12 +7,11 @@ import NoteMenu from "../../../components/note/note-menu";
 import TimelineActionAndStatus from "../../../components/timeline/timeline-action-and-status";
 import UserAvatar from "../../../components/user/user-avatar";
 import UserLink from "../../../components/user/user-link";
-import { useReadRelays } from "../../../hooks/use-client-relays";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
 import useParamsProfilePointer from "../../../hooks/use-params-pubkey-pointer";
 import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
 import useTimelineLoader from "../../../hooks/use-timeline-loader";
-import useUserMailboxes from "../../../hooks/use-user-mailboxes";
+import { useUserOutbox } from "../../../hooks/use-user-mailboxes";
 import { ContentSettingsProvider } from "../../../providers/local/content-settings";
 import IntersectionObserverProvider from "../../../providers/local/intersection-observer";
 
@@ -42,17 +41,12 @@ const Reaction = ({ reaction: reaction }: { reaction: NostrEvent }) => {
 
 export default function UserReactionsTab() {
   const user = useParamsProfilePointer("pubkey");
-  const mailboxes = useUserMailboxes(user);
-  const readRelays = useReadRelays();
+  const relays = useUserOutbox(user) || [];
 
-  const { loader, timeline: reactions } = useTimelineLoader(
-    `${user.pubkey}-reactions`,
-    mailboxes?.outboxes || readRelays,
-    {
-      authors: [user.pubkey],
-      kinds: [7],
-    },
-  );
+  const { loader, timeline: reactions } = useTimelineLoader(`${user.pubkey}-reactions`, relays, {
+    authors: [user.pubkey],
+    kinds: [7],
+  });
   const callback = useTimelineCurserIntersectionCallback(loader);
 
   return (
