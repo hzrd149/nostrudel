@@ -11,7 +11,7 @@ import { combineLatestWith, map, merge, of, throttleTime } from "rxjs";
 
 import { ignoreUnhealthyRelaysOnPointers } from "applesauce-relay";
 import NoteFilterTypeButtons from "../../components/note-filter-type-buttons";
-import OutboxRelayDebugger from "../../components/outbox-relay-debugger";
+import OutboxRelaySelectionModal from "../../components/outbox-relay-selection-modal";
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
 import TimelinePage, { useTimelinePageEventFilter } from "../../components/timeline-page";
 import TimelineViewTypeButtons from "../../components/timeline-page/timeline-view-type";
@@ -118,7 +118,7 @@ function HomePage() {
       <PeopleListSelection />
       <NoteFilterTypeButtons showReplies={showReplies} showReposts={showReposts} />
       <Spacer />
-      {outboxes && selection && <OutboxRelayDebugger outboxMap={outboxes} selection={selection} />}
+      {outboxes && selection && <OutboxRelaySelectionModal outboxMap={outboxes} selection={selection} />}
       <TimelineViewTypeButtons />
     </Flex>
   );

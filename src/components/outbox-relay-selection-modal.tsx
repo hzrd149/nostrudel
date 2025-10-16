@@ -7,6 +7,7 @@ import {
   Badge,
   Box,
   Button,
+  ButtonProps,
   Flex,
   Heading,
   Modal,
@@ -59,9 +60,6 @@ import RelayStatusBadge from "./relays/relay-status";
 function StatsOverview({ stats }: { stats: RelayStats }) {
   return (
     <Box>
-      <Heading size="md" mb={4}>
-        Overview
-      </Heading>
       <Flex gap={4} wrap="wrap">
         <Stat>
           <StatLabel>Selected Relays</StatLabel>
@@ -241,23 +239,22 @@ function RelayDebuggerModal({
       <ModalContent>
         <ModalHeader>Outbox Relay Selection Debugger</ModalHeader>
         <ModalCloseButton />
-        <ModalBody pb={6}>
-          <VStack spacing={6} align="stretch">
-            <StatsOverview stats={stats} />
-            <ConnectionProgress stats={stats} />
-            <RelayDetailsTable relayDetails={relayDetails} stats={stats} />
-            <SummarySection stats={stats} />
-          </VStack>
+        <ModalBody pb={6} display="flex" flexDirection="column" gap={6}>
+          <StatsOverview stats={stats} />
+          <ConnectionProgress stats={stats} />
+          <RelayDetailsTable relayDetails={relayDetails} stats={stats} />
+          <SummarySection stats={stats} />
         </ModalBody>
       </ModalContent>
     </Modal>
   );
 }
 
-export default function OutboxRelayDebugger({
+export default function OutboxRelaySelectionModal({
   outboxMap,
   selection,
-}: {
+  ...props
+}: Omit<ButtonProps, "children" | "onClick" | "colorScheme"> & {
   outboxMap: OutboxMap;
   selection: ProfilePointer[];
 }) {
@@ -303,6 +300,7 @@ export default function OutboxRelayDebugger({
     <>
       <Button
         variant="ghost"
+        {...props}
         onClick={onOpen}
         colorScheme={stats.coveragePercentage >= 80 ? "green" : stats.coveragePercentage >= 50 ? "yellow" : "red"}
       >
