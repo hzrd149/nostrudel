@@ -13,20 +13,17 @@ import {
   NumberInputStepper,
   Text,
 } from "@chakra-ui/react";
-import { includeMailboxes } from "applesauce-core";
-import { groupPubkeysByRelay } from "applesauce-core/helpers";
-import { selectOptimalRelays } from "applesauce-core/helpers/relay-selection";
-import { useActiveAccount, useObservableEagerState, useObservableState } from "applesauce-react/hooks";
+import { useActiveAccount, useEventModel, useObservableEagerState, useObservableMemo } from "applesauce-react/hooks";
 import { ProfilePointer } from "nostr-tools/nip19";
 import { useMemo } from "react";
-import { NEVER, shareReplay, throttleTime } from "rxjs";
 
-import { ignoreUnhealthyRelaysOnPointers } from "applesauce-relay";
+import { includeMailboxes } from "applesauce-core";
+import { NEVER } from "rxjs";
 import { ErrorBoundary } from "../../../components/error-boundary";
 import SimpleView from "../../../components/layout/presets/simple-view";
 import RouterLink from "../../../components/router-link";
+import { OutboxSelectionModel } from "../../../models/outbox-selection";
 import { eventStore } from "../../../services/event-store";
-import { liveness } from "../../../services/pool";
 import localSettings from "../../../services/preferences";
 import FallbackRelaySettings from "../relays/components/fallback-relay-settings";
 import MissingRelaysRow from "./components/missing-relays-row";
@@ -34,13 +31,16 @@ import OrphanedUsersRow from "./components/orphaned-users-row";
 import RelayCountRow from "./components/relay-count-row";
 import SelectRelayRow from "./components/selected-relay-row";
 
-function UsersByRelayCount({
-  selection,
-  contacts,
-}: {
-  selection: ProfilePointer[] | null | undefined;
-  contacts: ProfilePointer[] | null | undefined;
-}) {
+function UsersByRelayCount({ selection }: { selection: ProfilePointer[] | null | undefined }) {
+  const account = useActiveAccount();
+  const contacts = useObservableMemo(
+    () =>
+      account?.pubkey
+        ? eventStore.contacts({ pubkey: account?.pubkey }).pipe(includeMailboxes(eventStore, "outbox"))
+        : NEVER,
+    [account?.pubkey],
+  );
+
   // Calculate missing relays users - users who never had any relays (no NIP-65 relay list)
   const missingRelaysUsers = useMemo(() => {
     if (!contacts || !selection) return [];
@@ -161,40 +161,11 @@ function ConnectionSettings() {
 
 export default function OutboxSelectionSettings() {
   const account = useActiveAccount();
-  const maxConnections = useObservableEagerState(localSettings.maxConnections);
-  const maxRelaysPerUser = useObservableEagerState(localSettings.maxRelaysPerUser);
-
-  // Create an observable for adding relays to the contacts
-  const outboxes$ = useMemo(
-    () =>
-      account?.pubkey
-        ? eventStore.contacts(account.pubkey).pipe(
-            // Load the NIP-65 outboxes for all contacts
-            includeMailboxes(eventStore),
-            // Watch the blacklist and ignore relays
-            ignoreUnhealthyRelaysOnPointers(liveness),
-            // Only recalculate every 200ms
-            throttleTime(200),
-            // Only calculate it once
-            shareReplay(1),
-          )
-        : NEVER,
-    [account?.pubkey, eventStore],
-  );
-
-  const original = useObservableState(outboxes$);
 
   // Get grouped outbox data
-  const selection = useMemo(() => {
-    if (!original) return [];
-
-    console.info("Selecting optimal relays", original.length);
-    return selectOptimalRelays(original, { maxConnections, maxRelaysPerUser });
-  }, [original, maxConnections, maxRelaysPerUser]);
-
-  const outboxMap = useMemo(() => selection && groupPubkeysByRelay(selection), [selection]);
-
-  const sortedRelays = outboxMap ? Object.entries(outboxMap).sort(([, a], [, b]) => b.length - a.length) : [];
+  const { outboxes, selection } =
+    useEventModel(OutboxSelectionModel, account?.pubkey ? [{ pubkey: account.pubkey, kind: 3 }] : undefined) ?? {};
+  const sortedRelays = outboxes ? Object.entries(outboxes).sort(([, a], [, b]) => b.length - a.length) : [];
 
   return (
     <SimpleView title="Outbox Selection" maxW="6xl">
@@ -232,7 +203,7 @@ export default function OutboxSelectionSettings() {
           Users by Relay Count
         </Heading>
         <Text color="GrayText">All users grouped by how many relays have been selected for them.</Text>
-        <UsersByRelayCount selection={selection} contacts={original} />
+        <UsersByRelayCount selection={selection} />
       </ErrorBoundary>
 
       <FallbackRelaySettings />

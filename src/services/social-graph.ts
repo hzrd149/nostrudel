@@ -3,6 +3,7 @@ import { kinds, NostrEvent } from "nostr-tools";
 import {
   BehaviorSubject,
   combineLatest,
+  distinctUntilChanged,
   exhaustMap,
   finalize,
   map,
@@ -19,11 +20,10 @@ import accounts from "./accounts";
 import idbKeyValueStore from "./database/kv";
 import { eventStore } from "./event-store";
 import { socialGraphLoader } from "./loaders";
+import { formatBytes } from "../helpers/number";
 
 const log = logger.extend("SocialGraph");
 const cacheKey = "social-graph";
-
-log("Social graph initializing...");
 
 // Load the social graph from the cache
 const cached = (await idbKeyValueStore.getItem(cacheKey)) as Uint8Array | undefined;
@@ -37,7 +37,7 @@ function autoSave() {
   socialGraph$
     .pipe(
       skip(1),
-      throttleTime(10_000),
+      throttleTime(20_000),
       exhaustMap((graph) => saveSocialGraph(graph)),
     )
     .subscribe();
@@ -45,7 +45,9 @@ function autoSave() {
 
 // Load the social graph from the cache and start auto saving
 if (cached) {
+  log("Loading social graph from cache");
   SocialGraph.fromBinary(accounts.active?.pubkey ?? SOCIAL_GRAPH_FALLBACK_PUBKEY, cached).then((graph) => {
+    log(`Loaded social graph from cache with ${graph.size().users} user (${formatBytes(cached.length)})`);
     socialGraph$.next(graph);
 
     autoSave();
@@ -79,12 +81,13 @@ export async function saveSocialGraph(graph: SocialGraph) {
 
   // Don't save empty graphs
   if (size.users === 0) {
+    log("Social graph is empty, deleting cache");
     await idbKeyValueStore.deleteItem(cacheKey);
-    return;
   } else {
     log(`Saving social graph (${size.users} users, ${size.mutes} mutes)`);
-    await idbKeyValueStore.setItem(cacheKey, graph.toBinary());
-    log("Saved social graph to cache");
+    const blob = await graph.toBinary();
+    await idbKeyValueStore.setItem(cacheKey, blob);
+    log(`Saved social graph to cache (${formatBytes(blob.length)})`);
   }
 }
 

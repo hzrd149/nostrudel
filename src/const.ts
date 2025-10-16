@@ -1,6 +1,7 @@
 import { EventFactoryClient } from "applesauce-factory";
 import { isSafeRelayURL } from "applesauce-core/helpers/relays";
 import { normalizeURL } from "applesauce-core/helpers";
+import { IS_WEB_ANDROID } from "./env";
 
 function normalizeRelayURLs(relays: string[]) {
   return relays.filter(isSafeRelayURL).map(normalizeURL);
@@ -14,8 +15,30 @@ export const DEFAULT_SEARCH_RELAYS = normalizeRelayURLs([
   "wss://filter.nostr.wine",
 ]);
 export const WIKI_RELAYS = normalizeRelayURLs(["wss://relay.wikifreedia.xyz/"]);
+
+/** The default maximum number of connections to make for outbox selection */
+export const DEFAULT_MAX_CONNECTIONS = 20;
+
+/** Default max number of relays to select per user for outbox selection */
+export const DEFAULT_MAX_RELAYS_PER_USER = 5;
+
+/** The default lookup relays used to fetch users profiles and outboxes */
 export const DEFAULT_LOOKUP_RELAYS = normalizeRelayURLs(["wss://purplepag.es/"]);
+
+/** Extra recommended lookup relays */
 export const RECOMMENDED_LOOKUP_RELAYS = normalizeRelayURLs(["wss://purplepag.es/", "wss://index.hzrd149.com"]);
+
+/** The default set of relays to use for fetching users events who have out published outboxes */
+export const DEFAULT_FALLBACK_RELAYS = normalizeRelayURLs(["wss://relay.primal.net/", "wss://relay.damus.io/"]);
+
+/** The default recommended relays to use when a user has not outboxes */
+export const RECOMMENDED_FALLBACK_RELAYS = normalizeRelayURLs([
+  "wss://relay.primal.net/",
+  "wss://relay.damus.io/",
+  "wss://nos.lol/",
+]);
+
+/** The default relay to recommend for remote signers */
 export const DEFAULT_NOSTR_CONNECT_RELAY = normalizeURL("wss://relay.nsec.app/");
 
 export const NOSTR_CONNECT_PERMISSIONS = [

@@ -1,18 +1,25 @@
-import { PropsWithChildren, createContext, useCallback, useContext, useMemo } from "react";
-import { getProfilePointersFromList } from "applesauce-core/helpers";
+import {
+  AddressPointerWithoutD,
+  getAddressPointerForEvent,
+  getProfilePointersFromList,
+  getReplaceableIdentifier,
+  parseCoordinate,
+} from "applesauce-core/helpers";
 import { useActiveAccount } from "applesauce-react/hooks";
-import { Filter, kinds } from "nostr-tools";
+import { Filter, NostrEvent, kinds } from "nostr-tools";
+import { AddressPointer, ProfilePointer } from "nostr-tools/nip19";
+import { PropsWithChildren, createContext, useCallback, useContext, useMemo } from "react";
 
 import useReplaceableEvent from "../../hooks/use-replaceable-event";
-import { NostrEvent } from "nostr-tools";
 import useRouteSearchValue from "../../hooks/use-route-search-value";
-import { ProfilePointer } from "nostr-tools/nip19";
+import { LoadableAddressPointer } from "applesauce-loaders/loaders";
 
 export type ListId = "following" | "global" | "self" | string;
 
 export type PeopleListContextType = {
   selected: ListId;
   listId?: string;
+  pointer?: AddressPointer;
   listEvent?: NostrEvent;
   people: ProfilePointer[] | undefined;
   setSelected: (list: ListId) => void;
@@ -44,9 +51,19 @@ export function usePeopleListSelect(selected: ListId, onChange: (list: ListId) =
   const account = useActiveAccount();
 
   const listId = useListCoordinate(selected);
-  const listEvent = useReplaceableEvent(listId);
-
-  const people = useMemo(() => listEvent && getProfilePointersFromList(listEvent), [listEvent]);
+  const event = useReplaceableEvent(listId);
+  const pointer = useMemo(
+    () =>
+      event
+        ? ({
+            kind: kinds.Contacts,
+            pubkey: event.pubkey,
+            identifier: getReplaceableIdentifier(event),
+          } satisfies LoadableAddressPointer)
+        : undefined,
+    [event],
+  );
+  const people = useMemo(() => event && getProfilePointersFromList(event), [event]);
 
   const filter = useMemo<Filter | undefined>(() => {
     if (selected === "global") return {};
@@ -63,7 +80,8 @@ export function usePeopleListSelect(selected: ListId, onChange: (list: ListId) =
     people,
     selected,
     listId,
-    listEvent,
+    pointer,
+    listEvent: event,
     setSelected: onChange,
     filter,
   };

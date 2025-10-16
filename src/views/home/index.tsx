@@ -1,15 +1,9 @@
 import { Flex, Spacer } from "@chakra-ui/react";
-import { includeFallbackRelays, includeMailboxes } from "applesauce-core";
-import { groupPubkeysByRelay, selectOptimalRelays } from "applesauce-core/helpers";
-import { TimelessFilter } from "applesauce-loaders";
-import { TimelineLoader } from "applesauce-loaders/loaders";
-import { useObservableEagerMemo } from "applesauce-react/hooks";
-import hash_sum from "hash-sum";
+import { useEventModel, useObservableEagerMemo } from "applesauce-react/hooks";
 import { Filter, kinds, NostrEvent } from "nostr-tools";
-import { useCallback, useEffect, useMemo, useRef } from "react";
-import { combineLatestWith, map, merge, of, throttleTime } from "rxjs";
+import { useCallback, useEffect, useMemo } from "react";
+import { map, of } from "rxjs";
 
-import { ignoreUnhealthyRelaysOnPointers } from "applesauce-relay";
 import NoteFilterTypeButtons from "../../components/note-filter-type-buttons";
 import OutboxRelaySelectionModal from "../../components/outbox-relay-selection-modal";
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
@@ -17,13 +11,12 @@ import TimelinePage, { useTimelinePageEventFilter } from "../../components/timel
 import TimelineViewTypeButtons from "../../components/timeline-page/timeline-view-type";
 import { isReply, isRepost } from "../../helpers/nostr/event";
 import useClientSideMuteFilter from "../../hooks/use-client-side-mute-filter";
+import { useLoaderForOutboxes } from "../../hooks/use-loaders-for-outboxes";
 import useLocalStorageDisclosure from "../../hooks/use-localstorage-disclosure";
+import { OutboxSelectionModel } from "../../models/outbox-selection";
 import KindSelectionProvider, { useKindSelectionContext } from "../../providers/local/kind-selection-provider";
 import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
 import { eventStore } from "../../services/event-store";
-import { liveness } from "../../services/pool";
-import localSettings from "../../services/preferences";
-import timelineCacheService from "../../services/timeline-cache";
 
 const defaultKinds = [kinds.ShortTextNote, kinds.Repost, kinds.GenericRepost];
 
@@ -43,68 +36,12 @@ function HomePage() {
     [timelinePageEventFilter, showReplies.isOpen, showReposts.isOpen, muteFilter],
   );
 
-  const { listId, filter, people } = usePeopleListContext();
+  const { listId, filter, pointer } = usePeopleListContext();
   const { kinds } = useKindSelectionContext();
-  const selection = useObservableEagerMemo(() => {
-    if (!people) return;
-
-    return of(people).pipe(
-      // Add users outbox relays
-      includeMailboxes(eventStore, "outbox"),
-      // Get the extra relays
-      includeFallbackRelays(localSettings.fallbackRelays),
-      // Ignore unhealthy relays
-      ignoreUnhealthyRelaysOnPointers(liveness),
-      // Get connection settings
-      combineLatestWith(localSettings.maxConnections, localSettings.maxRelaysPerUser),
-      // Only recalculate every 200ms
-      throttleTime(500),
-      // Select optimal relays
-      map(([users, maxConnections, maxRelaysPerUser]) => {
-        console.log(`Selecting relays for ${users.length} users`, {
-          connections: maxConnections,
-          maxPerUser: maxRelaysPerUser,
-        });
-
-        return selectOptimalRelays(users, { maxConnections, maxRelaysPerUser });
-      }),
-    );
-  }, [people]);
-
-  const outboxes = useMemo(() => {
-    if (!selection) return;
-    const outboxes = groupPubkeysByRelay(selection);
-
-    if (import.meta.env.DEV) {
-      console.table(
-        Object.entries(outboxes)
-          .map(([relay, users]) => ({ relay, users: users.length }))
-          .sort((a, b) => b.users - a.users),
-      );
-    }
-
-    return outboxes;
-  }, [selection]);
-
-  // Create loaders for each relay
-  const loaders = useRef<TimelineLoader[]>([]);
-  useEffect(() => {
-    loaders.current = [];
-
-    if (!outboxes) return;
-    for (const [relay, users] of Object.entries(outboxes)) {
-      const filter: TimelessFilter = { kinds, authors: users.map((u) => u.pubkey) };
-
-      loaders.current.push(
-        timelineCacheService.createTimeline(`home-${listId}-${relay}-${hash_sum(filter)}`, [relay], [filter]),
-      );
-    }
-  }, [outboxes, listId, kinds]);
+  const { selection, outboxes } = useEventModel(OutboxSelectionModel, pointer ? [pointer] : undefined) ?? {};
 
   // Merge all loaders
-  const loader: TimelineLoader = useMemo(() => {
-    return (since?: number) => merge(...loaders.current.map((l) => l(since)));
-  }, []);
+  const loader = useLoaderForOutboxes(`home-${listId}`, outboxes, kinds);
 
   // Subscribe to event store for timeline events
   const filters: Filter[] = useMemo(() => (filter ? [{ ...filter, kinds }] : []), [filter, kinds]);

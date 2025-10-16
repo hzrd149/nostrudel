@@ -11,10 +11,10 @@ import RelayControl from "./relay-control";
 
 export default function LookupRelaySettings() {
   const lookupRelays = useObservableEagerState(localSettings.lookupRelays);
-  const recommendedLookupRelays = RECOMMENDED_LOOKUP_RELAYS.filter((url) => lookupRelays.includes(url) === false);
+  const recommendations = RECOMMENDED_LOOKUP_RELAYS.filter((url) => lookupRelays.includes(url) === false);
 
   return (
-    <>
+    <Flex direction="column" gap="2">
       <Heading size="md">Lookup Relays</Heading>
       <Text color="GrayText">
         Lookup relays are special indexing relays that are used to find user profiles and user mailboxes.
@@ -35,9 +35,8 @@ export default function LookupRelaySettings() {
         }}
       />
 
-      {recommendedLookupRelays.length > 0 && (
+      {recommendations.length > 0 && (
         <Flex gap="2" alignItems="center" wrap="wrap">
-          <Text>Recommended:</Text>
           {RECOMMENDED_LOOKUP_RELAYS.filter((url) => lookupRelays.includes(url) === false).map((url) => (
             <Button
               variant="ghost"
@@ -58,6 +57,6 @@ export default function LookupRelaySettings() {
           <WarningIcon /> There are no index relays set, profile lookup and other features may not work properly
         </Text>
       )}
-    </>
+    </Flex>
   );
 }

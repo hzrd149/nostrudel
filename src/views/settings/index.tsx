@@ -49,17 +49,18 @@ export default function SettingsView() {
           <SimpleNavItem to="/settings/accounts" leftIcon={<UserAvatar size="xs" pubkey={account.pubkey} />}>
             Accounts
           </SimpleNavItem>
+          <DividerHeader title="Account" />
           <SimpleNavItem to="/settings/profile" leftIcon={<User01 boxSize={5} />}>
             Profile
           </SimpleNavItem>
           <SimpleNavItem to="/settings/mailboxes" leftIcon={<Mail02 boxSize={5} />}>
             Mailboxes
           </SimpleNavItem>
+          <SimpleNavItem to="/settings/search" leftIcon={<SearchIcon boxSize={5} />}>
+            Search
+          </SimpleNavItem>
           <SimpleNavItem to="/settings/media-servers" leftIcon={<Image01 boxSize={5} />}>
             Media Servers
-          </SimpleNavItem>
-          <SimpleNavItem to="/settings/identity" leftIcon={<VerifiedIcon boxSize={5} />}>
-            DNS Identity
           </SimpleNavItem>
           <SimpleNavItem to="/settings/messages" leftIcon={<Mail02 boxSize={5} />}>
             Messages
@@ -67,31 +68,25 @@ export default function SettingsView() {
           <SimpleNavItem to="/settings/mutes" leftIcon={<MuteIcon boxSize={5} />}>
             Mutes
           </SimpleNavItem>
+          <SimpleNavItem to="/settings/identity" leftIcon={<VerifiedIcon boxSize={5} />}>
+            DNS Identity
+          </SimpleNavItem>
         </>
       )}
-      <SimpleNavItem to="/settings/social-graph" leftIcon={<Share07 boxSize={5} />}>
-        Social Graph
-      </SimpleNavItem>
 
-      <DividerHeader title="Network" />
+      <DividerHeader title="Client" />
       <SimpleNavItem to="/settings/relays" leftIcon={<RelayIcon boxSize={5} />}>
         Relays
       </SimpleNavItem>
-      {account && (
-        <>
-          <SimpleNavItem to="/settings/outbox-selection" leftIcon={<RelayIcon boxSize={5} />}>
-            Outbox Selection
-          </SimpleNavItem>
-          <SimpleNavItem to="/settings/search" leftIcon={<SearchIcon boxSize={5} />}>
-            Search
-          </SimpleNavItem>
-        </>
-      )}
+      <SimpleNavItem to="/settings/outbox-selection" leftIcon={<RelayIcon boxSize={5} />}>
+        Outbox Selection
+      </SimpleNavItem>
+      <SimpleNavItem to="/settings/social-graph" leftIcon={<Share07 boxSize={5} />}>
+        Social Graph
+      </SimpleNavItem>
       <SimpleNavItem to="/settings/authentication" leftIcon={<CheckCircleBroken boxSize={5} />}>
         Authentication
       </SimpleNavItem>
-
-      <DividerHeader title="App" />
       <SimpleNavItem to="/settings/display" leftIcon={<AppearanceIcon boxSize={5} />}>
         Display
       </SimpleNavItem>
@@ -112,16 +107,6 @@ export default function SettingsView() {
       </SimpleNavItem>
       <SimpleNavItem to="/settings/performance" leftIcon={<CpuChip01 boxSize={5} />}>
         Performance
-      </SimpleNavItem>
-
-      <DividerHeader title="Debug" />
-      {IS_SERVICE_WORKER_SUPPORTED && (
-        <SimpleNavItem to="/settings/background-worker" leftIcon={<CpuChip01 boxSize={5} />}>
-          Background Worker
-        </SimpleNavItem>
-      )}
-      <SimpleNavItem to="/relays/cache/database" leftIcon={<DatabaseIcon boxSize={5} />}>
-        Database Tools
       </SimpleNavItem>
 
       <Flex alignItems="center">

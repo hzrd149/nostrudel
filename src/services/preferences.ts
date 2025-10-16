@@ -2,7 +2,12 @@ import { bytesToHex, hexToBytes } from "@noble/hashes/utils";
 import { type SerializedAccount } from "applesauce-accounts";
 
 import { PreferenceSubject } from "../classes/preference-subject";
-import { DEFAULT_LOOKUP_RELAYS } from "../const";
+import {
+  DEFAULT_FALLBACK_RELAYS,
+  DEFAULT_LOOKUP_RELAYS,
+  DEFAULT_MAX_CONNECTIONS,
+  DEFAULT_MAX_RELAYS_PER_USER,
+} from "../const";
 import { type RelayAuthMode } from "./authentication-signer";
 
 // Accounts
@@ -10,9 +15,9 @@ const accounts = await PreferenceSubject.array<SerializedAccount<any, any>>("acc
 const activeAccount = await PreferenceSubject.stringNullable("active-account", null);
 
 // Relays
-const fallbackRelays = await PreferenceSubject.array<string>("read-relays", []);
-const extraPublishRelays = await PreferenceSubject.array<string>("write-relays", []);
+const fallbackRelays = await PreferenceSubject.array<string>("fallback-relays", DEFAULT_FALLBACK_RELAYS);
 const lookupRelays = await PreferenceSubject.array<string>("lookup-relays", DEFAULT_LOOKUP_RELAYS);
+const extraPublishRelays = await PreferenceSubject.array<string>("extra-publish-relays", []);
 
 // Event cache
 const idbMaxEvents = await PreferenceSubject.number("nostr-idb-max-events", 10_000);
@@ -71,8 +76,8 @@ const autoDecryptMessages = await PreferenceSubject.boolean("auto-decrypt-messag
 const defaultMessageExpiration = await PreferenceSubject.numberNullable("default-message-expiration", null);
 
 // Relay Selection
-const maxConnections = await PreferenceSubject.number("max-connections", 30);
-const maxRelaysPerUser = await PreferenceSubject.number("max-relays-per-user", 8);
+const maxConnections = await PreferenceSubject.number("max-connections", DEFAULT_MAX_CONNECTIONS);
+const maxRelaysPerUser = await PreferenceSubject.number("max-relays-per-user", DEFAULT_MAX_RELAYS_PER_USER);
 
 const localSettings = {
   // Accounts
