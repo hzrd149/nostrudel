@@ -5,8 +5,7 @@ export type RelyNameProps = {
 };
 
 export default function RelayName({ relay }: RelyNameProps) {
-  const { info } = useRelayInfo(relay);
-  const name = info?.name || relay.replace("wss://", "").replace("ws://", "");
+  const name = relay.replace("wss://", "").replace("ws://", "");
 
   return <span>{name}</span>;
 }

@@ -21,11 +21,14 @@ import { ProfilePointer } from "nostr-tools/nip19";
 import { useMemo } from "react";
 import { NEVER, shareReplay, throttleTime } from "rxjs";
 
+import { ignoreUnhealthyRelaysOnPointers } from "applesauce-relay";
 import { ErrorBoundary } from "../../../components/error-boundary";
 import SimpleView from "../../../components/layout/presets/simple-view";
 import RouterLink from "../../../components/router-link";
 import { eventStore } from "../../../services/event-store";
+import { liveness } from "../../../services/pool";
 import localSettings from "../../../services/preferences";
+import FallbackRelaySettings from "../relays/components/fallback-relay-settings";
 import MissingRelaysRow from "./components/missing-relays-row";
 import OrphanedUsersRow from "./components/orphaned-users-row";
 import RelayCountRow from "./components/relay-count-row";
@@ -169,7 +172,7 @@ export default function OutboxSelectionSettings() {
             // Load the NIP-65 outboxes for all contacts
             includeMailboxes(eventStore),
             // Watch the blacklist and ignore relays
-            // ignoreBlacklistedRelays(blacklist$),
+            ignoreUnhealthyRelaysOnPointers(liveness),
             // Only recalculate every 200ms
             throttleTime(200),
             // Only calculate it once
@@ -231,6 +234,8 @@ export default function OutboxSelectionSettings() {
         <Text color="GrayText">All users grouped by how many relays have been selected for them.</Text>
         <UsersByRelayCount selection={selection} contacts={original} />
       </ErrorBoundary>
+
+      <FallbackRelaySettings />
     </SimpleView>
   );
 }

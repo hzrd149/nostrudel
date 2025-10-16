@@ -1,6 +1,6 @@
 import { Avatar, AvatarProps } from "@chakra-ui/react";
 import styled from "@emotion/styled";
-import { ProfileContent } from "applesauce-core/helpers";
+import { getProfilePicture, ProfileContent } from "applesauce-core/helpers";
 import { useActiveAccount, useObservableEagerState } from "applesauce-react/hooks";
 import { ProfilePointer } from "nostr-tools/nip19";
 import { forwardRef, memo, useMemo } from "react";
@@ -96,8 +96,10 @@ export const MetadataAvatar = forwardRef<HTMLDivElement, MetadataAvatarProps>(
     const account = useActiveAccount();
     const picture = useMemo(() => {
       if (hideUsernames && pubkey && pubkey !== account?.pubkey) return undefined;
-      if (metadata?.picture) {
-        const src = safeUrl(metadata?.picture);
+
+      const url = getProfilePicture(metadata);
+      if (url) {
+        const src = safeUrl(url);
         if (src && !noProxy) {
           const proxyURL = buildImageProxyURL(src, RESIZE_PROFILE_SIZE);
           if (proxyURL) return proxyURL;

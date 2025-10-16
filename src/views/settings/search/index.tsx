@@ -9,8 +9,8 @@ import { useRelayInfo } from "../../../hooks/use-relay-info";
 import useAsyncAction from "../../../hooks/use-async-action";
 import useUserSearchRelayList from "../../../hooks/use-user-search-relay-list";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
-import AddRelayForm from "../relays/add-relay-form";
-import RelayControl from "../relays/relay-control";
+import AddRelayForm from "../relays/components/add-relay-form";
+import RelayControl from "../relays/components/relay-control";
 
 function RelayEntry({
   url,

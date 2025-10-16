@@ -3,7 +3,7 @@ import { isSafeRelayURL } from "applesauce-core/helpers/relays";
 import { normalizeURL } from "applesauce-core/helpers/url";
 import { useForm } from "react-hook-form";
 
-import { RelayUrlInput } from "../../../components/relay-url-input";
+import { RelayUrlInput } from "../../../../components/relay-url-input";
 
 export default function AddRelayForm({
   onSubmit,

@@ -11,6 +11,7 @@ import { combineLatestWith, map, merge, of, throttleTime } from "rxjs";
 
 import { ignoreUnhealthyRelaysOnPointers } from "applesauce-relay";
 import NoteFilterTypeButtons from "../../components/note-filter-type-buttons";
+import OutboxRelayDebugger from "../../components/outbox-relay-debugger";
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
 import TimelinePage, { useTimelinePageEventFilter } from "../../components/timeline-page";
 import TimelineViewTypeButtons from "../../components/timeline-page/timeline-view-type";
@@ -44,8 +45,8 @@ function HomePage() {
 
   const { listId, filter, people } = usePeopleListContext();
   const { kinds } = useKindSelectionContext();
-  const outboxes = useObservableEagerMemo(() => {
-    if (!people) return undefined;
+  const selection = useObservableEagerMemo(() => {
+    if (!people) return;
 
     return of(people).pipe(
       // Add users outbox relays
@@ -65,21 +66,25 @@ function HomePage() {
           maxPerUser: maxRelaysPerUser,
         });
 
-        const selection = selectOptimalRelays(users, { maxConnections, maxRelaysPerUser });
-        const outboxes = groupPubkeysByRelay(selection);
-
-        if (import.meta.env.DEV) {
-          console.table(
-            Object.entries(outboxes)
-              .map(([relay, users]) => ({ relay, users: users.length }))
-              .sort((a, b) => b.users - a.users),
-          );
-        }
-
-        return outboxes;
+        return selectOptimalRelays(users, { maxConnections, maxRelaysPerUser });
       }),
     );
   }, [people]);
+
+  const outboxes = useMemo(() => {
+    if (!selection) return;
+    const outboxes = groupPubkeysByRelay(selection);
+
+    if (import.meta.env.DEV) {
+      console.table(
+        Object.entries(outboxes)
+          .map(([relay, users]) => ({ relay, users: users.length }))
+          .sort((a, b) => b.users - a.users),
+      );
+    }
+
+    return outboxes;
+  }, [selection]);
 
   // Create loaders for each relay
   const loaders = useRef<TimelineLoader[]>([]);
@@ -113,6 +118,7 @@ function HomePage() {
       <PeopleListSelection />
       <NoteFilterTypeButtons showReplies={showReplies} showReposts={showReposts} />
       <Spacer />
+      {outboxes && selection && <OutboxRelayDebugger outboxMap={outboxes} selection={selection} />}
       <TimelineViewTypeButtons />
     </Flex>
   );

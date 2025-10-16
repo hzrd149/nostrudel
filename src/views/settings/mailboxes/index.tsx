@@ -17,8 +17,8 @@ import { useRelayInfo } from "../../../hooks/use-relay-info";
 import useReplaceableEvent from "../../../hooks/use-replaceable-event";
 import useUserMailboxes from "../../../hooks/use-user-mailboxes";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
-import AddRelayForm from "../relays/add-relay-form";
-import RelayControl from "../relays/relay-control";
+import AddRelayForm from "../relays/components/add-relay-form";
+import RelayControl from "../relays/components/relay-control";
 
 function InboxRelay({ url }: { url: string }) {
   const publish = usePublishEvent();

@@ -8,8 +8,8 @@ import useAddressableEvent from "../../../hooks/use-addressable-event";
 import useAsyncAction from "../../../hooks/use-async-action";
 import { useRelayInfo } from "../../../hooks/use-relay-info";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
-import AddRelayForm from "../relays/add-relay-form";
-import RelayControl from "../relays/relay-control";
+import AddRelayForm from "../relays/components/add-relay-form";
+import RelayControl from "../relays/components/relay-control";
 import pool from "../../../services/pool";
 
 function RelayEntry({ url, onRemove }: { url: string; onRemove: () => void }) {
