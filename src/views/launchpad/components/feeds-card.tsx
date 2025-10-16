@@ -24,7 +24,7 @@ import { getListTitle } from "../../../helpers/nostr/lists";
 import useFavoriteLists from "../../../hooks/use-favorite-lists";
 import useRecentIds from "../../../hooks/use-recent-ids";
 import useUserContactList from "../../../hooks/use-user-contact-list";
-import useUserSets from "../../../hooks/use-user-lists";
+import useUserSets from "../../../hooks/use-user-sets";
 
 function Feed({ list, ...props }: { list: NostrEvent } & Omit<CardProps, "children">) {
   const people = useMemo(() => getProfilePointersFromList(list), [list]);

@@ -1,5 +1,5 @@
 import { Debugger } from "debug";
-import { BehaviorSubject, filter, identity, interval, Observable, startWith, Subscription } from "rxjs";
+import { BehaviorSubject, filter, interval, Observable, startWith, Subscription } from "rxjs";
 
 import { logger } from "../helpers/debug";
 import localSettings from "./preferences";

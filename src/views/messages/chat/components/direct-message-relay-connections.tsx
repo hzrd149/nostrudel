@@ -6,7 +6,7 @@ import { useMemo } from "react";
 import { RelayIcon } from "../../../../components/icons";
 import { useUserInbox } from "../../../../hooks/use-user-mailboxes";
 import { connections$ } from "../../../../services/pool";
-import { DirectMessageRelays } from "../../../../models/messages";
+import { DirectMessageRelaysModel } from "../../../../models/messages";
 
 export default function DirectMessageRelayConnectionsButton({
   other,
@@ -17,7 +17,7 @@ export default function DirectMessageRelayConnectionsButton({
   const selfInboxes = useUserInbox(account.pubkey);
 
   const legacyRelays = useMemo(() => mergeRelaySets(selfInboxes, otherInboxes), [selfInboxes, otherInboxes]);
-  const messageInboxes = useEventModel(DirectMessageRelays, [account.pubkey]);
+  const messageInboxes = useEventModel(DirectMessageRelaysModel, [account.pubkey]);
   const allRelays = useMemo(() => mergeRelaySets(legacyRelays, messageInboxes), [legacyRelays, messageInboxes]);
 
   const connections = useObservableState(connections$) ?? {};

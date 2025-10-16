@@ -21,7 +21,7 @@ import useScrollRestoreRef from "../../../hooks/use-scroll-restore";
 import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
 import useTimelineLoader from "../../../hooks/use-timeline-loader";
 import { useUserInbox } from "../../../hooks/use-user-mailboxes";
-import { DirectMessageRelays } from "../../../models/messages";
+import { DirectMessageRelaysModel } from "../../../models/messages";
 import IntersectionObserverProvider from "../../../providers/local/intersection-observer";
 import { legacyMessageSubscription, wrappedMessageSubscription } from "../../../services/lifecycle";
 import DirectMessageGroup from "../components/direct-message-group";
@@ -100,7 +100,7 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
     {},
   );
 
-  const inboxes = useEventModel(DirectMessageRelays, [account.pubkey]);
+  const inboxes = useEventModel(DirectMessageRelaysModel, [account.pubkey]);
   const allReadRelays = useMemo(() => mergeRelaySets(legacyInboxes, inboxes), [legacyInboxes, inboxes]);
 
   const legacyMessages = useEventModel(LegacyMessagesGroup, [account.pubkey, pubkey]);

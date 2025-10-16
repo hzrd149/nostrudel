@@ -21,8 +21,7 @@ import {
 } from "rxjs";
 
 import { APP_SETTING_IDENTIFIER, APP_SETTINGS_KIND } from "../helpers/app-settings";
-import { MailboxesQuery } from "../models";
-import { DirectMessageRelays } from "../models/messages";
+import { DirectMessageRelaysModel } from "../models/messages";
 import accounts from "./accounts";
 import authenticationSigner from "./authentication-signer";
 import { writeEvent } from "./event-cache";
@@ -48,7 +47,7 @@ combineLatest([
 ])
   .pipe(
     switchMap(([account, relays]) =>
-      combineLatest([of(account), eventStore.model(MailboxesQuery, { pubkey: account.pubkey, relays })] as const),
+      combineLatest([of(account), eventStore.mailboxes({ pubkey: account.pubkey, relays })] as const),
     ),
     switchMap(([account, mailboxes]) => {
       if (!mailboxes?.outboxes) return NEVER;
@@ -116,7 +115,7 @@ pool.relays$
 export const legacyMessageSubscription = accounts.active$.pipe(
   switchMap((account) => {
     if (!account) return NEVER;
-    const inboxes = eventStore.model(MailboxesQuery, account.pubkey).pipe(
+    const inboxes = eventStore.mailboxes(account.pubkey).pipe(
       defined(),
       map((m) => m?.inboxes),
     );
@@ -138,7 +137,7 @@ export const legacyMessageSubscription = accounts.active$.pipe(
 export const wrappedMessageSubscription = accounts.active$.pipe(
   switchMap((account) => {
     if (!account) return NEVER;
-    const inboxes = eventStore.model(DirectMessageRelays, account.pubkey).pipe(defined());
+    const inboxes = eventStore.model(DirectMessageRelaysModel, account.pubkey).pipe(defined());
     return combineLatest([of(account), inboxes]);
   }),
   // Open a subscription to all relays for incoming messages

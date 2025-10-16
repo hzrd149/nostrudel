@@ -36,7 +36,7 @@ import UserName from "../../../../components/user/user-name";
 import { useAppTitle } from "../../../../hooks/use-app-title";
 import useAsyncAction from "../../../../hooks/use-async-action";
 import { legacyMessageSubscription, wrappedMessageSubscription } from "../../../../services/lifecycle";
-import { DirectMessageRelays } from "../../../../models/messages";
+import { DirectMessageRelaysModel } from "../../../../models/messages";
 import ReadAuthRequiredAlert from "../../components/read-auth-required-alert";
 
 interface GroupInfo {
@@ -149,7 +149,7 @@ function MiscEventsTable({ events }: { events: Rumor[] }) {
 export default function LockedMessagesSection() {
   const account = useActiveAccount()!;
 
-  const inboxes = useEventModel(DirectMessageRelays, [account.pubkey]);
+  const inboxes = useEventModel(DirectMessageRelaysModel, [account.pubkey]);
 
   // Get all gift wraps for the account
   const initiallyLockedIds = useRef<Set<string>>(new Set());

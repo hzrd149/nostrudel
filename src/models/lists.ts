@@ -6,7 +6,7 @@ import { defer, ignoreElements, map, mergeWith } from "rxjs";
 import { isJunkList, SET_KINDS } from "../helpers/nostr/lists";
 import { userSetsLoader } from "../services/loaders";
 
-export function UserListsQuery(user: ProfilePointer): Model<NostrEvent[]> {
+export function UserSetsQuery(user: ProfilePointer): Model<NostrEvent[]> {
   return (events) =>
     defer(() => userSetsLoader(user)).pipe(
       ignoreElements(),

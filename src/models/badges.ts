@@ -4,8 +4,6 @@ import { AddressPointer, EventPointer, ProfilePointer } from "nostr-tools/nip19"
 import { combineLatest, filter, of, switchMap } from "rxjs";
 
 import { getProfileBadges, PROFILE_BADGES_IDENTIFIER } from "../helpers/nostr/badges";
-import { AddressableQuery } from "./addressable";
-import EventQuery from "./events";
 
 export function ProfileBadgesQuery(user: ProfilePointer): Model<
   {
@@ -17,7 +15,7 @@ export function ProfileBadgesQuery(user: ProfilePointer): Model<
 > {
   return (events) =>
     events
-      .model(AddressableQuery, {
+      .replaceable({
         ...user,
         kind: kinds.ProfileBadges,
         identifier: PROFILE_BADGES_IDENTIFIER,
@@ -30,8 +28,8 @@ export function ProfileBadgesQuery(user: ProfilePointer): Model<
           combineLatest(
             getProfileBadges(event).map((badge) =>
               combineLatest({
-                badge: events.model(AddressableQuery, badge.badge),
-                award: events.model(EventQuery, badge.award),
+                badge: events.replaceable(badge.badge),
+                award: events.event(badge.award),
                 badgePointer: of(badge.badge),
                 awardPointer: of(badge.award),
               }),

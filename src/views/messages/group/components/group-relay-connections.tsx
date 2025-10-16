@@ -3,7 +3,7 @@ import { useActiveAccount, useEventModel, useObservableState } from "applesauce-
 import { useMemo } from "react";
 
 import { RelayIcon } from "../../../../components/icons";
-import { DirectMessageRelays } from "../../../../models/messages";
+import { DirectMessageRelaysModel } from "../../../../models/messages";
 import { connections$ } from "../../../../services/pool";
 
 export default function GroupRelayConnectionsButton({
@@ -11,7 +11,7 @@ export default function GroupRelayConnectionsButton({
   ...props
 }: Omit<ButtonProps, "children" | "colorScheme"> & { group: string }) {
   const account = useActiveAccount()!;
-  const relays = useEventModel(DirectMessageRelays, [account.pubkey]);
+  const relays = useEventModel(DirectMessageRelaysModel, [account.pubkey]);
   const connections = useObservableState(connections$) ?? {};
 
   const color = useMemo(() => {

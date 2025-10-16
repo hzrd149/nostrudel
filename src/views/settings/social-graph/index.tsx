@@ -3,13 +3,10 @@ import {
   Badge,
   Box,
   Button,
-  ButtonGroup,
   Card,
   Flex,
   Heading,
   HStack,
-  Input,
-  Link,
   Select,
   Spinner,
   Text,
@@ -17,7 +14,6 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { useObservableEagerMemo, useObservableEagerState } from "applesauce-react/hooks";
-import { useState } from "react";
 import { map } from "rxjs";
 
 import SimpleView from "../../../components/layout/presets/simple-view";
@@ -25,20 +21,13 @@ import Timestamp from "../../../components/timestamp";
 import { UserAvatarLink } from "../../../components/user/user-avatar-link";
 import UserDnsIdentity from "../../../components/user/user-dns-identity";
 import UserLink from "../../../components/user/user-link";
-import { SOCIAL_GRAPH_DOWNLOAD_URL } from "../../../const";
 import { humanReadableSats } from "../../../helpers/lightning";
 import { useAppTitle } from "../../../hooks/use-app-title";
 import useAsyncAction from "../../../hooks/use-async-action";
 import { useBreakpointValue } from "../../../providers/global/breakpoint-provider";
 import { updateSocialGraphCron } from "../../../services/cron";
 import localSettings from "../../../services/preferences";
-import {
-  clearSocialGraph,
-  exportGraph,
-  importGraph,
-  loadSocialGraphFromUrl,
-  socialGraph$,
-} from "../../../services/social-graph";
+import { clearSocialGraph, socialGraph$ } from "../../../services/social-graph";
 
 function FollowDistanceGroup({ distance, max, label }: { distance: number; max: number; label: string }) {
   const users = useObservableEagerMemo(
@@ -171,21 +160,6 @@ export default function SocialGraphSettings() {
 
   const updating = useObservableEagerState(updateSocialGraphCron.running);
 
-  const [downloadUrl, setDownloadUrl] = useState(SOCIAL_GRAPH_DOWNLOAD_URL);
-
-  const downloadGraph = useAsyncAction(
-    async (e: React.FormEvent) => {
-      e.preventDefault();
-
-      await loadSocialGraphFromUrl(downloadUrl);
-      toast({
-        title: "Downloaded social graph",
-        status: "success",
-      });
-    },
-    [downloadUrl],
-  );
-
   const displayMaxPeople = useBreakpointValue({ base: 4, lg: 5, xl: 10 }) || 4;
 
   const clearGraph = useAsyncAction(async () => {
@@ -245,37 +219,6 @@ export default function SocialGraphSettings() {
               </>
             )}
           </Card>
-          <Flex gap="2" justifyContent="space-between" flexWrap="wrap">
-            <Flex as="form" gap="2" onSubmit={downloadGraph.run} direction="column">
-              <Flex gap="2">
-                <Input
-                  name="url"
-                  type="url"
-                  placeholder={SOCIAL_GRAPH_DOWNLOAD_URL}
-                  value={downloadUrl}
-                  maxW="lg"
-                  w="full"
-                  onChange={(e) => setDownloadUrl(e.target.value)}
-                />
-                <Button type="submit" flexShrink={0} isLoading={downloadGraph.loading}>
-                  Download
-                </Button>
-              </Flex>
-              <Text fontSize="sm" color="gray.500">
-                A URL to download serialized social graph that is compatible with the{" "}
-                <Link href="https://github.com/mmalmi/nostr-social-graph" isExternal color="blue.500">
-                  nostr-social-graph
-                </Link>{" "}
-                library.
-              </Text>
-            </Flex>
-            <ButtonGroup>
-              <Button onClick={exportGraph}>Export</Button>
-              <Button colorScheme="primary" onClick={importGraph}>
-                Import
-              </Button>
-            </ButtonGroup>
-          </Flex>
         </>
       )}
 

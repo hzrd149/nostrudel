@@ -20,7 +20,7 @@ import { kinds, NostrEvent } from "nostr-tools";
 import { getListTitle, isEventInList } from "../../helpers/nostr/lists";
 import useAsyncAction from "../../hooks/use-async-action";
 import userUserBookmarksList from "../../hooks/use-user-bookmarks-list";
-import useUserSets from "../../hooks/use-user-lists";
+import useUserSets from "../../hooks/use-user-sets";
 import { usePublishEvent } from "../../providers/global/publish-provider";
 import NewBookmarkSetModal from "../../views/lists/components/new-set-modal";
 import { BookmarkedIcon, BookmarkIcon } from "../icons";

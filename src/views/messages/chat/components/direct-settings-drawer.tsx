@@ -26,7 +26,7 @@ import UserDnsIdentity from "../../../../components/user/user-dns-identity";
 import UserLink from "../../../../components/user/user-link";
 import UserName from "../../../../components/user/user-name";
 import { useUserInbox } from "../../../../hooks/use-user-mailboxes";
-import { DirectMessageRelays } from "../../../../models/messages";
+import { DirectMessageRelaysModel } from "../../../../models/messages";
 import InboxesStatusSection from "../../components/inboxes-status-section";
 import { LegacyMessagesGroup } from "applesauce-core/models";
 import useAsyncAction from "../../../../hooks/use-async-action";
@@ -197,7 +197,7 @@ interface InfoDrawerProps {
 export default function DirectMessageSettingsDrawer({ isOpen, onClose, otherUserPubkey }: InfoDrawerProps) {
   const account = useActiveAccount()!;
   const legacyInboxes = useUserInbox(account.pubkey);
-  const messageInboxes = useEventModel(DirectMessageRelays, [account.pubkey]);
+  const messageInboxes = useEventModel(DirectMessageRelaysModel, [account.pubkey]);
   const otherLegacyInboxes = useUserInbox(otherUserPubkey);
 
   return (

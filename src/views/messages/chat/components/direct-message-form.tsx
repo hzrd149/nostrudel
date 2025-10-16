@@ -38,7 +38,7 @@ import InsertReactionButton from "../../../../components/reactions/insert-reacti
 import useCacheForm from "../../../../hooks/use-cache-form";
 import useTextAreaUploadFile, { useTextAreaInsertTextWithForm } from "../../../../hooks/use-textarea-upload-file";
 import { useUserInbox } from "../../../../hooks/use-user-mailboxes";
-import { GroupMessageInboxes } from "../../../../models/messages";
+import { GroupMessageInboxesModel } from "../../../../models/messages";
 import { PublishLogEntry, usePublishEvent } from "../../../../providers/global/publish-provider";
 import { eventStore } from "../../../../services/event-store";
 import localSettings from "../../../../services/preferences";
@@ -168,7 +168,10 @@ export default function SendMessageForm({
   const [sending, setSending] = useState<PublishLogEntry[] | null>(null);
   const otherInboxes = useUserInbox(pubkey);
   const selfInboxes = useUserInbox(account.pubkey);
-  const inboxes = useEventModel(GroupMessageInboxes, [createConversationIdentifier(account.pubkey, pubkey), false]);
+  const inboxes = useEventModel(GroupMessageInboxesModel, [
+    createConversationIdentifier(account.pubkey, pubkey),
+    false,
+  ]);
   const sendMessage = handleSubmit(async (values) => {
     if (!values.content) return;
 

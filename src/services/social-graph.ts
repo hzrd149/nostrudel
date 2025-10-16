@@ -1,11 +1,10 @@
-import { SerializedSocialGraph, SocialGraph } from "nostr-social-graph";
+import { SocialGraph } from "nostr-social-graph";
 import { kinds, NostrEvent } from "nostr-tools";
 import {
   BehaviorSubject,
   combineLatest,
   exhaustMap,
   finalize,
-  firstValueFrom,
   map,
   Observable,
   scan,
@@ -27,19 +26,32 @@ const cacheKey = "social-graph";
 log("Social graph initializing...");
 
 // Load the social graph from the cache
-const cached = await idbKeyValueStore.getItem<SerializedSocialGraph>(cacheKey);
+const cached = (await idbKeyValueStore.getItem(cacheKey)) as Uint8Array | undefined;
 
 /** An observable that emits the social graph for the active account */
 export const socialGraph$ = new BehaviorSubject<SocialGraph>(
-  new SocialGraph(accounts.active?.pubkey ?? SOCIAL_GRAPH_FALLBACK_PUBKEY, cached),
+  new SocialGraph(accounts.active?.pubkey ?? SOCIAL_GRAPH_FALLBACK_PUBKEY),
 );
 
+function autoSave() {
+  socialGraph$
+    .pipe(
+      skip(1),
+      throttleTime(10_000),
+      exhaustMap((graph) => saveSocialGraph(graph)),
+    )
+    .subscribe();
+}
+
+// Load the social graph from the cache and start auto saving
 if (cached) {
-  const size = socialGraph$.value.size();
-  log(`Loaded social graph from cache (${size.users} users, ${size.mutes} mutes)`);
+  SocialGraph.fromBinary(accounts.active?.pubkey ?? SOCIAL_GRAPH_FALLBACK_PUBKEY, cached).then((graph) => {
+    socialGraph$.next(graph);
+
+    autoSave();
+  });
 } else {
-  // log(`Setting up social graph, downloading from ${SOCIAL_GRAPH_DOWNLOAD_URL}`);
-  // loadSocialGraphFromUrl(SOCIAL_GRAPH_DOWNLOAD_URL);
+  autoSave();
 }
 
 // Set the social graph root to the active account pubkey
@@ -61,75 +73,19 @@ eventStore
     socialGraph$.next(socialGraph$.value);
   });
 
-// Save the active users social graph at most every 10 seconds
-socialGraph$
-  .pipe(
-    skip(1),
-    throttleTime(10_000),
-    exhaustMap((graph) => saveSocialGraph(graph)),
-  )
-  .subscribe();
-
 /** Save the social graph to the cache */
 export async function saveSocialGraph(graph: SocialGraph) {
   const size = graph.size();
 
   // Don't save empty graphs
-  if (size.users === 0) return;
-
-  log(`Saving social graph (${size.users} users, ${size.mutes} mutes)`);
-  await idbKeyValueStore.setItem(cacheKey, graph.serialize());
-  log("Saved social graph to cache");
-}
-
-/** Exports the social graph to a file */
-export async function exportGraph() {
-  const graph = await firstValueFrom(socialGraph$);
-  const data = graph.serialize();
-  const url = URL.createObjectURL(
-    new File([JSON.stringify(data)], "social_graph.json", {
-      type: "text/json",
-    }),
-  );
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "social_graph.json";
-  a.click();
-}
-
-/** Loads a social graph from a file and merges it with the existing graph */
-export function importGraph() {
-  const input = document.createElement("input");
-  input.type = "file";
-  input.accept = ".json";
-  input.multiple = false;
-  input.onchange = () => {
-    if (input.files?.length) {
-      const file = input.files[0];
-      file
-        .text()
-        .then(async (json) => {
-          const data = JSON.parse(json) as SerializedSocialGraph;
-          if (!Reflect.has(data, "uniqueIds") || !Reflect.has(data, "followLists") || !Reflect.has(data, "muteLists"))
-            throw new Error("Invalid graph data");
-
-          replaceSocialGraph(data);
-        })
-        .catch((e) => {
-          console.error("failed to load social graph from file:", e);
-        });
-    }
-  };
-  input.click();
-}
-
-/**
- * Replaces the social graph with a new one
- * TODO: this should merge the graph once there are not bugs
- */
-export async function replaceSocialGraph(data: SerializedSocialGraph) {
-  const graph = await firstValueFrom(socialGraph$);
-  socialGraph$.next(new SocialGraph(graph.getRoot(), data));
+  if (size.users === 0) {
+    await idbKeyValueStore.deleteItem(cacheKey);
+    return;
+  } else {
+    log(`Saving social graph (${size.users} users, ${size.mutes} mutes)`);
+    await idbKeyValueStore.setItem(cacheKey, graph.toBinary());
+    log("Saved social graph to cache");
+  }
 }
 
 /** Updates the social graph out to a given distance */
@@ -153,15 +109,6 @@ export function updateSocialGraph(distance = 2): Observable<string> {
       return `Social graph update complete (${size.users} users, ${size.mutes} mutes)`;
     }),
   );
-}
-
-/** Replaces the social graph with a new one from a URL */
-export async function loadSocialGraphFromUrl(url: string) {
-  const res = await fetch(url);
-  const data = (await res.json()) as SerializedSocialGraph;
-  if (!Reflect.has(data, "uniqueIds") || !Reflect.has(data, "followLists") || !Reflect.has(data, "muteLists"))
-    throw new Error("Invalid graph data");
-  await replaceSocialGraph(data);
 }
 
 /** Clears the social graph */

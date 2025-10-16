@@ -11,7 +11,7 @@ import SimpleView from "../../components/layout/presets/simple-view";
 import RequireActiveAccount from "../../components/router/require-active-account";
 import useFavoriteLists from "../../hooks/use-favorite-lists";
 import useUserContacts from "../../hooks/use-user-contacts";
-import useUserSets from "../../hooks/use-user-lists";
+import useUserSets from "../../hooks/use-user-sets";
 import useUserMutes from "../../hooks/use-user-mutes";
 import { getSharableEventAddress } from "../../services/relay-hints";
 import FallbackListCard from "./components/fallback-list-card";

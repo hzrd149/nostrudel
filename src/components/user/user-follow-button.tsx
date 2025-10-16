@@ -19,7 +19,7 @@ import { kinds } from "nostr-tools";
 import { getListTitle } from "../../helpers/nostr/lists";
 import useAsyncAction from "../../hooks/use-async-action";
 import useUserContactList from "../../hooks/use-user-contact-list";
-import useUserSets from "../../hooks/use-user-lists";
+import useUserSets from "../../hooks/use-user-sets";
 import useUserMuteActions from "../../hooks/use-user-mute-actions";
 import { usePublishEvent } from "../../providers/global/publish-provider";
 import { useMuteModalContext } from "../../providers/route/mute-modal-provider";

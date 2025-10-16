@@ -1,12 +1,12 @@
+import { MailboxesModel } from "applesauce-core/models";
 import { useEventModel, useObservableEagerState } from "applesauce-react/hooks";
 import { ProfilePointer } from "nostr-tools/nip19";
 import { useMemo } from "react";
-import { MailboxesQuery } from "../models/mailboxes";
 import { liveness } from "../services/pool";
 import localSettings from "../services/preferences";
 
 export default function useUserMailboxes(user?: string | ProfilePointer) {
-  return useEventModel(MailboxesQuery, user ? [user] : undefined);
+  return useEventModel(MailboxesModel, user ? [user] : undefined);
 }
 
 /** Gets the users inboxes and filters out unhealthy relays */

@@ -6,7 +6,7 @@ import Users01 from "../../../components/icons/users-01";
 import ScrollLayout from "../../../components/layout/presets/scroll-layout";
 import useParamsProfilePointer from "../../../hooks/use-params-pubkey-pointer";
 import useUserContacts from "../../../hooks/use-user-contacts";
-import useUserSets from "../../../hooks/use-user-lists";
+import useUserSets from "../../../hooks/use-user-sets";
 import { useUserOutbox } from "../../../hooks/use-user-mailboxes";
 import useUserMutes from "../../../hooks/use-user-mutes";
 import FallbackListCard from "../../lists/components/fallback-list-card";

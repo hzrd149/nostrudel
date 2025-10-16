@@ -21,7 +21,7 @@ import { normalizeToHexPubkey } from "../../../helpers/nip19";
 import { groupMessages } from "../../../helpers/nostr/dms";
 import useRouterMarker from "../../../hooks/use-router-marker";
 import useScrollRestoreRef from "../../../hooks/use-scroll-restore";
-import { DirectMessageRelays } from "../../../models/messages";
+import { DirectMessageRelaysModel } from "../../../models/messages";
 import { wrappedMessageSubscription } from "../../../services/lifecycle";
 import DirectMessageGroup from "../components/direct-message-group";
 import PendingLockedAlert from "../components/pending-decryption-alert";
@@ -45,7 +45,7 @@ const ChatLog = memo(({ messages }: { messages: (Rumor | NostrEvent)[] }) => {
 
 const GroupReadAuthRequiredAlert = () => {
   const account = useActiveAccount()!;
-  const inboxes = useEventModel(DirectMessageRelays, [account.pubkey]);
+  const inboxes = useEventModel(DirectMessageRelaysModel, [account.pubkey]);
 
   return <ReadAuthRequiredAlert relays={inboxes ?? []} />;
 };

@@ -22,7 +22,7 @@ import RouterLink from "../../../../components/router-link";
 import UserAvatarLink from "../../../../components/user/user-avatar-link";
 import UserLink from "../../../../components/user/user-link";
 import UserName from "../../../../components/user/user-name";
-import { DirectMessageRelays, GroupMessageInboxes } from "../../../../models/messages";
+import { DirectMessageRelaysModel, GroupMessageInboxesModel } from "../../../../models/messages";
 import InboxesStatusSection from "../../components/inboxes-status-section";
 
 function ParticipantInboxesSection({
@@ -83,8 +83,8 @@ interface GroupSettingsDrawerProps {
 export default function GroupSettingsDrawer({ isOpen, onClose, group }: GroupSettingsDrawerProps) {
   const account = useActiveAccount()!;
   const participants = getConversationParticipants(group);
-  const inboxes = useEventModel(DirectMessageRelays, [account.pubkey]);
-  const groupInboxes = useEventModel(GroupMessageInboxes, [group]);
+  const inboxes = useEventModel(DirectMessageRelaysModel, [account.pubkey]);
+  const groupInboxes = useEventModel(GroupMessageInboxesModel, [group]);
 
   // Filter out current user and get other participants
   const others = participants.filter((p) => p !== account.pubkey);

@@ -29,7 +29,7 @@ import MagicTextArea, { RefType } from "../../../../components/magic-textarea";
 import InsertReactionButton from "../../../../components/reactions/insert-reaction-button";
 import useCacheForm from "../../../../hooks/use-cache-form";
 import useTextAreaUploadFile, { useTextAreaInsertTextWithForm } from "../../../../hooks/use-textarea-upload-file";
-import { GroupMessageInboxes } from "../../../../models/messages";
+import { GroupMessageInboxesModel } from "../../../../models/messages";
 import { PublishLogEntry, usePublishEvent } from "../../../../providers/global/publish-provider";
 import { eventStore } from "../../../../services/event-store";
 import localSettings from "../../../../services/preferences";
@@ -104,7 +104,7 @@ export default function GroupMessageForm({
   const { onPaste } = useTextAreaUploadFile(insertText);
 
   const [sending, setSending] = useState<PublishLogEntry[] | null>(null);
-  const inboxes = useEventModel(GroupMessageInboxes, [group, false]);
+  const inboxes = useEventModel(GroupMessageInboxesModel, [group, false]);
   const sendMessage = handleSubmit(async (values) => {
     if (!values.content) return;
 

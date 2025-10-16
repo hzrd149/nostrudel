@@ -17,6 +17,7 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import dayjs from "dayjs";
+import { EventTemplate } from "nostr-tools";
 import { PropsWithChildren, createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 
 import { useActiveAccount } from "applesauce-react/hooks";
@@ -35,7 +36,6 @@ import { getDisplayName } from "../../helpers/nostr/profile";
 import useUserMuteList from "../../hooks/use-user-mute-list";
 import useUserProfile from "../../hooks/use-user-profile";
 import { usePublishEvent } from "../global/publish-provider";
-import { EventTemplate } from "nostr-tools";
 
 type MuteModalContextType = {
   openModal: (pubkey: string) => void;

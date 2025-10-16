@@ -35,7 +35,7 @@ import IntersectionObserverProvider from "../../providers/local/intersection-obs
 import RequireDecryptionCache from "../../providers/route/require-decryption-cache";
 import { legacyMessageSubscription, wrappedMessageSubscription } from "../../services/lifecycle";
 import localSettings from "../../services/preferences";
-import { DirectMessageRelays } from "../../models/messages";
+import { DirectMessageRelaysModel } from "../../models/messages";
 import ReadAuthRequiredAlert from "./components/read-auth-required-alert";
 
 function MessagePreview({ message }: { message: NostrEvent }) {
@@ -104,7 +104,7 @@ function Groups() {
 
   // Create a timeline loader for legacy messages
   const legacyInboxes = useUserInbox(account.pubkey);
-  const messagesInboxes = useEventModel(DirectMessageRelays, [account.pubkey]);
+  const messagesInboxes = useEventModel(DirectMessageRelaysModel, [account.pubkey]);
   const inboxes = useMemo(() => mergeRelaySets(legacyInboxes, messagesInboxes), [legacyInboxes, messagesInboxes]);
   const { loader } = useTimelineLoader(`${account.pubkey}-legacy-messages`, legacyInboxes ?? [], [
     { authors: [account.pubkey], kinds: [kinds.EncryptedDirectMessage] },
