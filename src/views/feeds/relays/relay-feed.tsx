@@ -20,7 +20,7 @@ import pool from "../../../services/pool";
 import { RelayFavoriteButton } from "./components/relay-favorite-button";
 import useClientSideMuteFilter from "../../../hooks/use-client-side-mute-filter";
 
-function RelayAuthAlert({ relay }: { relay: string }) {
+export function RelayAuthAlert({ relay }: { relay: string }) {
   const account = useActiveAccount();
   const authenticated = useObservableMemo(() => pool.relay(relay).authenticated$, [relay]);
   const required = useObservableMemo(() => pool.relay(relay).authRequiredForRead$, [relay]);

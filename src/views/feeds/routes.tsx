@@ -5,6 +5,7 @@ import HomeView from "../home";
 import blindspotRoutes from "./blindspot/routes";
 import DVMFeedsView from "./dvm";
 import DVMFeedView from "./dvm/feed";
+import outboxesRoutes from "./outboxes/routes";
 import relaysRoutes from "./relays/routes";
 
 export default [
@@ -20,6 +21,10 @@ export default [
   {
     path: "relays",
     children: relaysRoutes,
+  },
+  {
+    path: "outboxes",
+    children: outboxesRoutes,
   },
   {
     path: "blindspot",
