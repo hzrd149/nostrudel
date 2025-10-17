@@ -27,7 +27,6 @@ import { eventStore } from "../../services/event-store";
 import lnurlMetadataService from "../../services/lnurl-metadata";
 import { getEventRelayHints } from "../../services/relay-hints";
 import relayScoreboardService from "../../services/relay-scoreboard";
-import { EmbedProps } from "../embed-event/card";
 import UserLink from "../user/user-link";
 import InputStep from "./input-step";
 import PayStep from "./pay-step";
@@ -150,7 +149,6 @@ export type ZapModalProps = Omit<ModalProps, "children"> & {
   initialAmount?: number;
   allowComment?: boolean;
   showEmbed?: boolean;
-  embedProps?: EmbedProps;
   additionalRelays?: Iterable<string>;
   onZapped: () => void;
 };
@@ -164,7 +162,6 @@ export default function ZapModal({
   initialAmount,
   allowComment = true,
   showEmbed = true,
-  embedProps,
   additionalRelays = [],
   onZapped,
   ...props
@@ -182,7 +179,6 @@ export default function ZapModal({
           initialComment={initialComment}
           initialAmount={initialAmount}
           showEmbed={showEmbed}
-          embedProps={embedProps}
           allowComment={allowComment}
           onSubmit={async (values) => {
             const amountInMSats = values.amount * 1000;

@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { humanReadableSats } from "../../helpers/lightning";
 import useAppSettings from "../../hooks/use-user-app-settings";
 import useUserLNURLMetadata from "../../hooks/use-user-lnurl-metadata";
-import { EmbedEventCard, EmbedProps } from "../embed-event/card";
+import { EmbedEventCard } from "../embed-event/card";
 import { LightningIcon } from "../icons";
 import UserAvatar from "../user/user-avatar";
 import UserLink from "../user/user-link";
@@ -38,7 +38,6 @@ export type InputStepProps = {
   initialAmount?: number;
   allowComment?: boolean;
   showEmbed?: boolean;
-  embedProps?: EmbedProps;
   onSubmit: (values: { amount: number; comment: string }) => void;
 };
 
@@ -49,7 +48,6 @@ export default function InputStep({
   initialAmount,
   allowComment = true,
   showEmbed = true,
-  embedProps,
   onSubmit,
 }: InputStepProps) {
   const { customZapAmounts } = useAppSettings();
@@ -88,7 +86,7 @@ export default function InputStep({
           <UserCard key={p.pubkey} pubkey={p.pubkey} percent={p.percent} />
         ))}
 
-        {showEmbed && event && <EmbedEventCard event={event} {...embedProps} />}
+        {showEmbed && event && <EmbedEventCard event={event} />}
 
         {showComment && (
           <Input

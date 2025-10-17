@@ -57,7 +57,6 @@ export default function StreamZapButton({
           initialComment={initComment}
           additionalRelays={relays}
           showEmbed
-          embedProps={{ goalProps: { showActions: false } }}
         />
       )}
     </>
