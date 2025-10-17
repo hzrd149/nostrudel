@@ -1,5 +1,4 @@
-import { StarIcon } from "@chakra-ui/icons";
-import { Box, CardProps, Flex, Heading, IconButton, LinkBox, Text } from "@chakra-ui/react";
+import { Box, CardProps, Flex, Heading, LinkBox, Text } from "@chakra-ui/react";
 import { withImmediateValueOrDefault } from "applesauce-core";
 import { FAVORITE_RELAYS_KIND, getRelaysFromList, groupPubkeysByRelay } from "applesauce-core/helpers";
 import { TimelineModel } from "applesauce-core/models";
@@ -19,14 +18,15 @@ import SimpleView from "../../../components/layout/presets/simple-view";
 import RelayFavicon from "../../../components/relay/relay-favicon";
 import RelayName from "../../../components/relay/relay-name";
 import UserAvatar from "../../../components/user/user-avatar";
+import { SUPPORT_PUBKEY } from "../../../const";
+import { useAppTitle } from "../../../hooks/use-app-title";
 import useFavoriteRelays from "../../../hooks/use-favorite-relays";
 import { useLoaderForOutboxes } from "../../../hooks/use-loaders-for-outboxes";
 import { useRelayInfo } from "../../../hooks/use-relay-info";
 import { outboxSelection } from "../../../models/outbox-selection";
 import { eventStore } from "../../../services/event-store";
-import { RelayFavoriteIconButton } from "./components/relay-favorite-button";
 import { liveness } from "../../../services/pool";
-import { useAppTitle } from "../../../hooks/use-app-title";
+import { RelayFavoriteIconButton } from "./components/relay-favorite-button";
 
 function FavoriteRelayRow({ relay, ...props }: { relay: string } & Omit<CardProps, "children">) {
   const { info } = useRelayInfo(relay);
@@ -50,8 +50,9 @@ function FavoriteRelayRow({ relay, ...props }: { relay: string } & Omit<CardProp
 function RelayFeedRow({
   relay,
   pubkeys,
+  showUsers = true,
   ...props
-}: { relay: string; pubkeys: string[] } & Omit<CardProps, "children">) {
+}: { relay: string; pubkeys: string[]; showUsers?: boolean } & Omit<CardProps, "children">) {
   const { info } = useRelayInfo(relay);
 
   return (
@@ -66,19 +67,26 @@ function RelayFeedRow({
             {info?.description}
           </Text>
         </Box>
-        <Flex gap={1}>
-          {pubkeys.slice(0, 20).map((pubkey) => (
-            <UserAvatar key={pubkey} pubkey={pubkey} size="xs" showNip05={false} />
-          ))}
-        </Flex>
+        {showUsers && (
+          <Flex gap={1}>
+            {pubkeys.slice(0, 20).map((pubkey) => (
+              <UserAvatar key={pubkey} pubkey={pubkey} size="xs" showNip05={false} />
+            ))}
+            {pubkeys.length > 20 && (
+              <Text fontSize="sm" color="GrayText" alignSelf="center">
+                +{pubkeys.length - 20} more
+              </Text>
+            )}
+          </Flex>
+        )}
       </Flex>
     </Flex>
   );
 }
 
 function FavoriteRelays() {
-  const account = useActiveAccount()!;
-  const favorites = useFavoriteRelays(account.pubkey);
+  const account = useActiveAccount();
+  const favorites = useFavoriteRelays(account?.pubkey);
 
   if (!favorites) return null;
 
@@ -98,19 +106,19 @@ function FavoriteRelays() {
   );
 }
 
-function DiscoverRelays() {
-  const account = useActiveAccount();
-  const userFavorites = useFavoriteRelays(account?.pubkey);
+function DiscoverRelays({ pubkey, showUsers }: { pubkey: string; showUsers?: boolean }) {
+  const userFavorites = useFavoriteRelays(pubkey);
 
   const selection = useObservableEagerMemo(
     () =>
-      account &&
-      eventStore.contacts({ pubkey: account.pubkey }).pipe(
-        outboxSelection(),
-        // TODO: I don't like this, why isn't the use observable hooks automatically handling sync values?
-        withImmediateValueOrDefault(undefined),
-      ),
-    [account?.pubkey],
+      pubkey
+        ? eventStore.contacts(pubkey).pipe(
+            outboxSelection(),
+            // TODO: I don't like this, why isn't the use observable hooks automatically handling sync values?
+            withImmediateValueOrDefault(undefined),
+          )
+        : undefined,
+    [pubkey],
   );
   const outboxes = useMemo(() => selection && groupPubkeysByRelay(selection), [selection]);
 
@@ -162,7 +170,7 @@ function DiscoverRelays() {
           .filter(({ relay }) => !userFavorites?.includes(relay))
           .map(({ relay, pubkeys }) => (
             <ErrorBoundary key={relay}>
-              <RelayFeedRow relay={relay} pubkeys={pubkeys} />
+              <RelayFeedRow relay={relay} pubkeys={pubkeys} showUsers={showUsers} />
             </ErrorBoundary>
           ))}
       </Flex>
@@ -176,8 +184,13 @@ export default function RelaysView() {
 
   return (
     <SimpleView title="Relay Feeds" flush gap={0}>
-      <FavoriteRelays />
-      {account && <DiscoverRelays />}
+      {account && (
+        <>
+          <FavoriteRelays />
+          <DiscoverRelays pubkey={account.pubkey} />
+        </>
+      )}
+      {!account && <DiscoverRelays pubkey={SUPPORT_PUBKEY} showUsers={false} />}
     </SimpleView>
   );
 }

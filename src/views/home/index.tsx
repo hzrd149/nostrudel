@@ -1,7 +1,7 @@
-import { Flex, Spacer } from "@chakra-ui/react";
-import { useEventModel, useObservableEagerMemo } from "applesauce-react/hooks";
+import { Box, Button, Divider, Flex, Heading, Link, Spacer, Text } from "@chakra-ui/react";
+import { useActiveAccount, useEventModel, useObservableEagerMemo } from "applesauce-react/hooks";
 import { Filter, kinds, NostrEvent } from "nostr-tools";
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { map, of } from "rxjs";
 
 import NoteFilterTypeButtons from "../../components/note-filter-type-buttons";
@@ -14,11 +14,13 @@ import useClientSideMuteFilter from "../../hooks/use-client-side-mute-filter";
 import { useLoaderForOutboxes } from "../../hooks/use-loaders-for-outboxes";
 import useLocalStorageDisclosure from "../../hooks/use-localstorage-disclosure";
 import { OutboxSelectionModel } from "../../models/outbox-selection";
-import KindSelectionProvider, { useKindSelectionContext } from "../../providers/local/kind-selection-provider";
 import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
 import { eventStore } from "../../services/event-store";
+import SimpleView from "../../components/layout/presets/simple-view";
+import RouterLink from "../../components/router-link";
+import VerticalPageLayout from "../../components/vertical-page-layout";
 
-const defaultKinds = [kinds.ShortTextNote, kinds.Repost, kinds.GenericRepost];
+const feedKinds = [kinds.ShortTextNote, kinds.Repost, kinds.GenericRepost];
 
 function HomePage() {
   const showReplies = useLocalStorageDisclosure("show-replies", false);
@@ -37,14 +39,13 @@ function HomePage() {
   );
 
   const { listId, filter, pointer } = usePeopleListContext();
-  const { kinds } = useKindSelectionContext();
   const { selection, outboxes } = useEventModel(OutboxSelectionModel, pointer ? [pointer] : undefined) ?? {};
 
   // Merge all loaders
-  const loader = useLoaderForOutboxes(`home-${listId}`, outboxes, kinds);
+  const loader = useLoaderForOutboxes(`home-${listId}`, outboxes, feedKinds);
 
   // Subscribe to event store for timeline events
-  const filters: Filter[] = useMemo(() => (filter ? [{ ...filter, kinds }] : []), [filter, kinds]);
+  const filters: Filter[] = useMemo(() => (filter ? [{ ...filter, kinds: feedKinds }] : []), [filter]);
   const timeline = useObservableEagerMemo(
     () => (filters ? eventStore.timeline(filters).pipe(map((events) => events.filter(eventFilter))) : of([])),
     [filters, eventFilter],
@@ -64,11 +65,42 @@ function HomePage() {
 }
 
 export default function HomeView() {
-  return (
-    <PeopleListProvider>
-      <KindSelectionProvider initKinds={defaultKinds}>
+  const account = useActiveAccount();
+
+  if (account)
+    return (
+      <PeopleListProvider>
         <HomePage />
-      </KindSelectionProvider>
-    </PeopleListProvider>
-  );
+      </PeopleListProvider>
+    );
+  else
+    return (
+      <VerticalPageLayout>
+        <Box textAlign="center">
+          <Heading size="lg" mt={20} pb={4}>
+            Welcome to noStrudel
+          </Heading>
+          <Text my={10}>
+            Get started by either signing in with a{" "}
+            <Link isExternal href="https://nostr.com" color="blue.500">
+              Nostr Account
+            </Link>{" "}
+            or browse some existing relays.
+          </Text>
+          <Button as={RouterLink} to="/signin" size="lg" minW="xs">
+            Sign in
+          </Button>
+          <Flex maxW="6xl" mx="auto" my="4" gap={4} align="center">
+            <Divider />
+            <Text fontWeight="bold" fontSize="md" whiteSpace="pre">
+              OR
+            </Text>
+            <Divider />
+          </Flex>
+          <Button as={RouterLink} to="/feeds/relays" size="lg" minW="xs">
+            Browse relays
+          </Button>
+        </Box>
+      </VerticalPageLayout>
+    );
 }

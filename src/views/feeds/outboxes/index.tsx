@@ -21,8 +21,9 @@ import { liveness } from "../../../services/pool";
 function OutboxRelayRow({
   relay,
   pubkeys,
+  totalUsers,
   ...props
-}: { relay: string; pubkeys: string[] } & Omit<CardProps, "children">) {
+}: { relay: string; pubkeys: string[]; totalUsers?: number } & Omit<CardProps, "children">) {
   const { info } = useRelayInfo(relay);
 
   return (
@@ -38,13 +39,21 @@ function OutboxRelayRow({
           </Text>
         </Box>
         <Flex gap={1}>
-          {pubkeys.slice(0, 10).map((pubkey) => (
-            <UserAvatar key={pubkey} pubkey={pubkey} size="xs" showNip05={false} />
-          ))}
-          {pubkeys.length > 10 && (
-            <Text fontSize="xs" color="GrayText" alignSelf="center">
-              +{pubkeys.length - 10} more
+          {pubkeys.length > 20 ? (
+            <Text fontSize="sm">
+              {pubkeys.length} users ({totalUsers ? Math.round((pubkeys.length / totalUsers) * 100) : 0}% of friends)
             </Text>
+          ) : (
+            <>
+              {pubkeys.slice(0, 10).map((pubkey) => (
+                <UserAvatar key={pubkey} pubkey={pubkey} size="xs" showNip05={false} />
+              ))}
+              {pubkeys.length > 10 && (
+                <Text fontSize="sm" color="GrayText" alignSelf="center">
+                  +{pubkeys.length - 10} more
+                </Text>
+              )}
+            </>
           )}
         </Flex>
       </Flex>
@@ -64,13 +73,16 @@ function FriendsOutboxes() {
         // Ignore unhealthy relays
         ignoreUnhealthyRelaysOnPointers(liveness),
         // Limit the number of relays per user to 2 and only select 30 relays
-        map((users) => users && selectOptimalRelays(users, { maxConnections: 30, maxRelaysPerUser: 200 })),
+        map((users) => users && selectOptimalRelays(users, { maxConnections: 50, maxRelaysPerUser: 200 })),
         // Fix for React
         withImmediateValueOrDefault(undefined),
       ),
     [account?.pubkey],
   );
   const outboxes = useMemo(() => contacts && groupPubkeysByRelay(contacts), [contacts]);
+
+  // Calculate total contacts count
+  const totalContacts = useMemo(() => contacts?.length || 0, [contacts]);
 
   // Calculate total contacts for each relay
   const relays = useMemo(() => {
@@ -100,7 +112,7 @@ function FriendsOutboxes() {
       <Flex direction="column" borderTopWidth={1}>
         {relays.map(({ relay, pubkeys }) => (
           <ErrorBoundary key={relay}>
-            <OutboxRelayRow relay={relay} pubkeys={pubkeys} />
+            <OutboxRelayRow relay={relay} pubkeys={pubkeys} totalUsers={totalContacts} />
           </ErrorBoundary>
         ))}
       </Flex>
