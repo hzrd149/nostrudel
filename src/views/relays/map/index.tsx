@@ -16,7 +16,7 @@ import RelayList from "./components/relay-list";
 import RelayMap from "./components/relay-map";
 import { SelectedContext } from "./selected-context";
 
-export default function RelayDiscoveryView() {
+export default function RelayMapView() {
   const showMap = useBreakpointValue({ base: false, lg: true });
 
   const [discoveryRelay, _setDiscoveryRelay] = useState("wss://relay.nostr.watch");

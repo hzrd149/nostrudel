@@ -25,7 +25,7 @@ import RelayFavicon from "../../../../components/relay/relay-favicon";
 import UserAvatarLink from "../../../../components/user/user-avatar-link";
 import UserName from "../../../../components/user/user-name";
 import { getPubkeysFromList } from "../../../../helpers/nostr/lists";
-import SupportedNIPs from "../../../relays/components/supported-nips";
+import SupportedNIPs from "../../components/supported-nips";
 import { SelectedContext } from "../selected-context";
 
 export default function RelayStatusDetails({ event, ...props }: Omit<FlexProps, "children"> & { event: NostrEvent }) {

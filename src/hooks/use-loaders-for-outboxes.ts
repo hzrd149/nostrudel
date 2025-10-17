@@ -20,7 +20,7 @@ export function useLoaderForOutboxes(prefix: string, outboxes: OutboxMap | undef
         timelineCacheService.createTimeline(`${prefix}-${relay}-${hash_sum(filter)}`, [relay], [filter]),
       );
     }
-  }, [outboxes, prefix, kinds]);
+  }, [outboxes, prefix, kinds.join(",")]);
 
   // Merge all loaders
   const loader: TimelineLoader = useMemo(() => {

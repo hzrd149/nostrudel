@@ -12,7 +12,7 @@ import RelayLink from "../../../components/relay/relay-link";
 import { useAppTitle } from "../../../hooks/use-app-title";
 import RelayAboutView from "./tabs/about";
 import RelayAdvancedView from "./tabs/advanced";
-import RelayNotesView from "./tabs/events";
+import RelayFeedView from "./tabs/feed";
 import RelayHomepageView from "./tabs/homepage";
 import RelayReviewsView from "./tabs/reviews";
 import RelayUsersView from "./tabs/users";
@@ -20,7 +20,7 @@ import useRelayUrlParam from "./use-relay-url-param";
 
 export const relayTabs: AppTabs[] = [
   { label: "About", path: "", icon: InfoIcon, Component: RelayAboutView },
-  { label: "Notes", path: "notes", icon: NotesIcon, Component: RelayNotesView },
+  { label: "Notes", path: "notes", icon: NotesIcon, Component: RelayFeedView },
   { label: "Reviews", path: "reviews", icon: ThumbsUp, Component: RelayReviewsView },
   { label: "Users", path: "users", icon: Users01, Component: RelayUsersView },
   { label: "Homepage", path: "homepage", icon: Globe01, Component: RelayHomepageView },

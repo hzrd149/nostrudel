@@ -31,7 +31,7 @@ export default function SimpleView({
       px={flush ? 0 : "4"}
       pt={flush ? 0 : "4"}
       pb={flush ? 0 : "max(1rem, var(--safe-bottom))"}
-      gap={gap || "2"}
+      gap={gap !== undefined ? gap : 2}
       flexGrow={1}
       maxW={maxW}
       w={maxW ? "full" : "initial"}

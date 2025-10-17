@@ -17,7 +17,7 @@ import { useContext } from "react";
 
 import RelayFavicon from "../../../../components/relay/relay-favicon";
 import Timestamp from "../../../../components/timestamp";
-import SupportedNIPs from "../../../relays/components/supported-nips";
+import SupportedNIPs from "../../components/supported-nips";
 import { SelectedContext } from "../selected-context";
 
 const IgnoreNips = [1, 2, 4, 11, 12, 15, 16];

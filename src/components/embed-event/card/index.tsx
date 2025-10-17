@@ -13,9 +13,9 @@ import useSingleEvent from "../../../hooks/use-single-event";
 import type { EmbeddedGoalOptions } from "./embedded-goal";
 import EmbeddedNote from "./embedded-note";
 
-import { DVM_CONTENT_DISCOVERY_JOB_KIND } from "../../../helpers/nostr/dvm";
-import DVMCard from "../../../views/discovery/dvm-feed/components/dvm-card";
+import { isValidContentDVM } from "../../../helpers/nostr/dvm";
 import LoadingNostrLink from "../../loading-nostr-link";
+import EmbeddedDVM from "./embedded-dvm";
 
 const EmbeddedDM = lazy(() => import("./embedded-dm"));
 const EmbeddedSetOrList = lazy(() => import("./embedded-list"));
@@ -85,8 +85,7 @@ export function EmbedEventCard({
         return <EmbeddedFile file={event} {...cardProps} />;
       case kinds.Handlerinformation:
         // if its a content DVM
-        if (event.tags.some((t) => t[0] === "k" && t[1] === String(DVM_CONTENT_DISCOVERY_JOB_KIND)))
-          return <DVMCard dvm={event} />;
+        if (isValidContentDVM(event)) return <EmbeddedDVM dvm={event} />;
     }
     if (event.kind === kinds.Zap && isValidZap(event)) {
       return <EmbeddedZapRecept zap={event} {...cardProps} />;

@@ -3,7 +3,6 @@ import {
   AlertDescription,
   AlertIcon,
   AlertTitle,
-  Box,
   Card,
   Flex,
   Heading,
@@ -17,19 +16,18 @@ import { memo, useMemo, useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
 
 import HoverLinkOverlay from "../../../components/hover-link-overlay";
+import SimpleView from "../../../components/layout/presets/simple-view";
 import UserAvatar from "../../../components/user/user-avatar";
 import UserName from "../../../components/user/user-name";
-import VerticalPageLayout from "../../../components/vertical-page-layout";
 import useUserContactList from "../../../hooks/use-user-contact-list";
 import { socialGraph$ } from "../../../services/social-graph";
-import SimpleView from "../../../components/layout/presets/simple-view";
 
 const UserCard = memo(({ pubkey, blindspot }: { pubkey: string; blindspot: string[] }) => {
   return (
     <Card display="block" p="4">
       <UserAvatar pubkey={pubkey} mr="4" float="left" />
       <Heading size="md" isTruncated>
-        <HoverLinkOverlay as={RouterLink} to={`/discovery/blindspot/${nip19.npubEncode(pubkey)}`}>
+        <HoverLinkOverlay as={RouterLink} to={`/feeds/blindspot/${nip19.npubEncode(pubkey)}`}>
           <UserName pubkey={pubkey} />
         </HoverLinkOverlay>
       </Heading>

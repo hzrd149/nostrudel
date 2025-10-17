@@ -5,23 +5,18 @@ import { useCallback } from "react";
 
 import { NostrEvent } from "nostr-tools";
 import NoteFilterTypeButtons from "../../../../components/note-filter-type-buttons";
-import PeopleListSelection from "../../../../components/people-list-selection/people-list-selection";
 import TimelinePage, { useTimelinePageEventFilter } from "../../../../components/timeline-page";
 import TimelineViewTypeButtons from "../../../../components/timeline-page/timeline-view-type";
 import { isReply, isRepost } from "../../../../helpers/nostr/event";
 import useClientSideMuteFilter from "../../../../hooks/use-client-side-mute-filter";
 import useTimelineLoader from "../../../../hooks/use-timeline-loader";
-import { usePeopleListContext } from "../../../../providers/local/people-list-provider";
 import useRelayUrlParam from "../use-relay-url-param";
 
-export default function RelayNotesView() {
+export default function RelayFeedView() {
   const relay = useRelayUrlParam();
 
   const showReplies = useDisclosure();
   const showReposts = useDisclosure({ defaultIsOpen: true });
-
-  const { filter } = usePeopleListContext();
-  const k = [kinds.ShortTextNote];
 
   const timelineEventFilter = useTimelinePageEventFilter();
   const muteFilter = useClientSideMuteFilter();
@@ -36,15 +31,16 @@ export default function RelayNotesView() {
     [timelineEventFilter, showReplies.isOpen, showReposts.isOpen, muteFilter],
   );
   const { loader, timeline } = useTimelineLoader(
-    `${relay}-notes`,
+    `relay-feed-${relay}`,
     [relay],
-    filter ? { ...filter, kinds: k } : undefined,
+    {
+      kinds: [kinds.ShortTextNote],
+    },
     { eventFilter },
   );
 
   const header = (
     <Flex gap="2" wrap="wrap" px={["2", 0]}>
-      <PeopleListSelection />
       <NoteFilterTypeButtons showReplies={showReplies} showReposts={showReposts} />
       <Spacer />
       <TimelineViewTypeButtons />

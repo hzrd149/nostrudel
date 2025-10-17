@@ -19,11 +19,6 @@ liveness.load();
 // Connect to the pool and listen for connection states
 liveness.connectToPool(pool);
 
-// Update the pools blacklist to follow the liveness tracker
-liveness.unhealthy$.subscribe((unhealthy) => {
-  pool.blacklist = new Set(unhealthy);
-});
-
 export const connections$ = pool.relays$.pipe(
   switchMap((relays) =>
     // Create a map of relay url -> connection state

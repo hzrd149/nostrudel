@@ -22,6 +22,7 @@ import UploadCloud01 from "../icons/upload-cloud-01";
 import Users01 from "../icons/users-01";
 import Users02 from "../icons/users-02";
 import Wallet02 from "../icons/wallet-02";
+import Globe01 from "../icons/globe-01";
 
 export type App = {
   icon?: ComponentWithAs<"svg", IconProps>;
@@ -34,9 +35,9 @@ export type App = {
 };
 
 export const internalApps: App[] = [
-  { title: "Notes", description: "Short text posts from your friends", icon: NotesIcon, id: "notes", to: "/notes" },
   { title: "Launchpad", description: "Quick account overview", icon: Rocket02, id: "launchpad", to: "/launchpad" },
-  { title: "Discover", description: "Discover new feeds", icon: PuzzlePiece01, id: "discover", to: "/discovery" },
+  { title: "Notes", description: "Short text posts from your friends", icon: NotesIcon, id: "notes", to: "/notes" },
+  { title: "Feeds", description: "Discover new feeds", icon: PuzzlePiece01, id: "feeds", to: "/feeds" },
   {
     title: "Notifications",
     description: "Notifications feed",
@@ -94,6 +95,7 @@ export const internalApps: App[] = [
   { title: "Articles", description: "Browse articles", icon: ArticleIcon, id: "articles", to: "/articles" },
   { title: "Files", description: "Browse files", icon: FileAttachment01, id: "files", to: "/files" },
   { title: "Wallet", description: "Receive and send cashu tokens", icon: Wallet02, id: "wallet", to: "/wallet" },
+  { title: "Relay map", description: "Discover relays on a map", icon: Globe01, id: "relay-map", to: "/relays/map" },
 ];
 
 export const internalTools: App[] = [

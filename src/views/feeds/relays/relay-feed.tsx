@@ -1,22 +1,24 @@
-import { Alert, AlertDescription, AlertIcon, AlertTitle, Button, Flex, Text } from "@chakra-ui/react";
-import { mapEventsToStore } from "applesauce-core";
-import { useActiveAccount, useObservableEagerMemo, useObservableMemo } from "applesauce-react/hooks";
-import { onlyEvents } from "applesauce-relay";
+import { Alert, AlertDescription, AlertIcon, AlertTitle, Button, Flex } from "@chakra-ui/react";
+import { useActiveAccount, useObservableMemo } from "applesauce-react/hooks";
 import { kinds, NostrEvent } from "nostr-tools";
 import { Navigate, useParams } from "react-router-dom";
-import { Observable, ReplaySubject, scan, share, startWith, timer } from "rxjs";
 
+import { getSeenRelays, normalizeURL } from "applesauce-core/helpers";
+import { useCallback } from "react";
 import SimpleView from "../../../components/layout/presets/simple-view";
-import RouterLink from "../../../components/router-link";
+import RelayFavicon from "../../../components/relay/relay-favicon";
+import RelayLink from "../../../components/relay/relay-link";
 import GenericNoteTimeline from "../../../components/timeline-page/generic-note-timeline";
+import TimelineActionAndStatus from "../../../components/timeline/timeline-action-and-status";
 import { useAppTitle } from "../../../hooks/use-app-title";
 import useAsyncAction from "../../../hooks/use-async-action";
+import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
+import useTimelineLoader from "../../../hooks/use-timeline-loader";
+import IntersectionObserverProvider from "../../../providers/local/intersection-observer";
 import authenticationSigner from "../../../services/authentication-signer";
-import { eventStore } from "../../../services/event-store";
 import pool from "../../../services/pool";
-import RelayFavicon from "../../../components/relay/relay-favicon";
-import RelayList from "../relays/components/relay-list";
-import RelayLink from "../../../components/relay/relay-link";
+import { RelayFavoriteButton } from "./components/relay-favorite-button";
+import useClientSideMuteFilter from "../../../hooks/use-client-side-mute-filter";
 
 function RelayAuthAlert({ relay }: { relay: string }) {
   const account = useActiveAccount();
@@ -52,30 +54,27 @@ function RelayAuthAlert({ relay }: { relay: string }) {
   );
 }
 
-const cache = new Map<string, Observable<NostrEvent[]>>();
+export function RelayFeedPage({ relay }: { relay: string }) {
+  relay = normalizeURL(relay);
 
-function getRelayFeed(relay: string) {
-  if (cache.has(relay)) return cache.get(relay)!;
-  const observable = pool
-    .relay(relay)
-    .subscription({ kinds: [kinds.ShortTextNote] })
-    .pipe(
-      onlyEvents(),
-      mapEventsToStore(eventStore),
-      scan((acc, event) => [...acc, event], [] as NostrEvent[]),
-      startWith([] as NostrEvent[]),
-      // cache feed for 2 minutes
-      share({ connector: () => new ReplaySubject(1), resetOnRefCountZero: () => timer(120_000) }),
-    );
+  const muteFilter = useClientSideMuteFilter();
+  const eventFilter = useCallback(
+    (event: NostrEvent) => {
+      if (!getSeenRelays(event)?.has(relay)) return false;
+      if (muteFilter(event)) return false;
+      return true;
+    },
+    [relay, muteFilter],
+  );
 
-  cache.set(relay, observable);
-  return observable;
-}
+  const { loader, timeline } = useTimelineLoader(
+    `relay-feed-${relay}`,
+    [relay],
+    { kinds: [kinds.ShortTextNote] },
+    { eventFilter },
+  );
 
-function RelayFeedPage({ relay }: { relay: string }) {
-  useAppTitle(`${relay} - Feed`);
-
-  const timeline = useObservableEagerMemo(() => getRelayFeed(relay), [relay]);
+  const callback = useTimelineCurserIntersectionCallback(loader);
 
   return (
     <SimpleView
@@ -85,19 +84,25 @@ function RelayFeedPage({ relay }: { relay: string }) {
           <RelayLink relay={relay} fontWeight="bold" isTruncated />
         </Flex>
       }
+      actions={<RelayFavoriteButton relay={relay} ms="auto" colorScheme="yellow" variant="ghost" />}
       center
       maxW="container.xl"
     >
       <RelayAuthAlert relay={relay} />
 
-      {timeline && <GenericNoteTimeline timeline={timeline} />}
+      <IntersectionObserverProvider callback={callback}>
+        {timeline && <GenericNoteTimeline timeline={timeline} />}
+        <TimelineActionAndStatus loader={loader} />
+      </IntersectionObserverProvider>
     </SimpleView>
   );
 }
 
 export default function RelayFeedView() {
   const { relay } = useParams();
-  if (!relay) return <Navigate to="/discovery" />;
+  useAppTitle(`${relay} - Feed`);
+
+  if (!relay) return <Navigate to="/feeds/relays" />;
 
   return <RelayFeedPage relay={relay} />;
 }

@@ -1,6 +1,6 @@
-import { isETag } from "applesauce-core/helpers";
+import { isETag, isEvent, KnownEvent } from "applesauce-core/helpers";
 import { safeParse } from "applesauce-core/helpers/json";
-import { NostrEvent } from "nostr-tools";
+import { kinds, NostrEvent } from "nostr-tools";
 
 export const DVM_STATUS_KIND = 7000;
 
@@ -147,4 +147,14 @@ export function flattenJobChain(jobs: ChainedDVMJob[]) {
 
 export function getEventIdsFromJobs(jobs: ChainedDVMJob[]) {
   return jobs.map((j) => j.responses?.map((r) => (r.result ? getResultEventIds(r.result) : [])).flat()).flat();
+}
+
+export function isValidContentDVM(event: any): event is KnownEvent<kinds.Application> {
+  return (
+    isEvent(event) &&
+    event.kind === kinds.Handlerinformation &&
+    !event.tags.some((t) => t[0] === "web") &&
+    event.content.startsWith("{") &&
+    safeParse(event.content) !== undefined
+  );
 }

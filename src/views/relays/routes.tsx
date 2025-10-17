@@ -1,9 +1,10 @@
+import { lazy } from "react";
 import { RouteObject } from "react-router-dom";
 
 import relayRoutes from "./relay/routes";
-import RelayDiscoveryView from "../discovery/relays";
+const RelayMapView = lazy(() => import("./map"));
 
 export default [
-  { index: true, element: <RelayDiscoveryView /> },
+  { path: "map", Component: RelayMapView },
   { path: ":relay", children: relayRoutes },
 ] satisfies RouteObject[];

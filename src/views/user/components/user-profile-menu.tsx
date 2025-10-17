@@ -65,7 +65,7 @@ export const UserProfileMenu = ({
       <MenuItem
         icon={<Telescope fontSize="1.5em" />}
         as={RouterLink}
-        to={`/discovery/blindspot/${nip19.npubEncode(pubkey)}`}
+        to={`/feeds/blindspot/${nip19.npubEncode(pubkey)}`}
       >
         Blind spot
       </MenuItem>

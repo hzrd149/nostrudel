@@ -36,7 +36,7 @@ import blossomRoutes from "./views/blossom/routes";
 import picturesRoutes from "./views/pictures/routes";
 import streamsRoutes from "./views/streams/routes";
 import toolsRoutes from "./views/tools/routes";
-import discoveryRoutes from "./views/discovery/routes";
+import feedsRoutes from "./views/feeds/routes";
 import wikiRoutes from "./views/wiki/routes";
 import filesRoutes from "./views/files/routes";
 import messagesRoutes from "./views/messages/routes";
@@ -90,8 +90,9 @@ export const router = createBrowserRouter(
       Component: RootPage,
       children: [
         { index: true, Component: HomeView },
-        { path: "notes", Component: HomeView },
         { path: "new", children: newRoutes },
+        { path: "notes", Component: HomeView },
+        { path: "feeds", children: feedsRoutes },
         { path: "launchpad", Component: LaunchpadView },
         { path: "messages", children: messagesRoutes },
         { path: "user/:pubkey", children: userRoutes },
@@ -108,7 +109,6 @@ export const router = createBrowserRouter(
         { path: "streams", children: streamsRoutes },
         { path: "groups", children: groupsRoutes },
         { path: "tools", children: toolsRoutes },
-        { path: "discovery", children: discoveryRoutes },
         { path: "wiki", children: wikiRoutes },
         { path: "support", Component: SupportView },
         { path: "l/:link", Component: NostrLinkView },
