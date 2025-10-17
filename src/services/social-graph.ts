@@ -21,39 +21,43 @@ import idbKeyValueStore from "./database/kv";
 import { eventStore } from "./event-store";
 import { socialGraphLoader } from "./loaders";
 import { formatBytes } from "../helpers/number";
+import { CAP_IS_WEB } from "../env";
 
 const log = logger.extend("SocialGraph");
-const cacheKey = "social-graph";
 
-// Load the social graph from the cache
-const cached = (await idbKeyValueStore.getItem(cacheKey)) as Uint8Array | undefined;
+const cacheKey = "social-graph";
 
 /** An observable that emits the social graph for the active account */
 export const socialGraph$ = new BehaviorSubject<SocialGraph>(
   new SocialGraph(accounts.active?.pubkey ?? SOCIAL_GRAPH_FALLBACK_PUBKEY),
 );
 
-function autoSave() {
-  socialGraph$
-    .pipe(
-      skip(1),
-      throttleTime(20_000),
-      exhaustMap((graph) => saveSocialGraph(graph)),
-    )
-    .subscribe();
-}
+// NOTE: social graph is killing android for some reason (probably too much data in JS thread)
+if (CAP_IS_WEB) {
+  function autoSave() {
+    socialGraph$
+      .pipe(
+        skip(1),
+        throttleTime(20_000),
+        exhaustMap((graph) => saveSocialGraph(graph)),
+      )
+      .subscribe();
+  }
 
-// Load the social graph from the cache and start auto saving
-if (cached) {
-  log("Loading social graph from cache");
-  SocialGraph.fromBinary(accounts.active?.pubkey ?? SOCIAL_GRAPH_FALLBACK_PUBKEY, cached).then((graph) => {
-    log(`Loaded social graph from cache with ${graph.size().users} user (${formatBytes(cached.length)})`);
-    socialGraph$.next(graph);
+  // Load the social graph from the cache
+  const cached = (await idbKeyValueStore.getItem(cacheKey)) as Uint8Array | undefined;
+  // Load the social graph from the cache and start auto saving
+  if (cached) {
+    log("Loading social graph from cache");
+    SocialGraph.fromBinary(accounts.active?.pubkey ?? SOCIAL_GRAPH_FALLBACK_PUBKEY, cached).then((graph) => {
+      log(`Loaded social graph from cache with ${graph.size().users} user (${formatBytes(cached.length)})`);
+      socialGraph$.next(graph);
 
+      autoSave();
+    });
+  } else {
     autoSave();
-  });
-} else {
-  autoSave();
+  }
 }
 
 // Set the social graph root to the active account pubkey

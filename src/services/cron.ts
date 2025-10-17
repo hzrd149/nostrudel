@@ -1,6 +1,7 @@
 import { Debugger } from "debug";
 import { BehaviorSubject, filter, interval, Observable, startWith, Subscription } from "rxjs";
 
+import { CAP_IS_WEB } from "../env";
 import { logger } from "../helpers/debug";
 import localSettings from "./preferences";
 import { socialGraph$, updateSocialGraph } from "./social-graph";
@@ -78,6 +79,11 @@ updateSocialGraphCron.lastRun = localSettings.lastUpdatedSocialGraph;
 updateSocialGraphCron.start();
 
 // Trigger an update if there are no users in the 2nd degree
-if (socialGraph$.value.getUsersByFollowDistance(2).size === 0) {
-  updateSocialGraphCron.run();
+// NOTE: social graph is killing android for some reason (probably too much data in JS thread)
+if (CAP_IS_WEB) {
+  setTimeout(() => {
+    if (socialGraph$.value.getUsersByFollowDistance(2).size === 0) {
+      updateSocialGraphCron.run();
+    }
+  }, 10 * 1000);
 }

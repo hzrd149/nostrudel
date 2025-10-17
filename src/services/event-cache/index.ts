@@ -8,11 +8,10 @@ import { EventCache } from "./interface";
 import { wrapInTimeout } from "../../helpers/promise";
 
 // An ordered array of fallback types to use when event cache fails to load
-const FALLBACKS: string[] = ["nostr-idb", "none"];
+const FALLBACKS: string[] = ["local-relay", "nostr-idb", "none"];
 
 // Default to wasm-worker on web, native-sqlite on native
-if (CAP_IS_WEB) FALLBACKS.unshift("wasm-worker");
-else if (CAP_IS_NATIVE) FALLBACKS.unshift("native-sqlite");
+if (CAP_IS_NATIVE) FALLBACKS.splice(1, 0, "native-sqlite");
 
 const log = logger.extend(`event-cache`);
 
