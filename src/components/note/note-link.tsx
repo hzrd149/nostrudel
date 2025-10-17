@@ -6,7 +6,7 @@ import { nip19 } from "nostr-tools";
 import { truncatedId } from "../../helpers/nostr/event";
 import { getEventPointerRelayHints } from "../../services/relay-hints";
 
-export type NoteLinkProps = LinkProps & {
+export type NoteLinkProps = Omit<LinkProps, "href"> & {
   noteId: string;
 };
 

@@ -8,7 +8,7 @@ import { UnbookmarkEvent } from "applesauce-actions/actions";
 import { useActionHub, useActiveAccount } from "applesauce-react/hooks";
 import { EmbedEventCard } from "../../components/embed-event/card";
 import SimpleView from "../../components/layout/presets/simple-view";
-import TimelineItem from "../../components/timeline-page/generic-note-timeline/timeline-item";
+import TimelineItem from "../../components/timeline/timeline-item";
 import UserAvatarLink from "../../components/user/user-avatar-link";
 import UserName from "../../components/user/user-name";
 import useAddressableEvent from "../../hooks/use-addressable-event";

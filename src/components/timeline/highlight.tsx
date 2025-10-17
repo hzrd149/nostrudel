@@ -42,7 +42,6 @@ import UserLink from "../user/user-link";
 import EventZapButton from "../zap/event-zap-button";
 import EventShareButton from "./note/components/event-share-button";
 import NoteReactions from "./note/components/note-reactions";
-import ReplyContext from "./note/components/reply-context";
 import ZapBubbles from "./note/components/zap-bubbles";
 
 export type TimelineHighlightProps = Omit<CardProps, "children"> & {
@@ -63,11 +62,46 @@ const HIGHLIGHT_STYLES: HighlightProps["styles"] = {
   fontStyle: "italic",
 };
 
+export function HighlightContent({ highlight }: { highlight: NostrEvent }) {
+  const text = getHighlightText(highlight);
+  const context = getHighlightContext(highlight);
+
+  return (
+    <Box position="relative" overflow="hidden">
+      <Box position="absolute" left="0" top="0" bottom="0" width="4px" bg="purple.500" borderRadius="2px" />
+      <Box pl="3" color="GrayText">
+        {context ? (
+          <Highlight query={text} styles={HIGHLIGHT_STYLES}>
+            {context}
+          </Highlight>
+        ) : (
+          <Highlight query={text} styles={HIGHLIGHT_STYLES}>
+            {text}
+          </Highlight>
+        )}
+      </Box>
+    </Box>
+  );
+}
+
+export function HighlightSource({ highlight }: { highlight: NostrEvent }) {
+  const eventPointer = getHighlightSourceEventPointer(highlight);
+  const addressPointer = getHighlightSourceAddressPointer(highlight);
+  const url = getHighlightSourceUrl(highlight);
+
+  return url && URL.canParse(url) ? (
+    <OpenGraphLink url={new URL(url)} />
+  ) : eventPointer ? (
+    <EmbedEventPointerLink pointer={{ type: "nevent", data: eventPointer }} color="blue.500" />
+  ) : addressPointer ? (
+    <EmbedEventPointerLink pointer={{ type: "naddr", data: addressPointer }} color="blue.500" />
+  ) : null;
+}
+
 export function TimelineHighlight({
   event,
   variant = "unstyled",
   showReplyButton,
-  showReplyLine = true,
   hideDrawerButton,
   registerIntersectionEntity = true,
   clickable = true,
@@ -78,9 +112,6 @@ export function TimelineHighlight({
 
   // Extract highlight data using applesauce helpers
   const highlightText = getHighlightText(event);
-  const sourceEventPointer = getHighlightSourceEventPointer(event);
-  const sourceAddressPointer = getHighlightSourceAddressPointer(event);
-  const sourceUrl = getHighlightSourceUrl(event);
   const context = getHighlightContext(event);
   const hasSource = hasHighlightSource(event);
 
@@ -103,36 +134,16 @@ export function TimelineHighlight({
             <NotePublishedUsing event={event} />
             <Flex grow={1} />
           </Flex>
-          {showReplyLine && <ReplyContext event={event} />}
         </CardHeader>
         <CardBody px="2" overflow="hidden">
           {/* Highlight Content */}
-          <Box position="relative" overflow="hidden">
-            <Box position="absolute" left="0" top="0" bottom="0" width="4px" bg="purple.500" borderRadius="2px" />
-            <Box pl="3" color="GrayText">
-              {context ? (
-                <Highlight query={highlightText} styles={HIGHLIGHT_STYLES}>
-                  {context}
-                </Highlight>
-              ) : (
-                <Highlight query={highlightText} styles={HIGHLIGHT_STYLES}>
-                  {highlightText}
-                </Highlight>
-              )}
-            </Box>
-          </Box>
+          <HighlightContent highlight={event} />
 
           {/* Source Attribution */}
           {hasSource && (
             <Flex alignItems="center" gap="2" mt="2">
               <Text>From:</Text>
-              {sourceUrl && URL.canParse(sourceUrl) ? (
-                <OpenGraphLink url={new URL(sourceUrl)} />
-              ) : sourceEventPointer ? (
-                <EmbedEventPointerLink pointer={{ type: "nevent", data: sourceEventPointer }} color="blue.500" />
-              ) : sourceAddressPointer ? (
-                <EmbedEventPointerLink pointer={{ type: "naddr", data: sourceAddressPointer }} color="blue.500" />
-              ) : null}
+              <HighlightSource highlight={event} />
             </Flex>
           )}
         </CardBody>

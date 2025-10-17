@@ -7,7 +7,7 @@ import useNumberCache from "../../../hooks/timeline/use-number-cache";
 import useCacheEntryHeight from "../../../hooks/timeline/use-cache-entry-height";
 import { useTimelineDates } from "../../../hooks/timeline/use-timeline-dates";
 import useTimelineLocationCacheKey from "../../../hooks/timeline/use-timeline-cache-key";
-import TimelineItem from "./timeline-item";
+import TimelineItem from "../../timeline/timeline-item";
 import { getEventUID } from "applesauce-core/helpers";
 
 const INITIAL_NOTES = 10;

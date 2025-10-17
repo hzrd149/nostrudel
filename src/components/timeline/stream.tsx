@@ -15,13 +15,13 @@ import {
 import { Link as RouterLink } from "react-router-dom";
 import { NostrEvent } from "nostr-tools";
 
-import useShareableEventAddress from "../../../hooks/use-shareable-event-address";
-import UserAvatar from "../../user/user-avatar";
-import UserLink from "../../user/user-link";
-import StreamStatusBadge from "../../../views/streams/components/status-badge";
-import Timestamp from "../../timestamp";
-import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
-import { getStreamHashtags, getStreamHost, getStreamImage, getStreamTitle } from "../../../helpers/nostr/stream";
+import useShareableEventAddress from "../../hooks/use-shareable-event-address";
+import UserAvatar from "../user/user-avatar";
+import UserLink from "../user/user-link";
+import StreamStatusBadge from "../../views/streams/components/status-badge";
+import Timestamp from "../timestamp";
+import useEventIntersectionRef from "../../hooks/use-event-intersection-ref";
+import { getStreamHashtags, getStreamHost, getStreamImage, getStreamTitle } from "../../helpers/nostr/stream";
 
 export default function StreamNote({ stream, ...props }: CardProps & { stream: NostrEvent }) {
   const ref = useEventIntersectionRef(stream);

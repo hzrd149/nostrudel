@@ -1,4 +1,4 @@
-import { Card, CardProps, Flex, LinkBox, Spacer } from "@chakra-ui/react";
+import { Box, BoxProps, Flex, LinkBox, Spacer } from "@chakra-ui/react";
 import { NostrEvent } from "nostr-tools";
 import { MouseEventHandler, useCallback } from "react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
@@ -12,7 +12,7 @@ import Timestamp from "../../timestamp";
 import UserAvatarLink from "../../user/user-avatar-link";
 import UserLink from "../../user/user-link";
 
-export default function EmbeddedNote({ event, ...props }: Omit<CardProps, "children"> & { event: NostrEvent }) {
+export default function EmbeddedNote({ event, ...props }: Omit<BoxProps, "children" | "as"> & { event: NostrEvent }) {
   const navigate = useNavigate();
   const to = `/n/${getSharableEventAddress(event)}`;
 
@@ -26,18 +26,27 @@ export default function EmbeddedNote({ event, ...props }: Omit<CardProps, "child
 
   return (
     <ContentSettingsProvider event={event}>
-      <Card as={LinkBox} {...props}>
-        <Flex p="2" gap="2" alignItems="center">
-          <UserAvatarLink pubkey={event.pubkey} size="sm" />
-          <UserLink pubkey={event.pubkey} fontWeight="bold" isTruncated fontSize="lg" />
-          <NoteLink noteId={event.id} color="current" whiteSpace="nowrap">
+      <Box
+        as={LinkBox}
+        borderWidth={0}
+        borderLeftWidth={4}
+        borderLeftColor="primary.500"
+        borderRadius="md"
+        pb={2}
+        pt={1}
+        {...props}
+      >
+        <Flex p="2" gap="2" alignItems="center" fontSize="sm">
+          <UserAvatarLink pubkey={event.pubkey} size="xs" showNip05={false} />
+          <UserLink pubkey={event.pubkey} isTruncated fontSize="md" />
+          <NoteLink noteId={event.id} whiteSpace="nowrap" color="GrayText">
             <Timestamp timestamp={event.created_at} />
           </NoteLink>
           <HoverLinkOverlay as={RouterLink} to={to} onClick={handleClick} />
           <Spacer />
         </Flex>
         <CompactNoteContent px="2" event={event} maxLength={96} />
-      </Card>
+      </Box>
     </ContentSettingsProvider>
   );
 }
