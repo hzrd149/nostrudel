@@ -9,7 +9,7 @@ import StarRating from "../../../components/star-rating";
 import { NostrEvent } from "nostr-tools";
 import { Metadata } from "./relay-card";
 import Timestamp from "../../../components/timestamp";
-import { TextNoteContents } from "../../../components/note/timeline-note/text-note-contents";
+import { TextNoteContents } from "../../../components/timeline/note/text-note-contents";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
 
 export default function RelayReviewNote({ event, hideUrl }: { event: NostrEvent; hideUrl?: boolean }) {

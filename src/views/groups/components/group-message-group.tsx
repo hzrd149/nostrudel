@@ -9,8 +9,8 @@ import DotsHorizontal from "../../../components/icons/dots-horizontal";
 import DeleteEventMenuItem from "../../../components/menu/delete-event";
 import MuteUserMenuItem from "../../../components/menu/mute-user";
 import MessagesGroup, { MessageGroupProps } from "../../../components/message/message-group";
-import AddReactionButton from "../../../components/note/timeline-note/components/add-reaction-button";
-import TextNoteContents from "../../../components/note/timeline-note/text-note-contents";
+import AddReactionButton from "../../../components/timeline/note/components/add-reaction-button";
+import TextNoteContents from "../../../components/timeline/note/text-note-contents";
 import EventZapButton from "../../../components/zap/event-zap-button";
 
 function GroupMessageActions({

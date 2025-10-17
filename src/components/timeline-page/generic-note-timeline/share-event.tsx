@@ -11,7 +11,7 @@ import { eventStore } from "../../../services/event-store";
 import { EmbedEventCard } from "../../embed-event/card";
 import LoadingNostrLink from "../../loading-nostr-link";
 import NoteMenu from "../../note/note-menu";
-import TimelineNote from "../../note/timeline-note";
+import TimelineNote from "../../timeline/note";
 import UserAvatar from "../../user/user-avatar";
 import UserDnsIdentity from "../../user/user-dns-identity";
 import UserLink from "../../user/user-link";

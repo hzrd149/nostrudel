@@ -5,7 +5,7 @@ import { useEventModel } from "applesauce-react/hooks";
 import { NostrEvent } from "nostr-tools";
 
 import DebugEventButton from "../../../components/debug-modal/debug-event-button";
-import TextNoteContents from "../../../components/note/timeline-note/text-note-contents";
+import TextNoteContents from "../../../components/timeline/note/text-note-contents";
 import Timestamp from "../../../components/timestamp";
 import UserLink from "../../../components/user/user-link";
 import { useReadRelays } from "../../../hooks/use-client-relays";
@@ -38,7 +38,9 @@ export function PicturePostComments({ post }: { post: NostrEvent }) {
 
   return (
     <IntersectionObserverProvider callback={callback}>
-      {comments?.map((comment) => <Comment key={comment.id} comment={comment} />)}
+      {comments?.map((comment) => (
+        <Comment key={comment.id} comment={comment} />
+      ))}
     </IntersectionObserverProvider>
   );
 }

@@ -3,7 +3,7 @@ import { getEventUID, getTagValue } from "applesauce-core/helpers";
 import { useEventModel } from "applesauce-react/hooks";
 import { NostrEvent } from "nostr-tools";
 
-import { TextNoteContents } from "../../../components/note/timeline-note/text-note-contents";
+import { TextNoteContents } from "../../../components/timeline/note/text-note-contents";
 import OpenGraphCard from "../../../components/open-graph/open-graph-card";
 import { StreamCardsQuery } from "../../../models/stream";
 

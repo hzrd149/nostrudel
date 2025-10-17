@@ -18,14 +18,14 @@ import UserDnsIdentityIcon from "../../components/user/user-dns-identity-icon";
 import MarkdownContent from "../../components/markdown/markdown";
 import ArticleMenu from "./components/article-menu";
 import ArticleTags from "./components/article-tags";
-import NoteReactions from "../../components/note/timeline-note/components/note-reactions";
+import NoteReactions from "../../components/timeline/note/components/note-reactions";
 import EventZapButton from "../../components/zap/event-zap-button";
-import ZapBubbles from "../../components/note/timeline-note/components/zap-bubbles";
+import ZapBubbles from "../../components/timeline/note/components/zap-bubbles";
 import BookmarkEventButton from "../../components/note/bookmark-button";
 import EventQuoteButton from "../../components/note/event-quote-button";
 import { GenericComments } from "../../components/comment/generic-comments";
 import GenericCommentForm from "../../components/comment/generic-comment-form";
-import EventShareButton from "../../components/note/timeline-note/components/event-share-button";
+import EventShareButton from "../../components/timeline/note/components/event-share-button";
 import ArticleReader from "./components/article-reader";
 
 function ArticlePage({ article }: { article: NostrEvent }) {

@@ -47,7 +47,7 @@ import { ErrorBoundary } from "../error-boundary";
 import InsertGifButton from "../gif/insert-gif-button";
 import { ChevronDownIcon, ChevronUpIcon } from "../icons";
 import MagicTextArea, { RefType } from "../magic-textarea";
-import { TextNoteContents } from "../note/timeline-note/text-note-contents";
+import { TextNoteContents } from "../timeline/note/text-note-contents";
 import MinePOW from "../pow/mine-pow";
 
 type FormValues = {

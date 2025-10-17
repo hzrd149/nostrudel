@@ -3,7 +3,7 @@ import { NostrEvent } from "nostr-tools";
 
 import DebugEventButton from "~/components/debug-modal/debug-event-button";
 import EventQuoteButton from "~/components/note/event-quote-button";
-import EventShareButton from "~/components/note/timeline-note/components/event-share-button";
+import EventShareButton from "~/components/timeline/note/components/event-share-button";
 import PicturePostContents from "~/components/picture-post/picture-post-content";
 import PicturePostSlides from "~/components/picture-post/picture-slides";
 import BackButton from "~/components/router/back-button";
@@ -15,7 +15,7 @@ import useSingleEvent from "~/hooks/use-single-event";
 import { useBreakpointValue } from "~/providers/global/breakpoint-provider";
 import { ContentSettingsProvider } from "~/providers/local/content-settings";
 import SimpleView from "../../../components/layout/presets/simple-view";
-import NoteReactions from "../../../components/note/timeline-note/components/note-reactions";
+import NoteReactions from "../../../components/timeline/note/components/note-reactions";
 import PicturePostMenu from "../../../components/picture-post/picture-menu";
 import UserName from "../../../components/user/user-name";
 import EventZapButton from "../../../components/zap/event-zap-button";

@@ -4,7 +4,7 @@ import { forwardRef, useMemo } from "react";
 
 import { EmbedEventPointerCard } from "../../../components/embed-event/card";
 import { ReplyIcon } from "../../../components/icons";
-import { TimelineNote } from "../../../components/note/timeline-note";
+import { TimelineNote } from "../../../components/timeline/note";
 import { getThreadReferences } from "../../../helpers/nostr/event";
 import NotificationIconEntry from "./notification-icon-entry";
 

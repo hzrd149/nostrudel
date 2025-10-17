@@ -23,7 +23,7 @@ import { ErrorBoundary } from "../../components/error-boundary";
 import Magnet from "../../components/icons/magnet";
 import MessageTextCircle01 from "../../components/icons/message-text-circle-01";
 import EventQuoteButton from "../../components/note/event-quote-button";
-import { TextNoteContents } from "../../components/note/timeline-note/text-note-contents";
+import { TextNoteContents } from "../../components/timeline/note/text-note-contents";
 import Timestamp from "../../components/timestamp";
 import UserAvatarLink from "../../components/user/user-avatar-link";
 import UserLink from "../../components/user/user-link";

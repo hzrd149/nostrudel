@@ -7,7 +7,7 @@ import styled from "@emotion/styled";
 import { TrustImage, TrustVideo } from "../content/links";
 import { isImageURL, isVideoURL } from "applesauce-core/helpers";
 import { ChevronLeftIcon, ChevronRightIcon } from "../icons";
-import ZapBubbles from "../note/timeline-note/components/zap-bubbles";
+import ZapBubbles from "../timeline/note/components/zap-bubbles";
 
 function CustomArrows() {
   const { currentPage, totalPages, wrapMode, goBack, goForward } = useCarousel();

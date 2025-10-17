@@ -4,7 +4,7 @@ import { memo } from "react";
 import { Link as RouterLink } from "react-router-dom";
 
 import HoverLinkOverlay from "../../../components/hover-link-overlay";
-import ZapBubbles from "../../../components/note/timeline-note/components/zap-bubbles";
+import ZapBubbles from "../../../components/timeline/note/components/zap-bubbles";
 import Timestamp from "../../../components/timestamp";
 import UserAvatar from "../../../components/user/user-avatar";
 import UserName from "../../../components/user/user-name";

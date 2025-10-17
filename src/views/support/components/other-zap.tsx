@@ -3,7 +3,7 @@ import { getZapPayment, getZapRequest, getZapSender, KnownEvent } from "applesau
 import { kinds } from "nostr-tools";
 
 import { LightningIcon } from "../../../components/icons";
-import TextNoteContents from "../../../components/note/timeline-note/text-note-contents";
+import TextNoteContents from "../../../components/timeline/note/text-note-contents";
 import Timestamp from "../../../components/timestamp";
 import UserAvatar from "../../../components/user/user-avatar";
 import UserDnsIdentityIcon from "../../../components/user/user-dns-identity-icon";

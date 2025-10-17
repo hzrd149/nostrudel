@@ -22,7 +22,7 @@ import { ErrorBoundary } from "../../../components/error-boundary";
 import { TrashIcon } from "../../../components/icons";
 import SimpleView from "../../../components/layout/presets/simple-view";
 import EventQuoteButton from "../../../components/note/event-quote-button";
-import NoteReactions from "../../../components/note/timeline-note/components/note-reactions";
+import NoteReactions from "../../../components/timeline/note/components/note-reactions";
 import UserAboutContent from "../../../components/user/user-about-content";
 import UserAvatar from "../../../components/user/user-avatar";
 import UserDnsIdentity from "../../../components/user/user-dns-identity";

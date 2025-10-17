@@ -1,6 +1,7 @@
 import { lazy } from "react";
 import { Outlet, RouteObject } from "react-router-dom";
 
+import { Flex } from "@chakra-ui/react";
 import {
   AddReactionIcon,
   ArticleIcon,
@@ -8,7 +9,6 @@ import {
   EmojiPacksIcon,
   ErrorIcon,
   FollowIcon,
-  GoalIcon,
   LightningIcon,
   ListsIcon,
   LiveStreamIcon,
@@ -16,22 +16,21 @@ import {
   MuteIcon,
   NotesIcon,
   ProfileIcon,
-  RelayIcon,
   SettingsIcon,
   TorrentIcon,
-  VideoIcon,
 } from "../../components/icons";
+import PenTool01 from "../../components/icons/pen-tool-01";
+import UserPlus01 from "../../components/icons/user-plus-01";
+import SimpleHeader from "../../components/layout/components/simple-header";
 import AppTabsLayout, { AppTabs, AppTabsProvider } from "../../components/layout/presets/app-tabs-layout";
+import UserAvatar from "../../components/user/user-avatar";
+import UserLink from "../../components/user/user-link";
 import useParamsProfilePointer from "../../hooks/use-params-pubkey-pointer";
 import UserAboutView from "./about";
 import UserArticlesTab from "./tabs/articles";
+import UserHighlightsTab from "./tabs/highlights";
 import UserPicturePostsTab from "./tabs/media";
 import UserNotesTab from "./tabs/notes";
-import UserPlus01 from "../../components/icons/user-plus-01";
-import SimpleHeader from "../../components/layout/components/simple-header";
-import { Flex } from "@chakra-ui/react";
-import UserLink from "../../components/user/user-link";
-import UserAvatar from "../../components/user/user-avatar";
 
 // other stuff
 const UserStreamsTab = lazy(() => import("./tabs/streams"));
@@ -51,6 +50,7 @@ export const userProfileTabs: AppTabs[] = [
   { label: "About", path: "", icon: ProfileIcon },
   { label: "Notes", path: "notes", icon: NotesIcon, Component: UserNotesTab },
   { label: "Articles", path: "articles", icon: ArticleIcon, Component: UserArticlesTab },
+  { label: "Highlights", path: "highlights", icon: PenTool01, Component: UserHighlightsTab },
   { label: "Streams", path: "streams", icon: LiveStreamIcon, Component: UserStreamsTab },
   { label: "Media", path: "media", icon: MediaIcon, Component: UserPicturePostsTab },
   { label: "Zaps", path: "zaps", icon: LightningIcon, Component: UserZapsTab },

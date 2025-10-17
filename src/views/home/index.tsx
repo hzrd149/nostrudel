@@ -7,8 +7,10 @@ import { map, of } from "rxjs";
 import NoteFilterTypeButtons from "../../components/note-filter-type-buttons";
 import OutboxRelaySelectionModal from "../../components/outbox-relay-selection-modal";
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
+import RouterLink from "../../components/router-link";
 import TimelinePage, { useTimelinePageEventFilter } from "../../components/timeline-page";
 import TimelineViewTypeButtons from "../../components/timeline-page/timeline-view-type";
+import VerticalPageLayout from "../../components/vertical-page-layout";
 import { isReply, isRepost } from "../../helpers/nostr/event";
 import useClientSideMuteFilter from "../../hooks/use-client-side-mute-filter";
 import { useLoaderForOutboxes } from "../../hooks/use-loaders-for-outboxes";
@@ -16,11 +18,7 @@ import useLocalStorageDisclosure from "../../hooks/use-localstorage-disclosure";
 import { OutboxSelectionModel } from "../../models/outbox-selection";
 import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
 import { eventStore } from "../../services/event-store";
-import SimpleView from "../../components/layout/presets/simple-view";
-import RouterLink from "../../components/router-link";
-import VerticalPageLayout from "../../components/vertical-page-layout";
-
-const feedKinds = [kinds.ShortTextNote, kinds.Repost, kinds.GenericRepost];
+import { GENERIC_TIMELINE_KINDS } from "../../components/timeline-page/generic-note-timeline";
 
 function HomePage() {
   const showReplies = useLocalStorageDisclosure("show-replies", false);
@@ -42,10 +40,10 @@ function HomePage() {
   const { selection, outboxes } = useEventModel(OutboxSelectionModel, pointer ? [pointer] : undefined) ?? {};
 
   // Merge all loaders
-  const loader = useLoaderForOutboxes(`home-${listId}`, outboxes, feedKinds);
+  const loader = useLoaderForOutboxes(`home-${listId}`, outboxes, GENERIC_TIMELINE_KINDS);
 
   // Subscribe to event store for timeline events
-  const filters: Filter[] = useMemo(() => (filter ? [{ ...filter, kinds: feedKinds }] : []), [filter]);
+  const filters: Filter[] = useMemo(() => (filter ? [{ ...filter, kinds: GENERIC_TIMELINE_KINDS }] : []), [filter]);
   const timeline = useObservableEagerMemo(
     () => (filters ? eventStore.timeline(filters).pipe(map((events) => events.filter(eventFilter))) : of([])),
     [filters, eventFilter],

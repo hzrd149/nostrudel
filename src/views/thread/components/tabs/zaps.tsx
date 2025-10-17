@@ -5,7 +5,7 @@ import { kinds, NostrEvent } from "nostr-tools";
 import { memo } from "react";
 
 import { LightningIcon } from "../../../../components/icons";
-import TextNoteContents from "../../../../components/note/timeline-note/text-note-contents";
+import TextNoteContents from "../../../../components/timeline/note/text-note-contents";
 import Timestamp from "../../../../components/timestamp";
 import UserAvatarLink from "../../../../components/user/user-avatar-link";
 import UserLink from "../../../../components/user/user-link";

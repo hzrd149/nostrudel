@@ -8,7 +8,7 @@ import { getPayRequestForPubkey, PayRequest } from "../../../components/event-za
 import InsertGifButton from "../../../components/gif/insert-gif-button";
 import { LightningIcon } from "../../../components/icons";
 import MagicTextArea, { RefType } from "../../../components/magic-textarea";
-import TextNoteContents from "../../../components/note/timeline-note/text-note-contents";
+import TextNoteContents from "../../../components/timeline/note/text-note-contents";
 import { SUPPORT_PUBKEY } from "../../../const";
 import useTextAreaUploadFile, { useTextAreaInsertTextWithForm } from "../../../hooks/use-textarea-upload-file";
 import useUserLNURLMetadata from "../../../hooks/use-user-lnurl-metadata";

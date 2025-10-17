@@ -11,7 +11,7 @@ import { map } from "rxjs";
 import SimpleView from "../../../components/layout/presets/simple-view";
 import RelayFavicon from "../../../components/relay/relay-favicon";
 import RelayLink from "../../../components/relay/relay-link";
-import GenericNoteTimeline from "../../../components/timeline-page/generic-note-timeline";
+import GenericNoteTimeline, { GENERIC_TIMELINE_KINDS } from "../../../components/timeline-page/generic-note-timeline";
 import TimelineActionAndStatus from "../../../components/timeline/timeline-action-and-status";
 import { useAppTitle } from "../../../hooks/use-app-title";
 import useClientSideMuteFilter from "../../../hooks/use-client-side-mute-filter";
@@ -56,7 +56,7 @@ export function OutboxFeedPage({ relay }: { relay: string }) {
     [relay],
     contacts
       ? {
-          kinds: [kinds.ShortTextNote],
+          kinds: GENERIC_TIMELINE_KINDS,
           authors: contacts.map((user) => user.pubkey),
         }
       : undefined,

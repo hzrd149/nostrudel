@@ -14,7 +14,7 @@ import { Box, Button, ButtonGroup, Flex } from "@chakra-ui/react";
 import InsertImageButton from "../../views/new/note/insert-image-button";
 import InsertGifButton from "../gif/insert-gif-button";
 import { ContentSettingsProvider } from "../../providers/local/content-settings";
-import TextNoteContents from "../note/timeline-note/text-note-contents";
+import TextNoteContents from "../timeline/note/text-note-contents";
 import InsertReactionButton from "../reactions/insert-reaction-button";
 
 export default function GenericCommentForm({

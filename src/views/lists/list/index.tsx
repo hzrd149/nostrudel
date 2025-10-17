@@ -15,7 +15,7 @@ import GenericCommentSection from "../../../components/comment/generic-comment-s
 import { EmbedEventCard, EmbedEventPointerCard } from "../../../components/embed-event/card";
 import SimpleView from "../../../components/layout/presets/simple-view";
 import EventQuoteButton from "../../../components/note/event-quote-button";
-import NoteReactions from "../../../components/note/timeline-note/components/note-reactions";
+import NoteReactions from "../../../components/timeline/note/components/note-reactions";
 import OpenGraphCard from "../../../components/open-graph/open-graph-card";
 import UserAvatarLink from "../../../components/user/user-avatar-link";
 import UserDnsIdentity from "../../../components/user/user-dns-identity";

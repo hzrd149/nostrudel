@@ -14,7 +14,7 @@ import { useMemo } from "react";
 
 import { humanReadableSats } from "../../../helpers/lightning";
 import { LightningIcon } from "../../icons";
-import TextNoteContents from "../../note/timeline-note/text-note-contents";
+import TextNoteContents from "../../timeline/note/text-note-contents";
 import Timestamp from "../../timestamp";
 import UserAvatar from "../../user/user-avatar";
 import UserLink from "../../user/user-link";

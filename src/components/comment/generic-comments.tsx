@@ -23,8 +23,8 @@ import useTimelineLoader from "../../hooks/use-timeline-loader";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import DebugEventButton from "../debug-modal/debug-event-button";
 import { ChevronDownIcon, ChevronUpIcon, ReplyIcon } from "../icons";
-import NoteReactions from "../note/timeline-note/components/note-reactions";
-import TextNoteContents from "../note/timeline-note/text-note-contents";
+import NoteReactions from "../timeline/note/components/note-reactions";
+import TextNoteContents from "../timeline/note/text-note-contents";
 import Timestamp from "../timestamp";
 import UserAvatarLink from "../user/user-avatar-link";
 import UserDnsIdentity from "../user/user-dns-identity";
@@ -115,7 +115,9 @@ export function GenericComments({ event }: { event: NostrEvent }) {
 
   return (
     <IntersectionObserverProvider callback={callback}>
-      {comments?.map((comment) => <Comment key={comment.id} comment={comment} />)}
+      {comments?.map((comment) => (
+        <Comment key={comment.id} comment={comment} />
+      ))}
     </IntersectionObserverProvider>
   );
 }

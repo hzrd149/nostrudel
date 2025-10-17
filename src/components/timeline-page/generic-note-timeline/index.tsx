@@ -1,6 +1,6 @@
 import { memo, useState } from "react";
 import { Box, Button } from "@chakra-ui/react";
-import { NostrEvent } from "nostr-tools";
+import { kinds, NostrEvent } from "nostr-tools";
 import dayjs from "dayjs";
 
 import useNumberCache from "../../../hooks/timeline/use-number-cache";
@@ -12,6 +12,9 @@ import { getEventUID } from "applesauce-core/helpers";
 
 const INITIAL_NOTES = 10;
 const NOTE_BUFFER = 5;
+
+/** The kinds of events that the generic timeline can display */
+export const GENERIC_TIMELINE_KINDS = [kinds.ShortTextNote, kinds.Repost, kinds.GenericRepost, kinds.Highlights];
 
 function GenericNoteTimeline({ timeline }: { timeline: NostrEvent[] }) {
   const [latest, setLatest] = useState(() => dayjs().unix());

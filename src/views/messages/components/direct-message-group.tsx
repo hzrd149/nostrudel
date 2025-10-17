@@ -9,7 +9,7 @@ import { CopyToClipboardIcon, ReplyIcon } from "../../../components/icons";
 import DotsHorizontal from "../../../components/icons/dots-horizontal";
 import DeleteEventMenuItem from "../../../components/menu/delete-event";
 import MessagesGroup, { MessageGroupProps } from "../../../components/message/message-group";
-import AddReactionButton from "../../../components/note/timeline-note/components/add-reaction-button";
+import AddReactionButton from "../../../components/timeline/note/components/add-reaction-button";
 import EventZapButton from "../../../components/zap/event-zap-button";
 import { useLegacyMessagePlaintext } from "../../../hooks/use-legacy-message-plaintext";
 import DirectMessageContent from "./direct-message-content";

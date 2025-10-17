@@ -1,4 +1,4 @@
-import { CardProps, Link } from "@chakra-ui/react";
+import { CardProps, Link, LinkProps } from "@chakra-ui/react";
 import { DecodeResult } from "applesauce-core/helpers";
 import { kinds, NostrEvent } from "nostr-tools";
 
@@ -13,21 +13,21 @@ import RouterLink from "../../router-link";
 import UserName from "../../user/user-name";
 
 /** A component that renders an inline link to an event */
-export function EmbedEventLink({ event }: { event: NostrEvent }) {
+export function EmbedEventLink({ event, ...props }: { event: NostrEvent } & Omit<LinkProps, "children" | "href">) {
   const addr = useShareableEventAddress(event);
   const link = `/l/${addr}`;
 
   switch (event.kind) {
     case kinds.LongFormArticle:
       return (
-        <Link as={RouterLink} to={link}>
+        <Link {...props} as={RouterLink} to={link}>
           {getArticleTitle(event)} by <UserName pubkey={event.pubkey} />
         </Link>
       );
 
     default:
       return (
-        <Link as={RouterLink} to={link}>
+        <Link {...props} as={RouterLink} to={link}>
           {KindNames[event.kind] || event.kind} event by <UserName pubkey={event.pubkey} />
         </Link>
       );
@@ -38,7 +38,7 @@ export function EmbedEventLink({ event }: { event: NostrEvent }) {
 export function EmbedEventPointerLink({
   pointer,
   ...props
-}: { pointer: DecodeResult | string } & Omit<CardProps, "children">) {
+}: { pointer: DecodeResult | string } & Omit<LinkProps, "children" | "href">) {
   const parsedPointer = typeof pointer === "string" ? safeDecode(pointer) : pointer;
   if (!parsedPointer) return null;
 

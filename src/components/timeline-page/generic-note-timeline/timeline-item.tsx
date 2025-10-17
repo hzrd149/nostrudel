@@ -1,4 +1,4 @@
-import { Box, Spinner } from "@chakra-ui/react";
+import { Spinner } from "@chakra-ui/react";
 import { PICTURE_POST_KIND } from "applesauce-core/helpers";
 import { NostrEvent, kinds } from "nostr-tools";
 import { ReactNode, Suspense, lazy, memo } from "react";
@@ -9,8 +9,9 @@ import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
 import ArticleCard from "../../../views/articles/components/article-card";
 import EmbeddedUnknown from "../../embed-event/card/embedded-unknown";
 import { ErrorBoundary } from "../../error-boundary";
-import { TimelineNote } from "../../note/timeline-note";
 import PicturePost from "../../picture-post/picture-post-card";
+import { TimelineHighlight } from "../../timeline/highlight";
+import { TimelineNote } from "../../timeline/note";
 import ReplyNote from "./reply-note";
 import ShareEvent from "./share-event";
 
@@ -30,6 +31,9 @@ function TimelineItem({ event, visible, minHeight }: { event: NostrEvent; visibl
     case kinds.Repost:
     case kinds.GenericRepost:
       content = <ShareEvent event={event} />;
+      break;
+    case kinds.Highlights:
+      content = <TimelineHighlight event={event} clickable={false} />;
       break;
     case kinds.LiveEvent:
       content = <StreamNote stream={event} />;
@@ -53,9 +57,9 @@ function TimelineItem({ event, visible, minHeight }: { event: NostrEvent; visibl
 
   return (
     <ErrorBoundary event={event}>
-      <Box minHeight={minHeight + "px"} ref={ref}>
+      <div style={{ minHeight: minHeight + "px" }} ref={ref}>
         {visible && <Suspense fallback={<Spinner />}>{content}</Suspense>}
-      </Box>
+      </div>
     </ErrorBoundary>
   );
 }

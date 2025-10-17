@@ -16,7 +16,7 @@ import UserAvatarLink from "../../../components/user/user-avatar-link";
 import { LightningIcon } from "../../../components/icons";
 import NotificationIconEntry from "./notification-icon-entry";
 import ZapReceiptMenu from "../../../components/zap/zap-receipt-menu";
-import TextNoteContents from "../../../components/note/timeline-note/text-note-contents";
+import TextNoteContents from "../../../components/timeline/note/text-note-contents";
 
 const ZapNotification = forwardRef<HTMLDivElement, { zap: KnownEvent<kinds.Zap>; onClick?: () => void }>(
   ({ zap, onClick }, ref) => {

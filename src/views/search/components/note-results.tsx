@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { NostrEvent } from "nostr-tools";
 import { Button, Flex, Heading, useDisclosure } from "@chakra-ui/react";
 
-import { TimelineNote } from "../../../components/note/timeline-note";
+import { TimelineNote } from "../../../components/timeline/note";
 
 const MAX_NOTES = 4;
 

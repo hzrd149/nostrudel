@@ -8,7 +8,7 @@ import { ReactNode } from "react";
 import { Link as RouterLink } from "react-router-dom";
 
 import LoadingNostrLink from "../../components/loading-nostr-link";
-import TextNoteContents from "../../components/note/timeline-note/text-note-contents";
+import TextNoteContents from "../../components/timeline/note/text-note-contents";
 import Timestamp from "../../components/timestamp";
 import UserAvatarLink from "../../components/user/user-avatar-link";
 import UserDnsIdentityIcon from "../../components/user/user-dns-identity-icon";

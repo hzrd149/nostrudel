@@ -4,7 +4,7 @@ import { kinds, NostrEvent } from "nostr-tools";
 
 import UserAvatar from "../../../components/user/user-avatar";
 import UserLink from "../../../components/user/user-link";
-import TextNoteContents from "../../../components/note/timeline-note/text-note-contents";
+import TextNoteContents from "../../../components/timeline/note/text-note-contents";
 import { LightningIcon } from "../../../components/icons";
 import Timestamp from "../../../components/timestamp";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";

@@ -1,10 +1,11 @@
 import { Flex, Spacer } from "@chakra-ui/react";
-import { NostrEvent, kinds } from "nostr-tools";
+import { NostrEvent } from "nostr-tools";
 import { useCallback } from "react";
 
 import NoteFilterTypeButtons from "../../../components/note-filter-type-buttons";
 import { RelayIconStack } from "../../../components/relay-icon-stack";
 import TimelinePage, { useTimelinePageEventFilter } from "../../../components/timeline-page";
+import { GENERIC_TIMELINE_KINDS } from "../../../components/timeline-page/generic-note-timeline";
 import TimelineViewType from "../../../components/timeline-page/timeline-view-type";
 import { isReply, isRepost } from "../../../helpers/nostr/event";
 import useParamsProfilePointer from "../../../hooks/use-params-pubkey-pointer";
@@ -33,7 +34,7 @@ export default function UserNotesTab() {
     relays,
     {
       authors: [user.pubkey],
-      kinds: [kinds.ShortTextNote, kinds.Repost, kinds.GenericRepost, 2],
+      kinds: GENERIC_TIMELINE_KINDS,
     },
     { eventFilter },
   );

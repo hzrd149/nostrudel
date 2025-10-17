@@ -32,7 +32,7 @@ import { ErrorBoundary } from "../../../components/error-boundary";
 import InsertGifButton from "../../../components/gif/insert-gif-button";
 import { ChevronDownIcon, ChevronUpIcon } from "../../../components/icons";
 import MagicTextArea, { RefType } from "../../../components/magic-textarea";
-import TextNoteContents from "../../../components/note/timeline-note/text-note-contents";
+import TextNoteContents from "../../../components/timeline/note/text-note-contents";
 import MinePOW from "../../../components/pow/mine-pow";
 import InsertReactionButton from "../../../components/reactions/insert-reaction-button";
 import useCacheForm from "../../../hooks/use-cache-form";

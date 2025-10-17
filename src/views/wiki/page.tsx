@@ -21,7 +21,7 @@ import FileSearch01 from "../../components/icons/file-search-01";
 import GitBranch01 from "../../components/icons/git-branch-01";
 import MarkdownContent from "../../components/markdown/markdown";
 import EventQuoteButton from "../../components/note/event-quote-button";
-import ZapBubbles from "../../components/note/timeline-note/components/zap-bubbles";
+import ZapBubbles from "../../components/timeline/note/components/zap-bubbles";
 import EventVoteButtons from "../../components/reactions/event-vote-buttions";
 import Timestamp from "../../components/timestamp";
 import UserLink from "../../components/user/user-link";

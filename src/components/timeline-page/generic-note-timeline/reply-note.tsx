@@ -2,7 +2,7 @@ import { NostrEvent } from "nostr-tools";
 import { memo } from "react";
 
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
-import TimelineNote from "../../note/timeline-note";
+import TimelineNote from "../../timeline/note";
 
 function ReplyNote({ event }: { event: NostrEvent }) {
   const ref = useEventIntersectionRef(event);

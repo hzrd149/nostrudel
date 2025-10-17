@@ -4,7 +4,7 @@ import { kinds, NostrEvent } from "nostr-tools";
 import { EmbedEventCard } from "../../../components/embed-event/card";
 import { QuoteIcon } from "../../../components/icons";
 import NotificationIconEntry from "./notification-icon-entry";
-import { TimelineNote } from "../../../components/note/timeline-note";
+import { TimelineNote } from "../../../components/timeline/note";
 import ArticleCard from "../../articles/components/article-card";
 
 const QuoteNotification = forwardRef<HTMLDivElement, { event: NostrEvent; onClick?: () => void }>(

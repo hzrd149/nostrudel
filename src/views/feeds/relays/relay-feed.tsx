@@ -8,7 +8,7 @@ import { useCallback } from "react";
 import SimpleView from "../../../components/layout/presets/simple-view";
 import RelayFavicon from "../../../components/relay/relay-favicon";
 import RelayLink from "../../../components/relay/relay-link";
-import GenericNoteTimeline from "../../../components/timeline-page/generic-note-timeline";
+import GenericNoteTimeline, { GENERIC_TIMELINE_KINDS } from "../../../components/timeline-page/generic-note-timeline";
 import TimelineActionAndStatus from "../../../components/timeline/timeline-action-and-status";
 import { useAppTitle } from "../../../hooks/use-app-title";
 import useAsyncAction from "../../../hooks/use-async-action";
@@ -70,7 +70,7 @@ export function RelayFeedPage({ relay }: { relay: string }) {
   const { loader, timeline } = useTimelineLoader(
     `relay-feed-${relay}`,
     [relay],
-    { kinds: [kinds.ShortTextNote] },
+    { kinds: GENERIC_TIMELINE_KINDS },
     { eventFilter },
   );
 
