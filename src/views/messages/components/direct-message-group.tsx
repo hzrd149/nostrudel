@@ -55,8 +55,13 @@ function DirectMessageActions({
   return (
     <ButtonGroup size="xs" variant="ghost" gap="0">
       <IconButton aria-label="Reply" icon={<ReplyIcon />} onClick={handleReply} size="xs" />
-      <AddReactionButton event={message} size="xs" />
-      <EventZapButton event={message} size="xs" />
+      {/* Only show reactions and zaps for legacy messages (NIP-04), not NIP-17 */}
+      {message?.kind === kinds.EncryptedDirectMessage && (
+        <>
+          <AddReactionButton event={message as NostrEvent} size="xs" />
+          <EventZapButton event={message as NostrEvent} size="xs" />
+        </>
+      )}
       <Menu>
         <MenuButton as={IconButton} aria-label="More actions" icon={<DotsHorizontal />} size="xs" />
         <MenuList fontSize="sm">

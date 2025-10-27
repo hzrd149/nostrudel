@@ -1,5 +1,5 @@
 import { Box, ButtonGroup, Flex, FlexProps } from "@chakra-ui/react";
-import { NostrEvent } from "nostr-tools";
+import { kinds, NostrEvent } from "nostr-tools";
 import { ReactNode, useState } from "react";
 
 import useEventIntersectionRef from "../../hooks/use-event-intersection-ref";
@@ -17,7 +17,9 @@ export type MessageProps = Omit<FlexProps, "children"> & {
 };
 
 export default function Message({ message, showHeader = true, renderContent, renderActions, ...props }: MessageProps) {
-  const reactions = useEventReactions(message) ?? [];
+  // Only load reactions for non-private messages (NIP-17 private messages shouldn't have reactions)
+  const shouldLoadReactions = message.kind !== kinds.PrivateDirectMessage;
+  const reactions = useEventReactions(shouldLoadReactions ? message : undefined) ?? [];
   const hasReactions = reactions.length > 0;
   const ref = useEventIntersectionRef(message);
   const [hover, setHover] = useState(false);
