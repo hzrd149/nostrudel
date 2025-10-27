@@ -31,7 +31,7 @@ export function renderWavlakeUrl(match: URL) {
 export function renderAppleMusicUrl(match: URL) {
   if (match.hostname !== "music.apple.com") return null;
 
-  const isList = match.searchParams.get("l") !== null;
+  const isList = match.searchParams.get("l") !== null || match.pathname.includes("/album");
 
   const embedUrl = new URL(match);
   embedUrl.hostname = "embed.music.apple.com";

@@ -1,5 +1,7 @@
 import {
   Alert,
+  AlertIcon,
+  Box,
   Button,
   ButtonGroup,
   Flex,
@@ -7,6 +9,7 @@ import {
   Heading,
   IconButton,
   IconButtonProps,
+  Link,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -15,6 +18,7 @@ import {
   ModalHeader,
   ModalOverlay,
   Text,
+  VStack,
 } from "@chakra-ui/react";
 import { SendLegacyMessage, SendWrappedMessage } from "applesauce-actions/actions";
 import {
@@ -26,7 +30,7 @@ import {
 } from "applesauce-core/helpers";
 import { useActionHub, useActiveAccount, useEventModel, useObservableEagerState } from "applesauce-react/hooks";
 import { kinds } from "nostr-tools";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { lastValueFrom, toArray } from "rxjs";
 
@@ -35,25 +39,59 @@ import EyeOff from "../../../../components/icons/eye-off";
 import Lock01 from "../../../../components/icons/lock-01";
 import MagicTextArea, { RefType } from "../../../../components/magic-textarea";
 import InsertReactionButton from "../../../../components/reactions/insert-reaction-button";
+import RelayFavicon from "../../../../components/relay/relay-favicon";
+import RelayLink from "../../../../components/relay/relay-link";
+import RouterLink from "../../../../components/router-link";
+import UserName from "../../../../components/user/user-name";
 import useCacheForm from "../../../../hooks/use-cache-form";
 import useTextAreaUploadFile, { useTextAreaInsertTextWithForm } from "../../../../hooks/use-textarea-upload-file";
 import { useUserInbox } from "../../../../hooks/use-user-mailboxes";
-import { GroupMessageInboxesModel } from "../../../../models/messages";
+import { DirectMessageRelaysModel, GroupMessageInboxesModel } from "../../../../models/messages";
 import { PublishLogEntry, usePublishEvent } from "../../../../providers/global/publish-provider";
 import { eventStore } from "../../../../services/event-store";
 import localSettings from "../../../../services/preferences";
 import ExpirationToggleButton from "../../components/expiration-toggle-button";
 import SendingStatus from "../../components/sending-status";
 
+function RelayItem({ relay }: { relay: string }) {
+  return (
+    <Flex gap="2" alignItems="center" w="full" overflow="hidden">
+      <RelayFavicon relay={relay} size="xs" />
+      <RelayLink relay={relay} isTruncated />
+    </Flex>
+  );
+}
+
 function MessageTypeToggleButton({
   value,
   onChange,
+  pubkey,
   ...props
-}: { value: MessageType; onChange: (value: MessageType) => void } & Omit<
-  IconButtonProps,
-  "children" | "onClick" | "onChange" | "value" | "aria-label"
->) {
+}: {
+  value: MessageType;
+  onChange: (value: MessageType) => void;
+  pubkey: string;
+} & Omit<IconButtonProps, "children" | "onClick" | "onChange" | "value" | "aria-label">) {
   const [isOpen, setIsOpen] = useState(false);
+  const account = useActiveAccount()!;
+
+  // Get relay information for both message types
+  const selfNip17Inboxes = useEventModel(DirectMessageRelaysModel, [account.pubkey]);
+  const otherNip17Inboxes = useEventModel(DirectMessageRelaysModel, [pubkey]);
+  const selfNip65Inboxes = useUserInbox(account.pubkey);
+  const otherNip65Inboxes = useUserInbox(pubkey);
+
+  const nip17RelaysToShow = useMemo(() => {
+    const selfRelays = selfNip17Inboxes || [];
+    const otherRelays = otherNip17Inboxes || [];
+    return { self: selfRelays, other: otherRelays };
+  }, [selfNip17Inboxes, otherNip17Inboxes]);
+
+  const nip04RelaysToShow = useMemo(() => {
+    const selfRelays = selfNip65Inboxes || [];
+    const otherRelays = otherNip65Inboxes || [];
+    return { self: selfRelays, other: otherRelays };
+  }, [selfNip65Inboxes, otherNip65Inboxes]);
 
   const handleTypeChange = (newType: MessageType) => {
     onChange(newType);
@@ -72,7 +110,7 @@ function MessageTypeToggleButton({
         {value === "nip04" ? <EyeOff boxSize={6} /> : <Lock01 boxSize={6} />}
       </IconButton>
 
-      <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} isCentered>
+      <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} isCentered size="xl" scrollBehavior="inside">
         <ModalOverlay />
         <ModalContent>
           <ModalHeader p="4">Message Type</ModalHeader>
@@ -81,24 +119,142 @@ function MessageTypeToggleButton({
             {value === "nip04" ? (
               <>
                 <Alert status="warning" mb={4}>
+                  <AlertIcon />
                   <Text>
                     If the other user does not have a compatible app, they won't see the messages when you switch to
                     private messaging.
                   </Text>
                 </Alert>
-                <Text>
+                <Text mb={4}>
                   Private messaging (NIP-17) provides better privacy by hiding message metadata from third parties.
                 </Text>
+
+                <VStack spacing={4} align="stretch">
+                  <Box>
+                    <Heading size="sm" mb={2}>
+                      NIP-17 Message Inboxes
+                    </Heading>
+                    <Text fontSize="sm" color="GrayText" mb={3}>
+                      Messages will be sent to these inbox relays (
+                      <Link isExternal href="https://github.com/nostr-protocol/nips/blob/master/17.md" color="blue.500">
+                        NIP-17
+                      </Link>
+                      ).
+                    </Text>
+
+                    <VStack spacing={3} align="stretch">
+                      <Box>
+                        <Text fontSize="sm" fontWeight="semibold" mb={1}>
+                          Your inboxes:
+                        </Text>
+                        {nip17RelaysToShow.self.length > 0 ? (
+                          <VStack spacing={1} align="stretch" pl={2}>
+                            {nip17RelaysToShow.self.map((relay) => (
+                              <RelayItem key={relay} relay={relay} />
+                            ))}
+                          </VStack>
+                        ) : (
+                          <Alert status="warning" size="sm">
+                            <AlertIcon />
+                            <Box>
+                              <Text fontSize="sm">No NIP-17 inboxes configured.</Text>
+                              <Link as={RouterLink} to="/settings/messages" color="blue.500" fontSize="sm">
+                                Set up your message inboxes →
+                              </Link>
+                            </Box>
+                          </Alert>
+                        )}
+                      </Box>
+
+                      <Box>
+                        <Text fontSize="sm" fontWeight="semibold" mb={1}>
+                          <UserName pubkey={pubkey} />
+                          's inboxes:
+                        </Text>
+                        {nip17RelaysToShow.other.length > 0 ? (
+                          <VStack spacing={1} align="stretch" pl={2}>
+                            {nip17RelaysToShow.other.map((relay) => (
+                              <RelayItem key={relay} relay={relay} />
+                            ))}
+                          </VStack>
+                        ) : (
+                          <Text fontSize="sm" color="GrayText" pl={2}>
+                            No NIP-17 inboxes configured.
+                          </Text>
+                        )}
+                      </Box>
+                    </VStack>
+                  </Box>
+                </VStack>
               </>
             ) : (
               <>
                 <Alert status="warning" mb={4}>
+                  <AlertIcon />
                   <Text>
                     If you switch to legacy messaging, third parties will be able to see who you are messaging and how
                     many messages you send, even though the content of the messages is encrypted.
                   </Text>
                 </Alert>
-                <Text>Legacy messaging (NIP-04) is less private but more widely supported across different apps.</Text>
+                <Text mb={4}>
+                  Legacy messaging (NIP-04) is less private but more widely supported across different apps.
+                </Text>
+
+                <VStack spacing={4} align="stretch">
+                  <Box>
+                    <Heading size="sm" mb={2}>
+                      NIP-04 Legacy Inboxes
+                    </Heading>
+                    <Text fontSize="sm" color="GrayText" mb={3}>
+                      Messages will be sent to these NIP-65 inbox relays (
+                      <Link isExternal href="https://github.com/nostr-protocol/nips/blob/master/04.md" color="blue.500">
+                        NIP-04
+                      </Link>
+                      ,{" "}
+                      <Link isExternal href="https://github.com/nostr-protocol/nips/blob/master/65.md" color="blue.500">
+                        NIP-65
+                      </Link>
+                      ).
+                    </Text>
+
+                    <VStack spacing={3} align="stretch">
+                      <Box>
+                        <Text fontSize="sm" fontWeight="semibold" mb={1}>
+                          Your inboxes:
+                        </Text>
+                        {nip04RelaysToShow.self.length > 0 ? (
+                          <VStack spacing={1} align="stretch" pl={2}>
+                            {nip04RelaysToShow.self.map((relay) => (
+                              <RelayItem key={relay} relay={relay} />
+                            ))}
+                          </VStack>
+                        ) : (
+                          <Text fontSize="sm" color="GrayText" pl={2}>
+                            No NIP-65 inboxes configured.
+                          </Text>
+                        )}
+                      </Box>
+
+                      <Box>
+                        <Text fontSize="sm" fontWeight="semibold" mb={1}>
+                          <UserName pubkey={pubkey} />
+                          's inboxes:
+                        </Text>
+                        {nip04RelaysToShow.other.length > 0 ? (
+                          <VStack spacing={1} align="stretch" pl={2}>
+                            {nip04RelaysToShow.other.map((relay) => (
+                              <RelayItem key={relay} relay={relay} />
+                            ))}
+                          </VStack>
+                        ) : (
+                          <Text fontSize="sm" color="GrayText" pl={2}>
+                            No NIP-65 inboxes configured.
+                          </Text>
+                        )}
+                      </Box>
+                    </VStack>
+                  </Box>
+                </VStack>
               </>
             )}
           </ModalBody>
@@ -250,7 +406,7 @@ export default function SendMessageForm({
         <>
           <Flex gap="2" direction="column">
             <ExpirationToggleButton value={expiration} onChange={setExpiration} variant="ghost" />
-            <MessageTypeToggleButton value={type} onChange={setType} variant="ghost" />
+            <MessageTypeToggleButton value={type} onChange={setType} pubkey={pubkey} variant="ghost" />
           </Flex>
           <MagicTextArea
             mb="2"
