@@ -41,5 +41,9 @@ export default function useTimelineLoader(
       return false;
     });
 
-  return { loader, timeline: throttled };
+  return {
+    loader,
+    /** @deprecated get the events from the eventStore instead */
+    timeline: throttled,
+  };
 }

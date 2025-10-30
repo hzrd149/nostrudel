@@ -1,6 +1,6 @@
 import { Box, CardProps, Flex, Heading, LinkBox, Text } from "@chakra-ui/react";
 import { withImmediateValueOrDefault } from "applesauce-core";
-import { FAVORITE_RELAYS_KIND, getRelaysFromList, groupPubkeysByRelay } from "applesauce-core/helpers";
+import { FAVORITE_RELAYS_KIND, getRelaysFromList, groupPubkeysByRelay, kinds } from "applesauce-core/helpers";
 import { TimelineModel } from "applesauce-core/models";
 import {
   useActiveAccount,
@@ -21,12 +21,15 @@ import UserAvatar from "../../../components/user/user-avatar";
 import { SUPPORT_PUBKEY } from "../../../const";
 import { useAppTitle } from "../../../hooks/use-app-title";
 import useFavoriteRelays from "../../../hooks/use-favorite-relays";
-import { useLoaderForOutboxes } from "../../../hooks/use-loaders-for-outboxes";
 import { useRelayInfo } from "../../../hooks/use-relay-info";
 import { outboxSelection } from "../../../models/outbox-selection";
 import { eventStore } from "../../../services/event-store";
 import { liveness } from "../../../services/pool";
 import { RelayFavoriteIconButton } from "./components/relay-favorite-button";
+import { useOutboxTimelineLoader } from "../../../hooks/use-outbox-timeline-loader";
+import { LoadableAddressPointer } from "applesauce-loaders/loaders";
+import useUserContactList from "../../../hooks/use-user-contact-list";
+import useUserContacts from "../../../hooks/use-user-contacts";
 
 function FavoriteRelayRow({ relay, ...props }: { relay: string } & Omit<CardProps, "children">) {
   const { info } = useRelayInfo(relay);
@@ -109,29 +112,24 @@ function FavoriteRelays() {
 function DiscoverRelays({ pubkey, showUsers }: { pubkey: string; showUsers?: boolean }) {
   const userFavorites = useFavoriteRelays(pubkey);
 
-  const selection = useObservableEagerMemo(
-    () =>
-      pubkey
-        ? eventStore.contacts(pubkey).pipe(
-            outboxSelection(),
-            // TODO: I don't like this, why isn't the use observable hooks automatically handling sync values?
-            withImmediateValueOrDefault(undefined),
-          )
-        : undefined,
-    [pubkey],
-  );
-  const outboxes = useMemo(() => selection && groupPubkeysByRelay(selection), [selection]);
+  // Create list pointer and filter for loader
+  const pointer = useMemo(() => ({ kind: kinds.Contacts, pubkey }) satisfies LoadableAddressPointer, [pubkey]);
+  const filter = useMemo(() => ({ kinds: [FAVORITE_RELAYS_KIND] }), [pubkey]);
 
-  const unhealthy = useObservableEagerState(liveness.unhealthy$);
-
-  const loader = useLoaderForOutboxes("discover-favorite-relays", outboxes, [FAVORITE_RELAYS_KIND]);
-  const favorites = useEventModel(
-    TimelineModel,
-    selection && [{ authors: selection.map((s) => s.pubkey), kinds: [FAVORITE_RELAYS_KIND] }],
-  );
+  // Create a timeline loader for the contacts favorite relays
+  const loader = useOutboxTimelineLoader(pointer, filter && { ...filter, kinds: [FAVORITE_RELAYS_KIND] });
 
   // Load first page when component mounts
-  useMount(() => loader().subscribe());
+  useMount(() => loader?.().subscribe());
+
+  // get contacts for timelien
+  const contacts = useUserContacts(pubkey);
+  const favorites = useEventModel(
+    TimelineModel,
+    contacts && [{ authors: contacts.map((s) => s.pubkey), kinds: [FAVORITE_RELAYS_KIND] }],
+  );
+
+  const unhealthy = useObservableEagerState(liveness.unhealthy$);
 
   // Calculate total favorites for each relay
   const relays = useMemo(() => {

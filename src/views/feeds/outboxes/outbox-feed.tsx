@@ -12,7 +12,7 @@ import SimpleView from "../../../components/layout/presets/simple-view";
 import RelayFavicon from "../../../components/relay/relay-favicon";
 import RelayLink from "../../../components/relay/relay-link";
 import GenericNoteTimeline, { GENERIC_TIMELINE_KINDS } from "../../../components/timeline-page/generic-note-timeline";
-import TimelineActionAndStatus from "../../../components/timeline/timeline-action-and-status";
+import LoadMoreButton from "../../../components/timeline/load-more-button";
 import { useAppTitle } from "../../../hooks/use-app-title";
 import useClientSideMuteFilter from "../../../hooks/use-client-side-mute-filter";
 import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
@@ -93,7 +93,7 @@ export function OutboxFeedPage({ relay }: { relay: string }) {
 
       <IntersectionObserverProvider callback={callback}>
         {timeline && <GenericNoteTimeline timeline={timeline} />}
-        <TimelineActionAndStatus loader={loader} />
+        <LoadMoreButton loader={loader} />
       </IntersectionObserverProvider>
     </SimpleView>
   );

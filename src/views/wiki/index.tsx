@@ -6,7 +6,7 @@ import { Link as RouterLink } from "react-router-dom";
 import HoverLinkOverlay from "../../components/hover-link-overlay";
 import { ExternalLinkIcon } from "../../components/icons";
 import WikiLink from "../../components/markdown/wiki-link";
-import TimelineActionAndStatus from "../../components/timeline/timeline-action-and-status";
+import LoadMoreButton from "../../components/timeline/load-more-button";
 import UserAvatar from "../../components/user/user-avatar";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import { WIKI_RELAYS } from "../../const";
@@ -68,7 +68,7 @@ export default function WikiHomeView() {
               </LinkBox>
             ))}
       </SimpleGrid>
-      <TimelineActionAndStatus loader={loader} />
+      <LoadMoreButton loader={loader} />
     </VerticalPageLayout>
   );
 }

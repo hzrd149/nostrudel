@@ -11,7 +11,7 @@ import { EmbedEventPointerCard } from "../../../components/embed-event/card";
 import { ErrorBoundary } from "../../../components/error-boundary";
 import { LightningIcon } from "../../../components/icons";
 import ScrollLayout from "../../../components/layout/presets/scroll-layout";
-import TimelineActionAndStatus from "../../../components/timeline/timeline-action-and-status";
+import LoadMoreButton from "../../../components/timeline/load-more-button";
 import Timestamp from "../../../components/timestamp";
 import UserAvatarLink from "../../../components/user/user-avatar-link";
 import UserLink from "../../../components/user/user-link";
@@ -132,7 +132,7 @@ export default function UserZapsTab() {
           </ErrorBoundary>
         ))}
 
-        <TimelineActionAndStatus loader={loader} />
+        <LoadMoreButton loader={loader} />
       </IntersectionObserverProvider>
     </ScrollLayout>
   );

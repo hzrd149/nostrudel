@@ -9,7 +9,7 @@ import { Navigate, UNSAFE_DataRouterContext, useLocation, useNavigate, useParams
 import { SettingsIcon } from "../../../components/icons";
 import SimpleView from "../../../components/layout/presets/simple-view";
 import RequireActiveAccount from "../../../components/router/require-active-account";
-import TimelineActionAndStatus from "../../../components/timeline/timeline-action-and-status";
+import LoadMoreButton from "../../../components/timeline/load-more-button";
 import UserAvatarLink from "../../../components/user/user-avatar-link";
 import UserLink from "../../../components/user/user-link";
 import { groupMessages } from "../../../helpers/nostr/dms";
@@ -163,7 +163,7 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
         <Flex direction="column-reverse" gap="2" flexGrow={1} h={0} overflowX="hidden" overflowY="auto" ref={scroll}>
           <PendingLockedAlert />
           <ChatLog messages={messages} />
-          <TimelineActionAndStatus loader={loader} />
+          <LoadMoreButton loader={loader} />
         </Flex>
 
         <ReadAuthRequiredAlert relays={allReadRelays} />

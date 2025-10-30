@@ -3,7 +3,7 @@ import { getEventUID } from "applesauce-core/helpers";
 import { kinds } from "nostr-tools";
 
 import ScrollLayout from "../../../components/layout/presets/scroll-layout";
-import TimelineActionAndStatus from "../../../components/timeline/timeline-action-and-status";
+import LoadMoreButton from "../../../components/timeline/load-more-button";
 import useParamsProfilePointer from "../../../hooks/use-params-pubkey-pointer";
 import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
 import useTimelineLoader from "../../../hooks/use-timeline-loader";
@@ -33,7 +33,7 @@ export default function UserStreamsTab() {
             <StreamCard key={getEventUID(stream)} stream={stream} />
           ))}
         </SimpleGrid>
-        <TimelineActionAndStatus loader={loader} />
+        <LoadMoreButton loader={loader} />
       </IntersectionObserverProvider>
     </ScrollLayout>
   );

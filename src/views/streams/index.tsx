@@ -6,7 +6,7 @@ import { useCallback, useMemo } from "react";
 import { NostrEvent } from "nostr-tools";
 import SimpleView from "../../components/layout/presets/simple-view";
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
-import TimelineActionAndStatus from "../../components/timeline/timeline-action-and-status";
+import LoadMoreButton from "../../components/timeline/load-more-button";
 import { getStreamStatus, getStreamStreamingURLs } from "../../helpers/nostr/stream";
 import { useAppTitle } from "../../hooks/use-app-title";
 import { useReadRelays } from "../../hooks/use-client-relays";
@@ -104,7 +104,7 @@ function StreamsPage() {
             </SimpleGrid>
           </>
         )}
-        <TimelineActionAndStatus loader={loader} />
+        <LoadMoreButton loader={loader} />
       </IntersectionObserverProvider>
     </SimpleView>
   );

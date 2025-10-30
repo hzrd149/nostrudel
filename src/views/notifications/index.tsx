@@ -8,7 +8,7 @@ import { BehaviorSubject } from "rxjs";
 
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
 import RequireActiveAccount from "../../components/router/require-active-account";
-import TimelineActionAndStatus from "../../components/timeline/timeline-action-and-status";
+import LoadMoreButton from "../../components/timeline/load-more-button";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import { truncateId } from "../../helpers/string";
 import useCacheEntryHeight from "../../hooks/timeline/use-cache-entry-height";
@@ -236,7 +236,7 @@ function NotificationsPage() {
         </FocusedContext.Provider>
       </IntersectionObserverProvider>
 
-      <TimelineActionAndStatus loader={loader} />
+      <LoadMoreButton loader={loader} />
     </VerticalPageLayout>
   );
 }

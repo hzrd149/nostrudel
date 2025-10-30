@@ -8,7 +8,7 @@ import { useSearchParams } from "react-router-dom";
 import useRouteSearchValue from "../../hooks/use-route-search-value";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
-import TimelineActionAndStatus from "../timeline/timeline-action-and-status";
+import LoadMoreButton from "../timeline/load-more-button";
 import VerticalPageLayout from "../vertical-page-layout";
 import GenericNoteTimeline from "./generic-note-timeline";
 import MediaTimeline from "./media-timeline";
@@ -59,7 +59,7 @@ export default function TimelinePage({
       <VerticalPageLayout mx="auto" gap="4" {...props}>
         {header}
         {renderTimeline()}
-        <TimelineActionAndStatus loader={loader} />
+        <LoadMoreButton loader={loader} />
       </VerticalPageLayout>
     </IntersectionObserverProvider>
   );

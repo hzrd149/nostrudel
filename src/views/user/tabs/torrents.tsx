@@ -3,7 +3,7 @@ import { NostrEvent } from "nostr-tools";
 import { useCallback } from "react";
 
 import ScrollLayout from "../../../components/layout/presets/scroll-layout";
-import TimelineActionAndStatus from "../../../components/timeline/timeline-action-and-status";
+import LoadMoreButton from "../../../components/timeline/load-more-button";
 import { TORRENT_KIND, validateTorrent } from "../../../helpers/nostr/torrents";
 import useParamsProfilePointer from "../../../hooks/use-params-pubkey-pointer";
 import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
@@ -51,7 +51,7 @@ export default function UserTorrentsTab() {
           </Table>
         </TableContainer>
 
-        <TimelineActionAndStatus loader={loader} />
+        <LoadMoreButton loader={loader} />
       </IntersectionObserverProvider>
     </ScrollLayout>
   );

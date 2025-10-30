@@ -4,7 +4,7 @@ import { kinds, NostrEvent } from "nostr-tools";
 
 import ScrollLayout from "../../../components/layout/presets/scroll-layout";
 import { NoteLink } from "../../../components/note/note-link";
-import TimelineActionAndStatus from "../../../components/timeline/timeline-action-and-status";
+import LoadMoreButton from "../../../components/timeline/load-more-button";
 import UserLink from "../../../components/user/user-link";
 import { filterTagsByContentRefs } from "../../../helpers/nostr/event";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
@@ -67,7 +67,7 @@ export default function UserReportsTab() {
           <ReportEvent key={report.id} report={report} />
         ))}
 
-        <TimelineActionAndStatus loader={loader} />
+        <LoadMoreButton loader={loader} />
       </IntersectionObserverProvider>
     </ScrollLayout>
   );

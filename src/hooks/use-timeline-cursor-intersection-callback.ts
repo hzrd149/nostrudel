@@ -20,8 +20,7 @@ export function useTimelineCurserIntersectionCallback(loader?: TimelineLoader) {
   // if the cursor is set too far ahead and the last block did not overlap with the cursor
   // we need to keep loading blocks until the timeline is complete or the blocks pass the cursor
   useInterval(() => {
-    if (oldest.current) loader?.(oldest.current.created_at - 1).subscribe();
-    else loader?.(-Infinity).subscribe();
+    if (oldest.current) loader?.(oldest.current.created_at).subscribe();
   }, 1000);
 
   return useCachedIntersectionMapCallback(
@@ -31,7 +30,7 @@ export function useTimelineCurserIntersectionCallback(loader?: TimelineLoader) {
         if (!entry.isIntersecting) continue;
         const event = eventStore.getEvent(id);
         if (!event) continue;
-        if (!oldest.current || event.created_at < oldest.current.created_at - 1) {
+        if (!oldest.current || event.created_at < oldest.current.created_at) {
           oldest.current = event;
         }
       }

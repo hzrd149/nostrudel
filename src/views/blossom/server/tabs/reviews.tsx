@@ -8,7 +8,7 @@ import IntersectionObserverProvider from "../../../../providers/local/intersecti
 import BlossomServerReviewForm from "../components/blossom-server-review-form";
 import BlossomServerReview from "../components/blossom-server-review";
 import useServerUrlParam from "../use-server-url-param";
-import TimelineActionAndStatus from "../../../../components/timeline/timeline-action-and-status";
+import LoadMoreButton from "../../../../components/timeline/load-more-button";
 
 export const BLOSSOM_SERVER_REVIEW_KIND = 31963;
 
@@ -37,7 +37,7 @@ export default function BlossomReviewsView() {
         {reviews?.map((event) => (
           <BlossomServerReview key={event.id} event={event} />
         ))}
-        <TimelineActionAndStatus loader={loader} />
+        <LoadMoreButton loader={loader} />
       </IntersectionObserverProvider>
     </ScrollLayout>
   );

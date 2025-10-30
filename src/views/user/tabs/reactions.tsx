@@ -4,7 +4,7 @@ import { nip25, NostrEvent } from "nostr-tools";
 import { EmbedEventPointerCard } from "../../../components/embed-event/card";
 import ScrollLayout from "../../../components/layout/presets/scroll-layout";
 import NoteMenu from "../../../components/note/note-menu";
-import TimelineActionAndStatus from "../../../components/timeline/timeline-action-and-status";
+import LoadMoreButton from "../../../components/timeline/load-more-button";
 import UserAvatar from "../../../components/user/user-avatar";
 import UserLink from "../../../components/user/user-link";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
@@ -57,7 +57,7 @@ export default function UserReactionsTab() {
             <Reaction key={event.id} reaction={event} />
           ))}
 
-          <TimelineActionAndStatus loader={loader} />
+          <LoadMoreButton loader={loader} />
         </ContentSettingsProvider>
       </IntersectionObserverProvider>
     </ScrollLayout>

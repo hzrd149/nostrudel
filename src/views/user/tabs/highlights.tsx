@@ -1,7 +1,7 @@
 import { kinds } from "nostr-tools";
 
 import GenericNoteTimeline from "../../../components/timeline-page/generic-note-timeline";
-import TimelineActionAndStatus from "../../../components/timeline/timeline-action-and-status";
+import LoadMoreButton from "../../../components/timeline/load-more-button";
 import VerticalPageLayout from "../../../components/vertical-page-layout";
 import useParamsProfilePointer from "../../../hooks/use-params-pubkey-pointer";
 import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
@@ -24,7 +24,7 @@ export default function UserHighlightsTab() {
     <IntersectionObserverProvider callback={callback}>
       <VerticalPageLayout maxW="6xl" mx="auto">
         <GenericNoteTimeline timeline={timeline} />
-        <TimelineActionAndStatus loader={loader} />
+        <LoadMoreButton loader={loader} />
       </VerticalPageLayout>
     </IntersectionObserverProvider>
   );

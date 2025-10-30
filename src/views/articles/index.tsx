@@ -1,8 +1,8 @@
 import { Box, Divider, Flex } from "@chakra-ui/react";
 import { getEventUID } from "applesauce-core/helpers";
 import { useEventModel, useObservableEagerMemo } from "applesauce-react/hooks";
-import { Filter, kinds, NostrEvent } from "nostr-tools";
-import { useCallback, useMemo } from "react";
+import { kinds, NostrEvent } from "nostr-tools";
+import { useCallback } from "react";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { FixedSizeList as List, ListChildComponentProps } from "react-window";
 import { map, of } from "rxjs";
@@ -13,7 +13,7 @@ import OutboxRelaySelectionModal from "../../components/outbox-relay-selection-m
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
 import { getArticleTitle } from "../../helpers/nostr/long-form";
 import useClientSideMuteFilter from "../../hooks/use-client-side-mute-filter";
-import { useLoaderForOutboxes } from "../../hooks/use-loaders-for-outboxes";
+import { useOutboxTimelineLoader } from "../../hooks/use-outbox-timeline-loader";
 import { useVirtualListScrollRestore } from "../../hooks/use-scroll-restore";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import { OutboxSelectionModel } from "../../models/outbox-selection";
@@ -48,17 +48,21 @@ function ArticlesHomePage() {
     [userMuteFilter],
   );
 
-  const { filter, listId, people, pointer } = usePeopleListContext();
+  const { filter, pointer } = usePeopleListContext();
   const { outboxes, selection } = useEventModel(OutboxSelectionModel, pointer ? [pointer] : undefined) ?? {};
 
-  // Merge all loaders
-  const loader = useLoaderForOutboxes(`articles-${listId}`, outboxes, [kinds.LongFormArticle]);
+  // Get or create the outbox timeline loader
+  const loader = useOutboxTimelineLoader(pointer, { kinds: [kinds.LongFormArticle] });
 
   // Subscribe to event store for timeline events
-  const filters: Filter[] = useMemo(() => (filter ? [{ ...filter, kinds: [kinds.LongFormArticle] }] : []), [filter]);
   const articles = useObservableEagerMemo(
-    () => (filters ? eventStore.timeline(filters).pipe(map((events) => events.filter(eventFilter))) : of([])),
-    [filters, eventFilter],
+    () =>
+      filter
+        ? eventStore
+            .timeline({ ...filter, kinds: [kinds.LongFormArticle] })
+            .pipe(map((events) => events.filter(eventFilter)))
+        : of([]),
+    [filter, eventFilter],
   );
 
   const callback = useTimelineCurserIntersectionCallback(loader);

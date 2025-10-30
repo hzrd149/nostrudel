@@ -6,7 +6,7 @@ import { onlyEvents } from "applesauce-relay";
 import { memo, useEffect, useMemo } from "react";
 
 import { normalizeURL } from "nostr-tools/utils";
-import TimelineActionAndStatus from "../../../components/timeline/timeline-action-and-status";
+import LoadMoreButton from "../../../components/timeline/load-more-button";
 import { groupMessages } from "../../../helpers/nostr/dms";
 import useClientSideMuteFilter from "../../../hooks/use-client-side-mute-filter";
 import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
@@ -54,7 +54,7 @@ const GroupChatLog = memo(({ group }: { group: GroupPointer }) => {
       {grouped.map((group) => (
         <GroupMessageGroup key={group[0].id} messages={group} />
       ))}
-      <TimelineActionAndStatus loader={loader} />
+      <LoadMoreButton loader={loader} />
     </IntersectionObserverProvider>
   );
 });

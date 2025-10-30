@@ -11,7 +11,7 @@ import IntersectionObserverProvider from "../../providers/local/intersection-obs
 import { NostrEvent } from "nostr-tools";
 import { getListTitle, getRelaysFromList } from "../../helpers/nostr/lists";
 import RelayFavicon from "../../components/relay/relay-favicon";
-import TimelineActionAndStatus from "../../components/timeline/timeline-action-and-status";
+import LoadMoreButton from "../../components/timeline/load-more-button";
 import { useReadRelays } from "../../hooks/use-client-relays";
 
 function RelaySetCard({ set }: { set: NostrEvent }) {
@@ -55,7 +55,7 @@ function BrowseRelaySetsPage() {
           <RelaySetCard key={getEventUID(set)} set={set} />
         ))}
       </IntersectionObserverProvider>
-      <TimelineActionAndStatus loader={loader} />
+      <LoadMoreButton loader={loader} />
     </VerticalPageLayout>
   );
 }

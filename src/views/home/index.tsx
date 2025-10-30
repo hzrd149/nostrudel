@@ -1,7 +1,7 @@
 import { Box, Button, Divider, Flex, Heading, Link, Spacer, Text } from "@chakra-ui/react";
 import { useActiveAccount, useEventModel, useObservableEagerMemo } from "applesauce-react/hooks";
-import { Filter, kinds, NostrEvent } from "nostr-tools";
-import { useCallback, useMemo } from "react";
+import { NostrEvent } from "nostr-tools";
+import { useCallback } from "react";
 import { map, of } from "rxjs";
 
 import NoteFilterTypeButtons from "../../components/note-filter-type-buttons";
@@ -9,16 +9,16 @@ import OutboxRelaySelectionModal from "../../components/outbox-relay-selection-m
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
 import RouterLink from "../../components/router-link";
 import TimelinePage, { useTimelinePageEventFilter } from "../../components/timeline-page";
+import { GENERIC_TIMELINE_KINDS } from "../../components/timeline-page/generic-note-timeline";
 import TimelineViewTypeButtons from "../../components/timeline-page/timeline-view-type";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import { isReply, isRepost } from "../../helpers/nostr/event";
 import useClientSideMuteFilter from "../../hooks/use-client-side-mute-filter";
-import { useLoaderForOutboxes } from "../../hooks/use-loaders-for-outboxes";
 import useLocalStorageDisclosure from "../../hooks/use-localstorage-disclosure";
+import { useOutboxTimelineLoader } from "../../hooks/use-outbox-timeline-loader";
 import { OutboxSelectionModel } from "../../models/outbox-selection";
 import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
 import { eventStore } from "../../services/event-store";
-import { GENERIC_TIMELINE_KINDS } from "../../components/timeline-page/generic-note-timeline";
 
 function HomePage() {
   const showReplies = useLocalStorageDisclosure("show-replies", false);
@@ -36,17 +36,21 @@ function HomePage() {
     [timelinePageEventFilter, showReplies.isOpen, showReposts.isOpen, muteFilter],
   );
 
-  const { listId, filter, pointer } = usePeopleListContext();
+  const { filter, pointer } = usePeopleListContext();
   const { selection, outboxes } = useEventModel(OutboxSelectionModel, pointer ? [pointer] : undefined) ?? {};
 
-  // Merge all loaders
-  const loader = useLoaderForOutboxes(`home-${listId}`, outboxes, GENERIC_TIMELINE_KINDS);
+  // Get or create the outbox timeline loader
+  const loader = useOutboxTimelineLoader(pointer, filter && { ...filter, kinds: GENERIC_TIMELINE_KINDS });
 
   // Subscribe to event store for timeline events
-  const filters: Filter[] = useMemo(() => (filter ? [{ ...filter, kinds: GENERIC_TIMELINE_KINDS }] : []), [filter]);
   const timeline = useObservableEagerMemo(
-    () => (filters ? eventStore.timeline(filters).pipe(map((events) => events.filter(eventFilter))) : of([])),
-    [filters, eventFilter],
+    () =>
+      filter
+        ? eventStore
+            .timeline({ ...filter, kinds: GENERIC_TIMELINE_KINDS })
+            .pipe(map((events) => events.filter(eventFilter)))
+        : of([]),
+    [filter, eventFilter],
   );
 
   const header = (
@@ -65,13 +69,8 @@ function HomePage() {
 export default function HomeView() {
   const account = useActiveAccount();
 
-  if (account)
-    return (
-      <PeopleListProvider>
-        <HomePage />
-      </PeopleListProvider>
-    );
-  else
+  // Welcome screen
+  if (!account)
     return (
       <VerticalPageLayout>
         <Box textAlign="center">
@@ -101,4 +100,10 @@ export default function HomeView() {
         </Box>
       </VerticalPageLayout>
     );
+
+  return (
+    <PeopleListProvider>
+      <HomePage />
+    </PeopleListProvider>
+  );
 }

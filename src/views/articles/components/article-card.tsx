@@ -1,12 +1,12 @@
-import { Box, Card, CardProps, Flex, Heading, LinkBox, Spacer, Text } from "@chakra-ui/react";
+import { Box, CardProps, Flex, Heading, LinkBox, Text } from "@chakra-ui/react";
 import { NostrEvent } from "nostr-tools";
 import { memo } from "react";
 import { Link as RouterLink } from "react-router-dom";
 
+import { getEventUID } from "applesauce-core/helpers";
 import HoverLinkOverlay from "../../../components/hover-link-overlay";
 import ZapBubbles from "../../../components/timeline/note/components/zap-bubbles";
 import Timestamp from "../../../components/timestamp";
-import UserAvatar from "../../../components/user/user-avatar";
 import UserName from "../../../components/user/user-name";
 import {
   getArticleImage,
@@ -15,11 +15,11 @@ import {
   getArticleTitle,
 } from "../../../helpers/nostr/long-form";
 import useShareableEventAddress from "../../../hooks/use-shareable-event-address";
-import ArticleMenu from "./article-menu";
 import ArticleTags from "./article-tags";
-import { getEventUID } from "applesauce-core/helpers";
+import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
 
 const ArticleCard = memo(({ article, ...props }: { article: NostrEvent } & Omit<CardProps, "children">) => {
+  const ref = useEventIntersectionRef(article);
   const image = getArticleImage(article);
   const title = getArticleTitle(article);
   const published = getArticlePublishDate(article);
@@ -29,6 +29,7 @@ const ArticleCard = memo(({ article, ...props }: { article: NostrEvent } & Omit<
 
   return (
     <Box
+      ref={ref}
       as={LinkBox}
       position="relative"
       variant="ghost"

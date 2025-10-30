@@ -6,7 +6,7 @@ import { memo, useCallback, useMemo } from "react";
 
 import { ErrorBoundary } from "../../components/error-boundary";
 import SimpleView from "../../components/layout/presets/simple-view";
-import TimelineActionAndStatus from "../../components/timeline/timeline-action-and-status";
+import LoadMoreButton from "../../components/timeline/load-more-button";
 import { groupMessages } from "../../helpers/nostr/dms";
 import { truncateId } from "../../helpers/string";
 import useChannelMetadata from "../../hooks/use-channel-metadata";
@@ -98,7 +98,7 @@ function ChannelPage({ channel }: { channel: NostrEvent }) {
         >
           <Flex direction="column-reverse" p="4" gap={2} flexGrow={1} h={0} overflowX="hidden" overflowY="auto">
             <ChannelChatLog channel={channel} />
-            <TimelineActionAndStatus loader={loader} />
+            <LoadMoreButton loader={loader} />
           </Flex>
 
           <ChannelMessageForm channel={channel} px="2" pb="2" />

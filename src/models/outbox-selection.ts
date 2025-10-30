@@ -8,7 +8,7 @@ import {
 import { LoadableAddressPointer } from "applesauce-loaders/loaders";
 import { ignoreUnhealthyRelaysOnPointers } from "applesauce-relay";
 import { ProfilePointer } from "nostr-tools/nip19";
-import { combineLatestWith, map, MonoTypeOperatorFunction, of, pipe, switchMap, throttleTime } from "rxjs";
+import { combineLatestWith, debounceTime, map, MonoTypeOperatorFunction, of, pipe, switchMap } from "rxjs";
 import { eventStore } from "../services/event-store";
 import { liveness } from "../services/pool";
 import localSettings from "../services/preferences";
@@ -54,8 +54,8 @@ export function outboxSelection(): MonoTypeOperatorFunction<ProfilePointer[]> {
     includeOutboxRelays(),
     // Get connection settings
     combineLatestWith(localSettings.maxConnections, localSettings.maxRelaysPerUser),
-    // Only recalculate every 500ms
-    throttleTime(500),
+    // Wait for outboxes to be stable after 500ms
+    debounceTime(500),
     // Select optimal relays
     map(([users, maxConnections, maxRelaysPerUser]) =>
       selectOptimalRelays(users, { maxConnections, maxRelaysPerUser }),

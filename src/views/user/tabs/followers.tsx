@@ -3,7 +3,7 @@ import { Event, kinds } from "nostr-tools";
 import { useMemo } from "react";
 
 import ScrollLayout from "../../../components/layout/presets/scroll-layout";
-import TimelineActionAndStatus from "../../../components/timeline/timeline-action-and-status";
+import LoadMoreButton from "../../../components/timeline/load-more-button";
 import UserAvatarLink from "../../../components/user/user-avatar-link";
 import UserLink from "../../../components/user/user-link";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
@@ -51,7 +51,7 @@ export default function UserFollowersTab() {
             <FollowerItem key={event.pubkey} event={event} />
           ))}
         </SimpleGrid>
-        <TimelineActionAndStatus loader={loader} />
+        <LoadMoreButton loader={loader} />
       </IntersectionObserverProvider>
     </ScrollLayout>
   );

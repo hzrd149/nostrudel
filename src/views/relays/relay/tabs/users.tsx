@@ -4,7 +4,7 @@ import { useMemo } from "react";
 
 import HoverLinkOverlay from "../../../../components/hover-link-overlay";
 import ScrollLayout from "../../../../components/layout/presets/scroll-layout";
-import TimelineActionAndStatus from "../../../../components/timeline/timeline-action-and-status";
+import LoadMoreButton from "../../../../components/timeline/load-more-button";
 import UserAvatarLink from "../../../../components/user/user-avatar-link";
 import UserDnsIdentity from "../../../../components/user/user-dns-identity";
 import UserLink from "../../../../components/user/user-link";
@@ -56,7 +56,7 @@ export default function RelayUsersView() {
           ))}
         </SimpleGrid>
       </IntersectionObserverProvider>
-      <TimelineActionAndStatus loader={loader} />
+      <LoadMoreButton loader={loader} />
     </ScrollLayout>
   );
 }

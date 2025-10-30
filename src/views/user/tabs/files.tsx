@@ -4,7 +4,7 @@ import { kinds, NostrEvent } from "nostr-tools";
 import { Link as RouterLink } from "react-router-dom";
 
 import ScrollLayout from "../../../components/layout/presets/scroll-layout";
-import TimelineActionAndStatus from "../../../components/timeline/timeline-action-and-status";
+import LoadMoreButton from "../../../components/timeline/load-more-button";
 import Timestamp from "../../../components/timestamp";
 import { formatBytes } from "../../../helpers/number";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
@@ -71,7 +71,7 @@ export default function UserFilesTab() {
             </Tbody>
           </Table>
         </TableContainer>
-        <TimelineActionAndStatus loader={loader} />
+        <LoadMoreButton loader={loader} />
       </IntersectionObserverProvider>
     </ScrollLayout>
   );
