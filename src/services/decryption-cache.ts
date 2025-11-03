@@ -1,5 +1,5 @@
 import {
-  getLegacyMessageCorraspondant,
+  getLegacyMessageCorrespondent,
   isPTag,
   persistEncryptedContent,
   unlockGiftWrap,
@@ -10,6 +10,7 @@ import localforage from "localforage";
 import { NostrEvent } from "nostr-social-graph";
 import { kinds } from "nostr-tools";
 import {
+  combineLatest,
   distinctUntilChanged,
   filter,
   interval,
@@ -32,11 +33,11 @@ export const decryptionCache$ = localSettings.enableDecryptionCache.pipe(
     if (!enable) return of(null);
 
     // If enabled create a database instance
-    return localSettings.encryptDecryptionCache.pipe(
-      map((encrypt) => {
+    return combineLatest([localSettings.encryptDecryptionCache, localSettings.encryptionSalt]).pipe(
+      map(([encrypt, salt]) => {
         const kv = localforage.createInstance({ name: "decryption-cache" });
 
-        if (encrypt) return new EncryptedStorage(kv);
+        if (encrypt) return new EncryptedStorage(kv, salt);
         else return kv;
       }),
       switchMap((cache) => {
@@ -127,7 +128,7 @@ async function autoDecryptMessagesFallback(event: NostrEvent) {
   // Unlock legacy messages
   if (
     event.kind === kinds.EncryptedDirectMessage &&
-    (event.pubkey === account.pubkey || getLegacyMessageCorraspondant(event, account.pubkey) === account.pubkey)
+    (event.pubkey === account.pubkey || getLegacyMessageCorrespondent(event, account.pubkey) === account.pubkey)
   ) {
     return unlockLegacyMessage(event, account.pubkey, account);
   }

@@ -84,7 +84,7 @@ export default function HomeView() {
             </Link>{" "}
             or browse some existing relays.
           </Text>
-          <Button as={RouterLink} to="/signin" size="lg" minW="xs">
+          <Button as={RouterLink} to="/signin" size="lg" minW="xs" colorScheme="primary">
             Sign in
           </Button>
           <Flex maxW="6xl" mx="auto" my="4" gap={4} align="center">
