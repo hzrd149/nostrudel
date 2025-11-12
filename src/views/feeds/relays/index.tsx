@@ -1,89 +1,69 @@
-import { Box, CardProps, Flex, Heading, LinkBox, Text } from "@chakra-ui/react";
-import { withImmediateValueOrDefault } from "applesauce-core";
-import { FAVORITE_RELAYS_KIND, getRelaysFromList, groupPubkeysByRelay, kinds } from "applesauce-core/helpers";
+import { Box, Heading, SimpleGrid, Text } from "@chakra-ui/react";
+import { FAVORITE_RELAYS_KIND, getRelaysFromList, kinds } from "applesauce-core/helpers";
 import { TimelineModel } from "applesauce-core/models";
-import {
-  useActiveAccount,
-  useEventModel,
-  useObservableEagerMemo,
-  useObservableEagerState,
-} from "applesauce-react/hooks";
+import { LoadableAddressPointer } from "applesauce-loaders/loaders";
+import { useActiveAccount, useEventModel, useObservableEagerState } from "applesauce-react/hooks";
 import { useMemo } from "react";
-import { Link as RouterLink } from "react-router-dom";
 import { useMount } from "react-use";
 
 import { ErrorBoundary } from "../../../components/error-boundary";
-import HoverLinkOverlay from "../../../components/hover-link-overlay";
+import SimpleNavBox from "../../../components/layout/box-layout/simple-nav-box";
 import SimpleView from "../../../components/layout/presets/simple-view";
 import RelayFavicon from "../../../components/relay/relay-favicon";
 import RelayName from "../../../components/relay/relay-name";
-import UserAvatar from "../../../components/user/user-avatar";
 import { SUPPORT_PUBKEY } from "../../../const";
 import { useAppTitle } from "../../../hooks/use-app-title";
 import useFavoriteRelays from "../../../hooks/use-favorite-relays";
+import { useOutboxTimelineLoader } from "../../../hooks/use-outbox-timeline-loader";
 import { useRelayInfo } from "../../../hooks/use-relay-info";
-import { outboxSelection } from "../../../models/outbox-selection";
-import { eventStore } from "../../../services/event-store";
+import useUserContacts from "../../../hooks/use-user-contacts";
 import { liveness } from "../../../services/pool";
 import { RelayFavoriteIconButton } from "./components/relay-favorite-button";
-import { useOutboxTimelineLoader } from "../../../hooks/use-outbox-timeline-loader";
-import { LoadableAddressPointer } from "applesauce-loaders/loaders";
-import useUserContactList from "../../../hooks/use-user-contact-list";
-import useUserContacts from "../../../hooks/use-user-contacts";
 
-function FavoriteRelayRow({ relay, ...props }: { relay: string } & Omit<CardProps, "children">) {
+function FavoriteRelayRow({ relay }: { relay: string }) {
   const { info } = useRelayInfo(relay);
 
   return (
-    <Flex borderBottomWidth={1} overflow="hidden" {...props}>
-      <Flex as={LinkBox} gap="4" p="2" align="center" overflow="hidden" flex={1}>
-        <RelayFavicon relay={relay} size="sm" />
-        <HoverLinkOverlay as={RouterLink} to={`/feeds/relays/${encodeURIComponent(relay)}`}>
-          <RelayName relay={relay} fontWeight="bold" fontSize="lg" isTruncated />
-        </HoverLinkOverlay>
-        <Text noOfLines={2} fontSize="sm" color="GrayText" isTruncated>
-          {info?.description}
-        </Text>
-      </Flex>
-      <RelayFavoriteIconButton relay={relay} size="lg" variant="ghost" colorScheme="yellow" h="full" aspectRatio={1} />
-    </Flex>
+    <SimpleNavBox
+      icon={<RelayFavicon relay={relay} size="sm" />}
+      title={<RelayName relay={relay} fontWeight="bold" fontSize="lg" isTruncated />}
+      description={info?.description}
+      to={`/feeds/relays/${encodeURIComponent(relay)}`}
+      actions={
+        <RelayFavoriteIconButton
+          relay={relay}
+          size="lg"
+          variant="ghost"
+          colorScheme="yellow"
+          h="full"
+          aspectRatio={1}
+        />
+      }
+    />
   );
 }
 
-function RelayFeedRow({
-  relay,
-  pubkeys,
-  showUsers = true,
-  ...props
-}: { relay: string; pubkeys: string[]; showUsers?: boolean } & Omit<CardProps, "children">) {
+function RelayFeedRow({ relay, pubkeys }: { relay: string; pubkeys: string[] }) {
   const { info } = useRelayInfo(relay);
+  const account = useActiveAccount();
+  const contacts = useUserContacts(account?.pubkey);
+  const percentage = useMemo(
+    () => (contacts?.length ? Math.round((pubkeys.length / contacts.length) * 100) : 0),
+    [contacts, pubkeys.length],
+  );
 
   return (
-    <Flex as={LinkBox} gap="4" p="2" alignItems="center" borderBottomWidth={1} overflow="hidden" {...props}>
-      <RelayFavicon relay={relay} />
-      <Flex direction="column" gap="2" overflow="hidden">
-        <Box overflow="hidden">
-          <HoverLinkOverlay as={RouterLink} to={`/feeds/relays/${encodeURIComponent(relay)}`}>
-            <RelayName relay={relay} fontWeight="bold" fontSize="lg" isTruncated />
-          </HoverLinkOverlay>
-          <Text noOfLines={2} fontSize="sm" color="GrayText">
-            {info?.description}
-          </Text>
-        </Box>
-        {showUsers && (
-          <Flex gap={1}>
-            {pubkeys.slice(0, 20).map((pubkey) => (
-              <UserAvatar key={pubkey} pubkey={pubkey} size="xs" showNip05={false} />
-            ))}
-            {pubkeys.length > 20 && (
-              <Text fontSize="sm" color="GrayText" alignSelf="center">
-                +{pubkeys.length - 20} more
-              </Text>
-            )}
-          </Flex>
-        )}
-      </Flex>
-    </Flex>
+    <SimpleNavBox
+      icon={<RelayFavicon relay={relay} />}
+      title={<RelayName relay={relay} fontWeight="bold" fontSize="lg" isTruncated />}
+      description={info?.description}
+      footer={
+        <Text fontSize="sm" color="GrayText">
+          {pubkeys.length} users ({percentage}%)
+        </Text>
+      }
+      to={`/feeds/relays/${encodeURIComponent(relay)}`}
+    />
   );
 }
 
@@ -100,11 +80,11 @@ function FavoriteRelays() {
         <Text color="GrayText">Your favorite relays.</Text>
       </Box>
 
-      <Flex direction="column" borderTopWidth={1}>
+      <SimpleGrid columns={{ base: 1, lg: 2, xl: 3 }} borderTopWidth={1}>
         {favorites.map((relay) => (
           <FavoriteRelayRow key={relay} relay={relay} />
         ))}
-      </Flex>
+      </SimpleGrid>
     </>
   );
 }
@@ -163,15 +143,15 @@ function DiscoverRelays({ pubkey, showUsers }: { pubkey: string; showUsers?: boo
         <Text color="GrayText">Discover relays your friends like.</Text>
       </Box>
 
-      <Flex direction="column" borderTopWidth={1}>
+      <SimpleGrid columns={{ base: 1, lg: 2, xl: 3 }} borderTopWidth={1}>
         {relays
           .filter(({ relay }) => !userFavorites?.includes(relay))
           .map(({ relay, pubkeys }) => (
             <ErrorBoundary key={relay}>
-              <RelayFeedRow relay={relay} pubkeys={pubkeys} showUsers={showUsers} />
+              <RelayFeedRow relay={relay} pubkeys={pubkeys} />
             </ErrorBoundary>
           ))}
-      </Flex>
+      </SimpleGrid>
     </>
   );
 }

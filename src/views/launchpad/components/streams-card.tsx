@@ -1,13 +1,13 @@
-import { Button, Card, CardBody, CardHeader, CardProps, Flex, Heading, Link, LinkBox } from "@chakra-ui/react";
+import { Box, Button, Card, CardBody, CardHeader, CardProps, Heading, Link } from "@chakra-ui/react";
 import { getEventUID } from "applesauce-core/helpers";
 import { Filter, kinds, NostrEvent } from "nostr-tools";
 import { useCallback, useMemo } from "react";
 import { Link as RouterLink } from "react-router-dom";
 
 import { ErrorBoundary } from "../../../components/error-boundary";
-import HoverLinkOverlay from "../../../components/hover-link-overlay";
 import UserAvatar from "../../../components/user/user-avatar";
 import UserName from "../../../components/user/user-name";
+import SimpleNavBox from "../../../components/layout/box-layout/simple-nav-box";
 import { getStreamHost, getStreamStatus, getStreamTitle } from "../../../helpers/nostr/stream";
 import { useReadRelays } from "../../../hooks/use-client-relays";
 import useClientSideMuteFilter from "../../../hooks/use-client-side-mute-filter";
@@ -22,12 +22,11 @@ function LiveStream({ stream }: { stream: NostrEvent }) {
   const title = getStreamTitle(stream);
 
   return (
-    <Flex as={LinkBox} alignItems="center" gap="2">
-      <UserAvatar pubkey={host} size="sm" />
-
-      <HoverLinkOverlay as={RouterLink} to={`/streams/${naddr}`}></HoverLinkOverlay>
-      {title || <UserName pubkey={host} />}
-    </Flex>
+    <SimpleNavBox
+      icon={<UserAvatar pubkey={host} size="sm" />}
+      title={title || <UserName pubkey={host} />}
+      to={`/streams/${naddr}`}
+    />
   );
 }
 
@@ -58,20 +57,20 @@ function StreamsCardContent({ ...props }: Omit<CardProps, "children">) {
 
   return (
     <Card variant="outline" {...props}>
-      <CardHeader display="flex" justifyContent="space-between" alignItems="center" pb="2">
-        <Heading size="lg">
+      <CardHeader display="flex" justifyContent="space-between" alignItems="center">
+        <Heading size="md">
           <Link as={RouterLink} to="/streams">
             Streams
           </Link>
         </Heading>
       </CardHeader>
-      <CardBody overflowX="hidden" overflowY="auto" pt="4" display="flex" gap="2" flexDirection="column" maxH="50vh">
+      <CardBody p="0" overflowY="auto" maxH="50vh" borderTopWidth={1}>
         {streams?.map((stream) => (
           <ErrorBoundary key={getEventUID(stream)} event={stream}>
             <LiveStream stream={stream} />
           </ErrorBoundary>
         ))}
-        <Button as={RouterLink} to="/streams" flexShrink={0} variant="link" size="lg" py="4">
+        <Button as={RouterLink} to="/streams" w="full" flexShrink={0} variant="link" size="lg" py="4">
           View More
         </Button>
       </CardBody>

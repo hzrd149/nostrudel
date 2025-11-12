@@ -1,4 +1,18 @@
-import { Flex, Heading, Spinner, Text } from "@chakra-ui/react";
+import {
+  Button,
+  Flex,
+  Heading,
+  HStack,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalHeader,
+  ModalOverlay,
+  Spinner,
+  Text,
+  useDisclosure,
+} from "@chakra-ui/react";
 import { kinds, NostrEvent } from "nostr-tools";
 import { useCallback, useMemo } from "react";
 import { Navigate } from "react-router-dom";
@@ -6,6 +20,9 @@ import { Navigate } from "react-router-dom";
 import { useActiveAccount } from "applesauce-react/hooks";
 import SimpleView from "../../../components/layout/presets/simple-view";
 import TimelinePage, { useTimelinePageEventFilter } from "../../../components/timeline-page";
+import UserAvatarLink from "../../../components/user/user-avatar-link";
+import UserDnsIdentity from "../../../components/user/user-dns-identity";
+import UserLink from "../../../components/user/user-link";
 import UserName from "../../../components/user/user-name";
 import { isReply, isRepost } from "../../../helpers/nostr/event";
 import { getPubkeysFromList } from "../../../helpers/nostr/lists";
@@ -22,6 +39,7 @@ function BlindspotFeedPage({ pubkey }: { pubkey: string }) {
   const contacts = useUserContactList(account.pubkey);
   const otherContacts = useUserContactList(pubkey);
   const readRelays = useReadRelays();
+  const modal = useDisclosure();
 
   const blindspot = useMemo(() => {
     if (!contacts || !otherContacts) return [];
@@ -71,15 +89,43 @@ function BlindspotFeedPage({ pubkey }: { pubkey: string }) {
     );
 
   return (
-    <SimpleView
-      title={
-        <Text>
-          Blindspot with <UserName pubkey={pubkey} />
-        </Text>
-      }
-    >
-      <TimelinePage loader={loader} timeline={timeline} />
-    </SimpleView>
+    <>
+      <SimpleView
+        title={
+          <Text>
+            Blindspot with <UserName pubkey={pubkey} />
+          </Text>
+        }
+        actions={
+          blindspot.length > 0 && (
+            <Button variant="ghost" onClick={modal.onOpen}>
+              {blindspot.length} users
+            </Button>
+          )
+        }
+      >
+        <TimelinePage loader={loader} timeline={timeline} />
+      </SimpleView>
+
+      <Modal isOpen={modal.isOpen} onClose={modal.onClose} size="md">
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Users in blindspot</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody pb={4} display="flex" flexDirection="column" gap={2}>
+            {blindspot.map((userPubkey) => (
+              <HStack key={userPubkey} spacing={2} borderRadius="md">
+                <UserAvatarLink pubkey={userPubkey} size="sm" />
+                <Flex direction="column">
+                  <UserLink pubkey={userPubkey} />
+                  <UserDnsIdentity pubkey={userPubkey} fontSize="xs" />
+                </Flex>
+              </HStack>
+            ))}
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+    </>
   );
 }
 

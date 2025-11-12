@@ -1,21 +1,9 @@
-import {
-  Alert,
-  AlertDescription,
-  AlertIcon,
-  AlertTitle,
-  Card,
-  Flex,
-  Heading,
-  Select,
-  SimpleGrid,
-  Text,
-} from "@chakra-ui/react";
+import { Alert, AlertDescription, AlertIcon, AlertTitle, Flex, Select, SimpleGrid, Text } from "@chakra-ui/react";
 import { useActiveAccount, useObservableEagerState } from "applesauce-react/hooks";
 import { nip19 } from "nostr-tools";
 import { memo, useMemo, useState } from "react";
-import { Link as RouterLink } from "react-router-dom";
 
-import HoverLinkOverlay from "../../../components/hover-link-overlay";
+import SimpleNavBox from "../../../components/layout/box-layout/simple-nav-box";
 import SimpleView from "../../../components/layout/presets/simple-view";
 import UserAvatar from "../../../components/user/user-avatar";
 import UserName from "../../../components/user/user-name";
@@ -24,15 +12,12 @@ import { socialGraph$ } from "../../../services/social-graph";
 
 const UserCard = memo(({ pubkey, blindspot }: { pubkey: string; blindspot: string[] }) => {
   return (
-    <Card display="block" p="4">
-      <UserAvatar pubkey={pubkey} mr="4" float="left" />
-      <Heading size="md" isTruncated>
-        <HoverLinkOverlay as={RouterLink} to={`/feeds/blindspot/${nip19.npubEncode(pubkey)}`}>
-          <UserName pubkey={pubkey} />
-        </HoverLinkOverlay>
-      </Heading>
-      <Text>Following {blindspot.length} users you don't follow</Text>
-    </Card>
+    <SimpleNavBox
+      icon={<UserAvatar pubkey={pubkey} showNip05={false} />}
+      title={<UserName pubkey={pubkey} fontWeight="bold" fontSize="lg" isTruncated />}
+      description={`Following ${blindspot.length} users you don't follow`}
+      to={`/feeds/blindspot/${nip19.npubEncode(pubkey)}`}
+    />
   );
 });
 
@@ -72,17 +57,20 @@ export default function BlindspotHomeView() {
   }, [account.pubkey, pubkeys, graph, sort]);
 
   return (
-    <SimpleView title="Blindspots" center maxW="container.xl">
-      <Flex direction={{ base: "column", md: "row" }} gap="2" alignItems="center">
-        <Text>Pick another user and see what they are seeing that your not.</Text>
+    <SimpleView
+      title="Blindspots"
+      flush
+      actions={
         <Select ml="auto" maxW="48" value={sort} onChange={(e) => setSort(e.target.value)}>
           <option value="quality">Quality</option>
           <option value="follows">Follows</option>
         </Select>
-      </Flex>
+      }
+    >
+      <Text m="4">Pick another user and see what they are seeing that your not.</Text>
 
       {blindspots.length > 0 ? (
-        <SimpleGrid columns={{ base: 1, md: 2, xl: 3 }} spacing="4">
+        <SimpleGrid columns={{ base: 1, lg: 2, xl: 3 }} borderTopWidth={1}>
           {blindspots.map(({ pubkey, blindspot }) => (
             <UserCard key={pubkey} blindspot={blindspot} pubkey={pubkey} />
           ))}

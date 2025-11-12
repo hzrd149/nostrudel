@@ -1,4 +1,4 @@
-import { Button, Card, CardBody, CardHeader, CardProps, Heading, Link } from "@chakra-ui/react";
+import { Box, Button, Card, CardBody, CardHeader, CardProps, Heading, Link } from "@chakra-ui/react";
 import { getEventUID } from "applesauce-core/helpers";
 import { useActiveAccount, useObservableState } from "applesauce-react/hooks";
 import { kinds, NostrEvent } from "nostr-tools";
@@ -55,20 +55,20 @@ export default function NotificationsCard({ ...props }: Omit<CardProps, "childre
 
   return (
     <Card variant="outline" {...props}>
-      <CardHeader display="flex" justifyContent="space-between" alignItems="center" pb="2">
-        <Heading size="lg">
+      <CardHeader display="flex" justifyContent="space-between" alignItems="center">
+        <Heading size="md">
           <Link as={RouterLink} to="/notifications">
             Notifications
           </Link>
         </Heading>
       </CardHeader>
-      <CardBody overflowX="hidden" overflowY="auto" pt="4" display="flex" flexDirection="column">
+      <CardBody p="0" overflowY="auto" borderTopWidth={1}>
         {limit.map((event) => (
           <ErrorBoundary key={getEventUID(event)} event={event}>
-            <NotificationItem event={event} onClick={handleClick} visible />
+            <NotificationItem event={event} onClick={handleClick} visible borderBottomWidth={1} />
           </ErrorBoundary>
         ))}
-        <Button as={RouterLink} to="/notifications" flexShrink={0} variant="link" size="lg" py="4">
+        <Button as={RouterLink} to="/notifications" w="full" flexShrink={0} variant="link" size="lg" py="4">
           View More
         </Button>
       </CardBody>
