@@ -59,19 +59,19 @@ function LaunchpadPage() {
 
       <Flex gap="4" direction="row" wrap="wrap" flex={1} overflow="hidden" p={{ base: 0, lg: 2 }}>
         <ErrorBoundary>
-          <FeedsCard w={{ base: "full", md: "40%" }} maxH="30vh" />
+          <FeedsCard w={{ base: "full", md: "40%" }} maxH={{ base: "80vh", xl: "30vh" }} />
         </ErrorBoundary>
         <ErrorBoundary>
-          <ListsCard w={{ base: "full", md: "calc(60% - 1rem)" }} maxH="30vh" />
+          <ListsCard w={{ base: "full", md: "calc(60% - 1rem)" }} maxH={{ base: "80vh", xl: "30vh" }} />
         </ErrorBoundary>
         <ErrorBoundary>
           <NotificationsCard w="full" maxH="40vh" />
         </ErrorBoundary>
         <ErrorBoundary>
-          <StreamsCard w={{ base: "full", md: "40%" }} />
+          <StreamsCard w={{ base: "full", md: "40%" }} maxH="50vh" />
         </ErrorBoundary>
         <ErrorBoundary>
-          <ToolsCard w={{ base: "full", md: "calc(60% - 1rem)" }} />
+          <ToolsCard w={{ base: "full", md: "calc(60% - 1rem)" }} maxH="50vh" />
         </ErrorBoundary>
       </Flex>
     </SimpleView>

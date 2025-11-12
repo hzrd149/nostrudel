@@ -42,7 +42,7 @@ export default function ToolsCard({ ...props }: Omit<CardProps, "children">) {
           </Link>
         </Heading>
       </CardHeader>
-      <CardBody p="0" overflowY="auto" maxH="50vh" borderTopWidth={1}>
+      <CardBody p="0" overflowY="auto" borderTopWidth={1}>
         {apps.map((app) => (
           <ToolItem key={app.id} app={app} onClick={() => useApp(app.id)} />
         ))}
