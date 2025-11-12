@@ -1,95 +1,229 @@
-import { Button, Flex, Heading, SimpleGrid, useDisclosure } from "@chakra-ui/react";
-import { getEventUID } from "applesauce-core/helpers";
+import { AvatarGroup, Box, Button, Flex, Heading, Image, SimpleGrid, Text, useDisclosure } from "@chakra-ui/react";
+import {
+  getAddressPointersFromList,
+  getEventPointersFromList,
+  getEventUID,
+  getProfilePointersFromList,
+  getTagValue,
+} from "applesauce-core/helpers";
 import { kinds } from "nostr-tools";
 import { useNavigate } from "react-router-dom";
 
 import { useActiveAccount } from "applesauce-react/hooks";
+import { NostrEvent } from "nostr-tools";
 import { MuteIcon } from "../../components/icons";
-import Plus from "../../components/icons/plus";
 import Users01 from "../../components/icons/users-01";
+import SimpleNavBox from "../../components/layout/box-layout/simple-nav-box";
 import SimpleView from "../../components/layout/presets/simple-view";
 import RequireActiveAccount from "../../components/router/require-active-account";
+import UserAvatar from "../../components/user/user-avatar";
+import { getListDescription, getListTitle } from "../../helpers/nostr/lists";
 import useFavoriteLists from "../../hooks/use-favorite-lists";
-import useUserContacts from "../../hooks/use-user-contacts";
 import useUserSets from "../../hooks/use-user-sets";
-import useUserMutes from "../../hooks/use-user-mutes";
 import { getSharableEventAddress } from "../../services/relay-hints";
-import FallbackListCard from "./components/fallback-list-card";
-import ListTypeCard from "./components/list-type-card";
+import { createListLink } from "./components/fallback-list-card";
 import NewBookmarkSetModal from "./components/new-set-modal";
-import PeopleListCard from "./components/people-list-card";
+import Timestamp from "../../components/timestamp";
+import useUserContacts from "../../hooks/use-user-contacts";
+import useUserMutes from "../../hooks/use-user-mutes";
+
+function PeopleListRow({ list }: { list: NostrEvent }) {
+  const title = getListTitle(list);
+  const description = getListDescription(list);
+  const image = getTagValue(list, "image");
+  const people = getProfilePointersFromList(list);
+
+  return (
+    <SimpleNavBox
+      title={title}
+      icon={image ? <Image src={image} alt={title} w="14" h="14" objectFit="cover" /> : undefined}
+      timestamp={
+        <>
+          updated <Timestamp timestamp={list.created_at} />
+        </>
+      }
+      to={createListLink(list)}
+      description={description}
+      metadata={
+        <Flex gap="2" alignItems="center">
+          <AvatarGroup size="sm">
+            {people.slice(0, 5).map((person) => (
+              <UserAvatar key={person.pubkey} pubkey={person.pubkey} size="xs" showNip05={false} />
+            ))}
+          </AvatarGroup>
+          {people.length > 5 && <Text fontSize="sm">+{people.length - 5}</Text>}
+        </Flex>
+      }
+    />
+  );
+}
+
+function GenericListRow({ list }: { list: NostrEvent }) {
+  const title = getListTitle(list);
+  const description = getListDescription(list);
+  const people = getProfilePointersFromList(list);
+  const notes = getEventPointersFromList(list);
+  const addresses = getAddressPointersFromList(list);
+
+  const counts = [];
+  if (people.length > 0) counts.push(`${people.length} people`);
+  if (notes.length > 0) counts.push(`${notes.length} notes`);
+  if (addresses.length > 0) counts.push(`${addresses.length} items`);
+
+  return (
+    <SimpleNavBox
+      title={title}
+      to={createListLink(list)}
+      description={description}
+      metadata={counts.length > 0 ? <Text fontSize="sm">{counts.join(" · ")}</Text> : undefined}
+      timestamp={
+        <>
+          updated <Timestamp timestamp={list.created_at} />
+        </>
+      }
+    />
+  );
+}
+
+function BuiltInListCards() {
+  const account = useActiveAccount();
+  const contacts = useUserContacts(account?.pubkey);
+  const muted = useUserMutes(account?.pubkey);
+
+  return (
+    <>
+      <SimpleNavBox
+        icon={<Users01 boxSize={12} />}
+        title="Following"
+        description="People you follow"
+        to="/lists/following"
+        metadata={<Text fontSize="sm">{contacts?.length ?? 0} contacts</Text>}
+      />
+      <SimpleNavBox
+        icon={<MuteIcon boxSize={12} />}
+        title="Muted"
+        description="Muted accounts"
+        to="/lists/muted"
+        metadata={<Text fontSize="sm">{muted?.pubkeys?.size ?? 0} muted users</Text>}
+      />
+    </>
+  );
+}
+
+function PeopleListsSection() {
+  const account = useActiveAccount();
+  const sets = useUserSets(account?.pubkey) ?? [];
+
+  const followSets = sets.filter((event) => event.kind === kinds.Followsets);
+
+  return (
+    <>
+      <Flex px="4" pb="2" pt="4" alignItems="center" gap="2">
+        <Box>
+          <Heading size="md">People lists</Heading>
+          <Text color="GrayText">Lists of other users.</Text>
+        </Box>
+      </Flex>
+
+      {followSets.length > 0 && (
+        <SimpleGrid columns={{ base: 1, lg: 2, xl: 3 }} borderTopWidth={1}>
+          {followSets.map((event) => (
+            <PeopleListRow key={getEventUID(event)} list={event} />
+          ))}
+        </SimpleGrid>
+      )}
+    </>
+  );
+}
+
+function GenericListsSection() {
+  const account = useActiveAccount();
+  const sets = useUserSets(account?.pubkey) ?? [];
+
+  const genericSets = sets.filter((event) => event.kind === kinds.Genericlists);
+
+  if (genericSets.length === 0) return null;
+
+  return (
+    <>
+      <Box px="4" pb="2" pt="4">
+        <Heading size="md">Generic lists</Heading>
+      </Box>
+      <SimpleGrid columns={{ base: 1, lg: 2, xl: 3 }} borderTopWidth={1}>
+        {genericSets.map((event) => (
+          <GenericListRow key={getEventUID(event)} list={event} />
+        ))}
+      </SimpleGrid>
+    </>
+  );
+}
+
+function BookmarkListsSection() {
+  const account = useActiveAccount();
+  const sets = useUserSets(account?.pubkey) ?? [];
+
+  const bookmarkSets = sets.filter((event) => event.kind === kinds.Bookmarksets);
+
+  if (bookmarkSets.length === 0) return null;
+
+  return (
+    <>
+      <Box px="4" pb="2" pt="4">
+        <Heading size="md">Bookmark lists</Heading>
+        <Text color="GrayText">Lists of notes you have bookmarked.</Text>
+      </Box>
+      <SimpleGrid columns={{ base: 1, lg: 2, xl: 3 }} borderTopWidth={1}>
+        {bookmarkSets.map((event) => (
+          <GenericListRow key={getEventUID(event)} list={event} />
+        ))}
+      </SimpleGrid>
+    </>
+  );
+}
+
+function FavoriteListsSection() {
+  const account = useActiveAccount();
+  const { lists: favoriteLists } = useFavoriteLists(account?.pubkey);
+
+  if (favoriteLists.length === 0) return null;
+
+  return (
+    <>
+      <Box px="4" pb="2" pt="4">
+        <Heading size="md">Favorite lists</Heading>
+        <Text color="GrayText">Lists you have favorited.</Text>
+      </Box>
+      <SimpleGrid columns={{ base: 1, lg: 2, xl: 3 }} borderTopWidth={1}>
+        {favoriteLists.map((event) => (
+          <PeopleListRow key={getEventUID(event)} list={event} />
+        ))}
+      </SimpleGrid>
+    </>
+  );
+}
 
 function ListHomePage() {
-  const account = useActiveAccount()!;
-  const sets = useUserSets(account?.pubkey) ?? [];
-  const { lists: favoriteLists } = useFavoriteLists();
   const newList = useDisclosure();
   const navigate = useNavigate();
 
-  const contacts = useUserContacts(account?.pubkey);
-  const mutes = useUserMutes(account?.pubkey);
-
-  const followSets = sets.filter((event) => event.kind === kinds.Followsets);
-  const genericSets = sets.filter((event) => event.kind === kinds.Genericlists);
-  const bookmarkSets = sets.filter((event) => event.kind === kinds.Bookmarksets);
-
-  const columns = { base: 1, lg: 2, xl: 3 };
-
   return (
-    <SimpleView title="Lists" maxW="8xl" center>
-      <SimpleGrid columns={{ base: 1, md: 2 }} spacing="2">
-        <ListTypeCard title="Following" path="/lists/following" icon={Users01} people={contacts} />
-        <ListTypeCard title="Muted" path="/lists/muted" icon={MuteIcon} />
-      </SimpleGrid>
-
-      <Flex mt="4">
-        <Heading size="lg">People lists</Heading>
-        <Button leftIcon={<Plus boxSize={5} />} onClick={newList.onOpen} colorScheme="primary" ms="auto">
+    <SimpleView
+      title="Lists"
+      flush
+      gap={0}
+      actions={
+        <Button onClick={newList.onOpen} variant="ghost" colorScheme="primary" ml="auto">
           New List
         </Button>
-      </Flex>
-      <SimpleGrid columns={columns} spacing="2">
-        {followSets.map((event) => (
-          <PeopleListCard key={getEventUID(event)} list={event} />
-        ))}
+      }
+    >
+      <SimpleGrid columns={{ base: 1, lg: 2, xl: 3 }}>
+        <BuiltInListCards />
       </SimpleGrid>
-
-      {genericSets.length > 0 && (
-        <>
-          <Heading size="lg" mt="2">
-            Generic lists
-          </Heading>
-          <SimpleGrid columns={columns} spacing="2">
-            {genericSets.map((event) => (
-              <FallbackListCard key={getEventUID(event)} list={event} hideCreator />
-            ))}
-          </SimpleGrid>
-        </>
-      )}
-      {bookmarkSets.length > 0 && (
-        <>
-          <Heading size="lg" mt="2">
-            Bookmark lists
-          </Heading>
-          <SimpleGrid columns={columns} spacing="2">
-            {bookmarkSets.map((event) => (
-              <FallbackListCard key={getEventUID(event)} list={event} hideCreator />
-            ))}
-          </SimpleGrid>
-        </>
-      )}
-      {favoriteLists.length > 0 && (
-        <>
-          <Heading size="lg" mt="2">
-            Favorite lists
-          </Heading>
-          <SimpleGrid columns={columns} spacing="2">
-            {favoriteLists.map((event) => (
-              <FallbackListCard key={getEventUID(event)} list={event} />
-            ))}
-          </SimpleGrid>
-        </>
-      )}
+      <PeopleListsSection />
+      <GenericListsSection />
+      <BookmarkListsSection />
+      <FavoriteListsSection />
 
       {newList.isOpen && (
         <NewBookmarkSetModal

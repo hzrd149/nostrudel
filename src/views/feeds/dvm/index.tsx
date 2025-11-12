@@ -28,15 +28,13 @@ function DVMFeedRow({ dvm, ...props }: { dvm: NostrEvent }) {
   return (
     <SimpleNavBox
       ref={ref}
-      icon={<DVMAvatar pointer={pointer} w="16" />}
-      title={
-        <Flex gap="2" align="center">
-          <DVMName pointer={pointer} fontWeight="bold" fontSize="md" />
-          <Text fontSize="sm" color="gray.500" ms="auto">
-            Updated <Timestamp timestamp={dvm.created_at} />
-          </Text>
-        </Flex>
+      timestamp={
+        <>
+          Updated <Timestamp timestamp={dvm.created_at} />
+        </>
       }
+      icon={<DVMAvatar pointer={pointer} w="16" />}
+      title={<DVMName pointer={pointer} fontWeight="bold" fontSize="md" />}
       description={metadata.about}
       to={`/feeds/dvm/${getReplaceableAddress(dvm)}`}
       {...props}
