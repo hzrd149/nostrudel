@@ -20,7 +20,6 @@ import ThreadView from "./views/thread";
 import SupportView from "./views/support";
 import SearchView from "./views/search";
 import LaunchpadView from "./views/launchpad";
-import NotificationsView from "./views/notifications";
 import OtherStuffView from "./views/other-stuff";
 
 const HashTagView = lazy(() => import("./views/hashtag"));
@@ -50,6 +49,7 @@ import goalsRoutes from "./views/goals/routes";
 import badgesRoutes from "./views/badges/routes";
 import emojisRoutes from "./views/emojis/routes";
 import walletRoutes from "./views/wallet/routes";
+import notificationsRoutes from "./views/notifications/routes";
 
 // Redirect old hash routing
 const hashPath = window.location.hash.match(/^#(\/.+)/);
@@ -104,7 +104,7 @@ export const router = createBrowserRouter(
         { path: "settings", children: settingsRoutes },
         { path: "relays", children: relaysRoutes },
         { path: "blossom", children: blossomRoutes },
-        { path: "notifications", Component: NotificationsView },
+        { path: "notifications", children: notificationsRoutes },
         { path: "pictures", children: picturesRoutes },
         { path: "streams", children: streamsRoutes },
         { path: "groups", children: groupsRoutes },

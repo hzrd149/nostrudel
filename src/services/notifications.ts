@@ -17,8 +17,10 @@ import {
   filter,
   map,
   Observable,
+  of,
   ReplaySubject,
   share,
+  shareReplay,
   switchMap,
   tap,
   throttleTime,
@@ -32,6 +34,9 @@ import { eventStore } from "./event-store";
 import localSettings from "./preferences";
 import { MuteModel } from "applesauce-core/models";
 import { eventLoader } from "./loaders";
+import { cacheTimelineLoader, TimelineLoader } from "applesauce-loaders/loaders";
+import timelineCacheService from "./timeline-cache";
+import { TimelessFilter } from "applesauce-loaders";
 
 export const NotificationTypeSymbol = Symbol("notificationType");
 
@@ -225,5 +230,91 @@ const notifications$: Observable<CategorizedEvent[]> = combineLatest([accounts.a
   // keep the observable hot for 5 minutes after its unsubscribed
   share({ connector: () => new ReplaySubject(1), resetOnComplete: () => timer(5 * 60_000) }),
 );
-
 export default notifications$;
+
+// Get users mailboxes
+const mailboxes$ = accounts.active$.pipe(
+  switchMap((account) => (account ? eventStore.mailboxes(account.pubkey) : of(null))),
+);
+
+// Get users inboxes or fallback relays
+const inboxes$ = combineLatest([mailboxes$, localSettings.fallbackRelays]).pipe(
+  map(([mailboxes, fallbackRelays]) => mailboxes?.inboxes ?? fallbackRelays),
+);
+
+/** Timeline loader for share notifications from the user's inboxes */
+export const shareNotificationsLoader$: Observable<TimelineLoader | null> = combineLatest([
+  accounts.active$,
+  inboxes$,
+]).pipe(
+  map(([account, inboxes]) => {
+    if (!account || inboxes.length === 0) return null;
+
+    return timelineCacheService.createTimeline(`shares-notifications-${account.pubkey}`, inboxes, [
+      {
+        "#p": [account.pubkey],
+        kinds: [kinds.Repost, kinds.GenericRepost],
+      },
+    ]);
+  }),
+  // Only create a single timeline
+  shareReplay(1),
+);
+
+/** Timeline loader for zaps notifications from the user's inboxes */
+export const zapsNotificationsLoader$: Observable<TimelineLoader | null> = combineLatest([
+  accounts.active$,
+  inboxes$,
+]).pipe(
+  map(([account, inboxes]) => {
+    if (!account || inboxes.length === 0) return null;
+
+    return timelineCacheService.createTimeline(`zaps-notifications-${account.pubkey}`, inboxes, [
+      {
+        "#p": [account.pubkey],
+        kinds: [kinds.Zap],
+      },
+    ]);
+  }),
+  // Only create a single timeline
+  shareReplay(1),
+);
+
+/** Timeline loader for social notificatiots from the user's inboxes */
+export const socialNotificationsLoader$: Observable<TimelineLoader | null> = combineLatest([
+  accounts.active$,
+  inboxes$,
+]).pipe(
+  map(([account, inboxes]) => {
+    if (!account || inboxes.length === 0) return null;
+
+    return timelineCacheService.createTimeline(`notifications-${account.pubkey}`, inboxes, [
+      {
+        "#p": [account.pubkey],
+        // Get 1, 6, and 16 for mentions, reposts, and shares
+        kinds: [kinds.ShortTextNote, kinds.Repost, kinds.GenericRepost],
+      },
+    ]);
+  }),
+  // Only create a single timeline
+  shareReplay(1),
+);
+
+/** Timeline loader for zap notifications from the user's inboxes */
+export const zapNotificationsLoader$: Observable<TimelineLoader | null> = combineLatest([
+  accounts.active$,
+  inboxes$,
+]).pipe(
+  map(([account, inboxes]) => {
+    if (!account || inboxes.length === 0) return null;
+
+    return timelineCacheService.createTimeline(`zaps-notifications-${account.pubkey}`, inboxes, [
+      {
+        "#p": [account.pubkey],
+        kinds: [kinds.Zap],
+      },
+    ]);
+  }),
+  // Only create a single timeline
+  shareReplay(1),
+);
