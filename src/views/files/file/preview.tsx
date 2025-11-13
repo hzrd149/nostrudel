@@ -1,11 +1,30 @@
-import { Alert, AlertDescription, AlertIcon, AlertTitle } from "@chakra-ui/react";
+import { Alert, AlertDescription, AlertIcon, AlertTitle, Box } from "@chakra-ui/react";
 import { getTagValue } from "applesauce-core/helpers";
 import { NostrEvent } from "nostr-tools";
+import { useEffect, useState } from "react";
 
 import { TrustImage, TrustVideo } from "../../../components/content/links";
 import useUsersMediaServers from "../../../hooks/use-user-blossom-servers";
-import STLViewer from "../../../components/stl-viewer";
 import FileDownloadButton from "../components/download-button";
+import { loadSTLViewerComponent } from "../../../helpers/stl-viewer-loader";
+import { createRequestProxyUrl } from "../../../helpers/request";
+
+function STLViewerWrapper({ url }: { url: string }) {
+  const [loaded, setLoaded] = useState(false);
+  const corsProxy = createRequestProxyUrl("").toString();
+
+  useEffect(() => {
+    loadSTLViewerComponent().then(() => setLoaded(true));
+  }, []);
+
+  if (!loaded) return <Box w="full" aspectRatio={16 / 10}>Loading viewer...</Box>;
+
+  return (
+    <Box w="full" aspectRatio={16 / 10}>
+      <stl-viewer src={url} cors-proxy={corsProxy} style={{ width: "100%", height: "100%" }} />
+    </Box>
+  );
+}
 
 export default function FilePreview({ file }: { file: NostrEvent }) {
   const type = getTagValue(file, "m");
@@ -19,8 +38,7 @@ export default function FilePreview({ file }: { file: NostrEvent }) {
     if (type?.startsWith("image/")) return <TrustImage h="full" src={url} />;
     if (type?.startsWith("video/")) return <TrustVideo h="full" src={url} />;
 
-    if (type === "model/stl")
-      return <STLViewer aspectRatio={16 / 10} width={1920} height={1080} w="full" h="auto" url={url} />;
+    if (type === "model/stl") return <STLViewerWrapper url={url} />;
   }
 
   const image = getTagValue(file, "image");

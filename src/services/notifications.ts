@@ -261,25 +261,6 @@ export const shareNotificationsLoader$: Observable<TimelineLoader | null> = comb
   shareReplay(1),
 );
 
-/** Timeline loader for zaps notifications from the user's inboxes */
-export const zapsNotificationsLoader$: Observable<TimelineLoader | null> = combineLatest([
-  accounts.active$,
-  inboxes$,
-]).pipe(
-  map(([account, inboxes]) => {
-    if (!account || inboxes.length === 0) return null;
-
-    return timelineCacheService.createTimeline(`zaps-notifications-${account.pubkey}`, inboxes, [
-      {
-        "#p": [account.pubkey],
-        kinds: [kinds.Zap],
-      },
-    ]);
-  }),
-  // Only create a single timeline
-  shareReplay(1),
-);
-
 /** Timeline loader for social notificatiots from the user's inboxes */
 export const socialNotificationsLoader$: Observable<TimelineLoader | null> = combineLatest([
   accounts.active$,
@@ -291,8 +272,7 @@ export const socialNotificationsLoader$: Observable<TimelineLoader | null> = com
     return timelineCacheService.createTimeline(`notifications-${account.pubkey}`, inboxes, [
       {
         "#p": [account.pubkey],
-        // Get 1, 6, and 16 for mentions, reposts, and shares
-        kinds: [kinds.ShortTextNote, kinds.Repost, kinds.GenericRepost],
+        kinds: [kinds.ShortTextNote],
       },
     ]);
   }),

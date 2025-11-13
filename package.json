@@ -119,8 +119,6 @@
     "remark-wiki-link": "^2.0.1",
     "rxjs": "^7.8.2",
     "strip-markdown": "^6.0.0",
-    "three": "^0.179.1",
-    "three-stdlib": "^2.36.1",
     "unified": "^11.0.5",
     "webln": "^0.3.2",
     "workbox-core": "7.0.0",
