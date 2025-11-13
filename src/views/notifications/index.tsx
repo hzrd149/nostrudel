@@ -1,6 +1,6 @@
 import { SimpleGrid } from "@chakra-ui/react";
 
-import { AtIcon, LightningIcon, RepostIcon, ShareIcon, ThreadIcon } from "../../components/icons";
+import { AtIcon, LightningIcon, RepostIcon, ThreadIcon } from "../../components/icons";
 import SimpleNavBox from "../../components/layout/box-layout/simple-nav-box";
 import SimpleView from "../../components/layout/presets/simple-view";
 

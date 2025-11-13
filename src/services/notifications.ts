@@ -272,7 +272,7 @@ export const socialNotificationsLoader$: Observable<TimelineLoader | null> = com
     return timelineCacheService.createTimeline(`notifications-${account.pubkey}`, inboxes, [
       {
         "#p": [account.pubkey],
-        kinds: [kinds.ShortTextNote],
+        kinds: [kinds.ShortTextNote, kinds.LongFormArticle, COMMENT_KIND],
       },
     ]);
   }),
