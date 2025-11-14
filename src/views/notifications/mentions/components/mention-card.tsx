@@ -12,6 +12,7 @@ import UserAvatar from "../../../../components/user/user-avatar";
 import UserName from "../../../../components/user/user-name";
 import { isReply } from "../../../../helpers/nostr/event";
 import useSingleEvent from "../../../../hooks/use-single-event";
+import useEventIntersectionRef from "../../../../hooks/use-event-intersection-ref";
 
 function ReplyLine({ pointer }: { pointer: EventPointer }) {
   const parent = useSingleEvent(pointer);
@@ -28,6 +29,7 @@ function ReplyLine({ pointer }: { pointer: EventPointer }) {
 }
 
 export default function MentionCard({ event }: { event: NostrEvent }) {
+  const ref = useEventIntersectionRef(event);
   const link = useMemo(() => {
     return `/l/${neventEncode({ id: event.id, author: event.pubkey, kind: event.kind })}`;
   }, [event]);
@@ -51,7 +53,7 @@ export default function MentionCard({ event }: { event: NostrEvent }) {
   };
 
   return (
-    <Flex as={LinkBox} direction="column" overflow="hidden" p="2" gap="2">
+    <Flex as={LinkBox} direction="column" overflow="hidden" p="2" gap="2" ref={ref}>
       {/* Mention Info */}
       <Flex overflow="hidden" alignItems="center" gap="2">
         <UserAvatar pubkey={event.pubkey} size="sm" showNip05={false} />

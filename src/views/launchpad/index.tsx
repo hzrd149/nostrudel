@@ -1,14 +1,15 @@
 import { Button, Card, CardBody, CardHeader, CardProps, Flex, Heading, Link, SimpleGrid } from "@chakra-ui/react";
 
-import RequireActiveAccount from "../../components/router/require-active-account";
 import { ErrorBoundary } from "../../components/error-boundary";
 import SimpleView from "../../components/layout/presets/simple-view";
-import SearchForm from "./components/search-form";
-import NotificationsCard from "./components/notifications-card";
-import ToolsCard from "./components/tools-card";
-import StreamsCard from "./components/streams-card";
 import RouterLink from "../../components/router-link";
+import RequireActiveAccount from "../../components/router/require-active-account";
 import { BuiltInFeedCards, ListFeedCards } from "../feeds";
+import SearchForm from "./components/search-form";
+import StreamsCard from "./components/streams-card";
+import ToolsCard from "./components/tools-card";
+import MentionsCard from "./components/mentions-card";
+import ZapsCard from "./components/zaps-card";
 
 function FeedsCard({ ...props }: Omit<CardProps, "children">) {
   return (
@@ -59,13 +60,16 @@ function LaunchpadPage() {
 
       <Flex gap="4" direction="row" wrap="wrap" flex={1} overflow="hidden" p={{ base: 0, lg: 2 }}>
         <ErrorBoundary>
-          <FeedsCard w={{ base: "full", md: "40%" }} maxH={{ base: "80vh", xl: "30vh" }} />
-        </ErrorBoundary>
-        <ErrorBoundary>
           <ListsCard w={{ base: "full", md: "calc(60% - 1rem)" }} maxH={{ base: "80vh", xl: "30vh" }} />
         </ErrorBoundary>
         <ErrorBoundary>
-          <NotificationsCard w="full" maxH="40vh" />
+          <FeedsCard w={{ base: "full", md: "40%" }} maxH={{ base: "80vh", xl: "30vh" }} />
+        </ErrorBoundary>
+        <ErrorBoundary>
+          <ZapsCard w={{ base: "full", md: "40%" }} maxH="30vh" />
+        </ErrorBoundary>
+        <ErrorBoundary>
+          <MentionsCard w={{ base: "full", md: "calc(60% - 1rem)" }} maxH="30vh" />
         </ErrorBoundary>
         <ErrorBoundary>
           <StreamsCard w={{ base: "full", md: "40%" }} maxH="50vh" />

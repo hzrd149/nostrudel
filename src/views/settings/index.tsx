@@ -81,6 +81,9 @@ export default function SettingsView() {
       <SimpleNavItem to="/settings/outbox-selection" leftIcon={<RelayIcon boxSize={5} />}>
         Outbox Selection
       </SimpleNavItem>
+      <SimpleNavItem to="/settings/cache" leftIcon={<Database01 boxSize={5} />}>
+        Event Cache
+      </SimpleNavItem>
       <SimpleNavItem to="/settings/social-graph" leftIcon={<Share07 boxSize={5} />}>
         Social Graph
       </SimpleNavItem>
@@ -101,9 +104,6 @@ export default function SettingsView() {
       </SimpleNavItem>
       <SimpleNavItem to="/settings/privacy" leftIcon={<SpyIcon boxSize={5} />}>
         Privacy
-      </SimpleNavItem>
-      <SimpleNavItem to="/settings/cache" leftIcon={<Database01 boxSize={5} />}>
-        Event Cache
       </SimpleNavItem>
       <SimpleNavItem to="/settings/performance" leftIcon={<CpuChip01 boxSize={5} />}>
         Performance

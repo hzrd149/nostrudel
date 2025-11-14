@@ -49,7 +49,7 @@ export default function ContactListRelaysView() {
         )
       }
     >
-      <Text fontStyle="italic" mt="-2">
+      <Text fontStyle="italic">
         Some apps store relays in your contacts list (kind-3)
         <br />
         noStrudel does not use these relays, instead it uses your{" "}

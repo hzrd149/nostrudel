@@ -1,8 +1,10 @@
 import { Box, Button, Card, CardBody, CardHeader, CardProps, Heading, Link } from "@chakra-ui/react";
 import { getEventUID } from "applesauce-core/helpers";
 import { Filter, kinds, NostrEvent } from "nostr-tools";
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
+
+import TimePeriodSelect, { getTimePeriodTimestamp, TimePeriod } from "./time-period-select";
 
 import { ErrorBoundary } from "../../../components/error-boundary";
 import UserAvatar from "../../../components/user/user-avatar";
@@ -31,6 +33,7 @@ function LiveStream({ stream }: { stream: NostrEvent }) {
 }
 
 function StreamsCardContent({ ...props }: Omit<CardProps, "children">) {
+  const [timePeriod, setTimePeriod] = useState<TimePeriod>("today");
   const relays = useReadRelays();
   const userMuteFilter = useClientSideMuteFilter();
 
@@ -45,11 +48,12 @@ function StreamsCardContent({ ...props }: Omit<CardProps, "children">) {
   const { filter, listId } = usePeopleListContext();
   const query = useMemo<Filter[] | undefined>(() => {
     if (!filter) return undefined;
+    const since = getTimePeriodTimestamp(timePeriod);
     return [
-      { authors: filter.authors, kinds: [kinds.LiveEvent] },
-      { "#p": filter.authors, kinds: [kinds.LiveEvent] },
+      { authors: filter.authors, kinds: [kinds.LiveEvent], since },
+      { "#p": filter.authors, kinds: [kinds.LiveEvent], since },
     ];
-  }, [filter]);
+  }, [filter, timePeriod]);
 
   const { timeline } = useTimelineLoader(`${listId ?? "global"}-streams`, relays, query, { eventFilter });
 
@@ -63,6 +67,7 @@ function StreamsCardContent({ ...props }: Omit<CardProps, "children">) {
             Streams
           </Link>
         </Heading>
+        <TimePeriodSelect value={timePeriod} onChange={setTimePeriod} />
       </CardHeader>
       <CardBody p="0" overflowY="auto" maxH="50vh" borderTopWidth={1}>
         {streams?.map((stream) => (

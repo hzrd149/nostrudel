@@ -151,9 +151,7 @@ function IdentityDetails({ pubkey, profile }: { pubkey: string; profile: Profile
           <Heading size="md" mt="4">
             Relays
           </Heading>
-          <Text fontStyle="italic" mt="-2">
-            You have {identity.relays?.length ?? 0} relays set in your DNS identity
-          </Text>
+          <Text fontStyle="italic">You have {identity.relays?.length ?? 0} relays set in your DNS identity</Text>
 
           {identity?.relays?.map((url) => (
             <Flex gap="2" alignItems="center" key={url}>

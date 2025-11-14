@@ -24,7 +24,7 @@ export default function NIP05RelaysView() {
 
   return (
     <SimpleView title="NIP-05 Relays">
-      <Text fontStyle="italic" mt="-2">
+      <Text fontStyle="italic">
         These relays cant be modified by noStrudel, they must be set manually on your{" "}
         <Code>/.well-known/nostr.json</Code> file or by your identity provider
         <br />

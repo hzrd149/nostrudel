@@ -2,7 +2,7 @@ import { Box, Flex } from "@chakra-ui/react";
 import { NostrEvent } from "nostr-tools";
 import { useMemo } from "react";
 import AutoSizer from "react-virtualized-auto-sizer";
-import { FixedSizeList as List, ListChildComponentProps } from "react-window";
+import { VariableSizeList as List, ListChildComponentProps } from "react-window";
 
 import {
   AddressPointer,
@@ -17,11 +17,13 @@ import { useActiveAccount, useEventModel, useObservableEagerState } from "apples
 import { kinds } from "nostr-tools";
 import { ErrorBoundary } from "../../../components/error-boundary";
 import SimpleView from "../../../components/layout/presets/simple-view";
+import { groupByTimePeriod, TimeGroupedListItem } from "../../../helpers/time-grouping";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
 import { useVirtualListScrollRestore } from "../../../hooks/use-scroll-restore";
 import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
 import IntersectionObserverProvider from "../../../providers/local/intersection-observer";
 import { shareNotificationsLoader$ } from "../../../services/notifications";
+import TimePeriodHeader from "../components/time-period-header";
 import RepostGroup from "./components/repost-group";
 
 export type RepostGroup = {
@@ -32,15 +34,20 @@ export type RepostGroup = {
   latest: number;
 };
 
-function RepostGroupRow({ index, style, data }: ListChildComponentProps<RepostGroup[]>) {
-  const group = data[index];
-  const ref = useEventIntersectionRef(group.events[0]);
+type ListItem = TimeGroupedListItem<RepostGroup>;
+
+function ListItemRow({ index, style, data }: ListChildComponentProps<ListItem[]>) {
+  const item = data[index];
 
   return (
-    <Box style={style} borderBottomWidth={1} ref={ref}>
-      <ErrorBoundary>
-        <RepostGroup group={group} />
-      </ErrorBoundary>
+    <Box style={style}>
+      {item.type === "header" ? (
+        <TimePeriodHeader label={item.label} />
+      ) : (
+        <ErrorBoundary>
+          <RepostGroup group={item.item} />
+        </ErrorBoundary>
+      )}
     </Box>
   );
 }
@@ -92,23 +99,38 @@ export default function SharesTab() {
     return Array.from(groups.values()).sort((a, b) => b.latest - a.latest);
   }, [events]);
 
+  // Group repost groups by time period
+  const listItems = useMemo<ListItem[]>(() => {
+    return groupByTimePeriod(
+      groups,
+      (group) => group.latest,
+      (group) => group.key,
+    );
+  }, [groups]);
+
+  const getItemSize = (index: number) => {
+    const item = listItems[index];
+    return item.type === "header" ? 60 : 88;
+  };
+
   return (
     <IntersectionObserverProvider callback={callback}>
       <SimpleView title="Reposts" scroll={false} flush gap={0}>
         <Flex direction="column" flex={1}>
-          {groups.length > 0 ? (
+          {listItems.length > 0 ? (
             <AutoSizer>
               {({ height, width }) => (
                 <List
                   itemKey={(index, data) => data[index].key}
-                  itemCount={groups.length}
-                  itemSize={88}
-                  itemData={groups}
+                  itemCount={listItems.length}
+                  itemSize={getItemSize}
+                  itemData={listItems}
                   width={width}
                   height={height}
-                  {...scroll}
+                  outerRef={scroll.outerRef}
+                  ref={scroll.ref as any}
                 >
-                  {RepostGroupRow}
+                  {ListItemRow}
                 </List>
               )}
             </AutoSizer>

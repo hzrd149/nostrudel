@@ -19,13 +19,13 @@ export default function CacheRelayView() {
 
   return (
     <SimpleView title="Cache Relay" maxW="4xl">
-      <Text fontStyle="italic" mt="-2" px={{ base: "2", lg: 0 }}>
+      <Text fontStyle="italic" px={{ base: "2", lg: 0 }}>
         The cache relay is used to cache events locally so they can be loaded quickly
       </Text>
+      {navigator.userAgent.includes("Android") ? <CitrineRelayCard /> : <NostrRelayTrayCard />}
       <NostrIdbCard />
       {WASM_RELAY_SUPPORTED && <WasmWorkerCard />}
       {CAP_IS_NATIVE && <NativeSqliteCard />}
-      {navigator.userAgent.includes("Android") ? <CitrineRelayCard /> : <NostrRelayTrayCard />}
       {window.CACHE_RELAY_ENABLED && <HostedRelayCard />}
       <Button w="full" variant="link" p="4" onClick={showAdvanced.onToggle}>
         <Divider />

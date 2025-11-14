@@ -1,6 +1,18 @@
 import { bech32 } from "@scure/base";
 import { NostrEvent, utils } from "nostr-tools";
-import { getZapPayment, isETag, isPTag, ProfileContent } from "applesauce-core/helpers";
+import {
+  AddressPointer,
+  EventPointer,
+  getCoordinateFromAddressPointer,
+  getZapAddressPointer,
+  getZapEventPointer,
+  getZapPayment,
+  insertEventIntoDescendingList,
+  isETag,
+  isPTag,
+  ProfileContent,
+  ZapEvent,
+} from "applesauce-core/helpers";
 
 // based on https://github.com/nbd-wtf/nostr-tools/blob/master/nip57.ts
 export async function getZapEndpoint(metadata: ProfileContent): Promise<null | string> {
@@ -40,4 +52,51 @@ export function isProfileZap(event: NostrEvent) {
 
 export function totalZaps(zaps: NostrEvent[]) {
   return zaps.map(getZapPayment).reduce((t, p) => t + (p?.amount ?? 0), 0);
+}
+
+export type TZapGroup = {
+  key: string;
+  eventPointer: EventPointer;
+  addressPointer?: AddressPointer;
+  events: ZapEvent[];
+  latest: number;
+};
+
+/**
+ * Groups zap events by the zapped event (using event pointers or address pointers)
+ * and sorts them by most recent timestamp
+ */
+export function groupZapsByZappedEvent(events: ZapEvent[]): TZapGroup[] {
+  if (!events || events.length === 0) return [];
+
+  const groups = new Map<string, TZapGroup>();
+
+  for (const event of events) {
+    // Try to get the zapped event pointer
+    const eventPointer = getZapEventPointer(event) ?? undefined;
+    const addressPointer = getZapAddressPointer(event) ?? undefined;
+
+    const key = addressPointer ? getCoordinateFromAddressPointer(addressPointer) : eventPointer?.id;
+    if (!key) continue;
+
+    // Create the group if it doesn't exist
+    let group = groups.get(key);
+    if (!group) {
+      group = {
+        key,
+        eventPointer: eventPointer!,
+        addressPointer: addressPointer,
+        events: [],
+        latest: event.created_at,
+      };
+      groups.set(key, group);
+    }
+
+    // Add the event to the group
+    insertEventIntoDescendingList(group.events, event);
+    group.latest = Math.max(group.latest, event.created_at);
+  }
+
+  // Convert to array and sort by most recent timestamp
+  return Array.from(groups.values()).sort((a, b) => b.latest - a.latest);
 }

@@ -1,11 +1,11 @@
 import { Filter, NostrEvent } from "nostr-tools";
-import { BehaviorSubject, bufferTime, combineLatest, EMPTY, filter, Observable, Subject, timeout } from "rxjs";
+import { BehaviorSubject, bufferTime, EMPTY, filter, Observable, Subject, timeout } from "rxjs";
 
-import { CAP_IS_NATIVE, CAP_IS_WEB, WASM_RELAY_SUPPORTED } from "../../env";
+import { CAP_IS_NATIVE, WASM_RELAY_SUPPORTED } from "../../env";
 import { logger } from "../../helpers/debug";
+import { wrapInTimeout } from "../../helpers/promise";
 import localSettings from "../preferences";
 import { EventCache } from "./interface";
-import { wrapInTimeout } from "../../helpers/promise";
 
 // An ordered array of fallback types to use when event cache fails to load
 const FALLBACKS: string[] = ["local-relay", "nostr-idb", "none"];

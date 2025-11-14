@@ -10,13 +10,14 @@ import {
 } from "applesauce-core/helpers";
 import { useMemo } from "react";
 
-import { ZapGroup as ZapGroupType } from "..";
 import HoverLinkOverlay from "../../../../components/hover-link-overlay";
 import RouterLink from "../../../../components/router-link";
 import Timestamp from "../../../../components/timestamp";
 import UserAvatar from "../../../../components/user/user-avatar";
 import UserName from "../../../../components/user/user-name";
 import { humanReadableSats } from "../../../../helpers/lightning";
+import { TZapGroup } from "../../../../helpers/nostr/zaps";
+import useEventIntersectionRef from "../../../../hooks/use-event-intersection-ref";
 import useReplaceableEvent from "../../../../hooks/use-replaceable-event";
 import useSingleEvent from "../../../../hooks/use-single-event";
 
@@ -32,11 +33,12 @@ function ZapBubble({ zap }: { zap: ZapEvent }) {
   );
 }
 
-export default function ZapGroup({ group }: { group: ZapGroupType }) {
+export default function ZapGroup({ group }: { group: TZapGroup }) {
   // Try to load the zapped event
   const singleEvent = useSingleEvent(group.eventPointer);
   const replaceableEvent = useReplaceableEvent(group.addressPointer);
   const event = replaceableEvent || singleEvent;
+  const ref = useEventIntersectionRef(group.events[0]);
 
   // Sort zaps by amount (highest first)
   const sortedZaps = useMemo(() => {
@@ -49,7 +51,7 @@ export default function ZapGroup({ group }: { group: ZapGroupType }) {
   }, [group]);
 
   return (
-    <Flex as={LinkBox} direction="column" overflow="hidden" p="2" gap="2">
+    <Flex as={LinkBox} direction="column" overflow="hidden" p="2" gap="2" ref={ref}>
       {/* Zapped Event */}
       {event ? (
         <Flex overflow="hidden" alignItems="center" gap="2">

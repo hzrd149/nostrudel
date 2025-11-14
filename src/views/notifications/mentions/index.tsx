@@ -6,26 +6,33 @@ import { getContentPointers } from "applesauce-factory/helpers";
 import { kinds, NostrEvent } from "nostr-tools";
 import { useMemo } from "react";
 import AutoSizer from "react-virtualized-auto-sizer";
-import { FixedSizeList as List, ListChildComponentProps } from "react-window";
+import { VariableSizeList as List, ListChildComponentProps } from "react-window";
 
 import { ErrorBoundary } from "../../../components/error-boundary";
 import SimpleView from "../../../components/layout/presets/simple-view";
+import { groupByTimePeriod, TimeGroupedListItem } from "../../../helpers/time-grouping";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
 import { useVirtualListScrollRestore } from "../../../hooks/use-scroll-restore";
 import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
 import IntersectionObserverProvider from "../../../providers/local/intersection-observer";
 import { socialNotificationsLoader$ } from "../../../services/notifications";
+import TimePeriodHeader from "../components/time-period-header";
 import MentionCard from "./components/mention-card";
 
-function MentionRow({ index, style, data }: ListChildComponentProps<NostrEvent[]>) {
-  const event = data[index];
-  const ref = useEventIntersectionRef(event);
+type ListItem = TimeGroupedListItem<NostrEvent>;
+
+function ListItemRow({ index, style, data }: ListChildComponentProps<ListItem[]>) {
+  const item = data[index];
 
   return (
-    <Box style={style} borderBottomWidth={1} ref={ref}>
-      <ErrorBoundary>
-        <MentionCard event={event} />
-      </ErrorBoundary>
+    <Box style={style}>
+      {item.type === "header" ? (
+        <TimePeriodHeader label={item.label} />
+      ) : (
+        <ErrorBoundary>
+          <MentionCard event={item.item} />
+        </ErrorBoundary>
+      )}
     </Box>
   );
 }
@@ -62,23 +69,38 @@ export default function MentionsTab() {
       .sort((a, b) => b.created_at - a.created_at);
   }, [events, account.pubkey]);
 
+  // Group mentions by time period
+  const listItems = useMemo<ListItem[]>(() => {
+    return groupByTimePeriod(
+      mentions,
+      (event) => event.created_at,
+      (event) => event.id,
+    );
+  }, [mentions]);
+
+  const getItemSize = (index: number) => {
+    const item = listItems[index];
+    return item.type === "header" ? 60 : 80;
+  };
+
   return (
     <IntersectionObserverProvider callback={callback}>
       <SimpleView title="Mentions" scroll={false} flush gap={0}>
         <Flex direction="column" flex={1}>
-          {mentions.length > 0 ? (
+          {listItems.length > 0 ? (
             <AutoSizer>
               {({ height, width }) => (
                 <List
-                  itemKey={(index, data) => data[index].id}
-                  itemCount={mentions.length}
-                  itemSize={80}
-                  itemData={mentions}
+                  itemKey={(index, data) => data[index].key}
+                  itemCount={listItems.length}
+                  itemSize={getItemSize}
+                  itemData={listItems}
                   width={width}
                   height={height}
-                  {...scroll}
+                  outerRef={scroll.outerRef}
+                  ref={scroll.ref as any}
                 >
-                  {MentionRow}
+                  {ListItemRow}
                 </List>
               )}
             </AutoSizer>

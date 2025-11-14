@@ -11,8 +11,11 @@ import UserAvatarLink from "../../../../components/user/user-avatar-link";
 import UserName from "../../../../components/user/user-name";
 import useSingleEvent from "../../../../hooks/use-single-event";
 import { eventStore } from "../../../../services/event-store";
+import useEventIntersectionRef from "../../../../hooks/use-event-intersection-ref";
 
 export default function RepostGroup({ group }: { group: RepostGroupType }) {
+  const ref = useEventIntersectionRef(group.events[0]);
+
   // Get the shared event
   const firstShareEvent = group.events[0];
   const wrappedEvent = useMemo(() => getEmbededSharedEvent(firstShareEvent), [firstShareEvent.content]);
@@ -47,7 +50,7 @@ export default function RepostGroup({ group }: { group: RepostGroupType }) {
   }, [group]);
 
   return (
-    <Flex as={LinkBox} direction="column" overflow="hidden" p="2" gap="2">
+    <Flex as={LinkBox} direction="column" overflow="hidden" p="2" gap="2" ref={ref}>
       {/* Shared Note */}
       {sharedEvent ? (
         <Flex overflow="hidden" alignItems="center" gap="2">
