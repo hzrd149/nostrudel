@@ -7,6 +7,7 @@ import { EventPointer } from "nostr-tools/nip19";
 import { ReactNode } from "react";
 import { Link as RouterLink } from "react-router-dom";
 
+import ExpandableToggleButton from "../../components/expandable-toggle-button";
 import LoadingNostrLink from "../../components/loading-nostr-link";
 import TextNoteContents from "../../components/timeline/note/text-note-contents";
 import Timestamp from "../../components/timestamp";
@@ -20,10 +21,9 @@ import useParamsEventPointer from "../../hooks/use-params-event-pointer";
 import useSingleEvent from "../../hooks/use-single-event";
 import useThreadTimelineLoader from "../../hooks/use-thread-timeline-loader";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
-import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import { ContentSettingsProvider } from "../../providers/local/content-settings";
+import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import { getSharableEventAddress } from "../../services/relay-hints";
-import { ExpandableToggleButton } from "../notifications/components/notification-item";
 import ThreadPost from "./components/thread-post";
 
 function ParentNote({ note, level = 0 }: { note: NostrEvent; level?: number }) {

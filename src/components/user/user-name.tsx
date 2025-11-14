@@ -9,12 +9,19 @@ import localSettings from "../../services/preferences";
 
 function UserName({ pubkey, ...props }: Omit<TextProps, "children"> & { pubkey: string }) {
   const metadata = useUserProfile(pubkey);
-  const { removeEmojisInUsernames } = useAppSettings();
+  const { removeEmojisInUsernames, showPubkeyColor } = useAppSettings();
+  const color = "#" + pubkey.slice(0, 6);
 
   const hideUsernames = useObservableEagerState(localSettings.hideUsernames);
 
   return (
-    <Text as="span" whiteSpace="nowrap" fontWeight="bold" {...props}>
+    <Text
+      as="span"
+      whiteSpace="nowrap"
+      fontWeight="bold"
+      textDecoration={showPubkeyColor === "underline" ? `underline ${color} solid 2px` : undefined}
+      {...props}
+    >
       {hideUsernames ? "Anon" : getDisplayName(metadata, pubkey, removeEmojisInUsernames)}
     </Text>
   );
