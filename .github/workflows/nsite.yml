@@ -1,5 +1,6 @@
-name: Deploy Next Version
+name: Deploy nsite
 on:
+  workflow_dispatch:
   push:
     branches:
       - master
@@ -41,5 +42,10 @@ jobs:
       - name: Redirect 404 to Index for SPA
         run: cp dist/index.html dist/404.html
 
-      - name: Deploy nsite
-        run: npx -y nsite-cli upload dist --verbose --purge --privatekey ${{ secrets.NSITE_KEY }}
+      - name: Deploy to nsite
+        uses: sandwichfarm/nsite-action@v0.2.2
+        with:
+          nbunksec: ${{ secrets.NSITE_BUNKER }}
+          directory: "./dist"
+          force: true
+          purge: true
