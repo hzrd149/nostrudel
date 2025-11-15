@@ -1,5 +1,39 @@
 # nostrudel
 
+## 1.0.0
+
+### Major Changes
+
+- 056b0f6: Subscribe to users outbox relays for home feed (outbox model)
+- aff6784: Rename "Discovery" view to "Feeds"
+
+### Minor Changes
+
+- 8ff8aa5: Show highlights in the timeline
+- 92ee6f7: Remove experimental relay chat view
+- 6c970fc: Remove broken DVM tools in thread view
+- 1e7e413: Remove support for note corrections (they were shown under note threads)
+- 54404d8: Add contacts outbox feeds to feeds view
+- aff6784: Add relay favorite button to relay feed
+- 91d280e: Add blossom servers page
+- 0731e9f: Add support for Primal, Vertex, and Relatr username search
+- 453d264: Cleanup launchpad layout
+- e0e50a2: Remove view for browsing zap goals (boken)
+- 345929b: Remove stemstr support
+- 65fbe8e: Replace "Notifications" on launchpad with threads, mentions, and zaps
+- 75e58bd: Rebuild notification views
+- e0e50a2: Remove flare.pub video views
+- 1e7e413: Remove DVM translations and TTS (no more DVMs running)
+- e0e50a2: Remove view for browsing badges (broken)
+- 5816f3d: Remove experimental WebRTC relay feature (it never worked)
+- 1e7e413: Remove map tool
+- 5de83bf: Finish NIP-29 group chat view
+
+### Patch Changes
+
+- fc863bd: Disable reactions on NIP-17 DMs
+- 991e36a: Fix spotify embeds being mistaken for wavlake
+
 ## 0.46.1
 
 ### Patch Changes
