@@ -1,5 +1,6 @@
 import { bytesToHex, hexToBytes } from "@noble/hashes/utils";
 import { type SerializedAccount } from "applesauce-accounts";
+import type { ProfilePointer } from "nostr-tools/nip19";
 
 import { PreferenceSubject } from "../classes/preference-subject";
 import {
@@ -79,6 +80,16 @@ const defaultMessageExpiration = await PreferenceSubject.numberNullable("default
 const maxConnections = await PreferenceSubject.number("max-connections", DEFAULT_MAX_CONNECTIONS);
 const maxRelaysPerUser = await PreferenceSubject.number("max-relays-per-user", DEFAULT_MAX_RELAYS_PER_USER);
 
+// Username Lookup
+const usernameLookupProvider = await PreferenceSubject.string("username-lookup-provider", "primal");
+const primalCacheUrl = await PreferenceSubject.stringNullable("primal-cache-url", null);
+const vertexRelayUrl = await PreferenceSubject.stringNullable("vertex-relay-url", null);
+const vertexSortMethod = await PreferenceSubject.string("vertex-sort-method", "globalPagerank");
+const relatrServer = await PreferenceSubject.create<ProfilePointer | null>("relatr-server", null, {
+  decode: (raw) => JSON.parse(raw),
+  encode: (value) => JSON.stringify(value),
+});
+
 const localSettings = {
   // Accounts
   accounts,
@@ -127,6 +138,13 @@ const localSettings = {
   // Relay Selection
   maxConnections,
   maxRelaysPerUser,
+
+  // Username Lookup
+  usernameLookupProvider,
+  primalCacheUrl,
+  vertexRelayUrl,
+  vertexSortMethod,
+  relatrServer,
 } satisfies Record<string, PreferenceSubject<any>>;
 
 // Migrate legacy local storage settings

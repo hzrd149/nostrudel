@@ -9,6 +9,8 @@ import { Observable } from "rxjs";
 import { eventCache$ } from "../../../services/event-cache";
 import { eventStore } from "../../../services/event-store";
 import pool from "../../../services/pool";
+import { lookupUsers, SearchResult } from "../../../services/username-search";
+import useAsyncAction from "../../../hooks/use-async-action";
 import ArticleSearchResults from "./article-results";
 import NoteSearchResults from "./note-results";
 import ProfileSearchResults from "./profile-results";
@@ -29,18 +31,49 @@ export function createSearchAction(relays?: string[]): (filters: Filter[]) => Ob
 }
 
 const searchCache = new LRU<NostrEvent[]>(10);
+const profileSearchCache = new LRU<SearchResult[]>(10);
 
 export default function SearchResults({ query, relay }: { query: string; relay: string }) {
   const [results, setResults] = useState<NostrEvent[]>([]);
+  const [profileResults, setProfileResults] = useState<SearchResult[]>([]);
 
   const [searching, setSearching] = useState(false);
+  const [searchingProfiles, setSearchingProfiles] = useState(false);
   const [error, setError] = useState<Error>();
   const search = useMemo(() => createSearchAction(relay ? [relay] : []), [relay]);
+
+  // Search for profiles using username-search service
+  const { loading: loadingProfiles, run: searchProfiles } = useAsyncAction(
+    async (searchQuery: string) => {
+      const results = await lookupUsers(searchQuery, 20);
+      return results;
+    },
+    []
+  );
 
   useEffect(() => {
     if (query.length < 3) return;
 
     setError(undefined);
+
+    // Search for profiles using username-search service
+    if (profileSearchCache.has(query)) {
+      const cached = profileSearchCache.get(query)!;
+      setProfileResults(cached);
+      setSearchingProfiles(false);
+    } else {
+      setProfileResults([]);
+      setSearchingProfiles(true);
+      searchProfiles(query).then((results) => {
+        if (results) {
+          setProfileResults(results);
+          profileSearchCache.set(query, results);
+        }
+        setSearchingProfiles(false);
+      });
+    }
+
+    // Search for notes and articles using relay search
     if (searchCache.has(query + relay)) {
       // restore search from cache
       const events = searchCache.get(query + relay)!;
@@ -52,7 +85,7 @@ export default function SearchResults({ query, relay }: { query: string; relay: 
       setSearching(true);
 
       const sub = search([
-        { search: query, kinds: [kinds.Metadata, kinds.ShortTextNote, kinds.LongFormArticle], limit: 200 },
+        { search: query, kinds: [kinds.ShortTextNote, kinds.LongFormArticle], limit: 200 },
       ]).subscribe((event) => {
         setResults((arr) => {
           const newArr = [...arr, event];
@@ -63,16 +96,19 @@ export default function SearchResults({ query, relay }: { query: string; relay: 
 
       return () => sub.unsubscribe();
     }
-  }, [query, search]);
+  }, [query, search, searchProfiles]);
 
-  const profiles = results.filter((e) => e.kind === kinds.Metadata);
   const notes = results.filter((e) => e.kind === kinds.ShortTextNote);
   const articles = results.filter((e) => e.kind === kinds.LongFormArticle);
 
-  if (searching && results.length === 0) {
+  const isLoading = (searching && results.length === 0) || (searchingProfiles && profileResults.length === 0);
+  const hasResults = profileResults.length > 0 || results.length > 0;
+  const totalResults = profileResults.length + results.length;
+
+  if (isLoading) {
     return (
       <Heading size="md" mx="auto" my="10">
-        <Spinner /> Searching relay...
+        <Spinner /> Searching...
       </Heading>
     );
   }
@@ -99,7 +135,7 @@ export default function SearchResults({ query, relay }: { query: string; relay: 
     );
   }
 
-  if (results.length === 0) {
+  if (!hasResults) {
     return (
       <Heading size="md" mx="auto" my="10">
         Found nothing... :(
@@ -109,8 +145,8 @@ export default function SearchResults({ query, relay }: { query: string; relay: 
 
   return (
     <>
-      {results.length > 0 && <Text>Found {results.length} results</Text>}
-      {profiles.length > 0 && <ProfileSearchResults profiles={profiles} />}
+      {hasResults && <Text>Found {totalResults} results</Text>}
+      {profileResults.length > 0 && <ProfileSearchResults profiles={profileResults} />}
       {notes.length > 0 && <NoteSearchResults notes={notes} />}
       {articles.length > 0 && <ArticleSearchResults articles={articles} />}
     </>

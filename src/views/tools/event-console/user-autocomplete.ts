@@ -1,9 +1,11 @@
-import _throttle from "lodash.throttle";
 import { CompletionContext, CompletionResult } from "@codemirror/autocomplete";
 import { syntaxTree } from "@codemirror/language";
-import { SearchDirectory, userSearchDirectory } from "../../../services/username-search";
+import { lookupUsers, SearchResult } from "../../../services/username-search";
 
-let users: SearchDirectory = [];
+let cachedUsers: SearchResult[] = [];
+let lastQuery = "";
+let lookupPromise: Promise<void> | null = null;
+
 export function codeMirrorUserAutocomplete(context: CompletionContext): CompletionResult | null {
   const nodeBefore = syntaxTree(context.state).resolveInner(context.pos, -1);
   if (nodeBefore.name !== "String") return null;
@@ -12,21 +14,24 @@ export function codeMirrorUserAutocomplete(context: CompletionContext): Completi
   const tagBefore = /@\w*$/.exec(textBefore);
   if (!tagBefore && !context.explicit) return null;
 
+  const query = tagBefore ? textBefore.slice(tagBefore.index + 1) : "";
+
+  // Trigger async lookup if query changed
+  if (query !== lastQuery && query.length >= 2) {
+    lastQuery = query;
+    lookupPromise = lookupUsers(query, 20).then((results) => {
+      cachedUsers = results;
+    });
+  }
+
   return {
     from: tagBefore ? nodeBefore.from + tagBefore.index : context.pos,
     validFor: /^(@\w*)?$/,
-    // options: tagOptions,
-    options: users
-      .filter((u) => !!u.names[0])
-      .map((user) => ({
-        label: "@" + user.names[0]!,
-        type: "keyword",
-        apply: user.pubkey,
-        detail: "pubkey",
-      })),
+    options: cachedUsers.map((user) => ({
+      label: "@" + user.query,
+      type: "keyword",
+      apply: user.pubkey,
+      detail: "pubkey",
+    })),
   };
 }
-
-userSearchDirectory.subscribe((directory) => {
-  users = directory;
-});

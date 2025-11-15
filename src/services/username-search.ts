@@ -1,49 +1,27 @@
-import _throttle from "lodash.throttle";
-import { kinds } from "nostr-tools";
-import { from } from "rxjs";
-import { filter, bufferTime, concatMap, mergeWith, shareReplay, map, scan } from "rxjs/operators";
-import { getProfileContent, isFromCache } from "applesauce-core/helpers";
+import localSettings from "./preferences";
+import { primalLookup } from "./lookup/primal";
+import { vertexLookup } from "./lookup/vertex";
+import { lookupRelatr } from "./lookup/relatr";
+import { ProfilePointer } from "nostr-tools/nip19";
 
-import { getSearchNames } from "../helpers/nostr/profile";
-import db from "./database";
-import { eventStore } from "./event-store";
-import { logger } from "../helpers/debug";
+export type LookupProvider = "primal" | "vertex" | "relatr";
+export type SearchResult = ProfilePointer & { query: string };
 
-export type UserDirectory = Record<string, string[]>;
-export type SearchDirectory = { pubkey: string; names: string[] }[];
+/**
+ * Lookup users by username using the configured provider
+ */
+export async function lookupUsers(query: string, limit: number = 10): Promise<SearchResult[]> {
+  const provider = localSettings.usernameLookupProvider.value as LookupProvider;
 
-const log = logger.extend("UsernameSearch");
+  let results: ProfilePointer[] = [];
+  switch (provider) {
+    case "primal":
+      results = await primalLookup(query, limit);
+    case "vertex":
+      results = await vertexLookup(query, limit);
+    case "relatr":
+      results = await lookupRelatr(query, limit);
+  }
 
-log(`Started loading profiles`);
-const cache = db.getAll("userSearch").then((rows: { pubkey: string; names: string[] }[]) => {
-  log(`Loaded ${rows.length} profiles`);
-  return rows.reduce<UserDirectory>((dir, row) => ({ ...dir, [row.pubkey]: row.names }), {});
-});
-
-const updates = eventStore.filters([{ kinds: [kinds.Metadata] }]).pipe(
-  filter((event) => !isFromCache(event)),
-  bufferTime(500),
-  concatMap(async (events) => {
-    if (events.length === 0) return {};
-
-    const updates: UserDirectory = {};
-    const transaction = db.transaction("userSearch", "readwrite");
-    for (const metadata of events) {
-      const profile = getProfileContent(metadata);
-      const names = profile ? getSearchNames(profile) : [];
-      updates[metadata.pubkey] = names;
-      transaction.objectStore("userSearch").put({ pubkey: metadata.pubkey, names });
-    }
-    transaction.commit();
-    await transaction.done;
-    log(`Updated ${events.length} profiles`);
-    return updates;
-  }),
-);
-
-export const userSearchDirectory = from(cache).pipe(
-  mergeWith(updates),
-  scan((dir, updates) => ({ ...dir, ...updates })),
-  map<UserDirectory, SearchDirectory>((dir) => Object.entries(dir).map(([pubkey, names]) => ({ pubkey, names }))),
-  shareReplay(1),
-);
+  return results.map((result) => ({ ...result, query }));
+}

@@ -1,6 +1,6 @@
-import { LegacyRef, forwardRef, useMemo } from "react";
+import { forwardRef, LegacyRef, useMemo, useRef } from "react";
 // NOTE: Do not remove Textarea or Input from the imports. they are used
-import { Image, Input, InputProps, Textarea, TextareaProps } from "@chakra-ui/react";
+import { Image, Input, InputProps, Spinner, Textarea, TextareaProps } from "@chakra-ui/react";
 import { type EmojiMartData } from "@emoji-mart/data";
 import ReactTextareaAutocomplete, {
   ItemComponentProps,
@@ -8,21 +8,23 @@ import ReactTextareaAutocomplete, {
   TriggerType,
 } from "@webscopeio/react-textarea-autocomplete";
 import "@webscopeio/react-textarea-autocomplete/style.css";
-import { useObservableState } from "applesauce-react/hooks";
 import { matchSorter } from "match-sorter";
 import { nip19 } from "nostr-tools";
 import { useAsync, useLocalStorage } from "react-use";
 
+import { debounce } from "../helpers/function";
+
 import { useContextEmojis } from "../providers/global/emoji-provider";
 import { sortByDistanceAndConnections } from "../services/social-graph";
-import { userSearchDirectory } from "../services/username-search";
+import { lookupUsers, SearchResult } from "../services/username-search";
 import UserAvatar from "./user/user-avatar";
 import UserDnsIdentity from "./user/user-dns-identity";
+import UserName from "./user/user-name";
 
 // Referencing Textarea and Input so they are not removed from the imports
 [Textarea, Input];
 
-export type PeopleToken = { pubkey: string; names: string[] };
+export type PeopleToken = SearchResult;
 export type EmojiToken = { id: string; name: string; keywords: string[]; char: string; url?: string };
 type Token = EmojiToken | PeopleToken;
 
@@ -38,16 +40,23 @@ const Item = ({ entity }: ItemComponentProps<Token>) => {
     const { url, name, char } = entity;
     if (url)
       return (
-        <span role="option" aria-label={`Emoji: ${name}`}>
+        <span role="option" aria-label={`Emoji: ${name}`} style={{ background: "transparent" }}>
           {name}:{" "}
           <Image src={url} h="1.2em" w="1.2em" display="inline-block" verticalAlign="middle" title={name} alt={name} />
         </span>
       );
-    else return <span role="option" aria-label={`Emoji: ${name}`}>{`${name}: ${char}`}</span>;
+    else
+      return (
+        <span
+          role="option"
+          aria-label={`Emoji: ${name}`}
+          style={{ background: "transparent" }}
+        >{`${name}: ${char}`}</span>
+      );
   } else if (isPersonToken(entity)) {
     return (
-      <span role="option" aria-label={`User: ${entity.names[0]}`}>
-        <UserAvatar pubkey={entity.pubkey} size="xs" /> {entity.names[0]}{" "}
+      <span role="option" aria-label={`User: ${entity.pubkey}`} style={{ background: "transparent" }}>
+        <UserAvatar pubkey={entity.pubkey} size="xs" /> <UserName pubkey={entity.pubkey} />{" "}
         <UserDnsIdentity pubkey={entity.pubkey} onlyIcon />
       </span>
     );
@@ -66,7 +75,11 @@ function output(token: Token) {
 const Loading: ReactTextareaAutocompleteProps<
   Token,
   React.TextareaHTMLAttributes<HTMLTextAreaElement>
->["loadingComponent"] = ({ data }) => <div>Loading</div>;
+>["loadingComponent"] = ({ data }) => (
+  <div style={{ padding: "8px", background: "var(--chakra-colors-chakra-body-bg)", textAlign: "center" }}>
+    <Spinner size="sm" />
+  </div>
+);
 
 function useEmojiTokens() {
   const customEmojis = useContextEmojis();
@@ -116,33 +129,39 @@ function useEmojiTokens() {
 }
 
 function useAutocompleteTriggers() {
-  const directory = useObservableState(userSearchDirectory) ?? [];
   const emojis = useEmojiTokens();
 
-  const triggers: TriggerType<Token> = {
-    ":": {
-      dataProvider: (token: string) => {
-        if (!token) return emojis.slice(0, 10);
-        else return matchSorter(emojis, token.trim(), { keys: ["keywords"] }).slice(0, 10);
+  // Create a stable reference to the lookup function that will be debounced
+  const lookupFunctionRef = useRef(async (token: string) => {
+    const results = await lookupUsers(token.trim(), 10);
+    return sortByDistanceAndConnections(results, (r) => r.pubkey);
+  });
+
+  // Create a debounced version - note: debounce wraps the result in a Promise
+  const debouncedLookupRef = useRef(debounce(lookupFunctionRef.current, 300));
+
+  const triggers: TriggerType<Token> = useMemo(
+    () => ({
+      ":": {
+        dataProvider: (token: string) => {
+          if (!token) return emojis.slice(0, 10);
+          else return matchSorter(emojis, token.trim(), { keys: ["keywords"] }).slice(0, 10);
+        },
+        component: Item,
+        output,
       },
-      component: Item,
-      output,
-    },
-    "@": {
-      dataProvider: async (token: string) => {
-        return matchSorter(directory, token.trim(), {
-          keys: ["names"],
-          sorter: (items) =>
-            sortByDistanceAndConnections(
-              items.sort((a, b) => b.rank - a.rank),
-              (i) => i.item.pubkey,
-            ),
-        }).slice(0, 10);
+      "@": {
+        dataProvider: async (token: string) => {
+          // Require at least 3 characters before searching
+          if (token.trim().length < 3) return [];
+          return await debouncedLookupRef.current(token);
+        },
+        component: Item,
+        output,
       },
-      component: Item,
-      output,
-    },
-  };
+    }),
+    [emojis],
+  );
 
   return triggers;
 }
@@ -198,4 +217,4 @@ const MagicTextArea = forwardRef<HTMLTextAreaElement, TextareaProps & { instance
 
 MagicTextArea.displayName = "MagicTextArea";
 
-export { MagicInput, MagicTextArea as default };
+export { MagicTextArea as default, MagicInput };

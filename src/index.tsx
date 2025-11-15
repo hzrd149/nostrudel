@@ -9,7 +9,6 @@ import { URLOpenListenerEvent, App as CapacitorApp } from "@capacitor/app";
 import "./services/debug-api";
 import "./services/decryption-cache";
 import "./services/lifecycle";
-import "./services/username-search";
 
 // setup bitcoin connect
 import { init, onConnected } from "@getalby/bitcoin-connect-react";

@@ -1,6 +1,20 @@
-import { Alert, AlertDescription, AlertIcon, AlertTitle, Box, Button, Text } from "@chakra-ui/react";
+import {
+  Alert,
+  AlertDescription,
+  AlertIcon,
+  AlertTitle,
+  Box,
+  Button,
+  Divider,
+  FormControl,
+  FormLabel,
+  Heading,
+  Select,
+  Spacer,
+  Text,
+} from "@chakra-ui/react";
 import { addRelayTag, removeRelayTag } from "applesauce-factory/operations/tag";
-import { useActiveAccount, useEventFactory } from "applesauce-react/hooks";
+import { useActiveAccount, useEventFactory, useObservableEagerState } from "applesauce-react/hooks";
 import { kinds } from "nostr-tools";
 
 import SimpleView from "../../../components/layout/presets/simple-view";
@@ -9,8 +23,13 @@ import { useRelayInfo } from "../../../hooks/use-relay-info";
 import useAsyncAction from "../../../hooks/use-async-action";
 import useUserSearchRelayList from "../../../hooks/use-user-search-relay-list";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
+import localSettings from "../../../services/preferences";
+import { LookupProvider } from "../../../services/username-search";
 import AddRelayForm from "../relays/components/add-relay-form";
 import RelayControl from "../relays/components/relay-control";
+import { PrimalConfig } from "./components/primal-config";
+import { RelatrConfig } from "./components/relatr-config";
+import { VertexConfig } from "./components/vertex-config";
 
 function RelayEntry({
   url,
@@ -125,6 +144,44 @@ export default function SearchSettings() {
       ))}
 
       <AddRelayForm onSubmit={addRelay.run} supportedNips={[50]} />
+
+      <Divider my="6" />
+
+      <UsernameLookupSettings />
     </SimpleView>
+  );
+}
+
+function UsernameLookupSettings() {
+  const selectedProvider = useObservableEagerState(localSettings.usernameLookupProvider) as LookupProvider;
+
+  return (
+    <>
+      <Box>
+        <Heading size="md" mb="2">
+          Username Lookup
+        </Heading>
+        <Text fontSize="sm" color="gray.500" mb="4">
+          Select the provider to use for searching users by username.
+        </Text>
+      </Box>
+
+      <FormControl>
+        <FormLabel>Search Provider</FormLabel>
+        <Select
+          value={selectedProvider}
+          onChange={(e) => localSettings.usernameLookupProvider.next(e.target.value)}
+          maxW="md"
+        >
+          <option value="primal">Primal - Uses Primal cache server</option>
+          <option value="vertex">Vertex - Uses Vertex relay with ranked results</option>
+          <option value="relatr">Relatr - Uses Relatr search server</option>
+        </Select>
+      </FormControl>
+
+      {selectedProvider === "primal" && <PrimalConfig />}
+      {selectedProvider === "vertex" && <VertexConfig />}
+      {selectedProvider === "relatr" && <RelatrConfig />}
+    </>
   );
 }

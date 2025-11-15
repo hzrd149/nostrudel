@@ -13,20 +13,20 @@ import {
   SimpleGrid,
   useDisclosure,
 } from "@chakra-ui/react";
-import { useActiveAccount, useObservableState } from "applesauce-react/hooks";
+import { useActiveAccount } from "applesauce-react/hooks";
 import { kinds } from "nostr-tools";
 import { useCallback, useState } from "react";
 import { getProfilePointersFromList, getReplaceableAddress } from "applesauce-core/helpers";
 
-import { matchSorter } from "match-sorter";
 import { NostrEvent } from "nostr-tools";
+import { useAsync, useDebounce } from "react-use";
 import { getEventUID } from "../../helpers/nostr/event";
 import { getListTitle } from "../../helpers/nostr/lists";
 import useFavoriteLists from "../../hooks/use-favorite-lists";
 import useUserContactList from "../../hooks/use-user-contact-list";
 import useUserSets from "../../hooks/use-user-sets";
 import { usePeopleListContext } from "../../providers/local/people-list-provider";
-import { userSearchDirectory } from "../../services/username-search";
+import { lookupUsers } from "../../services/username-search";
 import UserAvatar from "../user/user-avatar";
 import UserName from "../user/user-name";
 
@@ -63,17 +63,26 @@ export default function PeopleListSelection({
   const { lists: favoriteLists } = useFavoriteLists(account?.pubkey);
   const { selected, setSelected, listEvent } = usePeopleListContext();
 
-  const searchDirectory = useObservableState(userSearchDirectory);
   const contacts = useUserContactList(account?.pubkey);
-  const getSearchResults = useCallback(
-    (search: string) => {
-      const pubkeys = contacts ? getProfilePointersFromList(contacts).map((p) => p.pubkey) : [];
-      const filteredByContacts = searchDirectory?.filter((p) => pubkeys.includes(p.pubkey)) ?? [];
-      return matchSorter(filteredByContacts, search.trim(), { keys: ["names"] }).slice(0, 10);
-    },
-    [contacts, searchDirectory],
-  );
   const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+
+  useDebounce(
+    () => {
+      setDebouncedSearch(search);
+    },
+    300,
+    [search],
+  );
+
+  const { value: searchResults = [] } = useAsync(async () => {
+    if (debouncedSearch.trim().length < 2) return [];
+
+    const results = await lookupUsers(debouncedSearch.trim(), 10);
+    const contactPubkeys = contacts ? getProfilePointersFromList(contacts).map((p) => p.pubkey) : [];
+    // Filter to only show contacts
+    return results.filter((r) => contactPubkeys.includes(r.pubkey));
+  }, [debouncedSearch, contacts]);
 
   const selectList = useCallback(
     (list: NostrEvent) => {
@@ -152,7 +161,7 @@ export default function PeopleListSelection({
             />
             {search.length > 2 && (
               <SimpleGrid columns={2} spacing="2">
-                {getSearchResults(search).map((person) => (
+                {searchResults.map((person) => (
                   <PersonCard key={person.pubkey} pubkey={person.pubkey} onClick={() => selectPerson(person.pubkey)} />
                 ))}
               </SimpleGrid>

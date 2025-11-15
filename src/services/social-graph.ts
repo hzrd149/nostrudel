@@ -152,7 +152,7 @@ export function sortComparePubkeys(a: string, b: string) {
   const graph = socialGraph$.value;
   const aDist = graph.getFollowDistance(a);
   const bDist = graph.getFollowDistance(b);
-  return Math.abs(aDist - bDist);
+  return aDist - bDist;
 }
 
 if (import.meta.env.DEV) {

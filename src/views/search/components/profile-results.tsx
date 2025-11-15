@@ -1,7 +1,6 @@
-import { useMemo, useState } from "react";
 import { useAsync } from "react-use";
-import { nip19, NostrEvent } from "nostr-tools";
-import { Button, ButtonGroup, Flex, LinkBox, Text } from "@chakra-ui/react";
+import { nip19 } from "nostr-tools";
+import { Flex, LinkBox, Text } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 
 import UserAvatar from "../../../components/user/user-avatar";
@@ -11,10 +10,56 @@ import { humanReadableSats } from "../../../helpers/lightning";
 import UserAboutContent from "../../../components/user/user-about-content";
 import UserName from "../../../components/user/user-name";
 import HoverLinkOverlay from "../../../components/hover-link-overlay";
-import { sortByDistanceAndConnections } from "../../../services/social-graph";
+import { SearchResult } from "../../../services/username-search";
 
-function ProfileResult({ profile }: { profile: NostrEvent }) {
-  const { value: stats } = useAsync(() => trustedUserStatsService.getUserStats(profile.pubkey), [profile.pubkey]);
+// Simple cache for user stats to prevent duplicate requests
+const statsCache = new Map<string, { data: any; timestamp: number }>();
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+const pendingRequests = new Map<string, Promise<any>>();
+
+function getCachedStats(pubkey: string): any | null {
+  const cached = statsCache.get(pubkey);
+  if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
+    return cached.data;
+  }
+  return null;
+}
+
+function setCachedStats(pubkey: string, data: any) {
+  statsCache.set(pubkey, { data, timestamp: Date.now() });
+}
+
+async function fetchUserStats(pubkey: string): Promise<any> {
+  // Check cache first
+  const cached = getCachedStats(pubkey);
+  if (cached !== null) {
+    return cached;
+  }
+
+  // Check if there's already a pending request for this pubkey
+  if (pendingRequests.has(pubkey)) {
+    return pendingRequests.get(pubkey);
+  }
+
+  // Create new request
+  const request = trustedUserStatsService
+    .getUserStats(pubkey)
+    .then((stats) => {
+      setCachedStats(pubkey, stats);
+      pendingRequests.delete(pubkey);
+      return stats;
+    })
+    .catch((error) => {
+      pendingRequests.delete(pubkey);
+      throw error;
+    });
+
+  pendingRequests.set(pubkey, request);
+  return request;
+}
+
+function ProfileResult({ profile }: { profile: SearchResult }) {
+  const { value: stats } = useAsync(() => fetchUserStats(profile.pubkey), [profile.pubkey]);
 
   return (
     <Flex
@@ -45,37 +90,12 @@ function ProfileResult({ profile }: { profile: NostrEvent }) {
   );
 }
 
-export default function ProfileSearchResults({ profiles }: { profiles: NostrEvent[] }) {
-  const [order, setOrder] = useState("relay");
-
-  const sorted = useMemo(() => {
-    switch (order) {
-      case "trust":
-        return sortByDistanceAndConnections(profiles, (p) => p.pubkey) || profiles;
-      default:
-      case "relay":
-        return profiles;
-    }
-  }, [order, profiles]);
-
+export default function ProfileSearchResults({ profiles }: { profiles: SearchResult[] }) {
   return (
-    <>
-      <Flex gap="2">
-        <Text>Order By:</Text>
-        <ButtonGroup size="xs">
-          <Button variant={order === "relay" ? "solid" : "outline"} onClick={() => setOrder("relay")}>
-            Relay order
-          </Button>
-          <Button variant={order === "trust" ? "solid" : "outline"} onClick={() => setOrder("trust")}>
-            Trust
-          </Button>
-        </ButtonGroup>
-      </Flex>
-      <Flex gap="2" overflowY="hidden" overflowX="auto" w="full" px="2" pb="2">
-        {sorted.map((profile) => (
-          <ProfileResult key={profile.pubkey} profile={profile} />
-        ))}
-      </Flex>
-    </>
+    <Flex gap="2" overflowY="hidden" overflowX="auto" w="full" px="2" pb="2">
+      {profiles.map((profile) => (
+        <ProfileResult key={profile.pubkey} profile={profile} />
+      ))}
+    </Flex>
   );
 }

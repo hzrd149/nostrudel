@@ -1,15 +1,14 @@
 import { Card, Flex, FlexProps, Input, InputGroup, InputRightElement, useDisclosure } from "@chakra-ui/react";
-import { useObservableState } from "applesauce-react/hooks";
-import { matchSorter } from "match-sorter";
 import { nip19 } from "nostr-tools";
 import { FormEventHandler, useCallback, useEffect, useRef, useState } from "react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
-import { useAsync, useKeyPressEvent, useThrottle } from "react-use";
+import { useAsync, useKeyPressEvent } from "react-use";
+import { useDebounce } from "react-use";
 
 import KeyboardShortcut from "../../../components/keyboard-shortcut";
 import UserAvatar from "../../../components/user/user-avatar";
 import UserName from "../../../components/user/user-name";
-import { userSearchDirectory } from "../../../services/username-search";
+import { lookupUsers } from "../../../services/username-search";
 import { sortByDistanceAndConnections } from "../../../services/social-graph";
 
 function UserOption({ pubkey }: { pubkey: string }) {
@@ -22,25 +21,26 @@ function UserOption({ pubkey }: { pubkey: string }) {
 }
 
 export default function SearchForm({ ...props }: Omit<FlexProps, "children">) {
-  const directory = useObservableState(userSearchDirectory);
   const navigate = useNavigate();
   const autoComplete = useDisclosure();
   const ref = useRef<HTMLInputElement | null>(null);
   const [query, setQuery] = useState("");
+  const [debouncedQuery, setDebouncedQuery] = useState("");
 
-  const queryThrottle = useThrottle(query);
+  useDebounce(
+    () => {
+      setDebouncedQuery(query);
+    },
+    300,
+    [query],
+  );
+
   const { value: localUsers = [] } = useAsync(async () => {
-    if (queryThrottle.trim().length < 2) return [];
+    if (debouncedQuery.trim().length < 2) return [];
 
-    return matchSorter(directory ?? [], queryThrottle.trim(), {
-      keys: ["names"],
-      sorter: (items) =>
-        sortByDistanceAndConnections(
-          items.sort((a, b) => b.rank - a.rank),
-          (i) => i.item.pubkey,
-        ),
-    }).slice(0, 10);
-  }, [queryThrottle]);
+    const results = await lookupUsers(debouncedQuery.trim(), 10);
+    return sortByDistanceAndConnections(results, (r) => r.pubkey);
+  }, [debouncedQuery]);
   useEffect(() => {
     if (localUsers.length > 0 && !autoComplete.isOpen) autoComplete.onOpen();
   }, [localUsers, autoComplete.isOpen]);
