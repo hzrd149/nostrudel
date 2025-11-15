@@ -7,6 +7,10 @@ on:
     tags:
       - "v*.*.*"
 
+concurrency:
+  group: docker-image-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
