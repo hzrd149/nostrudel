@@ -1,0 +1,4 @@
+{
+  "relays": ["wss://relay.primal.net", "wss://nos.lol", "wss://relay.damus.io", "wss://relay.nostr.band"],
+  "servers": ["https://cdn.hzrd149.com", "https://nostr.download", "https://blossom.primal.net"]
+}
