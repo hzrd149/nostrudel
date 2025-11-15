@@ -47,5 +47,6 @@ jobs:
         with:
           nbunksec: ${{ secrets.NSITE_BUNKER }}
           directory: "./dist"
+          nsite_version: "v0.21.0"
           force: true
           purge: true
