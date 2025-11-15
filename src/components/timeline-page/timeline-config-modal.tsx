@@ -67,7 +67,9 @@ export default function TimelineConfigModal({
           <Heading size="md">Kinds</Heading>
           <Divider />
           <Flex gap="4" wrap="wrap" alignItems="center">
-            {availableKinds?.map((kind) => <KindToggle key={kind} kind={kind} />)}
+            {availableKinds?.map((kind) => (
+              <KindToggle key={kind} kind={kind} />
+            ))}
           </Flex>
         </ModalBody>
       </ModalContent>

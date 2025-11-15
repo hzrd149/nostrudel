@@ -1,6 +1,6 @@
 import { ButtonProps } from "@chakra-ui/react";
 import { useActiveAccount } from "applesauce-react/hooks";
-import { NostrEvent } from 'nostr-tools';
+import { NostrEvent } from "nostr-tools";
 import { useMemo } from "react";
 
 import { groupReactions } from "../../helpers/nostr/reactions";

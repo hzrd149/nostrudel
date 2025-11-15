@@ -8,7 +8,7 @@ import {
   neventEncode,
   ZapEvent,
 } from "applesauce-core/helpers";
-import { useMemo } from "react";
+import { memo, useMemo } from "react";
 
 import HoverLinkOverlay from "../../../../components/hover-link-overlay";
 import RouterLink from "../../../../components/router-link";
@@ -33,7 +33,7 @@ function ZapBubble({ zap }: { zap: ZapEvent }) {
   );
 }
 
-export default function ZapGroup({ group }: { group: TZapGroup }) {
+function ZapGroup({ group }: { group: TZapGroup }) {
   // Try to load the zapped event
   const singleEvent = useSingleEvent(group.eventPointer);
   const replaceableEvent = useReplaceableEvent(group.addressPointer);
@@ -89,3 +89,5 @@ export default function ZapGroup({ group }: { group: TZapGroup }) {
     </Flex>
   );
 }
+
+export default memo(ZapGroup);

@@ -3,9 +3,11 @@ import {
   getNip10References,
   getCommentReplyPointer,
   getCommentRootPointer,
+  insertEventIntoDescendingList,
 } from "applesauce-core/helpers";
 import { NostrEvent } from "nostr-tools";
 import { EventPointer, AddressPointer } from "nostr-tools/nip19";
+import { eventStore } from "../../../services/event-store";
 
 /**
  * Get the thread root pointer from an event
@@ -99,4 +101,151 @@ export function getThreadRootKey(pointer: EventPointer | AddressPointer | undefi
   }
 
   return undefined;
+}
+
+// Types for the notification state
+export type DirectReplyData = {
+  key: string;
+  event: NostrEvent;
+  parentPointer?: EventPointer | AddressPointer;
+};
+
+export type ThreadGroupData = {
+  key: string;
+  rootPointer: EventPointer | AddressPointer;
+  replies: NostrEvent[];
+  repliers: string[];
+  latest: number;
+};
+
+export type ThreadNotificationState = {
+  directReplies: Map<string, DirectReplyData>;
+  threadGroups: Map<string, ThreadGroupData>;
+};
+
+/**
+ * Iteratively process a single event and update the notification state.
+ * This function can be used with RxJS scan operator for incremental updates.
+ */
+export function processThreadNotification(
+  state: ThreadNotificationState,
+  event: NostrEvent,
+  userPubkey: string,
+): ThreadNotificationState {
+  // Skip user's own events
+  if (event.pubkey === userPubkey) return state;
+
+  const replyPointer = getReplyPointer(event);
+  const threadRoot = getThreadRoot(event);
+
+  // Try to determine if this is a direct reply
+  let isDirect = false;
+  if (replyPointer) {
+    // Check if reply pointer matches any of user's posts
+    if ("id" in replyPointer) {
+      const parentPost = eventStore.getEvent(replyPointer.id);
+      isDirect = isDirectReplyTo(event, userPubkey, parentPost);
+    }
+  }
+
+  if (isDirect && replyPointer) {
+    // Add as direct reply
+    const key = `direct-${event.id}`;
+
+    // Only add if not already present
+    if (!state.directReplies.has(key)) {
+      const newDirectReplies = new Map(state.directReplies);
+      newDirectReplies.set(key, {
+        key,
+        event,
+        parentPointer: replyPointer,
+      });
+
+      return {
+        ...state,
+        directReplies: newDirectReplies,
+      };
+    }
+  } else if (threadRoot) {
+    // Add to thread group
+    const rootKey = getThreadRootKey(threadRoot);
+    if (rootKey) {
+      const existingGroup = state.threadGroups.get(rootKey);
+
+      // Check if event is already in the group
+      if (existingGroup && existingGroup.replies.some((e) => e.id === event.id)) {
+        return state;
+      }
+
+      const newThreadGroups = new Map(state.threadGroups);
+
+      if (existingGroup) {
+        // Update existing group
+        const newReplies = [...existingGroup.replies];
+        insertEventIntoDescendingList(newReplies, event);
+
+        const newRepliers = existingGroup.repliers.includes(event.pubkey)
+          ? existingGroup.repliers
+          : [...existingGroup.repliers, event.pubkey];
+
+        newThreadGroups.set(rootKey, {
+          key: rootKey,
+          rootPointer: existingGroup.rootPointer,
+          replies: newReplies,
+          repliers: newRepliers,
+          latest: Math.max(existingGroup.latest, event.created_at),
+        });
+      } else {
+        // Create new group
+        newThreadGroups.set(rootKey, {
+          key: rootKey,
+          rootPointer: threadRoot,
+          replies: [event],
+          repliers: [event.pubkey],
+          latest: event.created_at,
+        });
+      }
+
+      return {
+        ...state,
+        threadGroups: newThreadGroups,
+      };
+    }
+  }
+
+  return state;
+}
+
+export type ThreadNotification =
+  | { type: "direct"; data: DirectReplyData; timestamp: number }
+  | { type: "thread"; data: ThreadGroupData; timestamp: number };
+
+/**
+ * Convert the notification state into a sorted array of notifications
+ */
+export function getNotificationsFromState(state: ThreadNotificationState) {
+  const notifications: ThreadNotification[] = [];
+
+  // Add direct replies
+  for (const reply of state.directReplies.values()) {
+    notifications.push({
+      type: "direct",
+      data: reply,
+      timestamp: reply.event.created_at,
+    });
+  }
+
+  // Add thread groups
+  for (const group of state.threadGroups.values()) {
+    notifications.push({
+      type: "thread",
+      data: group,
+      timestamp: group.latest,
+    });
+  }
+
+  // Sort by timestamp (newest first)
+  notifications.sort((a, b) => b.timestamp - a.timestamp);
+
+  return notifications;
 }

@@ -45,7 +45,9 @@ function EmojiPacksBrowsePage() {
         </Flex>
 
         <SimpleGrid columns={{ base: 1, lg: 2 }} spacing="2">
-          {packs?.map((event) => <EmojiPackCard key={getEventUID(event)} pack={event} />)}
+          {packs?.map((event) => (
+            <EmojiPackCard key={getEventUID(event)} pack={event} />
+          ))}
         </SimpleGrid>
       </VerticalPageLayout>
     </IntersectionObserverProvider>

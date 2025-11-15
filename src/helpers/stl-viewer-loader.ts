@@ -37,4 +37,3 @@ export function loadSTLViewerComponent(): Promise<void> {
 
   return scriptLoading;
 }
-

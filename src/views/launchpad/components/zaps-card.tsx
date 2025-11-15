@@ -1,16 +1,13 @@
 import { Box, Button, Card, CardBody, CardHeader, CardProps, Heading, Link } from "@chakra-ui/react";
-import { isValidZap, ZapEvent } from "applesauce-core/helpers";
-import { TimelineModel } from "applesauce-core/models";
-import { useActiveAccount, useEventModel, useObservableEagerState } from "applesauce-react/hooks";
+import { useActiveAccount, useObservableEagerState } from "applesauce-react/hooks";
 import { kinds } from "nostr-tools";
 import { useMemo, useState } from "react";
 
 import { ErrorBoundary } from "../../../components/error-boundary";
 import RouterLink from "../../../components/router-link";
-import { groupZapsByZappedEvent } from "../../../helpers/nostr/zaps";
 import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
 import IntersectionObserverProvider from "../../../providers/local/intersection-observer";
-import { zapNotificationsLoader$ } from "../../../services/notifications";
+import { zapNotificationsLoader$, zapNotifications$ } from "../../../services/notifications";
 import ZapGroupComponent from "../../notifications/zaps/components/zap-group";
 import TimePeriodSelect, { getTimePeriodLabel, getTimePeriodTimestamp, TimePeriod } from "./time-period-select";
 
@@ -20,28 +17,27 @@ export default function ZapsCard({ ...props }: Omit<CardProps, "children">) {
   // Get account
   const account = useActiveAccount()!;
 
-  // Get timeline of zap events
-  const events = useEventModel(TimelineModel, [{ kinds: [kinds.Zap], "#p": [account.pubkey] }])?.filter(
-    (e): e is ZapEvent => {
-      try {
-        // Ensure the payment can be parsed
-        return isValidZap(e);
-      } catch (error) {
-        return false;
-      }
-    },
+  // Filter for fetching events in the modal
+  const filter = useMemo(
+    () => ({
+      kinds: [kinds.Zap],
+      "#p": [account.pubkey],
+    }),
+    [account.pubkey],
   );
 
   // Start the zap notifications loader
   const loader = useObservableEagerState(zapNotificationsLoader$);
   const callback = useTimelineCurserIntersectionCallback(loader ?? undefined);
 
-  // Group zaps by the zapped event and filter by time period
+  // Get grouped zap notifications from the observable
+  const allGroups = useObservableEagerState(zapNotifications$);
+
+  // Filter by time period and limit to 10 groups
   const groups = useMemo(() => {
-    const allGroups = groupZapsByZappedEvent(events ?? []);
     const cutoffTimestamp = getTimePeriodTimestamp(timePeriod);
     return allGroups.filter((group) => group.latest >= cutoffTimestamp).slice(0, 10);
-  }, [events, timePeriod]);
+  }, [allGroups, timePeriod]);
 
   return (
     <IntersectionObserverProvider callback={callback}>

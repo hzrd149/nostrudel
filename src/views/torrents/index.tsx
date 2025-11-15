@@ -113,7 +113,11 @@ function TorrentsPage() {
                 <Th />
               </Tr>
             </Thead>
-            <Tbody>{torrents?.map((torrent) => <TorrentTableRow key={torrent.id} torrent={torrent} />)}</Tbody>
+            <Tbody>
+              {torrents?.map((torrent) => (
+                <TorrentTableRow key={torrent.id} torrent={torrent} />
+              ))}
+            </Tbody>
           </Table>
         </TableContainer>
       </IntersectionObserverProvider>

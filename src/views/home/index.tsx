@@ -2,7 +2,7 @@ import { Box, Button, Divider, Flex, Heading, Link, Spacer, Text } from "@chakra
 import { useActiveAccount, useEventModel, useObservableEagerMemo } from "applesauce-react/hooks";
 import { NostrEvent } from "nostr-tools";
 import { useCallback } from "react";
-import { map, of } from "rxjs";
+import { map, of, throttleTime } from "rxjs";
 
 import NoteFilterTypeButtons from "../../components/note-filter-type-buttons";
 import OutboxRelaySelectionModal from "../../components/outbox-relay-selection-modal";
@@ -46,9 +46,10 @@ function HomePage() {
   const timeline = useObservableEagerMemo(
     () =>
       filter
-        ? eventStore
-            .timeline({ ...filter, kinds: GENERIC_TIMELINE_KINDS })
-            .pipe(map((events) => events.filter(eventFilter)))
+        ? eventStore.timeline({ ...filter, kinds: GENERIC_TIMELINE_KINDS }).pipe(
+            throttleTime(500),
+            map((events) => events.filter(eventFilter)),
+          )
         : of([]),
     [filter, eventFilter],
   );

@@ -17,7 +17,12 @@ function STLViewerWrapper({ url }: { url: string }) {
     loadSTLViewerComponent().then(() => setLoaded(true));
   }, []);
 
-  if (!loaded) return <Box w="full" aspectRatio={16 / 10}>Loading viewer...</Box>;
+  if (!loaded)
+    return (
+      <Box w="full" aspectRatio={16 / 10}>
+        Loading viewer...
+      </Box>
+    );
 
   return (
     <Box w="full" aspectRatio={16 / 10}>

@@ -1,19 +1,19 @@
 import { AvatarGroup, Flex, LinkBox, Text } from "@chakra-ui/react";
 import { getSharedEventPointer, getTagValue, naddrEncode, neventEncode } from "applesauce-core/helpers";
 import { getEmbededSharedEvent } from "applesauce-core/helpers/share";
-import { useEffect, useMemo } from "react";
+import { memo, useEffect, useMemo } from "react";
 
-import { RepostGroup as RepostGroupType } from "..";
 import HoverLinkOverlay from "../../../../components/hover-link-overlay";
 import RouterLink from "../../../../components/router-link";
 import Timestamp from "../../../../components/timestamp";
 import UserAvatarLink from "../../../../components/user/user-avatar-link";
 import UserName from "../../../../components/user/user-name";
+import useEventIntersectionRef from "../../../../hooks/use-event-intersection-ref";
 import useSingleEvent from "../../../../hooks/use-single-event";
 import { eventStore } from "../../../../services/event-store";
-import useEventIntersectionRef from "../../../../hooks/use-event-intersection-ref";
+import { TRepostGroup } from "../../../../services/notifications";
 
-export default function RepostGroup({ group }: { group: RepostGroupType }) {
+function RepostGroup({ group }: { group: TRepostGroup }) {
   const ref = useEventIntersectionRef(group.events[0]);
 
   // Get the shared event
@@ -87,3 +87,5 @@ export default function RepostGroup({ group }: { group: RepostGroupType }) {
     </Flex>
   );
 }
+
+export default memo(RepostGroup);

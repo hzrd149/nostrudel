@@ -14,18 +14,18 @@ export const RelayUrlInput = forwardRef(({ nips, ...props }: { nips?: number[] }
   useEffect(() => {
     setLoading(true);
     setError(null);
-    
+
     const subscription = nip66Discovery.fetchRelays().subscribe({
       next: (relayMap) => {
         try {
           let relays: string[];
-          
+
           if (nips && nips.length > 0) {
             relays = nip66Discovery.getRelaysByNIPs(nips);
           } else {
             relays = nip66Discovery.getOnlineRelays();
           }
-          
+
           setRelaysJson(relays);
           setLoading(false);
         } catch (err) {
@@ -36,7 +36,7 @@ export const RelayUrlInput = forwardRef(({ nips, ...props }: { nips?: number[] }
       error: (err) => {
         setError(err);
         setLoading(false);
-      }
+      },
     });
 
     return () => {

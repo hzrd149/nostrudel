@@ -2,7 +2,7 @@ import { Flex, LinkBox, Text } from "@chakra-ui/react";
 import { COMMENT_KIND, EventPointer, getNip10References, neventEncode } from "applesauce-core/helpers";
 import { useActiveAccount } from "applesauce-react/hooks";
 import { kinds, NostrEvent } from "nostr-tools";
-import { useMemo } from "react";
+import { memo, useMemo } from "react";
 
 import { CompactNoteContent } from "../../../../components/compact-note-content";
 import HoverLinkOverlay from "../../../../components/hover-link-overlay";
@@ -28,7 +28,7 @@ function ReplyLine({ pointer }: { pointer: EventPointer }) {
   );
 }
 
-export default function MentionCard({ event }: { event: NostrEvent }) {
+function MentionCard({ event }: { event: NostrEvent }) {
   const ref = useEventIntersectionRef(event);
   const link = useMemo(() => {
     return `/l/${neventEncode({ id: event.id, author: event.pubkey, kind: event.kind })}`;
@@ -71,3 +71,5 @@ export default function MentionCard({ event }: { event: NostrEvent }) {
     </Flex>
   );
 }
+
+export default memo(MentionCard);

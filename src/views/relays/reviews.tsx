@@ -39,7 +39,9 @@ function RelayReviewsPage() {
           <PeopleListSelection />
           <Heading size="md">Relay Reviews</Heading>
         </Flex>
-        {reviews?.map((event) => <RelayReviewNote key={event.id} event={event} />)}
+        {reviews?.map((event) => (
+          <RelayReviewNote key={event.id} event={event} />
+        ))}
       </VerticalPageLayout>
     </IntersectionObserverProvider>
   );

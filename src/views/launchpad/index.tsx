@@ -10,6 +10,7 @@ import StreamsCard from "./components/streams-card";
 import ToolsCard from "./components/tools-card";
 import MentionsCard from "./components/mentions-card";
 import ZapsCard from "./components/zaps-card";
+import ThreadsCard from "./components/threads-card";
 
 function FeedsCard({ ...props }: Omit<CardProps, "children">) {
   return (
@@ -63,19 +64,22 @@ function LaunchpadPage() {
           <ListsCard w={{ base: "full", md: "calc(60% - 1rem)" }} maxH={{ base: "80vh", xl: "30vh" }} />
         </ErrorBoundary>
         <ErrorBoundary>
-          <FeedsCard w={{ base: "full", md: "40%" }} maxH={{ base: "80vh", xl: "30vh" }} />
+          <ZapsCard w={{ base: "full", md: "40%" }} maxH={{ base: "80vh", xl: "30vh" }} />
         </ErrorBoundary>
         <ErrorBoundary>
-          <ZapsCard w={{ base: "full", md: "40%" }} maxH="30vh" />
+          <ThreadsCard w={{ base: "full", md: "40%" }} maxH={{ base: "50vh", xl: "30vh" }} />
         </ErrorBoundary>
         <ErrorBoundary>
-          <MentionsCard w={{ base: "full", md: "calc(60% - 1rem)" }} maxH="30vh" />
+          <MentionsCard w={{ base: "full", md: "calc(60% - 1rem)" }} maxH={{ base: "50vh", xl: "30vh" }} />
         </ErrorBoundary>
         <ErrorBoundary>
-          <StreamsCard w={{ base: "full", md: "40%" }} maxH="50vh" />
+          <FeedsCard w={{ base: "full", md: "calc(33%)" }} maxH="50vh" />
         </ErrorBoundary>
         <ErrorBoundary>
-          <ToolsCard w={{ base: "full", md: "calc(60% - 1rem)" }} maxH="50vh" />
+          <StreamsCard w={{ base: "full", md: "calc(33% )" }} maxH="50vh" />
+        </ErrorBoundary>
+        <ErrorBoundary>
+          <ToolsCard w={{ base: "full", md: "calc(33% - 1rem)" }} maxH="50vh" />
         </ErrorBoundary>
       </Flex>
     </SimpleView>

@@ -1,8 +1,7 @@
-import { Box, Flex } from "@chakra-ui/react";
-import { COMMENT_KIND, insertEventIntoDescendingList } from "applesauce-core/helpers";
-import { TimelineModel } from "applesauce-core/models";
-import { useActiveAccount, useEventModel, useObservableEagerState } from "applesauce-react/hooks";
-import { kinds, NostrEvent } from "nostr-tools";
+import { Box, ButtonGroup, Flex } from "@chakra-ui/react";
+import { COMMENT_KIND } from "applesauce-core/helpers";
+import { useActiveAccount, useObservableEagerState } from "applesauce-react/hooks";
+import { kinds } from "nostr-tools";
 import { useMemo } from "react";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { VariableSizeList as List, ListChildComponentProps } from "react-window";
@@ -13,14 +12,13 @@ import { groupByTimePeriod, TimeGroupedListItem } from "../../../helpers/time-gr
 import { useVirtualListScrollRestore } from "../../../hooks/use-scroll-restore";
 import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
 import IntersectionObserverProvider from "../../../providers/local/intersection-observer";
-import { socialNotificationsLoader$ } from "../../../services/notifications";
+import { socialNotificationsLoader$, threadNotifications$ } from "../../../services/notifications";
+import RelayDistributionButton from "../components/relay-distribution-button";
+import MailboxSettingsButton from "../components/mailbox-settings-button";
 import TimePeriodHeader from "../components/time-period-header";
-import DirectReplyCard, { DirectReplyData } from "./components/direct-reply-card";
-import ThreadGroup, { ThreadGroupData } from "./components/thread-group";
-import { getReplyPointer, getThreadRoot, getThreadRootKey, isDirectReplyTo } from "./helpers";
-import { eventStore } from "../../../services/event-store";
-
-type ThreadNotification = { type: "direct"; data: DirectReplyData } | { type: "thread"; data: ThreadGroupData };
+import DirectReplyCard from "./components/direct-reply-card";
+import ThreadGroup from "./components/thread-group";
+import { ThreadNotification } from "./helpers";
 
 type ListItem = TimeGroupedListItem<ThreadNotification>;
 
@@ -48,112 +46,48 @@ export default function ThreadsTab() {
   const loader = useObservableEagerState(socialNotificationsLoader$);
   const callback = useTimelineCurserIntersectionCallback(loader ?? undefined);
   const scroll = useVirtualListScrollRestore("manual");
-
-  // Get account
   const account = useActiveAccount()!;
 
-  // Get timeline of social events (kind 1 and kind 1111)
-  const events = useEventModel(TimelineModel, [{ kinds: [kinds.ShortTextNote, COMMENT_KIND], "#p": [account.pubkey] }]);
+  // Subscribe to the processed thread notifications observable
+  const notifications = useObservableEagerState(threadNotifications$) ?? [];
 
-  // Categorize and group notifications
-  const notifications = useMemo<ThreadNotification[]>(() => {
-    if (!events || events.length === 0) return [];
-
-    const directReplies: ThreadNotification[] = [];
-    const threadGroups = new Map<string, ThreadGroupData>();
-
-    for (const event of events) {
-      // Skip user's own events
-      if (event.pubkey === account.pubkey) continue;
-
-      const replyPointer = getReplyPointer(event);
-      const threadRoot = getThreadRoot(event);
-
-      // Try to determine if this is a direct reply
-      let isDirect = false;
-      if (replyPointer) {
-        // Check if reply pointer matches any of user's posts
-        if ("id" in replyPointer) {
-          const parentPost = eventStore.getEvent(replyPointer.id);
-          isDirect = isDirectReplyTo(event, account.pubkey, parentPost);
-        }
-      }
-
-      if (isDirect && replyPointer) {
-        // Add as direct reply
-        directReplies.push({
-          type: "direct",
-          data: {
-            key: `direct-${event.id}`,
-            event,
-            parentPointer: replyPointer,
-          },
-        });
-      } else if (threadRoot) {
-        // Add to thread group
-        const rootKey = getThreadRootKey(threadRoot);
-        if (rootKey) {
-          let group = threadGroups.get(rootKey);
-          if (!group) {
-            group = {
-              key: rootKey,
-              rootPointer: threadRoot,
-              replies: [],
-              repliers: [],
-              latest: event.created_at,
-            };
-            threadGroups.set(rootKey, group);
-          }
-
-          // Add event to group
-          insertEventIntoDescendingList(group.replies, event);
-
-          // Add replier if not already in list
-          if (!group.repliers.includes(event.pubkey)) {
-            group.repliers.push(event.pubkey);
-          }
-
-          // Update latest timestamp
-          group.latest = Math.max(group.latest, event.created_at);
-        }
-      }
-    }
-
-    // Convert thread groups to notifications
-    const threadNotifications: ThreadNotification[] = Array.from(threadGroups.values()).map((group) => ({
-      type: "thread" as const,
-      data: group,
-    }));
-
-    // Combine and sort by timestamp
-    const allNotifications = [...directReplies, ...threadNotifications];
-    allNotifications.sort((a, b) => {
-      const aTime = a.type === "direct" ? a.data.event.created_at : a.data.latest;
-      const bTime = b.type === "direct" ? b.data.event.created_at : b.data.latest;
-      return bTime - aTime;
-    });
-
-    return allNotifications;
-  }, [events, account.pubkey]);
+  // Filter for fetching events in the modal
+  const filter = useMemo(
+    () => ({
+      kinds: [kinds.ShortTextNote, COMMENT_KIND],
+      "#p": [account.pubkey],
+    }),
+    [account.pubkey],
+  );
 
   // Group notifications by time period
   const listItems = useMemo<ListItem[]>(() => {
     return groupByTimePeriod(
       notifications,
-      (notification) =>
-        notification.type === "direct" ? notification.data.event.created_at : notification.data.latest,
-      (notification) => (notification.type === "direct" ? notification.data.key : notification.data.key),
+      (notification) => notification.timestamp,
+      (notification) => notification.data.key,
     );
   }, [notifications]);
 
   const getItemSize = (index: number) => {
     const item = listItems[index];
-    return item.type === "header" ? 60 : 88;
+    return item.type === "header" ? 60 : 80;
   };
 
   return (
     <IntersectionObserverProvider callback={callback}>
-      <SimpleView title="Threads" scroll={false} flush gap={0}>
+      <SimpleView
+        title="Threads"
+        scroll={false}
+        flush
+        gap={0}
+        actions={
+          <ButtonGroup ms="auto">
+            <RelayDistributionButton filter={filter} title="Thread Notifications Relay Distribution" />
+            <MailboxSettingsButton />
+          </ButtonGroup>
+        }
+      >
         <Flex direction="column" flex={1}>
           {listItems.length > 0 ? (
             <AutoSizer>
