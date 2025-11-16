@@ -20,7 +20,7 @@ export default function ShareLinkMenuItem({ event }: { event: NostrEvent }) {
 
   const handleClick = useCallback(async () => {
     const data: ShareData = {
-      url: (shareService || DEFAULT_SHARE_SERVICE) + address,
+      url: new URL(address || "", shareService || DEFAULT_SHARE_SERVICE).toString(),
       title: getTagValue(event, "title") || "Nostr note by " + getDisplayName(metadata, event.pubkey),
     };
 
