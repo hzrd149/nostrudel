@@ -1,4 +1,4 @@
-import { fakeVerifyEvent } from "applesauce-core/helpers/event";
+import { fakeVerifyEvent, setVerifyWrappedEventMethod } from "applesauce-core/helpers/event";
 import { NostrEvent, verifyEvent as internalVerifyEvent } from "nostr-tools";
 import { setNostrWasm, verifyEvent as wasmVerifyEvent } from "nostr-tools/wasm";
 import { distinctUntilChanged } from "rxjs";
@@ -8,7 +8,6 @@ import localSettings from "./preferences";
 
 const log = logger.extend("VerifyEvent");
 let verifyEventMethod: typeof internalVerifyEvent;
-let alwaysVerifyMethod: typeof internalVerifyEvent;
 
 function loadWithTimeout() {
   return new Promise<typeof internalVerifyEvent>((res, rej) => {
@@ -33,9 +32,6 @@ function loadWithTimeout() {
 export default function verifyEvent(event: NostrEvent) {
   return verifyEventMethod(event);
 }
-export function alwaysVerify(event: NostrEvent) {
-  return alwaysVerifyMethod(event);
-}
 
 async function updateVerifyMethod() {
   try {
@@ -43,26 +39,28 @@ async function updateVerifyMethod() {
       case "wasm":
         if (!("WebAssembly" in window)) throw new Error("WebAssembly not supported");
         log("Loading WebAssembly module");
-        verifyEventMethod = alwaysVerifyMethod = await loadWithTimeout();
+        verifyEventMethod = await loadWithTimeout();
         log("Loaded");
         break;
       case "none":
         log("Using fake verify event method");
         verifyEventMethod = fakeVerifyEvent;
-        alwaysVerifyMethod = internalVerifyEvent;
         break;
       case "internal":
       default:
         log("Using internal nostr-tools");
-        verifyEventMethod = alwaysVerifyMethod = internalVerifyEvent;
+        verifyEventMethod = internalVerifyEvent;
         break;
     }
+
+    // Update wrapped verifyEvent method in applesauce-core
+    setVerifyWrappedEventMethod(verifyEventMethod);
   } catch (error) {
     console.error("Failed to initialize event verification method, disabling");
     console.log(error);
 
     localSettings.verifyEventMethod.next("none");
-    verifyEventMethod = alwaysVerifyMethod = internalVerifyEvent;
+    verifyEventMethod = internalVerifyEvent;
   }
 }
 

@@ -101,17 +101,9 @@ export default function SearchResults({ query, relay }: { query: string; relay: 
   const notes = results.filter((e) => e.kind === kinds.ShortTextNote);
   const articles = results.filter((e) => e.kind === kinds.LongFormArticle);
 
-  const isLoading = (searching && results.length === 0) || (searchingProfiles && profileResults.length === 0);
   const hasResults = profileResults.length > 0 || results.length > 0;
   const totalResults = profileResults.length + results.length;
-
-  if (isLoading) {
-    return (
-      <Heading size="md" mx="auto" my="10">
-        <Spinner /> Searching...
-      </Heading>
-    );
-  }
+  const allSearchesComplete = !searching && !searchingProfiles;
 
   if (error) {
     return (
@@ -135,7 +127,8 @@ export default function SearchResults({ query, relay }: { query: string; relay: 
     );
   }
 
-  if (!hasResults) {
+  // Show "nothing found" only if all searches are complete and there are no results
+  if (!hasResults && allSearchesComplete) {
     return (
       <Heading size="md" mx="auto" my="10">
         Found nothing... :(
@@ -145,7 +138,11 @@ export default function SearchResults({ query, relay }: { query: string; relay: 
 
   return (
     <>
-      {hasResults && <Text>Found {totalResults} results</Text>}
+      {(hasResults || searching || searchingProfiles) && (
+        <Text>
+          {hasResults ? `Found ${totalResults} results` : <><Spinner size="sm" /> Searching...</>}
+        </Text>
+      )}
       {profileResults.length > 0 && <ProfileSearchResults profiles={profileResults} />}
       {notes.length > 0 && <NoteSearchResults notes={notes} />}
       {articles.length > 0 && <ArticleSearchResults articles={articles} />}

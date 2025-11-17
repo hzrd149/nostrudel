@@ -52,17 +52,7 @@ export function usePeopleListSelect(selected: ListId, onChange: (list: ListId) =
 
   const listId = useListCoordinate(selected);
   const event = useReplaceableEvent(listId);
-  const pointer = useMemo(
-    () =>
-      event
-        ? ({
-            kind: kinds.Contacts,
-            pubkey: event.pubkey,
-            identifier: getReplaceableIdentifier(event),
-          } satisfies LoadableAddressPointer)
-        : undefined,
-    [event],
-  );
+  const pointer = useMemo(() => (event ? getAddressPointerForEvent(event) : undefined), [event]);
   const people = useMemo(() => event && getProfilePointersFromList(event), [event]);
 
   const filter = useMemo<Filter | undefined>(() => {
