@@ -43,10 +43,12 @@ function ListItemRow({ index, style, data }: ListChildComponentProps<ListItem[]>
 }
 
 export default function ThreadsTab() {
-  const loader = useObservableEagerState(socialNotificationsLoader$);
-  const callback = useTimelineCurserIntersectionCallback(loader ?? undefined);
   const scroll = useVirtualListScrollRestore("manual");
   const account = useActiveAccount()!;
+
+  // Start the event loader
+  const loader = useObservableEagerState(socialNotificationsLoader$);
+  const callback = useTimelineCurserIntersectionCallback(loader ?? undefined);
 
   // Subscribe to the processed thread notifications observable
   const notifications = useObservableEagerState(threadNotifications$) ?? [];

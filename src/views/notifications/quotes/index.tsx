@@ -1,6 +1,7 @@
 import { Box, ButtonGroup, Flex } from "@chakra-ui/react";
+import { COMMENT_KIND } from "applesauce-core/helpers";
 import { useActiveAccount, useObservableEagerState } from "applesauce-react/hooks";
-import { kinds } from "nostr-tools";
+import { Filter, kinds, NostrEvent } from "nostr-tools";
 import { useMemo } from "react";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { VariableSizeList as List, ListChildComponentProps } from "react-window";
@@ -8,17 +9,16 @@ import { VariableSizeList as List, ListChildComponentProps } from "react-window"
 import { ErrorBoundary } from "../../../components/error-boundary";
 import SimpleView from "../../../components/layout/presets/simple-view";
 import { groupByTimePeriod, TimeGroupedListItem } from "../../../helpers/time-grouping";
-import { TZapGroup } from "../../../helpers/nostr/zaps";
 import { useVirtualListScrollRestore } from "../../../hooks/use-scroll-restore";
-import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
-import IntersectionObserverProvider from "../../../providers/local/intersection-observer";
-import { zapNotificationsLoader$, zapNotifications$ } from "../../../services/notifications";
+import { quoteNotifications$, socialNotificationsLoader$ } from "../../../services/notifications";
 import RelayDistributionButton from "../components/relay-distribution-button";
 import MailboxSettingsButton from "../components/mailbox-settings-button";
 import TimePeriodHeader from "../components/time-period-header";
-import ZapGroup from "./components/zap-group";
+import QuoteCard from "./components/quote-card";
+import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
+import IntersectionObserverProvider from "../../../providers/local/intersection-observer";
 
-type ListItem = TimeGroupedListItem<TZapGroup>;
+type ListItem = TimeGroupedListItem<NostrEvent>;
 
 function ListItemRow({ index, style, data }: ListChildComponentProps<ListItem[]>) {
   const item = data[index];
@@ -29,63 +29,61 @@ function ListItemRow({ index, style, data }: ListChildComponentProps<ListItem[]>
         <TimePeriodHeader label={item.label} />
       ) : (
         <ErrorBoundary>
-          <ZapGroup group={item.item} />
+          <QuoteCard event={item.item} />
         </ErrorBoundary>
       )}
     </Box>
   );
 }
 
-export default function ZapsTab() {
+export default function QuotesTab() {
   const scroll = useVirtualListScrollRestore("manual");
-
-  // Start the zap notifications loader
-  const loader = useObservableEagerState(zapNotificationsLoader$);
-  const callback = useTimelineCurserIntersectionCallback(loader ?? undefined);
-
-  // Get account
   const account = useActiveAccount()!;
 
+  // Get quote notifications from the observable
+  const quotes = useObservableEagerState(quoteNotifications$) ?? [];
+
+  // Start the event loader
+  const loader = useObservableEagerState(socialNotificationsLoader$);
+  const callback = useTimelineCurserIntersectionCallback(loader ?? undefined);
+
   // Filter for fetching events in the modal
-  const filter = useMemo(
+  const filter = useMemo<Filter>(
     () => ({
-      kinds: [kinds.Zap],
+      kinds: [kinds.ShortTextNote, kinds.LongFormArticle, COMMENT_KIND],
       "#p": [account.pubkey],
     }),
     [account.pubkey],
   );
 
-  // Get grouped zap notifications from the observable
-  const groups = useObservableEagerState(zapNotifications$);
-
-  // Group zap groups by time period and flatten into list items
+  // Group quotes by time period
   const listItems = useMemo<ListItem[]>(() => {
     return groupByTimePeriod(
-      groups,
-      (group) => group.latest,
-      (group) => group.key,
+      quotes,
+      (event) => event.created_at,
+      (event) => event.id,
     );
-  }, [groups]);
+  }, [quotes]);
 
   const getItemSize = (index: number) => {
     const item = listItems[index];
-    return item.type === "header" ? 60 : 88;
+    return item.type === "header" ? 60 : 80;
   };
 
   return (
-    <IntersectionObserverProvider callback={callback}>
-      <SimpleView
-        title="Zaps"
-        scroll={false}
-        flush
-        gap={0}
-        actions={
-          <ButtonGroup ms="auto">
-            <RelayDistributionButton filter={filter} title="Zap Notifications Relay Distribution" />
-            <MailboxSettingsButton />
-          </ButtonGroup>
-        }
-      >
+    <SimpleView
+      title="Quotes"
+      scroll={false}
+      flush
+      gap={0}
+      actions={
+        <ButtonGroup ms="auto">
+          <RelayDistributionButton filter={filter} title="Quote Notifications Relay Distribution" />
+          <MailboxSettingsButton />
+        </ButtonGroup>
+      }
+    >
+      <IntersectionObserverProvider callback={callback}>
         <Flex direction="column" flex={1}>
           {listItems.length > 0 ? (
             <AutoSizer>
@@ -106,11 +104,11 @@ export default function ZapsTab() {
             </AutoSizer>
           ) : (
             <Box mt="4" textAlign="center">
-              No zaps yet
+              No quotes yet
             </Box>
           )}
         </Flex>
-      </SimpleView>
-    </IntersectionObserverProvider>
+      </IntersectionObserverProvider>
+    </SimpleView>
   );
 }

@@ -1,8 +1,21 @@
-import { COMMENT_KIND, insertEventIntoDescendingList } from "applesauce-core/helpers";
+import { COMMENT_KIND, getEventPointerFromQTag, insertEventIntoDescendingList } from "applesauce-core/helpers";
 import { kinds, NostrEvent } from "nostr-tools";
 import { combineLatest, filter, map, Observable, of, scan, shareReplay, switchMap, throttleTime } from "rxjs";
 
+import { getParsedContent } from "applesauce-content/text";
+import { mapEventsToTimeline, withImmediateValueOrDefault } from "applesauce-core";
+import type { AddressPointer, EventPointer } from "applesauce-core/helpers";
+import {
+  getCoordinateFromAddressPointer,
+  getSharedAddressPointer,
+  getSharedEventPointer,
+  getZapAddressPointer,
+  getZapEventPointer,
+  isValidZap,
+  ZapEvent,
+} from "applesauce-core/helpers";
 import { TimelineLoader } from "applesauce-loaders/loaders";
+import type { TZapGroup } from "../helpers/nostr/zaps";
 import { shareAndHold } from "../helpers/observable";
 import {
   getNotificationsFromState,
@@ -14,18 +27,6 @@ import accounts from "./accounts";
 import { eventStore } from "./event-store";
 import localSettings from "./preferences";
 import timelineCacheService from "./timeline-cache";
-import { withImmediateValueOrDefault } from "applesauce-core";
-import { getContentPointers } from "applesauce-factory/helpers";
-import {
-  getZapAddressPointer,
-  getZapEventPointer,
-  getCoordinateFromAddressPointer,
-  isValidZap,
-  ZapEvent,
-} from "applesauce-core/helpers";
-import type { TZapGroup } from "../helpers/nostr/zaps";
-import type { AddressPointer, EventPointer } from "applesauce-core/helpers";
-import { getSharedAddressPointer, getSharedEventPointer } from "applesauce-core/helpers";
 
 export type TRepostGroup = {
   key: string;
@@ -64,7 +65,7 @@ export const shareNotificationsLoader$: Observable<TimelineLoader | null> = comb
   shareReplay(1),
 );
 
-/** Timeline loader for social notificatiots from the user's inboxes */
+/** Timeline loader for social notifications from the user's inboxes */
 export const socialNotificationsLoader$: Observable<TimelineLoader | null> = combineLatest([
   accounts.active$,
   inboxes$,
@@ -126,8 +127,6 @@ export const threadNotifications$: Observable<ThreadNotification[]> = accounts.a
         scan((state, event) => processThreadNotification(state, event, account.pubkey), initialState),
         // Convert state to sorted notifications array
         map(getNotificationsFromState),
-        // Throttle updates to avoid excessive re-renders
-        throttleTime(500, undefined, { leading: true, trailing: true }),
       );
   }),
   // Ensure observable has an immediate value
@@ -136,21 +135,81 @@ export const threadNotifications$: Observable<ThreadNotification[]> = accounts.a
   shareAndHold(),
 );
 
-/**
- * Check if an event mentions the user's pubkey in its content
- */
+/** Check if an event mentions the user's pubkey in its content */
 function isMentionEvent(event: NostrEvent, userPubkey: string): boolean {
-  const pointers = getContentPointers(event.content);
-  return pointers.some(
-    (p) =>
-      // npub mention
-      (p.type === "npub" && p.data === userPubkey) ||
-      // nprofile mention
-      (p.type === "nprofile" && p.data.pubkey === userPubkey),
+  // Parse content to get pointers
+  const content = getParsedContent(event);
+
+  return content.children.some(
+    (c) =>
+      c.type === "mention" &&
+      // Is an npub mention
+      ((c.decoded.type === "npub" && c.decoded.data === userPubkey) ||
+        // Or an nprofile mention
+        (c.decoded.type === "nprofile" && c.decoded.data.pubkey === userPubkey)),
   );
 }
 
-/** Observable stream of mention notifications (events that mention the user in content) */
+/** Check if an event is a quote (has "q" tag or content tag refs with "e" tag) */
+export function isQuoteEvent(event: NostrEvent, pubkey: string): boolean {
+  // Check if any of the "q" tags directly mention the user
+  const quotes = event.tags.filter((t) => t[0] === "q" && t[1]).map(getEventPointerFromQTag);
+  if (
+    quotes.some(
+      (q) =>
+        // Pointer has pubkey and matches user
+        q.author === pubkey ||
+        // Or references a known event by the user
+        eventStore.getEvent(q.id)?.pubkey === pubkey,
+    )
+  )
+    return true;
+
+  // Check content mentions
+  const content = getParsedContent(event);
+  if (
+    content.children.some(
+      (c) =>
+        // Find nostr: mentions
+        c.type === "mention" &&
+        // If its a nevent with author
+        ((c.decoded.type === "nevent" && c.decoded.data.author === pubkey) ||
+          // Or an naddr with pubkey
+          (c.decoded.type === "naddr" && c.decoded.data.pubkey === pubkey)),
+    )
+  )
+    return true;
+
+  return false;
+}
+
+/** Observable stream of quote notifications (events that mention the user in content AND are quotes) */
+export const quoteNotifications$: Observable<NostrEvent[]> = accounts.active$.pipe(
+  switchMap((account) => {
+    if (!account) return of([]);
+
+    // Use eventStore.filters to get a stream of both existing and new events
+    return eventStore
+      .filters({
+        kinds: [kinds.ShortTextNote, kinds.LongFormArticle, COMMENT_KIND],
+        "#p": [account.pubkey],
+      })
+      .pipe(
+        // Ignore events created by the user
+        filter((event) => event.pubkey !== account.pubkey),
+        // Only include quote events
+        filter((event) => isQuoteEvent(event, account.pubkey)),
+        // Build timeline from events
+        mapEventsToTimeline(),
+      );
+  }),
+  // Ensure observable has an immediate value
+  withImmediateValueOrDefault([]),
+  // Share the observable to avoid duplicate processing
+  shareAndHold(),
+);
+
+/** Observable stream of mention notifications (events that mention the user in content, excluding quotes) */
 export const mentionNotifications$: Observable<NostrEvent[]> = accounts.active$.pipe(
   switchMap((account) => {
     if (!account) return of([]);
@@ -162,19 +221,12 @@ export const mentionNotifications$: Observable<NostrEvent[]> = accounts.active$.
         "#p": [account.pubkey],
       })
       .pipe(
-        // Use scan to build a sorted list of mention events
-        scan((mentions, event) => {
-          // Check if event mentions the user
-          if (!isMentionEvent(event, account.pubkey)) return mentions;
-
-          // Check if event is already in the list
-          if (mentions.some((e) => e.id === event.id)) return mentions;
-
-          // Add event and maintain descending order by created_at
-          return insertEventIntoDescendingList(mentions, event);
-        }, [] as NostrEvent[]),
-        // Throttle updates to avoid excessive re-renders
-        throttleTime(500, undefined, { leading: true, trailing: true }),
+        // Ignore events created by the user
+        filter((event) => event.pubkey !== account.pubkey),
+        // Filter for events mentioning the user
+        filter((event) => isMentionEvent(event, account.pubkey)),
+        // Build timeline from events
+        mapEventsToTimeline(),
       );
   }),
   // Ensure observable has an immediate value

@@ -10,11 +10,13 @@ import { ErrorBoundary } from "../../../components/error-boundary";
 import SimpleView from "../../../components/layout/presets/simple-view";
 import { groupByTimePeriod, TimeGroupedListItem } from "../../../helpers/time-grouping";
 import { useVirtualListScrollRestore } from "../../../hooks/use-scroll-restore";
-import { mentionNotifications$ } from "../../../services/notifications";
+import { mentionNotifications$, socialNotificationsLoader$ } from "../../../services/notifications";
 import RelayDistributionButton from "../components/relay-distribution-button";
 import MailboxSettingsButton from "../components/mailbox-settings-button";
 import TimePeriodHeader from "../components/time-period-header";
 import MentionCard from "./components/mention-card";
+import IntersectionObserverProvider from "../../../providers/local/intersection-observer";
+import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
 
 type ListItem = TimeGroupedListItem<NostrEvent>;
 
@@ -40,6 +42,10 @@ export default function MentionsTab() {
 
   // Get mention notifications from the observable
   const mentions = useObservableEagerState(mentionNotifications$) ?? [];
+
+  // Start the event loader
+  const loader = useObservableEagerState(socialNotificationsLoader$);
+  const callback = useTimelineCurserIntersectionCallback(loader ?? undefined);
 
   // Filter for fetching events in the modal
   const filter = useMemo<Filter>(
@@ -77,30 +83,32 @@ export default function MentionsTab() {
         </ButtonGroup>
       }
     >
-      <Flex direction="column" flex={1}>
-        {listItems.length > 0 ? (
-          <AutoSizer>
-            {({ height, width }) => (
-              <List
-                itemKey={(index, data) => data[index].key}
-                itemCount={listItems.length}
-                itemSize={getItemSize}
-                itemData={listItems}
-                width={width}
-                height={height}
-                outerRef={scroll.outerRef}
-                ref={scroll.ref as any}
-              >
-                {ListItemRow}
-              </List>
-            )}
-          </AutoSizer>
-        ) : (
-          <Box mt="4" textAlign="center">
-            No mentions yet
-          </Box>
-        )}
-      </Flex>
+      <IntersectionObserverProvider callback={callback}>
+        <Flex direction="column" flex={1}>
+          {listItems.length > 0 ? (
+            <AutoSizer>
+              {({ height, width }) => (
+                <List
+                  itemKey={(index, data) => data[index].key}
+                  itemCount={listItems.length}
+                  itemSize={getItemSize}
+                  itemData={listItems}
+                  width={width}
+                  height={height}
+                  outerRef={scroll.outerRef}
+                  ref={scroll.ref as any}
+                >
+                  {ListItemRow}
+                </List>
+              )}
+            </AutoSizer>
+          ) : (
+            <Box mt="4" textAlign="center">
+              No mentions yet
+            </Box>
+          )}
+        </Flex>
+      </IntersectionObserverProvider>
     </SimpleView>
   );
 }

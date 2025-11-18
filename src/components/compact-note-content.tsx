@@ -1,11 +1,11 @@
 import { Box, BoxProps, Text } from "@chakra-ui/react";
 import { Root, truncateContent } from "applesauce-content/nast";
+import { emojis, hashtags, links, nostrMentions } from "applesauce-content/text";
+import { useRenderedContent } from "applesauce-react/hooks";
 import { EventTemplate, NostrEvent } from "nostr-tools";
 import React, { useMemo, useRef } from "react";
 
-import { emojis, hashtags, links, nostrMentions } from "applesauce-content/text";
-import { useRenderedContent } from "applesauce-react/hooks";
-import { components } from "./content";
+import { onlyLinkComponents } from "./content";
 import { renderGenericUrl } from "./content/links/common";
 import { LightboxProvider } from "./lightbox-provider";
 
@@ -35,7 +35,7 @@ export const CompactNoteContent = React.memo(
       ],
       [maxLength],
     );
-    const content = useRenderedContent(event, components, {
+    const content = useRenderedContent(event, onlyLinkComponents, {
       transformers,
       linkRenderers,
       maxLength,

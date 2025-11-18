@@ -1,6 +1,6 @@
 import { SimpleGrid } from "@chakra-ui/react";
 
-import { AtIcon, LightningIcon, RepostIcon, ThreadIcon } from "../../components/icons";
+import { AtIcon, LightningIcon, QuoteIcon, RepostIcon, ThreadIcon } from "../../components/icons";
 import SimpleNavBox from "../../components/layout/box-layout/simple-nav-box";
 import SimpleView from "../../components/layout/presets/simple-view";
 
@@ -19,6 +19,12 @@ export default function NotificationsView() {
           title="Mentions"
           description="See where you've been mentioned"
           to="/notifications/mentions"
+        />
+        <SimpleNavBox
+          icon={<QuoteIcon boxSize={12} />}
+          title="Quotes"
+          description="Who has quoted your notes"
+          to="/notifications/quotes"
         />
         <SimpleNavBox
           icon={<RepostIcon boxSize={12} />}
