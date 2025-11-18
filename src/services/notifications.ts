@@ -133,6 +133,8 @@ export const threadNotifications$: Observable<ThreadNotification[]> = accounts.a
   withImmediateValueOrDefault([]),
   // Share the observable to avoid duplicate processing
   shareAndHold(),
+  // Place throttle after share so each subscription gets its own
+  throttleTime(1000 / 30, undefined, { leading: true, trailing: true }), // 30fps
 );
 
 /** Check if an event mentions the user's pubkey in its content */
@@ -207,6 +209,8 @@ export const quoteNotifications$: Observable<NostrEvent[]> = accounts.active$.pi
   withImmediateValueOrDefault([]),
   // Share the observable to avoid duplicate processing
   shareAndHold(),
+  // Place throttle after share so each subscription gets its own
+  throttleTime(1000 / 30, undefined, { leading: true, trailing: true }), // 30fps
 );
 
 /** Observable stream of mention notifications (events that mention the user in content, excluding quotes) */
@@ -233,6 +237,8 @@ export const mentionNotifications$: Observable<NostrEvent[]> = accounts.active$.
   withImmediateValueOrDefault([]),
   // Share the observable to avoid duplicate processing
   shareAndHold(),
+  // Place throttle after share so each subscription gets its own
+  throttleTime(1000 / 30, undefined, { leading: true, trailing: true }), // 30fps
 );
 
 /**
@@ -307,14 +313,14 @@ export const zapNotifications$: Observable<TZapGroup[]> = accounts.active$.pipe(
         scan((groups, event) => processZapNotification(groups, event), new Map<string, TZapGroup>()),
         // Convert Map to sorted array
         map(getZapGroupsFromState),
-        // Throttle updates to avoid excessive re-renders
-        throttleTime(500, undefined, { leading: true, trailing: true }),
       );
   }),
   // Ensure observable has an immediate value
   withImmediateValueOrDefault([]),
   // Share the observable to avoid duplicate processing
   shareAndHold(),
+  // Place throttle after share so each subscription gets its own
+  throttleTime(1000 / 30, undefined, { leading: true, trailing: true }), // 30fps
 );
 
 /**
@@ -381,12 +387,12 @@ export const repostNotifications$: Observable<TRepostGroup[]> = accounts.active$
         scan((groups, event) => processRepostNotification(groups, event), new Map<string, TRepostGroup>()),
         // Convert Map to sorted array
         map(getRepostGroupsFromState),
-        // Throttle updates to avoid excessive re-renders
-        throttleTime(500, undefined, { leading: true, trailing: true }),
       );
   }),
   // Ensure observable has an immediate value
   withImmediateValueOrDefault([]),
   // Share the observable to avoid duplicate processing
   shareAndHold(),
+  // Place throttle after share so each subscription gets its own
+  throttleTime(1000 / 30, undefined, { leading: true, trailing: true }), // 30fps
 );
