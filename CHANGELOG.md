@@ -40,7 +40,7 @@
 - 2ea2ebc: Add NIP-17 message inbox for decrypting messages
 - 4f592dc: Add DM conversation info drawer
 - 403315c: Redesign direct messages
-- 4f9c5b9: Add preview to porfile editor
+- 4f9c5b9: Add preview to profile editor
 
 ### Patch Changes
 
