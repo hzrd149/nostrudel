@@ -1,4 +1,9 @@
 import { capSQLiteVersionUpgrade, SQLiteConnection } from "@capacitor-community/sqlite";
+import {
+  CREATE_EVENTS_TABLE_STATEMENT,
+  CREATE_EVENT_TAGS_TABLE_STATEMENT,
+  CREATE_INDEXES_STATEMENTS,
+} from "applesauce-sqlite/helpers";
 import { logger } from "../../helpers/debug";
 
 const log = logger.extend("sqlite-migrations");
@@ -14,6 +19,7 @@ export const migrations: capSQLiteVersionUpgrade[] = [
   {
     toVersion: 1,
     statements: [
+      // Legacy migration - kept for compatibility
       `CREATE TABLE IF NOT EXISTS events (
         id TEXT PRIMARY KEY NOT NULL,
         created_at INTEGER NOT NULL,
@@ -38,6 +44,23 @@ export const migrations: capSQLiteVersionUpgrade[] = [
       `CREATE INDEX IF NOT EXISTS idx_tags_event ON tags(event)`,
       `CREATE INDEX IF NOT EXISTS idx_tags_tag ON tags(tag)`,
       `CREATE INDEX IF NOT EXISTS idx_tags_value ON tags(value)`,
+    ],
+  },
+  {
+    toVersion: 2,
+    statements: [
+      // Migration 2: Migrate to applesauce-sqlite schema (without search)
+      // This migration will drop all existing tables and recreate them with the applesauce schema
+      `DROP TABLE IF EXISTS tags`,
+      `DROP TABLE IF EXISTS events`,
+      `DROP TABLE IF EXISTS events_fts`,
+      `DROP TABLE IF EXISTS events_search`,
+      // Create events table using applesauce-sqlite statement
+      CREATE_EVENTS_TABLE_STATEMENT.sql,
+      // Create tags table using applesauce-sqlite statement
+      CREATE_EVENT_TAGS_TABLE_STATEMENT.sql,
+      // Create indexes using applesauce-sqlite statements
+      ...CREATE_INDEXES_STATEMENTS.map((stmt) => stmt.sql),
     ],
   },
 ];

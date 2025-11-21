@@ -1,11 +1,8 @@
 import { ISigner } from "applesauce-signers";
-import { NostrSignerPlugin } from "nostr-signer-capacitor-plugin";
-import { EventTemplate, getEventHash, nip19, NostrEvent, UnsignedEvent, verifyEvent } from "nostr-tools";
-
-type Permission = {
-  type: "string";
-  kind?: number;
-};
+import { nanoid } from "nanoid";
+import { NostrSignerPlugin, Permission } from "nostr-signer-capacitor-plugin";
+import { EventTemplate, getEventHash, NostrEvent, UnsignedEvent, verifyEvent } from "nostr-tools";
+import { decode, npubEncode } from "nostr-tools/nip19";
 
 export default class AndroidNativeSigner implements ISigner {
   packageName: string;
@@ -45,14 +42,11 @@ export default class AndroidNativeSigner implements ISigner {
   async setup() {
     if (this.connected) return;
 
-    await NostrSignerPlugin.setPackageName({ packageName: this.packageName });
+    await NostrSignerPlugin.setPackageName(this.packageName);
 
-    // get pubkey
-    const result = await (this.permissions.length > 0
-      ? NostrSignerPlugin.getPublicKey({ permissions: JSON.stringify(this.permissions) })
-      : NostrSignerPlugin.getPublicKey());
+    const result = await NostrSignerPlugin.getPublicKey(this.packageName, this.permissions);
 
-    const pubkey = nip19.decode(result.npub).data as string;
+    const pubkey = decode(result.npub).data as string;
     this.pubkey = pubkey;
 
     this.connected = true;
@@ -80,11 +74,12 @@ export default class AndroidNativeSigner implements ISigner {
     };
 
     // request signature
-    const result = await NostrSignerPlugin.signEvent({
-      eventJson: JSON.stringify(unsigned),
-      eventId: unsigned.id,
-      npub: nip19.npubEncode(unsigned.pubkey),
-    });
+    const result = await NostrSignerPlugin.signEvent(
+      this.packageName,
+      JSON.stringify(unsigned),
+      unsigned.id,
+      npubEncode(unsigned.pubkey),
+    );
 
     const signed: NostrEvent = { ...unsigned, id: result.id, sig: result.signature };
     if (!this.verifyEvent(signed)) throw new Error("Invalid signature");
@@ -95,40 +90,24 @@ export default class AndroidNativeSigner implements ISigner {
   // NIP-04
   async nip04Encrypt(pubkey: string, plaintext: string) {
     const p = await this.getPublicKey();
-    const result = await NostrSignerPlugin.nip04Encrypt({
-      plainText: plaintext,
-      npub: nip19.npubEncode(p),
-      pubKey: pubkey,
-    });
+    const result = await NostrSignerPlugin.nip04Encrypt(this.packageName, plaintext, nanoid(), pubkey, npubEncode(p));
     return result.result;
   }
   async nip04Decrypt(pubkey: string, ciphertext: string) {
     const p = await this.getPublicKey();
-    const result = await NostrSignerPlugin.nip04Decrypt({
-      encryptedText: ciphertext,
-      npub: nip19.npubEncode(p),
-      pubKey: pubkey,
-    });
+    const result = await NostrSignerPlugin.nip04Decrypt(this.packageName, ciphertext, nanoid(), pubkey, npubEncode(p));
     return result.result;
   }
 
   // NIP-44
   async nip44Encrypt(pubkey: string, plaintext: string) {
     const p = await this.getPublicKey();
-    const result = await NostrSignerPlugin.nip44Encrypt({
-      plainText: plaintext,
-      npub: nip19.npubEncode(p),
-      pubKey: pubkey,
-    });
+    const result = await NostrSignerPlugin.nip44Encrypt(this.packageName, plaintext, nanoid(), pubkey, npubEncode(p));
     return result.result;
   }
   async nip44Decrypt(pubkey: string, ciphertext: string) {
     const p = await this.getPublicKey();
-    const result = await NostrSignerPlugin.nip44Decrypt({
-      encryptedText: ciphertext,
-      npub: nip19.npubEncode(p),
-      pubKey: pubkey,
-    });
+    const result = await NostrSignerPlugin.nip44Decrypt(this.packageName, ciphertext, nanoid(), pubkey, npubEncode(p));
     return result.result;
   }
 }

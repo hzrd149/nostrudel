@@ -15,7 +15,7 @@ include ':capacitor-share'
 project(':capacitor-share').projectDir = new File('../node_modules/.pnpm/@capacitor+share@7.0.2_@capacitor+core@7.4.4/node_modules/@capacitor/share/android')
 
 include ':nostr-signer-capacitor-plugin'
-project(':nostr-signer-capacitor-plugin').projectDir = new File('../node_modules/.pnpm/nostr-signer-capacitor-plugin@0.0.3_@capacitor+core@7.4.4/node_modules/nostr-signer-capacitor-plugin/android')
+project(':nostr-signer-capacitor-plugin').projectDir = new File('../node_modules/.pnpm/nostr-signer-capacitor-plugin@0.0.5_@capacitor+core@7.4.4/node_modules/nostr-signer-capacitor-plugin/android')
 
 include ':capacitor-app'
 project(':capacitor-app').projectDir = new File('../node_modules/.pnpm/@capacitor+app@7.1.0_@capacitor+core@7.4.4/node_modules/@capacitor/app/android')

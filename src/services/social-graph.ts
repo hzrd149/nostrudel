@@ -3,7 +3,6 @@ import { kinds, NostrEvent } from "nostr-tools";
 import {
   BehaviorSubject,
   combineLatest,
-  distinctUntilChanged,
   exhaustMap,
   finalize,
   map,
@@ -15,13 +14,13 @@ import {
 } from "rxjs";
 
 import { SOCIAL_GRAPH_FALLBACK_PUBKEY } from "../const";
+import { CAP_IS_WEB } from "../env";
 import { logger } from "../helpers/debug";
+import { formatBytes } from "../helpers/number";
 import accounts from "./accounts";
 import idbKeyValueStore from "./database/kv";
 import { eventStore } from "./event-store";
 import { socialGraphLoader } from "./loaders";
-import { formatBytes } from "../helpers/number";
-import { CAP_IS_WEB } from "../env";
 
 const log = logger.extend("SocialGraph");
 
