@@ -4,7 +4,7 @@ import { Thread, ThreadModel } from "applesauce-core/models";
 import { useEventModel } from "applesauce-react/hooks";
 import { nip19, NostrEvent } from "nostr-tools";
 import { EventPointer } from "nostr-tools/nip19";
-import { ReactNode } from "react";
+import { ReactNode, useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
 
 import ExpandableToggleButton from "../../components/expandable-toggle-button";
@@ -16,6 +16,7 @@ import UserDnsIdentityIcon from "../../components/user/user-dns-identity-icon";
 import UserLink from "../../components/user/user-link";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import { useReadRelays } from "../../hooks/use-client-relays";
+import useClientSideMuteFilter from "../../hooks/use-client-side-mute-filter";
 import useEventIntersectionRef from "../../hooks/use-event-intersection-ref";
 import useParamsEventPointer from "../../hooks/use-params-event-pointer";
 import useSingleEvent from "../../hooks/use-single-event";
@@ -24,11 +25,15 @@ import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-
 import { ContentSettingsProvider } from "../../providers/local/content-settings";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import { getSharableEventAddress } from "../../services/relay-hints";
+import MutedNotePlaceholder from "./components/muted-note-placeholder";
 import ThreadPost from "./components/thread-post";
 
 function ParentNote({ note, level = 0 }: { note: NostrEvent; level?: number }) {
   const ref = useEventIntersectionRef(note);
   const more = useDisclosure({ defaultIsOpen: level < 2 });
+  const muteFilter = useClientSideMuteFilter();
+  const isMuted = muteFilter(note);
+  const [alwaysShow, setAlwaysShow] = useState(false);
 
   return (
     <LinkBox
@@ -61,10 +66,14 @@ function ParentNote({ note, level = 0 }: { note: NostrEvent; level?: number }) {
         </Link>
       </Box>
       {more.isOpen ? (
-        <ContentSettingsProvider blurMedia={false}>
-          <br />
-          <TextNoteContents event={note} aria-expanded="true" />
-        </ContentSettingsProvider>
+        isMuted && !alwaysShow ? (
+          <MutedNotePlaceholder event={note} showHeader={false} onShowAnyway={() => setAlwaysShow(true)} />
+        ) : (
+          <ContentSettingsProvider blurMedia={false}>
+            <br />
+            <TextNoteContents event={note} aria-expanded="true" />
+          </ContentSettingsProvider>
+        )
       ) : (
         <Link
           as={RouterLink}
@@ -73,7 +82,7 @@ function ParentNote({ note, level = 0 }: { note: NostrEvent; level?: number }) {
           fontStyle="italic"
           aria-expanded="false"
         >
-          {note.content}
+          {isMuted ? "Muted user or note" : note.content}
         </Link>
       )}
     </LinkBox>

@@ -30,6 +30,7 @@ import { useBreakpointValue } from "../../../providers/global/breakpoint-provide
 import { ContentSettingsProvider } from "../../../providers/local/content-settings";
 import { getSharableEventAddress } from "../../../services/relay-hints";
 import DetailsTabs from "./details-tabs";
+import MutedNotePlaceholder from "./muted-note-placeholder";
 import ReplyForm from "./reply-form";
 import SeenOnRelaysButton from "../../../components/note/seen-on-relays-button";
 
@@ -48,8 +49,8 @@ function ThreadPost({ post, initShowReplies, focusId, level = -1 }: ThreadItemPr
   const muteFilter = useClientSideMuteFilter();
 
   const isFocused = level === -1;
-  const replies = Array.from(post.replies).filter((r) => !muteFilter(r.event));
-  const numberOfReplies = countReplies(replies);
+  // Count all replies including muted ones for accurate thread structure
+  const numberOfReplies = countReplies(post.replies);
   const isMuted = muteFilter(post.event);
 
   const [alwaysShow, setAlwaysShow] = useState(false);
@@ -77,7 +78,7 @@ function ThreadPost({ post, initShowReplies, focusId, level = -1 }: ThreadItemPr
       <NotePublishedUsing event={post.event} />
       <Spacer />
       {!isFocused &&
-        (replies.length > 0 ? (
+        (post.replies.size > 0 ? (
           <Button variant="ghost" onClick={expanded.onToggle} rightIcon={expanded.isOpen ? <Minus /> : <Expand01 />}>
             ({numberOfReplies})
           </Button>
@@ -130,7 +131,23 @@ function ThreadPost({ post, initShowReplies, focusId, level = -1 }: ThreadItemPr
 
   const ref = useEventIntersectionRef(post.event);
 
-  if (isMuted && replies.length === 0) return null;
+  // If muted and has no replies, show placeholder instead of returning null
+  // But still show the header and allow expansion
+  if (isMuted && post.replies.size === 0 && !alwaysShow) {
+    return (
+      <>
+        <Flex direction="column" gap="2" px="2" py="0" borderWidth="0 1px 0 .35rem" {...colorProps} ref={ref}>
+          {header}
+          {expanded.isOpen && (
+            <>
+              <MutedNotePlaceholder event={post.event} onShowAnyway={() => setAlwaysShow(true)} />
+            </>
+          )}
+        </Flex>
+        {replyForm.isOpen && <ReplyForm item={post} onCancel={replyForm.onClose} onSubmitted={replyForm.onClose} />}
+      </>
+    );
+  }
 
   return (
     <>
