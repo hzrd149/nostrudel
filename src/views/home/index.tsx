@@ -1,8 +1,9 @@
 import { Box, Button, Divider, Flex, Heading, Link, Spacer, Text } from "@chakra-ui/react";
-import { useActiveAccount, useEventModel, useObservableEagerMemo } from "applesauce-react/hooks";
-import { NostrEvent } from "nostr-tools";
-import { useCallback } from "react";
-import { map, of, throttleTime } from "rxjs";
+import { useActiveAccount, useEventModel, useObservableEagerMemo, useObservableState } from "applesauce-react/hooks";
+import { Filter, NostrEvent } from "nostr-tools";
+import { useCallback, useMemo } from "react";
+import { map, NEVER, of, throttleTime } from "rxjs";
+import hash_sum from "hash-sum";
 
 import NoteFilterTypeButtons from "../../components/note-filter-type-buttons";
 import OutboxRelaySelectionModal from "../../components/outbox-relay-selection-modal";
@@ -19,6 +20,9 @@ import { useOutboxTimelineLoader } from "../../hooks/use-outbox-timeline-loader"
 import { OutboxSelectionModel } from "../../models/outbox-selection";
 import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
 import { eventStore } from "../../services/event-store";
+import outboxSubscriptionsService from "../../services/outbox-subscriptions";
+import { unixNow } from "applesauce-core/helpers";
+import { shareAndHold } from "../../helpers/observable";
 
 function HomePage() {
   const showReplies = useLocalStorageDisclosure("show-replies", false);
@@ -41,6 +45,16 @@ function HomePage() {
 
   // Get or create the outbox timeline loader
   const loader = useOutboxTimelineLoader(pointer, filter && { ...filter, kinds: GENERIC_TIMELINE_KINDS });
+
+  // Create the subscription observable with shareAndHold to keep it open for a bit
+  const subscription$ = useMemo(() => {
+    if (!pointer || !filter) return NEVER;
+    const subscriptionFilter = { ...filter, kinds: GENERIC_TIMELINE_KINDS, since: unixNow() - 60 };
+    return outboxSubscriptionsService.subscription(pointer, subscriptionFilter).pipe(shareAndHold(60_000)); // Keep subscription alive for 60 seconds after last unsubscribe
+  }, [pointer, filter]);
+
+  // Subscribe to live events from outboxes
+  useObservableState(subscription$);
 
   // Subscribe to event store for timeline events
   const timeline = useObservableEagerMemo(

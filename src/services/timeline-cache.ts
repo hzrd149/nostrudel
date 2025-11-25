@@ -1,5 +1,4 @@
-import { defined } from "applesauce-core";
-import { createOutboxMap, getProfilePointersFromList, LRU } from "applesauce-core/helpers";
+import { LRU } from "applesauce-core/helpers";
 import { TimelessFilter } from "applesauce-loaders";
 import {
   createOutboxTimelineLoader,
@@ -8,12 +7,11 @@ import {
   TimelineLoader,
 } from "applesauce-loaders/loaders";
 import hash_sum from "hash-sum";
-import { map, tap } from "rxjs";
 
 import { logger } from "../helpers/debug";
-import { outboxSelection } from "../models/outbox-selection";
 import { cacheRequest } from "./event-cache";
 import { eventStore } from "./event-store";
+import outboxCacheService from "./outbox-cache";
 import pool from "./pool";
 
 const MAX_CACHE = 30;
@@ -53,19 +51,8 @@ class TimelineCacheService {
 
     this.log(`Creating outbox timeline for ${list.kind}:${list.pubkey}:${list.identifier} with filter`, filter);
 
-    // Create an observable for the outbox map for the list
-    const outboxMap$ = eventStore.replaceable(list).pipe(
-      // Get users from the list
-      map((event) => (event ? getProfilePointersFromList(event) : undefined)),
-      // Filter out undefined
-      defined(),
-      // Select outboxes for users
-      outboxSelection(),
-      // Log timeline changes
-      tap(() => this.log(`Updating outbox map for ${list.kind}:${list.pubkey}:${list.identifier}`)),
-      // Group outboxes by relay
-      map((selection) => createOutboxMap(selection)),
-    );
+    // Get the outbox map observable from the cache service
+    const outboxMap$ = outboxCacheService.getOutboxMap(list);
 
     // Create a new outbox timeline
     const loader = createOutboxTimelineLoader(pool, outboxMap$, filter, {
