@@ -35,8 +35,6 @@ jobs:
       - name: Build
         env:
           VITE_TENOR_API_KEY: ${{ secrets.VITE_TENOR_API_KEY }}
-          VITE_PAYWALL_NIP05: "/.well-known/nostr.json"
-          VITE_PAYWALL_MESSAGE: "This is the latest alpha build of noStrudel.\nIf your enjoying the new features consider supporting the project by donating some sats and adding your message on the support page."
         run: pnpm build
 
       - name: Redirect 404 to Index for SPA
