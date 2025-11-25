@@ -17,10 +17,13 @@ export async function lookupUsers(query: string, limit: number = 10): Promise<Se
   switch (provider) {
     case "primal":
       results = await primalLookup(query, limit);
+      break;
     case "vertex":
       results = await vertexLookup(query, limit);
+      break;
     case "relatr":
       results = await lookupRelatr(query, limit);
+      break;
   }
 
   return results.map((result) => ({ ...result, query }));
