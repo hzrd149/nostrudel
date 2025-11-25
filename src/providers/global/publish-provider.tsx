@@ -1,6 +1,6 @@
 import { useToast } from "@chakra-ui/react";
 import { addSeenRelay, mergeRelaySets } from "applesauce-core/helpers";
-import { useActiveAccount, useEventFactory } from "applesauce-react/hooks";
+import { useActiveAccount, useEventFactory, useObservableEagerState } from "applesauce-react/hooks";
 import { PublishResponse } from "applesauce-relay";
 import { nanoid } from "nanoid";
 import { EventTemplate, NostrEvent, UnsignedEvent } from "nostr-tools";
@@ -9,10 +9,11 @@ import { BehaviorSubject, map, Observable, share } from "rxjs";
 
 import { scanToArray } from "../../helpers/observable";
 import { useWriteRelays } from "../../hooks/use-client-relays";
-import { useUserOutbox } from "../../hooks/use-user-mailboxes";
+import useUserMailboxes from "../../hooks/use-user-mailboxes";
 import { writeEvent } from "../../services/event-cache";
 import { eventStore } from "../../services/event-store";
 import pool from "../../services/pool";
+import localSettings from "../../services/preferences";
 
 export type PublishResults = { packets: PublishResponse[]; relays: Record<string, PublishResponse> };
 
@@ -101,7 +102,8 @@ export default function PublishProvider({ children }: PropsWithChildren) {
   const toast = useToast();
   const [log, setLog] = useState<PublishLogEntry[]>([]);
   const account = useActiveAccount();
-  const outbox = useUserOutbox(account?.pubkey);
+  const mailboxes = useUserMailboxes(account?.pubkey);
+  const fallbackRelays = useObservableEagerState(localSettings.fallbackRelays);
   const writeRelays = useWriteRelays();
   const factory = useEventFactory();
 
@@ -121,7 +123,7 @@ export default function PublishProvider({ children }: PropsWithChildren) {
       try {
         let relays;
         if (onlyAdditionalRelays) relays = mergeRelaySets(additionalRelays ?? []);
-        else relays = mergeRelaySets(writeRelays, outbox, additionalRelays);
+        else relays = mergeRelaySets(writeRelays, mailboxes?.outboxes || fallbackRelays, additionalRelays);
 
         // add pubkey to event
         if (!Reflect.has(event, "pubkey")) event = await finalizeDraft(event);
@@ -144,7 +146,7 @@ export default function PublishProvider({ children }: PropsWithChildren) {
         if (!quite) throw e;
       }
     },
-    [toast, setLog, account, finalizeDraft, outbox, writeRelays],
+    [toast, setLog, account, finalizeDraft, writeRelays, mailboxes, fallbackRelays],
   ) as PublishContextType["publishEvent"];
 
   const context = useMemo<PublishContextType>(
