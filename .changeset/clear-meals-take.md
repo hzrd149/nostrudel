@@ -1,5 +1,5 @@
 ---
-"nostrudel": minor
+"nostrudel": patch
 ---
 
 Show muted replies in threads
