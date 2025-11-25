@@ -1,5 +1,14 @@
 # nostrudel
 
+## 1.0.1
+
+### Patch Changes
+
+- 96958b2: Remove unused paywall
+- c61e241: Show muted replies in threads
+- 533909f: Fix events getting published to 0 relays
+- 98bf119: Fix user lookup calling all providers
+
 ## 1.0.0
 
 ### Major Changes
