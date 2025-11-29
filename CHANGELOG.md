@@ -1,5 +1,11 @@
 # nostrudel
 
+## 1.0.2
+
+### Patch Changes
+
+- 2d8bb9d: Use random default pubkeys when user is not signed in
+
 ## 1.0.1
 
 ### Patch Changes
