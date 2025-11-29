@@ -1,5 +1,11 @@
 # nostrudel
 
+## 1.0.3
+
+### Patch Changes
+
+- 2e11485: Fix new tabs not using last active account
+
 ## 1.0.2
 
 ### Patch Changes
