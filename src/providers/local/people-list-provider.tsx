@@ -1,18 +1,12 @@
-import {
-  AddressPointerWithoutD,
-  getAddressPointerForEvent,
-  getProfilePointersFromList,
-  getReplaceableIdentifier,
-  parseCoordinate,
-} from "applesauce-core/helpers";
+import { getAddressPointerForEvent, getProfilePointersFromList } from "applesauce-core/helpers";
 import { useActiveAccount } from "applesauce-react/hooks";
 import { Filter, NostrEvent, kinds } from "nostr-tools";
 import { AddressPointer, ProfilePointer } from "nostr-tools/nip19";
 import { PropsWithChildren, createContext, useCallback, useContext, useMemo } from "react";
 
+import { DEFAULT_ANON_PUBKEY } from "../../const";
 import useReplaceableEvent from "../../hooks/use-replaceable-event";
 import useRouteSearchValue from "../../hooks/use-route-search-value";
-import { LoadableAddressPointer } from "applesauce-loaders/loaders";
 
 export type ListId = "following" | "global" | "self" | string;
 
@@ -56,7 +50,12 @@ export function usePeopleListSelect(selected: ListId, onChange: (list: ListId) =
   const people = useMemo(() => event && getProfilePointersFromList(event), [event]);
 
   const filter = useMemo<Filter | undefined>(() => {
-    if (selected === "global") return {};
+    if (selected === "global") {
+      // If logged in, show all events (original global behavior)
+      if (account) return {};
+      // If logged out, should not reach here - should default to anon contact list
+      return {};
+    }
     if (selected === "self") {
       if (account) return { authors: [account.pubkey] };
       else return undefined;
@@ -84,7 +83,15 @@ export default function PeopleListProvider({ children, initList }: PeopleListPro
   const account = useActiveAccount();
   const peopleParam = useRouteSearchValue("people");
 
-  const selected = peopleParam.value || (initList as ListId) || (account ? "following" : "global");
+  // When logged out and no selection, default to anon contact list instead of "global"
+  const defaultSelected = useMemo(() => {
+    if (account) return "following";
+    if (initList) return initList as ListId;
+    // Default to anon contact list when logged out
+    return `${kinds.Contacts}:${DEFAULT_ANON_PUBKEY}`;
+  }, [account, initList]);
+
+  const selected = peopleParam.value || defaultSelected;
   const setSelected = useCallback(
     (value: ListId) => {
       peopleParam.setValue(value);

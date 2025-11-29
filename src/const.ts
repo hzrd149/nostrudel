@@ -1,20 +1,33 @@
 import { EventFactoryClient } from "applesauce-factory";
 import { isSafeRelayURL } from "applesauce-core/helpers/relays";
 import { normalizeURL, ProfilePointer } from "applesauce-core/helpers";
-import { IS_WEB_ANDROID } from "./env";
 
-function normalizeRelayURLs(relays: string[]) {
+function relays(relays: string[]) {
   return relays.filter(isSafeRelayURL).map(normalizeURL);
 }
 
+/**
+ * The default pubkey to use when viewing the app logged out
+ * TODO: might be cool to cycle through a list of pubkeys for each session
+ */
+export const DEFAULT_ANON_PUBKEYS = [
+  "532d830dffe09c13e75e8b145c825718fc12b0003f61d61e9077721c7fff93cb",
+  "84dee6e676e5bb67b4ad4e042cf70cbd8681155db535942fcc6a0533858a7240",
+  "e62f419a0e16607b96ff10ecb00249af7d4b69c7d121e4b04130c61cc998c32e",
+  "82341f882b6eabcd2ba7f1ef90aad961cf074af15b9ef44a09f9d2a8fbfbe6a2",
+  "50d94fc2d8580c682b071a542f8b1e31a200b0508bab95a33bef0855df281d63",
+  "f1989a96d75aa386b4c871543626cbb362c03248b220dc9ae53d7cefbcaaf2c1",
+];
+export const DEFAULT_ANON_PUBKEY = DEFAULT_ANON_PUBKEYS[Math.floor(Math.random() * DEFAULT_ANON_PUBKEYS.length)];
+
 export const DEFAULT_SHARE_SERVICE = "https://njump.me/";
-export const DEFAULT_SEARCH_RELAYS = normalizeRelayURLs([
+export const DEFAULT_SEARCH_RELAYS = relays([
   "wss://relay.nostr.band",
   "wss://search.nos.today",
   "wss://relay.noswhere.com",
   "wss://filter.nostr.wine",
 ]);
-export const WIKI_RELAYS = normalizeRelayURLs(["wss://relay.wikifreedia.xyz/"]);
+export const WIKI_RELAYS = relays(["wss://relay.wikifreedia.xyz/"]);
 
 /** The default maximum number of connections to make for outbox selection */
 export const DEFAULT_MAX_CONNECTIONS = 20;
@@ -23,16 +36,16 @@ export const DEFAULT_MAX_CONNECTIONS = 20;
 export const DEFAULT_MAX_RELAYS_PER_USER = 5;
 
 /** The default lookup relays used to fetch users profiles and outboxes */
-export const DEFAULT_LOOKUP_RELAYS = normalizeRelayURLs(["wss://purplepag.es/"]);
+export const DEFAULT_LOOKUP_RELAYS = relays(["wss://purplepag.es/"]);
 
 /** Extra recommended lookup relays */
-export const RECOMMENDED_LOOKUP_RELAYS = normalizeRelayURLs(["wss://purplepag.es/", "wss://index.hzrd149.com"]);
+export const RECOMMENDED_LOOKUP_RELAYS = relays(["wss://purplepag.es/", "wss://index.hzrd149.com"]);
 
 /** The default set of relays to use for fetching users events who have out published outboxes */
-export const DEFAULT_FALLBACK_RELAYS = normalizeRelayURLs(["wss://relay.primal.net/", "wss://relay.damus.io/"]);
+export const DEFAULT_FALLBACK_RELAYS = relays(["wss://relay.primal.net/", "wss://relay.damus.io/"]);
 
 /** The default recommended relays to use when a user has not outboxes */
-export const RECOMMENDED_FALLBACK_RELAYS = normalizeRelayURLs([
+export const RECOMMENDED_FALLBACK_RELAYS = relays([
   "wss://relay.primal.net/",
   "wss://relay.damus.io/",
   "wss://nos.lol/",
@@ -63,11 +76,13 @@ export const NIP_89_CLIENT_APP: EventFactoryClient = {
   },
 };
 
+// Default local relay URL
 export const LOCAL_RELAY_URL = "ws://localhost:4869/";
 
 export const SOCIAL_GRAPH_FALLBACK_PUBKEY = "713978c3094081b34fcf2f5491733b0c22728cd3b7a6946519d40f5f08598af8";
 export const SUPPORT_PUBKEY = "713978c3094081b34fcf2f5491733b0c22728cd3b7a6946519d40f5f08598af8";
 
+// Tenor API Key for GIFs
 export const TENOR_API_KEY = import.meta.env.VITE_TENOR_API_KEY as string | undefined;
 
 // Username Lookup defaults

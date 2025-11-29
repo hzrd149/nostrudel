@@ -11,19 +11,23 @@ import {
   ModalHeader,
   ModalOverlay,
   SimpleGrid,
+  Text,
   useDisclosure,
 } from "@chakra-ui/react";
 import { useActiveAccount } from "applesauce-react/hooks";
 import { kinds } from "nostr-tools";
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { getProfilePointersFromList, getReplaceableAddress } from "applesauce-core/helpers";
 
 import { NostrEvent } from "nostr-tools";
 import { useAsync, useDebounce } from "react-use";
+import { DEFAULT_ANON_PUBKEYS } from "../../const";
+import { getDisplayName } from "../../helpers/nostr/profile";
 import { getEventUID } from "../../helpers/nostr/event";
 import { getListTitle } from "../../helpers/nostr/lists";
 import useFavoriteLists from "../../hooks/use-favorite-lists";
 import useUserContactList from "../../hooks/use-user-contact-list";
+import useUserProfile from "../../hooks/use-user-profile";
 import useUserSets from "../../hooks/use-user-sets";
 import { usePeopleListContext } from "../../providers/local/people-list-provider";
 import { lookupUsers } from "../../services/username-search";
@@ -47,6 +51,29 @@ function PersonCard({ pubkey, ...props }: { pubkey: string } & Omit<ButtonProps,
       {...props}
     >
       <UserName pubkey={pubkey} />
+    </Button>
+  );
+}
+
+function AnonPerspectiveCard({
+  pubkey,
+  isSelected,
+  ...props
+}: { pubkey: string; isSelected: boolean } & Omit<ButtonProps, "children">) {
+  const profile = useUserProfile(pubkey);
+  const displayName = getDisplayName(profile, pubkey);
+
+  return (
+    <Button
+      leftIcon={<UserAvatar pubkey={pubkey} size="sm" showNip05={false} />}
+      isTruncated
+      justifyContent="flex-start"
+      p="2"
+      colorScheme={isSelected ? "primary" : undefined}
+      variant={isSelected ? "solid" : "outline"}
+      {...props}
+    >
+      {displayName}
     </Button>
   );
 }
@@ -100,10 +127,27 @@ export default function PeopleListSelection({
     [setSelected, modal.onClose, setSearch],
   );
 
+  // Check if we're viewing an anon contact list (logged out and viewing a contact list)
+  const isAnonList = !account && listEvent && listEvent.kind === kinds.Contacts;
+  const anonPubkey = isAnonList ? listEvent.pubkey : undefined;
+  const anonProfile = useUserProfile(anonPubkey);
+  const anonDisplayName = useMemo(() => {
+    if (!isAnonList || !anonPubkey) return null;
+    return getDisplayName(anonProfile, anonPubkey);
+  }, [isAnonList, anonPubkey, anonProfile]);
+
   return (
     <>
       <Button onClick={modal.onOpen} {...props}>
-        {listEvent ? getListTitle(listEvent) : selected === "global" ? "Global" : "Loading..."}
+        {isAnonList && anonDisplayName
+          ? `Viewing as ${anonDisplayName}`
+          : isAnonList
+            ? "Anon"
+            : listEvent
+              ? getListTitle(listEvent)
+              : selected === "global"
+                ? "Global"
+                : "Loading..."}
       </Button>
       <Modal isOpen={modal.isOpen} onClose={modal.onClose} size="2xl">
         <ModalOverlay />
@@ -111,6 +155,33 @@ export default function PeopleListSelection({
           <ModalHeader p="4">Select List</ModalHeader>
           <ModalCloseButton />
           <ModalBody px="4" pb="4" pt="0" display="flex" flexDirection="column" gap="2">
+            {!account && isAnonList && DEFAULT_ANON_PUBKEYS.length > 0 && (
+              <>
+                <Heading size="md">Perspectives</Heading>
+                <Text fontSize="sm" color="gray.500" mb="2">
+                  {DEFAULT_ANON_PUBKEYS.length > 1
+                    ? "View the app from different user perspectives"
+                    : "Current perspective"}
+                </Text>
+                <SimpleGrid columns={2} spacing="2">
+                  {DEFAULT_ANON_PUBKEYS.map((pubkey) => {
+                    const contactListId = `${kinds.Contacts}:${pubkey}`;
+                    const isSelected = selected === contactListId;
+                    return (
+                      <AnonPerspectiveCard
+                        key={pubkey}
+                        pubkey={pubkey}
+                        isSelected={isSelected}
+                        onClick={() => {
+                          setSelected(contactListId);
+                          modal.onClose();
+                        }}
+                      />
+                    );
+                  })}
+                </SimpleGrid>
+              </>
+            )}
             <ButtonGroup>
               {account && (
                 <Button
