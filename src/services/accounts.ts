@@ -1,7 +1,7 @@
 import { AccountManager, SerializedAccount } from "applesauce-accounts";
 import { AmberClipboardAccount, PasswordAccount, registerCommonAccountTypes } from "applesauce-accounts/accounts";
 import { NostrConnectSigner } from "applesauce-signers";
-import { skip } from "rxjs";
+import { fromEvent, merge, skip } from "rxjs";
 
 import AndroidSignerAccount from "../classes/accounts/android-signer-account";
 import { CAP_IS_NATIVE } from "../env";
@@ -49,22 +49,20 @@ accounts.accounts$.pipe(skip(1)).subscribe(async () => {
   await localSettings.accounts.next(json);
 });
 
-// load last active account
+// load last active account from session storage or local settings
 const lastPubkey = localSettings.activeAccount.value;
 const lastAccount = lastPubkey && accounts.getAccountForPubkey(lastPubkey);
 if (lastAccount) accounts.setActive(lastAccount);
 
-// save last active
-accounts.active$.pipe(skip(1)).subscribe((account) => {
+// When window is focused, save active pubkey to session storage
+// This should allow new tabs to use the last active tabs pubkey by default
+merge(fromEvent(window, "focus"), accounts.active$.pipe(skip(1))).subscribe(() => {
+  const account = accounts.active;
+
   if (localSettings.activeAccount.value === (account?.id ?? null)) return;
 
   if (account) localSettings.activeAccount.next(account.pubkey);
   else localSettings.activeAccount.clear();
 });
-
-if (import.meta.env.DEV) {
-  // @ts-expect-error debug
-  window.accounts = accounts;
-}
 
 export default accounts;
