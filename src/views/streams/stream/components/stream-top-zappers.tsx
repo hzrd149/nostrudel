@@ -2,11 +2,11 @@ import { Flex, FlexProps, Text } from "@chakra-ui/react";
 import { getZapPayment, getZapSender, isValidZap } from "applesauce-core/helpers";
 import { kinds, NostrEvent } from "nostr-tools";
 
-import { LightningIcon } from "../../../components/icons";
-import UserAvatarLink from "../../../components/user/user-avatar-link";
-import UserLink from "../../../components/user/user-link";
-import { humanReadableSats } from "../../../helpers/lightning";
-import useStreamChatTimeline from "../stream/stream-chat/use-stream-chat-timeline";
+import { LightningIcon } from "../../../../components/icons";
+import UserAvatarLink from "../../../../components/user/user-avatar-link";
+import UserLink from "../../../../components/user/user-link";
+import { humanReadableSats } from "../../../../helpers/lightning";
+import useStreamChatTimeline from "../../stream/stream-chat/use-stream-chat-timeline";
 
 export default function StreamTopZappers({ stream, ...props }: FlexProps & { stream: NostrEvent }) {
   const { timeline } = useStreamChatTimeline(stream);

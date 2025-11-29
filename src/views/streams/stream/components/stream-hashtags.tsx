@@ -1,7 +1,7 @@
 import { Tag } from "@chakra-ui/react";
 import { NostrEvent } from "nostr-tools";
 
-import { getStreamHashtags } from "../../../helpers/nostr/stream";
+import { getStreamHashtags } from "../../../../helpers/nostr/stream";
 
 export default function StreamHashtags({ stream }: { stream: NostrEvent }) {
   return (

@@ -2,9 +2,9 @@ import { Box, BoxProps } from "@chakra-ui/react";
 import { useRenderedContent } from "applesauce-react/hooks";
 import { NostrEvent } from "nostr-tools";
 
-import { renderGenericUrl, renderImageUrl } from "../../../components/content/links";
-import { components } from "../../../components/content";
-import { getStreamSummary } from "../../../helpers/nostr/stream";
+import { renderGenericUrl, renderImageUrl } from "../../../../components/content/links";
+import { components } from "../../../../components/content";
+import { getStreamSummary } from "../../../../helpers/nostr/stream";
 
 const StreamSummaryContentSymbol = Symbol.for("stream-summary-content");
 const linkRenderers = [renderImageUrl, renderGenericUrl];

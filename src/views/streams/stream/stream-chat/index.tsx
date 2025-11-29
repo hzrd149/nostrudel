@@ -5,7 +5,7 @@ import { NostrEvent } from "nostr-tools";
 import { LightboxProvider } from "../../../../components/lightbox-provider";
 import IntersectionObserverProvider from "../../../../providers/local/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../../../hooks/use-timeline-cursor-intersection-callback";
-import StreamTopZappers from "../../components/stream-top-zappers";
+import StreamTopZappers from "../components/stream-top-zappers";
 import ChatMessageForm from "./stream-chat-form";
 import useStreamChatTimeline from "./use-stream-chat-timeline";
 import StreamChatLog from "./chat-log";

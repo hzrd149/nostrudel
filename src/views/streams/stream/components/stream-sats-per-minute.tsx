@@ -21,8 +21,8 @@ import { parseBolt11 } from "applesauce-core/helpers";
 import { useCallback, useState } from "react";
 import { useInterval } from "react-use";
 
-import { V4VStopIcon, V4VStreamIcon } from "../../../components/icons";
-import useUserLNURLMetadata from "../../../hooks/use-user-lnurl-metadata";
+import { V4VStopIcon, V4VStreamIcon } from "../../../../components/icons";
+import useUserLNURLMetadata from "../../../../hooks/use-user-lnurl-metadata";
 
 export default function StreamSatsPerMinute({ pubkey, ...props }: { pubkey: string } & FlexProps) {
   const [enabled, setEnabled] = useState(false);

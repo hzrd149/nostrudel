@@ -4,7 +4,7 @@ import { NostrEvent } from "nostr-tools";
 import { ProfilePointer } from "nostr-tools/nip19";
 import { combineLatest, filter, of, switchMap } from "rxjs";
 
-import { STREAMER_CARDS_TYPE } from "../views/streams/components/streamer-cards";
+import { STREAMER_CARDS_TYPE } from "../views/streams/stream/components/streamer-cards";
 
 export function StreamCardsQuery(user: ProfilePointer): Model<NostrEvent[] | undefined> {
   return (events) =>

@@ -3,9 +3,9 @@ import { getEventUID, getTagValue } from "applesauce-core/helpers";
 import { useEventModel } from "applesauce-react/hooks";
 import { NostrEvent } from "nostr-tools";
 
-import { TextNoteContents } from "../../../components/timeline/note/text-note-contents";
-import OpenGraphCard from "../../../components/open-graph/open-graph-card";
-import { StreamCardsQuery } from "../../../models/stream";
+import { TextNoteContents } from "../../../../components/timeline/note/text-note-contents";
+import OpenGraphCard from "../../../../components/open-graph/open-graph-card";
+import { StreamCardsQuery } from "../../../../models/stream";
 
 export const STREAMER_CARDS_TYPE = 17777;
 export const STREAMER_CARD_TYPE = 37777;

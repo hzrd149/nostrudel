@@ -15,7 +15,7 @@ import useTextAreaUploadFile, { useTextAreaInsertTextWithForm } from "../../../.
 import { useUserInbox } from "../../../../hooks/use-user-mailboxes";
 import { useContextEmojis } from "../../../../providers/global/emoji-provider";
 import { usePublishEvent } from "../../../../providers/global/publish-provider";
-import StreamZapButton from "../../components/stream-zap-button";
+import StreamZapButton from "../components/stream-zap-button";
 
 export default function ChatMessageForm({ stream, hideZapButton }: { stream: NostrEvent; hideZapButton?: boolean }) {
   const toast = useToast();

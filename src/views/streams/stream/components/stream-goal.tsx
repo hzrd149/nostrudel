@@ -2,12 +2,12 @@ import { Link as RouterLink } from "react-router-dom";
 import { Card, CardBody, CardHeader, CardProps, Flex, Heading, Link } from "@chakra-ui/react";
 import { NostrEvent } from "nostr-tools";
 
-import { getGoalName } from "../../../helpers/nostr/goal";
-import GoalProgress from "../../goals/components/goal-progress";
-import GoalTopZappers from "../../goals/components/goal-top-zappers";
-import GoalZapButton from "../../goals/components/goal-zap-button";
-import useStreamGoal from "../../../hooks/use-stream-goal";
-import { getSharableEventAddress } from "../../../services/relay-hints";
+import { getGoalName } from "../../../../helpers/nostr/goal";
+import GoalProgress from "../../../goals/components/goal-progress";
+import GoalTopZappers from "../../../goals/components/goal-top-zappers";
+import GoalZapButton from "../../../goals/components/goal-zap-button";
+import useStreamGoal from "../../../../hooks/use-stream-goal";
+import { getSharableEventAddress } from "../../../../services/relay-hints";
 
 export default function StreamGoal({ stream, ...props }: Omit<CardProps, "children"> & { stream: NostrEvent }) {
   const goal = useStreamGoal(stream);

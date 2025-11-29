@@ -1,63 +1,57 @@
-import { Flex, Heading, SimpleGrid, Switch } from "@chakra-ui/react";
-import { getEventUID, isStreamURL } from "applesauce-core/helpers";
+import { Flex, Switch } from "@chakra-ui/react";
+import { useEventModel, useObservableState } from "applesauce-react/hooks";
 import { Filter, kinds } from "nostr-tools";
-import { useCallback, useMemo } from "react";
+import { useMemo } from "react";
+import { NEVER } from "rxjs";
+import { unixNow } from "applesauce-core/helpers";
+import { shareAndHold } from "../../helpers/observable";
 
-import { NostrEvent } from "nostr-tools";
 import SimpleView from "../../components/layout/presets/simple-view";
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
 import LoadMoreButton from "../../components/timeline/load-more-button";
-import { getStreamStatus, getStreamStreamingURLs } from "../../helpers/nostr/stream";
 import { useAppTitle } from "../../hooks/use-app-title";
-import { useReadRelays } from "../../hooks/use-client-relays";
-import useClientSideMuteFilter from "../../hooks/use-client-side-mute-filter";
-import useFavoriteStreams from "../../hooks/use-favorite-streams";
 import { useRouteStateBoolean } from "../../hooks/use-route-state-value";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
-import useTimelineLoader from "../../hooks/use-timeline-loader";
+import { useOutboxTimelineLoader } from "../../hooks/use-outbox-timeline-loader";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
-import StreamCard from "./components/stream-card";
+import { OutboxSelectionModel } from "../../models/outbox-selection";
+import outboxSubscriptionsService from "../../services/outbox-subscriptions";
+import EndedStreamsSection from "./components/sections/ended-streams-section";
+import FavoritesStreamsSection from "./components/sections/favorites-streams-section";
+import LiveStreamsSection from "./components/sections/live-streams-section";
 
 function StreamsPage() {
   useAppTitle("Streams");
-  const relays = useReadRelays();
-  const userMuteFilter = useClientSideMuteFilter();
   const showEnded = useRouteStateBoolean("ended", false);
 
-  const eventFilter = useCallback(
-    (event: NostrEvent) => {
-      if (userMuteFilter(event)) return false;
+  const { filter, pointer } = usePeopleListContext();
+  const { selection, outboxes } = useEventModel(OutboxSelectionModel, pointer ? [pointer] : undefined) ?? {};
 
-      // only show streams that have video streams
-      const urls = getStreamStreamingURLs(event);
-      if (!urls.some(isStreamURL)) return false;
-
-      return true;
-    },
-    [userMuteFilter],
-  );
-
-  const { filter, listId } = usePeopleListContext();
-  const query = useMemo<Filter | Filter[] | undefined>(() => {
+  // For outbox timeline loader, only include #p tags (authors are added automatically by outbox system)
+  const outboxFilter = useMemo(() => {
     if (!filter) return undefined;
-    return [
-      { authors: filter.authors, kinds: [kinds.LiveEvent] },
-      { "#p": filter.authors, kinds: [kinds.LiveEvent] },
-    ];
+    const { authors, ...rest } = filter;
+    return {
+      ...rest,
+      kinds: [kinds.LiveEvent],
+      "#p": authors,
+    };
   }, [filter]);
 
-  const { loader, timeline: streams } = useTimelineLoader(`${listId ?? "global"}-streams`, relays, query, {
-    eventFilter,
-  });
+  const loader = useOutboxTimelineLoader(pointer, outboxFilter);
+
+  // Create the subscription observable with shareAndHold to keep it open for a bit
+  const subscription$ = useMemo(() => {
+    if (!pointer || !outboxFilter) return NEVER;
+    const subscriptionFilter = { ...outboxFilter, since: unixNow() - 60 };
+    return outboxSubscriptionsService.subscription(pointer, subscriptionFilter).pipe(shareAndHold(60_000)); // Keep subscription alive for 60 seconds after last unsubscribe
+  }, [pointer, outboxFilter]);
+
+  // Subscribe to live events from outboxes
+  useObservableState(subscription$);
+
   const callback = useTimelineCurserIntersectionCallback(loader);
-
-  const { streams: favorites } = useFavoriteStreams();
-
-  const liveStreams = streams.filter((stream) => getStreamStatus(stream) === "live");
-  const endedStreams = streams.filter((stream) => getStreamStatus(stream) === "ended");
-
-  const columns = { base: 1, md: 2, lg: 3, xl: 4, "2xl": 5 };
 
   return (
     <SimpleView
@@ -72,38 +66,9 @@ function StreamsPage() {
       }
     >
       <IntersectionObserverProvider callback={callback}>
-        {favorites.length > 0 && (
-          <>
-            <Heading size="lg" mt="2">
-              Favorites
-            </Heading>
-            <SimpleGrid columns={columns} spacing="2">
-              {favorites.map((stream) => (
-                <StreamCard key={getEventUID(stream)} stream={stream} />
-              ))}
-            </SimpleGrid>
-          </>
-        )}
-        <Heading size="lg" mt="2">
-          Live
-        </Heading>
-        <SimpleGrid columns={columns} spacing="2">
-          {liveStreams.map((stream) => (
-            <StreamCard key={getEventUID(stream)} stream={stream} />
-          ))}
-        </SimpleGrid>
-        {showEnded.isOpen && (
-          <>
-            <Heading size="lg" mt="4">
-              Ended
-            </Heading>
-            <SimpleGrid columns={columns} spacing="2">
-              {endedStreams.map((stream) => (
-                <StreamCard key={getEventUID(stream)} stream={stream} />
-              ))}
-            </SimpleGrid>
-          </>
-        )}
+        <FavoritesStreamsSection />
+        <LiveStreamsSection filter={filter} />
+        {showEnded.isOpen && <EndedStreamsSection filter={filter} />}
         <LoadMoreButton loader={loader} />
       </IntersectionObserverProvider>
     </SimpleView>

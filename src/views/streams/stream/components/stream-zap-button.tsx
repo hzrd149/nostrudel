@@ -1,11 +1,11 @@
 import { Button, IconButton, useDisclosure } from "@chakra-ui/react";
 import { NostrEvent } from "nostr-tools";
 
-import ZapModal from "../../../components/event-zap-modal";
-import { LightningIcon } from "../../../components/icons";
-import { getStreamHost } from "../../../helpers/nostr/stream";
-import { useReadRelays } from "../../../hooks/use-client-relays";
-import useUserLNURLMetadata from "../../../hooks/use-user-lnurl-metadata";
+import ZapModal from "../../../../components/event-zap-modal";
+import { LightningIcon } from "../../../../components/icons";
+import { getStreamHost } from "../../../../helpers/nostr/stream";
+import { useReadRelays } from "../../../../hooks/use-client-relays";
+import useUserLNURLMetadata from "../../../../hooks/use-user-lnurl-metadata";
 
 export default function StreamZapButton({
   stream,
