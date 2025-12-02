@@ -3,7 +3,7 @@ import { addSeenRelay, mergeRelaySets } from "applesauce-core/helpers";
 import { useActiveAccount, useEventFactory, useObservableEagerState } from "applesauce-react/hooks";
 import { PublishResponse } from "applesauce-relay";
 import { nanoid } from "nanoid";
-import { EventTemplate, NostrEvent, UnsignedEvent } from "nostr-tools";
+import { EventTemplate, NostrEvent, UnsignedEvent, verifyEvent } from "nostr-tools";
 import { createContext, PropsWithChildren, useCallback, useContext, useMemo, useState } from "react";
 import { BehaviorSubject, map, Observable, share } from "rxjs";
 
@@ -125,11 +125,13 @@ export default function PublishProvider({ children }: PropsWithChildren) {
         if (onlyAdditionalRelays) relays = mergeRelaySets(additionalRelays ?? []);
         else relays = mergeRelaySets(writeRelays, mailboxes?.outboxes || fallbackRelays, additionalRelays);
 
-        // add pubkey to event
-        if (!Reflect.has(event, "pubkey")) event = await finalizeDraft(event);
+        // Finalize and sign with the active account to avoid publishing pre-signed or mismatched events
+        const unsigned = await finalizeDraft(event);
+        if (unsigned.pubkey !== account!.pubkey) throw new Error("Event pubkey does not match active account");
 
-        // sign event
-        const signed = !Reflect.has(event, "sig") ? await account!.signEvent(event) : (event as NostrEvent);
+        // Always sign ourselves; never forward a caller-supplied signature
+        const signed = await account!.signEvent(unsigned);
+        if (!verifyEvent(signed)) throw new Error("Signed event failed verification");
 
         const entry = new PublishLogEntry(label, signed, [...relays]);
 
