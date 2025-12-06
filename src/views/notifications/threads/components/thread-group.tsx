@@ -10,7 +10,7 @@ import UserName from "../../../../components/user/user-name";
 import useSingleEvent from "../../../../hooks/use-single-event";
 import useEventIntersectionRef from "../../../../hooks/use-event-intersection-ref";
 import useReplaceableEvent from "../../../../hooks/use-replaceable-event";
-import { ThreadGroupData } from "../helpers";
+import { ThreadGroupData } from "../../../../services/notifications/threads";
 
 function ThreadGroup({ group }: { group: ThreadGroupData }) {
   const ref = useEventIntersectionRef(group.replies[0]);

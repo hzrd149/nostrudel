@@ -16,7 +16,7 @@ import { debounce } from "../helpers/function";
 
 import { useContextEmojis } from "../providers/global/emoji-provider";
 import { sortByDistanceAndConnections } from "../services/social-graph";
-import { lookupUsers, SearchResult } from "../services/username-search";
+import { lookupUsers, SearchResult } from "../services/user-lookup";
 import UserAvatar from "./user/user-avatar";
 import UserDnsIdentity from "./user/user-dns-identity";
 import UserName from "./user/user-name";

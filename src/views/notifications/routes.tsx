@@ -6,6 +6,7 @@ import RequireActiveAccount from "../../components/router/require-active-account
 
 // Lazy load tab components
 const ThreadsTab = lazy(() => import("./threads"));
+const RepliesTab = lazy(() => import("./replies"));
 const MentionsTab = lazy(() => import("./mentions"));
 const QuotesTab = lazy(() => import("./quotes"));
 const RepostsTab = lazy(() => import("./reposts"));
@@ -26,6 +27,10 @@ export default [
       {
         path: "threads",
         element: <ThreadsTab />,
+      },
+      {
+        path: "replies",
+        element: <RepliesTab />,
       },
       {
         path: "mentions",

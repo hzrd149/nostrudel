@@ -15,7 +15,7 @@ import localSettings from "./preferences";
 import readStatusService from "./read-status";
 import relayInfoService from "./relay-info";
 import timelineCacheService from "./timeline-cache";
-import { lookupUsers } from "./username-search";
+import { lookupUsers } from "./user-lookup";
 
 const noStrudel = {
   /** Connection pool */

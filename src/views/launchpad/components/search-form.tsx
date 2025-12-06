@@ -8,7 +8,7 @@ import { useDebounce } from "react-use";
 import KeyboardShortcut from "../../../components/keyboard-shortcut";
 import UserAvatar from "../../../components/user/user-avatar";
 import UserName from "../../../components/user/user-name";
-import { lookupUsers } from "../../../services/username-search";
+import { lookupUsers } from "../../../services/user-lookup";
 import { sortByDistanceAndConnections } from "../../../services/social-graph";
 
 function UserOption({ pubkey }: { pubkey: string }) {

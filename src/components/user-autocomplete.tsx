@@ -4,7 +4,7 @@ import { forwardRef, useEffect, useState } from "react";
 import { useDebounce } from "react-use";
 
 import { sortByDistanceAndConnections } from "../services/social-graph";
-import { lookupUsers, SearchResult } from "../services/username-search";
+import { lookupUsers, SearchResult } from "../services/user-lookup";
 import UserAvatar from "./user/user-avatar";
 import UserName from "./user/user-name";
 

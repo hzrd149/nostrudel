@@ -9,7 +9,7 @@ import { Observable } from "rxjs";
 import { eventCache$ } from "../../../services/event-cache";
 import { eventStore } from "../../../services/event-store";
 import pool from "../../../services/pool";
-import { lookupUsers, SearchResult } from "../../../services/username-search";
+import { lookupUsers, SearchResult } from "../../../services/user-lookup";
 import useAsyncAction from "../../../hooks/use-async-action";
 import ArticleSearchResults from "./article-results";
 import NoteSearchResults from "./note-results";
@@ -43,13 +43,10 @@ export default function SearchResults({ query, relay }: { query: string; relay: 
   const search = useMemo(() => createSearchAction(relay ? [relay] : []), [relay]);
 
   // Search for profiles using username-search service
-  const { loading: loadingProfiles, run: searchProfiles } = useAsyncAction(
-    async (searchQuery: string) => {
-      const results = await lookupUsers(searchQuery, 20);
-      return results;
-    },
-    []
-  );
+  const { loading: loadingProfiles, run: searchProfiles } = useAsyncAction(async (searchQuery: string) => {
+    const results = await lookupUsers(searchQuery, 20);
+    return results;
+  }, []);
 
   useEffect(() => {
     if (query.length < 3) return;
@@ -140,7 +137,13 @@ export default function SearchResults({ query, relay }: { query: string; relay: 
     <>
       {(hasResults || searching || searchingProfiles) && (
         <Text>
-          {hasResults ? `Found ${totalResults} results` : <><Spinner size="sm" /> Searching...</>}
+          {hasResults ? (
+            `Found ${totalResults} results`
+          ) : (
+            <>
+              <Spinner size="sm" /> Searching...
+            </>
+          )}
         </Text>
       )}
       {profileResults.length > 0 && <ProfileSearchResults profiles={profileResults} />}

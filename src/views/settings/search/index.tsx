@@ -24,7 +24,7 @@ import useAsyncAction from "../../../hooks/use-async-action";
 import useUserSearchRelayList from "../../../hooks/use-user-search-relay-list";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
 import localSettings from "../../../services/preferences";
-import { LookupProvider } from "../../../services/username-search";
+import { LookupProvider } from "../../../services/user-lookup";
 import AddRelayForm from "../relays/components/add-relay-form";
 import RelayControl from "../relays/components/relay-control";
 import { PrimalConfig } from "./components/primal-config";

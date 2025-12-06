@@ -5,6 +5,7 @@ import { NostrEvent } from "nostr-tools";
 import {
   mentionNotifications$,
   quoteNotifications$,
+  replyNotifications$,
   repostNotifications$,
   threadNotifications$,
   zapNotifications$,
@@ -13,6 +14,7 @@ import type { ThreadNotification } from "../threads/helpers";
 import { getTimeRangeSince, TimeRange } from "./time-range-select";
 
 export type NotificationCounts = {
+  replies: number;
   threads: number;
   mentions: number;
   quotes: number;
@@ -22,6 +24,7 @@ export type NotificationCounts = {
 
 export function useNotificationCounts(timeRange: TimeRange): NotificationCounts {
   const threads = useObservableEagerState(threadNotifications$) ?? [];
+  const replies = useObservableEagerState(replyNotifications$) ?? [];
   const mentions = useObservableEagerState(mentionNotifications$) ?? [];
   const quotes = useObservableEagerState(quoteNotifications$) ?? [];
   const reposts = useObservableEagerState(repostNotifications$) ?? [];
@@ -46,11 +49,12 @@ export function useNotificationCounts(timeRange: TimeRange): NotificationCounts 
     };
 
     return {
+      replies: filterEvents(replies).length,
       threads: filterThreads(threads).length,
       mentions: filterEvents(mentions).length,
       quotes: filterEvents(quotes).length,
       reposts: filterGroups(reposts).length,
       zaps: filterGroups(zaps).length,
     };
-  }, [threads, mentions, quotes, reposts, zaps, since]);
+  }, [replies, threads, mentions, quotes, reposts, zaps, since]);
 }

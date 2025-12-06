@@ -1,7 +1,7 @@
 import { Flex, FlexProps, LinkBox, Text } from "@chakra-ui/react";
-import { isAddressPointer, neventEncode } from "applesauce-core/helpers";
+import { getSeenRelays, neventEncode } from "applesauce-core/helpers";
 import { useActiveAccount } from "applesauce-react/hooks";
-import { AddressPointer, EventPointer } from "nostr-tools/nip19";
+import { NostrEvent } from "nostr-tools";
 import { memo, useMemo } from "react";
 
 import { CompactNoteContent } from "../../../../components/compact-note-content";
@@ -10,16 +10,13 @@ import RouterLink from "../../../../components/router-link";
 import Timestamp from "../../../../components/timestamp";
 import UserAvatar from "../../../../components/user/user-avatar";
 import UserName from "../../../../components/user/user-name";
+import useEvent from "../../../../hooks/use-event";
 import useEventIntersectionRef from "../../../../hooks/use-event-intersection-ref";
-import useReplaceableEvent from "../../../../hooks/use-replaceable-event";
-import useSingleEvent from "../../../../hooks/use-single-event";
-import { DirectReplyData } from "../helpers";
+import { getReplyPointer } from "../../../../services/notifications/threads";
 
-function ParentPreview({
-  pointer,
-  ...props
-}: { pointer: EventPointer | AddressPointer } & Omit<FlexProps, "children">) {
-  const parent = isAddressPointer(pointer) ? useReplaceableEvent(pointer) : useSingleEvent(pointer);
+function ParentPreview({ event, ...props }: { event: NostrEvent } & Omit<FlexProps, "children">) {
+  const replyPointer = getReplyPointer(event);
+  const parent = useEvent(replyPointer);
   const account = useActiveAccount();
 
   // Don't show if parent is not the current user's note
@@ -27,33 +24,32 @@ function ParentPreview({
 
   return (
     <Flex gap="2" fontSize="sm" color="GrayText" fontStyle="italic" overflow="hidden" {...props}>
-      <Text flexShrink={0}>replying to you:</Text>
       <Text isTruncated>{parent.content}</Text>
     </Flex>
   );
 }
 
-function DirectReplyCard({ reply }: { reply: DirectReplyData }) {
-  const ref = useEventIntersectionRef(reply.event);
+function ReplyCard({ event }: { event: NostrEvent }) {
+  const ref = useEventIntersectionRef(event);
 
   const link = useMemo(() => {
-    return `/n/${neventEncode({ id: reply.event.id, relays: [] })}`;
-  }, [reply.event.id]);
+    return `/n/${neventEncode({ id: event.id, relays: Array.from(getSeenRelays(event) ?? []) })}`;
+  }, [event.id]);
 
   return (
     <Flex as={LinkBox} direction="column" overflow="hidden" p="2" gap="2" ref={ref}>
       {/* Header */}
       <HoverLinkOverlay as={RouterLink} to={link} display="flex" alignItems="center" gap="2">
-        <UserAvatar pubkey={reply.event.pubkey} size="sm" showNip05={false} />
-        <UserName pubkey={reply.event.pubkey} fontWeight="bold" />
-        {reply.parentPointer && <ParentPreview pointer={reply.parentPointer} />}
-        <Timestamp timestamp={reply.event.created_at} ms="auto" whiteSpace="nowrap" />
+        <UserAvatar pubkey={event.pubkey} size="sm" showNip05={false} />
+        <UserName pubkey={event.pubkey} fontWeight="bold" />
+        <ParentPreview event={event} />
+        <Timestamp timestamp={event.created_at} ms="auto" whiteSpace="nowrap" />
       </HoverLinkOverlay>
 
       {/* Reply Content */}
-      <CompactNoteContent event={reply.event} maxLength={200} noOfLines={1} whiteSpace="initial" />
+      <CompactNoteContent event={event} maxLength={200} noOfLines={1} whiteSpace="initial" />
     </Flex>
   );
 }
 
-export default memo(DirectReplyCard);
+export default memo(ReplyCard);

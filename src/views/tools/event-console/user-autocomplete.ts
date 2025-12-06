@@ -1,6 +1,6 @@
 import { CompletionContext, CompletionResult } from "@codemirror/autocomplete";
 import { syntaxTree } from "@codemirror/language";
-import { lookupUsers, SearchResult } from "../../../services/username-search";
+import { lookupUsers, SearchResult } from "../../../services/user-lookup";
 
 let cachedUsers: SearchResult[] = [];
 let lastQuery = "";

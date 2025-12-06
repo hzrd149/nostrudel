@@ -30,7 +30,7 @@ import useUserContactList from "../../hooks/use-user-contact-list";
 import useUserProfile from "../../hooks/use-user-profile";
 import useUserSets from "../../hooks/use-user-sets";
 import { usePeopleListContext } from "../../providers/local/people-list-provider";
-import { lookupUsers } from "../../services/username-search";
+import { lookupUsers } from "../../services/user-lookup";
 import UserAvatar from "../user/user-avatar";
 import UserName from "../user/user-name";
 

@@ -4,11 +4,10 @@ import { useMemo, useState } from "react";
 
 import { ErrorBoundary } from "../../../components/error-boundary";
 import RouterLink from "../../../components/router-link";
-import DirectReplyCard from "../../notifications/threads/components/direct-reply-card";
-import ThreadGroup from "../../notifications/threads/components/thread-group";
 import { threadNotifications$ } from "../../../services/notifications";
-import TimePeriodSelect, { getTimePeriodLabel, getTimePeriodTimestamp, TimePeriod } from "./time-period-select";
+import ThreadGroup from "../../notifications/threads/components/thread-group";
 import { ThreadNotification } from "../../notifications/threads/helpers";
+import TimePeriodSelect, { getTimePeriodLabel, getTimePeriodTimestamp, TimePeriod } from "./time-period-select";
 
 export default function ThreadsCard({ ...props }: Omit<CardProps, "children">) {
   const [timePeriod, setTimePeriod] = useState<TimePeriod>("lastWeek");
@@ -38,11 +37,7 @@ export default function ThreadsCard({ ...props }: Omit<CardProps, "children">) {
           <>
             {threads.map((notification) => (
               <ErrorBoundary key={notification.data.key}>
-                {notification.type === "direct" ? (
-                  <DirectReplyCard reply={notification.data} />
-                ) : (
-                  <ThreadGroup group={notification.data} />
-                )}
+                <ThreadGroup group={notification.data} />
               </ErrorBoundary>
             ))}
             <Button as={RouterLink} to="/notifications/threads" w="full" flexShrink={0} variant="link" size="lg" py="4">

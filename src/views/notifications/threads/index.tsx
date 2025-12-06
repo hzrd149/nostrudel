@@ -16,7 +16,6 @@ import { socialNotificationsLoader$, threadNotifications$ } from "../../../servi
 import RelayDistributionButton from "../components/relay-distribution-button";
 import MailboxSettingsButton from "../components/mailbox-settings-button";
 import TimePeriodHeader from "../components/time-period-header";
-import DirectReplyCard from "./components/direct-reply-card";
 import ThreadGroup from "./components/thread-group";
 import { ThreadNotification } from "./helpers";
 
@@ -29,10 +28,6 @@ function ListItemRow({ index, style, data }: ListChildComponentProps<ListItem[]>
     <Box style={style}>
       {item.type === "header" ? (
         <TimePeriodHeader label={item.label} />
-      ) : item.item.type === "direct" ? (
-        <ErrorBoundary>
-          <DirectReplyCard reply={item.item.data} />
-        </ErrorBoundary>
       ) : (
         <ErrorBoundary>
           <ThreadGroup group={item.item.data} />

@@ -10,7 +10,7 @@ import { humanReadableSats } from "../../../helpers/lightning";
 import UserAboutContent from "../../../components/user/user-about-content";
 import UserName from "../../../components/user/user-name";
 import HoverLinkOverlay from "../../../components/hover-link-overlay";
-import { SearchResult } from "../../../services/username-search";
+import { SearchResult } from "../../../services/user-lookup";
 
 // Simple cache for user stats to prevent duplicate requests
 const statsCache = new Map<string, { data: any; timestamp: number }>();

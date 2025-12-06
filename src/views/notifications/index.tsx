@@ -3,7 +3,7 @@ import { useEffect, useMemo } from "react";
 
 import { useObservableEagerState } from "applesauce-react/hooks";
 import { useLocalStorage } from "react-use";
-import { AtIcon, LightningIcon, QuoteIcon, RepostIcon, ThreadIcon } from "../../components/icons";
+import { AtIcon, LightningIcon, QuoteIcon, ReplyIcon, RepostIcon, ThreadIcon } from "../../components/icons";
 import SimpleNavBox from "../../components/layout/box-layout/simple-nav-box";
 import SimpleView from "../../components/layout/presets/simple-view";
 import {
@@ -45,15 +45,15 @@ export default function NotificationsView() {
     >
       <SimpleGrid columns={{ base: 1, lg: 2, xl: 3 }}>
         <SimpleNavBox
-          icon={<ThreadIcon boxSize={12} />}
-          title="Threads"
-          description="View replies to your posts"
-          to="/notifications/threads"
+          icon={<ReplyIcon boxSize={12} />}
+          title="Replies"
+          description="Direct replies to your notes"
+          to="/notifications/replies"
           metadata={
-            counts.threads === 0 ? null : (
+            counts.replies === 0 ? null : (
               <Flex alignItems="center" gap="2">
-                <Badge colorScheme={counts.threads > 0 ? "primary" : "gray"} fontSize="sm">
-                  {counts.threads}
+                <Badge colorScheme={counts.replies > 0 ? "primary" : "gray"} fontSize="sm">
+                  {counts.replies}
                 </Badge>
                 {timeRange !== "all" && (
                   <Text fontSize="xs" color="GrayText">
@@ -74,6 +74,26 @@ export default function NotificationsView() {
               <Flex alignItems="center" gap="2">
                 <Badge colorScheme={counts.mentions > 0 ? "primary" : "gray"} fontSize="sm">
                   {counts.mentions}
+                </Badge>
+                {timeRange !== "all" && (
+                  <Text fontSize="xs" color="GrayText">
+                    {timeRangeLabel}
+                  </Text>
+                )}
+              </Flex>
+            )
+          }
+        />
+        <SimpleNavBox
+          icon={<ThreadIcon boxSize={12} />}
+          title="Threads"
+          description="Conversations in your threads"
+          to="/notifications/threads"
+          metadata={
+            counts.threads === 0 ? null : (
+              <Flex alignItems="center" gap="2">
+                <Badge colorScheme={counts.threads > 0 ? "primary" : "gray"} fontSize="sm">
+                  {counts.threads}
                 </Badge>
                 {timeRange !== "all" && (
                   <Text fontSize="xs" color="GrayText">
