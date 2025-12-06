@@ -19,7 +19,6 @@ import { shareAndHold } from "../../helpers/observable";
 import { getNotificationsFromState, ThreadNotification } from "../../views/notifications/threads/helpers";
 import accounts from "../accounts";
 import { eventStore } from "../event-store";
-import { userEvents$ } from "./common";
 
 /**
  * Get the thread root pointer from an event
@@ -179,27 +178,23 @@ export const threadNotifications$: Observable<ThreadNotification[]> = accounts.a
     });
 
     // Use switchMap on userEvents$ to reset state when user events change
-    return userEvents$.pipe(
-      switchMap((userEventIds) =>
-        replyEvents$.pipe(
-          scan((state, event) => {
-            // Skip user's own events
-            if (event.pubkey === account.pubkey) return state;
+    return replyEvents$.pipe(
+      scan((state, event) => {
+        // Skip user's own events
+        if (event.pubkey === account.pubkey) return state;
 
-            // Get the reply pointer to check if it's a direct reply
-            const replyPointer = getReplyPointer(event);
+        // Get the reply pointer to check if it's a direct reply
+        // const replyPointer = getReplyPointer(event);
 
-            // If this is a direct reply to user's event, skip it
-            if (replyPointer && isDirectReply(replyPointer, userEventIds)) return state;
+        // If this is a direct reply to user's event, skip it
+        // if (replyPointer && isDirectReply(replyPointer, userEventIds)) return state;
 
-            // Skip user's own events
-            if (event.pubkey === account.pubkey) return state;
+        // Skip user's own events
+        if (event.pubkey === account.pubkey) return state;
 
-            // Process as thread notification
-            return processThreadNotification(state, event);
-          }, initialState),
-        ),
-      ),
+        // Process as thread notification
+        return processThreadNotification(state, event);
+      }, initialState),
       // Convert state to sorted notifications array
       map(getNotificationsFromState),
     );

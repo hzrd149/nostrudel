@@ -99,7 +99,7 @@
     "nostr-idb": "^4.0.1",
     "nostr-signer-capacitor-plugin": "^0.0.5",
     "nostr-social-graph": "^1.0.33",
-    "nostr-tools": "^2.17.2",
+    "nostr-tools": "^2.19",
     "nostr-wasm": "^0.1.0",
     "nuka-carousel": "^8.2.0",
     "react": "^19.2.0",
@@ -164,6 +164,9 @@
     "vite-tsconfig-paths": "^5.1.4",
     "workbox-build": "^7.3.0",
     "workbox-window": "^7.3.0"
+  },
+  "resolutions": {
+    "nostr-tools": "^2.19"
   },
   "funding": {
     "type": "lightning",
