@@ -1,5 +1,15 @@
 # nostrudel
 
+## 1.1.0
+
+### Minor Changes
+
+- e5bb226: Split direct replies and thread replies into seperate notification views
+
+### Patch Changes
+
+- 2e11485: Fix new tabs not using last active account
+
 ## 1.0.2
 
 ### Patch Changes
