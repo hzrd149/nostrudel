@@ -111,7 +111,7 @@ encode.number = function (buffers: Array<Uint8Array>, data: any) {
 
   const maxLo = 0x80000000;
   const hi = (data / maxLo) << 0;
-  const lo = data % maxLo << 0;
+  const lo = (data % maxLo) << 0;
   const val = hi * maxLo + lo;
 
   buffers.push(text2arr("i" + val + "e"));

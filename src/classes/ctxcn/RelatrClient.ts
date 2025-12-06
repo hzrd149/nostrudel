@@ -86,7 +86,12 @@ export interface SearchProfilesOutput {
 export type Relatr = {
   CalculateTrustScore: (targetPubkey: string, weightingScheme?: string) => Promise<CalculateTrustScoreOutput>;
   Stats: (args: StatsInput) => Promise<StatsOutput>;
-  SearchProfiles: (query: string, limit?: number, weightingScheme?: string, extendToNostr?: boolean) => Promise<SearchProfilesOutput>;
+  SearchProfiles: (
+    query: string,
+    limit?: number,
+    weightingScheme?: string,
+    extendToNostr?: boolean,
+  ) => Promise<SearchProfilesOutput>;
 };
 
 export class RelatrClient implements Relatr {
@@ -95,24 +100,21 @@ export class RelatrClient implements Relatr {
   private client: Client;
   private transport: Transport;
 
-  constructor(
-    options: Partial<NostrTransportOptions> & { privateKey?: string; relays?: string[] } = {}
-  ) {
+  constructor(options: Partial<NostrTransportOptions> & { privateKey?: string; relays?: string[] } = {}) {
     this.client = new Client({
       name: "RelatrClient",
       version: "1.0.0",
     });
 
     // Private key precedence: constructor options > config file
-    const resolvedPrivateKey = options.privateKey ||
-      "";
+    const resolvedPrivateKey = options.privateKey || "";
 
     const {
       privateKey: _,
       relays = RelatrClient.DEFAULT_RELAYS,
       signer = new PrivateKeySigner(resolvedPrivateKey),
       relayHandler = new ApplesauceRelayPool(relays),
- 			serverPubkey,
+      serverPubkey,
       ...rest
     } = options;
 
@@ -134,10 +136,7 @@ export class RelatrClient implements Relatr {
     await this.transport.close();
   }
 
-  private async call<T = unknown>(
-    name: string,
-    args: Record<string, unknown>
-  ): Promise<T> {
+  private async call<T = unknown>(name: string, args: Record<string, unknown>): Promise<T> {
     const result = await this.client.callTool({
       name,
       arguments: { ...args },
@@ -145,29 +144,25 @@ export class RelatrClient implements Relatr {
     return result.structuredContent as T;
   }
 
-    /**
+  /**
    * Compute trust score for a Nostr pubkey using social graph analysis and profile validation. Only target pubkey is required - all other parameters are optional.
    * @param {string} targetPubkey The target pubkey parameter
    * @param {string} weightingScheme [optional] Weighting scheme: 'default' (balanced), 'conservative' (higher profile validation), 'progressive' (higher social distance), 'balanced'
    * @returns {Promise<CalculateTrustScoreOutput>} The result of the calculate_trust_score operation
    */
-  async CalculateTrustScore(
-    targetPubkey: string, weightingScheme?: string
-  ): Promise<CalculateTrustScoreOutput> {
+  async CalculateTrustScore(targetPubkey: string, weightingScheme?: string): Promise<CalculateTrustScoreOutput> {
     return this.call("calculate_trust_score", { targetPubkey, weightingScheme });
   }
 
-    /**
+  /**
    * Get comprehensive statistics about the Relatr service including database stats, social graph stats, and the source public key
    * @returns {Promise<StatsOutput>} The result of the stats operation
    */
-  async Stats(
-    args: StatsInput
-  ): Promise<StatsOutput> {
+  async Stats(args: StatsInput): Promise<StatsOutput> {
     return this.call("stats", args);
   }
 
-    /**
+  /**
    * Search for Nostr profiles by name/query and return results sorted by trust score. Queries metadata relays and calculates trust scores for each result.
    * @param {string} query The query parameter
    * @param {number} limit [optional] Maximum number of results to return (default: 20)
@@ -176,7 +171,10 @@ export class RelatrClient implements Relatr {
    * @returns {Promise<SearchProfilesOutput>} The result of the search_profiles operation
    */
   async SearchProfiles(
-    query: string, limit?: number, weightingScheme?: string, extendToNostr?: boolean
+    query: string,
+    limit?: number,
+    weightingScheme?: string,
+    extendToNostr?: boolean,
   ): Promise<SearchProfilesOutput> {
     return this.call("search_profiles", { query, limit, weightingScheme, extendToNostr });
   }

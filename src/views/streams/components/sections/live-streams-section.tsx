@@ -42,16 +42,17 @@ export default function LiveStreamsSection({ filter }: Props) {
   }, [filter]);
 
   // Subscribe to event store for timeline events
-  const streams = useObservableEagerMemo(
-    () =>
-      timelineFilter
-        ? eventStore.timeline(timelineFilter).pipe(
-            throttleTime(500),
-            map((events) => events.filter(eventFilter)),
-          )
-        : of([]),
-    [timelineFilter, eventFilter],
-  ) ?? [];
+  const streams =
+    useObservableEagerMemo(
+      () =>
+        timelineFilter
+          ? eventStore.timeline(timelineFilter).pipe(
+              throttleTime(500),
+              map((events) => events.filter(eventFilter)),
+            )
+          : of([]),
+      [timelineFilter, eventFilter],
+    ) ?? [];
 
   const liveStreams = useMemo(() => streams.filter((stream) => getStreamStatus(stream) === "live"), [streams]);
 
@@ -70,4 +71,3 @@ export default function LiveStreamsSection({ filter }: Props) {
     </>
   );
 }
-

@@ -1,9 +1,5 @@
 {
   "source": "src/classes/ctxcn",
-  "relays": [
-    "wss://relay.contextvm.org"
-  ],
-  "addedClients": [
-    "750682303c9f0ddad75941b49edc9d46e3ed306b9ee3335338a21a3e404c5fa3"
-  ]
+  "relays": ["wss://relay.contextvm.org"],
+  "addedClients": ["750682303c9f0ddad75941b49edc9d46e3ed306b9ee3335338a21a3e404c5fa3"]
 }
