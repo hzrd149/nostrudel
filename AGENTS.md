@@ -170,3 +170,283 @@ import { NostrEvent } from "nostr-tools";
 import { getDisplayName } from "../../helpers/nostr/profile";
 import eventStore from "../../services/event-store";
 ```
+
+## Adding New Views
+
+Views are page-level components that handle routing and display content. Follow this structured approach when adding new views to the app.
+
+### File Structure
+
+Create a new directory under `src/views/` with the following structure:
+
+```
+src/views/your-view/
+├── index.tsx              # Main view (list/feed page)
+├── routes.tsx             # Route definitions
+├── [detail-page].tsx      # Detail view (optional)
+├── new.tsx                # Create form (optional)
+└── components/            # View-specific components
+    ├── component-one.tsx
+    └── component-two.tsx
+```
+
+### Step 1: Create Helper Functions
+
+**IMPORTANT**: Always create helper functions for working with Nostr events in `src/helpers/nostr/`. This keeps business logic separate from UI components.
+
+**File**: `src/helpers/nostr/your-feature.ts`
+
+```typescript
+import { NostrEvent } from "nostr-tools";
+
+// Define event kinds
+export const YOUR_FEATURE_KIND = 2003;
+export const YOUR_FEATURE_COMMENT_KIND = 2004;
+
+// Helper functions to extract data from events
+export function getFeatureTitle(event: NostrEvent) {
+  const title = event.tags.find((t) => t[0] === "title")?.[1];
+  if (!title) throw new Error("Missing title");
+  return title;
+}
+
+export function getFeatureData(event: NostrEvent) {
+  const data = event.tags.find((t) => t[0] === "x")?.[1];
+  if (!data) throw new Error("Missing data");
+  return data;
+}
+
+// Validation helper
+export function validateFeature(event: NostrEvent) {
+  try {
+    getFeatureTitle(event);
+    getFeatureData(event);
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+// Add any constants or types needed
+export type Category = {
+  name: string;
+  tag: string;
+};
+```
+
+### Step 2: Create the Main View
+
+**File**: `src/views/your-view/index.tsx`
+
+```typescript
+import { useCallback, useMemo } from "react";
+import { Button, Flex, Spacer } from "@chakra-ui/react";
+import { Link as RouterLink } from "react-router-dom";
+import { NostrEvent } from "nostr-tools";
+
+import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
+import VerticalPageLayout from "../../components/vertical-page-layout";
+import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
+import useTimelineLoader from "../../hooks/use-timeline-loader";
+import useClientSideMuteFilter from "../../hooks/use-client-side-mute-filter";
+import { YOUR_FEATURE_KIND, validateFeature } from "../../helpers/nostr/your-feature";
+import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
+import IntersectionObserverProvider from "../../providers/local/intersection-observer";
+import { useReadRelays } from "../../hooks/use-client-relays";
+
+function YourViewPage() {
+  const { filter, listId } = usePeopleListContext();
+  const relays = useReadRelays();
+
+  const muteFilter = useClientSideMuteFilter();
+  const eventFilter = useCallback(
+    (e: NostrEvent) => {
+      if (muteFilter(e)) return false;
+      if (!validateFeature(e)) return false;
+      return true;
+    },
+    [muteFilter],
+  );
+
+  const query = useMemo(() => {
+    if (!filter) return undefined;
+    return { ...filter, kinds: [YOUR_FEATURE_KIND] };
+  }, [filter]);
+
+  const { loader, timeline: items } = useTimelineLoader(
+    `${listId || "global"}-your-view`,
+    relays,
+    query,
+    { eventFilter },
+  );
+  const callback = useTimelineCurserIntersectionCallback(loader);
+
+  return (
+    <VerticalPageLayout>
+      <Flex gap="2">
+        <PeopleListSelection />
+        <Spacer />
+        <Button as={RouterLink} to="/your-view/new">
+          Create New
+        </Button>
+      </Flex>
+      <IntersectionObserverProvider callback={callback}>
+        {/* Render your items here */}
+        {items?.map((item) => (
+          <YourItemComponent key={item.id} item={item} />
+        ))}
+      </IntersectionObserverProvider>
+    </VerticalPageLayout>
+  );
+}
+
+// Export with provider wrapper
+export default function YourView() {
+  return (
+    <PeopleListProvider>
+      <YourViewPage />
+    </PeopleListProvider>
+  );
+}
+```
+
+### Step 3: Create Detail View (Optional)
+
+**File**: `src/views/your-view/detail.tsx`
+
+```typescript
+import { Spinner } from "@chakra-ui/react";
+import { NostrEvent } from "nostr-tools";
+
+import { ErrorBoundary } from "../../components/error-boundary";
+import VerticalPageLayout from "../../components/vertical-page-layout";
+import useParamsEventPointer from "../../hooks/use-params-event-pointer";
+import useSingleEvent from "../../hooks/use-single-event";
+import { getFeatureTitle } from "../../helpers/nostr/your-feature";
+
+function DetailPage({ item }: { item: NostrEvent }) {
+  return (
+    <VerticalPageLayout>
+      <h1>{getFeatureTitle(item)}</h1>
+      {/* Render item details */}
+    </VerticalPageLayout>
+  );
+}
+
+export default function DetailView() {
+  const pointer = useParamsEventPointer("id");
+  const item = useSingleEvent(pointer);
+
+  if (!item) return <Spinner />;
+
+  return (
+    <ErrorBoundary>
+      <DetailPage item={item} />
+    </ErrorBoundary>
+  );
+}
+```
+
+### Step 4: Define Routes
+
+**File**: `src/views/your-view/routes.tsx`
+
+```typescript
+import { RouteObject } from "react-router-dom";
+import YourView from ".";
+import NewItemView from "./new";
+import DetailView from "./detail";
+
+export default [
+  { index: true, Component: YourView },
+  { path: "new", Component: NewItemView },
+  { path: ":id", Component: DetailView },
+] satisfies RouteObject[];
+```
+
+### Step 5: Register Routes in App
+
+**File**: `src/app.tsx`
+
+Add the import near other route imports (around line 45):
+
+```typescript
+import yourViewRoutes from "./views/your-view/routes";
+```
+
+Add the route to the router configuration (around line 122):
+
+```typescript
+const router = createHashRouter([
+  {
+    element: <RootPage />,
+    children: [
+      // ... existing routes
+      { path: "your-view", children: yourViewRoutes },
+    ],
+  },
+]);
+```
+
+### View Components Pattern
+
+Create reusable components in `src/views/your-view/components/`:
+
+**File**: `src/views/your-view/components/item-row.tsx`
+
+```typescript
+import { memo } from "react";
+import { Link, Td, Tr } from "@chakra-ui/react";
+import { NostrEvent } from "nostr-tools";
+import { Link as RouterLink } from "react-router-dom";
+
+import UserLink from "../../../components/user/user-link";
+import Timestamp from "../../../components/timestamp";
+import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
+import useShareableEventAddress from "../../../hooks/use-shareable-event-address";
+import { getFeatureTitle } from "../../../helpers/nostr/your-feature";
+
+function ItemRow({ item }: { item: NostrEvent }) {
+  const ref = useEventIntersectionRef<HTMLTableRowElement>(item);
+  const address = useShareableEventAddress(item);
+
+  return (
+    <Tr ref={ref}>
+      <Td>
+        <Link as={RouterLink} to={`/your-view/${address}`}>
+          {getFeatureTitle(item)}
+        </Link>
+      </Td>
+      <Td>
+        <Timestamp timestamp={item.created_at} />
+      </Td>
+      <Td>
+        <UserLink pubkey={item.pubkey} />
+      </Td>
+    </Tr>
+  );
+}
+
+export default memo(ItemRow);
+```
+
+### Key Patterns
+
+1. **Helper Functions First**: Always create helpers in `src/helpers/nostr/` before building UI
+2. **Provider Wrapper**: Wrap main view with providers (PeopleListProvider, etc.)
+3. **Timeline Loader**: Use `useTimelineLoader` for feeds with infinite scroll
+4. **Event Validation**: Filter events with `eventFilter` callback
+5. **Intersection Observer**: Use for lazy loading and performance
+6. **Relative Imports**: Always use relative imports (`../../components/`)
+7. **Memo Components**: Use `memo()` for list items to prevent re-renders
+8. **Error Boundaries**: Wrap critical sections with `<ErrorBoundary>`
+
+### Real Example: Torrents View
+
+The torrents view (`src/views/torrents/`) demonstrates this pattern:
+
+- **Helpers**: `src/helpers/nostr/torrents.ts` - Event kind, validation, data extraction
+- **Main View**: `src/views/torrents/index.tsx` - List with filtering and infinite scroll
+- **Detail View**: `src/views/torrents/torrent.tsx` - Individual torrent details
+- **Routes**: `src/views/torrents/routes.tsx` - Route configuration
+- **Components**: `src/views/torrents/components/` - Reusable UI components
