@@ -20,7 +20,8 @@ import { parseNIP05Address, ProfileContent } from "applesauce-core/helpers";
 import { IdentityStatus } from "applesauce-loaders/helpers/dns-identity";
 import { useActiveAccount } from "applesauce-react/hooks";
 import { useRef, useState } from "react";
-import { useForm, useFormContext } from "react-hook-form";
+import { useForm, useFormContext, useWatch } from "react-hook-form";
+import { useAsync } from "react-use";
 
 import { ChevronDownIcon, ChevronUpIcon, OutboxIcon } from "../../../../components/icons";
 import { isLNURL } from "../../../../helpers/lnurl";
@@ -160,8 +161,26 @@ export default function ProfileEditForm({
     handleSubmit,
     reset,
     setValue,
+    control,
     formState: { errors },
   } = useFormContext<ProfileFormData>();
+
+  const lightningAddress = useWatch({ control, name: "lud16" });
+  const { value: lightningAddressWarning } = useAsync(async () => {
+    if (!lightningAddress) return undefined;
+    if (!isLNURL(lightningAddress) && !isLightningAddress(lightningAddress)) return undefined;
+
+    const metadata = await lnurlMetadataService.requestMetadata(lightningAddress).catch(() => undefined);
+    if (!metadata) {
+      return "Could not verify LNURL metadata (network or CORS issue)";
+    }
+
+    if (!metadata.allowsNostr) {
+      return "Address does not advertise Nostr zaps, but it should still work for payments";
+    }
+
+    return undefined;
+  }, [lightningAddress]);
 
   return (
     <VStack as="form" onSubmit={handleSubmit(onSubmit)} spacing={6} align="stretch">
@@ -240,7 +259,7 @@ export default function ProfileEditForm({
               validate: validateLightningAddress,
             })}
           />
-          <FormHelperText>Your Lightning address for receiving zaps.</FormHelperText>
+          <FormHelperText>{lightningAddressWarning || "Your Lightning address for receiving zaps."}</FormHelperText>
           <FormErrorMessage>{errors.lud16?.message}</FormErrorMessage>
         </FormControl>
 
