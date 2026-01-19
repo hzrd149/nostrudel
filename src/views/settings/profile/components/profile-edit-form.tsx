@@ -19,8 +19,9 @@ import {
 import { parseNIP05Address, ProfileContent } from "applesauce-core/helpers";
 import { IdentityStatus } from "applesauce-loaders/helpers/dns-identity";
 import { useActiveAccount } from "applesauce-react/hooks";
-import { useEffect, useRef, useState } from "react";
-import { useForm, useFormContext } from "react-hook-form";
+import { useRef, useState } from "react";
+import { useForm, useFormContext, useWatch } from "react-hook-form";
+import { useAsync } from "react-use";
 
 import { ChevronDownIcon, ChevronUpIcon, OutboxIcon } from "../../../../components/icons";
 import { isLNURL } from "../../../../helpers/lnurl";
@@ -34,6 +35,13 @@ function isLightningAddress(addr: string) {
   return isEmail.test(addr);
 }
 
+function normalizeNip05Address(address: string) {
+  const trimmed = address.trim();
+  if (!trimmed) return trimmed;
+  if (trimmed.includes("@")) return trimmed;
+  return `_@${trimmed}`;
+}
+
 // Validation methods
 const validateLightningAddress = async (value?: string) => {
   if (!value) return true;
@@ -43,26 +51,18 @@ const validateLightningAddress = async (value?: string) => {
 
   try {
     const metadata = await lnurlMetadataService.requestMetadata(value);
-    if (!metadata) {
-      return "Incorrect or broken LNURL address";
-    }
-
-    // Check if the address supports nostr payments
-    if (!metadata.allowsNostr) {
-      return "Lightning address does not support Nostr zaps";
-    }
-
+    if (!metadata) return true;
     return true;
   } catch (error) {
-    return "Error validating lightning address";
+    return true;
   }
 };
 
 const validateNip05 = async (address?: string, userPubkey?: string) => {
   if (!address) return true;
-  if (!address.includes("@")) return "Invalid address";
+  const normalizedAddress = normalizeNip05Address(address);
 
-  const { name, domain } = parseNIP05Address(address) || {};
+  const { name, domain } = parseNIP05Address(normalizedAddress) || {};
   if (!name || !domain) return "Failed to parse address";
 
   try {
@@ -161,8 +161,26 @@ export default function ProfileEditForm({
     handleSubmit,
     reset,
     setValue,
+    control,
     formState: { errors },
   } = useFormContext<ProfileFormData>();
+
+  const lightningAddress = useWatch({ control, name: "lud16" });
+  const { value: lightningAddressWarning } = useAsync(async () => {
+    if (!lightningAddress) return undefined;
+    if (!isLNURL(lightningAddress) && !isLightningAddress(lightningAddress)) return undefined;
+
+    const metadata = await lnurlMetadataService.requestMetadata(lightningAddress).catch(() => undefined);
+    if (!metadata) {
+      return "Could not verify LNURL metadata (network or CORS issue)";
+    }
+
+    if (!metadata.allowsNostr) {
+      return "Address does not advertise Nostr zaps, but it should still work for payments";
+    }
+
+    return undefined;
+  }, [lightningAddress]);
 
   return (
     <VStack as="form" onSubmit={handleSubmit(onSubmit)} spacing={6} align="stretch">
@@ -241,17 +259,18 @@ export default function ProfileEditForm({
               validate: validateLightningAddress,
             })}
           />
-          <FormHelperText>Your Lightning address for receiving zaps.</FormHelperText>
+          <FormHelperText>{lightningAddressWarning || "Your Lightning address for receiving zaps."}</FormHelperText>
           <FormErrorMessage>{errors.lud16?.message}</FormErrorMessage>
         </FormControl>
 
         <FormControl isInvalid={!!errors.nip05}>
           <FormLabel>NIP-05 ID</FormLabel>
           <Input
-            type="email"
-            placeholder="user@domain.com"
+            type="text"
+            placeholder="user@domain.com or example.com"
             autoComplete="off"
             {...register("nip05", {
+              setValueAs: (value) => (typeof value === "string" ? normalizeNip05Address(value) : value),
               validate: (address) => validateNip05(address, account.pubkey),
             })}
           />
