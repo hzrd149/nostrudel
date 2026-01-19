@@ -19,7 +19,7 @@ import {
 import { parseNIP05Address, ProfileContent } from "applesauce-core/helpers";
 import { IdentityStatus } from "applesauce-loaders/helpers/dns-identity";
 import { useActiveAccount } from "applesauce-react/hooks";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useForm, useFormContext } from "react-hook-form";
 
 import { ChevronDownIcon, ChevronUpIcon, OutboxIcon } from "../../../../components/icons";
@@ -34,6 +34,13 @@ function isLightningAddress(addr: string) {
   return isEmail.test(addr);
 }
 
+function normalizeNip05Address(address: string) {
+  const trimmed = address.trim();
+  if (!trimmed) return trimmed;
+  if (trimmed.includes("@")) return trimmed;
+  return `_@${trimmed}`;
+}
+
 // Validation methods
 const validateLightningAddress = async (value?: string) => {
   if (!value) return true;
@@ -43,26 +50,18 @@ const validateLightningAddress = async (value?: string) => {
 
   try {
     const metadata = await lnurlMetadataService.requestMetadata(value);
-    if (!metadata) {
-      return "Incorrect or broken LNURL address";
-    }
-
-    // Check if the address supports nostr payments
-    if (!metadata.allowsNostr) {
-      return "Lightning address does not support Nostr zaps";
-    }
-
+    if (!metadata) return true;
     return true;
   } catch (error) {
-    return "Error validating lightning address";
+    return true;
   }
 };
 
 const validateNip05 = async (address?: string, userPubkey?: string) => {
   if (!address) return true;
-  if (!address.includes("@")) return "Invalid address";
+  const normalizedAddress = normalizeNip05Address(address);
 
-  const { name, domain } = parseNIP05Address(address) || {};
+  const { name, domain } = parseNIP05Address(normalizedAddress) || {};
   if (!name || !domain) return "Failed to parse address";
 
   try {
@@ -248,10 +247,11 @@ export default function ProfileEditForm({
         <FormControl isInvalid={!!errors.nip05}>
           <FormLabel>NIP-05 ID</FormLabel>
           <Input
-            type="email"
-            placeholder="user@domain.com"
+            type="text"
+            placeholder="user@domain.com or example.com"
             autoComplete="off"
             {...register("nip05", {
+              setValueAs: (value) => (typeof value === "string" ? normalizeNip05Address(value) : value),
               validate: (address) => validateNip05(address, account.pubkey),
             })}
           />
