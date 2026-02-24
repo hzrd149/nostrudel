@@ -18,7 +18,7 @@ import { Navigate } from "react-router-dom";
 import { getProfileContent, mergeRelaySets, parseNIP05Address, ProfileContent } from "applesauce-core/helpers";
 import { CheckIcon, CloseIcon, EditIcon } from "@chakra-ui/icons";
 import { kinds } from "nostr-tools";
-import {  setContent  } from "applesauce-common/operations/content";
+import { setContent } from "applesauce-core/operations";
 import { IdentityStatus } from "applesauce-loaders/helpers/dns-identity";
 import { useAsync } from "react-use";
 

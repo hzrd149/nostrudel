@@ -1,4 +1,4 @@
-import { getEventPointerFromQTag } from "applesauce-core/helpers";
+import { getEventPointerFromQTag, EventPointer } from "applesauce-core/helpers";
 import { COMMENT_KIND } from "applesauce-common/helpers";
 import { getParsedContent } from "applesauce-content/text";
 import { mapEventsToTimeline, withImmediateValueOrDefault } from "applesauce-core";

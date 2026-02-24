@@ -1,5 +1,6 @@
 import { AvatarGroup, Flex, LinkBox, Text } from "@chakra-ui/react";
-import { getSharedEventPointer, getTagValue, naddrEncode, neventEncode } from "applesauce-core/helpers";
+import { getTagValue, naddrEncode, neventEncode } from "applesauce-core/helpers";
+import { getSharedEventPointer } from "applesauce-common/helpers";
 import { getEmbededSharedEvent } from "applesauce-common/helpers/share";
 import { memo, useEffect, useMemo } from "react";
 
