@@ -94,7 +94,8 @@ export async function getPayRequestForPubkey(
   // attach "e" or "a" tag
   if (event) {
     if (isReplaceable(event.kind) && event.tags.some(isDTag)) {
-      zapRequest.tags.push(["a", getReplaceableAddress(event)]);
+      const address = getReplaceableAddress(event);
+      if (address) zapRequest.tags.push(["a", address]); // v5: can return null
     } else zapRequest.tags.push(["e", event.id]);
   }
 

@@ -114,7 +114,8 @@ export default function PeopleListSelection({
 
   const selectList = useCallback(
     (list: NostrEvent) => {
-      setSelected(getReplaceableAddress(list));
+      const address = getReplaceableAddress(list);
+      if (address) setSelected(address); // v5: can return null
       modal.onClose();
     },
     [setSelected, modal.onClose],
