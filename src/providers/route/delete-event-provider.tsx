@@ -71,7 +71,8 @@ export default function DeleteEventProvider({ children }: PropsWithChildren) {
       setLoading(true);
       const tags: string[][] = [["e", event.id]];
       if (isReplaceable(event.kind)) {
-        tags.push(["a", getReplaceableAddress(event)]);
+        const address = getReplaceableAddress(event);
+        if (address) tags.push(["a", address]); // v5: can return null
       }
 
       const draft = {

@@ -40,10 +40,14 @@ function UsersLists({ pubkey }: { pubkey: string }) {
     async (cords: string | string[]) => {
       if (!Array.isArray(cords)) return;
 
-      const addToList = lists.find((list) => !inLists.includes(list) && cords.includes(getReplaceableAddress(list)));
-      const removeFromList = lists.find(
-        (list) => inLists.includes(list) && !cords.includes(getReplaceableAddress(list)),
-      );
+      const addToList = lists.find((list) => {
+        const addr = getReplaceableAddress(list);
+        return addr && !inLists.includes(list) && cords.includes(addr); // v5: can be null
+      });
+      const removeFromList = lists.find((list) => {
+        const addr = getReplaceableAddress(list);
+        return addr && inLists.includes(list) && !cords.includes(addr); // v5: can be null
+      });
 
       if (addToList) {
         await actions
@@ -64,14 +68,18 @@ function UsersLists({ pubkey }: { pubkey: string }) {
         <MenuOptionGroup
           title="Lists"
           type="checkbox"
-          value={inLists.map((list) => getReplaceableAddress(list))}
+          value={inLists.map((list) => getReplaceableAddress(list)).filter((addr): addr is string => addr !== null)} // v5: filter nulls
           onChange={handleChange.run}
         >
-          {lists.map((list) => (
-            <MenuItemOption key={getEventUID(list)} value={getReplaceableAddress(list)} isTruncated maxW="90vw">
-              {getListTitle(list)}
-            </MenuItemOption>
-          ))}
+          {lists.map((list) => {
+            const addr = getReplaceableAddress(list);
+            if (!addr) return null; // v5: can be null
+            return (
+              <MenuItemOption key={getEventUID(list)} value={addr} isTruncated maxW="90vw">
+                {getListTitle(list)}
+              </MenuItemOption>
+            );
+          })}
         </MenuOptionGroup>
       )}
       <MenuDivider />

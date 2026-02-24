@@ -15,7 +15,9 @@ export default function EmbeddedDVM({
   ...props
 }: Omit<CardProps, "children"> & { dvm: NostrEvent; to?: To; onClick?: LinkOverlayProps["onClick"] }) {
   const metadata = JSON.parse(dvm.content);
-  const pointer: AddressPointer = useMemo(() => getAddressPointerForEvent(dvm), [dvm]);
+  const pointer = useMemo(() => getAddressPointerForEvent(dvm), [dvm]);
+
+  if (!pointer) return null; // v5: getAddressPointerForEvent can return null
 
   return (
     <Card as={LinkBox} display="block" p="4" {...props}>

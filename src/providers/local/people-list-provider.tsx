@@ -70,7 +70,7 @@ export function usePeopleListSelect(selected: ListId, onChange: (list: ListId) =
     people,
     selected,
     listId,
-    pointer,
+    pointer: pointer || undefined, // v5: convert null to undefined
     listEvent: event,
     setSelected: onChange,
     filter,

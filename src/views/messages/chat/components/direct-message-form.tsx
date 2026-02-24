@@ -21,7 +21,8 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { SendLegacyMessage, SendWrappedMessage } from "applesauce-actions/actions";
-import { getConversationIdentifierFromMessage, getDisplayName } from "applesauce-common/helpers";
+import { getConversationIdentifierFromMessage } from "applesauce-common/helpers";
+import { getDisplayName } from "applesauce-core/helpers";
 import { getTagValue, unixNow, mergeRelaySets } from "applesauce-core/helpers";
 import { useActionRunner, useActiveAccount, useEventModel, useObservableEagerState } from "applesauce-react/hooks";
 import { kinds } from "nostr-tools";
@@ -320,7 +321,7 @@ export default function SendMessageForm({
   const otherInboxes = useUserInbox(pubkey);
   const selfInboxes = useUserInbox(account.pubkey);
   const inboxes = useEventModel(GroupMessageInboxesModel, [
-    createConversationIdentifier(account.pubkey, pubkey),
+    getConversationIdentifierFromMessage(account.pubkey, pubkey),
     false,
   ]);
   const sendMessage = handleSubmit(async (values) => {

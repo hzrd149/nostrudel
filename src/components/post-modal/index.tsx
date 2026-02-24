@@ -26,7 +26,7 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { ZapSplit } from "applesauce-common/helpers";
-import { getEventPointerFromQTag, processTags } from "applesauce-core/helpers";
+import { getEventPointerFromQTag, processTags, EventPointer } from "applesauce-core/helpers";
 import { Emoji } from "applesauce-common/helpers";
 import { useActiveAccount, useEventFactory, useEventStore, useObservableEagerState } from "applesauce-react/hooks";
 import { UnsignedEvent } from "nostr-tools";
@@ -125,7 +125,9 @@ export default function PostModal({
 
   const publishPost = async (unsigned: UnsignedEvent) => {
     // Broadcast quoted events
-    const pointers = processTags(unsigned.tags, (t) => (t[0] === "q" ? getEventPointerFromQTag(t) : undefined));
+    const pointers = processTags(unsigned.tags, (t) => (t[0] === "q" ? getEventPointerFromQTag(t) : undefined)).filter(
+      (p): p is EventPointer => p !== null,
+    ); // v5: filter nulls
     const events = pointers.map((p) => eventStore.getEvent(p.id)).filter((t) => !!t);
     for (const event of events) publish("Broadcast event", event);
 
