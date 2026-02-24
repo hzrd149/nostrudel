@@ -121,7 +121,9 @@ export default function ShortTextNoteForm({
 
   const publishPost = async (unsigned: UnsignedEvent) => {
     // Broadcast quoted events
-    const pointers = processTags(unsigned.tags, (t) => (t[0] === "q" ? getEventPointerFromQTag(t) : undefined));
+    const pointers = processTags(unsigned.tags, (t) => (t[0] === "q" ? getEventPointerFromQTag(t) : undefined)).filter(
+      (p): p is NonNullable<typeof p> => p !== null,
+    ); // v5: filter nulls
     const events = pointers.map((p) => eventStore.getEvent(p.id)).filter((t) => !!t);
     for (const event of events) publish("Broadcast event", event);
 

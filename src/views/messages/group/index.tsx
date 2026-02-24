@@ -156,8 +156,9 @@ export default function DirectMessageGroupView() {
       .map(normalizeToHexPubkey)
       .filter((p) => !!p) as string[];
     if (account) pubkeys.push(account.pubkey);
-    return createConversationIdentifier(pubkeys);
-  }, [group]);
+    // v5: Just return sorted pubkeys as conversation ID
+    return pubkeys.sort().join(",");
+  }, [group, account]);
 
   return (
     <RequireActiveAccount>
