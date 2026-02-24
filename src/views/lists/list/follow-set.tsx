@@ -40,10 +40,13 @@ import { ListPageHeader } from ".";
 import ListEditModal from "../components/list-edit-modal";
 
 function ListFeedButton({ list, ...props }: { list: NostrEvent } & Omit<ButtonProps, "children">) {
+  const address = getReplaceableAddress(list);
+  if (!address) return null; // v5: can return null
+
   return (
     <Button
       as={RouterLink}
-      to={{ pathname: "/", search: new URLSearchParams({ people: getReplaceableAddress(list) }).toString() }}
+      to={{ pathname: "/", search: new URLSearchParams({ people: address }).toString() }}
       {...props}
     >
       View Feed
@@ -103,12 +106,15 @@ export default function FollowSetView({ event }: { event: NostrEvent }) {
       center
       actions={
         <ButtonGroup ms="auto">
-          <Button
-            as={RouterLink}
-            to={{ pathname: "/", search: new URLSearchParams({ people: getReplaceableAddress(event) }).toString() }}
-          >
-            View Feed
-          </Button>
+          {(() => {
+            const addr = getReplaceableAddress(event);
+            if (!addr) return null; // v5: can return null
+            return (
+              <Button as={RouterLink} to={{ pathname: "/", search: new URLSearchParams({ people: addr }).toString() }}>
+                View Feed
+              </Button>
+            );
+          })()}
           {isAuthor && (
             <Button onClick={edit.onOpen} colorScheme="primary">
               Edit

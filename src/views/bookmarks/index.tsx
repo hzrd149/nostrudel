@@ -87,9 +87,11 @@ function BookmarksPage({ pubkey }: { pubkey: string }) {
         .map((tag) => {
           if (isETag(tag)) {
             const pointer = getEventPointerFromETag(tag);
+            if (!pointer) return null; // v5: can return null
             return <BookmarkEventItem key={pointer.id} pointer={pointer} />;
           } else if (isATag(tag)) {
             const pointer = getAddressPointerFromATag(tag);
+            if (!pointer) return null; // v5: can return null
             return <BookmarkAddressItem key={tag[1]} pointer={pointer} />;
           }
           return null;

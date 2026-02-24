@@ -21,7 +21,9 @@ import { DVMName } from "./components/dvm-name";
 
 function DVMFeedRow({ dvm, ...props }: { dvm: NostrEvent }) {
   const metadata = JSON.parse(dvm.content);
-  const pointer: AddressPointer = useMemo(() => getAddressPointerForEvent(dvm), [dvm]);
+  const pointer = useMemo(() => getAddressPointerForEvent(dvm), [dvm]);
+
+  if (!pointer) return null; // v5: can return null
 
   const ref = useEventIntersectionRef(dvm);
 

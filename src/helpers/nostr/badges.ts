@@ -40,7 +40,10 @@ export function getBadgeThumbnails(event: NostrEvent) {
 }
 
 export function getBadgeAwardPubkeys(event: NostrEvent) {
-  return event.tags.filter(isPTag).map(getProfilePointerFromPTag);
+  return event.tags
+    .filter(isPTag)
+    .map(getProfilePointerFromPTag)
+    .filter((p): p is { pubkey: string; relays?: string[] } => p !== null); // v5: filter nulls
 }
 export function getBadgeAwardBadge(event: NostrEvent) {
   const badgeCord = event.tags.find(isATag)?.[1];

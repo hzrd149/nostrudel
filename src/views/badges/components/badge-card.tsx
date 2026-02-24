@@ -22,9 +22,11 @@ function BadgeCard({ badge, ...props }: Omit<CardProps, "children"> & { badge: N
   // if there is a parent intersection observer, register this card
   const ref = useEventIntersectionRef(badge);
 
-  const timesAwarded = useEventModel(TimelineModel, [
-    { kinds: [kinds.BadgeAward], "#a": [getReplaceableAddress(badge)] },
-  ]);
+  const coordinate = getReplaceableAddress(badge);
+  const timesAwarded = useEventModel(
+    TimelineModel,
+    [coordinate ? { kinds: [kinds.BadgeAward], "#a": [coordinate] } : undefined].filter(Boolean),
+  );
 
   return (
     <Card ref={ref} variant="outline" {...props}>
