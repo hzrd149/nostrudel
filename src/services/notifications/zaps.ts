@@ -1,11 +1,5 @@
-import {
-  getCoordinateFromAddressPointer,
-  getZapAddressPointer,
-  getZapEventPointer,
-  insertEventIntoDescendingList,
-  isValidZap,
-  ZapEvent,
-} from "applesauce-core/helpers";
+import { getCoordinateFromAddressPointer, getZapAddressPointer, insertEventIntoDescendingList, ZapEvent,  } from "applesauce-common/helpers";
+import { getZapEventPointer, isValidZap } from "applesauce-common/helpers";
 import { withImmediateValueOrDefault } from "applesauce-core";
 import type { AddressPointer, EventPointer } from "applesauce-core/helpers";
 import { kinds } from "nostr-tools";

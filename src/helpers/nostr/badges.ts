@@ -65,7 +65,12 @@ export function getProfileBadges(profileBadges: NostrEvent): ProfileBadge[] {
       if (isATag(tag)) {
         lastAtag = tag;
       } else if (isETag(tag) && lastAtag && !seen.has(lastAtag[1])) {
-        badges.push({ badge: getAddressPointerFromATag(lastAtag), award: getEventPointerFromETag(tag) });
+        const badge = getAddressPointerFromATag(lastAtag);
+        const award = getEventPointerFromETag(tag);
+        if (badge && award) {
+          // v5: these can return null
+          badges.push({ badge, award });
+        }
         seen.add(lastAtag[1]);
         lastAtag = undefined;
       }

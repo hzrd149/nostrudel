@@ -13,7 +13,7 @@ import { cacheRequest } from "./event-cache";
 import { eventStore } from "./event-store";
 import localSettings from "./preferences";
 import pool from "./pool";
-import { BLOSSOM_SERVER_LIST_KIND } from "applesauce-core/helpers";
+import { BLOSSOM_SERVER_LIST_KIND } from "applesauce-common/helpers";
 
 /** Loader for replaceable events based on coordinate */
 export const replaceableLoader = createAddressLoader(pool, {

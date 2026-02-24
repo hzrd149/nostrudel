@@ -1,6 +1,6 @@
 import { getEncodedToken, Token } from "@cashu/cashu-ts";
 import { Button, Flex, Input, Select } from "@chakra-ui/react";
-import { useActionHub, useActiveAccount, useEventModel } from "applesauce-react/hooks";
+import { useActionRunner, useActiveAccount, useEventModel } from "applesauce-react/hooks";
 import { CompleteSpend } from "applesauce-wallet/actions";
 import { dumbTokenSelection } from "applesauce-wallet/helpers";
 import { WalletBalanceModel, WalletModel, WalletTokensModel } from "applesauce-wallet/models";
@@ -29,7 +29,7 @@ export default function WalletSendCashuView() {
 
   watch("mint");
 
-  const actions = useActionHub();
+  const actions = useActionRunner();
   const submit = handleSubmit(async (values) => {
     if (!tokens) return;
     const selected = dumbTokenSelection(tokens, values.amount, values.mint);

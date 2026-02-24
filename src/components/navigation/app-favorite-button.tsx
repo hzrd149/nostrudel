@@ -3,7 +3,7 @@ import { IconButton, IconButtonProps } from "@chakra-ui/react";
 import { kinds } from "nostr-tools";
 import { useEventFactory } from "applesauce-react/hooks";
 import { NameValueTag, unixNow } from "applesauce-core/helpers";
-import { removeNameValueTag, addNameValueTag } from "applesauce-factory/operations/tag";
+import { TagOperations } from "applesauce-core/operations";
 
 import { App, defaultUserFavoriteApps } from "./apps";
 import useFavoriteInternalIds from "../../hooks/use-favorite-internal-ids";
@@ -30,7 +30,10 @@ export default function AppFavoriteButton({
 
     setLoading(true);
     const tag: NameValueTag = ["app", app.id];
-    const draft = await factory.modifyTags(prev, isFavorite ? removeNameValueTag(tag) : addNameValueTag(tag));
+    const draft = await factory.modifyTags(
+      prev,
+      isFavorite ? TagOperations.removeNameValueTag(tag) : TagOperations.addNameValueTag(tag),
+    );
     await publish(isFavorite ? "Unfavorite app" : "Favorite app", draft);
     setLoading(false);
   };

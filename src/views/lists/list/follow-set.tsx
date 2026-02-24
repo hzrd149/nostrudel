@@ -11,8 +11,9 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { RemoveUserFromFollowSet } from "applesauce-actions/actions";
-import { getProfilePointersFromList, getReplaceableAddress, getTagValue } from "applesauce-core/helpers";
-import { useActionHub, useActiveAccount } from "applesauce-react/hooks";
+import { getReplaceableAddress, getTagValue } from "applesauce-core/helpers";
+import { getProfilePointersFromList } from "applesauce-common/helpers";
+import { useActionRunner, useActiveAccount } from "applesauce-react/hooks";
 import { NostrEvent } from "nostr-tools";
 import { useMemo } from "react";
 
@@ -51,7 +52,7 @@ function ListFeedButton({ list, ...props }: { list: NostrEvent } & Omit<ButtonPr
 }
 
 function UserCard({ pubkey, list }: { pubkey: string; list: NostrEvent }) {
-  const hub = useActionHub();
+  const hub = useActionRunner();
   const publish = usePublishEvent();
 
   const remove = useAsyncAction(async () => {

@@ -1,6 +1,6 @@
 import { MenuItem } from "@chakra-ui/react";
-import { CreatePinList, PinNote, UnpinNote } from "applesauce-actions/actions/pins";
-import { useActionHub, useActiveAccount, useEventFactory, useEventStore } from "applesauce-react/hooks";
+import { PinNote, UnpinNote } from "applesauce-actions/actions";
+import { useActionRunner, useActiveAccount, useEventFactory, useEventStore } from "applesauce-react/hooks";
 import { kinds, NostrEvent } from "nostr-tools";
 
 import { isEventInList } from "../../helpers/nostr/lists";
@@ -13,7 +13,7 @@ export default function PinEventMenuItem({ event }: { event: NostrEvent }) {
   const publish = usePublishEvent();
   const account = useActiveAccount();
   const factory = useEventFactory();
-  const actions = useActionHub();
+  const actions = useActionRunner();
   const eventStore = useEventStore();
   const { list } = useUserPinList(account?.pubkey);
 
@@ -29,11 +29,10 @@ export default function PinEventMenuItem({ event }: { event: NostrEvent }) {
 
   const toggle = useAsyncAction(async () => {
     if (!account) return;
+    // v5: PinNote creates the list automatically if it doesn't exist
     if (isPinned) await actions.exec(UnpinNote, event).forEach((e) => publish(label, e));
-    else if (eventStore.hasReplaceable(kinds.Pinlist, account.pubkey))
-      await actions.exec(PinNote, event).forEach((e) => publish(label, e));
-    else await actions.exec(CreatePinList, [event]).forEach((e) => publish(label, e));
-  }, [isPinned, factory]);
+    else await actions.exec(PinNote, event).forEach((e) => publish(label, e));
+  }, [isPinned, factory, account, label]);
 
   if (event.pubkey !== account?.pubkey) return null;
 

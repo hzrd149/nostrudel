@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 import { Flex, SimpleGrid, Switch, useDisclosure } from "@chakra-ui/react";
 import { getEventUID } from "applesauce-core/helpers";
-import { getEmojis } from "applesauce-core/helpers/emoji";
+import { getEmojis } from "applesauce-common/helpers/emoji";
 import { kinds } from "nostr-tools";
 
 import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";

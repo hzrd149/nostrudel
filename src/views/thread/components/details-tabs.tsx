@@ -1,6 +1,6 @@
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/react";
 import styled from "@emotion/styled";
-import { ThreadItem } from "applesauce-core/models";
+import { ThreadItem } from "applesauce-common/models";
 import { kinds } from "nostr-tools";
 import { ReactNode } from "react";
 

@@ -1,13 +1,6 @@
 import { Box, Flex, LinkBox, Text } from "@chakra-ui/react";
-import {
-  getTagValue,
-  getZapAmount,
-  getZapPayment,
-  getZapSender,
-  naddrEncode,
-  neventEncode,
-  ZapEvent,
-} from "applesauce-core/helpers";
+import { getTagValue, naddrEncode, neventEncode, ZapEvent,  } from "applesauce-common/helpers";
+import { getZapAmount, getZapPayment, getZapSender } from "applesauce-common/helpers";
 import { memo, useMemo } from "react";
 
 import HoverLinkOverlay from "../../../../components/hover-link-overlay";

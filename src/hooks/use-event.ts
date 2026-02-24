@@ -1,10 +1,4 @@
-import {
-  AddressPointer,
-  AddressPointerWithoutD,
-  EventPointer,
-  isEventPointer,
-  parseCoordinate,
-} from "applesauce-core/helpers";
+import { AddressPointer, AddressPointerWithoutD, EventPointer, isEventPointer, parseReplaceableAddress as parseCoordinate,  } from "applesauce-core/helpers";
 import { useEventStore, useObservableEagerMemo } from "applesauce-react/hooks";
 import hash_sum from "hash-sum";
 

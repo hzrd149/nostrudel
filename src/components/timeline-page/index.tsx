@@ -1,5 +1,6 @@
 import { FlexProps } from "@chakra-ui/react";
-import { Expressions } from "applesauce-content/helpers";
+// v5: Expressions was removed, define URL regex inline
+const URL_REGEX = /https?:\/\/[^\s]+/g;
 import { TimelineLoader } from "applesauce-loaders/loaders";
 import { NostrEvent } from "nostr-tools";
 import { useCallback } from "react";
@@ -19,7 +20,7 @@ export function useTimelinePageEventFilter() {
 
   return useCallback(
     (event: NostrEvent) => {
-      if (view === "images" && !event.content.match(Expressions.link)) return false;
+      if (view === "images" && !event.content.match(URL_REGEX)) return false;
       return true;
     },
     [view],

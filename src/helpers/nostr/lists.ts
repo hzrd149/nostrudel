@@ -1,5 +1,6 @@
-import { isDTag, isPTag, isRTag, mergeRelaySets } from "applesauce-core/helpers";
-import { isAddressPointerInList, isEventPointerInList, isProfilePointerInList } from "applesauce-core/helpers/lists";
+import { isDTag, isPTag, isRTag } from "applesauce-core/helpers";
+import { mergeRelaySets } from "applesauce-core/helpers";
+import { isAddressPointerInList, isEventPointerInList, isProfilePointerInList } from "applesauce-common/helpers/lists";
 import dayjs from "dayjs";
 import { EventTemplate, NostrEvent, kinds } from "nostr-tools";
 
@@ -110,7 +111,7 @@ export function isPubkeyInList(list?: NostrEvent, pubkey?: string) {
   return isProfilePointerInList(list, pubkey);
 }
 
-export { isEventInList } from "applesauce-core/helpers/lists";
+export { isEventInList } from "applesauce-common/helpers/lists";
 
 /** @deprecated */
 export function listAddPerson(

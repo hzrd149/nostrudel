@@ -1,11 +1,4 @@
-import {
-  addRelayHintsToPointer,
-  getEventPointerFromETag,
-  getTagValue,
-  isPTag,
-  isSafeRelayURL,
-  normalizeURL,
-} from "applesauce-core/helpers";
+import { addRelayHintsToPointer, getEventPointerFromETag, getTagValue, isPTag, isSafeRelayURL, normalizeURL,  } from "applesauce-core/helpers";
 import dayjs from "dayjs";
 import { NostrEvent } from "nostr-tools";
 

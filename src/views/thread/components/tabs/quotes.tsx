@@ -1,5 +1,5 @@
 import { Flex } from "@chakra-ui/react";
-import { ThreadItem } from "applesauce-core/models";
+import { ThreadItem } from "applesauce-common/models";
 import { NostrEvent } from "nostr-tools";
 
 import { TimelineNote } from "../../../../components/timeline/note";

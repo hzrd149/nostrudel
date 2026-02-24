@@ -1,5 +1,5 @@
 import { Button, Card, CardBody, CardProps, Flex } from "@chakra-ui/react";
-import { removePubkeyTag } from "applesauce-factory/operations/tag";
+import {  removePubkeyTag  } from "applesauce-core/operations/tag";
 
 import { useActiveAccount, useEventFactory } from "applesauce-react/hooks";
 import { NostrEvent } from "nostr-tools";

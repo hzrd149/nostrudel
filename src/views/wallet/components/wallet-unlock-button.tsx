@@ -1,5 +1,5 @@
 import { Button, ButtonProps } from "@chakra-ui/react";
-import { useActionHub, useActiveAccount } from "applesauce-react/hooks";
+import { useActionRunner, useActiveAccount } from "applesauce-react/hooks";
 import { UnlockWallet } from "applesauce-wallet/actions";
 
 import useUserWallet from "../../../hooks/use-user-wallet";
@@ -9,7 +9,7 @@ export default function WalletUnlockButton({ children, ...props }: Omit<ButtonPr
   const account = useActiveAccount()!;
   const wallet = useUserWallet(account.pubkey);
 
-  const actions = useActionHub();
+  const actions = useActionRunner();
   const unlock = useAsyncAction(async () => {
     if (!wallet) throw new Error("Missing wallet");
     if (wallet.locked === false) return;

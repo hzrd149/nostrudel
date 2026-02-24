@@ -17,8 +17,9 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { SendWrappedMessage } from "applesauce-actions/actions";
-import { getConversationParticipants, getDisplayName, getTagValue, unixNow } from "applesauce-core/helpers";
-import { useActionHub, useEventModel, useObservableEagerState } from "applesauce-react/hooks";
+import { getTagValue, unixNow } from "applesauce-core/helpers";
+import { getConversationParticipants, getDisplayName } from "applesauce-common/helpers";
+import { useActionRunner, useEventModel, useObservableEagerState } from "applesauce-react/hooks";
 import { kinds } from "nostr-tools";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -76,7 +77,7 @@ export default function GroupMessageForm({
   ...props
 }: { group: string; initialExpiration?: number } & Omit<FlexProps, "children">) {
   const publish = usePublishEvent();
-  const actions = useActionHub();
+  const actions = useActionRunner();
   const pubkeys = useMemo(() => getConversationParticipants(group), [group]);
   const defaultMessageExpiration = useObservableEagerState(localSettings.defaultMessageExpiration);
   const [expiration, setExpiration] = useState<number | null>(initialExpiration ?? defaultMessageExpiration);

@@ -25,7 +25,9 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
-import { Emoji, getEventPointerFromQTag, processTags, ZapSplit } from "applesauce-core/helpers";
+import { ZapSplit } from "applesauce-common/helpers";
+import { getEventPointerFromQTag, processTags } from "applesauce-core/helpers";
+import { Emoji } from "applesauce-common/helpers";
 import { useActiveAccount, useEventFactory, useEventStore, useObservableEagerState } from "applesauce-react/hooks";
 import { UnsignedEvent } from "nostr-tools";
 import { useRef, useState } from "react";

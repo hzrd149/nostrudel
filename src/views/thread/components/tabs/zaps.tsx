@@ -1,6 +1,7 @@
 import { Box, ButtonGroup, Flex, Text } from "@chakra-ui/react";
-import { getZapPayment, getZapRequest, getZapSender, isValidZap, KnownEvent } from "applesauce-core/helpers";
-import { ThreadItem } from "applesauce-core/models";
+import { KnownEvent } from "applesauce-core/helpers";
+import { getZapPayment, getZapRequest, getZapSender, isValidZap } from "applesauce-common/helpers";
+import { ThreadItem } from "applesauce-common/models";
 import { kinds, NostrEvent } from "nostr-tools";
 import { memo } from "react";
 

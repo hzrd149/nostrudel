@@ -5,7 +5,7 @@ import { AddressPointer, EventPointer } from "nostr-tools/nip19";
 import { useParams } from "react-router-dom";
 
 import { UnbookmarkEvent } from "applesauce-actions/actions";
-import { useActionHub, useActiveAccount } from "applesauce-react/hooks";
+import { useActionRunner, useActiveAccount } from "applesauce-react/hooks";
 import { EmbedEventCard } from "../../components/embed-event/card";
 import SimpleView from "../../components/layout/presets/simple-view";
 import TimelineItem from "../../components/timeline/timeline-item";
@@ -20,7 +20,7 @@ import { usePublishEvent } from "../../providers/global/publish-provider";
 import ListMenu from "../lists/components/list-menu";
 
 function RemoveBookmarkButton({ event }: { event: NostrEvent }) {
-  const actions = useActionHub();
+  const actions = useActionRunner();
   const publish = usePublishEvent();
 
   const remove = useAsyncAction(async () => {

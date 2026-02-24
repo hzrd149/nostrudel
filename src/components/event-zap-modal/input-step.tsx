@@ -1,5 +1,5 @@
 import { Box, Button, Flex, Input, Text } from "@chakra-ui/react";
-import { getZapSplits } from "applesauce-core/helpers";
+import { getZapSplits } from "applesauce-common/helpers";
 import { NostrEvent } from "nostr-tools";
 import { useForm } from "react-hook-form";
 

@@ -4,7 +4,7 @@ import { Button, ButtonGroup, Flex, IconButton, Spacer, useToast } from "@chakra
 import { ANIMATED_QR_INTERVAL, encodeTokenToEmoji, sendAnimated } from "applesauce-wallet/helpers";
 import { getDecodedToken, Proof, ProofState } from "@cashu/cashu-ts";
 import { ReceiveToken } from "applesauce-wallet/actions";
-import { useActionHub } from "applesauce-react/hooks";
+import { useActionRunner } from "applesauce-react/hooks";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { Share } from "@capacitor/share";
 import { useAsync } from "react-use";
@@ -23,7 +23,7 @@ export default function WalletSendTokenView() {
   const token: string = location.state?.token;
   if (!token) return <Navigate to="/wallet" />;
 
-  const actions = useActionHub();
+  const actions = useActionRunner();
 
   const [speed, setSpeed] = useState(ANIMATED_QR_INTERVAL.MEDIUM);
   const [data, setData] = useState<string>();

@@ -2,7 +2,8 @@ import { Box, Flex, Text } from "@chakra-ui/react";
 import { kinds } from "nostr-tools";
 import { memo } from "react";
 
-import { getZapPayment, getZapRequest, getZapSender, KnownEvent } from "applesauce-core/helpers";
+import { KnownEvent } from "applesauce-core/helpers";
+import { getZapPayment, getZapRequest, getZapSender } from "applesauce-common/helpers";
 import { LightningIcon } from "../../../../components/icons";
 import UserAvatar from "../../../../components/user/user-avatar";
 import UserLink from "../../../../components/user/user-link";

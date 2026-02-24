@@ -17,7 +17,8 @@ import {
 import { useActiveAccount } from "applesauce-react/hooks";
 import { kinds } from "nostr-tools";
 import { useCallback, useMemo, useState } from "react";
-import { getProfilePointersFromList, getReplaceableAddress } from "applesauce-core/helpers";
+import { getReplaceableAddress } from "applesauce-core/helpers";
+import { getProfilePointersFromList } from "applesauce-common/helpers";
 
 import { NostrEvent } from "nostr-tools";
 import { useAsync, useDebounce } from "react-use";

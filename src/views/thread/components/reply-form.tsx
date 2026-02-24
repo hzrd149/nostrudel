@@ -1,6 +1,6 @@
 import { Box, Button, ButtonGroup, Flex, Input, Switch, useDisclosure } from "@chakra-ui/react";
-import { Emoji } from "applesauce-core/helpers";
-import { ThreadItem } from "applesauce-core/models";
+import { Emoji } from "applesauce-common/helpers";
+import { ThreadItem } from "applesauce-common/models";
 import { useEventFactory } from "applesauce-react/hooks";
 import { kinds, NostrEvent } from "nostr-tools";
 import { useMemo, useRef } from "react";

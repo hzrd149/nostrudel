@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { ButtonProps, useToast } from "@chakra-ui/react";
 import { NostrEvent } from "nostr-tools";
-import { Emoji } from "applesauce-core/helpers";
+import { Emoji } from "applesauce-common/helpers";
 import { useEventFactory } from "applesauce-react/hooks";
 
 import { usePublishEvent } from "../../../../providers/global/publish-provider";

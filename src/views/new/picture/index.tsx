@@ -1,6 +1,6 @@
 import { Flex, Spinner, Text, useToast } from "@chakra-ui/react";
-import { FileMetadata } from "applesauce-core/helpers";
-import { PicturePostBlueprint } from "applesauce-factory/blueprints";
+import { FileMetadata } from "applesauce-common/helpers";
+import {  PicturePostBlueprint  } from "applesauce-common/blueprints";
 import { useEventFactory } from "applesauce-react/hooks";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";

@@ -13,8 +13,8 @@ import {
 } from "@chakra-ui/react";
 import { BookmarkEvent, CreateBookmarkList, UnbookmarkEvent } from "applesauce-actions/actions/bookmarks";
 import { getEventUID, getReplaceableIdentifier } from "applesauce-core/helpers";
-import { isEventPointerInList } from "applesauce-core/helpers/lists";
-import { useActionHub, useActiveAccount } from "applesauce-react/hooks";
+import { isEventPointerInList } from "applesauce-common/helpers/lists";
+import { useActionRunner, useActiveAccount } from "applesauce-react/hooks";
 import { kinds, NostrEvent } from "nostr-tools";
 
 import { getListTitle, isEventInList } from "../../helpers/nostr/lists";
@@ -29,7 +29,7 @@ import BookmarkMinus from "../icons/bookmark-minus";
 
 function PrimaryBookmarkButton({ event }: { event: NostrEvent }) {
   const { list } = userUserBookmarksList();
-  const actions = useActionHub();
+  const actions = useActionRunner();
   const publish = usePublishEvent();
 
   const bookmarked = !!list && isEventInList(list, event);
@@ -60,7 +60,7 @@ function PrimaryBookmarkButton({ event }: { event: NostrEvent }) {
 
 function BookmarkListItem({ list, event }: { list: NostrEvent; event: NostrEvent }) {
   const publish = usePublishEvent();
-  const actions = useActionHub();
+  const actions = useActionRunner();
 
   const bookmarked = isEventInList(list, event);
 

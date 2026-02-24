@@ -1,9 +1,4 @@
-import {
-  getCoordinateFromAddressPointer,
-  getSharedAddressPointer,
-  getSharedEventPointer,
-  insertEventIntoDescendingList,
-} from "applesauce-core/helpers";
+import { getCoordinateFromAddressPointer, getSharedAddressPointer, getSharedEventPointer, insertEventIntoDescendingList,  } from "applesauce-core/helpers";
 import { withImmediateValueOrDefault } from "applesauce-core";
 import type { AddressPointer, EventPointer } from "applesauce-core/helpers";
 import { kinds, NostrEvent } from "nostr-tools";

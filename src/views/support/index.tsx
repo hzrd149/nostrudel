@@ -1,5 +1,6 @@
 import { Box, Button, Divider, Flex, Heading, Text, useDisclosure } from "@chakra-ui/react";
-import { getTagValue, getZapPayment, isValidZap, unixNow } from "applesauce-core/helpers";
+import { getTagValue, unixNow } from "applesauce-core/helpers";
+import { getZapPayment, isValidZap } from "applesauce-common/helpers";
 import { TimelineModel } from "applesauce-core/models";
 import { useEventModel } from "applesauce-react/hooks";
 import confetti from "canvas-confetti";

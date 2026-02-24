@@ -1,4 +1,5 @@
-import { getAddressPointerForEvent, getProfilePointersFromList } from "applesauce-core/helpers";
+import { getAddressPointerForEvent } from "applesauce-core/helpers";
+import { getProfilePointersFromList } from "applesauce-common/helpers";
 import { useActiveAccount } from "applesauce-react/hooks";
 import { Filter, NostrEvent, kinds } from "nostr-tools";
 import { AddressPointer, ProfilePointer } from "nostr-tools/nip19";

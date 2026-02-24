@@ -1,6 +1,6 @@
 import { defer, ignoreElements, mergeWith } from "rxjs";
 import { zapsLoader } from "../services/loaders";
-import { EventZapsModel } from "applesauce-core/models";
+import { EventZapsModel } from "applesauce-common/models";
 import { Model } from "applesauce-core";
 import { NostrEvent } from "nostr-tools";
 

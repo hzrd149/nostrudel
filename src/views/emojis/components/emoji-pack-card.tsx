@@ -11,7 +11,8 @@ import {
   Image,
   Text,
 } from "@chakra-ui/react";
-import { getEmojis, getPackName } from "applesauce-core/helpers/emoji";
+import { getPackName } from "applesauce-common/helpers/emoji";
+import { getEmojis } from "applesauce-common/helpers/emoji";
 
 import UserAvatarLink from "../../../components/user/user-avatar-link";
 import UserLink from "../../../components/user/user-link";

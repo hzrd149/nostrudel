@@ -1,5 +1,6 @@
 import { AspectRatio, Box, Card, CardBody, Center, Flex, Image, Text, VStack } from "@chakra-ui/react";
-import { getDisplayName, ProfileContent } from "applesauce-core/helpers";
+import { ProfileContent } from "applesauce-core/helpers";
+import { getDisplayName } from "applesauce-common/helpers";
 import { useActiveAccount } from "applesauce-react/hooks";
 import { npubEncode } from "nostr-tools/nip19";
 import { useFormContext, useWatch } from "react-hook-form";

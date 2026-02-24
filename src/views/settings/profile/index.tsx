@@ -1,7 +1,7 @@
 import { Grid, GridItem, Text, VStack } from "@chakra-ui/react";
 import { CreateProfile, UpdateProfile } from "applesauce-actions/actions";
 import { ProfileContent } from "applesauce-core/helpers";
-import { useActionHub, useActiveAccount, useObservableMemo } from "applesauce-react/hooks";
+import { useActionRunner, useActiveAccount, useObservableMemo } from "applesauce-react/hooks";
 import { nip19 } from "nostr-tools";
 import { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
@@ -39,7 +39,7 @@ export default function ProfileSettingsView() {
   const uploadFile = useUploadFile();
   const navigate = useNavigate();
   const [uploadStatus, setUploadStatus] = useState<string>();
-  const actions = useActionHub();
+  const actions = useActionRunner();
 
   // Form management
   const formMethods = useForm<ProfileFormData>({

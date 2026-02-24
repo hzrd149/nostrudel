@@ -2,7 +2,7 @@ import { getEventUID } from "applesauce-core/helpers";
 import { kinds } from "nostr-tools";
 import { combineLatest, map, Observable, of, scan, shareReplay, switchMap } from "rxjs";
 
-import { COMMENT_KIND } from "applesauce-core/helpers";
+import { COMMENT_KIND } from "applesauce-common/helpers";
 import { TimelineLoader } from "applesauce-loaders/loaders";
 import accounts from "../accounts";
 import { eventStore } from "../event-store";

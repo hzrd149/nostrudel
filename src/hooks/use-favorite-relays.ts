@@ -1,4 +1,4 @@
-import { FavoriteRelaysModel } from "applesauce-core/models";
+import { FavoriteRelaysModel } from "applesauce-common/models";
 import { useActiveAccount, useEventModel } from "applesauce-react/hooks";
 
 export default function useFavoriteRelays(pubkey?: string) {

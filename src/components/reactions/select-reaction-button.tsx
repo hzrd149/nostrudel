@@ -15,7 +15,7 @@ import {
   Text,
   useBoolean,
 } from "@chakra-ui/react";
-import { Emoji } from "applesauce-core/helpers/emoji";
+import { Emoji } from "applesauce-common/helpers/emoji";
 
 import { AddReactionIcon } from "../icons";
 import { useBreakpointValue } from "../../providers/global/breakpoint-provider";

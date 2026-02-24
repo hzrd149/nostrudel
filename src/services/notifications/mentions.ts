@@ -1,4 +1,4 @@
-import { COMMENT_KIND } from "applesauce-core/helpers";
+import { COMMENT_KIND } from "applesauce-common/helpers";
 import { getParsedContent } from "applesauce-content/text";
 import { mapEventsToTimeline, withImmediateValueOrDefault } from "applesauce-core";
 import { kinds, NostrEvent } from "nostr-tools";

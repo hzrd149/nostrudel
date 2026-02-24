@@ -1,5 +1,5 @@
 import { Alert, AlertDescription, AlertIcon, Heading, Link, Text, VStack } from "@chakra-ui/react";
-import { addRelayTag, removeRelayTag } from "applesauce-factory/operations/tag";
+import { TagOperations } from "applesauce-core/operations";
 import { useActiveAccount, useEventFactory, useObservableMemo } from "applesauce-react/hooks";
 import { kinds } from "nostr-tools";
 
@@ -63,7 +63,7 @@ export default function DirectMessageRelaysSection() {
         tags: [],
         created_at: Math.floor(Date.now() / 1000),
       },
-      addRelayTag(relay),
+      TagOperations.addRelayTag(relay),
     );
     const signed = await factory.sign(draft);
     await publish("Add DM relay", signed);
@@ -71,7 +71,7 @@ export default function DirectMessageRelaysSection() {
 
   const removeRelay = useAsyncAction(async (relay: string) => {
     if (!dmRelayList) return;
-    const draft = await factory.modifyTags(dmRelayList, removeRelayTag(relay));
+    const draft = await factory.modifyTags(dmRelayList, TagOperations.removeRelayTag(relay));
     const signed = await factory.sign(draft);
     await publish("Remove DM relay", signed);
   });

@@ -1,5 +1,6 @@
 import { Model } from "applesauce-core";
-import { getConversationParticipants, isSafeRelayURL, normalizeURL, processTags } from "applesauce-core/helpers";
+import { isSafeRelayURL, normalizeURL, processTags } from "applesauce-core/helpers";
+import { getConversationParticipants } from "applesauce-common/helpers";
 import { kinds } from "nostr-tools";
 import { ProfilePointer } from "nostr-tools/nip19";
 import { combineLatest, map } from "rxjs";

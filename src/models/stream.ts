@@ -1,5 +1,5 @@
 import { Model } from "applesauce-core";
-import { getAddressPointersFromList } from "applesauce-core/helpers";
+import { getAddressPointersFromList } from "applesauce-common/helpers";
 import { NostrEvent } from "nostr-tools";
 import { ProfilePointer } from "nostr-tools/nip19";
 import { combineLatest, filter, of, switchMap } from "rxjs";

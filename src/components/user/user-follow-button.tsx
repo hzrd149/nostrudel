@@ -12,8 +12,8 @@ import {
 } from "@chakra-ui/react";
 import { AddUserToFollowSet, FollowUser, RemoveUserFromFollowSet, UnfollowUser } from "applesauce-actions/actions";
 import { getEventUID, getReplaceableAddress, getReplaceableIdentifier } from "applesauce-core/helpers";
-import { isProfilePointerInList } from "applesauce-core/helpers/lists";
-import { useActionHub, useActiveAccount } from "applesauce-react/hooks";
+import { isProfilePointerInList } from "applesauce-common/helpers/lists";
+import { useActionRunner, useActiveAccount } from "applesauce-react/hooks";
 import { kinds } from "nostr-tools";
 
 import { getListTitle } from "../../helpers/nostr/lists";
@@ -30,7 +30,7 @@ function UsersLists({ pubkey }: { pubkey: string }) {
   const publish = usePublishEvent();
   const account = useActiveAccount()!;
   const newListModal = useDisclosure();
-  const actions = useActionHub();
+  const actions = useActionRunner();
 
   const lists = useUserSets(account.pubkey)?.filter((list) => list.kind === kinds.Followsets) ?? [];
 
@@ -94,7 +94,7 @@ export type UserFollowButtonProps = { pubkey: string; showLists?: boolean } & Om
 export function SimpleUserFollowButton({ pubkey, ...props }: UserFollowButtonProps) {
   const account = useActiveAccount()!;
   const contacts = useUserContactList(account?.pubkey);
-  const actions = useActionHub();
+  const actions = useActionRunner();
   const publish = usePublishEvent();
 
   const isFollowing = !!contacts && isProfilePointerInList(contacts, pubkey);
@@ -125,7 +125,7 @@ export function UserFollowButton({ pubkey, showLists, ...props }: UserFollowButt
   const contacts = useUserContactList(account?.pubkey);
   const { isMuted, unmute } = useUserMuteActions(pubkey);
   const { openModal } = useMuteModalContext();
-  const actions = useActionHub();
+  const actions = useActionRunner();
 
   const isFollowing = !!contacts && isProfilePointerInList(contacts, pubkey);
 

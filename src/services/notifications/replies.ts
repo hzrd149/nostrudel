@@ -1,11 +1,6 @@
 import { withImmediateValueOrDefault } from "applesauce-core";
-import {
-  COMMENT_KIND,
-  getCoordinateFromAddressPointer,
-  insertEventIntoDescendingList,
-  isAddressPointer,
-  isEventPointer,
-} from "applesauce-core/helpers";
+import { getCoordinateFromAddressPointer, insertEventIntoDescendingList, isAddressPointer, isEventPointer,  } from "applesauce-core/helpers";
+import { COMMENT_KIND } from "applesauce-common/helpers";
 import { kinds, NostrEvent } from "nostr-tools";
 import { combineLatest, Observable, of, scan, switchMap, throttleTime } from "rxjs";
 

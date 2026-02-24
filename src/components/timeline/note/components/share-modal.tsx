@@ -14,8 +14,9 @@ import {
   Text,
   useToast,
 } from "@chakra-ui/react";
-import { getMediaAttachmentURLsFromContent } from "applesauce-content/helpers";
-import { getMediaAttachments } from "applesauce-core/helpers";
+import { Helpers } from "applesauce-content";
+const { getMediaAttachmentURLsFromContent } = Helpers;
+import { getMediaAttachments } from "applesauce-common/helpers";
 import { useActiveAccount, useEventFactory } from "applesauce-react/hooks";
 import { BlossomClient } from "blossom-client-sdk";
 import { EventTemplate, NostrEvent } from "nostr-tools";

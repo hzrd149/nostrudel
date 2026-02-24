@@ -14,12 +14,8 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { kinds } from "nostr-tools";
-import {
-  getAddressPointersFromList,
-  getEventPointersFromList,
-  getProfilePointersFromList,
-  getReplaceableUID,
-} from "applesauce-core/helpers";
+import { getEventPointersFromList, getReplaceableUID,  } from "applesauce-core/helpers";
+import { getAddressPointersFromList, getProfilePointersFromList } from "applesauce-common/helpers";
 
 import UserAvatarLink from "../../../components/user/user-avatar-link";
 import UserLink from "../../../components/user/user-link";

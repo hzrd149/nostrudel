@@ -3,4 +3,4 @@ export {
   getArticlePublished as getArticlePublishDate,
   getArticleSummary,
   getArticleTitle,
-} from "applesauce-core/helpers/article";
+} from "applesauce-common/helpers/article";

@@ -11,7 +11,7 @@ import {
   Tabs,
   useToast,
 } from "@chakra-ui/react";
-import { useActionHub, useActiveAccount, useEventModel } from "applesauce-react/hooks";
+import { useActionRunner, useActiveAccount, useEventModel } from "applesauce-react/hooks";
 import { CreateWallet } from "applesauce-wallet/actions";
 import { WALLET_HISTORY_KIND, WALLET_TOKEN_KIND } from "applesauce-wallet/helpers";
 import { WalletBalanceModel } from "applesauce-wallet/models";
@@ -35,7 +35,7 @@ export default function WalletHomeView() {
   const toast = useToast();
   const account = useActiveAccount()!;
   const wallet = useUserWallet(account.pubkey);
-  const actions = useActionHub();
+  const actions = useActionRunner();
 
   const mailboxes = useUserMailboxes(account.pubkey);
   const readRelays = useReadRelays(mailboxes?.outboxes);

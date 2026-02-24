@@ -1,4 +1,4 @@
-import { EventFactory } from "applesauce-factory";
+import { EventFactory } from "applesauce-core/event-factory";
 
 import { getEventRelayHint, getPubkeyRelayHint } from "./relay-hints";
 import { NIP_89_CLIENT_APP } from "../const";

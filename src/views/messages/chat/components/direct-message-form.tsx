@@ -21,14 +21,10 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { SendLegacyMessage, SendWrappedMessage } from "applesauce-actions/actions";
-import {
-  createConversationIdentifier,
-  getDisplayName,
-  getTagValue,
-  mergeRelaySets,
-  unixNow,
-} from "applesauce-core/helpers";
-import { useActionHub, useActiveAccount, useEventModel, useObservableEagerState } from "applesauce-react/hooks";
+import { createConversationIdentifier, getTagValue, unixNow,  } from "applesauce-core/helpers";
+import { mergeRelaySets } from "applesauce-core/helpers";
+import { getDisplayName } from "applesauce-common/helpers";
+import { useActionRunner, useActiveAccount, useEventModel, useObservableEagerState } from "applesauce-react/hooks";
 import { kinds } from "nostr-tools";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -289,7 +285,7 @@ export default function SendMessageForm({
 >) {
   const account = useActiveAccount()!;
   const publish = usePublishEvent();
-  const actions = useActionHub();
+  const actions = useActionRunner();
   const defaultMessageExpiration = useObservableEagerState(localSettings.defaultMessageExpiration);
 
   // These values are managed outside of the form because they are options the user toggles

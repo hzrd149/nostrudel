@@ -1,6 +1,6 @@
 import { SimpleGrid, Spinner } from "@chakra-ui/react";
 
-import { getProfilePointersFromList } from "applesauce-core/helpers";
+import { getProfilePointersFromList } from "applesauce-common/helpers";
 import { ErrorBoundary } from "../../../components/error-boundary";
 import ScrollLayout from "../../../components/layout/presets/scroll-layout";
 import useParamsProfilePointer from "../../../hooks/use-params-pubkey-pointer";

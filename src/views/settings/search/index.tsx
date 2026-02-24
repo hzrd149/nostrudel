@@ -13,7 +13,7 @@ import {
   Spacer,
   Text,
 } from "@chakra-ui/react";
-import { addRelayTag, removeRelayTag } from "applesauce-factory/operations/tag";
+import { TagOperations } from "applesauce-core/operations";
 import { useActiveAccount, useEventFactory, useObservableEagerState } from "applesauce-react/hooks";
 import { kinds } from "nostr-tools";
 
@@ -81,7 +81,7 @@ export default function SearchSettings() {
         tags: [],
         created_at: Math.floor(Date.now() / 1000),
       },
-      addRelayTag(url),
+      TagOperations.addRelayTag(url),
     );
     const signed = await factory.sign(draft);
     await publish("Add search relay", signed);
@@ -99,7 +99,7 @@ export default function SearchSettings() {
 
   const removeRelay = useAsyncAction(async (url: string) => {
     if (!searchRelayList) return;
-    const draft = await factory.modifyTags(searchRelayList, removeRelayTag(url));
+    const draft = await factory.modifyTags(searchRelayList, TagOperations.removeRelayTag(url));
     const signed = await factory.sign(draft);
     await publish("Remove search relay", signed);
   });

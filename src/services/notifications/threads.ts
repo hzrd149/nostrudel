@@ -1,17 +1,6 @@
 import { withImmediateValueOrDefault } from "applesauce-core";
-import {
-  AddressPointer,
-  COMMENT_KIND,
-  EventPointer,
-  getCommentReplyPointer,
-  getCommentRootPointer,
-  getCoordinateFromAddressPointer,
-  getNip10References,
-  insertEventIntoDescendingList,
-  isAddressPointer,
-  isEventPointer,
-  NostrEvent,
-} from "applesauce-core/helpers";
+import { AddressPointer, EventPointer, getCoordinateFromAddressPointer, insertEventIntoDescendingList, isAddressPointer, isEventPointer, NostrEvent,  } from "applesauce-core/helpers";
+import { COMMENT_KIND, getCommentReplyPointer, getCommentRootPointer, getNip10References } from "applesauce-common/helpers";
 import { kinds } from "nostr-tools";
 import { map, Observable, of, scan, switchMap, throttleTime } from "rxjs";
 

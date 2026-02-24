@@ -1,6 +1,6 @@
 import { Flex, Button, Text, Card, CardBody, useToast } from "@chakra-ui/react";
 import { useLocation, Navigate, useNavigate } from "react-router-dom";
-import { useActionHub } from "applesauce-react/hooks";
+import { useActionRunner } from "applesauce-react/hooks";
 import { getDecodedToken, type Token } from "@cashu/cashu-ts";
 import { ReceiveToken } from "applesauce-wallet/actions";
 
@@ -13,7 +13,7 @@ import { getCashuWallet } from "../../../services/cashu-mints";
 export default function WalletReceiveTokenView() {
   const navigate = useNavigate();
   const toast = useToast();
-  const actions = useActionHub();
+  const actions = useActionRunner();
   const location = useLocation();
 
   const token: string = location.state?.token;

@@ -1,4 +1,4 @@
-import { EventFactoryClient } from "applesauce-factory";
+import { EventFactoryClient } from "applesauce-core/event-factory";
 import { isSafeRelayURL } from "applesauce-core/helpers/relays";
 import { normalizeURL, ProfilePointer } from "applesauce-core/helpers";
 

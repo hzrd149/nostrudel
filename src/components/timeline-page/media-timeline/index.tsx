@@ -1,4 +1,5 @@
-import { Expressions } from "applesauce-content/helpers";
+// v5: Expressions was removed, define URL regex inline
+const URL_REGEX = /https?:\/\/[^\s]+/g;
 import { kinds, NostrEvent } from "nostr-tools";
 import { useMemo } from "react";
 import { Photo } from "react-photo-album";
@@ -39,7 +40,7 @@ export default function MediaTimeline({ timeline }: { timeline: NostrEvent[] }) 
 
     for (const event of timeline) {
       if (event.kind === kinds.Repost || event.kind === kinds.GenericRepost) continue;
-      const urls = event.content.matchAll(Expressions.link);
+      const urls = event.content.matchAll(URL_REGEX);
 
       for (const match of urls) {
         if (isImageURL(match[0])) images.push({ event, src: match[0] });

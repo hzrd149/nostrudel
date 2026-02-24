@@ -1,5 +1,5 @@
 import { kinds } from "nostr-tools";
-import { getAddressPointersFromList } from "applesauce-core/helpers/lists";
+import { getAddressPointersFromList } from "applesauce-common/helpers/lists";
 import { useActiveAccount } from "applesauce-react/hooks";
 
 import useReplaceableEvent from "./use-replaceable-event";

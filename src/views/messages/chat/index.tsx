@@ -1,6 +1,8 @@
 import { ButtonGroup, Flex, IconButton } from "@chakra-ui/react";
-import { getExpirationTimestamp, getRumorGiftWraps, isEvent, mergeRelaySets, Rumor } from "applesauce-core/helpers";
-import { LegacyMessagesGroup, WrappedMessagesGroup } from "applesauce-core/models";
+import { getRumorGiftWraps, isEvent } from "applesauce-core/helpers";
+import { mergeRelaySets } from "applesauce-core/helpers";
+import { getExpirationTimestamp, Rumor } from "applesauce-common/helpers";
+import { LegacyMessagesGroup, WrappedMessagesGroup } from "applesauce-common/models";
 import { useActiveAccount, useEventModel, useObservableState } from "applesauce-react/hooks";
 import { kinds, NostrEvent } from "nostr-tools";
 import { memo, useCallback, useContext, useEffect, useMemo } from "react";

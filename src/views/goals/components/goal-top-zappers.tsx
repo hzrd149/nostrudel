@@ -1,5 +1,5 @@
 import { Box, Flex, FlexProps } from "@chakra-ui/react";
-import { getZapPayment, getZapSender } from "applesauce-core/helpers";
+import { getZapPayment, getZapSender } from "applesauce-common/helpers";
 
 import { NostrEvent } from "nostr-tools";
 import { LightningIcon } from "../../../components/icons";

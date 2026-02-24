@@ -1,5 +1,5 @@
 import { Avatar, Box, Card, CardBody, CardHeader, CardProps, Heading, HStack, Text, VStack } from "@chakra-ui/react";
-import { encodeGroupPointer, GroupPointer } from "applesauce-core/helpers/groups";
+import { encodeGroupPointer, GroupPointer } from "applesauce-common/helpers/groups";
 import { useEventModel } from "applesauce-react/hooks";
 import { Link as RouterLink } from "react-router-dom";
 

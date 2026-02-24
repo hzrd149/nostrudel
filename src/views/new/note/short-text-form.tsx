@@ -20,7 +20,8 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
-import { Emoji, getEventPointerFromQTag, processTags } from "applesauce-core/helpers";
+import { getEventPointerFromQTag, processTags } from "applesauce-core/helpers";
+import { Emoji } from "applesauce-common/helpers";
 import { useEventFactory, useObservableEagerState } from "applesauce-react/hooks";
 import { UnsignedEvent } from "nostr-tools";
 import { useRef, useState } from "react";

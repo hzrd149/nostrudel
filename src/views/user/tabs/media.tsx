@@ -1,4 +1,4 @@
-import { PICTURE_POST_KIND } from "applesauce-core/helpers";
+import { PICTURE_POST_KIND } from "applesauce-common/helpers";
 
 import ScrollLayout from "../../../components/layout/presets/scroll-layout";
 import TimelinePage from "../../../components/timeline-page";

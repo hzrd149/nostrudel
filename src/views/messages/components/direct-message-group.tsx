@@ -1,5 +1,5 @@
 import { ButtonGroup, IconButton, Menu, MenuButton, MenuItem, MenuList, useToast } from "@chakra-ui/react";
-import { Rumor } from "applesauce-core/helpers";
+import { Rumor } from "applesauce-common/helpers";
 import { useActiveAccount } from "applesauce-react/hooks";
 import { kinds, NostrEvent } from "nostr-tools";
 import { memo, useCallback } from "react";

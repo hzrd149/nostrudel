@@ -1,7 +1,7 @@
 import { Card, CardBody, CardHeader, CardProps, Flex, Text } from "@chakra-ui/react";
 import { NostrEvent } from "nostr-tools";
 
-import { hasHighlightSource } from "applesauce-core/helpers/highlight";
+import { hasHighlightSource } from "applesauce-common/helpers/highlight";
 
 import { HighlightContent, HighlightSource } from "../../timeline/highlight";
 import Timestamp from "../../timestamp";

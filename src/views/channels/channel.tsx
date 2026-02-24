@@ -1,5 +1,5 @@
 import { Button, ButtonGroup, Flex, Spinner, useDisclosure } from "@chakra-ui/react";
-import { ChannelHiddenModel, ChannelMessagesModel, ChannelMutedModel } from "applesauce-core/models";
+import { ChannelHiddenModel, ChannelMessagesModel, ChannelMutedModel } from "applesauce-common/models";
 import { useEventModel } from "applesauce-react/hooks";
 import { kinds, NostrEvent } from "nostr-tools";
 import { memo, useCallback, useMemo } from "react";

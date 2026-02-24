@@ -9,8 +9,10 @@ import {
   LinkOverlay,
   Text,
 } from "@chakra-ui/react";
-import { mergeRelaySets, Rumor } from "applesauce-core/helpers";
-import { GiftWrapsModel, LegacyMessagesGroups, WrappedMessagesGroups } from "applesauce-core/models";
+import { mergeRelaySets } from "applesauce-core/helpers";
+import { Rumor } from "applesauce-common/helpers";
+import { LegacyMessagesGroups, WrappedMessagesGroups } from "applesauce-core/models";
+import { GiftWrapsModel } from "applesauce-common/models";
 import { useActiveAccount, useEventModel, useObservableEagerState, useObservableState } from "applesauce-react/hooks";
 import { NostrEvent, kinds } from "nostr-tools";
 import { npubEncode } from "nostr-tools/nip19";
