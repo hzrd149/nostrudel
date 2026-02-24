@@ -1,5 +1,6 @@
 import { AvatarGroup, Box, Button, Flex, Heading, Image, SimpleGrid, Text, useDisclosure } from "@chakra-ui/react";
-import { getEventPointersFromList, getEventUID, getTagValue,  } from "applesauce-core/helpers";
+import { getEventPointersFromList } from "applesauce-common/helpers";
+import { getEventUID, getTagValue } from "applesauce-core/helpers";
 import { getAddressPointersFromList, getProfilePointersFromList } from "applesauce-common/helpers";
 import { kinds } from "nostr-tools";
 import { useNavigate } from "react-router-dom";

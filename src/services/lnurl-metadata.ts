@@ -1,4 +1,4 @@
-import { parseLNURLOrAddress } from "applesauce-core/helpers/lnurl";
+import { parseLNURLOrAddress } from "applesauce-common/helpers";
 import { fetchWithProxy } from "../helpers/request";
 
 type LNURLPMetadata = {

@@ -15,7 +15,7 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
-import { isLegacyMessageUnlocked } from "applesauce-core/helpers";
+import { isLegacyMessageUnlocked } from "applesauce-common/helpers";
 import { unlockLegacyMessage } from "applesauce-common/helpers";
 import { useActiveAccount, useEventModel } from "applesauce-react/hooks";
 

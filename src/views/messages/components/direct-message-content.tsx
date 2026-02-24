@@ -3,8 +3,8 @@ import { useRenderedContent } from "applesauce-react/hooks";
 import { kinds, NostrEvent } from "nostr-tools";
 import React, { useMemo } from "react";
 
-import { getRumorGiftWraps } from "applesauce-core/helpers";
-import { getExpirationTimestamp, Rumor } from "applesauce-common/helpers";
+import { getRumorGiftWraps, Rumor } from "applesauce-common/helpers";
+import { getExpirationTimestamp } from "applesauce-core/helpers";
 import dayjs from "dayjs";
 import { components } from "../../../components/content";
 import {

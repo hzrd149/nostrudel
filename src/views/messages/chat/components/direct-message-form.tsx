@@ -21,9 +21,8 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { SendLegacyMessage, SendWrappedMessage } from "applesauce-actions/actions";
-import { createConversationIdentifier, getTagValue, unixNow,  } from "applesauce-core/helpers";
-import { mergeRelaySets } from "applesauce-core/helpers";
-import { getDisplayName } from "applesauce-common/helpers";
+import { getConversationIdentifierFromMessage, getDisplayName } from "applesauce-common/helpers";
+import { getTagValue, unixNow, mergeRelaySets } from "applesauce-core/helpers";
 import { useActionRunner, useActiveAccount, useEventModel, useObservableEagerState } from "applesauce-react/hooks";
 import { kinds } from "nostr-tools";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";

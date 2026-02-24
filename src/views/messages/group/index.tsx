@@ -1,6 +1,11 @@
 import { AvatarGroup, ButtonGroup, Flex, IconButton, Text } from "@chakra-ui/react";
-import { createConversationIdentifier, getRumorGiftWraps,  } from "applesauce-core/helpers";
-import { getConversationParticipants, getExpirationTimestamp, Rumor } from "applesauce-common/helpers";
+import {
+  getConversationIdentifierFromMessage as createConversationIdentifier,
+  getRumorGiftWraps,
+  getConversationParticipants,
+  Rumor,
+} from "applesauce-common/helpers";
+import { getExpirationTimestamp } from "applesauce-core/helpers";
 import { useActiveAccount, useEventModel, useObservableState } from "applesauce-react/hooks";
 import { NostrEvent } from "nostr-tools";
 import { memo, useCallback, useContext, useEffect, useMemo } from "react";
