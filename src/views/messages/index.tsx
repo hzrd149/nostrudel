@@ -11,7 +11,7 @@ import {
 } from "@chakra-ui/react";
 import { mergeRelaySets } from "applesauce-core/helpers";
 import { Rumor } from "applesauce-common/helpers";
-import { GiftWrapsModel, LegacyMessagesGroup, WrappedMessagesGroup } from "applesauce-common/models";
+import { GiftWrapsModel, LegacyMessagesGroups, WrappedMessagesGroups } from "applesauce-common/models";
 import { useActiveAccount, useEventModel, useObservableEagerState, useObservableState } from "applesauce-react/hooks";
 import { NostrEvent, kinds } from "nostr-tools";
 import { npubEncode } from "nostr-tools/nip19";
@@ -117,8 +117,9 @@ function Groups() {
     loader?.();
   }, [loader]);
 
-  const legacyGroups = useEventModel(LegacyMessagesGroup, [account.pubkey]);
-  const wrappedGroups = useEventModel(WrappedMessagesGroup, [account.pubkey]);
+  // v5: useEventModel expects array of arguments
+  const legacyGroups = useEventModel(LegacyMessagesGroups, [account.pubkey]) ?? [];
+  const wrappedGroups = useEventModel(WrappedMessagesGroups, [account.pubkey]) ?? [];
 
   const groups = useMemo(() => {
     const byId = new Map<string, LegacyGroup | WrappedGroup>();
