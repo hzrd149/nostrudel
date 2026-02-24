@@ -16,7 +16,8 @@ import {
   useDisclosure,
   VStack,
 } from "@chakra-ui/react";
-import { parseNIP05Address, ProfileContent } from "applesauce-core/helpers";
+import { ProfileContent } from "applesauce-core/helpers";
+import { parseNIP05Address } from "applesauce-core/helpers/dns-identity";
 import { IdentityStatus } from "applesauce-loaders/helpers/dns-identity";
 import { useActiveAccount } from "applesauce-react/hooks";
 import { useEffect, useRef, useState } from "react";

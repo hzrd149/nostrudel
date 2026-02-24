@@ -20,9 +20,9 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
-import { addRelayHintsToPointer, parseLNURLOrAddress,  } from "applesauce-core/helpers";
-import { parseNIP05Address } from "applesauce-core/helpers";
-import { getDisplayName } from "applesauce-common/helpers";
+import { addRelayHintsToPointer, getDisplayName } from "applesauce-core/helpers";
+import { parseNIP05Address } from "applesauce-core/helpers/dns-identity";
+import { parseLNURLOrAddress } from "applesauce-common/helpers";
 import { useActiveAccount, useObservableMemo, useObservableState } from "applesauce-react/hooks";
 import { kinds, nip19 } from "nostr-tools";
 import { useMemo } from "react";

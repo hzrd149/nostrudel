@@ -1,4 +1,5 @@
-import { getEventUID, getStreamRelays } from "applesauce-core/helpers";
+import { getEventUID } from "applesauce-core/helpers";
+import { getStreamRelays } from "../../../../helpers/nostr/stream";
 import { Filter, kinds, NostrEvent } from "nostr-tools";
 import { useCallback, useMemo } from "react";
 
