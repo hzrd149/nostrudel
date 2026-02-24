@@ -1,5 +1,9 @@
 import { Button, Flex, Heading, useDisclosure } from "@chakra-ui/react";
-import { getCoordinateFromAddressPointer, isEventPointer } from "applesauce-core/helpers";
+import { isEventPointer, AddressPointer } from "applesauce-core/helpers";
+
+// v5: getCoordinateFromAddressPointer was removed
+const getCoordinateFromAddressPointer = (pointer: AddressPointer) =>
+  `${pointer.kind}:${pointer.pubkey}:${pointer.identifier}`;
 
 import { EmbedEventPointerCard } from "../../../components/embed-event/card";
 import useUserPinList from "../../../hooks/use-user-pin-list";
