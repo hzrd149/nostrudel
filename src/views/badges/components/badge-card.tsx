@@ -23,10 +23,9 @@ function BadgeCard({ badge, ...props }: Omit<CardProps, "children"> & { badge: N
   const ref = useEventIntersectionRef(badge);
 
   const coordinate = getReplaceableAddress(badge);
-  const timesAwarded = useEventModel(
-    TimelineModel,
-    [coordinate ? { kinds: [kinds.BadgeAward], "#a": [coordinate] } : undefined].filter(Boolean),
-  );
+  const timesAwarded = useEventModel(TimelineModel, [
+    coordinate ? { kinds: [kinds.BadgeAward], "#a": [coordinate] } : { kinds: [] },
+  ]);
 
   return (
     <Card ref={ref} variant="outline" {...props}>

@@ -320,10 +320,9 @@ export default function SendMessageForm({
   const [sending, setSending] = useState<PublishLogEntry[] | null>(null);
   const otherInboxes = useUserInbox(pubkey);
   const selfInboxes = useUserInbox(account.pubkey);
-  const inboxes = useEventModel(GroupMessageInboxesModel, [
-    getConversationIdentifierFromMessage(account.pubkey, pubkey),
-    false,
-  ]);
+  // v5: GroupMessageInboxesModel signature changed, takes just conversation ID
+  const conversationId = [account.pubkey, pubkey].sort().join(",");
+  const inboxes = useEventModel(GroupMessageInboxesModel, [conversationId]);
   const sendMessage = handleSubmit(async (values) => {
     if (!values.content) return;
 

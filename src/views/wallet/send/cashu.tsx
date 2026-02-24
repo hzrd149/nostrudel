@@ -2,8 +2,9 @@ import { getEncodedToken, Token } from "@cashu/cashu-ts";
 import { Button, Flex, Input, Select } from "@chakra-ui/react";
 import { useActionRunner, useActiveAccount, useEventModel } from "applesauce-react/hooks";
 import { CompleteSpend } from "applesauce-wallet/actions";
-import { dumbTokenSelection } from "applesauce-wallet/helpers";
-import { WalletBalanceModel, WalletModel, WalletTokensModel } from "applesauce-wallet/models";
+import { dumbTokenSelection, isWalletUnlocked } from "applesauce-wallet/helpers";
+import { WalletBalanceModel, WalletTokensModel } from "applesauce-wallet/models";
+import { WalletQuery } from "../../../models/wallet";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 
@@ -16,7 +17,8 @@ import WalletUnlockButton from "../components/wallet-unlock-button";
 export default function WalletSendCashuView() {
   const navigate = useNavigate();
   const account = useActiveAccount()!;
-  const wallet = useEventModel(WalletModel, [account.pubkey]);
+  // v5: Use WalletQuery
+  const walletEvent = useEventModel(WalletQuery, [account.pubkey]);
   const balance = useEventModel(WalletBalanceModel, [account.pubkey]);
   const tokens = useEventModel(WalletTokensModel, [account.pubkey, false]);
 
@@ -53,7 +55,9 @@ export default function WalletSendCashuView() {
 
   return (
     <SimpleView as="form" title="Send Cashu" maxW="xl" center onSubmit={submit}>
-      {wallet?.locked && <WalletUnlockButton colorScheme="primary" mx="auto" size="lg" w="sm" />}
+      {walletEvent && !isWalletUnlocked(walletEvent) && (
+        <WalletUnlockButton wallet={walletEvent} colorScheme="primary" mx="auto" size="lg" w="sm" />
+      )}
 
       <Select {...register("mint", { required: true })} isRequired>
         {balance &&

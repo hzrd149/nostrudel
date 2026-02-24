@@ -1,25 +1,23 @@
 import { Button, ButtonProps } from "@chakra-ui/react";
-import { useActionRunner, useActiveAccount } from "applesauce-react/hooks";
 import { UnlockWallet } from "applesauce-wallet/actions";
+import { useActionRunner } from "applesauce-react/hooks";
+import { NostrEvent } from "nostr-tools";
+import { isWalletUnlocked } from "applesauce-wallet/helpers";
 
-import useUserWallet from "../../../hooks/use-user-wallet";
 import useAsyncAction from "../../../hooks/use-async-action";
 
-export default function WalletUnlockButton({ children, ...props }: Omit<ButtonProps, "onClick" | "isLoading">) {
-  const account = useActiveAccount()!;
-  const wallet = useUserWallet(account.pubkey);
-
+export default function WalletUnlockButton({ wallet, ...props }: { wallet?: NostrEvent } & ButtonProps) {
   const actions = useActionRunner();
   const unlock = useAsyncAction(async () => {
     if (!wallet) throw new Error("Missing wallet");
-    if (wallet.locked === false) return;
+    if (isWalletUnlocked(wallet)) return; // v5: use isWalletUnlocked helper
 
     await actions.run(UnlockWallet, { history: true, tokens: true });
   }, [wallet, actions]);
 
   return (
     <Button onClick={unlock.run} isLoading={unlock.loading} {...props}>
-      {children || "Unlock"}
+      Unlock Wallet
     </Button>
   );
 }

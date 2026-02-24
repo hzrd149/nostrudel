@@ -13,7 +13,7 @@ import {
 } from "@chakra-ui/react";
 import { useActionRunner, useActiveAccount, useEventModel } from "applesauce-react/hooks";
 import { CreateWallet } from "applesauce-wallet/actions";
-import { WALLET_HISTORY_KIND, WALLET_TOKEN_KIND } from "applesauce-wallet/helpers";
+import { WALLET_HISTORY_KIND, WALLET_TOKEN_KIND, isWalletUnlocked, getWalletMints } from "applesauce-wallet/helpers";
 import { WalletBalanceModel } from "applesauce-wallet/models";
 import { kinds } from "nostr-tools";
 import { useState } from "react";
@@ -52,7 +52,8 @@ export default function WalletHomeView() {
   const create = async () => {
     try {
       setCreating(true);
-      await actions.run(CreateWallet, []);
+      // v5: CreateWallet takes an object with mints array
+      await actions.run(CreateWallet, { mints: [] });
       toast({ status: "success", description: "Created new wallet" });
     } catch (error) {
       if (error instanceof Error) toast({ status: "error", description: error.message });
@@ -66,7 +67,10 @@ export default function WalletHomeView() {
     <IntersectionObserverProvider callback={callback}>
       <SimpleView
         title="Wallet"
-        actions={wallet?.locked && <WalletUnlockButton colorScheme="primary" ms="auto" size="sm" />}
+        actions={
+          wallet &&
+          !isWalletUnlocked(wallet) && <WalletUnlockButton wallet={wallet} colorScheme="primary" ms="auto" size="sm" />
+        }
       >
         <Alert status="error" mb="4">
           <AlertIcon />
@@ -81,7 +85,9 @@ export default function WalletHomeView() {
             Create Wallet
           </Button>
         )}
-        {wallet?.locked && <WalletUnlockButton colorScheme="primary" mx="auto" size="lg" w="sm" />}
+        {wallet && !isWalletUnlocked(wallet) && (
+          <WalletUnlockButton wallet={wallet} colorScheme="primary" mx="auto" size="lg" w="sm" />
+        )}
 
         {wallet && (
           <Tabs isFitted maxW="2xl" mx="auto" w="full" isLazy>

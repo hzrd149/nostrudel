@@ -33,7 +33,8 @@ export default function WalletReceiveTokenView() {
       const fee = originalAmount - amount;
 
       // save new tokens
-      await actions.run(ReceiveToken, token, undefined, fee || undefined);
+      // v5: ReceiveToken signature changed to (token, options)
+      await actions.run(ReceiveToken, token, { addHistory: true });
 
       toast({ status: "success", description: `Received ${amount} sats` });
 
