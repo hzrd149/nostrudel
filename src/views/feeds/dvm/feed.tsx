@@ -20,12 +20,16 @@ import {
   Tr,
   useDisclosure,
 } from "@chakra-ui/react";
-import { addRelayHintsToPointer, getCoordinateFromAddressPointer } from "applesauce-core/helpers";
+import { addRelayHintsToPointer } from "applesauce-core/helpers";
 import { useActiveAccount } from "applesauce-react/hooks";
 import dayjs from "dayjs";
 import { EventTemplate, NostrEvent } from "nostr-tools";
 import { AddressPointer } from "nostr-tools/nip19";
 import { useEffect, useMemo, useState } from "react";
+
+// v5: getCoordinateFromAddressPointer was removed, create inline
+const getCoordinateFromAddressPointer = (pointer: any) =>
+  `${pointer.kind}:${pointer.pubkey}:${pointer.identifier}`;
 
 import DebugEventButton from "../../../components/debug-modal/debug-event-button";
 import DVMFeedFavoriteButton from "../../../components/dvm/dvm-feed-favorite-button";

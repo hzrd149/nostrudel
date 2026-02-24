@@ -1,6 +1,15 @@
 import { withImmediateValueOrDefault } from "applesauce-core";
-import { getCoordinateFromAddressPointer, insertEventIntoDescendingList, isAddressPointer, isEventPointer,  } from "applesauce-core/helpers";
+import {
+  insertEventIntoDescendingList,
+  isAddressPointer,
+  isEventPointer,
+  AddressPointer,
+} from "applesauce-core/helpers";
 import { COMMENT_KIND } from "applesauce-common/helpers";
+
+// v5: getCoordinateFromAddressPointer was removed, create inline
+const getCoordinateFromAddressPointer = (pointer: AddressPointer) =>
+  `${pointer.kind}:${pointer.pubkey}:${pointer.identifier}`;
 import { kinds, NostrEvent } from "nostr-tools";
 import { combineLatest, Observable, of, scan, switchMap, throttleTime } from "rxjs";
 

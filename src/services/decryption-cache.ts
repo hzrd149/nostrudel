@@ -1,4 +1,5 @@
-import { getLegacyMessageCorrespondent, isPTag, persistEncryptedContent,  } from "applesauce-core/helpers";
+import { isPTag, getEncryptedContent as persistEncryptedContent } from "applesauce-core/helpers";
+import { getLegacyMessageCorrespondent } from "applesauce-common/helpers";
 import { unlockGiftWrap, unlockLegacyMessage } from "applesauce-common/helpers";
 import { defined } from "applesauce-core/observable";
 import localforage from "localforage";
