@@ -1,9 +1,9 @@
-import { getEncodedToken, Token } from "@cashu/cashu-ts";
+import { getEncodedToken } from "@cashu/cashu-ts";
 import { Button, Flex, Input, Select } from "@chakra-ui/react";
 import { useActionRunner, useActiveAccount, useEventModel } from "applesauce-react/hooks";
-import { CompleteSpend } from "applesauce-wallet/actions";
-import { dumbTokenSelection, isWalletUnlocked } from "applesauce-wallet/helpers";
-import { WalletBalanceModel, WalletTokensModel } from "applesauce-wallet/models";
+import { TokensOperation } from "applesauce-wallet/actions";
+import { isWalletUnlocked } from "applesauce-wallet/helpers";
+import { WalletBalanceModel } from "applesauce-wallet/models";
 import { WalletQuery } from "../../../models/wallet";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
@@ -11,16 +11,15 @@ import { useNavigate } from "react-router-dom";
 import CashuMintName from "../../../components/cashu/cashu-mint-name";
 import SimpleView from "../../../components/layout/presets/simple-view";
 import RouterLink from "../../../components/router-link";
-import { getCashuWallet } from "../../../services/cashu-mints";
+import couch from "../../../services/cashu-couch";
 import WalletUnlockButton from "../components/wallet-unlock-button";
+import useAsyncAction from "../../../hooks/use-async-action";
 
 export default function WalletSendCashuView() {
   const navigate = useNavigate();
   const account = useActiveAccount()!;
-  // v5: Use WalletQuery
   const walletEvent = useEventModel(WalletQuery, [account.pubkey]);
   const balance = useEventModel(WalletBalanceModel, [account.pubkey]);
-  const tokens = useEventModel(WalletTokensModel, [account.pubkey, false]);
 
   const defaultMint = balance && Object.keys(balance).reduce((a, b) => (balance[a] > balance[b] ? a : b));
 
@@ -32,29 +31,35 @@ export default function WalletSendCashuView() {
   watch("mint");
 
   const actions = useActionRunner();
-  const submit = handleSubmit(async (values) => {
-    if (!tokens) return;
-    const selected = dumbTokenSelection(tokens, values.amount, values.mint);
-    const wallet = await getCashuWallet(values.mint);
 
-    await wallet.mint.getKeySets();
+  const { run: submit, loading } = useAsyncAction(
+    async (values: { amount: number; mint: string }) => {
+      let outboundToken: string | undefined;
 
-    // swap tokens for send
-    const send = await wallet.send(values.amount, selected.proofs);
+      await actions.run(
+        TokensOperation,
+        values.amount,
+        async ({ selectedProofs, mint, cashuWallet }) => {
+          // swap proofs for a clean send token
+          const { keep, send } = await cashuWallet.ops.send(values.amount, selectedProofs).run();
 
-    // save the change
-    await actions.run(CompleteSpend, selected.events, { proofs: send.keep, mint: values.mint });
+          // encode for QR / clipboard display
+          outboundToken = getEncodedToken({ mint, proofs: send, unit: "sat" });
 
-    // redirect to the token view
-    const token: Token = {
-      mint: values.mint,
-      proofs: send.send,
-    };
-    navigate("/wallet/send/token", { state: { token: getEncodedToken(token) } });
-  });
+          return { change: keep.length > 0 ? keep : undefined };
+        },
+        { mint: values.mint || undefined, couch },
+      );
+
+      if (outboundToken) navigate("/wallet/send/token", { state: { token: outboundToken } });
+    },
+    [actions, navigate],
+  );
+
+  const onSubmit = handleSubmit((values) => submit(values));
 
   return (
-    <SimpleView as="form" title="Send Cashu" maxW="xl" center onSubmit={submit}>
+    <SimpleView as="form" title="Send Cashu" maxW="xl" center onSubmit={onSubmit}>
       {walletEvent && !isWalletUnlocked(walletEvent) && (
         <WalletUnlockButton wallet={walletEvent} colorScheme="primary" mx="auto" size="lg" w="sm" />
       )}
@@ -81,7 +86,12 @@ export default function WalletSendCashuView() {
       />
 
       <Flex direction="row-reverse">
-        <Button type="submit" colorScheme="primary" isLoading={formState.isSubmitting} isDisabled={!formState.isValid}>
+        <Button
+          type="submit"
+          colorScheme="primary"
+          isLoading={loading || formState.isSubmitting}
+          isDisabled={!formState.isValid}
+        >
           Create
         </Button>
         <Button as={RouterLink} to="/wallet" me="auto">

@@ -3,7 +3,7 @@ import { getHistoryRedeemed, WALLET_KIND } from "applesauce-wallet/helpers";
 // v5: WalletInfo and WalletModel removed, use direct implementation
 import { NostrEvent } from "nostr-tools";
 import { ProfilePointer } from "nostr-tools/nip19";
-import { combineLatest, map } from "rxjs";
+import { combineLatest, map, startWith } from "rxjs";
 
 export function WalletQuery(user: string | ProfilePointer): Model<NostrEvent | undefined> {
   const pointer = typeof user === "string" ? { pubkey: user } : user;
@@ -14,5 +14,6 @@ export function WalletHistoryRedeemedQuery(history: NostrEvent): Model<NostrEven
   return (events) =>
     combineLatest(getHistoryRedeemed(history).map((id) => events.event(id))).pipe(
       map((events) => events.filter((e) => !!e)),
+      startWith([])
     );
 }

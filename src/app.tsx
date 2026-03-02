@@ -111,6 +111,7 @@ export const router = createBrowserRouter(
         { path: "wiki", children: wikiRoutes },
         { path: "support", Component: SupportView },
         { path: "l/:link", Component: NostrLinkView },
+        { path: "t", Component: HashTagView },
         { path: "t/:hashtag", Component: HashTagView },
 
         // other stuff
