@@ -28,8 +28,7 @@ import { AddressPointer } from "nostr-tools/nip19";
 import { useEffect, useMemo, useState } from "react";
 
 // v5: getCoordinateFromAddressPointer was removed, create inline
-const getCoordinateFromAddressPointer = (pointer: any) =>
-  `${pointer.kind}:${pointer.pubkey}:${pointer.identifier}`;
+const getCoordinateFromAddressPointer = (pointer: any) => `${pointer.kind}:${pointer.pubkey}:${pointer.identifier}`;
 
 import DebugEventButton from "../../../components/debug-modal/debug-event-button";
 import DVMFeedFavoriteButton from "../../../components/dvm/dvm-feed-favorite-button";

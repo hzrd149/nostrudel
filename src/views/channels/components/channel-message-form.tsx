@@ -13,7 +13,7 @@ import { usePublishEvent } from "../../../providers/global/publish-provider";
 import InsertGifButton from "../../../components/gif/insert-gif-button";
 import InsertImageButton from "../../new/note/insert-image-button";
 import InsertReactionButton from "../../../components/reactions/insert-reaction-button";
-import {  ChannelMessageBlueprint, ChannelMessageReplyBlueprint  } from "applesauce-common/blueprints";
+import { ChannelMessageBlueprint, ChannelMessageReplyBlueprint } from "applesauce-common/blueprints";
 
 export default function ChannelMessageForm({
   channel,

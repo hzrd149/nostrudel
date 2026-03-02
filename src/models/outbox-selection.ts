@@ -1,5 +1,5 @@
 import { includeFallbackRelays, includeMailboxes, Model } from "applesauce-core";
-import { OutboxMap,  } from "applesauce-core/helpers";
+import { OutboxMap } from "applesauce-core/helpers";
 import { groupPubkeysByRelay, selectOptimalRelays } from "applesauce-core/helpers";
 import { getProfilePointersFromList } from "applesauce-common/helpers";
 import { LoadableAddressPointer } from "applesauce-loaders/loaders";

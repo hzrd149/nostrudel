@@ -1,5 +1,5 @@
 import { Button, Flex, FlexProps, Heading, Textarea } from "@chakra-ui/react";
-import {  includeSingletonTag  } from "applesauce-core/operations";
+import { includeSingletonTag } from "applesauce-core/operations";
 import { useState } from "react";
 
 import { useEventFactory } from "applesauce-react/hooks";

@@ -52,7 +52,7 @@ export const RECOMMENDED_FALLBACK_RELAYS = relays([
 ]);
 
 /** The default relay to recommend for remote signers */
-export const DEFAULT_NOSTR_CONNECT_RELAY = normalizeURL("wss://relay.nsec.app/");
+export const DEFAULT_NOSTR_CONNECT_RELAY = normalizeURL("wss://bucket.coracle.social/");
 
 export const NOSTR_CONNECT_PERMISSIONS = [
   "get_public_key",

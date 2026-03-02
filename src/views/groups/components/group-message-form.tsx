@@ -4,7 +4,7 @@ import { useEventFactory } from "applesauce-react/hooks";
 import { useRef } from "react";
 import { useForm } from "react-hook-form";
 
-import {  GroupMessageBlueprint  } from "applesauce-common/blueprints";
+import { GroupMessageBlueprint } from "applesauce-common/blueprints";
 import InsertGifButton from "../../../components/gif/insert-gif-button";
 import MagicTextArea, { RefType } from "../../../components/magic-textarea";
 import InsertReactionButton from "../../../components/reactions/insert-reaction-button";

@@ -1,54 +1,93 @@
 import { useState } from "react";
-import { Button, Flex, FormControl, FormHelperText, FormLabel, Input, Link, useToast } from "@chakra-ui/react";
+import { Button, Flex, FormControl, FormLabel, Input } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import { useAccountManager } from "applesauce-react/hooks";
 import { ReadonlyAccount } from "applesauce-accounts/accounts";
 import { ReadonlySigner } from "applesauce-signers";
+import { useDebounce } from "react-use";
 
 import { normalizeToHexPubkey } from "../../helpers/nip19";
 import QRCodeScannerButton from "../../components/qr-code/qr-code-scanner-button";
+import { lookupUsers, SearchResult } from "../../services/user-lookup";
+import UserAvatar from "../../components/user/user-avatar";
+import UserName from "../../components/user/user-name";
+
+function UserResult({ pubkey, onSelect }: { pubkey: string; onSelect: (pubkey: string) => void }) {
+  return (
+    <Flex
+      p="2"
+      gap="3"
+      alignItems="center"
+      cursor="pointer"
+      borderRadius="md"
+      _hover={{ bg: "gray.100", _dark: { bg: "gray.700" } }}
+      onClick={() => onSelect(pubkey)}
+    >
+      <UserAvatar pubkey={pubkey} size="sm" />
+      <UserName fontWeight="bold" pubkey={pubkey} />
+    </Flex>
+  );
+}
 
 export default function SigninNpubView() {
   const navigate = useNavigate();
-  const toast = useToast();
-  const [npub, setNpub] = useState("");
   const manager = useAccountManager();
-  // const [relayUrl, setRelayUrl] = useState(COMMON_CONTACT_RELAY);
+  const [query, setQuery] = useState("");
+  const [results, setResults] = useState<SearchResult[]>([]);
 
-  const handleSubmit: React.FormEventHandler<HTMLDivElement> = (e) => {
-    e.preventDefault();
+  useDebounce(
+    () => {
+      if (!query || query.length < 2) {
+        setResults([]);
+        return;
+      }
 
-    const pubkey = normalizeToHexPubkey(npub);
-    if (!pubkey) return toast({ status: "error", title: "Invalid npub" });
+      // If it resolves directly to a pubkey, show that user immediately
+      const pubkey = normalizeToHexPubkey(query);
+      if (pubkey) {
+        setResults([{ pubkey, relays: [], query }]);
+        return;
+      }
 
+      lookupUsers(query, 5).then(setResults);
+    },
+    300,
+    [query],
+  );
+
+  const loginAs = (pubkey: string) => {
     const account = new ReadonlyAccount(pubkey, new ReadonlySigner(pubkey));
     manager.addAccount(account);
     manager.setActive(account);
   };
 
   return (
-    <Flex as="form" direction="column" gap="4" onSubmit={handleSubmit} w="full">
+    <Flex direction="column" gap="4" w="full">
       <FormControl>
-        <FormLabel>Enter user npub</FormLabel>
+        <FormLabel>Search for an account</FormLabel>
         <Flex gap="2">
-          <Input type="text" placeholder="npub1" isRequired value={npub} onChange={(e) => setNpub(e.target.value)} />
-          <QRCodeScannerButton onResult={(v) => setNpub(v)} />
+          <Input
+            type="text"
+            placeholder="Name, npub, or hex key"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            autoFocus
+          />
+          <QRCodeScannerButton onResult={(v) => setQuery(v)} />
         </Flex>
-        <FormHelperText>
-          Enter any npub you want.{" "}
-          <Link isExternal href="https://nostr.directory" color="blue.500" target="_blank">
-            nostr.directory
-          </Link>
-        </FormHelperText>
       </FormControl>
-      <Flex justifyContent="space-between" gap="2">
-        <Button variant="link" onClick={() => navigate("../")}>
-          Back
-        </Button>
-        <Button colorScheme="primary" ml="auto" type="submit">
-          Signin
-        </Button>
-      </Flex>
+
+      {results.length > 0 && (
+        <Flex direction="column" gap="1">
+          {results.slice(0, 5).map(({ pubkey }) => (
+            <UserResult key={pubkey} pubkey={pubkey} onSelect={loginAs} />
+          ))}
+        </Flex>
+      )}
+
+      <Button variant="link" onClick={() => navigate("../")} alignSelf="flex-start">
+        Back
+      </Button>
     </Flex>
   );
 }

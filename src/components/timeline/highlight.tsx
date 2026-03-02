@@ -17,8 +17,13 @@ import { NostrEvent } from "nostr-tools";
 import { memo } from "react";
 import { Link as RouterLink } from "react-router-dom";
 
-import { getHighlightSourceUrl, hasHighlightSource,  } from "applesauce-common/helpers/highlight";
-import { getHighlightContext, getHighlightSourceAddressPointer, getHighlightSourceEventPointer, getHighlightText } from "applesauce-common/helpers/highlight";
+import { getHighlightSourceUrl, hasHighlightSource } from "applesauce-common/helpers/highlight";
+import {
+  getHighlightContext,
+  getHighlightSourceAddressPointer,
+  getHighlightSourceEventPointer,
+  getHighlightText,
+} from "applesauce-common/helpers/highlight";
 
 import useEventIntersectionRef from "../../hooks/use-event-intersection-ref";
 import useEventZaps from "../../hooks/use-event-zaps";
