@@ -47,6 +47,7 @@ import streamsRoutes from "./views/streams/routes";
 import toolsRoutes from "./views/tools/routes";
 import torrentsRoutes from "./views/torrents/routes";
 import userRoutes from "./views/user/routes";
+import webxdcRoutes from "./views/webxdc/routes";
 import walletRoutes from "./views/wallet/routes";
 import wikiRoutes from "./views/wiki/routes";
 
@@ -120,6 +121,7 @@ export const router = createBrowserRouter(
         { path: "lists", children: listsRoutes },
         { path: "files", children: filesRoutes },
         { path: "torrents", children: torrentsRoutes },
+        { path: "webxdc", children: webxdcRoutes },
         { path: "channels", children: channelsRoutes },
         { path: "goals", children: goalsRoutes },
         { path: "badges", children: badgesRoutes },

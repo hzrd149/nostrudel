@@ -9,4 +9,5 @@ export * from "./reddit";
 export * from "./simplex";
 export * from "./twitter";
 export * from "./video";
+export * from "./webxdc";
 export * from "./youtube";
