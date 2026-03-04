@@ -11,8 +11,9 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { RemoveUserFromFollowSet } from "applesauce-actions/actions";
-import { getProfilePointersFromList, getReplaceableAddress, getTagValue } from "applesauce-core/helpers";
-import { useActionHub, useActiveAccount } from "applesauce-react/hooks";
+import { getReplaceableAddress, getTagValue } from "applesauce-core/helpers";
+import { getProfilePointersFromList } from "applesauce-common/helpers";
+import { useActionRunner, useActiveAccount } from "applesauce-react/hooks";
 import { NostrEvent } from "nostr-tools";
 import { useMemo } from "react";
 
@@ -39,10 +40,13 @@ import { ListPageHeader } from ".";
 import ListEditModal from "../components/list-edit-modal";
 
 function ListFeedButton({ list, ...props }: { list: NostrEvent } & Omit<ButtonProps, "children">) {
+  const address = getReplaceableAddress(list);
+  if (!address) return null; // v5: can return null
+
   return (
     <Button
       as={RouterLink}
-      to={{ pathname: "/", search: new URLSearchParams({ people: getReplaceableAddress(list) }).toString() }}
+      to={{ pathname: "/", search: new URLSearchParams({ people: address }).toString() }}
       {...props}
     >
       View Feed
@@ -51,7 +55,7 @@ function ListFeedButton({ list, ...props }: { list: NostrEvent } & Omit<ButtonPr
 }
 
 function UserCard({ pubkey, list }: { pubkey: string; list: NostrEvent }) {
-  const hub = useActionHub();
+  const hub = useActionRunner();
   const publish = usePublishEvent();
 
   const remove = useAsyncAction(async () => {
@@ -102,12 +106,15 @@ export default function FollowSetView({ event }: { event: NostrEvent }) {
       center
       actions={
         <ButtonGroup ms="auto">
-          <Button
-            as={RouterLink}
-            to={{ pathname: "/", search: new URLSearchParams({ people: getReplaceableAddress(event) }).toString() }}
-          >
-            View Feed
-          </Button>
+          {(() => {
+            const addr = getReplaceableAddress(event);
+            if (!addr) return null; // v5: can return null
+            return (
+              <Button as={RouterLink} to={{ pathname: "/", search: new URLSearchParams({ people: addr }).toString() }}>
+                View Feed
+              </Button>
+            );
+          })()}
           {isAuthor && (
             <Button onClick={edit.onOpen} colorScheme="primary">
               Edit

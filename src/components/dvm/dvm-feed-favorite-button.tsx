@@ -1,6 +1,6 @@
 import { IconButton, IconButtonProps } from "@chakra-ui/react";
-import { isAddressPointerInList } from "applesauce-core/helpers/lists";
-import { addCoordinateTag, removeCoordinateTag } from "applesauce-factory/operations/tag";
+import { isAddressPointerInList } from "applesauce-common/helpers/lists";
+import { TagOperations } from "applesauce-core/operations";
 import { useEventFactory } from "applesauce-react/hooks";
 import { kinds } from "nostr-tools";
 import { AddressPointer } from "nostr-tools/nip19";
@@ -28,7 +28,10 @@ export default function DVMFeedFavoriteButton({
       content: "",
     };
 
-    const draft = await factory.modifyTags(prev, isFavorite ? removeCoordinateTag(pointer) : addCoordinateTag(pointer));
+    const draft = await factory.modifyTags(
+      prev,
+      isFavorite ? TagOperations.removeAddressPointerTag(pointer) : TagOperations.addAddressPointerTag(pointer),
+    );
     await publish(isFavorite ? "Unfavorite feed" : "Favorite feed", draft);
   }, [factory, favorites, pointer, publish]);
 

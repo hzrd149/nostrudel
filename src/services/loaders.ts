@@ -7,13 +7,14 @@ import {
   createTagValueLoader,
   createUserListsLoader,
   createZapsLoader,
+  createEventLoaderForStore,
 } from "applesauce-loaders/loaders";
 import { kinds } from "nostr-tools";
 import { cacheRequest } from "./event-cache";
 import { eventStore } from "./event-store";
 import localSettings from "./preferences";
 import pool from "./pool";
-import { BLOSSOM_SERVER_LIST_KIND } from "applesauce-core/helpers";
+import { BLOSSOM_SERVER_LIST_KIND } from "applesauce-common/helpers";
 
 /** Loader for replaceable events based on coordinate */
 export const replaceableLoader = createAddressLoader(pool, {
@@ -53,9 +54,12 @@ export const eventLoader = createEventLoader(pool, {
 });
 
 // Setup loaders on event store
-eventStore.addressableLoader = addressLoader;
-eventStore.replaceableLoader = addressLoader;
-eventStore.eventLoader = eventLoader;
+// v5: Use unified event loader that handles all pointer types
+eventStore.eventLoader = createEventLoaderForStore(eventStore, pool, {
+  cacheRequest,
+  bufferTime: 500,
+  extraRelays: localSettings.fallbackRelays,
+});
 
 export const zapsLoader = createZapsLoader(pool, {
   cacheRequest,

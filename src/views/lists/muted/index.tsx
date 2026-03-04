@@ -1,6 +1,6 @@
 import { Box, Card, CardBody, CardProps, Flex, IconButton } from "@chakra-ui/react";
 import { UnmuteUser } from "applesauce-actions/actions";
-import { useActionHub, useActiveAccount } from "applesauce-react/hooks";
+import { useActionRunner, useActiveAccount } from "applesauce-react/hooks";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { FixedSizeList as List, ListChildComponentProps } from "react-window";
 
@@ -16,7 +16,7 @@ import useUserMutes from "../../../hooks/use-user-mutes";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
 
 function UserCard({ pubkey, ...props }: { pubkey: string } & Omit<CardProps, "children">) {
-  const hub = useActionHub();
+  const hub = useActionRunner();
   const publish = usePublishEvent();
 
   const remove = useAsyncAction(async () => {

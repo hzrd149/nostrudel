@@ -11,7 +11,8 @@ import {
   Link,
   Text,
 } from "@chakra-ui/react";
-import { getEmojis, getPackName } from "applesauce-core/helpers/emoji";
+import { getPackName } from "applesauce-common/helpers/emoji";
+import { getEmojis } from "applesauce-common/helpers/emoji";
 import { NostrEvent } from "nostr-tools";
 import { Link as RouterLink } from "react-router-dom";
 

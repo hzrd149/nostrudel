@@ -1,7 +1,8 @@
 import { Flex, FlexProps, Tag, TagLabel } from "@chakra-ui/react";
 import { kinds, NostrEvent } from "nostr-tools";
 import styled from "@emotion/styled";
-import { getZapPayment, getZapRequest, KnownEvent } from "applesauce-core/helpers";
+import { KnownEvent } from "applesauce-core/helpers";
+import { getZapPayment, getZapRequest } from "applesauce-common/helpers";
 
 import useEventZaps from "../../../../hooks/use-event-zaps";
 import UserAvatarLink from "../../../user/user-avatar-link";

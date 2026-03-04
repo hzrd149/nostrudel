@@ -11,7 +11,7 @@ import {
   FormLabel,
   Text,
 } from "@chakra-ui/react";
-import { useObservable, useObservableEagerState } from "applesauce-react/hooks";
+import { useObservableEagerState } from "applesauce-react/hooks";
 
 import { safeUrl } from "../../../helpers/parse";
 import { createRequestProxyUrl } from "../../../helpers/request";

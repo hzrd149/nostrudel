@@ -1,5 +1,5 @@
 import { Spinner } from "@chakra-ui/react";
-import { PICTURE_POST_KIND } from "applesauce-core/helpers";
+import { PICTURE_POST_KIND } from "applesauce-common/helpers";
 import { NostrEvent, kinds } from "nostr-tools";
 import { Suspense, lazy, memo } from "react";
 

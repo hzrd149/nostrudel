@@ -13,12 +13,10 @@ export default function useParamsAddressPointer(key: string, requireD: boolean =
   if (!value) throw new Error(`Missing ${key} in route`);
 
   if (value.includes(":")) {
-    if (requireD) {
-      return parseCoordinate(value, true, false);
-    } else {
-      // @ts-ignore
-      return parseCoordinate(value, false, false);
-    }
+    // v5: parseCoordinate signature changed, now only takes (value, requireIdentifier)
+    const result = parseCoordinate(value, requireD);
+    if (!result) throw new Error(`Invalid coordinate: ${value}`); // v5: can return null
+    return result as AddressPointer;
   }
 
   // its not a coordinate, try to parse the nip19

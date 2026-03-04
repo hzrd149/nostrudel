@@ -1,15 +1,13 @@
-import {
-  getCoordinateFromAddressPointer,
-  getZapAddressPointer,
-  getZapEventPointer,
-  insertEventIntoDescendingList,
-  isValidZap,
-  ZapEvent,
-} from "applesauce-core/helpers";
+import { getZapAddressPointer, ZapEvent } from "applesauce-common/helpers";
+import { insertEventIntoDescendingList } from "applesauce-core/helpers";
+import { getZapEventPointer, isValidZap } from "applesauce-common/helpers";
 import { withImmediateValueOrDefault } from "applesauce-core";
 import type { AddressPointer, EventPointer } from "applesauce-core/helpers";
 import { kinds } from "nostr-tools";
 import { filter, map, Observable, of, scan, switchMap, throttleTime } from "rxjs";
+
+// v5: getCoordinateFromAddressPointer was removed, create inline
+const getCoordinateFromAddressPointer = (pointer: any) => `${pointer.kind}:${pointer.pubkey}:${pointer.identifier}`;
 
 import type { TZapGroup } from "../../helpers/nostr/zaps";
 import { shareAndHold } from "../../helpers/observable";

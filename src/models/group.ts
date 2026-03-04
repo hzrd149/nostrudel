@@ -1,5 +1,5 @@
 import { Model } from "applesauce-core";
-import { GroupPointer } from "applesauce-core/helpers";
+import { GroupPointer } from "applesauce-common/helpers";
 import { map } from "rxjs";
 
 import { GroupInfo, parseGroupInfo } from "../helpers/groups";

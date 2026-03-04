@@ -17,7 +17,7 @@ import {
 } from "@chakra-ui/react";
 import { SetListMetadata } from "applesauce-actions/actions/lists";
 import { getTagValue } from "applesauce-core/helpers";
-import { useActionHub } from "applesauce-react/hooks";
+import { useActionRunner } from "applesauce-react/hooks";
 import { NostrEvent } from "nostr-tools";
 import { useForm } from "react-hook-form";
 
@@ -36,7 +36,7 @@ type ListEditModalProps = Omit<ModalProps, "children"> & {
 };
 
 export default function ListEditModal({ list, onClose, ...props }: ListEditModalProps) {
-  const actions = useActionHub();
+  const actions = useActionRunner();
   const publish = usePublishEvent();
 
   const { handleSubmit, register, watch, setValue } = useForm<FormData>({

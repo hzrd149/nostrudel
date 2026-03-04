@@ -5,7 +5,7 @@ import {
   RemoveInboxRelay,
   RemoveOutboxRelay,
 } from "applesauce-actions/actions/mailboxes";
-import { useActionHub, useActiveAccount } from "applesauce-react/hooks";
+import { useActionRunner, useActiveAccount } from "applesauce-react/hooks";
 import { kinds } from "nostr-tools";
 
 import DebugEventButton from "../../../components/debug-modal/debug-event-button";
@@ -22,7 +22,7 @@ import RelayControl from "../relays/components/relay-control";
 
 function InboxRelay({ url }: { url: string }) {
   const publish = usePublishEvent();
-  const actions = useActionHub();
+  const actions = useActionRunner();
   const { info } = useRelayInfo(url);
 
   const remove = useAsyncAction(async () => {
@@ -53,7 +53,7 @@ function InboxRelay({ url }: { url: string }) {
 
 function OutboxRelay({ url }: { url: string }) {
   const publish = usePublishEvent();
-  const actions = useActionHub();
+  const actions = useActionRunner();
   const { info } = useRelayInfo(url);
 
   const remove = useAsyncAction(async () => {
@@ -68,7 +68,7 @@ function MailboxesPage() {
   const publish = usePublishEvent();
   const mailboxes = useUserMailboxes(account.pubkey);
   const event = useReplaceableEvent({ kind: kinds.RelayList, pubkey: account.pubkey });
-  const actions = useActionHub();
+  const actions = useActionRunner();
 
   const addInboxRelay = useAsyncAction(async (relay: string) => {
     await actions.exec(AddInboxRelay, relay).forEach((e) => publish("Add inbox relay", e));

@@ -1,5 +1,5 @@
 import { Box, Card, CardBody, CardProps, Flex, IconButton } from "@chakra-ui/react";
-import { useActionHub, useActiveAccount } from "applesauce-react/hooks";
+import { useActionRunner, useActiveAccount } from "applesauce-react/hooks";
 import { ProfilePointer } from "nostr-tools/nip19";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { FixedSizeList as List, ListChildComponentProps } from "react-window";
@@ -17,7 +17,7 @@ import useUserContacts from "../../../hooks/use-user-contacts";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
 
 function UserCard({ person, ...props }: { person: ProfilePointer } & Omit<CardProps, "children">) {
-  const hub = useActionHub();
+  const hub = useActionRunner();
   const publish = usePublishEvent();
 
   const remove = useAsyncAction(async () => {

@@ -3,7 +3,7 @@ import {
   AddressPointerWithoutD,
   EventPointer,
   isEventPointer,
-  parseCoordinate,
+  parseReplaceableAddress as parseCoordinate,
 } from "applesauce-core/helpers";
 import { useEventStore, useObservableEagerMemo } from "applesauce-react/hooks";
 import hash_sum from "hash-sum";

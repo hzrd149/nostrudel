@@ -16,7 +16,8 @@ import { kinds, NostrEvent } from "nostr-tools";
 import { Navigate, useParams } from "react-router-dom";
 
 import { includeMailboxes, withImmediateValueOrDefault } from "applesauce-core";
-import { getSeenRelays, normalizeURL } from "applesauce-core/helpers";
+import { normalizeURL } from "applesauce-core/helpers";
+import { getSeenRelays } from "applesauce-core/helpers";
 import { useObservableEagerMemo } from "applesauce-react/hooks";
 import { useCallback, useMemo } from "react";
 import { map } from "rxjs";

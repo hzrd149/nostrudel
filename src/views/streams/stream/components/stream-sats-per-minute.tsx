@@ -17,7 +17,7 @@ import {
   Spinner,
   Text,
 } from "@chakra-ui/react";
-import { parseBolt11 } from "applesauce-core/helpers";
+import { parseBolt11 } from "applesauce-common/helpers";
 import { useCallback, useState } from "react";
 import { useInterval } from "react-use";
 

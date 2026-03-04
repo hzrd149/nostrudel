@@ -14,7 +14,7 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
-import { getConversationParticipants } from "applesauce-core/helpers";
+import { getConversationParticipants } from "applesauce-common/helpers";
 import { useActiveAccount, useEventModel } from "applesauce-react/hooks";
 import RelayFavicon from "../../../../components/relay/relay-favicon";
 import RelayLink from "../../../../components/relay/relay-link";

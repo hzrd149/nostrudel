@@ -21,14 +21,10 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { SendLegacyMessage, SendWrappedMessage } from "applesauce-actions/actions";
-import {
-  createConversationIdentifier,
-  getDisplayName,
-  getTagValue,
-  mergeRelaySets,
-  unixNow,
-} from "applesauce-core/helpers";
-import { useActionHub, useActiveAccount, useEventModel, useObservableEagerState } from "applesauce-react/hooks";
+import { getConversationIdentifierFromMessage } from "applesauce-common/helpers";
+import { getDisplayName } from "applesauce-core/helpers";
+import { getTagValue, unixNow, mergeRelaySets } from "applesauce-core/helpers";
+import { useActionRunner, useActiveAccount, useEventModel, useObservableEagerState } from "applesauce-react/hooks";
 import { kinds } from "nostr-tools";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -289,7 +285,7 @@ export default function SendMessageForm({
 >) {
   const account = useActiveAccount()!;
   const publish = usePublishEvent();
-  const actions = useActionHub();
+  const actions = useActionRunner();
   const defaultMessageExpiration = useObservableEagerState(localSettings.defaultMessageExpiration);
 
   // These values are managed outside of the form because they are options the user toggles
@@ -324,10 +320,9 @@ export default function SendMessageForm({
   const [sending, setSending] = useState<PublishLogEntry[] | null>(null);
   const otherInboxes = useUserInbox(pubkey);
   const selfInboxes = useUserInbox(account.pubkey);
-  const inboxes = useEventModel(GroupMessageInboxesModel, [
-    createConversationIdentifier(account.pubkey, pubkey),
-    false,
-  ]);
+  // v5: GroupMessageInboxesModel signature changed, takes just conversation ID
+  const conversationId = [account.pubkey, pubkey].sort().join(",");
+  const inboxes = useEventModel(GroupMessageInboxesModel, [conversationId]);
   const sendMessage = handleSubmit(async (values) => {
     if (!values.content) return;
 

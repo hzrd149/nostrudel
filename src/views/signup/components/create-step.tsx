@@ -1,7 +1,8 @@
 import { Avatar, Button, Flex, Heading, Text, useToast } from "@chakra-ui/react";
 import { bytesToHex } from "@noble/hashes/utils";
 import { SimpleAccount } from "applesauce-accounts/accounts";
-import { ProfileContent, unixNow } from "applesauce-core/helpers";
+import { unixNow } from "applesauce-core/helpers";
+import { ProfileContent } from "applesauce-core/helpers";
 import { useAccountManager } from "applesauce-react/hooks";
 import { EventTemplate, finalizeEvent, generateSecretKey, kinds } from "nostr-tools";
 import { useEffect, useState } from "react";

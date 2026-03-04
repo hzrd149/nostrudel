@@ -1,19 +1,23 @@
 import { withImmediateValueOrDefault } from "applesauce-core";
 import {
   AddressPointer,
-  COMMENT_KIND,
   EventPointer,
-  getCommentReplyPointer,
-  getCommentRootPointer,
-  getCoordinateFromAddressPointer,
-  getNip10References,
   insertEventIntoDescendingList,
   isAddressPointer,
   isEventPointer,
   NostrEvent,
 } from "applesauce-core/helpers";
+import {
+  COMMENT_KIND,
+  getCommentReplyPointer,
+  getCommentRootPointer,
+  getNip10References,
+} from "applesauce-common/helpers";
 import { kinds } from "nostr-tools";
 import { map, Observable, of, scan, switchMap, throttleTime } from "rxjs";
+
+// v5: getCoordinateFromAddressPointer was removed, create inline
+const getCoordinateFromAddressPointer = (pointer: any) => `${pointer.kind}:${pointer.pubkey}:${pointer.identifier}`;
 
 import { shareAndHold } from "../../helpers/observable";
 import { getNotificationsFromState, ThreadNotification } from "../../views/notifications/threads/helpers";

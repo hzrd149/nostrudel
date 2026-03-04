@@ -4,6 +4,10 @@
     "nostr": {
       "type": "local",
       "command": ["npx", "-y", "@nostrbook/mcp@latest"]
+    },
+    "applesauce": {
+      "type": "remote",
+      "url": "https://mcp.applesauce.build/mcp"
     }
   }
 }

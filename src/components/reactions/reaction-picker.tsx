@@ -1,6 +1,8 @@
 import { useMemo } from "react";
-import { Emoji, getEmojis, getEventUID, getPackName } from "applesauce-core/helpers";
-import { getAddressPointersFromList } from "applesauce-core/helpers/lists";
+import { getPackName } from "applesauce-common/helpers";
+import { getEventUID } from "applesauce-core/helpers";
+import { Emoji, getEmojis } from "applesauce-common/helpers";
+import { getAddressPointersFromList } from "applesauce-common/helpers/lists";
 import { useActiveAccount } from "applesauce-react/hooks";
 
 import EmojiPicker, { defaultCategories, NativeEmoji } from "./emoji-picker";

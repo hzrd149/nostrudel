@@ -3,9 +3,9 @@ import { NostrEvent } from "nostr-tools";
 
 import { BookmarkIcon, BookmarkedIcon } from "./icons";
 import userUserBookmarksList from "../hooks/use-user-bookmarks-list";
-import { useActionHub } from "applesauce-react/hooks";
+import { useActionRunner } from "applesauce-react/hooks";
 import { usePublishEvent } from "../providers/global/publish-provider";
-import { isEventInList } from "applesauce-core/helpers";
+import { isEventInList } from "applesauce-common/helpers";
 import useAsyncAction from "../hooks/use-async-action";
 import { BookmarkEvent, CreateBookmarkList, UnbookmarkEvent } from "applesauce-actions/actions";
 
@@ -14,7 +14,7 @@ export default function SimpleBookmarkButton({
   ...props
 }: { event: NostrEvent } & Omit<IconButtonProps, "icon">) {
   const { list } = userUserBookmarksList();
-  const actions = useActionHub();
+  const actions = useActionRunner();
   const publish = usePublishEvent();
 
   const bookmarked = !!list && isEventInList(list, event);

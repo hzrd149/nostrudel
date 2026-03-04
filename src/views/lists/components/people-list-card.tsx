@@ -12,7 +12,8 @@ import {
   LinkBox,
   Text,
 } from "@chakra-ui/react";
-import { getProfilePointersFromList, getTagValue } from "applesauce-core/helpers";
+import { getTagValue } from "applesauce-core/helpers";
+import { getProfilePointersFromList } from "applesauce-common/helpers";
 
 import { NostrEvent } from "nostr-tools";
 import HoverLinkOverlay from "../../../components/hover-link-overlay";

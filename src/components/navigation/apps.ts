@@ -16,6 +16,7 @@ import {
   WikiIcon,
 } from "../icons";
 import FileAttachment01 from "../icons/file-attachment-01";
+import GamingPad01 from "../icons/gaming-pad-01";
 import PuzzlePiece01 from "../icons/puzzle-piece-01";
 import Rocket02 from "../icons/rocket-02";
 import UploadCloud01 from "../icons/upload-cloud-01";
@@ -83,6 +84,7 @@ export const internalApps: App[] = [
     to: "/channels",
   },
   { title: "Torrents", description: "Browse torrents on nostr", icon: TorrentIcon, id: "torrents", to: "/torrents" },
+  { title: "Webxdc", description: "Play webxdc apps over nostr", icon: GamingPad01, id: "webxdc", to: "/webxdc" },
   { title: "Emojis", description: "Create custom emoji packs", icon: EmojiPacksIcon, id: "emojis", to: "/emojis" },
   { title: "Bookmarks", description: "Manage your bookmarks", icon: BookmarkIcon, id: "bookmarks", to: "/bookmarks" },
   {

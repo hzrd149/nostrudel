@@ -1,5 +1,5 @@
 import { useAsync } from "react-use";
-import { parseNIP05Address } from "applesauce-core/helpers";
+import { parseNIP05Address } from "applesauce-core/helpers/dns-identity";
 
 import dnsIdentityLoader from "../services/dns-identity-loader";
 import SuperMap from "../classes/super-map";

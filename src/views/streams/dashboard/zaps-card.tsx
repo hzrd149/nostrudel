@@ -1,5 +1,5 @@
 import { Flex } from "@chakra-ui/react";
-import { isValidZap } from "applesauce-core/helpers";
+import { isValidZap } from "applesauce-common/helpers";
 import { kinds, NostrEvent } from "nostr-tools";
 import { memo } from "react";
 

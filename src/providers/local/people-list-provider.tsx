@@ -1,4 +1,5 @@
-import { getAddressPointerForEvent, getProfilePointersFromList } from "applesauce-core/helpers";
+import { getAddressPointerForEvent } from "applesauce-core/helpers";
+import { getProfilePointersFromList } from "applesauce-common/helpers";
 import { useActiveAccount } from "applesauce-react/hooks";
 import { Filter, NostrEvent, kinds } from "nostr-tools";
 import { AddressPointer, ProfilePointer } from "nostr-tools/nip19";
@@ -69,7 +70,7 @@ export function usePeopleListSelect(selected: ListId, onChange: (list: ListId) =
     people,
     selected,
     listId,
-    pointer,
+    pointer: pointer || undefined, // v5: convert null to undefined
     listEvent: event,
     setSelected: onChange,
     filter,

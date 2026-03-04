@@ -1,5 +1,6 @@
 import { Flex, FlexProps, LinkBox, Text } from "@chakra-ui/react";
-import { getSeenRelays, neventEncode } from "applesauce-core/helpers";
+import { neventEncode } from "applesauce-core/helpers";
+import { getSeenRelays } from "applesauce-core/helpers";
 import { useActiveAccount } from "applesauce-react/hooks";
 import { NostrEvent } from "nostr-tools";
 import { memo, useMemo } from "react";

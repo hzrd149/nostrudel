@@ -1,5 +1,5 @@
 import { Avatar, ButtonGroup, Flex, Text } from "@chakra-ui/react";
-import { decodeGroupPointer, GroupPointer } from "applesauce-core/helpers";
+import { decodeGroupPointer, GroupPointer } from "applesauce-common/helpers";
 import { useEventModel } from "applesauce-react/hooks";
 import { Navigate, useParams } from "react-router-dom";
 

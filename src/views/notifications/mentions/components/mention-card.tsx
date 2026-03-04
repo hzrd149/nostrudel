@@ -1,5 +1,6 @@
 import { Flex, LinkBox, Text } from "@chakra-ui/react";
-import { COMMENT_KIND, EventPointer, getNip10References, neventEncode } from "applesauce-core/helpers";
+import { EventPointer, neventEncode } from "applesauce-core/helpers";
+import { COMMENT_KIND, getNip10References } from "applesauce-common/helpers";
 import { useActiveAccount } from "applesauce-react/hooks";
 import { kinds, NostrEvent } from "nostr-tools";
 import { memo, useMemo } from "react";

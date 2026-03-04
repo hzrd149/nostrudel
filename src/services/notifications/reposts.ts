@@ -1,13 +1,12 @@
-import {
-  getCoordinateFromAddressPointer,
-  getSharedAddressPointer,
-  getSharedEventPointer,
-  insertEventIntoDescendingList,
-} from "applesauce-core/helpers";
+import { getSharedAddressPointer, getSharedEventPointer } from "applesauce-common/helpers";
+import { insertEventIntoDescendingList } from "applesauce-core/helpers";
 import { withImmediateValueOrDefault } from "applesauce-core";
 import type { AddressPointer, EventPointer } from "applesauce-core/helpers";
 import { kinds, NostrEvent } from "nostr-tools";
 import { map, Observable, of, scan, switchMap, throttleTime } from "rxjs";
+
+// v5: getCoordinateFromAddressPointer was removed, create inline
+const getCoordinateFromAddressPointer = (pointer: any) => `${pointer.kind}:${pointer.pubkey}:${pointer.identifier}`;
 
 import { shareAndHold } from "../../helpers/observable";
 import accounts from "../accounts";

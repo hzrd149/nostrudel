@@ -13,7 +13,7 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { MuteWord, UnmuteWord } from "applesauce-actions/actions";
-import { useActionHub, useActiveAccount, useEventModel } from "applesauce-react/hooks";
+import { useActionRunner, useActiveAccount, useEventModel } from "applesauce-react/hooks";
 import { useCallback, useState } from "react";
 
 import useAsyncAction from "../../../hooks/use-async-action";
@@ -23,7 +23,7 @@ import { usePublishEvent } from "../../../providers/global/publish-provider";
 export default function MutedWordsSection() {
   const account = useActiveAccount();
   const publish = usePublishEvent();
-  const actions = useActionHub();
+  const actions = useActionRunner();
   const [newWord, setNewWord] = useState("");
 
   const mutes = useEventModel(MutesQuery, account && [account?.pubkey]);

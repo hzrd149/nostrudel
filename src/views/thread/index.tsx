@@ -1,6 +1,6 @@
 import { Box, Heading, Link, LinkBox, Spinner, useDisclosure } from "@chakra-ui/react";
-import { getNip10References } from "applesauce-core/helpers";
-import { Thread, ThreadModel } from "applesauce-core/models";
+import { getNip10References } from "applesauce-common/helpers";
+import { ThreadModel, Thread } from "applesauce-common/models";
 import { useEventModel } from "applesauce-react/hooks";
 import { nip19, NostrEvent } from "nostr-tools";
 import { EventPointer } from "nostr-tools/nip19";

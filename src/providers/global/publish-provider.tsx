@@ -1,5 +1,6 @@
 import { useToast } from "@chakra-ui/react";
-import { addSeenRelay, mergeRelaySets } from "applesauce-core/helpers";
+import { addSeenRelay } from "applesauce-core/helpers";
+import { mergeRelaySets } from "applesauce-core/helpers";
 import { useActiveAccount, useEventFactory, useObservableEagerState } from "applesauce-react/hooks";
 import { PublishResponse } from "applesauce-relay";
 import { nanoid } from "nanoid";

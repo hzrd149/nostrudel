@@ -31,6 +31,7 @@ function EventTag({ tag }: { tag: string[] }) {
   try {
     if (isETag(tag)) {
       const pointer = getEventPointerFromETag(tag);
+      if (!pointer) return content; // v5: decode can return null
       return (
         <>
           <Link as={RouterLink} to={`/l/${nip19.neventEncode(pointer)}`} onClick={toggle} {...props}>
@@ -41,6 +42,7 @@ function EventTag({ tag }: { tag: string[] }) {
       );
     } else if (isATag(tag)) {
       const pointer = getAddressPointerFromATag(tag);
+      if (!pointer) return content; // v5: decode can return null
       return (
         <>
           <Link as={RouterLink} to={`/l/${nip19.naddrEncode(pointer)}`} onClick={toggle} {...props}>

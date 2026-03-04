@@ -1,22 +1,23 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import {
-  ButtonGroup,
-  Editable,
-  EditableInput,
-  EditablePreview,
   Flex,
   IconButton,
   Input,
+  InputGroup,
+  InputRightElement,
   Spacer,
-  useEditableControls,
+  Tag,
+  TagCloseButton,
+  TagLabel,
+  Wrap,
+  WrapItem,
 } from "@chakra-ui/react";
-import { CloseIcon } from "@chakra-ui/icons";
 
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useAppTitle } from "../../hooks/use-app-title";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { isReply, isRepost } from "../../helpers/nostr/event";
-import { CheckIcon, EditIcon } from "../../components/icons";
+import { AddIcon } from "../../components/icons";
 import { NostrEvent } from "nostr-tools";
 import TimelinePage, { useTimelinePageEventFilter } from "../../components/timeline-page";
 import TimelineViewTypeButtons from "../../components/timeline-page/timeline-view-type";
@@ -27,27 +28,18 @@ import NoteFilterTypeButtons from "../../components/note-filter-type-buttons";
 import { useRouteStateBoolean } from "../../hooks/use-route-state-value";
 import { useReadRelays } from "../../hooks/use-client-relays";
 
-function EditableControls() {
-  const { isEditing, getSubmitButtonProps, getCancelButtonProps, getEditButtonProps } = useEditableControls();
-
-  return isEditing ? (
-    <ButtonGroup justifyContent="center" size="md">
-      <IconButton icon={<CheckIcon />} {...getSubmitButtonProps()} aria-label="Save" />
-      <IconButton icon={<CloseIcon />} {...getCancelButtonProps()} aria-label="Cancel" />
-    </ButtonGroup>
-  ) : (
-    <IconButton size="md" icon={<EditIcon />} {...getEditButtonProps()} aria-label="Edit" />
-  );
-}
-
 function HashTagPage() {
   const navigate = useNavigate();
-  const location = useLocation();
-  const { hashtag } = useParams() as { hashtag: string };
-  const [editableHashtag, setEditableHashtag] = useState(hashtag);
-  useEffect(() => setEditableHashtag(hashtag), [hashtag]);
+  const { hashtag: primaryHashtag } = useParams() as { hashtag?: string };
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  useAppTitle("#" + hashtag);
+  // Combine the primary route hashtag with any additional hashtags from search params
+  const extraHashtags = searchParams.getAll("t");
+  const hashtags = primaryHashtag
+    ? [primaryHashtag, ...extraHashtags.filter((t) => t !== primaryHashtag)]
+    : extraHashtags;
+
+  useAppTitle(hashtags.map((t) => "#" + t).join(" "));
 
   const showReplies = useRouteStateBoolean("show-replies", true);
   const showReposts = useRouteStateBoolean("show-reposts", true);
@@ -66,33 +58,101 @@ function HashTagPage() {
     },
     [showReplies.isOpen, showReposts.isOpen, muteFilter, timelinePageEventFilter],
   );
+
+  const timelineKey = `${listId ?? "global"}-${hashtags.join("+")}-hashtag`;
   const { loader, timeline } = useTimelineLoader(
-    `${listId ?? "global"}-${hashtag}-hashtag`,
+    timelineKey,
     readRelays,
-    { kinds: [1], "#t": [hashtag], ...filter },
+    hashtags.length > 0 ? { kinds: [1], "#t": hashtags, ...filter } : undefined,
     { eventFilter },
   );
 
+  // Input for adding a new hashtag
+  const [inputValue, setInputValue] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const addHashtag = (raw: string) => {
+    const tag = raw.trim().replace(/^#+/, "").toLowerCase();
+    if (!tag || hashtags.includes(tag)) return;
+
+    if (!primaryHashtag) {
+      // No primary hashtag yet — navigate to /t/:tag
+      navigate({ pathname: "/t/" + tag, search: searchParams.toString() });
+    } else {
+      // Add as search param
+      const next = new URLSearchParams(searchParams);
+      next.append("t", tag);
+      setSearchParams(next);
+    }
+    setInputValue("");
+  };
+
+  const removeHashtag = (tag: string) => {
+    if (tag === primaryHashtag) {
+      // Removing the primary hashtag; promote first extra to primary
+      const remaining = hashtags.filter((t) => t !== tag);
+      if (remaining.length === 0) {
+        navigate("/t");
+      } else {
+        const [newPrimary, ...rest] = remaining;
+        const next = new URLSearchParams();
+        for (const r of rest) next.append("t", r);
+        // preserve other (non-t) search params
+        for (const [k, v] of searchParams.entries()) {
+          if (k !== "t") next.append(k, v);
+        }
+        navigate({ pathname: "/t/" + newPrimary, search: next.toString() });
+      }
+    } else {
+      // Just remove from search params
+      const next = new URLSearchParams();
+      for (const [k, v] of searchParams.entries()) {
+        if (k === "t" && v === tag) continue;
+        next.append(k, v);
+      }
+      setSearchParams(next);
+    }
+  };
+
   const header = (
     <Flex gap="2" alignItems="center" wrap="wrap">
-      <Editable
-        value={editableHashtag}
-        onChange={(v) => setEditableHashtag(v)}
-        fontSize="3xl"
-        fontWeight="bold"
-        display="flex"
-        gap="2"
-        alignItems="center"
-        selectAllOnFocus
-        onSubmit={(v) => navigate("/t/" + String(v).toLowerCase() + location.search)}
-        flexShrink={0}
-      >
-        <div>
-          #<EditablePreview p={0} />
-        </div>
-        <Input as={EditableInput} maxW="md" />
-        <EditableControls />
-      </Editable>
+      <Wrap align="center" flex={1}>
+        {hashtags.map((tag) => (
+          <WrapItem key={tag}>
+            <Tag size="lg" borderRadius="full" variant="solid" colorScheme="primary" fontSize="md" px="3" py="1">
+              <TagLabel>#{tag}</TagLabel>
+              <TagCloseButton onClick={() => removeHashtag(tag)} aria-label={`Remove #${tag}`} />
+            </Tag>
+          </WrapItem>
+        ))}
+        <WrapItem>
+          <InputGroup size="sm" maxW="48">
+            <Input
+              ref={inputRef}
+              placeholder="Add hashtag..."
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  addHashtag(inputValue);
+                }
+              }}
+              borderRadius="full"
+              pr="8"
+            />
+            <InputRightElement>
+              <IconButton
+                size="xs"
+                aria-label="Add hashtag"
+                icon={<AddIcon />}
+                onClick={() => addHashtag(inputValue)}
+                variant="ghost"
+              />
+            </InputRightElement>
+          </InputGroup>
+        </WrapItem>
+      </Wrap>
       <PeopleListSelection />
       <NoteFilterTypeButtons showReplies={showReplies} showReposts={showReposts} />
       <Spacer />

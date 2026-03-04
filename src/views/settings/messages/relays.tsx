@@ -1,5 +1,6 @@
 import { Alert, AlertDescription, AlertIcon, Heading, Link, Text, VStack } from "@chakra-ui/react";
-import { addRelayTag, removeRelayTag } from "applesauce-factory/operations/tag";
+import { TagOperations } from "applesauce-core/operations";
+import { addRelayTag, removeRelayTag } from "applesauce-core/operations/tag/relay";
 import { useActiveAccount, useEventFactory, useObservableMemo } from "applesauce-react/hooks";
 import { kinds } from "nostr-tools";
 

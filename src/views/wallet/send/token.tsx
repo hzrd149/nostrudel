@@ -1,10 +1,9 @@
-import { useEffect, useState } from "react";
-import { filter, from, Observable, switchMap, take } from "rxjs";
-import { Button, ButtonGroup, Flex, IconButton, Spacer, useToast } from "@chakra-ui/react";
+import { useEffect, useRef, useState } from "react";
+import { Button, ButtonGroup, Flex, IconButton, Spacer } from "@chakra-ui/react";
 import { ANIMATED_QR_INTERVAL, encodeTokenToEmoji, sendAnimated } from "applesauce-wallet/helpers";
 import { getDecodedToken, Proof, ProofState } from "@cashu/cashu-ts";
 import { ReceiveToken } from "applesauce-wallet/actions";
-import { useActionHub } from "applesauce-react/hooks";
+import { useActionRunner } from "applesauce-react/hooks";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { Share } from "@capacitor/share";
 import { useAsync } from "react-use";
@@ -15,15 +14,16 @@ import { CopyIconButton } from "../../../components/copy-icon-button";
 import QrCodeSvg from "../../../components/qr-code/qr-code-svg";
 import { getCashuWallet } from "../../../services/cashu-mints";
 import { ShareIcon } from "../../../components/icons";
+import useAsyncAction from "../../../hooks/use-async-action";
+import couch from "../../../services/cashu-couch";
 
 export default function WalletSendTokenView() {
-  const toast = useToast();
   const navigate = useNavigate();
   const location = useLocation();
   const token: string = location.state?.token;
   if (!token) return <Navigate to="/wallet" />;
 
-  const actions = useActionHub();
+  const actions = useActionRunner();
 
   const [speed, setSpeed] = useState(ANIMATED_QR_INTERVAL.MEDIUM);
   const [data, setData] = useState<string>();
@@ -38,44 +38,50 @@ export default function WalletSendTokenView() {
     } else setData(token);
   }, [token, speed, shouldAnimate]);
 
-  // subscribe to redeemed state
+  // subscribe to proof spent state; navigate away when token is claimed
+  const cancellerRef = useRef<(() => void) | null>(null);
   useEffect(() => {
+    let active = true;
     const decoded = getDecodedToken(token);
-    const sub = from(getCashuWallet(decoded.mint))
-      .pipe(
-        switchMap((wallet) => {
-          // subscribe to proof states
-          return new Observable<ProofState & { proof: Proof }>((observer) => {
-            // TODO: cancel subscription
-            wallet.onProofStateUpdates(
-              decoded.proofs,
-              (state) => observer.next(state),
-              (err) => observer.error(err),
-            );
-          });
-        }),
-        // look for spent proofs
-        filter((state) => state.state === "SPENT"),
-        // only wait for one to be spent
-        take(1),
-      )
-      .subscribe(() => {
-        toast({ status: "success", description: "Tokens sent" });
-        navigate("/wallet");
-      });
 
-    return () => sub.unsubscribe();
-  }, [token]);
+    getCashuWallet(decoded.mint).then((wallet) => {
+      if (!active) return;
 
-  const [canceling, setCanceling] = useState(false);
-  const cancel = async () => {
-    setCanceling(true);
-    try {
-      await actions.run(ReceiveToken, getDecodedToken(token));
-      navigate("/wallet");
-    } catch (error) {}
-    setCanceling(false);
-  };
+      wallet
+        .onProofStateUpdates(
+          decoded.proofs,
+          (state: ProofState & { proof: Proof }) => {
+            if (state.state === "SPENT" && active) {
+              active = false;
+              cancellerRef.current?.();
+              navigate("/wallet");
+            }
+          },
+          (err: Error) => console.error("Proof state update error:", err),
+        )
+        .then((canceller) => {
+          if (!active) {
+            // subscription started but we already unmounted – cancel immediately
+            canceller();
+          } else {
+            cancellerRef.current = canceller;
+          }
+        })
+        .catch((err) => console.error("Failed to subscribe to proof states:", err));
+    });
+
+    return () => {
+      active = false;
+      cancellerRef.current?.();
+      cancellerRef.current = null;
+    };
+  }, [token, navigate]);
+
+  const { run: cancel, loading: canceling } = useAsyncAction(async () => {
+    // Reclaim the token back into the wallet using couch for safety
+    await actions.run(ReceiveToken, getDecodedToken(token), { couch });
+    navigate("/wallet");
+  }, [actions, token, navigate]);
 
   const { value: canShare } = useAsync(async () => Share.canShare());
 

@@ -28,7 +28,7 @@ export const GlobalProviders = ({ children }: { children: React.ReactNode }) => 
   return (
     <EventStoreProvider eventStore={eventStore}>
       <AccountsProvider manager={accounts}>
-        <ActionsProvider actionHub={actions}>
+        <ActionsProvider runner={actions}>
           <FactoryProvider factory={factory}>
             <ThemeProviders>
               <PublishProvider>

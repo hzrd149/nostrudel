@@ -7,16 +7,10 @@ import {
   ModalOverlay,
   ModalProps,
 } from "@chakra-ui/react";
-import {
-  getInboxes,
-  getInvoice,
-  getOutboxes,
-  getReplaceableAddress,
-  isDTag,
-  isReplaceable,
-  mergeRelaySets,
-} from "applesauce-core/helpers";
-import { getZapSplits } from "applesauce-core/helpers/zap";
+import { getInboxes, getReplaceableAddress, isDTag, isReplaceable } from "applesauce-core/helpers";
+import { getInvoice } from "applesauce-common/helpers";
+import { getOutboxes, mergeRelaySets } from "applesauce-core/helpers";
+import { getZapSplits } from "applesauce-common/helpers/zap";
 import { firstValueFrom } from "applesauce-core/observable";
 import dayjs from "dayjs";
 import { EventTemplate, kinds, NostrEvent } from "nostr-tools";
@@ -100,7 +94,8 @@ export async function getPayRequestForPubkey(
   // attach "e" or "a" tag
   if (event) {
     if (isReplaceable(event.kind) && event.tags.some(isDTag)) {
-      zapRequest.tags.push(["a", getReplaceableAddress(event)]);
+      const address = getReplaceableAddress(event);
+      if (address) zapRequest.tags.push(["a", address]); // v5: can return null
     } else zapRequest.tags.push(["e", event.id]);
   }
 

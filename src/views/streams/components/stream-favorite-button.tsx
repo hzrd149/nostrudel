@@ -1,6 +1,6 @@
 import { IconButton, IconButtonProps } from "@chakra-ui/react";
 import { getAddressPointerForEvent } from "applesauce-core/helpers";
-import { addCoordinateTag, removeCoordinateTag } from "applesauce-factory/operations/tag";
+import { TagOperations } from "applesauce-core/operations";
 import { useEventFactory } from "applesauce-react/hooks";
 import { EventTemplate, kinds, NostrEvent } from "nostr-tools";
 
@@ -9,7 +9,7 @@ import { isEventInList } from "../../../helpers/nostr/lists";
 import useAsyncAction from "../../../hooks/use-async-action";
 import useFavoriteStreams, { FAVORITE_STREAMS_IDENTIFIER } from "../../../hooks/use-favorite-streams";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
-import { modifyPublicTags } from "applesauce-factory/operations/tags";
+import { modifyPublicTags } from "applesauce-core/operations";
 
 export default function StreamFavoriteButton({
   stream,
@@ -22,7 +22,10 @@ export default function StreamFavoriteButton({
   const isFavorite = !!favorites && isEventInList(favorites, stream);
 
   const click = useAsyncAction(async () => {
-    const operation = isFavorite ? removeCoordinateTag(address) : addCoordinateTag(address);
+    if (!address) return; // v5: getAddressPointerForEvent can return null
+    const operation = isFavorite
+      ? TagOperations.removeAddressPointerTag(address)
+      : TagOperations.addAddressPointerTag(address);
     let draft: EventTemplate;
     if (favorites) {
       draft = await factory.modifyTags(favorites, operation);

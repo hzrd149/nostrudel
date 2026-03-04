@@ -1,6 +1,6 @@
 import { Box, Button, Flex, useToast } from "@chakra-ui/react";
-import { Emoji } from "applesauce-core/helpers";
-import { LiveChatMessageBlueprint } from "applesauce-factory/blueprints";
+import { Emoji } from "applesauce-common/helpers";
+import { LiveChatMessageBlueprint } from "applesauce-common/blueprints";
 import { useEventFactory } from "applesauce-react/hooks";
 import { NostrEvent } from "nostr-tools";
 import { useMemo, useRef } from "react";

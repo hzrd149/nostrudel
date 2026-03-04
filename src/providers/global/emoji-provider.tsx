@@ -1,5 +1,5 @@
 import { PropsWithChildren, createContext, useContext } from "react";
-import { Emoji, getEmojis } from "applesauce-core/helpers";
+import { Emoji, getEmojis } from "applesauce-common/helpers";
 import { useActiveAccount } from "applesauce-react/hooks";
 
 import useReplaceableEvents from "../../hooks/use-replaceable-events";

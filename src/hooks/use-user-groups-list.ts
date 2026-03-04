@@ -1,4 +1,4 @@
-import { getPublicGroups } from "applesauce-core/helpers/groups";
+import { getPublicGroups } from "applesauce-common/helpers/groups";
 import { useActiveAccount } from "applesauce-react/hooks";
 
 import useReplaceableEvent from "./use-replaceable-event";

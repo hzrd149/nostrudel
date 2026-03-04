@@ -15,7 +15,7 @@ import { memo, useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { FixedSizeList as List, ListChildComponentProps } from "react-window";
-import { getFileMetadata } from "applesauce-core/helpers/file-metadata";
+import { getFileMetadata } from "applesauce-common/helpers/file-metadata";
 
 import { NostrEvent } from "nostr-tools";
 import { ErrorBoundary } from "../../components/error-boundary";

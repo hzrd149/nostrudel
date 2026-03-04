@@ -1,10 +1,6 @@
-import {
-  getLegacyMessageCorrespondent,
-  isPTag,
-  persistEncryptedContent,
-  unlockGiftWrap,
-  unlockLegacyMessage,
-} from "applesauce-core/helpers";
+import { isPTag } from "applesauce-core/helpers";
+import { getLegacyMessageCorrespondent, persistEncryptedContent } from "applesauce-common/helpers";
+import { unlockGiftWrap, unlockLegacyMessage } from "applesauce-common/helpers";
 import { defined } from "applesauce-core/observable";
 import localforage from "localforage";
 import { NostrEvent } from "nostr-social-graph";

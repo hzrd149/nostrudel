@@ -1,5 +1,7 @@
 import { defined } from "applesauce-core";
-import { createOutboxMap, getProfilePointersFromList, LRU, OutboxMap } from "applesauce-core/helpers";
+import { LRU, OutboxMap } from "applesauce-core/helpers";
+import { createOutboxMap } from "applesauce-core/helpers";
+import { getProfilePointersFromList } from "applesauce-common/helpers";
 import { LoadableAddressPointer } from "applesauce-loaders/loaders";
 import hash_sum from "hash-sum";
 import { map, Observable, shareReplay, tap } from "rxjs";

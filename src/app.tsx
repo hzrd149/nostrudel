@@ -1,55 +1,55 @@
-import { lazy, Suspense } from "react";
 import { Spinner } from "@chakra-ui/react";
-import { createBrowserRouter, matchRoutes, Outlet, RouterProvider } from "react-router-dom";
-import { App as CapacitorApp, URLOpenListenerEvent } from "@capacitor/app";
+import { lazy, Suspense } from "react";
+import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
 
 import GlobalStyles from "./styles";
 
 import { ErrorBoundary } from "./components/error-boundary";
 import AppLayout from "./components/layout";
-import { RouteProviders } from "./providers/route";
 import useSetColorMode from "./hooks/use-set-color-mode";
+import { RouteProviders } from "./providers/route";
 
 import TaskManagerProvider from "./views/task-manager/provider";
 
 // one off views
 import NoteFoundView from "./views/404";
-import NostrLinkView from "./views/link";
 import HomeView from "./views/home";
-import ThreadView from "./views/thread";
-import SupportView from "./views/support";
-import SearchView from "./views/search";
 import LaunchpadView from "./views/launchpad";
+import NostrLinkView from "./views/link";
 import OtherStuffView from "./views/other-stuff";
+import SearchView from "./views/search";
+import SupportView from "./views/support";
+import ThreadView from "./views/thread";
 
 const HashTagView = lazy(() => import("./views/hashtag"));
 
 // routes
+import articlesRoutes from "./views/articles/routes";
+import badgesRoutes from "./views/badges/routes";
+import blossomRoutes from "./views/blossom/routes";
+import bookmarksRoutes from "./views/bookmarks/routes";
+import channelsRoutes from "./views/channels/routes";
+import emojisRoutes from "./views/emojis/routes";
+import feedsRoutes from "./views/feeds/routes";
+import filesRoutes from "./views/files/routes";
+import goalsRoutes from "./views/goals/routes";
+import groupsRoutes from "./views/groups/routes";
+import listsRoutes from "./views/lists/routes";
+import messagesRoutes from "./views/messages/routes";
+import newRoutes from "./views/new/routes";
+import notificationsRoutes from "./views/notifications/routes";
+import picturesRoutes from "./views/pictures/routes";
+import relaysRoutes from "./views/relays/routes";
+import settingsRoutes from "./views/settings/routes";
 import signinRoutes from "./views/signin/routes";
 import signupRoutes from "./views/signup/routes";
-import userRoutes from "./views/user/routes";
-import newRoutes from "./views/new/routes";
-import settingsRoutes from "./views/settings/routes";
-import relaysRoutes from "./views/relays/routes";
-import blossomRoutes from "./views/blossom/routes";
-import picturesRoutes from "./views/pictures/routes";
 import streamsRoutes from "./views/streams/routes";
 import toolsRoutes from "./views/tools/routes";
-import feedsRoutes from "./views/feeds/routes";
-import wikiRoutes from "./views/wiki/routes";
-import filesRoutes from "./views/files/routes";
-import messagesRoutes from "./views/messages/routes";
-import listsRoutes from "./views/lists/routes";
-import bookmarksRoutes from "./views/bookmarks/routes";
-import articlesRoutes from "./views/articles/routes";
 import torrentsRoutes from "./views/torrents/routes";
-import channelsRoutes from "./views/channels/routes";
-import groupsRoutes from "./views/groups/routes";
-import goalsRoutes from "./views/goals/routes";
-import badgesRoutes from "./views/badges/routes";
-import emojisRoutes from "./views/emojis/routes";
+import userRoutes from "./views/user/routes";
+import webxdcRoutes from "./views/webxdc/routes";
 import walletRoutes from "./views/wallet/routes";
-import notificationsRoutes from "./views/notifications/routes";
+import wikiRoutes from "./views/wiki/routes";
 
 // Redirect old hash routing
 const hashPath = window.location.hash.match(/^#(\/.+)/);
@@ -112,6 +112,7 @@ export const router = createBrowserRouter(
         { path: "wiki", children: wikiRoutes },
         { path: "support", Component: SupportView },
         { path: "l/:link", Component: NostrLinkView },
+        { path: "t", Component: HashTagView },
         { path: "t/:hashtag", Component: HashTagView },
 
         // other stuff
@@ -120,6 +121,7 @@ export const router = createBrowserRouter(
         { path: "lists", children: listsRoutes },
         { path: "files", children: filesRoutes },
         { path: "torrents", children: torrentsRoutes },
+        { path: "webxdc", children: webxdcRoutes },
         { path: "channels", children: channelsRoutes },
         { path: "goals", children: goalsRoutes },
         { path: "badges", children: badgesRoutes },

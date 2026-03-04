@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 import { Flex } from "@chakra-ui/react";
 import { NostrEvent } from "nostr-tools";
-import { PICTURE_POST_KIND } from "applesauce-core/helpers";
+import { PICTURE_POST_KIND } from "applesauce-common/helpers";
 
 import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
 import useClientSideMuteFilter from "../../hooks/use-client-side-mute-filter";

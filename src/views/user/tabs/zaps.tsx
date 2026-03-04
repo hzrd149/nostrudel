@@ -1,5 +1,6 @@
 import { Box, Flex, Select, Text } from "@chakra-ui/react";
-import { getZapPayment, getZapRequest, isATag, isETag, isValidZap, KnownEvent } from "applesauce-core/helpers";
+import { isATag, isETag, KnownEvent } from "applesauce-core/helpers";
+import { getZapPayment, getZapRequest, isValidZap } from "applesauce-common/helpers";
 import { useRenderedContent } from "applesauce-react/hooks";
 import dayjs from "dayjs";
 import { kinds, NostrEvent } from "nostr-tools";

@@ -1,5 +1,6 @@
 import { Box, Heading, SimpleGrid, Text } from "@chakra-ui/react";
-import { FAVORITE_RELAYS_KIND, getRelaysFromList, kinds } from "applesauce-core/helpers";
+import { kinds } from "applesauce-core/helpers";
+import { FAVORITE_RELAYS_KIND, getRelaysFromList } from "applesauce-common/helpers";
 import { TimelineModel } from "applesauce-core/models";
 import { LoadableAddressPointer } from "applesauce-loaders/loaders";
 import { useActiveAccount, useEventModel, useObservableEagerState } from "applesauce-react/hooks";

@@ -1,11 +1,13 @@
 import { Box, Button, Divider, Flex, Heading, Text, useDisclosure } from "@chakra-ui/react";
-import { getTagValue, getZapPayment, isValidZap, unixNow } from "applesauce-core/helpers";
+import { getTagValue, unixNow } from "applesauce-core/helpers";
+import { getZapPayment, isValidZap } from "applesauce-common/helpers";
 import { TimelineModel } from "applesauce-core/models";
-import { useEventModel } from "applesauce-react/hooks";
+import { useEventModel, useObservableMemo } from "applesauce-react/hooks";
 import confetti from "canvas-confetti";
 import dayjs from "dayjs";
 import { kinds } from "nostr-tools";
 import { useEffect, useState } from "react";
+import { filter, map } from "rxjs";
 
 import { PayRequest } from "../../components/event-zap-modal";
 import PayStep from "../../components/event-zap-modal/pay-step";
@@ -66,24 +68,24 @@ export default function SupportView() {
     .filter(isValidZap)
     .sort((a, b) => (getZapPayment(b)?.amount ?? 0) - (getZapPayment(a)?.amount ?? 0) || b.created_at - a.created_at);
 
+  const paidInvoice = useObservableMemo(
+    () =>
+      request
+        ? eventStore.filters([{ kinds: [kinds.Zap], since: unixNow() }]).pipe(
+            map((event) => getTagValue(event, "bolt11")),
+            filter((bolt11): bolt11 is string => bolt11 === request.invoice),
+          )
+        : undefined,
+    [request?.invoice],
+  );
+
   // close the pay request when new zap is received
   useEffect(() => {
-    if (request) {
-      const sub = eventStore.filters([{ kinds: [kinds.Zap], since: unixNow() }]).subscribe((event) => {
-        try {
-          const bont11 = getTagValue(event, "bolt11");
-
-          if (bont11 === request.invoice) {
-            setRequest(undefined);
-
-            fireworks();
-          }
-        } catch (error) {}
-      });
-
-      return () => sub.unsubscribe();
+    if (paidInvoice) {
+      setRequest(undefined);
+      fireworks();
     }
-  }, [request]);
+  }, [paidInvoice]);
 
   return (
     <>

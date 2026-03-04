@@ -1,7 +1,7 @@
 import { Box, Button, Divider, Flex, SimpleGrid, SimpleGridProps, useDisclosure } from "@chakra-ui/react";
 import { NostrEvent } from "nostr-tools";
 import { useMemo } from "react";
-import { ThreadItem } from "applesauce-core/models";
+import { ThreadItem } from "applesauce-common/models";
 
 import ReactionIcon from "../../../../components/event-reactions/reaction-icon";
 import UserAvatarLink from "../../../../components/user/user-avatar-link";

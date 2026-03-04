@@ -1,12 +1,13 @@
+import { createTimelineLoader } from "applesauce-loaders/loaders";
 import { TimelineModel } from "applesauce-core/models";
 import { useEventModel } from "applesauce-react/hooks";
 import sum from "hash-sum";
 import { Filter, NostrEvent } from "nostr-tools";
 import { useMemo } from "react";
-import { useThrottle } from "react-use";
 
-import timelineCacheService from "../services/timeline-cache";
-import useSimpleSubscription from "./use-forward-subscription";
+import { cacheRequest } from "../services/event-cache";
+import { eventStore } from "../services/event-store";
+import pool from "../services/pool";
 
 type Options = {
   eventFilter?: (event: NostrEvent) => boolean;
@@ -18,32 +19,27 @@ export default function useTimelineLoader(
   filters: Filter | Filter[] | undefined,
   opts?: Options,
 ) {
-  // start a forward subscription while component is mounted
-  useSimpleSubscription(relays, filters);
-
   const loader = useMemo(() => {
     const filtersArray = filters && (Array.isArray(filters) ? filters : [filters]);
 
     if (filtersArray && filtersArray.length > 0 && relays.length > 0)
-      return timelineCacheService.createTimeline(key, relays, Array.isArray(filters) ? filters : [filters]);
+      return createTimelineLoader(pool, relays, filtersArray, {
+        limit: 100,
+        cache: cacheRequest,
+        eventStore,
+      });
     else return undefined;
-  }, [key, sum(filters), relays.join(",")]);
+  }, [key, sum(relays), sum(filters)]);
 
   const timeline = useEventModel(TimelineModel, filters && [filters]) ?? [];
-  let throttled = useThrottle(timeline, 50);
-
-  // set event filter
-  if (opts?.eventFilter)
-    throttled = throttled.filter((e) => {
-      try {
-        return opts.eventFilter && opts.eventFilter(e);
-      } catch (error) {}
-      return false;
-    });
+  const filteredTimeline = useMemo(() => {
+    if (!opts?.eventFilter) return timeline;
+    return timeline.filter((event) => opts.eventFilter?.(event));
+  }, [timeline, opts?.eventFilter]);
 
   return {
     loader,
     /** @deprecated get the events from the eventStore instead */
-    timeline: throttled,
+    timeline: filteredTimeline,
   };
 }

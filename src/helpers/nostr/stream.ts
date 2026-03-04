@@ -32,7 +32,10 @@ export function getStreamHost(stream: NostrEvent) {
 
 export function getStreamGoalPointer(stream: NostrEvent) {
   const goalTag = stream.tags.find((t) => t[0] === "goal");
-  return goalTag && addRelayHintsToPointer(getEventPointerFromETag(goalTag), getStreamRelays(stream));
+  if (!goalTag) return;
+  const pointer = getEventPointerFromETag(goalTag);
+  if (!pointer) return; // v5: can return null
+  return addRelayHintsToPointer(pointer, getStreamRelays(stream));
 }
 
 /** Gets all the streaming urls for a stream */

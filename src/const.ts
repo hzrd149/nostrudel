@@ -1,4 +1,4 @@
-import { EventFactoryClient } from "applesauce-factory";
+import { EventFactoryClient } from "applesauce-core/event-factory";
 import { isSafeRelayURL } from "applesauce-core/helpers/relays";
 import { normalizeURL, ProfilePointer } from "applesauce-core/helpers";
 
@@ -39,7 +39,11 @@ export const DEFAULT_MAX_RELAYS_PER_USER = 5;
 export const DEFAULT_LOOKUP_RELAYS = relays(["wss://purplepag.es/"]);
 
 /** Extra recommended lookup relays */
-export const RECOMMENDED_LOOKUP_RELAYS = relays(["wss://purplepag.es/", "wss://index.hzrd149.com"]);
+export const RECOMMENDED_LOOKUP_RELAYS = relays([
+  "wss://purplepag.es/",
+  "wss://index.hzrd149.com",
+  "wss://indexer.coracle.social",
+]);
 
 /** The default set of relays to use for fetching users events who have out published outboxes */
 export const DEFAULT_FALLBACK_RELAYS = relays(["wss://relay.primal.net/", "wss://relay.damus.io/"]);
@@ -52,7 +56,7 @@ export const RECOMMENDED_FALLBACK_RELAYS = relays([
 ]);
 
 /** The default relay to recommend for remote signers */
-export const DEFAULT_NOSTR_CONNECT_RELAY = normalizeURL("wss://relay.nsec.app/");
+export const DEFAULT_NOSTR_CONNECT_RELAY = normalizeURL("wss://bucket.coracle.social/");
 
 export const NOSTR_CONNECT_PERMISSIONS = [
   "get_public_key",

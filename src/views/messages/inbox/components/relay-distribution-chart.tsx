@@ -1,4 +1,4 @@
-import { GiftWrapsModel } from "applesauce-core/models";
+import { GiftWrapsModel } from "applesauce-common/models";
 import { useActiveAccount, useEventModel } from "applesauce-react/hooks";
 
 import RelayDistributionChart from "../../../../components/charts/relay-distribution-chart";
