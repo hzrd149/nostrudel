@@ -3,11 +3,12 @@ import { kinds } from "nostr-tools";
 import { combineLatest, map, Observable, of, scan, shareReplay, switchMap } from "rxjs";
 
 import { COMMENT_KIND } from "applesauce-common/helpers";
-import { TimelineLoader } from "applesauce-loaders/loaders";
+import { createTimelineLoader, TimelineLoader } from "applesauce-loaders/loaders";
 import accounts from "../accounts";
+import { cacheRequest } from "../event-cache";
 import { eventStore } from "../event-store";
 import localSettings from "../preferences";
-import timelineCacheService from "../timeline-cache";
+import pool from "../pool";
 
 // Get users mailboxes
 const mailboxes$ = accounts.active$.pipe(
@@ -27,12 +28,21 @@ export const shareNotificationsLoader$: Observable<TimelineLoader | null> = comb
   map(([account, inboxes]) => {
     if (!account || inboxes.length === 0) return null;
 
-    return timelineCacheService.createTimeline(`shares-notifications-${account.pubkey}`, inboxes, [
+    return createTimelineLoader(
+      pool,
+      inboxes,
+      [
+        {
+          "#p": [account.pubkey],
+          kinds: [kinds.Repost, kinds.GenericRepost],
+        },
+      ],
       {
-        "#p": [account.pubkey],
-        kinds: [kinds.Repost, kinds.GenericRepost],
+        limit: 100,
+        cache: cacheRequest,
+        eventStore,
       },
-    ]);
+    );
   }),
   // Only create a single timeline
   shareReplay(1),
@@ -46,14 +56,23 @@ export const socialNotificationsLoader$: Observable<TimelineLoader | null> = com
   map(([account, inboxes]) => {
     if (!account || inboxes.length === 0) return null;
 
-    return timelineCacheService.createTimeline(`notifications-${account.pubkey}`, inboxes, [
+    return createTimelineLoader(
+      pool,
+      inboxes,
+      [
+        {
+          "#p": [account.pubkey],
+          kinds: [kinds.ShortTextNote, kinds.LongFormArticle, COMMENT_KIND],
+        },
+        // Also load the users own timeline from their inboxes so that replies to their own notes are shown
+        { authors: [account.pubkey], kinds: [kinds.ShortTextNote, kinds.LongFormArticle, COMMENT_KIND] },
+      ],
       {
-        "#p": [account.pubkey],
-        kinds: [kinds.ShortTextNote, kinds.LongFormArticle, COMMENT_KIND],
+        limit: 100,
+        cache: cacheRequest,
+        eventStore,
       },
-      // Also load the users own timeline from their inboxes so that replies to their own notes are shown
-      { authors: [account.pubkey], kinds: [kinds.ShortTextNote, kinds.LongFormArticle, COMMENT_KIND] },
-    ]);
+    );
   }),
   // Only create a single timeline
   shareReplay(1),
@@ -67,12 +86,21 @@ export const zapNotificationsLoader$: Observable<TimelineLoader | null> = combin
   map(([account, inboxes]) => {
     if (!account || inboxes.length === 0) return null;
 
-    return timelineCacheService.createTimeline(`zaps-notifications-${account.pubkey}`, inboxes, [
+    return createTimelineLoader(
+      pool,
+      inboxes,
+      [
+        {
+          "#p": [account.pubkey],
+          kinds: [kinds.Zap],
+        },
+      ],
       {
-        "#p": [account.pubkey],
-        kinds: [kinds.Zap],
+        limit: 100,
+        cache: cacheRequest,
+        eventStore,
       },
-    ]);
+    );
   }),
   // Only create a single timeline
   shareReplay(1),

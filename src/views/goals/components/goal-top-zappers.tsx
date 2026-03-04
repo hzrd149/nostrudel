@@ -1,13 +1,15 @@
 import { Box, Flex, FlexProps } from "@chakra-ui/react";
-import { getZapPayment, getZapSender } from "applesauce-common/helpers";
+import { castEvent, Zap } from "applesauce-common/casts";
 
 import { NostrEvent } from "nostr-tools";
+import { useMemo } from "react";
 import { LightningIcon } from "../../../components/icons";
 import UserAvatarLink from "../../../components/user/user-avatar-link";
 import UserLink from "../../../components/user/user-link";
 import { humanReadableSats } from "../../../helpers/lightning";
 import { getGoalRelays } from "../../../helpers/nostr/goal";
 import useEventZaps from "../../../hooks/use-event-zaps";
+import { eventStore } from "../../../services/event-store";
 
 export default function GoalTopZappers({
   goal,
@@ -16,11 +18,16 @@ export default function GoalTopZappers({
 }: Omit<FlexProps, "children"> & { goal: NostrEvent; max?: number }) {
   const zaps = useEventZaps(goal, getGoalRelays(goal));
 
-  const totals = zaps?.reduce<Record<string, number>>((dir, z) => {
-    const sender = getZapSender(z);
-    dir[sender] = (dir[sender] ?? 0) + (getZapPayment(z)?.amount ?? 0);
-    return dir;
-  }, {});
+  const totals = useMemo(
+    () =>
+      zaps.reduce<Record<string, number>>((dir, zapEvent) => {
+        const zap = castEvent(zapEvent, Zap, eventStore);
+        if (!zap.amount) return dir;
+        dir[zap.sender.pubkey] = (dir[zap.sender.pubkey] ?? 0) + zap.amount;
+        return dir;
+      }, {}),
+    [zaps],
+  );
 
   const sortedTotals = totals ? Array.from(Object.entries(totals)).sort((a, b) => b[1] - a[1]) : [];
   if (max !== undefined) {
