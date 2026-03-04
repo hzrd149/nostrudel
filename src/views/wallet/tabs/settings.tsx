@@ -1,12 +1,4 @@
-import {
-  Button,
-  ButtonGroup,
-  Divider,
-  Flex,
-  Heading,
-  Input,
-  Text
-} from "@chakra-ui/react";
+import { Button, ButtonGroup, Divider, Flex, Heading, Input, Text } from "@chakra-ui/react";
 import { useActionRunner, useActiveAccount } from "applesauce-react/hooks";
 import {
   AddNutzapInfoMint,

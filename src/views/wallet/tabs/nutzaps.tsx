@@ -6,7 +6,7 @@ import {
   getNutzapComment,
   getNutzapMint,
   isValidNutzap,
-  NUTZAP_KIND
+  NUTZAP_KIND,
 } from "applesauce-wallet/helpers";
 import { ProfileNutZapzModel, ReceivedNutzapsModel } from "applesauce-wallet/models";
 import { NostrEvent } from "nostr-tools";
