@@ -34,6 +34,7 @@ import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useThrottle } from "react-use";
 
+import UploadStatus from "../upload-status";
 import useCacheForm from "../../hooks/use-cache-form";
 import useLocalStorageDisclosure from "../../hooks/use-localstorage-disclosure";
 import useTextAreaUploadFile, { useTextAreaInsertTextWithForm } from "../../hooks/use-textarea-upload-file";
@@ -41,6 +42,7 @@ import useAppSettings from "../../hooks/use-user-app-settings";
 import { useContextEmojis } from "../../providers/global/emoji-provider";
 import { PublishLogEntry, usePublishEvent } from "../../providers/global/publish-provider";
 import { ContentSettingsProvider } from "../../providers/local/content-settings";
+import UploadProvider, { useUploadContext } from "../../providers/local/upload-provider";
 import localSettings from "../../services/preferences";
 import InsertImageButton from "../../views/new/note/insert-image-button";
 import ZapSplitCreator from "../../views/new/note/zap-split-creator";
@@ -65,7 +67,7 @@ export type PostModalProps = {
   initContent?: string;
 };
 
-export default function PostModal({
+function PostModalInner({
   isOpen,
   onClose,
   cacheFormKey = "new-note",
@@ -118,6 +120,8 @@ export default function PostModal({
     setDraft(unsigned);
     return unsigned;
   };
+
+  const uploadCtx = useUploadContext();
 
   const textAreaRef = useRef<RefType | null>(null);
   const insertText = useTextAreaInsertTextWithForm(textAreaRef, getValues, setValue);
@@ -187,6 +191,7 @@ export default function PostModal({
               if ((e.ctrlKey || e.metaKey) && e.key === "Enter") submit();
             }}
           />
+          <UploadStatus />
           {preview && preview.length > 0 && (
             <Box>
               <Heading size="sm">Preview:</Heading>
@@ -219,7 +224,8 @@ export default function PostModal({
               type="submit"
               isLoading={formState.isSubmitting}
               onClick={submit}
-              isDisabled={!canSubmit}
+              isDisabled={!canSubmit || !!uploadCtx?.isUploading}
+              title={uploadCtx?.isUploading ? "Upload in progress" : undefined}
             >
               Post
             </Button>
@@ -297,5 +303,13 @@ export default function PostModal({
         {renderBody()}
       </ModalContent>
     </Modal>
+  );
+}
+
+export default function PostModal(props: Omit<ModalProps, "children"> & PostModalProps) {
+  return (
+    <UploadProvider>
+      <PostModalInner {...props} />
+    </UploadProvider>
   );
 }

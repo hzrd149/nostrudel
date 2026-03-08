@@ -36,10 +36,12 @@ import MagicTextArea, { RefType } from "../../../components/magic-textarea";
 import TextNoteContents from "../../../components/timeline/note/text-note-contents";
 import MinePOW from "../../../components/pow/mine-pow";
 import InsertReactionButton from "../../../components/reactions/insert-reaction-button";
+import UploadStatus from "../../../components/upload-status";
 import useCacheForm from "../../../hooks/use-cache-form";
 import useLocalStorageDisclosure from "../../../hooks/use-localstorage-disclosure";
 import useTextAreaUploadFile, { useTextAreaInsertTextWithForm } from "../../../hooks/use-textarea-upload-file";
 import useAppSettings from "../../../hooks/use-user-app-settings";
+import UploadProvider, { useUploadContext } from "../../../providers/local/upload-provider";
 import { useContextEmojis } from "../../../providers/global/emoji-provider";
 import { PublishLogEntry, usePublishEvent } from "../../../providers/global/publish-provider";
 import { ContentSettingsProvider } from "../../../providers/local/content-settings";
@@ -62,7 +64,7 @@ export type ShortTextNoteFormProps = {
   initContent?: string;
 };
 
-export default function ShortTextNoteForm({
+function ShortTextNoteFormInner({
   cacheFormKey = "new-note",
   initContent = "",
 }: Omit<FlexProps, "children"> & ShortTextNoteFormProps) {
@@ -114,6 +116,8 @@ export default function ShortTextNoteForm({
   };
 
   const preview = useThrottle(getValues("content"), 500);
+
+  const uploadCtx = useUploadContext();
 
   const textAreaRef = useRef<RefType | null>(null);
   const insertText = useTextAreaInsertTextWithForm(textAreaRef, getValues, setValue);
@@ -180,6 +184,7 @@ export default function ShortTextNoteForm({
             if ((e.ctrlKey || e.metaKey) && e.key === "Enter") submit();
           }}
         />
+        <UploadStatus />
         {preview && preview.length > 0 && (
           <Box>
             <Heading size="sm">Preview:</Heading>
@@ -217,7 +222,8 @@ export default function ShortTextNoteForm({
             type="submit"
             isLoading={formState.isSubmitting}
             onClick={submit}
-            isDisabled={!canSubmit}
+            isDisabled={!canSubmit || !!uploadCtx?.isUploading}
+            title={uploadCtx?.isUploading ? "Upload in progress" : undefined}
           >
             Post
           </Button>
@@ -284,5 +290,13 @@ export default function ShortTextNoteForm({
         </Alert>
       )}
     </>
+  );
+}
+
+export default function ShortTextNoteForm(props: Omit<FlexProps, "children"> & ShortTextNoteFormProps) {
+  return (
+    <UploadProvider>
+      <ShortTextNoteFormInner {...props} />
+    </UploadProvider>
   );
 }
