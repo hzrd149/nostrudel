@@ -453,25 +453,27 @@ The torrents view (`src/views/torrents/`) demonstrates this pattern:
 
 ## Changesets for Version Management
 
-This project uses [Changesets](https://github.com/changesets/changesets) to manage versioning and changelogs. **Only create changesets when user-facing APIs change or break.**
+This project uses [Changesets](https://github.com/changesets/changesets) to manage versioning and changelogs. **Always create a changeset for any user-facing change** — this includes UI changes, not just API changes.
 
 ### When to Create a Changeset
 
 **CREATE a changeset when:**
 
+- ✅ Adding, removing, or significantly changing a view or page
+- ✅ Adding or removing navigation items (sidebar, bottom nav, app registry)
+- ✅ Adding new features users can see or interact with
+- ✅ Fixing bugs that affect user-facing behavior
 - ✅ Adding new public functions, classes, or methods
 - ✅ Modifying signatures of exported functions/methods
 - ✅ Adding/removing/changing public exports
-- ✅ Fixing bugs that affect user-facing behavior
 - ✅ Changing the behavior of existing APIs
-- ✅ Adding new features users can utilize
 - ✅ Deprecating or removing public APIs
 
 **DO NOT create a changeset for:**
 
-- ❌ Internal refactoring (no API changes)
+- ❌ Internal refactoring with no visible change to the user
 - ❌ Test-only changes
-- ❌ Documentation updates (unless they reflect API changes)
+- ❌ Documentation updates (unless they reflect behavioral changes)
 - ❌ Build configuration changes
 - ❌ Changes to dev dependencies
 - ❌ Code formatting or linting fixes
