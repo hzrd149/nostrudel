@@ -14,7 +14,6 @@ import TaskManagerProvider from "./views/task-manager/provider";
 // one off views
 import NoteFoundView from "./views/404";
 import HomeView from "./views/home";
-import LaunchpadView from "./views/launchpad";
 import NostrLinkView from "./views/link";
 import OtherStuffView from "./views/other-stuff";
 import SearchView from "./views/search";
@@ -93,7 +92,6 @@ export const router = createBrowserRouter(
         { path: "new", children: newRoutes },
         { path: "notes", Component: HomeView },
         { path: "feeds", children: feedsRoutes },
-        { path: "launchpad", Component: LaunchpadView },
         { path: "messages", children: messagesRoutes },
         { path: "user/:pubkey", children: userRoutes },
         { path: "u/:pubkey", children: userRoutes },
