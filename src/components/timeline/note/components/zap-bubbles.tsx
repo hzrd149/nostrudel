@@ -5,7 +5,7 @@ import { KnownEvent } from "applesauce-core/helpers";
 import { getZapPayment, getZapRequest } from "applesauce-common/helpers";
 
 import useEventZaps from "../../../../hooks/use-event-zaps";
-import UserAvatar from "../../../user/user-avatar";
+import UserAvatarLink from "../../../user/user-avatar-link";
 import { humanReadableSats } from "../../../../helpers/lightning";
 import { LightningIcon } from "../../../icons";
 
@@ -19,7 +19,7 @@ function ZapBubble({ zap }: { zap: KnownEvent<kinds.Zap> }) {
     <Tag key={zap.id} borderRadius="full" py="1" flexShrink={0} variant="outline">
       <LightningIcon mr="1" color="yellow.400" />
       <TagLabel fontWeight="bold">{humanReadableSats((payment.amount ?? 0) / 1000)}</TagLabel>
-      <UserAvatar pubkey={request.pubkey} size="xs" square={false} ml="2" />
+      <UserAvatarLink pubkey={request.pubkey} size="xs" square={false} ml="2" />
     </Tag>
   );
 }
