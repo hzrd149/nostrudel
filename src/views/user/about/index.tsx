@@ -59,7 +59,7 @@ import useUserMailboxes from "../../../hooks/use-user-mailboxes";
 import useUserProfile from "../../../hooks/use-user-profile";
 import { profileLoader } from "../../../services/loaders";
 import { socialGraph$ } from "../../../services/social-graph";
-import DNSIdentityWarning from "../../settings/dns-identity/identity-warning";
+import DNSIdentityWarning from "../../../components/user/dns-identity-warning";
 import { QrIconButton } from "../components/share-qr-button";
 import { UserProfileMenu } from "../components/user-profile-menu";
 import UserZapButton from "../components/user-zap-button";

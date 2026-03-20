@@ -1,6 +1,6 @@
 import { Link, Text } from "@chakra-ui/react";
 import { Identity, IdentityStatus } from "applesauce-loaders/helpers/dns-identity";
-import { ExternalLinkIcon } from "../../../components/icons";
+import { ExternalLinkIcon } from "../icons";
 
 export default function DNSIdentityWarning({ identity, pubkey }: { pubkey: string; identity: Identity }) {
   switch (identity?.status) {

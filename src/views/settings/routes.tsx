@@ -7,7 +7,6 @@ import AuthenticationSettingsView from "./authentication";
 import BackgroundWorkerSettings from "./background-worker";
 import CacheRelayView from "./cache";
 import DisplaySettings from "./display";
-import DnsIdentityView from "./dns-identity";
 import LightningSettings from "./lightning";
 import MailboxesView from "./mailboxes";
 import MediaServersView from "./media-servers";
@@ -46,7 +45,6 @@ export default [
         ),
       },
       { path: "mailboxes", Component: MailboxesView },
-      { path: "identity", Component: DnsIdentityView },
       { path: "authentication", Component: AuthenticationSettingsView },
       { path: "media-servers", Component: MediaServersView },
       { path: "search", Component: SearchSettings },

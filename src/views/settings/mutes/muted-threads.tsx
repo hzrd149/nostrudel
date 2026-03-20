@@ -1,4 +1,3 @@
-import { AddIcon } from "@chakra-ui/icons";
 import { Alert, AlertIcon, Box, Button, Card, Heading, HStack, Input, Link, Text, VStack } from "@chakra-ui/react";
 import { MuteThread, UnmuteThread } from "applesauce-actions/actions";
 import { useActionRunner, useActiveAccount, useEventModel } from "applesauce-react/hooks";
@@ -91,7 +90,7 @@ export default function MutedThreadsSection() {
             onKeyDown={(e) => e.key === "Enter" && addThread()}
             isInvalid={!!error}
           />
-          <Button onClick={addThread} leftIcon={<AddIcon />} isLoading={adding} isDisabled={!newNevent.trim()}>
+          <Button onClick={addThread} isLoading={adding} isDisabled={!newNevent.trim()}>
             Add
           </Button>
         </HStack>

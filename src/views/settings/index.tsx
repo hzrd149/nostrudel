@@ -11,7 +11,6 @@ import {
   RelayIcon,
   SearchIcon,
   SpyIcon,
-  VerifiedIcon,
 } from "../../components/icons";
 import CheckCircleBroken from "../../components/icons/check-circle-broken";
 import CpuChip01 from "../../components/icons/cpu-chip-01";
@@ -67,9 +66,6 @@ export default function SettingsView() {
           </SimpleNavItem>
           <SimpleNavItem to="/settings/mutes" leftIcon={<MuteIcon boxSize={5} />}>
             Mutes
-          </SimpleNavItem>
-          <SimpleNavItem to="/settings/identity" leftIcon={<VerifiedIcon boxSize={5} />}>
-            DNS Identity
           </SimpleNavItem>
         </>
       )}

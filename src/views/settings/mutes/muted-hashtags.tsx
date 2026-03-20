@@ -1,4 +1,3 @@
-import { AddIcon } from "@chakra-ui/icons";
 import {
   Box,
   Button,
@@ -60,12 +59,7 @@ export default function MutedHashtagsSection() {
           onChange={(e) => setNewHashtag(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && addHashtag.run()}
         />
-        <Button
-          onClick={addHashtag.run}
-          leftIcon={<AddIcon />}
-          isLoading={addHashtag.loading}
-          isDisabled={!newHashtag.trim()}
-        >
+        <Button onClick={addHashtag.run} isLoading={addHashtag.loading} isDisabled={!newHashtag.trim()}>
           Add
         </Button>
       </HStack>

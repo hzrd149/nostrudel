@@ -1,4 +1,3 @@
-import { AddIcon } from "@chakra-ui/icons";
 import {
   Box,
   Button,
@@ -65,7 +64,7 @@ export default function MutedWordsSection() {
           onChange={(e) => setNewWord(e.target.value)}
           onKeyPress={handleKeyPress}
         />
-        <Button onClick={addWord.run} leftIcon={<AddIcon />} isLoading={addWord.loading} isDisabled={!newWord.trim()}>
+        <Button onClick={addWord.run} isLoading={addWord.loading} isDisabled={!newWord.trim()}>
           Add
         </Button>
       </HStack>
