@@ -1,6 +1,6 @@
 import { Box, ButtonGroup } from "@chakra-ui/react";
-import { COMMENT_KIND } from "applesauce-core/helpers";
-import { CommentsModel } from "applesauce-core/models";
+import { COMMENT_KIND } from "applesauce-common/helpers";
+import { CommentsModel } from "applesauce-common/models";
 import { useEventModel } from "applesauce-react/hooks";
 import { NostrEvent } from "nostr-tools";
 

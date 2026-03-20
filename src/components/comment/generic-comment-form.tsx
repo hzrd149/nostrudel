@@ -16,8 +16,10 @@ import InsertGifButton from "../gif/insert-gif-button";
 import { ContentSettingsProvider } from "../../providers/local/content-settings";
 import TextNoteContents from "../timeline/note/text-note-contents";
 import InsertReactionButton from "../reactions/insert-reaction-button";
+import UploadProvider, { useUploadContext } from "../../providers/local/upload-provider";
+import UploadStatus from "../upload-status";
 
-export default function GenericCommentForm({
+function GenericCommentFormInner({
   event,
   onSubmitted,
   onCancel,
@@ -40,6 +42,8 @@ export default function GenericCommentForm({
   const clearCache = useCacheForm<{ content: string }>(`comment-${getEventUID(event)}`, getValues, reset, formState);
 
   watch("content");
+
+  const uploadCtx = useUploadContext();
 
   const textAreaRef = useRef<RefType | null>(null);
   const insertText = useTextAreaInsertTextWithForm(textAreaRef, getValues, setValue);
@@ -79,6 +83,7 @@ export default function GenericCommentForm({
           if ((e.ctrlKey || e.metaKey) && e.key === "Enter" && formRef.current) formRef.current.requestSubmit();
         }}
       />
+      <UploadStatus />
       <Flex gap="2" alignItems="center">
         <ButtonGroup size="sm">
           <InsertImageButton onUploaded={insertText} aria-label="Upload image" />
@@ -87,7 +92,13 @@ export default function GenericCommentForm({
         </ButtonGroup>
         <ButtonGroup size="sm" ml="auto">
           {onCancel && <Button onClick={onCancel}>Cancel</Button>}
-          <Button type="submit" colorScheme="primary" size="sm">
+          <Button
+            type="submit"
+            colorScheme="primary"
+            size="sm"
+            isDisabled={!!uploadCtx?.isUploading}
+            title={uploadCtx?.isUploading ? "Upload in progress" : undefined}
+          >
             Comment
           </Button>
         </ButtonGroup>
@@ -100,5 +111,17 @@ export default function GenericCommentForm({
         </Box>
       )}
     </Flex>
+  );
+}
+
+export default function GenericCommentForm(props: {
+  event: NostrEvent;
+  onSubmitted?: (comment: NostrEvent) => void;
+  onCancel?: () => void;
+}) {
+  return (
+    <UploadProvider>
+      <GenericCommentFormInner {...props} />
+    </UploadProvider>
   );
 }

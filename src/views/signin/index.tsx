@@ -1,6 +1,7 @@
 import { Avatar, Flex, Heading } from "@chakra-ui/react";
-import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useActiveAccount } from "applesauce-react/hooks";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
+import RouterLink from "../../components/router-link";
 
 export default function SigninView() {
   const current = useActiveAccount();
@@ -9,16 +10,14 @@ export default function SigninView() {
   if (current) return <Navigate to={location.state?.from ?? "/"} replace />;
 
   return (
-    <>
-      <Flex w="full" justifyContent="center">
-        <Flex direction="column" alignItems="center" gap="2" maxW="md" w="full" px="4" py="10">
-          <Avatar src="/apple-touch-icon.png" size="lg" flexShrink={0} />
-          <Heading size="lg" mb="2">
-            Sign in
-          </Heading>
-          <Outlet />
+    <Flex w="full" minH="100vh" overflowY="auto" justifyContent="center" px="4" py="10">
+      <Flex direction="column" gap="4" maxW="lg" w="full">
+        <Flex as={RouterLink} to="/" alignItems="center" gap="3">
+          <Avatar src="/apple-touch-icon.png" size="md" flexShrink={0} />
+          <Heading size="lg">Sign in</Heading>
         </Flex>
+        <Outlet />
       </Flex>
-    </>
+    </Flex>
   );
 }

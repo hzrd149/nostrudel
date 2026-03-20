@@ -3,7 +3,8 @@ import { useActiveAccount, useObservableMemo } from "applesauce-react/hooks";
 import { kinds, NostrEvent } from "nostr-tools";
 import { Navigate, useParams } from "react-router-dom";
 
-import { getSeenRelays, normalizeURL } from "applesauce-core/helpers";
+import { normalizeURL } from "applesauce-core/helpers";
+import { getSeenRelays } from "applesauce-core/helpers";
 import { useCallback } from "react";
 import SimpleView from "../../../components/layout/presets/simple-view";
 import RelayFavicon from "../../../components/relay/relay-favicon";

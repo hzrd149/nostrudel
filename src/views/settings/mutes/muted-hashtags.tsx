@@ -12,7 +12,7 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
-import { useActionHub, useActiveAccount, useEventModel } from "applesauce-react/hooks";
+import { useActionRunner, useActiveAccount, useEventModel } from "applesauce-react/hooks";
 import { useCallback, useState } from "react";
 
 import { MuteHashtag, UnmuteHashtag } from "applesauce-actions/actions";
@@ -23,7 +23,7 @@ import { usePublishEvent } from "../../../providers/global/publish-provider";
 export default function MutedHashtagsSection() {
   const account = useActiveAccount();
   const publish = usePublishEvent();
-  const actions = useActionHub();
+  const actions = useActionRunner();
   const [newHashtag, setNewHashtag] = useState("");
 
   const muted = useEventModel(MutesQuery, account && [account?.pubkey]);

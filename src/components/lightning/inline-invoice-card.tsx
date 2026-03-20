@@ -14,7 +14,7 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
-import { parseBolt11 } from "applesauce-core/helpers";
+import { parseBolt11 } from "applesauce-common/helpers";
 
 import { humanReadableSats } from "../../helpers/lightning";
 import { CopyIconButton } from "../copy-icon-button";

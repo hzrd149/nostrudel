@@ -1,5 +1,5 @@
 import { Alert, AlertIcon, Button, ButtonGroup, Flex, IconButton, Link, Spacer, useDisclosure } from "@chakra-ui/react";
-import { ThreadItem } from "applesauce-core/models";
+import { ThreadItem } from "applesauce-common/models";
 import { memo, useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
 

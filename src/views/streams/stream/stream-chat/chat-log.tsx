@@ -1,6 +1,6 @@
 import { Flex, FlexProps } from "@chakra-ui/react";
 import { css } from "@emotion/react";
-import { isValidZap } from "applesauce-core/helpers";
+import { isValidZap } from "applesauce-common/helpers";
 import { kinds, NostrEvent } from "nostr-tools";
 import { forwardRef } from "react";
 

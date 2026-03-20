@@ -1,14 +1,8 @@
 import { bech32 } from "@scure/base";
 import { NostrEvent, utils } from "nostr-tools";
-import {
-  AddressPointer,
-  EventPointer,
-  getZapPayment,
-  isETag,
-  isPTag,
-  ProfileContent,
-  ZapEvent,
-} from "applesauce-core/helpers";
+import { AddressPointer, EventPointer, isETag, isPTag } from "applesauce-core/helpers";
+import { ProfileContent } from "applesauce-core/helpers";
+import { getZapPayment, ZapEvent } from "applesauce-common/helpers";
 
 // based on https://github.com/nbd-wtf/nostr-tools/blob/master/nip57.ts
 export async function getZapEndpoint(metadata: ProfileContent): Promise<null | string> {

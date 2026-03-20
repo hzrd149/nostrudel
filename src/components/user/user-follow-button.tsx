@@ -12,8 +12,8 @@ import {
 } from "@chakra-ui/react";
 import { AddUserToFollowSet, FollowUser, RemoveUserFromFollowSet, UnfollowUser } from "applesauce-actions/actions";
 import { getEventUID, getReplaceableAddress, getReplaceableIdentifier } from "applesauce-core/helpers";
-import { isProfilePointerInList } from "applesauce-core/helpers/lists";
-import { useActionHub, useActiveAccount } from "applesauce-react/hooks";
+import { isProfilePointerInList } from "applesauce-common/helpers/lists";
+import { useActionRunner, useActiveAccount } from "applesauce-react/hooks";
 import { kinds } from "nostr-tools";
 
 import { getListTitle } from "../../helpers/nostr/lists";
@@ -30,7 +30,7 @@ function UsersLists({ pubkey }: { pubkey: string }) {
   const publish = usePublishEvent();
   const account = useActiveAccount()!;
   const newListModal = useDisclosure();
-  const actions = useActionHub();
+  const actions = useActionRunner();
 
   const lists = useUserSets(account.pubkey)?.filter((list) => list.kind === kinds.Followsets) ?? [];
 
@@ -40,10 +40,14 @@ function UsersLists({ pubkey }: { pubkey: string }) {
     async (cords: string | string[]) => {
       if (!Array.isArray(cords)) return;
 
-      const addToList = lists.find((list) => !inLists.includes(list) && cords.includes(getReplaceableAddress(list)));
-      const removeFromList = lists.find(
-        (list) => inLists.includes(list) && !cords.includes(getReplaceableAddress(list)),
-      );
+      const addToList = lists.find((list) => {
+        const addr = getReplaceableAddress(list);
+        return addr && !inLists.includes(list) && cords.includes(addr); // v5: can be null
+      });
+      const removeFromList = lists.find((list) => {
+        const addr = getReplaceableAddress(list);
+        return addr && inLists.includes(list) && !cords.includes(addr); // v5: can be null
+      });
 
       if (addToList) {
         await actions
@@ -64,14 +68,18 @@ function UsersLists({ pubkey }: { pubkey: string }) {
         <MenuOptionGroup
           title="Lists"
           type="checkbox"
-          value={inLists.map((list) => getReplaceableAddress(list))}
+          value={inLists.map((list) => getReplaceableAddress(list)).filter((addr): addr is string => addr !== null)} // v5: filter nulls
           onChange={handleChange.run}
         >
-          {lists.map((list) => (
-            <MenuItemOption key={getEventUID(list)} value={getReplaceableAddress(list)} isTruncated maxW="90vw">
-              {getListTitle(list)}
-            </MenuItemOption>
-          ))}
+          {lists.map((list) => {
+            const addr = getReplaceableAddress(list);
+            if (!addr) return null; // v5: can be null
+            return (
+              <MenuItemOption key={getEventUID(list)} value={addr} isTruncated maxW="90vw">
+                {getListTitle(list)}
+              </MenuItemOption>
+            );
+          })}
         </MenuOptionGroup>
       )}
       <MenuDivider />
@@ -94,7 +102,7 @@ export type UserFollowButtonProps = { pubkey: string; showLists?: boolean } & Om
 export function SimpleUserFollowButton({ pubkey, ...props }: UserFollowButtonProps) {
   const account = useActiveAccount()!;
   const contacts = useUserContactList(account?.pubkey);
-  const actions = useActionHub();
+  const actions = useActionRunner();
   const publish = usePublishEvent();
 
   const isFollowing = !!contacts && isProfilePointerInList(contacts, pubkey);
@@ -125,7 +133,7 @@ export function UserFollowButton({ pubkey, showLists, ...props }: UserFollowButt
   const contacts = useUserContactList(account?.pubkey);
   const { isMuted, unmute } = useUserMuteActions(pubkey);
   const { openModal } = useMuteModalContext();
-  const actions = useActionHub();
+  const actions = useActionRunner();
 
   const isFollowing = !!contacts && isProfilePointerInList(contacts, pubkey);
 

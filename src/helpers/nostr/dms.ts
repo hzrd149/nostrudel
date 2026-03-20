@@ -59,4 +59,4 @@ export function sortConversationsByLastReceived(conversations: KnownConversation
   });
 }
 
-export { groupMessageEvents as groupMessages } from "applesauce-core/helpers/messages";
+export { groupMessageEvents as groupMessages } from "applesauce-common/helpers";

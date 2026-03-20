@@ -20,7 +20,11 @@ import { NostrEvent } from "nostr-tools";
 import { useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
 
-import { getCoordinateFromAddressPointer } from "applesauce-core/helpers";
+import { AddressPointer } from "applesauce-core/helpers";
+
+// v5: getCoordinateFromAddressPointer was removed
+const getCoordinateFromAddressPointer = (pointer: AddressPointer) =>
+  `${pointer.kind}:${pointer.pubkey}:${pointer.identifier}`;
 import Timestamp from "../../../components/timestamp";
 import UserAvatarLink from "../../../components/user/user-avatar-link";
 import UserLink from "../../../components/user/user-link";

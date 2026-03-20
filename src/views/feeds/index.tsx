@@ -1,5 +1,6 @@
 import { AvatarGroup, Box, Flex, Heading, Image, Link, SimpleGrid, Text } from "@chakra-ui/react";
-import { getEventUID, getProfilePointersFromList, getTagValue } from "applesauce-core/helpers";
+import { getEventUID, getTagValue } from "applesauce-core/helpers";
+import { getProfilePointersFromList } from "applesauce-common/helpers";
 import { useActiveAccount } from "applesauce-react/hooks";
 import { kinds, NostrEvent } from "nostr-tools";
 import { useMemo } from "react";

@@ -1,7 +1,7 @@
 import { AddIcon } from "@chakra-ui/icons";
 import { Alert, AlertIcon, Box, Button, Card, Heading, HStack, Input, Link, Text, VStack } from "@chakra-ui/react";
 import { MuteThread, UnmuteThread } from "applesauce-actions/actions";
-import { useActionHub, useActiveAccount, useEventModel } from "applesauce-react/hooks";
+import { useActionRunner, useActiveAccount, useEventModel } from "applesauce-react/hooks";
 import { nip19 } from "nostr-tools";
 import { neventEncode } from "nostr-tools/nip19";
 import { useCallback, useMemo, useState } from "react";
@@ -37,7 +37,7 @@ function MutedThread({ thread, onRemove }: { thread: string; onRemove: (thread: 
 export default function MutedThreadsSection() {
   const account = useActiveAccount();
   const publish = usePublishEvent();
-  const actions = useActionHub();
+  const actions = useActionRunner();
   const [newNevent, setNewNevent] = useState("");
   const [error, setError] = useState<string | null>(null);
 

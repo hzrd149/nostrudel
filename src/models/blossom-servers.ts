@@ -1,6 +1,6 @@
 import { Model } from "applesauce-core";
-import { BLOSSOM_SERVER_LIST_KIND } from "applesauce-core/helpers";
-import { UserBlossomServersModel } from "applesauce-core/models";
+import { BLOSSOM_SERVER_LIST_KIND } from "applesauce-common/helpers";
+import { UserBlossomServersModel } from "applesauce-common/models";
 import { ProfilePointer } from "nostr-tools/nip19";
 import { ignoreElements, merge } from "rxjs";
 

@@ -1,4 +1,4 @@
-import { FileMetadata } from "applesauce-core/helpers";
+import { FileMetadata } from "applesauce-common/helpers";
 import { useActiveAccount } from "applesauce-react/hooks";
 
 import { EventTemplate } from "nostr-tools";

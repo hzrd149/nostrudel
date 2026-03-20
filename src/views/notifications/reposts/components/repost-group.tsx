@@ -1,6 +1,7 @@
 import { AvatarGroup, Flex, LinkBox, Text } from "@chakra-ui/react";
-import { getSharedEventPointer, getTagValue, naddrEncode, neventEncode } from "applesauce-core/helpers";
-import { getEmbededSharedEvent } from "applesauce-core/helpers/share";
+import { getTagValue, naddrEncode, neventEncode } from "applesauce-core/helpers";
+import { getSharedEventPointer } from "applesauce-common/helpers";
+import { getEmbededSharedEvent } from "applesauce-common/helpers/share";
 import { memo, useEffect, useMemo } from "react";
 
 import HoverLinkOverlay from "../../../../components/hover-link-overlay";

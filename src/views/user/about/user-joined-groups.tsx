@@ -1,5 +1,5 @@
 import { Button, Flex, Heading, SimpleGrid, useDisclosure } from "@chakra-ui/react";
-import { encodeGroupPointer } from "applesauce-core/helpers/groups";
+import { encodeGroupPointer } from "applesauce-common/helpers/groups";
 
 import { ErrorBoundary } from "../../../components/error-boundary";
 import GroupCard from "../../../components/groups/group-card";

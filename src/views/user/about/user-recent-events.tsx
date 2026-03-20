@@ -22,7 +22,7 @@ import { useReadRelays } from "../../../hooks/use-client-relays";
 import AlertTriangle from "../../../components/icons/alert-triangle";
 import MessageSquare02 from "../../../components/icons/message-square-02";
 import Camera01 from "../../../components/icons/camera-01";
-import { PICTURE_POST_KIND } from "applesauce-core/helpers";
+import { PICTURE_POST_KIND } from "applesauce-common/helpers";
 
 type KnownKind = {
   kind: number;

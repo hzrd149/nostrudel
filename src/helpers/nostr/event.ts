@@ -1,4 +1,5 @@
-import { getNip10References, getOrComputeCachedValue, isDTag, isReplaceable } from "applesauce-core/helpers";
+import { getOrComputeCachedValue, isDTag, isReplaceable } from "applesauce-core/helpers";
+import { getNip10References } from "applesauce-common/helpers";
 import dayjs from "dayjs";
 import { EventTemplate, kinds, NostrEvent } from "nostr-tools";
 import { AddressPointer, EventPointer } from "nostr-tools/nip19";
@@ -101,7 +102,8 @@ export type CustomAddressPointer = Omit<AddressPointer, "identifier"> & {
   identifier?: string;
 };
 
-export { parseCoordinate } from "applesauce-core/helpers/pointers";
+// parseCoordinate was renamed to parseReplaceableAddress in v5
+export { parseReplaceableAddress as parseCoordinate } from "applesauce-core/helpers/pointers";
 
 export function sortByDate<T extends { created_at: number }>(a: T, b: T) {
   return b.created_at - a.created_at;

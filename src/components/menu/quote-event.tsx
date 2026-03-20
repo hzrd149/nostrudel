@@ -1,5 +1,5 @@
 import { MenuItem, useToast } from "@chakra-ui/react";
-import { getZapSender } from "applesauce-core/helpers";
+import { getZapSender } from "applesauce-common/helpers";
 import { kinds, nip19, NostrEvent } from "nostr-tools";
 import { useCallback, useContext, useMemo } from "react";
 

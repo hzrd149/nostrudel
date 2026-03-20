@@ -1,7 +1,8 @@
 import { Alert, AlertIcon, AlertTitle, Button, Flex, Spinner, useDisclosure } from "@chakra-ui/react";
 import { NostrEvent, kinds, nip19 } from "nostr-tools";
 import { Navigate, useParams } from "react-router-dom";
-import { DecodeResult, PICTURE_POST_KIND } from "applesauce-core/helpers";
+import { DecodeResult } from "applesauce-core/helpers";
+import { PICTURE_POST_KIND } from "applesauce-common/helpers";
 
 import GenericCommentForm from "../../components/comment/generic-comment-form";
 import { GenericComments } from "../../components/comment/generic-comments";

@@ -21,7 +21,7 @@ import {
   RemoveBlossomServer,
   SetDefaultBlossomServer,
 } from "applesauce-actions/actions";
-import { useActionHub, useActiveAccount } from "applesauce-react/hooks";
+import { useActionRunner, useActiveAccount } from "applesauce-react/hooks";
 import { areServersEqual, USER_BLOSSOM_SERVER_LIST_KIND } from "blossom-client-sdk";
 import { useForm } from "react-hook-form";
 
@@ -37,7 +37,7 @@ import { usePublishEvent } from "../../../providers/global/publish-provider";
 import BlossomServerLink from "../../../components/blossom/blossom-server-link";
 
 function ServerRow({ server, index }: { server: string | URL; index: number }) {
-  const actions = useActionHub();
+  const actions = useActionRunner();
   const publish = usePublishEvent();
 
   const removeServer = useAsyncAction(
@@ -96,7 +96,7 @@ function AddServerForm() {
   const toast = useToast();
   const servers = useUsersBlossomServers(account.pubkey);
   const publish = usePublishEvent();
-  const actions = useActionHub();
+  const actions = useActionRunner();
 
   const { register, handleSubmit, reset } = useForm({ defaultValues: { server: "" } });
 
@@ -140,7 +140,7 @@ function AddServerForm() {
 function MissingServers() {
   const account = useActiveAccount()!;
   const publish = usePublishEvent();
-  const actions = useActionHub();
+  const actions = useActionRunner();
 
   const event = useReplaceableEvent({ kind: USER_BLOSSOM_SERVER_LIST_KIND, pubkey: account.pubkey });
   const addServer = useAsyncAction(

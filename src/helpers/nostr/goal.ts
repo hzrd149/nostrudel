@@ -11,25 +11,26 @@ import { decode } from "nostr-tools/nip19";
 
 /** @deprecated */
 export function getPointerFromTag(tag: string[]): ReturnType<typeof decode> | null {
-  try {
-    switch (tag[0]) {
-      case "e":
-        return { type: "nevent", data: getEventPointerFromETag(tag) };
-
-      case "a":
-        return {
-          type: "naddr",
-          data: getAddressPointerFromATag(tag),
-        };
-
-      case "p":
-        return { type: "nprofile", data: getProfilePointerFromPTag(tag) };
-
-      // NIP-18 quote tags
-      case "q":
-        return { type: "nevent", data: getEventPointerFromETag(tag) };
+  // v5: decode functions return null instead of throwing
+  switch (tag[0]) {
+    case "e": {
+      const pointer = getEventPointerFromETag(tag);
+      return pointer ? { type: "nevent", data: pointer } : null;
     }
-  } catch (error) {}
+    case "a": {
+      const pointer = getAddressPointerFromATag(tag);
+      return pointer ? { type: "naddr", data: pointer } : null;
+    }
+    case "p": {
+      const pointer = getProfilePointerFromPTag(tag);
+      return pointer ? { type: "nprofile", data: pointer } : null;
+    }
+    // NIP-18 quote tags
+    case "q": {
+      const pointer = getEventPointerFromETag(tag);
+      return pointer ? { type: "nevent", data: pointer } : null;
+    }
+  }
 
   return null;
 }

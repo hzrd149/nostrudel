@@ -1,5 +1,5 @@
 import { Box, ButtonGroup, Flex } from "@chakra-ui/react";
-import { COMMENT_KIND } from "applesauce-core/helpers";
+import { COMMENT_KIND } from "applesauce-common/helpers";
 import { useActiveAccount, useObservableEagerState } from "applesauce-react/hooks";
 import { kinds } from "nostr-tools";
 import { useMemo } from "react";

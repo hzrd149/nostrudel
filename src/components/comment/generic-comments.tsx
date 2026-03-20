@@ -10,8 +10,9 @@ import {
   IconButton,
   useDisclosure,
 } from "@chakra-ui/react";
-import { COMMENT_KIND, getEventUID } from "applesauce-core/helpers";
-import { CommentsModel, RepliesModel } from "applesauce-core/models";
+import { getEventUID } from "applesauce-core/helpers";
+import { COMMENT_KIND } from "applesauce-common/helpers";
+import { CommentsModel, RepliesModel } from "applesauce-common/models";
 import { useEventModel } from "applesauce-react/hooks";
 import { NostrEvent } from "nostr-tools";
 import { isAddressableKind } from "nostr-tools/kinds";

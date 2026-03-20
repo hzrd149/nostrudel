@@ -9,7 +9,7 @@ import {
   useBreakpointValue,
   useDisclosure,
 } from "@chakra-ui/react";
-import { ThreadItem, ThreadModel } from "applesauce-core/models";
+import { ThreadItem, ThreadModel } from "applesauce-common/models";
 import { NostrEvent } from "nostr-tools";
 import { memo, useState } from "react";
 

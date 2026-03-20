@@ -1,6 +1,6 @@
 import { MenuItem } from "@chakra-ui/react";
 import { UnmuteUser } from "applesauce-actions/actions";
-import { useActionHub, useActiveAccount } from "applesauce-react/hooks";
+import { useActionRunner, useActiveAccount } from "applesauce-react/hooks";
 import { NostrEvent } from "nostr-tools";
 
 import useAsyncAction from "../../hooks/use-async-action";
@@ -13,7 +13,7 @@ export default function MuteUserMenuItem({ event }: { event: NostrEvent }) {
   const account = useActiveAccount();
   const { isMuted } = useUserMuteActions(event.pubkey);
   const { openModal } = useMuteModalContext();
-  const actions = useActionHub();
+  const actions = useActionRunner();
   const publish = usePublishEvent();
 
   if (account?.pubkey === event.pubkey) return null;

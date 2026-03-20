@@ -1,6 +1,6 @@
 import { Model } from "applesauce-core";
-import { ChannelMetadataContent } from "applesauce-core/helpers";
-import { ChannelMetadataModel } from "applesauce-core/models";
+import { ChannelMetadataContent } from "applesauce-common/helpers";
+import { ChannelMetadataModel } from "applesauce-common/models";
 import { defer, ignoreElements, mergeWith } from "rxjs";
 import { channelMetadataLoader } from "../services/loaders";
 import { NostrEvent } from "nostr-tools";

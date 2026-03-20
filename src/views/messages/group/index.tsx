@@ -1,17 +1,17 @@
 import { AvatarGroup, ButtonGroup, Flex, IconButton, Text } from "@chakra-ui/react";
 import {
-  createConversationIdentifier,
-  getConversationParticipants,
-  getExpirationTimestamp,
+  getConversationIdentifierFromMessage as createConversationIdentifier,
   getRumorGiftWraps,
+  getConversationParticipants,
   Rumor,
-} from "applesauce-core/helpers";
+} from "applesauce-common/helpers";
+import { getExpirationTimestamp } from "applesauce-core/helpers";
 import { useActiveAccount, useEventModel, useObservableState } from "applesauce-react/hooks";
 import { NostrEvent } from "nostr-tools";
 import { memo, useCallback, useContext, useEffect, useMemo } from "react";
 import { Navigate, UNSAFE_DataRouterContext, useLocation, useNavigate, useParams } from "react-router-dom";
 
-import { GiftWrapsModel, WrappedMessagesGroup } from "applesauce-core/models";
+import { GiftWrapsModel, WrappedMessagesGroup } from "applesauce-common/models";
 import { SettingsIcon } from "../../../components/icons";
 import SimpleView from "../../../components/layout/presets/simple-view";
 import RequireActiveAccount from "../../../components/router/require-active-account";
@@ -156,8 +156,9 @@ export default function DirectMessageGroupView() {
       .map(normalizeToHexPubkey)
       .filter((p) => !!p) as string[];
     if (account) pubkeys.push(account.pubkey);
-    return createConversationIdentifier(pubkeys);
-  }, [group]);
+    // v5: Just return sorted pubkeys as conversation ID
+    return pubkeys.sort().join(",");
+  }, [group, account]);
 
   return (
     <RequireActiveAccount>

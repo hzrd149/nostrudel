@@ -1,4 +1,5 @@
-import { COMMENT_KIND, getEventPointerFromQTag } from "applesauce-core/helpers";
+import { getEventPointerFromQTag, EventPointer } from "applesauce-core/helpers";
+import { COMMENT_KIND } from "applesauce-common/helpers";
 import { getParsedContent } from "applesauce-content/text";
 import { mapEventsToTimeline, withImmediateValueOrDefault } from "applesauce-core";
 import { kinds, NostrEvent } from "nostr-tools";
@@ -11,7 +12,11 @@ import { eventStore } from "../event-store";
 /** Check if an event is a quote (has "q" tag or content tag refs with "e" tag) */
 export function isQuoteEvent(event: NostrEvent, pubkey: string): boolean {
   // Check if any of the "q" tags directly mention the user
-  const quotes = event.tags.filter((t) => t[0] === "q" && t[1]).map(getEventPointerFromQTag);
+  const quotes = event.tags
+    .filter((t) => t[0] === "q" && t[1])
+    .map(getEventPointerFromQTag)
+    .filter((q): q is EventPointer => q !== null); // v5: filter nulls
+
   if (
     quotes.some(
       (q) =>

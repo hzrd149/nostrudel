@@ -14,6 +14,7 @@ export default function useUserPinList(pubkey?: string, relays: string[] = [], f
     ? list.tags
         .filter((tag) => isATag(tag) || isETag(tag))
         .map((tag) => (isATag(tag) ? getAddressPointerFromATag(tag) : getEventPointerFromETag(tag)))
+        .filter((p): p is NonNullable<typeof p> => p !== null) // v5: filter nulls from decode functions
     : [];
 
   return { list, pointers };

@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { IconButtonProps } from "@chakra-ui/react";
-import { Emoji } from "applesauce-core/helpers";
+import { Emoji } from "applesauce-common/helpers";
 
 import SelectReactionButton from "./select-reaction-button";
 

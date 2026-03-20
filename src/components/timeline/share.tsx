@@ -1,5 +1,5 @@
 import { Flex, Heading, Text } from "@chakra-ui/react";
-import { getEmbededSharedEvent } from "applesauce-core/helpers/share";
+import { getEmbededSharedEvent } from "applesauce-common/helpers/share";
 import { nip18, NostrEvent } from "nostr-tools";
 import { memo, useEffect } from "react";
 

@@ -13,7 +13,7 @@ import {
   Spacer,
   Text,
 } from "@chakra-ui/react";
-import { addRelayTag, removeRelayTag } from "applesauce-factory/operations/tag";
+import { addRelayTag, removeRelayTag } from "applesauce-core/operations/tag/relay";
 import { useActiveAccount, useEventFactory, useObservableEagerState } from "applesauce-react/hooks";
 import { kinds } from "nostr-tools";
 

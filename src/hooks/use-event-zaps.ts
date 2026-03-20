@@ -1,4 +1,4 @@
-import { isValidZap } from "applesauce-core/helpers";
+import { isValidZap } from "applesauce-common/helpers";
 import { useEventModel } from "applesauce-react/hooks";
 import { NostrEvent } from "nostr-tools";
 import EventZapsQuery from "../models/event-zaps";

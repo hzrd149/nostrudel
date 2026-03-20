@@ -1,4 +1,4 @@
-import { Emoji } from "applesauce-core/helpers";
+import { Emoji } from "applesauce-common/helpers";
 import { useActiveAccount, useEventFactory } from "applesauce-react/hooks";
 import { NostrEvent } from "nostr-tools";
 import { useCallback } from "react";

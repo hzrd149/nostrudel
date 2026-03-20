@@ -16,8 +16,8 @@ import {
   WikiIcon,
 } from "../icons";
 import FileAttachment01 from "../icons/file-attachment-01";
+import GamingPad01 from "../icons/gaming-pad-01";
 import PuzzlePiece01 from "../icons/puzzle-piece-01";
-import Rocket02 from "../icons/rocket-02";
 import UploadCloud01 from "../icons/upload-cloud-01";
 import Users01 from "../icons/users-01";
 import Users02 from "../icons/users-02";
@@ -35,7 +35,6 @@ export type App = {
 };
 
 export const internalApps: App[] = [
-  { title: "Launchpad", description: "Quick account overview", icon: Rocket02, id: "launchpad", to: "/launchpad" },
   { title: "Notes", description: "Short text posts from your friends", icon: NotesIcon, id: "notes", to: "/notes" },
   { title: "Feeds", description: "Discover new feeds", icon: PuzzlePiece01, id: "feeds", to: "/feeds" },
   {
@@ -83,6 +82,7 @@ export const internalApps: App[] = [
     to: "/channels",
   },
   { title: "Torrents", description: "Browse torrents on nostr", icon: TorrentIcon, id: "torrents", to: "/torrents" },
+  { title: "Webxdc", description: "Play webxdc apps over nostr", icon: GamingPad01, id: "webxdc", to: "/webxdc" },
   { title: "Emojis", description: "Create custom emoji packs", icon: EmojiPacksIcon, id: "emojis", to: "/emojis" },
   { title: "Bookmarks", description: "Manage your bookmarks", icon: BookmarkIcon, id: "bookmarks", to: "/bookmarks" },
   {
@@ -206,6 +206,6 @@ export const externalTools: App[] = [
 ];
 
 export const defaultAnonFavoriteApps = ["notes", "discover", "search", "articles", "streams"];
-export const defaultUserFavoriteApps = ["launchpad", "notes", "discover", "notifications", "messages", "search"];
+export const defaultUserFavoriteApps = ["notes", "discover", "notifications", "messages", "search"];
 
 export const allApps = [...internalApps, ...internalTools, ...externalTools];

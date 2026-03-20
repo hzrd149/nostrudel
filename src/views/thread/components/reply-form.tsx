@@ -1,12 +1,13 @@
 import { Box, Button, ButtonGroup, Flex, Input, Switch, useDisclosure } from "@chakra-ui/react";
-import { Emoji } from "applesauce-core/helpers";
-import { ThreadItem } from "applesauce-core/models";
+import { Emoji } from "applesauce-common/helpers";
+import { ThreadItem } from "applesauce-common/models";
 import { useEventFactory } from "applesauce-react/hooks";
 import { kinds, NostrEvent } from "nostr-tools";
 import { useMemo, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { useAsync, useThrottle } from "react-use";
 
+import UploadStatus from "../../../components/upload-status";
 import InsertGifButton from "../../../components/gif/insert-gif-button";
 import { ChevronDownIcon, ChevronUpIcon } from "../../../components/icons";
 import MagicTextArea, { RefType } from "../../../components/magic-textarea";
@@ -17,6 +18,7 @@ import useTextAreaUploadFile, { useTextAreaInsertTextWithForm } from "../../../h
 import { useContextEmojis } from "../../../providers/global/emoji-provider";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
 import { ContentSettingsProvider } from "../../../providers/local/content-settings";
+import UploadProvider, { useUploadContext } from "../../../providers/local/upload-provider";
 import InsertImageButton from "../../new/note/insert-image-button";
 
 export type ReplyFormProps = {
@@ -26,7 +28,7 @@ export type ReplyFormProps = {
   onSubmitted?: (event: NostrEvent) => void;
 };
 
-export default function ReplyForm({ item, onCancel, onSubmitted, replyKind = kinds.ShortTextNote }: ReplyFormProps) {
+function ReplyFormInner({ item, onCancel, onSubmitted, replyKind = kinds.ShortTextNote }: ReplyFormProps) {
   const publish = usePublishEvent();
   const factory = useEventFactory();
   const emojis = useContextEmojis();
@@ -50,6 +52,8 @@ export default function ReplyForm({ item, onCancel, onSubmitted, replyKind = kin
   );
 
   watch("content");
+
+  const uploadCtx = useUploadContext();
 
   const textAreaRef = useRef<RefType | null>(null);
   const insertText = useTextAreaInsertTextWithForm(textAreaRef, getValues, setValue);
@@ -94,6 +98,7 @@ export default function ReplyForm({ item, onCancel, onSubmitted, replyKind = kin
           if ((e.ctrlKey || e.metaKey) && e.key === "Enter" && formRef.current) formRef.current.requestSubmit();
         }}
       />
+      <UploadStatus />
       <Flex gap="2" alignItems="center">
         <ButtonGroup size="sm">
           <InsertImageButton onUploaded={insertText} aria-label="Upload image" />
@@ -109,7 +114,13 @@ export default function ReplyForm({ item, onCancel, onSubmitted, replyKind = kin
         </ButtonGroup>
         <ButtonGroup size="sm" ml="auto">
           {onCancel && <Button onClick={onCancel}>Cancel</Button>}
-          <Button type="submit" colorScheme="primary" size="sm">
+          <Button
+            type="submit"
+            colorScheme="primary"
+            size="sm"
+            isDisabled={!!uploadCtx?.isUploading}
+            title={uploadCtx?.isUploading ? "Upload in progress" : undefined}
+          >
             Submit
           </Button>
         </ButtonGroup>
@@ -135,5 +146,13 @@ export default function ReplyForm({ item, onCancel, onSubmitted, replyKind = kin
         </Box>
       )}
     </Flex>
+  );
+}
+
+export default function ReplyForm(props: ReplyFormProps) {
+  return (
+    <UploadProvider>
+      <ReplyFormInner {...props} />
+    </UploadProvider>
   );
 }

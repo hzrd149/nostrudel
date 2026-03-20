@@ -15,7 +15,8 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
-import { isLegacyMessageUnlocked, unlockLegacyMessage } from "applesauce-core/helpers";
+import { isLegacyMessageUnlocked } from "applesauce-common/helpers";
+import { unlockLegacyMessage } from "applesauce-common/helpers";
 import { useActiveAccount, useEventModel } from "applesauce-react/hooks";
 
 import RelayFavicon from "../../../../components/relay/relay-favicon";
@@ -28,7 +29,7 @@ import UserName from "../../../../components/user/user-name";
 import { useUserInbox } from "../../../../hooks/use-user-mailboxes";
 import { DirectMessageRelaysModel } from "../../../../models/messages";
 import InboxesStatusSection from "../../components/inboxes-status-section";
-import { LegacyMessagesGroup } from "applesauce-core/models";
+import { LegacyMessagesGroup } from "applesauce-common/models";
 import useAsyncAction from "../../../../hooks/use-async-action";
 import { useMemo } from "react";
 import RelayLink from "../../../../components/relay/relay-link";

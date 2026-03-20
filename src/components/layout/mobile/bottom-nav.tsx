@@ -4,7 +4,6 @@ import { Link as RouterLink } from "react-router-dom";
 
 import { DirectMessagesIcon, NotesIcon, NotificationsIcon, PlusCircleIcon, SearchIcon } from "../../icons";
 import useRootPadding from "../../../hooks/use-root-padding";
-import Rocket02 from "../../icons/rocket-02";
 import UserAvatar from "../../user/user-avatar";
 import NavDrawer from "./nav-drawer";
 
@@ -66,7 +65,6 @@ export default function MobileBottomNav() {
           size="md"
           to="/notifications"
         />
-        <IconButton as={RouterLink} icon={<Rocket02 boxSize={6} />} aria-label="Launchpad" to="/launchpad" />
       </Flex>
       <NavDrawer isOpen={drawer.isOpen} onClose={drawer.onClose} />
     </>

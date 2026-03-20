@@ -1,5 +1,6 @@
 import { CardProps, Spinner } from "@chakra-ui/react";
-import { DecodeResult, isValidZap } from "applesauce-core/helpers";
+import { DecodeResult } from "applesauce-core/helpers";
+import { isValidZap } from "applesauce-common/helpers";
 import { kinds, NostrEvent } from "nostr-tools";
 import { lazy, Suspense } from "react";
 

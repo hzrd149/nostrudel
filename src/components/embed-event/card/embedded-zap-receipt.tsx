@@ -1,14 +1,13 @@
 import { Box, ButtonGroup, Card, CardBody, CardHeader, CardProps, LinkBox, Text } from "@chakra-ui/react";
+import { DecodeResult, KnownEvent } from "applesauce-core/helpers";
+import { getZapAddressPointer } from "applesauce-common/helpers";
 import {
-  DecodeResult,
-  getZapAddressPointer,
   getZapEventPointer,
   getZapPayment,
   getZapRecipient,
   getZapRequest,
   getZapSender,
-  KnownEvent,
-} from "applesauce-core/helpers";
+} from "applesauce-common/helpers";
 import { kinds } from "nostr-tools";
 import { useMemo } from "react";
 

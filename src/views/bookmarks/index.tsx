@@ -5,7 +5,7 @@ import { AddressPointer, EventPointer } from "nostr-tools/nip19";
 import { useParams } from "react-router-dom";
 
 import { UnbookmarkEvent } from "applesauce-actions/actions";
-import { useActionHub, useActiveAccount } from "applesauce-react/hooks";
+import { useActionRunner, useActiveAccount } from "applesauce-react/hooks";
 import { EmbedEventCard } from "../../components/embed-event/card";
 import SimpleView from "../../components/layout/presets/simple-view";
 import TimelineItem from "../../components/timeline/timeline-item";
@@ -20,7 +20,7 @@ import { usePublishEvent } from "../../providers/global/publish-provider";
 import ListMenu from "../lists/components/list-menu";
 
 function RemoveBookmarkButton({ event }: { event: NostrEvent }) {
-  const actions = useActionHub();
+  const actions = useActionRunner();
   const publish = usePublishEvent();
 
   const remove = useAsyncAction(async () => {
@@ -87,9 +87,11 @@ function BookmarksPage({ pubkey }: { pubkey: string }) {
         .map((tag) => {
           if (isETag(tag)) {
             const pointer = getEventPointerFromETag(tag);
+            if (!pointer) return null; // v5: can return null
             return <BookmarkEventItem key={pointer.id} pointer={pointer} />;
           } else if (isATag(tag)) {
             const pointer = getAddressPointerFromATag(tag);
+            if (!pointer) return null; // v5: can return null
             return <BookmarkAddressItem key={tag[1]} pointer={pointer} />;
           }
           return null;

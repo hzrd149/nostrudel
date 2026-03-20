@@ -1,6 +1,6 @@
 import { Alert, AlertIcon, Button, Flex, Text } from "@chakra-ui/react";
-import { isGiftWrapUnlocked, unlockGiftWrap } from "applesauce-core/helpers/gift-wraps";
-import { GiftWrapsModel } from "applesauce-core/models";
+import { isGiftWrapUnlocked, unlockGiftWrap } from "applesauce-common/helpers";
+import { GiftWrapsModel } from "applesauce-common/models";
 import { useActiveAccount, useEventModel } from "applesauce-react/hooks";
 
 import { UnlockIcon } from "../../../components/icons";

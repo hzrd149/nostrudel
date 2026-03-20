@@ -40,7 +40,10 @@ export function getBadgeThumbnails(event: NostrEvent) {
 }
 
 export function getBadgeAwardPubkeys(event: NostrEvent) {
-  return event.tags.filter(isPTag).map(getProfilePointerFromPTag);
+  return event.tags
+    .filter(isPTag)
+    .map(getProfilePointerFromPTag)
+    .filter((p): p is { pubkey: string; relays?: string[] } => p !== null); // v5: filter nulls
 }
 export function getBadgeAwardBadge(event: NostrEvent) {
   const badgeCord = event.tags.find(isATag)?.[1];
@@ -65,7 +68,12 @@ export function getProfileBadges(profileBadges: NostrEvent): ProfileBadge[] {
       if (isATag(tag)) {
         lastAtag = tag;
       } else if (isETag(tag) && lastAtag && !seen.has(lastAtag[1])) {
-        badges.push({ badge: getAddressPointerFromATag(lastAtag), award: getEventPointerFromETag(tag) });
+        const badge = getAddressPointerFromATag(lastAtag);
+        const award = getEventPointerFromETag(tag);
+        if (badge && award) {
+          // v5: these can return null
+          badges.push({ badge, award });
+        }
         seen.add(lastAtag[1]);
         lastAtag = undefined;
       }

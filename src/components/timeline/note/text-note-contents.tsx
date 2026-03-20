@@ -24,6 +24,7 @@ import {
   renderArchiveOrgURL,
   renderStreamUrl,
   renderNostrAppWebLink,
+  renderWebxdcUrl,
 } from "../../content/links";
 import { LightboxProvider } from "../../lightbox-provider";
 import MediaOwnerProvider from "../../../providers/local/media-owner";
@@ -55,6 +56,7 @@ const linkRenderers = [
   renderStreamUrl,
   renderAudioUrl,
   renderModelUrl,
+  renderWebxdcUrl,
   renderCodePenURL,
   renderArchiveOrgURL,
   renderNostrAppWebLink,

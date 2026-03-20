@@ -18,7 +18,8 @@ import {
   TagLabel,
   Text,
 } from "@chakra-ui/react";
-import { getEmojis, getPackName } from "applesauce-core/helpers/emoji";
+import { getPackName } from "applesauce-common/helpers/emoji";
+import { getEmojis } from "applesauce-common/helpers/emoji";
 import { useActiveAccount } from "applesauce-react/hooks";
 import { EventTemplate, kinds, NostrEvent } from "nostr-tools";
 

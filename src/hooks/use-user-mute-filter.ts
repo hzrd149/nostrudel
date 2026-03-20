@@ -1,4 +1,4 @@
-import { matchMutes } from "applesauce-core/helpers";
+import { matchMutes } from "applesauce-common/helpers";
 import { useActiveAccount, useEventModel } from "applesauce-react/hooks";
 import { NostrEvent } from "nostr-tools";
 import { ProfilePointer } from "nostr-tools/nip19";

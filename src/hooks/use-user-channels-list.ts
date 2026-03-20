@@ -1,4 +1,4 @@
-import { getEventPointersFromList } from "applesauce-core/helpers/lists";
+import { getEventPointersFromList } from "applesauce-common/helpers/lists";
 import { kinds } from "nostr-tools";
 import { ProfilePointer } from "nostr-tools/nip19";
 

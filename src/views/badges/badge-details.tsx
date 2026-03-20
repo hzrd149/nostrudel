@@ -102,6 +102,7 @@ function BadgeDetailsPage({ badge }: { badge: NostrEvent }) {
 
   const readRelays = useReadRelays();
   const coordinate = getReplaceableAddress(badge);
+  if (!coordinate) throw new Error("Invalid badge - no coordinate"); // v5: can return null
   const { loader, timeline } = useTimelineLoader(`${coordinate}-awards`, readRelays, {
     "#a": [coordinate],
     kinds: [kinds.BadgeAward],

@@ -3,7 +3,8 @@ import type { AddressPointer, EventPointer } from "nostr-tools/nip19";
 
 import relayScoreboardService from "./relay-scoreboard";
 import { eventStore } from "./event-store";
-import { getOutboxes, getSeenRelays, getTagValue, isReplaceable } from "applesauce-core/helpers";
+import { getTagValue, isReplaceable } from "applesauce-core/helpers";
+import { getOutboxes, getSeenRelays } from "applesauce-core/helpers";
 
 /** Filters and sorts relays */
 function pickBestRelays(relays: Iterable<string>) {

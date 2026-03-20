@@ -1,4 +1,4 @@
-import { decodeLNURL } from "applesauce-core/helpers";
+import { decodeLNURL } from "applesauce-common/helpers";
 
 export function isLNURL(lnurl: string) {
   try {

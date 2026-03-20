@@ -3,7 +3,7 @@ import { Flex, FlexProps, IconButton, useToast } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 import { NostrEvent } from "nostr-tools";
 import { useEventFactory } from "applesauce-react/hooks";
-import { Emoji } from "applesauce-core/helpers/emoji";
+import { Emoji } from "applesauce-common/helpers/emoji";
 
 import { usePublishEvent } from "../../../providers/global/publish-provider";
 import { useContextEmojis } from "../../../providers/global/emoji-provider";

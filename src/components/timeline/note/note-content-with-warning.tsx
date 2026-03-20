@@ -1,5 +1,5 @@
 import { NostrEvent } from "nostr-tools";
-import { getContentWarning } from "applesauce-core/helpers";
+import { getContentWarning } from "applesauce-common/helpers";
 
 import { TextNoteContents } from "./text-note-contents";
 import { useExpand } from "../../../providers/local/expanded";
