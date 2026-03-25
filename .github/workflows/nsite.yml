@@ -37,9 +37,6 @@ jobs:
           VITE_TENOR_API_KEY: ${{ secrets.VITE_TENOR_API_KEY }}
         run: pnpm build
 
-      - name: Redirect 404 to Index for SPA
-        run: cp dist/index.html dist/404.html
-
       - name: Deploy to nsite
         uses: sandwichfarm/nsite-action@v0.2.2
         with:
