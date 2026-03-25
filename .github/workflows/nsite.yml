@@ -18,10 +18,10 @@ jobs:
 
       - uses: pnpm/action-setup@v4
 
-      - name: Setup Node.js 20
+      - name: Setup Node.js 24
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
           cache: "pnpm"
 
       - name: Install Dependencies
@@ -45,6 +45,4 @@ jobs:
         with:
           nbunksec: ${{ secrets.NSITE_BUNKER }}
           directory: "./dist"
-          nsite_version: "v0.21.0"
-          force: true
-          purge: true
+          nsyte_version: "v0.23.0"

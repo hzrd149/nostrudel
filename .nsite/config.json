@@ -1,4 +1,16 @@
 {
-  "relays": ["wss://relay.primal.net", "wss://nos.lol", "wss://relay.damus.io", "wss://relay.nostr.band"],
-  "servers": ["https://cdn.hzrd149.com", "https://nostr.download", "https://blossom.primal.net"]
+  "relays": [
+    "wss://relay.primal.net",
+    "wss://nos.lol",
+    "wss://relay.damus.io",
+    "wss://nsite.run"
+  ],
+  "servers": [
+    "https://cdn.hzrd149.com",
+    "https://nostr.download",
+    "https://blossom.primal.net",
+    "https://nsite.run"
+  ],
+  "bunkerPubkey": "713978c3094081b34fcf2f5491733b0c22728cd3b7a6946519d40f5f08598af8",
+  "title": "noStrudel"
 }
