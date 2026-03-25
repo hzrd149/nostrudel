@@ -38,8 +38,7 @@ jobs:
         run: pnpm build
 
       - name: Deploy to nsite
-        uses: sandwichfarm/nsite-action@v0.2.2
+        uses: sandwichfarm/nsite-action@v0.3.0
         with:
           nbunksec: ${{ secrets.NSITE_BUNKER }}
           directory: "./dist"
-          nsyte_version: "v0.23.0"
