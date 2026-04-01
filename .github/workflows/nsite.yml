@@ -42,7 +42,7 @@ jobs:
       # Pushes to master deploy to the "next" build channel for testing
       - name: Deploy next version
         if: github.ref == 'refs/heads/master'
-        uses: sandwichfarm/nsite-action@v0.3.0
+        uses: sandwichfarm/nsite-action@v0.3.1
         with:
           nbunksec: ${{ secrets.NSITE_BUNKER }}
           directory: "./dist"
@@ -51,7 +51,7 @@ jobs:
       # Tag pushes deploy the latest stable version. Tags should be pushed in order
       - name: Deploy release
         if: startsWith(github.ref, 'refs/tags/')
-        uses: sandwichfarm/nsite-action@v0.3.0
+        uses: sandwichfarm/nsite-action@v0.3.1
         with:
           nbunksec: ${{ secrets.NSITE_BUNKER }}
           directory: "./dist"
