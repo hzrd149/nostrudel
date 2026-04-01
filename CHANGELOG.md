@@ -1,5 +1,16 @@
 # nostrudel
 
+## 1.2.0
+
+### Minor Changes
+
+- 2be34d6: Remove Launchpad view
+- f28717f: Add muted users to mute settings view
+- 52301c4: Add support for webxdc apps
+- f28717f: Remove broken advanced tag on relay details page
+- 8f195cf: Upgrade applesauce to v5
+- e4011ff: Redesign signin flow: merge nostr connect pages into one, card-based option layout
+
 ## 1.1.0
 
 ### Minor Changes
