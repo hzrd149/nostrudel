@@ -2,7 +2,6 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { VitePWA } from "vite-plugin-pwa";
 import tsconfigPaths from "vite-tsconfig-paths";
-import namecoinPlugin from "./proxy/vite-plugin-namecoin.mjs";
 
 console.log("Build with:");
 for (const [key, value] of Object.entries(process.env)) {
@@ -35,8 +34,6 @@ export default defineConfig({
   plugins: [
     react(),
     tsconfigPaths(),
-    // Namecoin ElectrumX proxy — zero-setup .bit identity resolution in dev
-    namecoinPlugin(),
     VitePWA({
       strategies: "injectManifest",
       srcDir: "src/sw/worker",

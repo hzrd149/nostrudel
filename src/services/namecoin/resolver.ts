@@ -2,12 +2,16 @@
  * Namecoin NIP-05 identity resolver
  *
  * Resolves .bit domains, d/ and id/ Namecoin names to Nostr pubkeys
- * by querying an ElectrumX HTTP proxy.
+ * by connecting directly to ElectrumX servers via WebSocket from the browser.
+ *
+ * No backend proxy needed — the browser connects to ElectrumX over ws:// or wss://
+ * and performs the full scripthash-based name lookup natively.
  */
 
 import { Identity, IdentityStatus } from "applesauce-loaders/helpers/dns-identity";
 import { ParsedNamecoinIdentifier, NamecoinNostrResult } from "./types";
-import { DEFAULT_PROXY_PATH, DEFAULT_CACHE_TTL } from "./constants";
+import { DEFAULT_CACHE_TTL } from "./constants";
+import { nameShowWithFallback } from "./electrumx-ws";
 
 // ── Identifier detection & parsing ──────────────────────────────────
 
@@ -104,47 +108,30 @@ function setCache(key: string, result: NamecoinNostrResult | null) {
   cache.set(key, { result, timestamp: Date.now() });
 }
 
-// ── Proxy resolution ────────────────────────────────────────────────
-
-function getProxyUrl(): string {
-  // Check for explicit env var first, then fall back to dev middleware path
-  if (typeof import.meta !== "undefined" && import.meta.env?.VITE_NAMECOIN_PROXY_URL) {
-    return import.meta.env.VITE_NAMECOIN_PROXY_URL;
-  }
-  return DEFAULT_PROXY_PATH;
-}
+// ── WebSocket resolution ────────────────────────────────────────────
 
 /**
- * Resolve a parsed Namecoin identifier via the ElectrumX HTTP proxy.
+ * Resolve a parsed Namecoin identifier via WebSocket to ElectrumX.
+ * Connects directly from the browser — no proxy needed.
  * Returns null if the name doesn't exist or has no Nostr data.
  */
-export async function resolveNamecoinViaProxy(
+export async function resolveNamecoinViaWs(
   parsed: ParsedNamecoinIdentifier,
-  proxyUrl?: string,
 ): Promise<NamecoinNostrResult | null> {
-  const base = proxyUrl || getProxyUrl();
-  const url = `${base}/lookup/${encodeURIComponent(parsed.namecoinName)}`;
+  const result = await nameShowWithFallback(parsed.namecoinName);
+  if (!result || result.expired) return null;
 
-  const response = await fetch(url);
-  if (!response.ok) {
-    if (response.status === 404) return null;
-    throw new Error(`Namecoin proxy error: ${response.status} ${response.statusText}`);
-  }
-
-  const data = await response.json();
-  if (!data || data.expired) return null;
-
-  const value = data.value;
+  const value = result.value;
   if (!value) return null;
 
-  let parsed_value: Record<string, unknown>;
+  let parsedValue: Record<string, unknown>;
   try {
-    parsed_value = typeof value === "string" ? JSON.parse(value) : value;
+    parsedValue = typeof value === "string" ? JSON.parse(value) : value;
   } catch {
     return null;
   }
 
-  return extractNostrData(parsed_value, parsed);
+  return extractNostrData(parsedValue, parsed);
 }
 
 /**
@@ -216,11 +203,10 @@ function isValidHexPubkey(s: string): boolean {
 
 /**
  * Resolve a Namecoin identifier to a Nostr pubkey.
- * Uses an in-memory LRU cache.
+ * Uses an in-memory LRU cache and direct WebSocket connection to ElectrumX.
  */
 export async function resolveNamecoin(
   address: string,
-  proxyUrl?: string,
 ): Promise<NamecoinNostrResult | null> {
   const parsed = parseNamecoinIdentifier(address);
   if (!parsed) return null;
@@ -233,7 +219,7 @@ export async function resolveNamecoin(
   if (cached !== undefined) return cached;
 
   try {
-    const result = await resolveNamecoinViaProxy(parsed, proxyUrl);
+    const result = await resolveNamecoinViaWs(parsed);
     setCache(cacheKey, result);
     return result;
   } catch (err) {
