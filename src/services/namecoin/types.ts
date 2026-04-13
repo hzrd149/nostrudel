@@ -22,8 +22,8 @@ export interface ParsedNamecoinIdentifier {
 
 /** Settings for the Namecoin resolver */
 export interface NamecoinSettings {
-  /** URL of the ElectrumX HTTP proxy */
-  proxyUrl: string;
+  /** Custom ElectrumX WebSocket servers (overrides defaults) */
+  servers?: Array<{ url: string; label: string }>;
   /** Cache TTL in milliseconds (default: 5 minutes) */
   cacheTtl?: number;
 }
