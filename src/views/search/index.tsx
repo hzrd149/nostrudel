@@ -8,6 +8,8 @@ import { CopyToClipboardIcon, SearchIcon, SettingsIcon } from "../../components/
 import QRCodeScannerButton from "../../components/qr-code/qr-code-scanner-button";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import { safeDecode } from "../../helpers/nip19";
+import { isNamecoinIdentifier, resolveNamecoin } from "../../services/namecoin";
+import { nip19 } from "nostr-tools";
 import { getMatchHashtag } from "../../helpers/regexp";
 import useSearchRelays, { useCacheRelaySupportsSearch } from "../../hooks/use-search-relays";
 import { useBreakpointValue } from "../../providers/global/breakpoint-provider";
@@ -50,6 +52,22 @@ export function SearchPage() {
     const hashTagMatch = getMatchHashtag().exec(cleanText);
     if (hashTagMatch) {
       navigate({ pathname: "/t/" + hashTagMatch[2].toLocaleLowerCase() }, { replace: true });
+      return true;
+    }
+
+    // Resolve Namecoin .bit / d/ / id/ identifiers via ElectrumX
+    if (isNamecoinIdentifier(cleanText)) {
+      resolveNamecoin(cleanText)
+        .then((result) => {
+          if (result?.pubkey) {
+            const target = "/u/" + nip19.npubEncode(result.pubkey);
+            console.log("[Namecoin] Navigating to", target);
+            window.location.href = target;
+          } else {
+            console.warn("[Namecoin] No pubkey found for", cleanText);
+          }
+        })
+        .catch((err) => console.warn("[Namecoin] Search resolve failed:", err));
       return true;
     }
 

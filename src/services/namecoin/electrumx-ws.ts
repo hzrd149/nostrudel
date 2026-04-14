@@ -29,7 +29,10 @@ import {
 
 /** SHA-256 hash using the browser's Web Crypto API */
 async function sha256(data: Uint8Array): Promise<Uint8Array> {
-  const hash = await crypto.subtle.digest("SHA-256", data);
+  if (!crypto?.subtle) {
+    throw new Error("crypto.subtle unavailable (insecure context?). Use https:// or localhost.");
+  }
+  const hash = await crypto.subtle.digest("SHA-256", data as ArrayBufferView<ArrayBuffer>);
   return new Uint8Array(hash);
 }
 

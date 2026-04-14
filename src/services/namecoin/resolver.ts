@@ -182,7 +182,17 @@ function extractNostrData(
 
     // Look up the local part (or "_" for root)
     const lookupKey = parsed.localPart || "_";
-    const pubkey = names[lookupKey];
+    let pubkey = names[lookupKey];
+
+    // Fallback: bare domain (no localPart) with no "_" entry —
+    // use the sole entry if there's exactly one name registered
+    if (!pubkey && !parsed.localPart) {
+      const entries = Object.entries(names).filter(([, v]) => isValidHexPubkey(v));
+      if (entries.length === 1) {
+        pubkey = entries[0][1];
+      }
+    }
+
     if (!pubkey || !isValidHexPubkey(pubkey)) return null;
 
     // Check for relays

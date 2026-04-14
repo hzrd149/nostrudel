@@ -6,10 +6,16 @@
  * These are public servers that advertise ws:// and wss:// services.
  * The browser connects directly — no backend proxy needed.
  */
-export const DEFAULT_ELECTRUMX_SERVERS: ElectrumxWsServer[] = [
-  { url: "wss://electrumx.testls.space:50004", label: "testls.space" },
-  { url: "ws://electrumx.testls.space:50003", label: "testls.space (plain)" },
-];
+export const DEFAULT_ELECTRUMX_SERVERS: ElectrumxWsServer[] =
+  typeof window !== "undefined" && window.location?.protocol === "https:"
+    ? [
+        { url: "wss://electrumx.testls.space:50004", label: "testls.space" },
+        { url: "ws://electrumx.testls.space:50003", label: "testls.space (plain)" },
+      ]
+    : [
+        { url: "ws://electrumx.testls.space:50003", label: "testls.space (plain)" },
+        { url: "wss://electrumx.testls.space:50004", label: "testls.space" },
+      ];
 
 export interface ElectrumxWsServer {
   /** WebSocket URL (ws:// or wss://) */
