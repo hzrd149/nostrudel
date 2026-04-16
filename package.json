@@ -67,7 +67,7 @@
     "applesauce-signers": "^5",
     "applesauce-sqlite": "^5",
     "applesauce-wallet": "^5",
-    "blossom-client-sdk": "^4.1.0",
+    "blossom-client-sdk": "5.0.0-2",
     "canvas-confetti": "^1.9.4",
     "chart.js": "^4.5.1",
     "chroma-js": "^2.6.0",

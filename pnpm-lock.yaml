@@ -156,8 +156,8 @@ importers:
         specifier: ^5
         version: 5.0.0(typescript@5.9.3)
       blossom-client-sdk:
-        specifier: ^4.1.0
-        version: 4.1.0
+        specifier: 5.0.0-2
+        version: 5.0.0-2(@cashu/cashu-ts@2.9.0)(hls.js@1.6.15)
       canvas-confetti:
         specifier: ^1.9.4
         version: 1.9.4
@@ -2599,9 +2599,17 @@ packages:
   bl@4.1.0:
     resolution: {integrity: sha512-1W07cM9gS6DcLperZfFSj+bWLtaPGSOHWhPiGzXmvVJbRLdG82sH/Kn8EtW1VqWVA54AKf2h5k5BbnIbwF3h6w==}
 
-  blossom-client-sdk@4.1.0:
-    resolution: {integrity: sha512-IEjX3/e6EYnEonlog8qbd1/7qYIatOKEAQMWGkPCPjTO/b9fsrSnoELwOam52a5U3M83XLvYFhf6qE9MmlmJuQ==}
+  blossom-client-sdk@5.0.0-2:
+    resolution: {integrity: sha512-g54Aa/tKf9cMk/R1IKiEx+zGtQ979FRo3J6Esw3gLxxgjaIo9oqFC6gvmXqBNJaW0p4pbvQ046JqUduBWTGkYQ==}
     engines: {node: '>=18'}
+    peerDependencies:
+      '@cashu/cashu-ts': ^2.4.3
+      hls.js: ^1.6.16
+    peerDependenciesMeta:
+      '@cashu/cashu-ts':
+        optional: true
+      hls.js:
+        optional: true
 
   body-parser@2.2.2:
     resolution: {integrity: sha512-oP5VkATKlNwcgvxi0vM0p/D3n2C3EReYVX+DNYs5TjZFn/oQt2j+4sVJtSMr18pdRr8wjTcBl6LoV+FUwzPmNA==}
@@ -9078,10 +9086,12 @@ snapshots:
       inherits: 2.0.4
       readable-stream: 3.6.2
 
-  blossom-client-sdk@4.1.0:
+  blossom-client-sdk@5.0.0-2(@cashu/cashu-ts@2.9.0)(hls.js@1.6.15):
     dependencies:
-      '@cashu/cashu-ts': 2.9.0
       '@noble/hashes': 1.8.0
+    optionalDependencies:
+      '@cashu/cashu-ts': 2.9.0
+      hls.js: 1.6.15
 
   body-parser@2.2.2:
     dependencies:

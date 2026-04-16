@@ -1,6 +1,6 @@
 import { forwardRef, MouseEventHandler, MutableRefObject, useCallback, useEffect, useMemo, useRef } from "react";
 import { Link } from "@chakra-ui/react";
-import { handleImageFallbacks } from "blossom-client-sdk/image";
+import { handleMediaFallbacks } from "blossom-client-sdk";
 import { NostrEvent } from "nostr-tools";
 
 import { EmbeddedImageProps, getPubkeyMediaServers, TrustImage, useImageThumbnail } from "../links";
@@ -29,7 +29,7 @@ export const GalleryImage = forwardRef<HTMLImageElement | null, EmbeddedImagePro
 
     useEffect(() => {
       const el = (ref as MutableRefObject<HTMLImageElement | null>).current;
-      if (el) handleImageFallbacks(el, getPubkeyMediaServers);
+      if (el) handleMediaFallbacks(el, getPubkeyMediaServers);
     }, []);
 
     return (

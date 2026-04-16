@@ -2,7 +2,7 @@ import { Image, ImageProps, Link, LinkProps } from "@chakra-ui/react";
 import {
   getHashFromURL,
   getServersFromServerListEvent,
-  handleImageFallbacks,
+  handleMediaFallbacks,
   USER_BLOSSOM_SERVER_LIST_KIND,
 } from "blossom-client-sdk";
 import { NostrEvent } from "nostr-tools";
@@ -71,7 +71,7 @@ export function EmbeddedImage({ src, event, imageProps, ...props }: EmbeddedImag
   );
 
   useEffect(() => {
-    if (ref.current) handleImageFallbacks(ref.current, getPubkeyMediaServers);
+    if (ref.current) handleMediaFallbacks(ref.current, getPubkeyMediaServers);
   }, []);
 
   return (

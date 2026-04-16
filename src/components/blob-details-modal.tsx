@@ -20,7 +20,9 @@ import {
 } from "@chakra-ui/react";
 import { sha256 } from "@noble/hashes/sha2";
 import { bytesToHex } from "@noble/hashes/utils";
-import { BlossomClient, createUploadAuth } from "blossom-client-sdk";
+import { createUploadAuth } from "blossom-client-sdk";
+import { downloadBlob } from "blossom-client-sdk/actions/download";
+import { hasBlob } from "blossom-client-sdk/actions/has";
 import { useState } from "react";
 import { useAsync } from "react-use";
 
@@ -32,7 +34,7 @@ import useUsersMediaServers from "../hooks/use-user-blossom-servers";
 import BlossomServerFavicon from "./blossom/blossom-server-favicon";
 
 function ServerBlobStatus({ server, blob }: { server: string | URL; blob: string }) {
-  const check = useAsync(() => BlossomClient.hasBlob(server, blob), [server, blob]);
+  const check = useAsync(() => hasBlob(server, blob), [server, blob]);
 
   return (
     <HStack spacing={2} width="100%">
@@ -146,7 +148,7 @@ function RepairBlobButton({
     // Attempt to download blob from any server
     for (const server of mergeBlossomServers(userServers, ownerServers)) {
       try {
-        const blob = await BlossomClient.downloadBlob(server, hash);
+        blob = await downloadBlob(server, hash).then((res) => res.blob());
         if (blob) break;
       } catch (error) {}
     }
@@ -155,7 +157,8 @@ function RepairBlobButton({
 
     // Attempt to upload to all servers
     const result = await multiServerUpload(userServers, blob, {
-      onAuth: (_server, blob, type) => createUploadAuth(async (e) => account.signEvent(e), blob, { type }),
+      onAuth: (_server, sha256, authType) =>
+        createUploadAuth(async (e) => account.signEvent(e), sha256, { type: authType }),
     });
 
     toast({

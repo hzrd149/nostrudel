@@ -18,7 +18,8 @@ import { Helpers } from "applesauce-content";
 const { getMediaAttachmentURLsFromContent } = Helpers;
 import { getMediaAttachments } from "applesauce-common/helpers";
 import { useActiveAccount, useEventFactory } from "applesauce-react/hooks";
-import { BlossomClient } from "blossom-client-sdk";
+import { createUploadAuth } from "blossom-client-sdk";
+import { mirrorBlob } from "blossom-client-sdk/actions/mirror";
 import { EventTemplate, NostrEvent } from "nostr-tools";
 import { useCallback, useMemo, useState } from "react";
 
@@ -69,7 +70,7 @@ export default function ShareModal({
     if (mirror && canMirror) {
       try {
         setLoading("Requesting signature for mirroring...");
-        const auth = await BlossomClient.createUploadAuth(
+        const auth = await createUploadAuth(
           signer,
           mediaAttachments.filter((m) => !!m.sha256).map((m) => m.sha256!),
         );
@@ -81,7 +82,7 @@ export default function ShareModal({
           // send mirror request to all servers
           await Promise.allSettled(
             servers.map((server) =>
-              BlossomClient.mirrorBlob(
+              mirrorBlob(
                 server,
                 {
                   sha256: media.sha256!,

@@ -1,7 +1,8 @@
 import { Button, ButtonProps, useToast } from "@chakra-ui/react";
 import { getTagValue } from "applesauce-core/helpers";
 import { useActiveAccount } from "applesauce-react/hooks";
-import { BlossomClient } from "blossom-client-sdk";
+import { createDownloadAuth } from "blossom-client-sdk";
+import { downloadBlob } from "blossom-client-sdk/actions/download";
 import { saveAs } from "file-saver";
 import { EventTemplate, NostrEvent } from "nostr-tools";
 import { useCallback, useState } from "react";
@@ -60,8 +61,8 @@ export default function FileDownloadButton({
       // attempt to download from users blossom servers
       if (!blob && servers.length > 0 && sha256) {
         for (const server of servers) {
-          blob = await BlossomClient.downloadBlob(server, sha256, {
-            onAuth: (server, hash) => BlossomClient.createGetAuth(signer, hash),
+          blob = await downloadBlob(server, sha256, {
+            onAuth: (_server, hash) => createDownloadAuth(signer, hash),
           }).then(
             (res) => res.blob(),
             () => undefined,
