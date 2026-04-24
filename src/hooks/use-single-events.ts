@@ -1,4 +1,4 @@
-import { useEventStore, useObservableMemo } from "applesauce-react/hooks";
+import { useEventStore, use$ } from "applesauce-react/hooks";
 import hash_sum from "hash-sum";
 import { NostrEvent } from "nostr-tools";
 import { combineLatest, map } from "rxjs";
@@ -7,7 +7,7 @@ export default function useSingleEvents(ids?: string[], relays?: string[]): Nost
   const eventStore = useEventStore();
 
   return (
-    useObservableMemo(() => {
+    use$(() => {
       const models = ids?.map((id) => eventStore.event({ id, relays })) ?? [];
 
       return combineLatest(models).pipe(map((events) => events.filter((e) => !!e)));

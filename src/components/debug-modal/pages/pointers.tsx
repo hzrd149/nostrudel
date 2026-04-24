@@ -121,11 +121,7 @@ function TagPointerBlock({ event }: { event: NostrEvent }) {
   );
 }
 
-function ProfilePointerPreview({
-  profile,
-}: {
-  profile: { pubkey: string; relays?: string[] };
-}) {
+function ProfilePointerPreview({ profile }: { profile: { pubkey: string; relays?: string[] } }) {
   const { pubkey, relays } = profile;
   return (
     <Box display="flex" gap="4" p="0">

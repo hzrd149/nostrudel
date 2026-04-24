@@ -3,7 +3,7 @@ import { kinds } from "applesauce-core/helpers";
 import { FAVORITE_RELAYS_KIND, getRelaysFromList } from "applesauce-common/helpers";
 import { TimelineModel } from "applesauce-core/models";
 import { LoadableAddressPointer } from "applesauce-loaders/loaders";
-import { useActiveAccount, useEventModel, useObservableEagerState } from "applesauce-react/hooks";
+import { useActiveAccount, useEventModel, use$ } from "applesauce-react/hooks";
 import { useMemo } from "react";
 import { useMount } from "react-use";
 
@@ -110,7 +110,7 @@ function DiscoverRelays({ pubkey, showUsers }: { pubkey: string; showUsers?: boo
     contacts && [{ authors: contacts.map((s) => s.pubkey), kinds: [FAVORITE_RELAYS_KIND] }],
   );
 
-  const unhealthy = useObservableEagerState(liveness.unhealthy$);
+  const unhealthy = use$(liveness.unhealthy$) ?? [];
 
   // Calculate total favorites for each relay
   const relays = useMemo(() => {

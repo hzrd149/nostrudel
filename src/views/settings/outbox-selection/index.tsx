@@ -13,7 +13,7 @@ import {
   NumberInputStepper,
   Text,
 } from "@chakra-ui/react";
-import { useActiveAccount, useEventModel, useObservableEagerState, useObservableMemo } from "applesauce-react/hooks";
+import { useActiveAccount, useEventModel, use$ } from "applesauce-react/hooks";
 import { ProfilePointer } from "nostr-tools/nip19";
 import { useMemo } from "react";
 
@@ -33,7 +33,7 @@ import SelectRelayRow from "./components/selected-relay-row";
 
 function UsersByRelayCount({ selection }: { selection: ProfilePointer[] | null | undefined }) {
   const account = useActiveAccount();
-  const contacts = useObservableMemo(
+  const contacts = use$(
     () =>
       account?.pubkey
         ? eventStore.contacts({ pubkey: account?.pubkey }).pipe(includeMailboxes(eventStore, "outbox"))
@@ -115,8 +115,8 @@ function UsersByRelayCount({ selection }: { selection: ProfilePointer[] | null |
 }
 
 function ConnectionSettings() {
-  const maxConnections = useObservableEagerState(localSettings.maxConnections);
-  const maxRelaysPerUser = useObservableEagerState(localSettings.maxRelaysPerUser);
+  const maxConnections = use$(localSettings.maxConnections);
+  const maxRelaysPerUser = use$(localSettings.maxRelaysPerUser);
 
   return (
     <Flex gap={4} wrap="wrap">

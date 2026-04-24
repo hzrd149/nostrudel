@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { useObservableEagerState } from "applesauce-react/hooks";
+import { use$ } from "applesauce-react/hooks";
 import { NostrEvent } from "nostr-tools";
 
 import {
@@ -23,12 +23,12 @@ export type NotificationCounts = {
 };
 
 export function useNotificationCounts(timeRange: TimeRange): NotificationCounts {
-  const threads = useObservableEagerState(threadNotifications$) ?? [];
-  const replies = useObservableEagerState(replyNotifications$) ?? [];
-  const mentions = useObservableEagerState(mentionNotifications$) ?? [];
-  const quotes = useObservableEagerState(quoteNotifications$) ?? [];
-  const reposts = useObservableEagerState(repostNotifications$) ?? [];
-  const zaps = useObservableEagerState(zapNotifications$) ?? [];
+  const threads = use$(threadNotifications$) ?? [];
+  const replies = use$(replyNotifications$) ?? [];
+  const mentions = use$(mentionNotifications$) ?? [];
+  const quotes = use$(quoteNotifications$) ?? [];
+  const reposts = use$(repostNotifications$) ?? [];
+  const zaps = use$(zapNotifications$) ?? [];
 
   const since = getTimeRangeSince(timeRange);
 

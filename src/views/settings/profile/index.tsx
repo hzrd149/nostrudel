@@ -1,7 +1,7 @@
 import { Grid, GridItem, Text, VStack } from "@chakra-ui/react";
 import { CreateProfile, UpdateProfile } from "applesauce-actions/actions";
 import { ProfileContent } from "applesauce-core/helpers";
-import { useActionRunner, useActiveAccount, useObservableMemo } from "applesauce-react/hooks";
+import { useActionRunner, useActiveAccount, use$ } from "applesauce-react/hooks";
 import { nip19 } from "nostr-tools";
 import { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
@@ -48,7 +48,7 @@ export default function ProfileSettingsView() {
   });
 
   // Load a fresh profile metadata to avoid stale data
-  useObservableMemo(
+  use$(
     () => profileLoader({ pubkey: account.pubkey, kind: 0, cache: false, relays: readRelays }),
     [account.pubkey, readRelays],
   );

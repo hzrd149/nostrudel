@@ -1,6 +1,6 @@
 import { Box, ButtonGroup, Flex } from "@chakra-ui/react";
 import { COMMENT_KIND } from "applesauce-common/helpers";
-import { useActiveAccount, useObservableEagerState } from "applesauce-react/hooks";
+import { useActiveAccount, use$ } from "applesauce-react/hooks";
 import { kinds } from "nostr-tools";
 import { useMemo } from "react";
 import AutoSizer from "react-virtualized-auto-sizer";
@@ -42,11 +42,11 @@ export default function ThreadsTab() {
   const account = useActiveAccount()!;
 
   // Start the event loader
-  const loader = useObservableEagerState(socialNotificationsLoader$);
+  const loader = use$(socialNotificationsLoader$);
   const callback = useTimelineCurserIntersectionCallback(loader ?? undefined);
 
   // Subscribe to the processed thread notifications observable
-  const notifications = useObservableEagerState(threadNotifications$) ?? [];
+  const notifications = use$(threadNotifications$) ?? [];
 
   // Filter for fetching events in the modal
   const filter = useMemo(

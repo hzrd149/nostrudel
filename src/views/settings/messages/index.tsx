@@ -1,5 +1,5 @@
 import { Flex, FormControl, FormHelperText, FormLabel, Select, Switch } from "@chakra-ui/react";
-import { useObservableEagerState } from "applesauce-react/hooks";
+import { use$ } from "applesauce-react/hooks";
 
 import SimpleView from "../../../components/layout/presets/simple-view";
 import localSettings from "../../../services/preferences";
@@ -7,8 +7,8 @@ import MessageCacheSection from "./cache";
 import DirectMessageRelaysSection from "./relays";
 
 export default function MessagesSettings() {
-  const autoDecryptMessages = useObservableEagerState(localSettings.autoDecryptMessages);
-  const defaultMessageExpirationTime = useObservableEagerState(localSettings.defaultMessageExpiration);
+  const autoDecryptMessages = use$(localSettings.autoDecryptMessages);
+  const defaultMessageExpirationTime = use$(localSettings.defaultMessageExpiration);
 
   return (
     <SimpleView gap="8" title="Messages" maxW="4xl">

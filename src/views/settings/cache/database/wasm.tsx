@@ -13,7 +13,7 @@ import {
   NumberInputStepper,
   Text,
 } from "@chakra-ui/react";
-import { useObservableEagerState } from "applesauce-react/hooks";
+import { use$ } from "applesauce-react/hooks";
 import { NostrEvent } from "nostr-tools";
 import { useCallback, useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
@@ -28,7 +28,7 @@ import ExportEventsButton from "./components/export-events-button";
 import ImportEventsButton from "./components/import-events-button";
 
 export default function WasmDatabasePage() {
-  const eventCache = useObservableEagerState(eventCache$);
+  const eventCache = use$(eventCache$);
   if (eventCache?.type !== "wasm-worker") return <Navigate to="/settings/cache" />;
 
   const { value: worker } = useAsync(async () => {
@@ -37,7 +37,7 @@ export default function WasmDatabasePage() {
   });
 
   const [summary, setSummary] = useState<Record<string, number>>();
-  const persistForDays = useObservableEagerState(localSettings.wasmPersistForDays);
+  const persistForDays = use$(localSettings.wasmPersistForDays);
 
   const total = summary ? Object.values(summary).reduce((t, v) => t + v, 0) : undefined;
 

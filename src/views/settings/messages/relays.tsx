@@ -1,7 +1,7 @@
 import { Alert, AlertDescription, AlertIcon, Heading, Link, Text, VStack } from "@chakra-ui/react";
 import { EventFactory } from "applesauce-core/factories";
 import { addRelayTag, removeRelayTag } from "applesauce-core/operations/tag/relay";
-import { useActiveAccount, useObservableMemo } from "applesauce-react/hooks";
+import { useActiveAccount, use$ } from "applesauce-react/hooks";
 import { kinds } from "nostr-tools";
 
 import { getRelaysFromList } from "../../../helpers/nostr/lists";
@@ -14,8 +14,8 @@ import RelayControl from "../relays/components/relay-control";
 import pool from "../../../services/pool";
 
 function RelayEntry({ url, onRemove }: { url: string; onRemove: () => void }) {
-  const authRequiredForPublishing = useObservableMemo(() => pool.relay(url).authRequiredForPublish$, [url]);
-  const authRequiredForReading = useObservableMemo(() => pool.relay(url).authRequiredForRead$, [url]);
+  const authRequiredForPublishing = use$(() => pool.relay(url).authRequiredForPublish$, [url]);
+  const authRequiredForReading = use$(() => pool.relay(url).authRequiredForRead$, [url]);
   const { info } = useRelayInfo(url);
 
   return (

@@ -1,5 +1,5 @@
 import { Alert, AlertDescription, AlertIcon, AlertTitle, Button, Flex } from "@chakra-ui/react";
-import { useActiveAccount, useObservableMemo } from "applesauce-react/hooks";
+import { useActiveAccount, use$ } from "applesauce-react/hooks";
 import { kinds, NostrEvent } from "nostr-tools";
 import { Navigate, useParams } from "react-router-dom";
 
@@ -23,9 +23,9 @@ import useClientSideMuteFilter from "../../../hooks/use-client-side-mute-filter"
 
 export function RelayAuthAlert({ relay }: { relay: string }) {
   const account = useActiveAccount();
-  const authenticated = useObservableMemo(() => pool.relay(relay).authenticated$, [relay]);
-  const required = useObservableMemo(() => pool.relay(relay).authRequiredForRead$, [relay]);
-  const response = useObservableMemo(() => pool.relay(relay).authenticationResponse$, [relay]);
+  const authenticated = use$(() => pool.relay(relay).authenticated$, [relay]);
+  const required = use$(() => pool.relay(relay).authRequiredForRead$, [relay]);
+  const response = use$(() => pool.relay(relay).authenticationResponse$, [relay]);
 
   const authenticate = useAsyncAction(async () => {
     if (!account) throw new Error("No account");

@@ -24,7 +24,7 @@ import { SendLegacyMessage, SendWrappedMessage } from "applesauce-actions/action
 import { getConversationIdentifierFromMessage } from "applesauce-common/helpers";
 import { getDisplayName } from "applesauce-core/helpers";
 import { getTagValue, unixNow, mergeRelaySets } from "applesauce-core/helpers";
-import { useActionRunner, useActiveAccount, useEventModel, useObservableEagerState } from "applesauce-react/hooks";
+import { useActionRunner, useActiveAccount, useEventModel, use$ } from "applesauce-react/hooks";
 import { kinds } from "nostr-tools";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -286,7 +286,7 @@ export default function SendMessageForm({
   const account = useActiveAccount()!;
   const publish = usePublishEvent();
   const actions = useActionRunner();
-  const defaultMessageExpiration = useObservableEagerState(localSettings.defaultMessageExpiration);
+  const defaultMessageExpiration = use$(localSettings.defaultMessageExpiration);
 
   // These values are managed outside of the form because they are options the user toggles
   const [expiration, setExpiration] = useState<number | null>(initialExpiration ?? defaultMessageExpiration);

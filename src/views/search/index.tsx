@@ -1,5 +1,5 @@
 import { ButtonGroup, Flex, IconButton, Input } from "@chakra-ui/react";
-import { useObservableEagerState } from "applesauce-react/hooks";
+import { use$ } from "applesauce-react/hooks";
 import { useCallback, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { Link as RouterLink, useNavigate, useSearchParams } from "react-router-dom";
@@ -17,7 +17,7 @@ import SearchRelayPicker from "./components/search-relay-picker";
 import SearchResults from "./components/search-results";
 
 export function SearchPage() {
-  const eventCache = useObservableEagerState(eventCache$);
+  const eventCache = use$(eventCache$);
   const navigate = useNavigate();
   const searchRelays = useSearchRelays();
   const localSearchSupported = useCacheRelaySupportsSearch();

@@ -1,6 +1,6 @@
 import { LockIcon } from "@chakra-ui/icons";
 import { Alert, AlertProps, Box, Button, ButtonGroup, Flex, Text, useToast } from "@chakra-ui/react";
-import { useActiveAccount, useObservableMemo } from "applesauce-react/hooks";
+import { useActiveAccount, use$ } from "applesauce-react/hooks";
 import { useMemo } from "react";
 import { combineLatest, lastValueFrom } from "rxjs";
 
@@ -13,7 +13,7 @@ export default function ReadAuthRequiredAlert({ relays, ...props }: { relays: st
   const toast = useToast();
 
   const relayState =
-    useObservableMemo(
+    use$(
       () =>
         combineLatest(
           Object.fromEntries(

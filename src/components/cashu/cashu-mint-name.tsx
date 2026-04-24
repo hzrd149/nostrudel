@@ -1,10 +1,10 @@
 import { AvatarProps, Text } from "@chakra-ui/react";
-import { useObservableState } from "applesauce-react/hooks";
+import { use$ } from "applesauce-react/hooks";
 
 import { cashuMintInfo } from "../../services/cashu-mints";
 
 export default function CashuMintName({ mint, ...props }: { mint: string } & Omit<AvatarProps, "src">) {
-  const info = useObservableState(cashuMintInfo(mint));
+  const info = use$(cashuMintInfo(mint));
 
   return (
     <Text as="span" {...props}>

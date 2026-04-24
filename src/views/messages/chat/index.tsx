@@ -2,7 +2,7 @@ import { ButtonGroup, Flex, IconButton } from "@chakra-ui/react";
 import { getRumorGiftWraps, Rumor } from "applesauce-common/helpers";
 import { isEvent, mergeRelaySets, getExpirationTimestamp } from "applesauce-core/helpers";
 import { LegacyMessagesGroup, WrappedMessagesGroup } from "applesauce-common/models";
-import { useActiveAccount, useEventModel, useObservableState } from "applesauce-react/hooks";
+import { useActiveAccount, useEventModel, use$ } from "applesauce-react/hooks";
 import { kinds, NostrEvent } from "nostr-tools";
 import { memo, useCallback, useContext, useEffect, useMemo } from "react";
 import { Navigate, UNSAFE_DataRouterContext, useLocation, useNavigate, useParams } from "react-router-dom";
@@ -51,8 +51,8 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
   const location = useLocation();
 
   // Keep a subscription open for NIP-04 and NIP-17 messages
-  useObservableState(legacyMessageSubscription);
-  useObservableState(wrappedMessageSubscription);
+  use$(legacyMessageSubscription);
+  use$(wrappedMessageSubscription);
 
   const { router } = useContext(UNSAFE_DataRouterContext)!;
   const marker = useRouterMarker(router);

@@ -1,5 +1,5 @@
 import { Flex, FormHelperText, Input, InputProps, Select } from "@chakra-ui/react";
-import { useObservableEagerState } from "applesauce-react/hooks";
+import { use$ } from "applesauce-react/hooks";
 import { useEffect, useMemo, useState } from "react";
 
 import { currencyToSats, satsToBtc } from "../helpers/lightning";
@@ -29,8 +29,8 @@ export type SatsInputProps = Omit<InputProps, "value" | "onChange" | "children">
 };
 
 export default function SatsInput({ value, onChange, isInvalid, ...props }: SatsInputProps) {
-  const displayCurrency = useObservableEagerState(localSettings.displayCurrency);
-  const exchangeRates = useObservableEagerState(exchangeRates$);
+  const displayCurrency = use$(localSettings.displayCurrency);
+  const exchangeRates = use$(exchangeRates$);
   const [currency, setCurrency] = useState(displayCurrency?.toUpperCase() ?? SATS_CURRENCY);
   const [inputValue, setInputValue] = useState(() => satsToInputValue(value, currency, exchangeRates?.rates));
 

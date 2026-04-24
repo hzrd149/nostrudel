@@ -1,4 +1,5 @@
 import {
+  Badge,
   Box,
   Button,
   ButtonGroup,
@@ -16,27 +17,21 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { Global, css } from "@emotion/react";
+import { Stream } from "applesauce-common/casts";
 import { NostrEvent } from "nostr-tools";
 import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
-import { isStreamURL, isVideoURL } from "applesauce-core/helpers";
 import { CopyIconButton } from "../../../components/copy-icon-button";
 import DebugEventButton from "../../../components/debug-modal/debug-event-button";
 import { ChevronLeftIcon, ExternalLinkIcon } from "../../../components/icons";
-import LiveVideoPlayer from "../../../components/live-video-player";
 import EventQuoteButton from "../../../components/note/event-quote-button";
 import UserAvatarLink from "../../../components/user/user-avatar-link";
 import UserLink from "../../../components/user/user-link";
 import VerticalPageLayout from "../../../components/vertical-page-layout";
-import {
-  getStreamHost,
-  getStreamImage,
-  getStreamRecording,
-  getStreamStreamingURLs,
-  getStreamTitle,
-} from "../../../helpers/nostr/stream";
+import { getStreamHost } from "../../../helpers/nostr/stream";
 import { useAppTitle } from "../../../hooks/use-app-title";
+import useCastEvent from "../../../hooks/use-cast-event";
 import useParamsAddressPointer from "../../../hooks/use-params-address-pointer";
 import useReplaceableEvent from "../../../hooks/use-replaceable-event";
 import useSetColorMode from "../../../hooks/use-set-color-mode";
@@ -51,13 +46,14 @@ import StreamOpenButton from "./components/stream-open-button";
 import StreamSatsPerMinute from "./components/stream-sats-per-minute";
 import StreamSummaryContent from "./components/stream-summary-content";
 import StreamTopZappers from "./components/stream-top-zappers";
+import StreamVideoArea from "./components/stream-video-area";
 import StreamZapButton from "./components/stream-zap-button";
 import StreamerCards from "./components/streamer-cards";
 import StreamChat, { ChatDisplayMode } from "./stream-chat";
 import StreamChatLog from "./stream-chat/chat-log";
 import ChatMessageForm from "./stream-chat/stream-chat-form";
 
-function DesktopStreamPage({ stream }: { stream: NostrEvent }) {
+function DesktopStreamPage({ stream, cast }: { stream: NostrEvent; cast: Stream }) {
   const navigate = useNavigate();
 
   const [showChat, setShowChat] = useState(true);
@@ -88,12 +84,9 @@ function DesktopStreamPage({ stream }: { stream: NostrEvent }) {
     );
   };
 
-  const title = getStreamTitle(stream);
+  const title = cast.title;
   const host = getStreamHost(stream);
-  const image = getStreamImage(stream);
-  const videoStreams = getStreamStreamingURLs(stream).filter(isStreamURL);
-  const recording = getStreamRecording(stream);
-  const videoRecording = recording && (isVideoURL(recording) || isStreamURL(recording)) ? recording : undefined;
+  const viewers = cast.viewers;
 
   useAppTitle(title);
 
@@ -107,10 +100,15 @@ function DesktopStreamPage({ stream }: { stream: NostrEvent }) {
         <Heading size="md" isTruncated display={{ base: "none", md: "initial" }}>
           {title}
         </Heading>
-        <StreamStatusBadge stream={stream} fontSize="lg" />
+        <StreamStatusBadge stream={cast} fontSize="lg" />
+        {viewers !== undefined && (
+          <Badge variant="outline" fontSize="md">
+            {viewers} viewers
+          </Badge>
+        )}
 
         <ButtonGroup ml="auto">
-          <StreamFavoriteButton stream={stream} />
+          <StreamFavoriteButton stream={cast} />
           <StreamOpenButton stream={stream} />
           <EventQuoteButton event={stream} title="Share stream" />
           <DebugEventButton event={stream} />
@@ -118,10 +116,8 @@ function DesktopStreamPage({ stream }: { stream: NostrEvent }) {
         </ButtonGroup>
       </Flex>
       <Flex gap="2" maxH="calc(100vh - 4rem)" overflow="hidden">
-        <LiveVideoPlayer
-          stream={videoStreams[0] || videoRecording}
-          autoPlay={videoStreams.length > 0}
-          poster={image}
+        <StreamVideoArea
+          cast={cast}
           // NOTE: width=0 is used for chromium browser to stop the video element from pushing the chat off screen
           w={0}
           flexGrow={1}
@@ -159,16 +155,12 @@ function DesktopStreamPage({ stream }: { stream: NostrEvent }) {
   );
 }
 
-function MobileStreamPage({ stream }: { stream: NostrEvent }) {
+function MobileStreamPage({ stream, cast }: { stream: NostrEvent; cast: Stream }) {
   const navigate = useNavigate();
   const showChat = useDisclosure();
 
-  const title = getStreamTitle(stream);
+  const title = cast.title;
   const host = getStreamHost(stream);
-  const image = getStreamImage(stream);
-  const videoStreams = getStreamStreamingURLs(stream).filter(isStreamURL);
-  const recording = getStreamRecording(stream);
-  const videoRecording = recording && (isVideoURL(recording) || isStreamURL(recording)) ? recording : undefined;
 
   useAppTitle(title);
 
@@ -180,14 +172,14 @@ function MobileStreamPage({ stream }: { stream: NostrEvent }) {
             Back
           </Button>
           <ButtonGroup size="sm" ml="auto">
-            <StreamFavoriteButton stream={stream} />
+            <StreamFavoriteButton stream={cast} />
             <StreamOpenButton stream={stream} />
             <EventQuoteButton event={stream} title="Share stream" />
             <DebugEventButton event={stream} />
             <Button onClick={showChat.onOpen}>Show Chat</Button>
           </ButtonGroup>
         </Flex>
-        <LiveVideoPlayer stream={videoStreams[0] || videoRecording} autoPlay={videoStreams.length > 0} poster={image} />
+        <StreamVideoArea cast={cast} />
         <Flex direction="column" gap="2" overflow="hidden" px="2">
           <Flex gap="2">
             <UserAvatarLink pubkey={host} noProxy />
@@ -229,9 +221,11 @@ function MobileStreamPage({ stream }: { stream: NostrEvent }) {
 
 function StreamPage({ stream }: { stream: NostrEvent }) {
   const isMobile = useBreakpointValue({ base: true, lg: false });
+  const cast = useCastEvent(stream, Stream);
   const Layout = isMobile ? MobileStreamPage : DesktopStreamPage;
 
-  return <Layout stream={stream} />;
+  if (!cast) return <Spinner />;
+  return <Layout stream={stream} cast={cast} />;
 }
 
 function ChatWidget({ stream, displayMode }: { stream: NostrEvent; displayMode: ChatDisplayMode }) {

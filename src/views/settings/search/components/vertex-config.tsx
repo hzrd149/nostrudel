@@ -1,12 +1,12 @@
 import { FormControl, FormHelperText, FormLabel, Input, Select } from "@chakra-ui/react";
-import { useObservableEagerState } from "applesauce-react/hooks";
+import { use$ } from "applesauce-react/hooks";
 
 import localSettings from "../../../../services/preferences";
 import { VertexStatus } from "./vertex-status";
 
 export function VertexConfig() {
-  const vertexRelay = useObservableEagerState(localSettings.vertexRelayUrl) || "";
-  const vertexMethod = useObservableEagerState(localSettings.vertexSortMethod);
+  const vertexRelay = use$(localSettings.vertexRelayUrl) || "";
+  const vertexMethod = use$(localSettings.vertexSortMethod);
 
   return (
     <>

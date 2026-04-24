@@ -10,7 +10,7 @@ import {
   Progress,
   Spinner,
 } from "@chakra-ui/react";
-import { useObservableState } from "applesauce-react/hooks";
+import { use$ } from "applesauce-react/hooks";
 import { PublishResponse } from "applesauce-relay";
 import { Link as RouterLink } from "react-router-dom";
 
@@ -36,7 +36,7 @@ function PublishResultRow({ response }: { response: PublishResponse }) {
 }
 
 export function PublishLogEntryDetails({ entry }: { entry: PublishLogEntry } & Omit<FlexProps, "children">) {
-  const relayStatus = useObservableState(entry.relayStatus$) ?? {};
+  const relayStatus = use$(entry.relayStatus$) ?? {};
 
   return (
     <Flex direction="column" gap="2">

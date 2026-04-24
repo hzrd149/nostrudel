@@ -1,7 +1,7 @@
 import { watchEventUpdates } from "applesauce-core";
 import { getEncryptedContent } from "applesauce-core/helpers";
 import { unlockLegacyMessage } from "applesauce-common/helpers";
-import { useActiveAccount, useEventStore, useObservableEagerMemo } from "applesauce-react/hooks";
+import { useActiveAccount, useEventStore, use$ } from "applesauce-react/hooks";
 import { NostrEvent } from "nostr-tools";
 import { useCallback, useState } from "react";
 import { filter, map, of } from "rxjs";
@@ -11,7 +11,7 @@ export function useLegacyMessagePlaintext(event: NostrEvent) {
   const account = useActiveAccount()!;
 
   const [error, setError] = useState<Error>();
-  const plaintext = useObservableEagerMemo(
+  const plaintext = use$(
     () =>
       of(event)
         .pipe(watchEventUpdates(eventStore))

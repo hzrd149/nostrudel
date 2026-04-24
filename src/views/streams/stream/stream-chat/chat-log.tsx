@@ -6,6 +6,7 @@ import { forwardRef } from "react";
 
 import { ErrorBoundary } from "../../../../components/error-boundary";
 import ChatMessage from "./chat-message";
+import useStreamChatRelays from "./use-stream-chat-relays";
 import useStreamChatTimeline from "./use-stream-chat-timeline";
 import ZapMessage from "./zap-message";
 
@@ -22,6 +23,7 @@ const StreamChatLog = forwardRef<
   Omit<FlexProps, "children"> & { stream: NostrEvent; hideScrollbar?: boolean }
 >(({ stream, hideScrollbar, ...props }, ref) => {
   const { timeline: events } = useStreamChatTimeline(stream);
+  const relays = useStreamChatRelays(stream);
 
   return (
     <Flex
@@ -36,7 +38,7 @@ const StreamChatLog = forwardRef<
       {events.map((event) => (
         <ErrorBoundary key={event.id} event={event}>
           {event.kind === kinds.LiveChatMessage ? (
-            <ChatMessage key={event.id} event={event} stream={stream} />
+            <ChatMessage key={event.id} event={event} stream={stream} relays={relays} />
           ) : isValidZap(event) ? (
             <ZapMessage key={event.id} zap={event} />
           ) : null}

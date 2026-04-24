@@ -29,7 +29,7 @@ import { ZapSplit } from "applesauce-common/helpers";
 import { NoteFactory } from "applesauce-common/factories";
 import { getEventPointerFromQTag, processTags, EventPointer } from "applesauce-core/helpers";
 import { Emoji } from "applesauce-common/helpers";
-import { useActiveAccount, useEventStore, useObservableEagerState } from "applesauce-react/hooks";
+import { useActiveAccount, useEventStore, use$ } from "applesauce-react/hooks";
 import { UnsignedEvent } from "nostr-tools";
 import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -77,7 +77,7 @@ function PostModalInner({
   const publish = usePublishEvent();
   const account = useActiveAccount()!;
   const { noteDifficulty } = useAppSettings();
-  const addClientTag = useObservableEagerState(localSettings.addClientTag);
+  const addClientTag = use$(localSettings.addClientTag);
   const promptAddClientTag = useLocalStorageDisclosure("prompt-add-client-tag", true);
   const [miningTarget, setMiningTarget] = useState(0);
   const [publishEntry, setPublishEntry] = useState<PublishLogEntry>();

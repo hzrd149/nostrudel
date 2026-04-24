@@ -1,12 +1,12 @@
 import { Spinner, Tag, TagLabel, TagProps } from "@chakra-ui/react";
-import { useObservableState } from "applesauce-react/hooks";
+import { use$ } from "applesauce-react/hooks";
 import { PublishResponse } from "applesauce-relay";
 
 import { CheckIcon, ErrorIcon } from "../../../components/icons";
 import { PublishLogEntry } from "../../../providers/global/publish-provider";
 
 export function usePublishLogEntryStatus(entry: PublishLogEntry) {
-  const relays = useObservableState(entry.relayStatus$) ?? {};
+  const relays = use$(entry.relayStatus$) ?? {};
 
   const total = entry.relays.length;
   const successful = Object.values(relays).filter((p) => p?.ok) as PublishResponse[];

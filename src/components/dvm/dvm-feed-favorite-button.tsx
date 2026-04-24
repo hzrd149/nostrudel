@@ -19,7 +19,9 @@ export default function DVMFeedFavoriteButton({
   const isFavorite = !!favorites && isAddressPointerInList(favorites, pointer);
 
   const toggle = useAsyncAction(async () => {
-    const operation = isFavorite ? TagOperations.removeAddressPointerTag(pointer) : TagOperations.addAddressPointerTag(pointer);
+    const operation = isFavorite
+      ? TagOperations.removeAddressPointerTag(pointer)
+      : TagOperations.addAddressPointerTag(pointer);
     const draft = await (favorites
       ? EventFactory.fromEvent(favorites).modifyPublicTags(operation)
       : EventFactory.fromKind(kinds.Application).modifyPublicTags(

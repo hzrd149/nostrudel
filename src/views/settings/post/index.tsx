@@ -13,7 +13,7 @@ import {
   Select,
   Switch,
 } from "@chakra-ui/react";
-import { useObservableEagerState } from "applesauce-react/hooks";
+import { use$ } from "applesauce-react/hooks";
 import { Link as RouterLink } from "react-router-dom";
 
 import { useActiveAccount } from "applesauce-react/hooks";
@@ -29,8 +29,8 @@ export default function PostSettings() {
 
   watch("mediaUploadService");
 
-  const addClientTag = useObservableEagerState(localSettings.addClientTag);
-  const alwaysAuthUpload = useObservableEagerState(localSettings.alwaysAuthUpload);
+  const addClientTag = use$(localSettings.addClientTag);
+  const alwaysAuthUpload = use$(localSettings.alwaysAuthUpload);
 
   return (
     <SimpleView

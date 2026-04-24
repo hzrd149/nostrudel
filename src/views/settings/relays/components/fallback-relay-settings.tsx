@@ -1,6 +1,6 @@
 import { Button, Flex, Heading, Text } from "@chakra-ui/react";
 import { relaySet } from "applesauce-core/helpers";
-import { useObservableEagerState } from "applesauce-react/hooks";
+import { use$ } from "applesauce-react/hooks";
 import NipLink from "../../../../components/nip-link";
 import RelayName from "../../../../components/relay/relay-name";
 import { RECOMMENDED_FALLBACK_RELAYS } from "../../../../const";
@@ -10,7 +10,7 @@ import RelayControl from "./relay-control";
 import RelayFavicon from "../../../../components/relay/relay-favicon";
 
 export default function FallbackRelaySettings() {
-  const fallbacks = useObservableEagerState(localSettings.fallbackRelays);
+  const fallbacks = use$(localSettings.fallbackRelays);
   const recommendations = RECOMMENDED_FALLBACK_RELAYS.filter((url) => fallbacks.includes(url) === false);
 
   return (

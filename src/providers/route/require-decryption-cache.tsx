@@ -24,7 +24,7 @@ import {
   useToast,
   VStack,
 } from "@chakra-ui/react";
-import { useObservableEagerState, useObservableState } from "applesauce-react/hooks";
+import { use$ } from "applesauce-react/hooks";
 import { useCallback, useRef, useState } from "react";
 import { firstValueFrom } from "rxjs";
 
@@ -35,9 +35,9 @@ import localSettings from "../../services/preferences";
 import useForceUpdate from "../../hooks/use-force-update";
 
 export default function RequireDecryptionCache({ children }: { children: JSX.Element }) {
-  const stats = useObservableState(decryptionCacheStats$);
-  const cache = useObservableEagerState(decryptionCache$);
-  const autoDecryptMessages = useObservableEagerState(localSettings.autoDecryptMessages);
+  const stats = use$(decryptionCacheStats$);
+  const cache = use$(decryptionCache$);
+  const autoDecryptMessages = use$(localSettings.autoDecryptMessages);
   const [password, setPassword] = useState("");
   const toast = useToast();
   const disableEncryptionModal = useDisclosure();

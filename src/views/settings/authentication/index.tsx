@@ -1,5 +1,5 @@
 import { Flex, FormControl, FormHelperText, FormLabel, Heading, SimpleGrid, Switch } from "@chakra-ui/react";
-import { useObservableEagerState, useObservableState } from "applesauce-react/hooks";
+import { use$ } from "applesauce-react/hooks";
 
 import SimpleView from "../../../components/layout/presets/simple-view";
 import RelayAuthCard from "../../../components/relays/relay-auth-card";
@@ -8,10 +8,10 @@ import localSettings from "../../../services/preferences";
 import { connections$ } from "../../../services/pool";
 
 export default function AuthenticationSettingsView() {
-  const connections = useObservableState(connections$) ?? {};
+  const connections = use$(connections$) ?? {};
   const sortedRelays = Object.keys(connections).sort();
 
-  const proactivelyAuthenticate = useObservableEagerState(localSettings.proactivelyAuthenticate);
+  const proactivelyAuthenticate = use$(localSettings.proactivelyAuthenticate);
 
   return (
     <SimpleView title="Authentication settings" maxW="6xl">

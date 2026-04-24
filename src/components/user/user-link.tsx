@@ -1,5 +1,5 @@
 import { Link, LinkProps } from "@chakra-ui/react";
-import { useActiveAccount, useObservableEagerState } from "applesauce-react/hooks";
+import { useActiveAccount, use$ } from "applesauce-react/hooks";
 import { npubEncode } from "nostr-tools/nip19";
 import { Link as RouterLink } from "react-router-dom";
 
@@ -19,7 +19,7 @@ export default function UserLink({ pubkey, showAt, tab, relays, ...props }: User
   const metadata = useUserProfile({ pubkey, relays });
   const account = useActiveAccount();
   const { removeEmojisInUsernames, showPubkeyColor } = useAppSettings();
-  const hideUsernames = useObservableEagerState(localSettings.hideUsernames);
+  const hideUsernames = use$(localSettings.hideUsernames);
   const color = "#" + pubkey.slice(0, 6);
 
   return (

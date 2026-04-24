@@ -1,6 +1,6 @@
 import { Box, Divider, Flex } from "@chakra-ui/react";
 import { getEventUID } from "applesauce-core/helpers";
-import { useEventModel, useObservableEagerMemo } from "applesauce-react/hooks";
+import { useEventModel, use$ } from "applesauce-react/hooks";
 import { kinds, NostrEvent } from "nostr-tools";
 import { useCallback } from "react";
 import AutoSizer from "react-virtualized-auto-sizer";
@@ -55,15 +55,16 @@ function ArticlesHomePage() {
   const loader = useOutboxTimelineLoader(pointer, { kinds: [kinds.LongFormArticle] });
 
   // Subscribe to event store for timeline events
-  const articles = useObservableEagerMemo(
-    () =>
-      filter
-        ? eventStore
-            .timeline({ ...filter, kinds: [kinds.LongFormArticle] })
-            .pipe(map((events) => events.filter(eventFilter)))
-        : of([]),
-    [filter, eventFilter],
-  );
+  const articles =
+    use$(
+      () =>
+        filter
+          ? eventStore
+              .timeline({ ...filter, kinds: [kinds.LongFormArticle] })
+              .pipe(map((events) => events.filter(eventFilter)))
+          : of([]),
+      [filter, eventFilter],
+    ) ?? [];
 
   const callback = useTimelineCurserIntersectionCallback(loader);
 

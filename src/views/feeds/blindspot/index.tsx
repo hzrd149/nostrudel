@@ -1,5 +1,5 @@
 import { Alert, AlertDescription, AlertIcon, AlertTitle, Flex, Select, SimpleGrid, Text } from "@chakra-ui/react";
-import { useActiveAccount, useObservableEagerState } from "applesauce-react/hooks";
+import { useActiveAccount, use$ } from "applesauce-react/hooks";
 import { nip19 } from "nostr-tools";
 import { memo, useMemo, useState } from "react";
 
@@ -25,7 +25,7 @@ export default function BlindspotHomeView() {
   const account = useActiveAccount()!;
   const [sort, setSort] = useState("quality"); // follows, quality
 
-  const graph = useObservableEagerState(socialGraph$);
+  const graph = use$(socialGraph$);
   const contacts = useUserContactList(account.pubkey);
 
   const pubkeys = useMemo(() => graph.getFollowedByUser(account.pubkey), [graph, account.pubkey]);

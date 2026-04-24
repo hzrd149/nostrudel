@@ -1,5 +1,5 @@
 import { Button, ButtonProps } from "@chakra-ui/react";
-import { useActiveAccount, useEventModel, useObservableState } from "applesauce-react/hooks";
+import { useActiveAccount, useEventModel, use$ } from "applesauce-react/hooks";
 import { useMemo } from "react";
 
 import { RelayIcon } from "../../../../components/icons";
@@ -12,7 +12,7 @@ export default function GroupRelayConnectionsButton({
 }: Omit<ButtonProps, "children" | "colorScheme"> & { group: string }) {
   const account = useActiveAccount()!;
   const relays = useEventModel(DirectMessageRelaysModel, [account.pubkey]);
-  const connections = useObservableState(connections$) ?? {};
+  const connections = use$(connections$) ?? {};
 
   const color = useMemo(() => {
     if (!relays) return "red";

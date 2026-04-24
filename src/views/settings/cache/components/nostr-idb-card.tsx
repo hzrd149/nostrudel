@@ -1,13 +1,13 @@
 import { Button, Card, CardBody, CardFooter, CardHeader, Heading, Text } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 
-import { useObservableEagerState } from "applesauce-react/hooks";
+import { use$ } from "applesauce-react/hooks";
 import useAsyncAction from "../../../../hooks/use-async-action";
 import { changeEventCache, eventCache$ } from "../../../../services/event-cache";
 import EnableWithDelete from "./enable-with-delete";
 
 export default function NostrIdbCard() {
-  const eventCache = useObservableEagerState(eventCache$);
+  const eventCache = use$(eventCache$);
   const enabled = eventCache?.type === "nostr-idb";
 
   const enable = useAsyncAction(async () => {

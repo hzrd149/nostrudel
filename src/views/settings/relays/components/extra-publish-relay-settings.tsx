@@ -1,12 +1,12 @@
 import { Heading, Text } from "@chakra-ui/react";
 import { relaySet } from "applesauce-core/helpers";
-import { useObservableEagerState } from "applesauce-react/hooks";
+import { use$ } from "applesauce-react/hooks";
 import localSettings from "../../../../services/preferences";
 import AddRelayForm from "./add-relay-form";
 import RelayControl from "./relay-control";
 
 export default function ExtraPublishRelaySettings() {
-  const extra = useObservableEagerState(localSettings.extraPublishRelays);
+  const extra = use$(localSettings.extraPublishRelays);
 
   return (
     <>

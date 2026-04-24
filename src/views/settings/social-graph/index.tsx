@@ -13,7 +13,7 @@ import {
   useToast,
   VStack,
 } from "@chakra-ui/react";
-import { useObservableEagerMemo, useObservableEagerState } from "applesauce-react/hooks";
+import { use$ } from "applesauce-react/hooks";
 import { map } from "rxjs";
 
 import SimpleView from "../../../components/layout/presets/simple-view";
@@ -30,10 +30,7 @@ import localSettings from "../../../services/preferences";
 import { clearSocialGraph, socialGraph$ } from "../../../services/social-graph";
 
 function FollowDistanceGroup({ distance, max, label }: { distance: number; max: number; label: string }) {
-  const users = useObservableEagerMemo(
-    () => socialGraph$.pipe(map((graph) => graph.getUsersByFollowDistance(distance))),
-    [distance],
-  );
+  const users = use$(() => socialGraph$.pipe(map((graph) => graph.getUsersByFollowDistance(distance))), [distance]);
 
   // Don't show empty groups
   if (users?.size === 0) return null;
@@ -59,11 +56,11 @@ function FollowDistanceGroup({ distance, max, label }: { distance: number; max: 
 }
 
 function SocialGraphCronSettings() {
-  const running = useObservableEagerState(updateSocialGraphCron.running);
-  const status = useObservableEagerState(updateSocialGraphCron.status);
-  const interval = useObservableEagerState(updateSocialGraphCron.interval);
-  const distance = useObservableEagerState(localSettings.updateSocialGraphDistance);
-  const lastUpdated = useObservableEagerState(localSettings.lastUpdatedSocialGraph);
+  const running = use$(updateSocialGraphCron.running);
+  const status = use$(updateSocialGraphCron.status);
+  const interval = use$(updateSocialGraphCron.interval);
+  const distance = use$(localSettings.updateSocialGraphDistance);
+  const lastUpdated = use$(localSettings.lastUpdatedSocialGraph);
 
   return (
     <Card direction="row" p={4} rounded="md" flexWrap="wrap" gap={4}>
@@ -155,10 +152,10 @@ function SocialGraphCronSettings() {
 export default function SocialGraphSettings() {
   useAppTitle("Social Graph");
   const toast = useToast();
-  const root = useObservableEagerMemo(() => socialGraph$.pipe(map((graph) => graph.getRoot())), []);
-  const size = useObservableEagerMemo(() => socialGraph$.pipe(map((graph) => graph.size())), []);
+  const root = use$(() => socialGraph$.pipe(map((graph) => graph.getRoot())), []);
+  const size = use$(() => socialGraph$.pipe(map((graph) => graph.size())), []);
 
-  const updating = useObservableEagerState(updateSocialGraphCron.running);
+  const updating = use$(updateSocialGraphCron.running);
 
   const displayMaxPeople = useBreakpointValue({ base: 4, lg: 5, xl: 10 }) || 4;
 

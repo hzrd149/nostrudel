@@ -1,5 +1,5 @@
 import { Box, ButtonGroup, Flex } from "@chakra-ui/react";
-import { useActiveAccount, useObservableEagerState } from "applesauce-react/hooks";
+import { useActiveAccount, use$ } from "applesauce-react/hooks";
 import { kinds } from "nostr-tools";
 import { useMemo } from "react";
 import AutoSizer from "react-virtualized-auto-sizer";
@@ -40,7 +40,7 @@ export default function ZapsTab() {
   const scroll = useVirtualListScrollRestore("manual");
 
   // Start the zap notifications loader
-  const loader = useObservableEagerState(zapNotificationsLoader$);
+  const loader = use$(zapNotificationsLoader$);
   const callback = useTimelineCurserIntersectionCallback(loader ?? undefined);
 
   // Get account
@@ -56,7 +56,7 @@ export default function ZapsTab() {
   );
 
   // Get grouped zap notifications from the observable
-  const groups = useObservableEagerState(zapNotifications$);
+  const groups = use$(zapNotifications$) ?? [];
 
   // Group zap groups by time period and flatten into list items
   const listItems = useMemo<ListItem[]>(() => {

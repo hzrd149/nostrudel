@@ -1,6 +1,6 @@
 import { Box, Button, Divider, Text, useDisclosure } from "@chakra-ui/react";
 
-import { useObservableEagerState } from "applesauce-react/hooks";
+import { use$ } from "applesauce-react/hooks";
 import { ChevronDownIcon, ChevronUpIcon } from "../../../components/icons";
 import SimpleView from "../../../components/layout/presets/simple-view";
 import { CAP_IS_NATIVE, WASM_RELAY_SUPPORTED } from "../../../env";
@@ -14,7 +14,7 @@ import NostrRelayTrayCard from "./components/nostr-relay-tray-card";
 import WasmWorkerCard from "./components/wasm-worker-card";
 
 export default function CacheRelayView() {
-  const eventCache = useObservableEagerState(eventCache$);
+  const eventCache = use$(eventCache$);
   const showAdvanced = useDisclosure({ defaultIsOpen: eventCache === null });
 
   return (

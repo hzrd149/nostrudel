@@ -15,7 +15,7 @@ import {
 } from "@chakra-ui/react";
 import { EventFactory } from "applesauce-core/factories";
 import { addRelayTag, removeRelayTag } from "applesauce-core/operations/tag/relay";
-import { useActiveAccount, useObservableEagerState } from "applesauce-react/hooks";
+import { useActiveAccount, use$ } from "applesauce-react/hooks";
 import { kinds } from "nostr-tools";
 
 import SimpleView from "../../../components/layout/presets/simple-view";
@@ -144,7 +144,7 @@ export default function SearchSettings() {
 }
 
 function UsernameLookupSettings() {
-  const selectedProvider = useObservableEagerState(localSettings.usernameLookupProvider) as LookupProvider;
+  const selectedProvider = use$(localSettings.usernameLookupProvider) as LookupProvider;
 
   return (
     <>

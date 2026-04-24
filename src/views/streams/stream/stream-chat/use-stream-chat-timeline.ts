@@ -1,18 +1,17 @@
 import { getEventUID } from "applesauce-core/helpers";
-import { getStreamRelays } from "../../../../helpers/nostr/stream";
 import { Filter, kinds, NostrEvent } from "nostr-tools";
 import { useCallback, useMemo } from "react";
 
 import { getEventCoordinate } from "../../../../helpers/nostr/event";
 import { getStreamEndTime, getStreamHost, getStreamStartTime } from "../../../../helpers/nostr/stream";
-import { useReadRelays } from "../../../../hooks/use-client-relays";
 import useClientSideMuteFilter from "../../../../hooks/use-client-side-mute-filter";
 import useStreamGoal from "../../../../hooks/use-stream-goal";
 import useTimelineLoader from "../../../../hooks/use-timeline-loader";
 import useUserMuteFilter from "../../../../hooks/use-user-mute-filter";
+import useStreamChatRelays from "./use-stream-chat-relays";
 
 export default function useStreamChatTimeline(stream: NostrEvent) {
-  const readRelays = useReadRelays(getStreamRelays(stream));
+  const readRelays = useStreamChatRelays(stream);
 
   const host = getStreamHost(stream);
   const starts = getStreamStartTime(stream);

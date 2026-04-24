@@ -1,5 +1,5 @@
 import { Text, TextProps } from "@chakra-ui/react";
-import { useObservableEagerState } from "applesauce-react/hooks";
+import { use$ } from "applesauce-react/hooks";
 import { memo } from "react";
 
 import { getDisplayName } from "../../helpers/nostr/profile";
@@ -12,7 +12,7 @@ function UserName({ pubkey, ...props }: Omit<TextProps, "children"> & { pubkey: 
   const { removeEmojisInUsernames, showPubkeyColor } = useAppSettings();
   const color = "#" + pubkey.slice(0, 6);
 
-  const hideUsernames = useObservableEagerState(localSettings.hideUsernames);
+  const hideUsernames = use$(localSettings.hideUsernames);
 
   return (
     <Text

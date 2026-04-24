@@ -1,10 +1,8 @@
 import { Badge, BadgeProps } from "@chakra-ui/react";
-import { NostrEvent } from "nostr-tools";
+import { Stream } from "applesauce-common/casts";
 
-import { getStreamStatus } from "../../../helpers/nostr/stream";
-
-export default function StreamStatusBadge({ stream, ...props }: { stream: NostrEvent } & Omit<BadgeProps, "children">) {
-  switch (getStreamStatus(stream)) {
+export default function StreamStatusBadge({ stream, ...props }: { stream: Stream } & Omit<BadgeProps, "children">) {
+  switch (stream.status) {
     case "planned":
       return (
         <Badge colorScheme="orange" variant="solid" {...props}>

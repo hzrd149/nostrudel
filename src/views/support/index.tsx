@@ -2,7 +2,7 @@ import { Box, Button, Divider, Flex, Heading, Text, useDisclosure } from "@chakr
 import { getTagValue, unixNow } from "applesauce-core/helpers";
 import { getZapPayment, isValidZap } from "applesauce-common/helpers";
 import { TimelineModel } from "applesauce-core/models";
-import { useEventModel, useObservableMemo } from "applesauce-react/hooks";
+import { useEventModel, use$ } from "applesauce-react/hooks";
 import confetti from "canvas-confetti";
 import dayjs from "dayjs";
 import { kinds } from "nostr-tools";
@@ -68,7 +68,7 @@ export default function SupportView() {
     .filter(isValidZap)
     .sort((a, b) => (getZapPayment(b)?.amount ?? 0) - (getZapPayment(a)?.amount ?? 0) || b.created_at - a.created_at);
 
-  const paidInvoice = useObservableMemo(
+  const paidInvoice = use$(
     () =>
       request
         ? eventStore.filters([{ kinds: [kinds.Zap], since: unixNow() }]).pipe(

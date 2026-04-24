@@ -24,7 +24,7 @@ import {
 import { getEventPointerFromQTag, processTags } from "applesauce-core/helpers";
 import { Emoji } from "applesauce-common/helpers";
 import { NoteFactory } from "applesauce-common/factories";
-import { useObservableEagerState } from "applesauce-react/hooks";
+import { use$ } from "applesauce-react/hooks";
 import { UnsignedEvent } from "nostr-tools";
 import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -73,7 +73,7 @@ function ShortTextNoteFormInner({
   const publish = usePublishEvent();
   const account = useActiveAccount()!;
   const { noteDifficulty } = useAppSettings();
-  const addClientTag = useObservableEagerState(localSettings.addClientTag);
+  const addClientTag = use$(localSettings.addClientTag);
   const promptAddClientTag = useLocalStorageDisclosure("prompt-add-client-tag", true);
   const [miningTarget, setMiningTarget] = useState(0);
   const [published, setPublished] = useState<PublishLogEntry>();

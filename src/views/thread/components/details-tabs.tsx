@@ -96,8 +96,7 @@ export default function DetailsTabs({ post }: { post: ThreadItem }) {
       } catch {
         return acc;
       }
-      const tag =
-        app.tags.find((t) => t[0] === "web" && t[2] === addressType) || app.tags.find((t) => t[0] === "web");
+      const tag = app.tags.find((t) => t[0] === "web" && t[2] === addressType) || app.tags.find((t) => t[0] === "web");
       if (!tag || !tag[1]) return acc;
       seen.add(app.pubkey);
       acc.push({ app, link: tag[1].replace("<bech32>", sharableAddress) });

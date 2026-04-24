@@ -1,8 +1,9 @@
 import { IconButton, IconButtonProps } from "@chakra-ui/react";
+import { Stream } from "applesauce-common/casts";
 import { EventFactory } from "applesauce-core/factories";
 import { getAddressPointerForEvent } from "applesauce-core/helpers";
 import { TagOperations } from "applesauce-core/operations";
-import { kinds, NostrEvent } from "nostr-tools";
+import { kinds } from "nostr-tools";
 
 import { StarEmptyIcon, StarFullIcon } from "../../../components/icons";
 import { isEventInList } from "../../../helpers/nostr/lists";
@@ -13,11 +14,11 @@ import { usePublishEvent } from "../../../providers/global/publish-provider";
 export default function StreamFavoriteButton({
   stream,
   ...props
-}: { stream: NostrEvent } & Omit<IconButtonProps, "children" | "aria-label" | "isLoading" | "onClick">) {
+}: { stream: Stream } & Omit<IconButtonProps, "children" | "aria-label" | "isLoading" | "onClick">) {
   const publish = usePublishEvent();
   const { favorites } = useFavoriteStreams();
-  const address = getAddressPointerForEvent(stream);
-  const isFavorite = !!favorites && isEventInList(favorites, stream);
+  const address = getAddressPointerForEvent(stream.event);
+  const isFavorite = !!favorites && isEventInList(favorites, stream.event);
 
   const click = useAsyncAction(async () => {
     if (!address) return; // v5: getAddressPointerForEvent can return null

@@ -1,57 +1,63 @@
-import { Flex, Switch } from "@chakra-ui/react";
-import { useEventModel, useObservableState } from "applesauce-react/hooks";
-import { Filter, kinds } from "nostr-tools";
+import { Box, Flex, Switch, Text } from "@chakra-ui/react";
+import { mapEventsToStore } from "applesauce-core";
+import { unixNow } from "applesauce-core/helpers";
+import { use$ } from "applesauce-react/hooks";
+import { kinds } from "nostr-tools";
 import { useMemo } from "react";
 import { NEVER } from "rxjs";
-import { unixNow } from "applesauce-core/helpers";
-import { shareAndHold } from "../../helpers/observable";
 
 import SimpleView from "../../components/layout/presets/simple-view";
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
-import LoadMoreButton from "../../components/timeline/load-more-button";
 import { useAppTitle } from "../../hooks/use-app-title";
+import { useReadRelays } from "../../hooks/use-client-relays";
 import { useRouteStateBoolean } from "../../hooks/use-route-state-value";
-import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
-import { useOutboxTimelineLoader } from "../../hooks/use-outbox-timeline-loader";
-import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
-import { OutboxSelectionModel } from "../../models/outbox-selection";
-import outboxSubscriptionsService from "../../services/outbox-subscriptions";
-import EndedStreamsSection from "./components/sections/ended-streams-section";
+import { eventStore } from "../../services/event-store";
+import pool from "../../services/pool";
 import FavoritesStreamsSection from "./components/sections/favorites-streams-section";
-import LiveStreamsSection from "./components/sections/live-streams-section";
+import StreamsSection from "./components/sections/streams-section";
+
+// Streams older than this are not interesting for the homepage; the helpers also
+// auto-classify anything older than two weeks as "ended", so a 7-day window is plenty
+// to capture currently live and recently-planned streams.
+const STREAMS_LOOKBACK_SECONDS = 7 * 24 * 60 * 60;
 
 function StreamsPage() {
   useAppTitle("Streams");
   const showEnded = useRouteStateBoolean("ended", false);
 
   const { filter, pointer } = usePeopleListContext();
-  const { selection, outboxes } = useEventModel(OutboxSelectionModel, pointer ? [pointer] : undefined) ?? {};
+  const readRelays = useReadRelays(["wss://relay.snort.social"]);
 
-  // For outbox timeline loader, only include #p tags (authors are added automatically by outbox system)
-  const outboxFilter = useMemo(() => {
+  const filters = useMemo(() => {
     if (!filter) return undefined;
     const { authors, ...rest } = filter;
-    return {
-      ...rest,
-      kinds: [kinds.LiveEvent],
-      "#p": authors,
-    };
+    return [
+      {
+        ...rest,
+        kinds: [kinds.LiveEvent],
+        "#p": authors,
+        since: unixNow() - STREAMS_LOOKBACK_SECONDS,
+      },
+      {
+        ...rest,
+        kinds: [kinds.LiveEvent],
+        authors: authors,
+        since: unixNow() - STREAMS_LOOKBACK_SECONDS,
+      },
+    ];
   }, [filter]);
 
-  const loader = useOutboxTimelineLoader(pointer, outboxFilter);
-
-  // Create the subscription observable with shareAndHold to keep it open for a bit
+  // Open a single live subscription for the page. The outbox service routes
+  // each author's events to the relays they actually publish on. Events flow
+  // into the shared event store and the section components react via
+  // `eventStore.timeline()`.
   const subscription$ = useMemo(() => {
-    if (!pointer || !outboxFilter) return NEVER;
-    const subscriptionFilter = { ...outboxFilter, since: unixNow() - 60 };
-    return outboxSubscriptionsService.subscription(pointer, subscriptionFilter).pipe(shareAndHold(60_000)); // Keep subscription alive for 60 seconds after last unsubscribe
-  }, [pointer, outboxFilter]);
+    if (!pointer || !filters) return NEVER;
+    return pool.subscription(readRelays, filters).pipe(mapEventsToStore(eventStore));
+  }, [pointer, filters, readRelays]);
 
-  // Subscribe to live events from outboxes
-  useObservableState(subscription$);
-
-  const callback = useTimelineCurserIntersectionCallback(loader);
+  use$(subscription$);
 
   return (
     <SimpleView
@@ -60,20 +66,32 @@ function StreamsPage() {
         <Flex gap="2" wrap="wrap" alignItems="center">
           <PeopleListSelection size="sm" />
           <Switch isChecked={showEnded.isOpen} onChange={showEnded.onToggle}>
-            Show Ended
+            Ended
           </Switch>
         </Flex>
       }
     >
-      <IntersectionObserverProvider callback={callback}>
-        <FavoritesStreamsSection />
-        <LiveStreamsSection filter={filter} />
-        {showEnded.isOpen && <EndedStreamsSection filter={filter} />}
-        <LoadMoreButton loader={loader} />
-      </IntersectionObserverProvider>
+      <FavoritesStreamsSection />
+      <StreamsSection
+        title="Live"
+        status="live"
+        filter={filter}
+        emptyState={
+          !filter ? null : (
+            <Box mt="2">
+              <Text color="GrayText">
+                No live streams from the selected people right now. New streams will appear here automatically.
+              </Text>
+            </Box>
+          )
+        }
+      />
+      <StreamsSection title="Planned" status="planned" filter={filter} mt="4" />
+      {showEnded.isOpen && <StreamsSection title="Ended" status="ended" filter={filter} mt="4" />}
     </SimpleView>
   );
 }
+
 export default function StreamHomeView() {
   return (
     <PeopleListProvider>

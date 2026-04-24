@@ -1,7 +1,7 @@
 import { IconButton, IconButtonProps, useToast } from "@chakra-ui/react";
 import { useCallback } from "react";
 
-import { useObservableEagerMemo, useObservableState } from "applesauce-react/hooks";
+import { use$ } from "applesauce-react/hooks";
 import authenticationSigner from "../../services/authentication-signer";
 import pool from "../../services/pool";
 import { ErrorIcon } from "../icons";
@@ -13,10 +13,10 @@ export function RelayAuthIconButton({
   ...props
 }: { relay: string } & Omit<IconButtonProps, "icon" | "aria-label" | "title">) {
   const toast = useToast();
-  const connected = useObservableEagerMemo(() => pool.relay(relay).connected$, [relay]);
-  const challenge = useObservableEagerMemo(() => pool.relay(relay).challenge$, [relay]);
-  const response = useObservableEagerMemo(() => pool.relay(relay).authenticationResponse$, [relay]);
-  const signing = useObservableState(authenticationSigner.relayState$)?.[relay];
+  const connected = use$(() => pool.relay(relay).connected$, [relay]);
+  const challenge = use$(() => pool.relay(relay).challenge$, [relay]);
+  const response = use$(() => pool.relay(relay).authenticationResponse$, [relay]);
+  const signing = use$(authenticationSigner.relayState$)?.[relay];
 
   const authenticate = useCallback(async () => {
     try {

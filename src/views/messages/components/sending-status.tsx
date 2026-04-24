@@ -1,6 +1,6 @@
 import { LockIcon } from "@chakra-ui/icons";
 import { Box, Button, ButtonGroup, Flex, Progress, Text, useToast, VStack } from "@chakra-ui/react";
-import { useActiveAccount, useObservableMemo } from "applesauce-react/hooks";
+import { useActiveAccount, use$ } from "applesauce-react/hooks";
 import { useMemo } from "react";
 import { combineLatest, lastValueFrom } from "rxjs";
 
@@ -14,7 +14,7 @@ export default function SendingStatus({ entries, onSkip }: { entries: PublishLog
   const toast = useToast();
 
   // Subscribe to all publishing results
-  const allResults = useObservableMemo(
+  const allResults = use$(
     () => (entries.length > 0 ? combineLatest(entries.map((entry) => entry.results$)) : undefined),
     [entries],
   );
@@ -24,7 +24,7 @@ export default function SendingStatus({ entries, onSkip }: { entries: PublishLog
 
   // Track auth requirements for each relay
   const relayState =
-    useObservableMemo(
+    use$(
       () =>
         allRelays.length > 0
           ? combineLatest(

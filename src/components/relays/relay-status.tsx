@@ -1,5 +1,5 @@
 import { Badge, BadgeProps } from "@chakra-ui/react";
-import { useObservableState } from "applesauce-react/hooks";
+import { use$ } from "applesauce-react/hooks";
 
 import { getConnectionStateColor } from "../../helpers/relay";
 import { connections$ } from "../../services/pool";
@@ -8,7 +8,7 @@ export default function RelayStatusBadge({
   relay,
   ...props
 }: { relay: string } & Omit<BadgeProps, "colorScheme" | "children">) {
-  const connections = useObservableState(connections$) ?? {};
+  const connections = use$(connections$) ?? {};
   const state = connections[relay];
 
   return (

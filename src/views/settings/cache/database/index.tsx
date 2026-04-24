@@ -3,14 +3,14 @@ import { Link, Text } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 
 import SimpleView from "../../../../components/layout/presets/simple-view";
-import { useObservableEagerState } from "applesauce-react/hooks";
+import { use$ } from "applesauce-react/hooks";
 import { eventCache$ } from "../../../../services/event-cache";
 
 const WasmDatabasePage = lazy(() => import("./wasm"));
 const InternalDatabasePage = lazy(() => import("./internal"));
 
 export default function DatabaseView() {
-  const eventCache = useObservableEagerState(eventCache$);
+  const eventCache = use$(eventCache$);
 
   let content = (
     <Text>

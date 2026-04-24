@@ -2,32 +2,22 @@ import { Box, Button, Flex, useToast } from "@chakra-ui/react";
 import { StreamChatMessageFactory } from "applesauce-common/factories";
 import { Emoji } from "applesauce-common/helpers";
 import { NostrEvent } from "nostr-tools";
-import { useMemo, useRef } from "react";
+import { useRef } from "react";
 import { useForm } from "react-hook-form";
 
 import InsertGifButton from "../../../../components/gif/insert-gif-button";
 import { MagicInput, RefType } from "../../../../components/magic-textarea";
-import { unique } from "../../../../helpers/array";
-import { getStreamHost } from "../../../../helpers/nostr/stream";
-import { useReadRelays } from "../../../../hooks/use-client-relays";
 import useTextAreaUploadFile, { useTextAreaInsertTextWithForm } from "../../../../hooks/use-textarea-upload-file";
-import { useUserInbox } from "../../../../hooks/use-user-mailboxes";
 import { useContextEmojis } from "../../../../providers/global/emoji-provider";
 import { usePublishEvent } from "../../../../providers/global/publish-provider";
 import StreamZapButton from "../components/stream-zap-button";
+import useStreamChatRelays from "./use-stream-chat-relays";
 
 export default function ChatMessageForm({ stream, hideZapButton }: { stream: NostrEvent; hideZapButton?: boolean }) {
   const toast = useToast();
   const publish = usePublishEvent();
   const emojis = useContextEmojis();
-  const streamRelays = useReadRelays();
-  const host = getStreamHost(stream);
-  const hostReadRelays = useUserInbox(host);
-
-  const writeRelays = useMemo(
-    () => unique([...streamRelays, ...(hostReadRelays ?? [])]),
-    [hostReadRelays, streamRelays],
-  );
+  const writeRelays = useStreamChatRelays(stream);
 
   const { setValue, handleSubmit, formState, reset, getValues, watch } = useForm({
     defaultValues: { content: "" },

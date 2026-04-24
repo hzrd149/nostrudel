@@ -1,12 +1,12 @@
 import { Button, Card, CardBody, CardFooter, CardHeader, Heading, Link, Text } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 
-import { useObservableEagerState } from "applesauce-react/hooks";
+import { use$ } from "applesauce-react/hooks";
 import useAsyncAction from "../../../../hooks/use-async-action";
 import { changeEventCache, eventCache$ } from "../../../../services/event-cache";
 
 export default function NativeSqliteCard() {
-  const eventCache = useObservableEagerState(eventCache$);
+  const eventCache = use$(eventCache$);
   const enabled = eventCache?.type === "native-sqlite";
   const enable = useAsyncAction(async () => {
     await changeEventCache("native-sqlite");

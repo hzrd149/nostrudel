@@ -1,11 +1,11 @@
 import { Card, FormControl, FormHelperText, FormLabel, Input } from "@chakra-ui/react";
-import { useObservableEagerState } from "applesauce-react/hooks";
+import { use$ } from "applesauce-react/hooks";
 
 import { DEFAULT_PRIMAL_CACHE_URL } from "../../../../const";
 import localSettings from "../../../../services/preferences";
 
 export function PrimalConfig() {
-  const primalCache = useObservableEagerState(localSettings.primalCacheUrl) || "";
+  const primalCache = use$(localSettings.primalCacheUrl) || "";
 
   return (
     <>

@@ -1,7 +1,7 @@
 import { WarningIcon } from "@chakra-ui/icons";
 import { Button, Flex, Heading, Text } from "@chakra-ui/react";
 import { relaySet } from "applesauce-core/helpers";
-import { useObservableEagerState } from "applesauce-react/hooks";
+import { use$ } from "applesauce-react/hooks";
 import RelayFavicon from "../../../../components/relay/relay-favicon";
 import RelayName from "../../../../components/relay/relay-name";
 import { RECOMMENDED_LOOKUP_RELAYS } from "../../../../const";
@@ -10,7 +10,7 @@ import AddRelayForm from "./add-relay-form";
 import RelayControl from "./relay-control";
 
 export default function LookupRelaySettings() {
-  const lookupRelays = useObservableEagerState(localSettings.lookupRelays);
+  const lookupRelays = use$(localSettings.lookupRelays);
   const recommendations = RECOMMENDED_LOOKUP_RELAYS.filter((url) => lookupRelays.includes(url) === false);
 
   return (

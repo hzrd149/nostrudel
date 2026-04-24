@@ -1,7 +1,7 @@
 import { Box, CardProps, Flex, Heading, SimpleGrid, Text } from "@chakra-ui/react";
 import { includeMailboxes, withImmediateValueOrDefault } from "applesauce-core";
 import { groupPubkeysByRelay, selectOptimalRelays } from "applesauce-core/helpers";
-import { useActiveAccount, useObservableEagerMemo } from "applesauce-react/hooks";
+import { useActiveAccount, use$ } from "applesauce-react/hooks";
 import { ignoreUnhealthyRelaysOnPointers } from "applesauce-relay";
 import { useMemo } from "react";
 import { map } from "rxjs";
@@ -37,7 +37,7 @@ function OutboxRelayRow({ relay, pubkeys, totalUsers }: { relay: string; pubkeys
 function ContactsOutboxes() {
   const account = useActiveAccount();
 
-  const contacts = useObservableEagerMemo(
+  const contacts = use$(
     () =>
       account &&
       eventStore.contacts({ pubkey: account.pubkey }).pipe(

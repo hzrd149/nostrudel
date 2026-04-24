@@ -1,11 +1,11 @@
 import { FormControl, FormHelperText, FormLabel, Select } from "@chakra-ui/react";
-import { useObservableEagerState } from "applesauce-react/hooks";
+import { use$ } from "applesauce-react/hooks";
 
 import SimpleView from "../../../components/layout/presets/simple-view";
 import localSettings from "../../../services/preferences";
 
 function VerifyEventSettings() {
-  const verifyEventMethod = useObservableEagerState(localSettings.verifyEventMethod);
+  const verifyEventMethod = use$(localSettings.verifyEventMethod);
 
   return (
     <>

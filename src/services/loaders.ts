@@ -93,7 +93,7 @@ export const groupInfoLoader = createTagValueLoader(pool, "d", {
 /** Loader for loading a users social graph */
 export const socialGraphLoader = createSocialGraphLoader(pool, {
   eventStore,
-  extraRelays: localSettings.fallbackRelays,
+  extraRelays: localSettings.lookupRelays,
   hints: false,
 });
 

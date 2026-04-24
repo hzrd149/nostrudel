@@ -1,5 +1,5 @@
 import { MailboxesModel } from "applesauce-core/models";
-import { useEventModel, useObservableEagerState } from "applesauce-react/hooks";
+import { useEventModel, use$ } from "applesauce-react/hooks";
 import { ProfilePointer } from "nostr-tools/nip19";
 import { useMemo } from "react";
 import { liveness } from "../services/pool";
@@ -11,7 +11,7 @@ export default function useUserMailboxes(user?: string | ProfilePointer) {
 
 /** Gets the users inboxes and filters out unhealthy relays */
 export function useUserInbox(pubkey?: string | ProfilePointer): string[] | undefined {
-  const unhealthy = useObservableEagerState(liveness.unhealthy$);
+  const unhealthy = use$(liveness.unhealthy$) ?? [];
   const mailboxes = useUserMailboxes(pubkey);
 
   return useMemo(() => {
@@ -22,8 +22,8 @@ export function useUserInbox(pubkey?: string | ProfilePointer): string[] | undef
 
 /** Gets the users outboxes or uses fallback relays and filters out unhealthy relays */
 export function useUserOutbox(pubkey?: string | ProfilePointer): string[] | undefined {
-  const fallbacks = useObservableEagerState(localSettings.fallbackRelays);
-  const unhealthy = useObservableEagerState(liveness.unhealthy$);
+  const fallbacks = use$(localSettings.fallbackRelays);
+  const unhealthy = use$(liveness.unhealthy$) ?? [];
   const mailboxes = useUserMailboxes(pubkey);
 
   return useMemo(() => {

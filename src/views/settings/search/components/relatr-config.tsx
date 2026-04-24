@@ -3,7 +3,7 @@ import { isHexKey, nprofileEncode } from "applesauce-core/helpers";
 import { nip19 } from "nostr-tools";
 import { useState } from "react";
 
-import { useObservableEagerState } from "applesauce-react/hooks";
+import { use$ } from "applesauce-react/hooks";
 import useAsyncAction from "../../../../hooks/use-async-action";
 import { relatrServer$ } from "../../../../services/lookup/relatr";
 import localSettings from "../../../../services/preferences";
@@ -12,7 +12,7 @@ import { RelatrServerStatus } from "./relatr-server-status";
 export function RelatrConfig() {
   const [input, setInput] = useState("");
   const [inputError, setInputError] = useState<string | null>(null);
-  const pointer = useObservableEagerState(relatrServer$);
+  const pointer = use$(relatrServer$);
 
   const setServer = useAsyncAction(async () => {
     const value = input.trim();

@@ -6,7 +6,7 @@ import {
   Rumor,
 } from "applesauce-common/helpers";
 import { getExpirationTimestamp } from "applesauce-core/helpers";
-import { useActiveAccount, useEventModel, useObservableState } from "applesauce-react/hooks";
+import { useActiveAccount, useEventModel, use$ } from "applesauce-react/hooks";
 import { NostrEvent } from "nostr-tools";
 import { memo, useCallback, useContext, useEffect, useMemo } from "react";
 import { Navigate, UNSAFE_DataRouterContext, useLocation, useNavigate, useParams } from "react-router-dom";
@@ -56,7 +56,7 @@ function DirectMessageGroupPage({ group }: { group: string }) {
   const location = useLocation();
 
   // Keep a subscription open for NIP-17 messages
-  useObservableState(wrappedMessageSubscription);
+  use$(wrappedMessageSubscription);
 
   const { router } = useContext(UNSAFE_DataRouterContext)!;
   const marker = useRouterMarker(router);

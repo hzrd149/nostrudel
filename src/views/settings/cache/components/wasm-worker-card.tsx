@@ -2,13 +2,13 @@ import { Button, Card, CardBody, CardFooter, CardHeader, Heading, Link, Text } f
 import { useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
 
-import { useObservableEagerState } from "applesauce-react/hooks";
+import { use$ } from "applesauce-react/hooks";
 import { eventCache$, changeEventCache } from "../../../../services/event-cache";
 import EnableWithDelete from "./enable-with-delete";
 import useAsyncAction from "../../../../hooks/use-async-action";
 
 export default function WasmWorkerCard() {
-  const eventCache = useObservableEagerState(eventCache$);
+  const eventCache = use$(eventCache$);
   const enabled = eventCache?.type === "wasm-worker";
   const enable = useAsyncAction(async () => {
     await changeEventCache("wasm-worker");

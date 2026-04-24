@@ -1,5 +1,5 @@
 import { Tab, TabIndicator, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/react";
-import { useObservableEagerState, useObservableState } from "applesauce-react/hooks";
+import { use$ } from "applesauce-react/hooks";
 
 import useRouteSearchValue from "../../../hooks/use-route-search-value";
 import authenticationSigner from "../../../services/authentication-signer";
@@ -14,11 +14,11 @@ export default function TaskManagerRelays() {
   const { value: tab, setValue: setTab } = useRouteSearchValue("tab", TABS[0]);
   const tabIndex = TABS.indexOf(tab);
 
-  const notices = useObservableEagerState(notices$);
+  const notices = use$(notices$);
 
-  const connections = useObservableState(connections$) ?? {};
+  const connections = use$(connections$) ?? {};
   const connected = Object.values(connections).reduce((t, s) => (s === "connected" ? t + 1 : t), 0);
-  const pending = useObservableEagerState(authenticationSigner.relayState$);
+  const pending = use$(authenticationSigner.relayState$);
 
   return (
     <Tabs position="relative" variant="unstyled" index={tabIndex} onChange={(i) => setTab(TABS[i])} isLazy>

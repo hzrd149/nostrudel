@@ -13,7 +13,7 @@ import {
   useToast,
   VStack,
 } from "@chakra-ui/react";
-import { useObservableEagerState, useObservableState } from "applesauce-react/hooks";
+import { use$ } from "applesauce-react/hooks";
 import { useCallback, useState } from "react";
 import { firstValueFrom } from "rxjs";
 
@@ -29,7 +29,7 @@ function formatBytes(bytes: number): string {
 }
 
 function DecryptionCacheStats() {
-  const stats = useObservableState(decryptionCacheStats$);
+  const stats = use$(decryptionCacheStats$);
   const [clearing, setClearing] = useState(false);
   const toast = useToast();
 
@@ -113,8 +113,8 @@ function DecryptionCacheStats() {
 }
 
 export default function MessageCacheSection() {
-  const encryptDecryptionCache = useObservableEagerState(localSettings.encryptDecryptionCache);
-  const enableDecryptionCache = useObservableEagerState(localSettings.enableDecryptionCache);
+  const encryptDecryptionCache = use$(localSettings.encryptDecryptionCache);
+  const enableDecryptionCache = use$(localSettings.enableDecryptionCache);
 
   return (
     <VStack spacing="4" align="stretch">

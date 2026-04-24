@@ -13,7 +13,7 @@ import {
   NumberInputStepper,
   Text,
 } from "@chakra-ui/react";
-import { useObservableEagerState } from "applesauce-react/hooks";
+import { use$ } from "applesauce-react/hooks";
 import { addEvents, countEvents, countEventsByKind, updateUsed } from "nostr-idb";
 import { NostrEvent } from "nostr-tools";
 import { useState } from "react";
@@ -56,7 +56,7 @@ export default function InternalDatabasePage() {
     return await countEventsByKind(database);
   }, []);
 
-  const maxEvents = useObservableEagerState(localSettings.idbMaxEvents);
+  const maxEvents = use$(localSettings.idbMaxEvents);
 
   const [clearing, setClearing] = useState(false);
   const handleClearData = async () => {

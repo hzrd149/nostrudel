@@ -1,11 +1,11 @@
 import { Button, Code, Flex, Heading, SimpleGrid, Text } from "@chakra-ui/react";
-import { useObservableEagerState } from "applesauce-react/hooks";
+import { use$ } from "applesauce-react/hooks";
 import { useCallback } from "react";
 import RelayName from "../../../../components/relay/relay-name";
 import { liveness } from "../../../../services/pool";
 
 export default function UnhealthyRelaysSettings() {
-  const unhealthyRelays = useObservableEagerState(liveness.unhealthy$);
+  const unhealthyRelays = use$(liveness.unhealthy$) ?? [];
 
   return (
     <>
@@ -25,7 +25,7 @@ export default function UnhealthyRelaysSettings() {
 }
 
 function DeadRelayControl({ url }: { url: string }) {
-  const state = useObservableEagerState(liveness.state(url));
+  const state = use$(liveness.state(url));
   const revive = useCallback(() => {
     liveness.revive(url);
   }, [url]);

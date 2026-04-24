@@ -17,7 +17,7 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { DecodeResult, encodeDecodeResult } from "applesauce-core/helpers";
-import { useObservableState } from "applesauce-react/hooks";
+import { use$ } from "applesauce-react/hooks";
 import { useContext, useState } from "react";
 import { useSet } from "react-use";
 
@@ -33,7 +33,7 @@ function SearchOnRelaysModal({ isOpen, onClose, decode }: Omit<ModalProps, "chil
   const [loading, setLoading] = useState(false);
   const [filter, setFilter] = useState("");
 
-  const discoveredRelays = Object.entries(useObservableState(connections$) ?? {}).reduce<string[]>(
+  const discoveredRelays = Object.entries(use$(connections$) ?? {}).reduce<string[]>(
     (arr, [relay, status]) => (status !== "error" ? [...arr, relay] : arr),
     [],
   );

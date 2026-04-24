@@ -1,4 +1,4 @@
-import { useEventStore, useObservableMemo } from "applesauce-react/hooks";
+import { useEventStore, use$ } from "applesauce-react/hooks";
 import { NostrEvent } from "nostr-tools";
 
 import hash_sum from "hash-sum";
@@ -9,7 +9,7 @@ export default function useReplaceableEvents(coordinates: string[] | CustomAddre
   const eventStore = useEventStore();
 
   return (
-    useObservableMemo(() => {
+    use$(() => {
       if (!coordinates) return of([]);
 
       const models = coordinates

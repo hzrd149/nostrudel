@@ -1,7 +1,7 @@
 import { Avatar, AvatarProps } from "@chakra-ui/react";
 import styled from "@emotion/styled";
 import { getProfilePicture, ProfileContent } from "applesauce-core/helpers";
-import { useActiveAccount, useObservableEagerState } from "applesauce-react/hooks";
+import { useActiveAccount, use$ } from "applesauce-react/hooks";
 import { ProfilePointer } from "nostr-tools/nip19";
 import { forwardRef, memo, useMemo } from "react";
 import { useAsync } from "react-use";
@@ -92,7 +92,7 @@ export type MetadataAvatarProps = Omit<AvatarProps, "src"> & {
 export const MetadataAvatar = forwardRef<HTMLDivElement, MetadataAvatarProps>(
   ({ pubkey, metadata, noProxy, showNip05, children, square = true, ...props }, ref) => {
     const { imageProxy, showPubkeyColor } = useAppSettings();
-    const hideUsernames = useObservableEagerState(localSettings.hideUsernames);
+    const hideUsernames = use$(localSettings.hideUsernames);
     const account = useActiveAccount();
     const picture = useMemo(() => {
       if (hideUsernames && pubkey && pubkey !== account?.pubkey) return undefined;

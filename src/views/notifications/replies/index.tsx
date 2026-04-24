@@ -1,6 +1,6 @@
 import { Box, ButtonGroup, Flex } from "@chakra-ui/react";
 import { COMMENT_KIND } from "applesauce-common/helpers";
-import { useActiveAccount, useObservableEagerState } from "applesauce-react/hooks";
+import { useActiveAccount, use$ } from "applesauce-react/hooks";
 import { Filter, kinds, NostrEvent } from "nostr-tools";
 import { useMemo } from "react";
 import AutoSizer from "react-virtualized-auto-sizer";
@@ -39,7 +39,7 @@ export default function RepliesTab() {
   const account = useActiveAccount()!;
 
   // Get reply notifications from the observable
-  const replies = useObservableEagerState(replyNotifications$) ?? [];
+  const replies = use$(replyNotifications$) ?? [];
 
   // Filter for fetching events in the modal
   const filter = useMemo<Filter>(

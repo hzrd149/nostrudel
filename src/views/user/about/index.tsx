@@ -23,7 +23,7 @@ import {
 import { addRelayHintsToPointer, getDisplayName } from "applesauce-core/helpers";
 import { parseNIP05Address } from "applesauce-core/helpers/dns-identity";
 import { parseLNURLOrAddress } from "applesauce-common/helpers";
-import { useActiveAccount, useObservableMemo, useObservableState } from "applesauce-react/hooks";
+import { useActiveAccount, use$ } from "applesauce-react/hooks";
 import { kinds, nip19 } from "nostr-tools";
 import { useMemo } from "react";
 import { Link as RouterLink } from "react-router-dom";
@@ -71,7 +71,7 @@ import UserRecentEvents from "./user-recent-events";
 import UserStatsAccordion from "./user-stats-accordion";
 
 function FollowedBy({ pubkey }: { pubkey: string }) {
-  const socialGraph = useObservableState(socialGraph$);
+  const socialGraph = use$(socialGraph$);
   const followedBy = useMemo(
     () => socialGraph && Array.from(socialGraph.followedByFriends(pubkey)).sort(() => Math.random() - 0.5),
     [pubkey, socialGraph],
@@ -174,7 +174,7 @@ export default function UserAboutView() {
   useAppTitle(getDisplayName(metadata, user.pubkey));
 
   // Force metadata load
-  useObservableMemo(
+  use$(
     () => profileLoader({ kind: kinds.Metadata, pubkey: user.pubkey, relays: mailboxes?.outboxes, cache: false }),
     [user.pubkey],
   );

@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { VariableSizeList as List, ListChildComponentProps } from "react-window";
 
-import { useActiveAccount, useObservableEagerState } from "applesauce-react/hooks";
+import { useActiveAccount, use$ } from "applesauce-react/hooks";
 import { kinds } from "nostr-tools";
 import { ErrorBoundary } from "../../../components/error-boundary";
 import SimpleView from "../../../components/layout/presets/simple-view";
@@ -36,7 +36,7 @@ function ListItemRow({ index, style, data }: ListChildComponentProps<ListItem[]>
 }
 
 export default function SharesTab() {
-  const loader = useObservableEagerState(shareNotificationsLoader$);
+  const loader = use$(shareNotificationsLoader$);
   const callback = useTimelineCurserIntersectionCallback(loader ?? undefined);
   const scroll = useVirtualListScrollRestore("manual");
 
@@ -53,7 +53,7 @@ export default function SharesTab() {
   );
 
   // Get grouped repost notifications from the observable stream
-  const groups = useObservableEagerState(repostNotifications$);
+  const groups = use$(repostNotifications$) ?? [];
 
   // Group repost groups by time period
   const listItems = useMemo<ListItem[]>(() => {

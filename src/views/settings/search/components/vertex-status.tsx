@@ -1,10 +1,10 @@
 import { Box, Button, Card, CardBody, Flex, Link, Stat, StatHelpText, StatLabel, StatNumber } from "@chakra-ui/react";
-import { useObservableState } from "applesauce-react/hooks";
+import { use$ } from "applesauce-react/hooks";
 
 import { triggerBalance, vertextBalance$ } from "../../../../services/lookup/vertex";
 
 export function VertexStatus() {
-  const balance = useObservableState(vertextBalance$);
+  const balance = use$(vertextBalance$);
 
   if (balance === undefined) return null;
 

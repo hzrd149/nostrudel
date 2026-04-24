@@ -12,7 +12,7 @@ import {
 import { mergeRelaySets } from "applesauce-core/helpers";
 import { Rumor } from "applesauce-common/helpers";
 import { GiftWrapsModel, LegacyMessagesGroups, WrappedMessagesGroups } from "applesauce-common/models";
-import { useActiveAccount, useEventModel, useObservableEagerState, useObservableState } from "applesauce-react/hooks";
+import { useActiveAccount, useEventModel, use$ } from "applesauce-react/hooks";
 import { NostrEvent, kinds } from "nostr-tools";
 import { npubEncode } from "nostr-tools/nip19";
 import { useEffect, useMemo } from "react";
@@ -100,8 +100,8 @@ function Groups() {
   const account = useActiveAccount()!;
 
   // Subscribe to incoming messages
-  useObservableState(legacyMessageSubscription);
-  useObservableState(wrappedMessageSubscription);
+  use$(legacyMessageSubscription);
+  use$(wrappedMessageSubscription);
 
   // Create a timeline loader for legacy messages
   const legacyInboxes = useUserInbox(account.pubkey);
@@ -167,7 +167,7 @@ function MessagesHomePage() {
   const account = useActiveAccount()!;
 
   // Automatically decrypt new wrapped messages
-  const autoDecryptMessages = useObservableEagerState(localSettings.autoDecryptMessages);
+  const autoDecryptMessages = use$(localSettings.autoDecryptMessages);
   const locked = useEventModel(GiftWrapsModel, [account.pubkey, true]);
 
   return (

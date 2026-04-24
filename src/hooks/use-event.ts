@@ -5,13 +5,13 @@ import {
   isEventPointer,
   parseReplaceableAddress as parseCoordinate,
 } from "applesauce-core/helpers";
-import { useEventStore, useObservableEagerMemo } from "applesauce-react/hooks";
+import { useEventStore, use$ } from "applesauce-react/hooks";
 import hash_sum from "hash-sum";
 
 export default function useEvent(pointer?: string | EventPointer | AddressPointer | AddressPointerWithoutD) {
   const eventStore = useEventStore();
 
-  return useObservableEagerMemo(() => {
+  return use$(() => {
     if (!pointer) return;
 
     if (typeof pointer === "string") {

@@ -2,7 +2,7 @@ import { Button, Card, CardBody, CardHeader, Flex, Heading, Link, SimpleGrid, Te
 import { useMemo } from "react";
 
 import { mapEventsToStore, mapEventsToTimeline } from "applesauce-core";
-import { useEventStore, useObservableMemo } from "applesauce-react/hooks";
+import { useEventStore, use$ } from "applesauce-react/hooks";
 import BlossomServerFavicon from "../../../../components/blossom/blossom-server-favicon";
 import ScrollLayout from "../../../../components/layout/presets/scroll-layout";
 import RouterLink from "../../../../components/router-link";
@@ -41,7 +41,7 @@ function BlossomServerPage({ server }: { server: string }) {
   }, [server]);
 
   // Load latest 4 reviews
-  const reviews = useObservableMemo(
+  const reviews = use$(
     () =>
       pool
         .request(readRelays, {

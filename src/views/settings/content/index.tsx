@@ -11,7 +11,7 @@ import {
   SliderTrack,
   Text,
 } from "@chakra-ui/react";
-import { useObservableEagerState } from "applesauce-react/hooks";
+import { use$ } from "applesauce-react/hooks";
 import { useId, useMemo } from "react";
 
 import SimpleView from "../../../components/layout/presets/simple-view";
@@ -33,7 +33,7 @@ function SocialGraphSlider({
 }) {
   const id = useId();
   const labels = ["Just you", "Friends", "Friends of Friends", "3rd degree", "4th degree", "5th degree", "Everyone"];
-  const graph = useObservableEagerState(socialGraph$);
+  const graph = use$(socialGraph$);
 
   const count = useMemo(() => {
     if (value === null) return null;
@@ -89,9 +89,9 @@ function SocialGraphSlider({
 export default function ContentPoliciesSettings() {
   useAppTitle("Content Policies");
 
-  const hideEventsOutsideSocialGraph = useObservableEagerState(localSettings.hideEventsOutsideSocialGraph);
-  const blurMediaOutsideSocialGraph = useObservableEagerState(localSettings.blurMediaOutsideSocialGraph);
-  const hideEmbedsOutsideSocialGraph = useObservableEagerState(localSettings.hideEmbedsOutsideSocialGraph);
+  const hideEventsOutsideSocialGraph = use$(localSettings.hideEventsOutsideSocialGraph);
+  const blurMediaOutsideSocialGraph = use$(localSettings.blurMediaOutsideSocialGraph);
+  const hideEmbedsOutsideSocialGraph = use$(localSettings.hideEmbedsOutsideSocialGraph);
 
   return (
     <SimpleView title="Content Policies" maxW="container.xl" gap="4">

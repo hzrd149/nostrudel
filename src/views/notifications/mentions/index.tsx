@@ -1,6 +1,6 @@
 import { Box, ButtonGroup, Flex } from "@chakra-ui/react";
 import { COMMENT_KIND } from "applesauce-common/helpers";
-import { useActiveAccount, useObservableEagerState } from "applesauce-react/hooks";
+import { useActiveAccount, use$ } from "applesauce-react/hooks";
 import { Filter, kinds, NostrEvent } from "nostr-tools";
 import { useMemo } from "react";
 import AutoSizer from "react-virtualized-auto-sizer";
@@ -41,10 +41,10 @@ export default function MentionsTab() {
   const account = useActiveAccount()!;
 
   // Get mention notifications from the observable
-  const mentions = useObservableEagerState(mentionNotifications$) ?? [];
+  const mentions = use$(mentionNotifications$) ?? [];
 
   // Start the event loader
-  const loader = useObservableEagerState(socialNotificationsLoader$);
+  const loader = use$(socialNotificationsLoader$);
   const callback = useTimelineCurserIntersectionCallback(loader ?? undefined);
 
   // Filter for fetching events in the modal

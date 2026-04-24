@@ -1,5 +1,5 @@
 import { Box, Card, CardBody, Flex, SimpleGrid, Stat, StatLabel, StatNumber, Text } from "@chakra-ui/react";
-import { useObservableState } from "applesauce-react/hooks";
+import { use$ } from "applesauce-react/hooks";
 import { nip19 } from "nostr-tools";
 import { of, switchMap } from "rxjs";
 
@@ -10,7 +10,7 @@ import { relatr$ } from "../../../../services/lookup/relatr";
 const stats$ = relatr$.pipe(switchMap((relatr) => (relatr ? relatr.Stats({}) : of(null))));
 
 export function RelatrServerStatus() {
-  const stats = useObservableState(stats$);
+  const stats = use$(stats$);
 
   if (!stats) return null;
 

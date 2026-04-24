@@ -1,5 +1,5 @@
 import { Button, Card, CardBody, CardHeader, Heading, Link, Text } from "@chakra-ui/react";
-import { useObservableEagerState } from "applesauce-react/hooks";
+import { use$ } from "applesauce-react/hooks";
 import { useAsync } from "react-use";
 
 import useAsyncAction from "../../../../hooks/use-async-action";
@@ -9,7 +9,7 @@ import { checkLocalRelay } from "../../../../services/local-relay";
 export default function CitrineRelayCard() {
   const { value: available, loading: checking } = useAsync(checkLocalRelay);
 
-  const eventCache = useObservableEagerState(eventCache$);
+  const eventCache = use$(eventCache$);
   const enabled = eventCache?.type === "local-relay";
 
   const enable = useAsyncAction(async () => {

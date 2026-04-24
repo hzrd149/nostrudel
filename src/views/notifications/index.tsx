@@ -1,7 +1,7 @@
 import { Badge, ButtonGroup, Flex, SimpleGrid, Text } from "@chakra-ui/react";
 import { useEffect, useMemo } from "react";
 
-import { useObservableEagerState } from "applesauce-react/hooks";
+import { use$ } from "applesauce-react/hooks";
 import { useLocalStorage } from "react-use";
 import { AtIcon, LightningIcon, QuoteIcon, ReplyIcon, RepostIcon, ThreadIcon } from "../../components/icons";
 import SimpleNavBox from "../../components/layout/box-layout/simple-nav-box";
@@ -21,9 +21,9 @@ export default function NotificationsView() {
   const timeRangeLabel = useMemo(() => getTimeRangeLabel(timeRange).toLowerCase(), [timeRange]);
 
   // Start the event loader
-  const socialLoader = useObservableEagerState(socialNotificationsLoader$);
-  const zapLoader = useObservableEagerState(zapNotificationsLoader$);
-  const shareLoader = useObservableEagerState(shareNotificationsLoader$);
+  const socialLoader = use$(socialNotificationsLoader$);
+  const zapLoader = use$(zapNotificationsLoader$);
+  const shareLoader = use$(shareNotificationsLoader$);
 
   // Load the initial block for all loaders
   useEffect(() => {

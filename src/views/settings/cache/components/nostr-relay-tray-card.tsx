@@ -1,5 +1,5 @@
 import { Button, Card, CardBody, CardHeader, Heading, Link, Text } from "@chakra-ui/react";
-import { useObservableEagerState } from "applesauce-react/hooks";
+import { use$ } from "applesauce-react/hooks";
 import { useAsync } from "react-use";
 
 import useAsyncAction from "../../../../hooks/use-async-action";
@@ -7,7 +7,7 @@ import { changeEventCache, eventCache$ } from "../../../../services/event-cache"
 import { checkLocalRelay } from "../../../../services/local-relay";
 
 export default function NostrRelayTrayCard() {
-  const cacheRelay = useObservableEagerState(eventCache$);
+  const cacheRelay = use$(eventCache$);
   const { value: available, loading: checking } = useAsync(checkLocalRelay);
 
   const enabled = cacheRelay?.type === "local-relay";

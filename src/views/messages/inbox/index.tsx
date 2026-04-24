@@ -1,4 +1,4 @@
-import { useObservableState } from "applesauce-react/hooks";
+import { use$ } from "applesauce-react/hooks";
 
 import SimpleView from "../../../components/layout/presets/simple-view";
 import { useAppTitle } from "../../../hooks/use-app-title";
@@ -11,8 +11,8 @@ export default function InboxView() {
   useAppTitle("Messages inbox");
 
   // Keep a subscription open for NIP-04 and NIP-17 messages
-  useObservableState(legacyMessageSubscription);
-  useObservableState(wrappedMessageSubscription);
+  use$(legacyMessageSubscription);
+  use$(wrappedMessageSubscription);
   return (
     <SimpleView title="Inbox">
       <Box w="full" overflow="hidden">

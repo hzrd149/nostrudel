@@ -32,7 +32,7 @@ import {
   useDisclosure,
   VStack,
 } from "@chakra-ui/react";
-import { useObservableState } from "applesauce-react/hooks";
+import { use$ } from "applesauce-react/hooks";
 import { ProfilePointer } from "nostr-tools/nip19";
 import { useMemo } from "react";
 
@@ -185,7 +185,7 @@ function RelayDebuggerModal({
   selection: ProfilePointer[] | null;
 }) {
   // Get connection states
-  const connections = useObservableState(connections$);
+  const connections = use$(connections$);
 
   // Calculate stats
   const stats: RelayStats = useMemo(() => {
@@ -261,7 +261,7 @@ export default function OutboxRelaySelectionModal({
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   // Get connection states for button display
-  const connections = useObservableState(connections$);
+  const connections = use$(connections$);
 
   // Calculate stats for button
   const stats = useMemo(() => {

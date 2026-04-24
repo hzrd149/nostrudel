@@ -1,5 +1,5 @@
 import { Box, Button, Divider, Flex, Heading, Link, Spacer, Text } from "@chakra-ui/react";
-import { useActiveAccount, useEventModel, useObservableEagerMemo, useObservableState } from "applesauce-react/hooks";
+import { useActiveAccount, useEventModel, use$ } from "applesauce-react/hooks";
 import { Filter, NostrEvent } from "nostr-tools";
 import { useCallback, useMemo } from "react";
 import { map, NEVER, of, throttleTime } from "rxjs";
@@ -54,19 +54,20 @@ function HomePage() {
   }, [pointer, filter]);
 
   // Subscribe to live events from outboxes
-  useObservableState(subscription$);
+  use$(subscription$);
 
   // Subscribe to event store for timeline events
-  const timeline = useObservableEagerMemo(
-    () =>
-      filter
-        ? eventStore.timeline({ ...filter, kinds: GENERIC_TIMELINE_KINDS }).pipe(
-            throttleTime(500),
-            map((events) => events.filter(eventFilter)),
-          )
-        : of([]),
-    [filter, eventFilter],
-  );
+  const timeline =
+    use$(
+      () =>
+        filter
+          ? eventStore.timeline({ ...filter, kinds: GENERIC_TIMELINE_KINDS }).pipe(
+              throttleTime(500),
+              map((events) => events.filter(eventFilter)),
+            )
+          : of([]),
+      [filter, eventFilter],
+    ) ?? [];
 
   const header = (
     <Flex gap="2" wrap="wrap" alignItems="center">

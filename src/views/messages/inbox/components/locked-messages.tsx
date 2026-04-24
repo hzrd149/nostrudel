@@ -23,7 +23,7 @@ import {
 import { getGiftWrapRumor, isGiftWrapUnlocked, Rumor, unlockGiftWrap } from "applesauce-common/helpers";
 import { getConversationParticipants } from "applesauce-common/helpers";
 import { GiftWrapsModel } from "applesauce-common/models";
-import { useActiveAccount, useEventModel, useObservableState } from "applesauce-react/hooks";
+import { useActiveAccount, useEventModel, use$ } from "applesauce-react/hooks";
 import { kinds } from "nostr-tools";
 import { useEffect, useMemo, useRef } from "react";
 import { Link as RouterLink } from "react-router-dom";

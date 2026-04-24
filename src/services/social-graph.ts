@@ -44,13 +44,17 @@ if (CAP_IS_WEB) {
   }
 
   // Load the social graph from the cache
+  console.time("SocialGraph:load");
   const cached = (await idbKeyValueStore.getItem(cacheKey)) as Uint8Array | undefined;
+  console.timeEnd("SocialGraph:load");
   // Load the social graph from the cache and start auto saving
   if (cached) {
     log("Loading social graph from cache");
+    console.time("SocialGraph:fromBinary");
     SocialGraph.fromBinary(accounts.active?.pubkey ?? SOCIAL_GRAPH_FALLBACK_PUBKEY, cached).then((graph) => {
       log(`Loaded social graph from cache with ${graph.size().users} user (${formatBytes(cached.length)})`);
       socialGraph$.next(graph);
+      console.timeEnd("SocialGraph:fromBinary");
 
       autoSave();
     });

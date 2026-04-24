@@ -1,11 +1,11 @@
 import { Button, Card, CardBody, CardHeader, Heading, Text } from "@chakra-ui/react";
 
-import { useObservableEagerState } from "applesauce-react/hooks";
+import { use$ } from "applesauce-react/hooks";
 import useAsyncAction from "../../../../hooks/use-async-action";
 import { changeEventCache, eventCache$ } from "../../../../services/event-cache";
 
 export default function NoCacheCard() {
-  const eventCache = useObservableEagerState(eventCache$);
+  const eventCache = use$(eventCache$);
   const enabled = eventCache === null;
 
   const enable = useAsyncAction(async () => {

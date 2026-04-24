@@ -12,7 +12,7 @@ import {
   Switch,
   Textarea,
 } from "@chakra-ui/react";
-import { useObservableEagerState } from "applesauce-react/hooks";
+import { use$ } from "applesauce-react/hooks";
 import { Link as RouterLink } from "react-router-dom";
 
 import SimpleView from "../../../components/layout/presets/simple-view";
@@ -25,12 +25,12 @@ import RefreshCw01 from "../../../components/icons/refresh-cw-01";
 export default function DisplaySettings() {
   const { register, submit, formState } = useSettingsForm();
 
-  const hideZapBubbles = useObservableEagerState(localSettings.hideZapBubbles);
-  const hideUsernames = useObservableEagerState(localSettings.hideUsernames);
-  const displayCurrency = useObservableEagerState(localSettings.displayCurrency);
-  const exchangeRateRefreshInterval = useObservableEagerState(localSettings.exchangeRateRefreshInterval);
-  const exchangeRateEndpoint = useObservableEagerState(localSettings.exchangeRateEndpoint);
-  const exchangeRates = useObservableEagerState(exchangeRates$);
+  const hideZapBubbles = use$(localSettings.hideZapBubbles);
+  const hideUsernames = use$(localSettings.hideUsernames);
+  const displayCurrency = use$(localSettings.displayCurrency);
+  const exchangeRateRefreshInterval = use$(localSettings.exchangeRateRefreshInterval);
+  const exchangeRateEndpoint = use$(localSettings.exchangeRateEndpoint);
+  const exchangeRates = use$(exchangeRates$);
   const currencyOptions = Array.from(
     new Set(["USD", "EUR", "GBP", "CAD", "AUD", "JPY", ...Object.keys(exchangeRates?.rates ?? {})]),
   ).sort();

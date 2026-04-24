@@ -20,7 +20,7 @@ import { SendWrappedMessage } from "applesauce-actions/actions";
 import { getTagValue, unixNow } from "applesauce-core/helpers";
 import { getConversationParticipants } from "applesauce-common/helpers";
 import { getDisplayName } from "applesauce-core/helpers";
-import { useActionRunner, useEventModel, useObservableEagerState } from "applesauce-react/hooks";
+import { useActionRunner, useEventModel, use$ } from "applesauce-react/hooks";
 import { kinds } from "nostr-tools";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -80,7 +80,7 @@ export default function GroupMessageForm({
   const publish = usePublishEvent();
   const actions = useActionRunner();
   const pubkeys = useMemo(() => getConversationParticipants(group), [group]);
-  const defaultMessageExpiration = useObservableEagerState(localSettings.defaultMessageExpiration);
+  const defaultMessageExpiration = use$(localSettings.defaultMessageExpiration);
   const [expiration, setExpiration] = useState<number | null>(initialExpiration ?? defaultMessageExpiration);
 
   // Reset the expiration when initial values change

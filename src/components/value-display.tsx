@@ -1,5 +1,5 @@
 import { Text, TextProps } from "@chakra-ui/react";
-import { useObservableEagerState } from "applesauce-react/hooks";
+import { use$ } from "applesauce-react/hooks";
 import { useEffect } from "react";
 
 import { formatSats, formatSatsAsCurrency } from "../helpers/lightning";
@@ -11,8 +11,8 @@ export type ValueDisplayProps = Omit<TextProps, "children"> & {
 };
 
 export default function ValueDisplay({ sats, title, ...props }: ValueDisplayProps) {
-  const displayCurrency = useObservableEagerState(localSettings.displayCurrency);
-  const exchangeRates = useObservableEagerState(exchangeRates$);
+  const displayCurrency = use$(localSettings.displayCurrency);
+  const exchangeRates = use$(exchangeRates$);
 
   useEffect(() => {
     if (displayCurrency) refreshExchangeRates().catch(() => undefined);

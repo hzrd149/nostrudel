@@ -10,27 +10,30 @@ import {
   Image,
   LinkBox,
   LinkOverlay,
+  Spinner,
   Text,
 } from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router-dom";
+import { Stream } from "applesauce-common/casts";
 import { NostrEvent } from "nostr-tools";
+import { Link as RouterLink } from "react-router-dom";
 
+import useCastEvent from "../../hooks/use-cast-event";
+import useEventIntersectionRef from "../../hooks/use-event-intersection-ref";
 import useShareableEventAddress from "../../hooks/use-shareable-event-address";
-import UserAvatar from "../user/user-avatar";
-import UserLink from "../user/user-link";
 import StreamStatusBadge from "../../views/streams/components/status-badge";
 import Timestamp from "../timestamp";
-import useEventIntersectionRef from "../../hooks/use-event-intersection-ref";
-import { getStreamHashtags, getStreamHost, getStreamImage, getStreamTitle } from "../../helpers/nostr/stream";
+import UserAvatar from "../user/user-avatar";
+import UserLink from "../user/user-link";
 
 export default function StreamNote({ stream, ...props }: CardProps & { stream: NostrEvent }) {
   const ref = useEventIntersectionRef(stream);
   const naddr = useShareableEventAddress(stream);
+  const cast = useCastEvent(stream, Stream);
 
-  const host = getStreamHost(stream);
-  const title = getStreamTitle(stream);
-  const image = getStreamImage(stream);
-  const tags = getStreamHashtags(stream);
+  const host = cast?.host.pubkey ?? stream.pubkey;
+  const title = cast?.title;
+  const image = cast?.image;
+  const tags = cast?.hashtags ?? [];
 
   return (
     <Card {...props} ref={ref}>
@@ -46,7 +49,7 @@ export default function StreamNote({ stream, ...props }: CardProps & { stream: N
             {image && <Image src={image} alt={title} borderRadius="lg" maxH="15rem" />}
             <Heading size="md">
               <LinkOverlay as={RouterLink} to={`/streams/${naddr}`}>
-                {title}
+                {title || "Untitled stream"}
               </LinkOverlay>
             </Heading>
           </Flex>
@@ -65,7 +68,7 @@ export default function StreamNote({ stream, ...props }: CardProps & { stream: N
       </LinkBox>
       <Divider />
       <CardFooter p="2" display="flex" gap="2" alignItems="center">
-        <StreamStatusBadge stream={stream} />
+        {cast ? <StreamStatusBadge stream={cast} /> : <Spinner size="xs" />}
       </CardFooter>
     </Card>
   );

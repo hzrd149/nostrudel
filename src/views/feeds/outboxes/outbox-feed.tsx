@@ -18,7 +18,7 @@ import { Navigate, useParams } from "react-router-dom";
 import { includeMailboxes, withImmediateValueOrDefault } from "applesauce-core";
 import { normalizeURL } from "applesauce-core/helpers";
 import { getSeenRelays } from "applesauce-core/helpers";
-import { useObservableEagerMemo } from "applesauce-react/hooks";
+import { use$ } from "applesauce-react/hooks";
 import { useCallback, useMemo } from "react";
 import { map } from "rxjs";
 import SimpleView from "../../../components/layout/presets/simple-view";
@@ -43,7 +43,7 @@ export function OutboxFeedPage({ relay }: { relay: string }) {
   const modal = useDisclosure();
 
   // Get all contacts to calculate total
-  const allContacts = useObservableEagerMemo(
+  const allContacts = use$(
     () =>
       account &&
       eventStore
@@ -53,7 +53,7 @@ export function OutboxFeedPage({ relay }: { relay: string }) {
   );
 
   // Get the contacts who publish to this relay
-  const contacts = useObservableEagerMemo(
+  const contacts = use$(
     () =>
       account &&
       eventStore.contacts({ pubkey: account.pubkey }).pipe(

@@ -1,11 +1,11 @@
 import { Button, Card, CardBody, CardHeader, Heading, Text } from "@chakra-ui/react";
 
-import { useObservableEagerState } from "applesauce-react/hooks";
+import { use$ } from "applesauce-react/hooks";
 import { eventCache$ } from "../../../../services/event-cache";
 import localSettings from "../../../../services/preferences";
 
 export default function HostedRelayCard() {
-  const eventCache = useObservableEagerState(eventCache$);
+  const eventCache = use$(eventCache$);
   const enabled = eventCache?.type === "hosted-relay";
   const enable = () => {
     localSettings.eventCache.clear();

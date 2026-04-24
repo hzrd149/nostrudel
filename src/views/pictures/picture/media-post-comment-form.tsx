@@ -26,7 +26,9 @@ export default function PicturePostCommentForm({
   });
   const sendMessage = handleSubmit(async (values) => {
     try {
-      const draft = await CommentFactory.create(post, values.content, { emojis: emojis.filter((e) => !!e.url) as Emoji[] });
+      const draft = await CommentFactory.create(post, values.content, {
+        emojis: emojis.filter((e) => !!e.url) as Emoji[],
+      });
       const pub = await publish("Comment", draft, relays);
       if (pub) reset();
     } catch (error) {

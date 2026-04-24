@@ -2,7 +2,7 @@ import { useToast } from "@chakra-ui/react";
 import { addSeenRelay } from "applesauce-core/helpers";
 import { mergeRelaySets } from "applesauce-core/helpers";
 import { setClient } from "applesauce-core/operations";
-import { useActiveAccount, useObservableEagerState } from "applesauce-react/hooks";
+import { useActiveAccount, use$ } from "applesauce-react/hooks";
 import { PublishResponse } from "applesauce-relay";
 import { nanoid } from "nanoid";
 import { EventTemplate, NostrEvent, UnsignedEvent } from "nostr-tools";
@@ -110,8 +110,8 @@ export default function PublishProvider({ children }: PropsWithChildren) {
   const [log, setLog] = useState<PublishLogEntry[]>([]);
   const account = useActiveAccount();
   const mailboxes = useUserMailboxes(account?.pubkey);
-  const fallbackRelays = useObservableEagerState(localSettings.fallbackRelays);
-  const addClientTag = useObservableEagerState(localSettings.addClientTag);
+  const fallbackRelays = use$(localSettings.fallbackRelays);
+  const addClientTag = use$(localSettings.addClientTag);
   const writeRelays = useWriteRelays();
 
   const applyClientTag = useCallback(

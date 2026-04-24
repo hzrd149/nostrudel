@@ -1,7 +1,7 @@
-import { useObservableState } from "applesauce-react/hooks";
+import { use$ } from "applesauce-react/hooks";
 import { connections$ } from "../services/pool";
 
 export default function useRelayConnectionState(relay: string) {
-  const connections = useObservableState(connections$);
+  const connections = use$(connections$);
   return connections?.[relay] ?? "dormant";
 }

@@ -1,6 +1,6 @@
 import { Button, ButtonProps } from "@chakra-ui/react";
 import { mergeRelaySets } from "applesauce-core/helpers";
-import { useActiveAccount, useEventModel, useObservableState } from "applesauce-react/hooks";
+import { useActiveAccount, useEventModel, use$ } from "applesauce-react/hooks";
 import { useMemo } from "react";
 
 import { RelayIcon } from "../../../../components/icons";
@@ -20,7 +20,7 @@ export default function DirectMessageRelayConnectionsButton({
   const messageInboxes = useEventModel(DirectMessageRelaysModel, [account.pubkey]);
   const allRelays = useMemo(() => mergeRelaySets(legacyRelays, messageInboxes), [legacyRelays, messageInboxes]);
 
-  const connections = useObservableState(connections$) ?? {};
+  const connections = use$(connections$) ?? {};
 
   const color = useMemo(() => {
     if (!messageInboxes && !selfInboxes) return "red";

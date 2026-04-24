@@ -1,6 +1,6 @@
 import { Box, ButtonGroup, Flex } from "@chakra-ui/react";
 import { COMMENT_KIND } from "applesauce-common/helpers";
-import { useActiveAccount, useObservableEagerState } from "applesauce-react/hooks";
+import { useActiveAccount, use$ } from "applesauce-react/hooks";
 import { Filter, kinds, NostrEvent } from "nostr-tools";
 import { useMemo } from "react";
 import AutoSizer from "react-virtualized-auto-sizer";
@@ -41,10 +41,10 @@ export default function QuotesTab() {
   const account = useActiveAccount()!;
 
   // Get quote notifications from the observable
-  const quotes = useObservableEagerState(quoteNotifications$) ?? [];
+  const quotes = use$(quoteNotifications$) ?? [];
 
   // Start the event loader
-  const loader = useObservableEagerState(socialNotificationsLoader$);
+  const loader = use$(socialNotificationsLoader$);
   const callback = useTimelineCurserIntersectionCallback(loader ?? undefined);
 
   // Filter for fetching events in the modal
