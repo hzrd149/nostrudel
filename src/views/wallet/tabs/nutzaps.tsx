@@ -17,6 +17,7 @@ import { ECashIcon } from "../../../components/icons";
 import Timestamp from "../../../components/timestamp";
 import UserAvatarLink from "../../../components/user/user-avatar-link";
 import UserLink from "../../../components/user/user-link";
+import ValueDisplay from "../../../components/value-display";
 import useAsyncAction from "../../../hooks/use-async-action";
 import { useReadRelays } from "../../../hooks/use-client-relays";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
@@ -56,7 +57,7 @@ function NutzapEntry({
             </Text>
             {amount !== undefined && (
               <Text color="green.500" fontWeight="semibold">
-                ⚡ {amount} sats
+                ⚡ <ValueDisplay sats={amount} />
               </Text>
             )}
             {mint && (

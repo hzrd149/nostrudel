@@ -16,10 +16,10 @@ import {
 } from "@chakra-ui/react";
 import { parseBolt11 } from "applesauce-common/helpers";
 
-import { humanReadableSats } from "../../helpers/lightning";
 import { CopyIconButton } from "../copy-icon-button";
 import QrCode02 from "../icons/qr-code-02";
 import QrCodeSvg from "../qr-code/qr-code-svg";
+import ValueDisplay from "../value-display";
 
 export type InvoiceButtonProps = {
   paymentRequest: string;
@@ -94,7 +94,7 @@ export default function InlineInvoiceCard({
             <CopyIconButton value={invoice.paymentRequest} aria-label="Copy Invoice" />
             <IconButton icon={<QrCode02 boxSize={6} />} onClick={more.onToggle} aria-label="Show QrCode" />
             <Button as="a" onClick={handleClick} isLoading={loading} href={`lightning:${paymentRequest}`}>
-              ⚡ Pay {invoice.amount ? humanReadableSats(invoice.amount / 1000) + " sats" : ""}
+              ⚡ Pay {invoice.amount ? <ValueDisplay sats={invoice.amount / 1000} /> : ""}
             </Button>
           </ButtonGroup>
         </Flex>

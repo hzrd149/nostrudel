@@ -3,9 +3,9 @@ import { getZapPayment, getZapSender, isValidZap } from "applesauce-common/helpe
 import { kinds, NostrEvent } from "nostr-tools";
 
 import { LightningIcon } from "../../../../components/icons";
+import ValueDisplay from "../../../../components/value-display";
 import UserAvatarLink from "../../../../components/user/user-avatar-link";
 import UserLink from "../../../../components/user/user-link";
-import { humanReadableSats } from "../../../../helpers/lightning";
 import useStreamChatTimeline from "../../stream/stream-chat/use-stream-chat-timeline";
 
 export default function StreamTopZappers({ stream, ...props }: FlexProps & { stream: NostrEvent }) {
@@ -31,7 +31,7 @@ export default function StreamTopZappers({ stream, ...props }: FlexProps & { str
             <UserLink pubkey={pubkey} fontWeight="bold" />
             <br />
             <LightningIcon />
-            {humanReadableSats(total / 1000)}
+            <ValueDisplay sats={total / 1000} />
           </Text>
         </Flex>
       ))}

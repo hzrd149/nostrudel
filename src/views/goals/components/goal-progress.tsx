@@ -2,7 +2,7 @@ import { Flex, Progress, Text } from "@chakra-ui/react";
 
 import { NostrEvent } from "nostr-tools";
 import { LightningIcon } from "../../../components/icons";
-import { humanReadableSats } from "../../../helpers/lightning";
+import ValueDisplay from "../../../components/value-display";
 import { getGoalAmount, getGoalRelays } from "../../../helpers/nostr/goal";
 import { totalZaps } from "../../../helpers/nostr/zaps";
 import useEventZaps from "../../../hooks/use-event-zaps";
@@ -17,7 +17,7 @@ export default function GoalProgress({ goal }: { goal: NostrEvent }) {
       <LightningIcon />
       <Progress value={(raised / amount) * 100} colorScheme="yellow" flex={1} />
       <Text>
-        {humanReadableSats(raised / 1000)} / {humanReadableSats(amount / 1000)} (
+        <ValueDisplay sats={raised / 1000} /> / <ValueDisplay sats={amount / 1000} /> (
         {Math.round((raised / amount) * 1000) / 10}%)
       </Text>
     </Flex>

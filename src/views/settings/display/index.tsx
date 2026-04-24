@@ -5,6 +5,7 @@ import {
   FormErrorMessage,
   FormHelperText,
   FormLabel,
+  IconButton,
   Input,
   Link,
   Select,
@@ -18,12 +19,21 @@ import SimpleView from "../../../components/layout/presets/simple-view";
 import localSettings from "../../../services/preferences";
 import useSettingsForm from "../use-settings-form";
 import { safeUrl } from "../../../helpers/parse";
+import { exchangeRates$, refreshExchangeRates } from "../../../services/exchange-rates";
+import RefreshCw01 from "../../../components/icons/refresh-cw-01";
 
 export default function DisplaySettings() {
   const { register, submit, formState } = useSettingsForm();
 
   const hideZapBubbles = useObservableEagerState(localSettings.hideZapBubbles);
   const hideUsernames = useObservableEagerState(localSettings.hideUsernames);
+  const displayCurrency = useObservableEagerState(localSettings.displayCurrency);
+  const exchangeRateRefreshInterval = useObservableEagerState(localSettings.exchangeRateRefreshInterval);
+  const exchangeRateEndpoint = useObservableEagerState(localSettings.exchangeRateEndpoint);
+  const exchangeRates = useObservableEagerState(exchangeRates$);
+  const currencyOptions = Array.from(
+    new Set(["USD", "EUR", "GBP", "CAD", "AUD", "JPY", ...Object.keys(exchangeRates?.rates ?? {})]),
+  ).sort();
 
   return (
     <SimpleView
@@ -134,6 +144,64 @@ export default function DisplaySettings() {
         <FormHelperText>
           <span>Hides individual zaps on notes in the timeline</span>
         </FormHelperText>
+      </FormControl>
+      <FormControl>
+        <FormLabel htmlFor="display-currency" mb="0">
+          Value display currency
+        </FormLabel>
+        <Select
+          id="display-currency"
+          maxW="sm"
+          value={displayCurrency ?? ""}
+          onChange={(e) => localSettings.displayCurrency.next(e.target.value || null)}
+        >
+          <option value="">Satoshis (bitcoin)</option>
+          {currencyOptions.map((currency) => (
+            <option key={currency} value={currency}>
+              {currency}
+            </option>
+          ))}
+        </Select>
+        <FormHelperText>Converts sat amounts using the cached BTC exchange rate when available.</FormHelperText>
+      </FormControl>
+      <FormControl>
+        <FormLabel htmlFor="exchange-rate-refresh-interval" mb="0">
+          Exchange rate refresh interval
+        </FormLabel>
+        <Select
+          id="exchange-rate-refresh-interval"
+          maxW="sm"
+          value={exchangeRateRefreshInterval}
+          onChange={(e) => localSettings.exchangeRateRefreshInterval.next(Number(e.target.value))}
+        >
+          <option value={1000 * 60 * 15}>15 minutes</option>
+          <option value={1000 * 60 * 60}>1 hour</option>
+          <option value={1000 * 60 * 60 * 6}>6 hours</option>
+          <option value={1000 * 60 * 60 * 24}>24 hours</option>
+        </Select>
+        <FormHelperText>
+          {exchangeRates ? `Last updated ${new Date(exchangeRates.updatedAt).toLocaleString()}` : "No cached rates yet"}
+        </FormHelperText>
+      </FormControl>
+      <FormControl>
+        <FormLabel htmlFor="exchange-rate-endpoint" mb="0">
+          Exchange rate endpoint
+        </FormLabel>
+        <Flex gap="2" alignItems="center">
+          <Input
+            id="exchange-rate-endpoint"
+            value={exchangeRateEndpoint}
+            onChange={(e) => localSettings.exchangeRateEndpoint.next(e.target.value)}
+            maxW="xl"
+          />
+          <IconButton
+            type="button"
+            onClick={() => refreshExchangeRates(true)}
+            icon={<RefreshCw01 />}
+            aria-label="Refresh exchange rates"
+          />
+        </Flex>
+        <FormHelperText>Endpoint must return a JSON object of currency codes to BTC exchange rates.</FormHelperText>
       </FormControl>
       <FormControl>
         <Flex alignItems="center">

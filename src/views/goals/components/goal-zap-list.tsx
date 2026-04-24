@@ -9,7 +9,7 @@ import TextNoteContents from "../../../components/timeline/note/text-note-conten
 import Timestamp from "../../../components/timestamp";
 import UserAvatarLink from "../../../components/user/user-avatar-link";
 import UserLink from "../../../components/user/user-link";
-import { humanReadableSats } from "../../../helpers/lightning";
+import ValueDisplay from "../../../components/value-display";
 import { getGoalRelays } from "../../../helpers/nostr/goal";
 import useCastEvent from "../../../hooks/use-cast-event";
 import useEventZaps from "../../../hooks/use-event-zaps";
@@ -30,7 +30,7 @@ function GoalZap({ zap }: { zap: KnownEvent<kinds.Zap> }) {
       </Box>
       <Spacer />
       <Text>
-        <LightningIcon /> {humanReadableSats(cast.amount / 1000)}
+        <LightningIcon /> <ValueDisplay sats={cast.amount / 1000} />
       </Text>
     </Flex>
   );

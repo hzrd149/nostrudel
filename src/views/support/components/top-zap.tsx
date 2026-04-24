@@ -11,6 +11,7 @@ import Timestamp from "../../../components/timestamp";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
 import { ContentSettingsProvider } from "../../../providers/local/content-settings";
 import ZapReceiptMenu from "../../../components/zap/zap-receipt-menu";
+import ValueDisplay from "../../../components/value-display";
 
 export function TopZap({ zap }: { zap: KnownEvent<kinds.Zap> }) {
   const sender = getZapSender(zap);
@@ -26,7 +27,7 @@ export function TopZap({ zap }: { zap: KnownEvent<kinds.Zap> }) {
           <LightningIcon color="yellow.400" boxSize={6} />
           {payment?.amount && (
             <Text color="purple.500" fontSize="xl" fontWeight="bold">
-              {(payment.amount / 1000).toLocaleString()}
+              <ValueDisplay sats={payment.amount / 1000} />
             </Text>
           )}
         </Flex>

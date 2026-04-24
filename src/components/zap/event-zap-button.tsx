@@ -3,7 +3,6 @@ import { getEventUID } from "applesauce-core/helpers";
 import { getZapSender } from "applesauce-common/helpers";
 import { useActiveAccount } from "applesauce-react/hooks";
 
-import { humanReadableSats } from "../../helpers/lightning";
 import { totalZaps } from "../../helpers/nostr/zaps";
 import useEventZaps from "../../hooks/use-event-zaps";
 import { NostrEvent } from "nostr-tools";
@@ -12,6 +11,7 @@ import ZapModal from "../event-zap-modal";
 import useUserLNURLMetadata from "../../hooks/use-user-lnurl-metadata";
 import { useReadRelays } from "../../hooks/use-client-relays";
 import { zapsLoader } from "../../services/loaders";
+import ValueDisplay from "../value-display";
 
 export type NoteZapButtonProps = Omit<ButtonProps, "children"> & {
   event: NostrEvent;
@@ -48,7 +48,7 @@ export default function EventZapButton({ event, allowComment, showEventPreview, 
           onClick={onOpen}
           isDisabled={!canZap}
         >
-          {humanReadableSats(total / 1000)}
+          <ValueDisplay sats={total / 1000} />
         </Button>
       ) : (
         <IconButton

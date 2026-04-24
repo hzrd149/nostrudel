@@ -16,6 +16,7 @@ import {
 import { useAsync } from "react-use";
 
 import Timestamp from "../../../components/timestamp";
+import ValueDisplay from "../../../components/value-display";
 import { humanReadableSats } from "../../../helpers/lightning";
 import { getPubkeysFromList } from "../../../helpers/nostr/lists";
 import useUserContactList from "../../../hooks/use-user-contact-list";
@@ -91,15 +92,21 @@ export default function UserStatsAccordion({ pubkey }: { pubkey: string }) {
                   </Stat>
                   <Stat>
                     <StatLabel>Total Sats Sent</StatLabel>
-                    <StatNumber>{humanReadableSats(stats.zaps_sent.msats / 1000)}</StatNumber>
+                    <StatNumber>
+                      <ValueDisplay sats={stats.zaps_sent.msats / 1000} />
+                    </StatNumber>
                   </Stat>
                   <Stat>
                     <StatLabel>Avg Zap Sent</StatLabel>
-                    <StatNumber>{humanReadableSats(stats.zaps_sent.avg_msats / 1000)}</StatNumber>
+                    <StatNumber>
+                      <ValueDisplay sats={stats.zaps_sent.avg_msats / 1000} />
+                    </StatNumber>
                   </Stat>
                   <Stat>
                     <StatLabel>Biggest Zap Sent</StatLabel>
-                    <StatNumber>{humanReadableSats(stats.zaps_sent.max_msats / 1000)}</StatNumber>
+                    <StatNumber>
+                      <ValueDisplay sats={stats.zaps_sent.max_msats / 1000} />
+                    </StatNumber>
                   </Stat>
                 </>
               )}
@@ -112,15 +119,21 @@ export default function UserStatsAccordion({ pubkey }: { pubkey: string }) {
                   </Stat>
                   <Stat>
                     <StatLabel>Total Sats Received</StatLabel>
-                    <StatNumber>{humanReadableSats(stats.zaps_received.msats / 1000)}</StatNumber>
+                    <StatNumber>
+                      <ValueDisplay sats={stats.zaps_received.msats / 1000} />
+                    </StatNumber>
                   </Stat>
                   <Stat>
                     <StatLabel>Avg Zap Received</StatLabel>
-                    <StatNumber>{humanReadableSats(stats.zaps_received.avg_msats / 1000)}</StatNumber>
+                    <StatNumber>
+                      <ValueDisplay sats={stats.zaps_received.avg_msats / 1000} />
+                    </StatNumber>
                   </Stat>
                   <Stat>
                     <StatLabel>Biggest Zap Received</StatLabel>
-                    <StatNumber>{humanReadableSats(stats.zaps_received.max_msats / 1000)}</StatNumber>
+                    <StatNumber>
+                      <ValueDisplay sats={stats.zaps_received.max_msats / 1000} />
+                    </StatNumber>
                   </Stat>
                 </>
               )}

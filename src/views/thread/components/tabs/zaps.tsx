@@ -12,7 +12,7 @@ import Timestamp from "../../../../components/timestamp";
 import UserAvatarLink from "../../../../components/user/user-avatar-link";
 import UserLink from "../../../../components/user/user-link";
 import ZapReceiptMenu from "../../../../components/zap/zap-receipt-menu";
-import { humanReadableSats } from "../../../../helpers/lightning";
+import ValueDisplay from "../../../../components/value-display";
 import useCastEvent from "../../../../hooks/use-cast-event";
 import { ContentSettingsProvider } from "../../../../providers/local/content-settings";
 
@@ -25,7 +25,7 @@ const ZapEvent = memo(({ zap }: { zap: KnownEvent<kinds.Zap> }) => {
       <Flex gap="2">
         <Flex direction="column" alignItems="center" minW="10">
           <LightningIcon color="yellow.500" boxSize={5} />
-          <Text>{humanReadableSats(cast.amount / 1000)}</Text>
+          <ValueDisplay sats={cast.amount / 1000} />
         </Flex>
 
         <UserAvatarLink pubkey={cast.sender.pubkey} size="sm" ml="2" />

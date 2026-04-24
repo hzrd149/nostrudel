@@ -4,9 +4,9 @@ import { castEvent, Zap } from "applesauce-common/casts";
 import { NostrEvent } from "nostr-tools";
 import { useMemo } from "react";
 import { LightningIcon } from "../../../components/icons";
+import ValueDisplay from "../../../components/value-display";
 import UserAvatarLink from "../../../components/user/user-avatar-link";
 import UserLink from "../../../components/user/user-link";
-import { humanReadableSats } from "../../../helpers/lightning";
 import { getGoalRelays } from "../../../helpers/nostr/goal";
 import useEventZaps from "../../../hooks/use-event-zaps";
 import { eventStore } from "../../../services/event-store";
@@ -42,7 +42,7 @@ export default function GoalTopZappers({
           <Box whiteSpace="pre" isTruncated>
             <UserLink fontSize="lg" fontWeight="bold" pubkey={pubkey} mr="2" />
             <br />
-            <LightningIcon /> {humanReadableSats(amount / 1000)}
+            <LightningIcon /> <ValueDisplay sats={amount / 1000} />
           </Box>
         </Flex>
       ))}

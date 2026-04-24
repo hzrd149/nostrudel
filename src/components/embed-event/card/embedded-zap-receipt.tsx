@@ -11,12 +11,12 @@ import {
 import { kinds } from "nostr-tools";
 import { useMemo } from "react";
 
-import { humanReadableSats } from "../../../helpers/lightning";
 import { LightningIcon } from "../../icons";
 import TextNoteContents from "../../timeline/note/text-note-contents";
 import Timestamp from "../../timestamp";
 import UserAvatar from "../../user/user-avatar";
 import UserLink from "../../user/user-link";
+import ValueDisplay from "../../value-display";
 import ZapReceiptMenu from "../../zap/zap-receipt-menu";
 import { EmbedEventPointerCard } from "./index";
 
@@ -49,7 +49,7 @@ export default function EmbeddedZapRecept({
         {payment.amount && (
           <>
             <LightningIcon color="yellow.500" boxSize={5} />
-            <Text>{humanReadableSats(payment.amount / 1000)}</Text>
+            <ValueDisplay sats={payment.amount / 1000} />
           </>
         )}
 

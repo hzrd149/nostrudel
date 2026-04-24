@@ -3,13 +3,14 @@ import { getZapSplits } from "applesauce-common/helpers";
 import { NostrEvent } from "nostr-tools";
 import { useForm } from "react-hook-form";
 
-import { humanReadableSats } from "../../helpers/lightning";
 import useAppSettings from "../../hooks/use-user-app-settings";
 import useUserLNURLMetadata from "../../hooks/use-user-lnurl-metadata";
 import { EmbedEventCard } from "../embed-event/card";
 import { LightningIcon } from "../icons";
+import SatsInput from "../sats-input";
 import UserAvatar from "../user/user-avatar";
 import UserLink from "../user/user-link";
+import ValueDisplay from "../value-display";
 import CustomZapAmountOptions from "./zap-options";
 
 function UserCard({ pubkey, percent }: { pubkey: string; percent?: number }) {
@@ -78,6 +79,7 @@ export default function InputStep({
   const actionName = canZap ? "Zap" : "Tip";
 
   const onSubmitZap = handleSubmit(onSubmit);
+  const amount = watch("amount");
 
   return (
     <form onSubmit={onSubmitZap}>
@@ -99,13 +101,13 @@ export default function InputStep({
         <CustomZapAmountOptions onSelect={(amount) => setValue("amount", amount, { shouldDirty: true })} />
 
         <Flex gap="2">
-          <Input
-            type="number"
+          <input type="hidden" {...register("amount", { valueAsNumber: true, min: 1 })} />
+          <SatsInput
             placeholder="Custom amount"
+            value={amount}
+            onChange={(nextAmount) => setValue("amount", nextAmount, { shouldDirty: true, shouldValidate: true })}
             isInvalid={!!errors.amount}
             step={1}
-            flex={1}
-            {...register("amount", { valueAsNumber: true, min: 1 })}
           />
           <Button
             leftIcon={<LightningIcon />}
@@ -115,7 +117,7 @@ export default function InputStep({
             size="md"
             autoFocus
           >
-            {actionName} {humanReadableSats(watch("amount"))} sats
+            {actionName} <ValueDisplay sats={amount} />
           </Button>
         </Flex>
       </Flex>

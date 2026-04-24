@@ -10,10 +10,10 @@ import UserAvatar from "../../components/user/user-avatar";
 import UserLink from "../../components/user/user-link";
 import GoalContents from "./components/goal-contents";
 import GoalZapList from "./components/goal-zap-list";
-import { humanReadableSats } from "../../helpers/lightning";
 import GoalZapButton from "./components/goal-zap-button";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import useParamsEventPointer from "../../hooks/use-params-event-pointer";
+import ValueDisplay from "../../components/value-display";
 
 export default function GoalDetailsView() {
   const navigate = useNavigate();
@@ -30,7 +30,7 @@ export default function GoalDetailsView() {
         </Button>
 
         <Heading size="md" isTruncated>
-          {getGoalName(goal)} ({humanReadableSats(getGoalAmount(goal) / 1000)})
+          {getGoalName(goal)} (<ValueDisplay sats={getGoalAmount(goal) / 1000} />)
         </Heading>
 
         <Spacer />

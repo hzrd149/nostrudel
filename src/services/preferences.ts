@@ -27,6 +27,12 @@ const wasmPersistForDays = await PreferenceSubject.numberNullable("wasm-relay-ol
 // Display
 const hideZapBubbles = await PreferenceSubject.boolean("hide-zap-bubbles", false);
 const hideUsernames = await PreferenceSubject.boolean("hide-usernames", false);
+const displayCurrency = await PreferenceSubject.stringNullable("display-currency", null);
+const exchangeRateRefreshInterval = await PreferenceSubject.number("exchange-rate-refresh-interval", 1000 * 60 * 60);
+const exchangeRateEndpoint = await PreferenceSubject.string(
+  "exchange-rate-endpoint",
+  "https://mempool.space/api/v1/prices",
+);
 
 // Posting
 const addClientTag = await PreferenceSubject.boolean("add-client-tag", false);
@@ -107,6 +113,9 @@ const localSettings = {
   // Display
   hideZapBubbles,
   hideUsernames,
+  displayCurrency,
+  exchangeRateRefreshInterval,
+  exchangeRateEndpoint,
 
   addClientTag,
   verifyEventMethod,

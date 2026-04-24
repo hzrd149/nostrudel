@@ -12,6 +12,7 @@ import UserDnsIdentityIcon from "../../../components/user/user-dns-identity-icon
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
 import { ContentSettingsProvider } from "../../../providers/local/content-settings";
 import ZapReceiptMenu from "../../../components/zap/zap-receipt-menu";
+import ValueDisplay from "../../../components/value-display";
 
 export function NotQuiteTopZap({ zap, color }: { zap: KnownEvent<kinds.Zap>; color: TextProps["color"] }) {
   const sender = getZapSender(zap);
@@ -32,7 +33,7 @@ export function NotQuiteTopZap({ zap, color }: { zap: KnownEvent<kinds.Zap>; col
           <LightningIcon color="yellow.400" boxSize={6} />
           {payment?.amount && (
             <Text color={color} fontSize="lg" fontWeight="bold">
-              {(payment.amount / 1000).toLocaleString()}
+              <ValueDisplay sats={payment.amount / 1000} />
             </Text>
           )}
         </Flex>

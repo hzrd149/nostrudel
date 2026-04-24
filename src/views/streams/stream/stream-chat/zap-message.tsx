@@ -5,9 +5,9 @@ import { memo } from "react";
 import { KnownEvent } from "applesauce-core/helpers";
 import { getZapPayment, getZapRequest, getZapSender } from "applesauce-common/helpers";
 import { LightningIcon } from "../../../../components/icons";
+import ValueDisplay from "../../../../components/value-display";
 import UserAvatar from "../../../../components/user/user-avatar";
 import UserLink from "../../../../components/user/user-link";
-import { humanReadableSats } from "../../../../helpers/lightning";
 import useClientSideMuteFilter from "../../../../hooks/use-client-side-mute-filter";
 import useEventIntersectionRef from "../../../../hooks/use-event-intersection-ref";
 import { ContentSettingsProvider } from "../../../../providers/local/content-settings";
@@ -31,7 +31,9 @@ function ZapMessage({ zap }: { zap: KnownEvent<kinds.Zap> }) {
           <LightningIcon color="yellow.400" />
           <UserAvatar pubkey={sender} size="xs" />
           <UserLink pubkey={sender} fontWeight="bold" color="yellow.400" />
-          <Text>zapped {humanReadableSats(payment.amount / 1000)} sats</Text>
+          <Text>
+            zapped <ValueDisplay sats={payment.amount / 1000} />
+          </Text>
         </Flex>
         <Box>
           <ChatMessageContent event={request} />

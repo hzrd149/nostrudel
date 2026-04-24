@@ -9,7 +9,7 @@ import RouterLink from "../../../../components/router-link";
 import Timestamp from "../../../../components/timestamp";
 import UserAvatar from "../../../../components/user/user-avatar";
 import UserName from "../../../../components/user/user-name";
-import { humanReadableSats } from "../../../../helpers/lightning";
+import ValueDisplay from "../../../../components/value-display";
 import { TZapGroup } from "../../../../helpers/nostr/zaps";
 import useEventIntersectionRef from "../../../../hooks/use-event-intersection-ref";
 import useReplaceableEvent from "../../../../hooks/use-replaceable-event";
@@ -22,7 +22,7 @@ function ZapBubble({ zap }: { zap: ZapEvent }) {
   return (
     <Box display="flex" alignItems="center" gap="2">
       <UserAvatar pubkey={sender} size="sm" showNip05={false} />
-      <Text fontWeight="bold">{humanReadableSats(amount / 1000)}</Text>
+      <ValueDisplay sats={amount / 1000} fontWeight="bold" />
     </Box>
   );
 }
@@ -69,7 +69,7 @@ function ZapGroup({ group }: { group: TZapGroup }) {
           <Text>
             <UserName pubkey={getZapSender(sortedZaps[0])} fontWeight="bold" /> Zapped
           </Text>
-          <Text fontWeight="bold">{humanReadableSats(getZapAmount(sortedZaps[0]) / 1000)}</Text>
+          <ValueDisplay sats={getZapAmount(sortedZaps[0]) / 1000} fontWeight="bold" />
         </Box>
       ) : (
         <Flex gap="2" overflow="hidden">

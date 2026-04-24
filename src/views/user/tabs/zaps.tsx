@@ -16,7 +16,7 @@ import LoadMoreButton from "../../../components/timeline/load-more-button";
 import Timestamp from "../../../components/timestamp";
 import UserAvatarLink from "../../../components/user/user-avatar-link";
 import UserLink from "../../../components/user/user-link";
-import { humanReadableSats } from "../../../helpers/lightning";
+import ValueDisplay from "../../../components/value-display";
 import { parseCoordinate } from "../../../helpers/nostr/event";
 import { isNoteZap, isProfileZap, totalZaps } from "../../../helpers/nostr/zaps";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
@@ -68,7 +68,7 @@ function Zap({ zap }: { zap: KnownEvent<kinds.Zap> }) {
         {payment?.amount && (
           <Flex gap="2">
             <LightningIcon color="yellow.400" />
-            <Text>{humanReadableSats(payment.amount / 1000)} sats</Text>
+            <ValueDisplay sats={payment.amount / 1000} />
           </Flex>
         )}
         <Timestamp ml="auto" timestamp={request.created_at} />
@@ -121,7 +121,7 @@ export default function UserZapsTab() {
             <Flex gap="2">
               <LightningIcon color="yellow.400" />
               <Text>
-                {humanReadableSats(totalZaps(zaps) / 1000)} sats in the last{" "}
+                <ValueDisplay sats={totalZaps(zaps) / 1000} /> in the last{" "}
                 {dayjs.unix(zaps[zaps.length - 1].created_at).fromNow(true)}
               </Text>
             </Flex>

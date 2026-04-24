@@ -9,6 +9,7 @@ import Timestamp from "../../../components/timestamp";
 import UserAvatar from "../../../components/user/user-avatar";
 import UserDnsIdentityIcon from "../../../components/user/user-dns-identity-icon";
 import UserLink from "../../../components/user/user-link";
+import ValueDisplay from "../../../components/value-display";
 import ZapReceiptMenu from "../../../components/zap/zap-receipt-menu";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
 import { ContentSettingsProvider } from "../../../providers/local/content-settings";
@@ -30,7 +31,7 @@ export function OtherZap({ zap }: { zap: KnownEvent<kinds.Zap> }) {
               <UserLink pubkey={sender} fontWeight="bold" />
               <UserDnsIdentityIcon pubkey={sender} />
               <LightningIcon color="yellow.400" />
-              {payment?.amount && <Text fontSize="md">{(payment.amount / 1000).toLocaleString()}</Text>}
+              {payment?.amount && <ValueDisplay sats={payment.amount / 1000} fontSize="md" />}
             </Flex>
           </Flex>
         </Flex>
