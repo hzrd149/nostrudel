@@ -8,6 +8,24 @@ for (const [key, value] of Object.entries(process.env)) {
   if (key.startsWith("VITE_")) console.log(`${key}: ${value}`);
 }
 
+/** Bundled in one chunk so @capacitor/preferences init order avoids circular-promise hangs (Rolldown requires manualChunks to be a function) */
+const CAPACITOR_CHUNKS = [
+  "@capacitor/core",
+  "@capacitor/app",
+  "@capacitor/preferences",
+  "@capacitor/share",
+  "@capacitor-community/sqlite",
+  "@capacitor-mlkit/barcode-scanning",
+] as const;
+
+function isCapacitorModule(id: string) {
+  if (!id.includes("node_modules")) return false;
+  for (const pkg of CAPACITOR_CHUNKS) {
+    if (id.includes(`node_modules/${pkg}/`)) return true;
+  }
+  return false;
+}
+
 // https://vitejs.dev/config/
 export default defineConfig({
   base: process.env.VITE_BASE ?? "/",
@@ -16,18 +34,7 @@ export default defineConfig({
     sourcemap: true,
     rollupOptions: {
       output: {
-        manualChunks: {
-          // Bundle all Capacitor dependencies together
-          // This is to fix the issue where @capacitor/preferences causes module initialization to hang because circular promises
-          capacitor: [
-            "@capacitor/core",
-            "@capacitor/app",
-            "@capacitor/preferences",
-            "@capacitor/share",
-            "@capacitor-community/sqlite",
-            "@capacitor-mlkit/barcode-scanning",
-          ],
-        },
+        manualChunks: (id) => (isCapacitorModule(id) ? "capacitor" : undefined),
       },
     },
   },
