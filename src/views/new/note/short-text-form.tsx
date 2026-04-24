@@ -16,6 +16,7 @@ import {
   SliderFilledTrack,
   SliderThumb,
   SliderTrack,
+  Spinner,
   Switch,
   Text,
   useDisclosure,
@@ -75,6 +76,7 @@ function ShortTextNoteFormInner({
   const promptAddClientTag = useLocalStorageDisclosure("prompt-add-client-tag", true);
   const [miningTarget, setMiningTarget] = useState(0);
   const [published, setPublished] = useState<PublishLogEntry>();
+  const [loading, setLoading] = useState("");
   const emojis = useContextEmojis();
   const advanced = useDisclosure();
 
@@ -131,13 +133,22 @@ function ShortTextNoteFormInner({
     const events = pointers.map((p) => eventStore.getEvent(p.id)).filter((t) => !!t);
     for (const event of events) publish("Broadcast event", event);
 
+    setLoading("Signing and publishing note...");
     const pub = await publish("Post", unsigned);
     if (pub) setPublished(pub);
   };
 
   const submit = handleSubmit(async (values) => {
-    if (values.difficulty > 0) setMiningTarget(values.difficulty);
-    else publishPost(await createDraft(values));
+    try {
+      if (values.difficulty > 0) setMiningTarget(values.difficulty);
+      else {
+        setLoading("Creating note...");
+        const unsigned = await createDraft(values);
+        await publishPost(unsigned);
+      }
+    } finally {
+      setLoading("");
+    }
   });
 
   const canSubmit = getValues().content.length > 0;
@@ -146,6 +157,15 @@ function ShortTextNoteFormInner({
     return (
       <Flex direction="column" gap="2">
         <PublishLogEntryDetails entry={published} />
+      </Flex>
+    );
+  }
+
+  if (loading) {
+    return (
+      <Flex gap="2" alignItems="center" justifyContent="center" py="8">
+        <Spinner size="lg" />
+        <Text>{loading}</Text>
       </Flex>
     );
   }
