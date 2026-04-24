@@ -18,8 +18,7 @@ import {
   TagLabel,
   Text,
 } from "@chakra-ui/react";
-import { getPackName } from "applesauce-common/helpers/emoji";
-import { getEmojis } from "applesauce-common/helpers/emoji";
+import { getEmojiPackEmojis, getEmojiPackName } from "applesauce-common/helpers";
 import { useActiveAccount } from "applesauce-react/hooks";
 import { EventTemplate, kinds, NostrEvent } from "nostr-tools";
 
@@ -106,7 +105,7 @@ function EmojiPackPage({ pack }: { pack: NostrEvent }) {
   const [scale, setScale] = useState(10);
 
   const isAuthor = account?.pubkey === pack.pubkey;
-  const emojis = getEmojis(pack);
+  const emojis = getEmojiPackEmojis(pack);
 
   const [editing, setEditing] = useState(false);
   const [draftEmojis, setDraft] = useState(emojis);
@@ -142,7 +141,7 @@ function EmojiPackPage({ pack }: { pack: NostrEvent }) {
 
   return (
     <SimpleView
-      title={getPackName(pack)}
+      title={getEmojiPackName(pack)}
       actions={
         <ButtonGroup ms="auto" size="sm">
           {isAuthor && (

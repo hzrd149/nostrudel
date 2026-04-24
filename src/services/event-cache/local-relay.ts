@@ -1,5 +1,5 @@
 import { markFromCache } from "applesauce-core/helpers";
-import { completeOnEose, Relay } from "applesauce-relay";
+import { Relay } from "applesauce-relay";
 import { tap } from "rxjs";
 
 import { LOCAL_RELAY_URL } from "../../const";
@@ -10,15 +10,11 @@ relay.keepAlive = 1000 * 60 * 5; // 5 minutes
 
 const localRelayCache: EventCache = {
   type: "local-relay",
-  read: (filters) =>
-    relay.req(filters).pipe(
-      completeOnEose(),
-      tap((e) => markFromCache(e)),
-    ),
+  read: (filters) => relay.request(filters).pipe(tap((e) => markFromCache(e))),
   write: (events) => {
     return Promise.all(events.map((event) => relay.event(event)));
   },
-  search: (filters) => relay.req(filters).pipe(completeOnEose()),
+  search: (filters) => relay.request(filters),
 };
 
 export default localRelayCache;

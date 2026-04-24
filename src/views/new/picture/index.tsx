@@ -1,7 +1,6 @@
 import { Flex, Spinner, Text, useToast } from "@chakra-ui/react";
-import { FileMetadata } from "applesauce-common/helpers";
-import { PicturePostBlueprint } from "applesauce-common/blueprints";
-import { useEventFactory } from "applesauce-react/hooks";
+import { PicturePostFactory } from "applesauce-common/factories";
+import { FileMetadataFields } from "applesauce-common/helpers";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -13,14 +12,13 @@ import PicturePostForm, { FormValues } from "./picture-post-form";
 
 export default function NewPictureView() {
   const toast = useToast();
-  const factory = useEventFactory();
   const publish = usePublishEvent();
   const uploadFile = useUploadFile();
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState("");
   const submit = async (values: FormValues) => {
-    const pictures: FileMetadata[] = [];
+    const pictures: FileMetadataFields[] = [];
 
     let i = 0;
     for (const media of values.media) {
@@ -31,19 +29,15 @@ export default function NewPictureView() {
     }
 
     setLoading("Creating post...");
-    let draft = await factory.create(PicturePostBlueprint, pictures, values.content, {
-      contentWarning: values.nsfw ? values.nsfwReason : undefined,
-    });
-
-    setLoading("Signing post...");
-    const signed = await factory.sign(draft);
+    let draft = PicturePostFactory.create(pictures, values.content).caption(values.content);
+    if (values.nsfw) draft = draft.contentWarning(values.nsfwReason);
 
     setLoading("Publishing post...");
-    await publish("Post picture", signed);
+    const pub = await publish("Post picture", await draft);
 
     toast({ status: "success", description: "Posted" });
 
-    navigate(`/pictures/${getSharableEventAddress(signed)}`);
+    if (pub) navigate(`/pictures/${getSharableEventAddress(pub.event)}`);
   };
 
   return (

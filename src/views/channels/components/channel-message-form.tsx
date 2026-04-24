@@ -1,8 +1,7 @@
 import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
-import { EventTemplate } from "nostr-tools";
+import { EventTemplate, kinds } from "nostr-tools";
 import { Button, ButtonGroup, Flex, FlexProps, Heading } from "@chakra-ui/react";
-import { useEventFactory } from "applesauce-react/hooks";
 import { Emoji } from "applesauce-common/helpers";
 
 import MagicTextArea, { RefType } from "../../../components/magic-textarea";
@@ -13,7 +12,6 @@ import { usePublishEvent } from "../../../providers/global/publish-provider";
 import InsertGifButton from "../../../components/gif/insert-gif-button";
 import InsertImageButton from "../../new/note/insert-image-button";
 import InsertReactionButton from "../../../components/reactions/insert-reaction-button";
-import { ChannelMessageBlueprint, ChannelMessageReplyBlueprint } from "applesauce-common/blueprints";
 
 export default function ChannelMessageForm({
   channel,
@@ -22,7 +20,6 @@ export default function ChannelMessageForm({
 }: { channel: NostrEvent; root?: NostrEvent } & Omit<FlexProps, "children">) {
   const publish = usePublishEvent();
   const emojis = useContextEmojis();
-  const factory = useEventFactory();
 
   const [loadingMessage, setLoadingMessage] = useState("");
   const { getValues, setValue, watch, handleSubmit, reset } = useForm({
@@ -39,16 +36,20 @@ export default function ChannelMessageForm({
   const { onPaste } = useTextAreaUploadFile(insertText);
 
   const sendMessage = handleSubmit(async (values) => {
-    if (!values.content || !factory) return;
+    if (!values.content) return;
 
     const customEmojis = emojis.filter((e) => !!e.url) as Emoji[];
 
-    let draft: EventTemplate;
-    if (root) {
-      draft = await factory.create(ChannelMessageReplyBlueprint, root, values.content, { emojis: customEmojis });
-    } else {
-      draft = await factory.create(ChannelMessageBlueprint, channel, values.content, { emojis: customEmojis });
-    }
+    const draft: EventTemplate = {
+      kind: kinds.ChannelMessage,
+      created_at: Math.floor(Date.now() / 1000),
+      content: values.content,
+      tags: [
+        ["e", channel.id, "", "root"],
+        ...(root ? [["e", root.id, "", "reply"]] : []),
+        ...customEmojis.map((emoji) => ["emoji", emoji.shortcode, emoji.url]),
+      ],
+    };
 
     setLoadingMessage("Signing...");
     await publish("Send DM", draft, undefined, false);

@@ -2,7 +2,7 @@ import { useRef } from "react";
 import { Flex, FlexProps, IconButton, useToast } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 import { NostrEvent } from "nostr-tools";
-import { useEventFactory } from "applesauce-react/hooks";
+import { CommentFactory } from "applesauce-common/factories";
 import { Emoji } from "applesauce-common/helpers/emoji";
 
 import { usePublishEvent } from "../../../providers/global/publish-provider";
@@ -19,7 +19,6 @@ export default function PicturePostCommentForm({
   const toast = useToast();
   const publish = usePublishEvent();
   const emojis = useContextEmojis();
-  const factory = useEventFactory();
 
   const relays = useWriteRelays();
   const { setValue, handleSubmit, formState, reset, getValues, watch } = useForm({
@@ -27,9 +26,7 @@ export default function PicturePostCommentForm({
   });
   const sendMessage = handleSubmit(async (values) => {
     try {
-      if (!factory) throw new Error("Missing factory");
-
-      let draft = await factory.comment(post, values.content, { emojis: emojis.filter((e) => !!e.url) as Emoji[] });
+      const draft = await CommentFactory.create(post, values.content, { emojis: emojis.filter((e) => !!e.url) as Emoji[] });
       const pub = await publish("Comment", draft, relays);
       if (pub) reset();
     } catch (error) {

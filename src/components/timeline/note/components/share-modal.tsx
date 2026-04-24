@@ -16,8 +16,9 @@ import {
 } from "@chakra-ui/react";
 import { Helpers } from "applesauce-content";
 const { getMediaAttachmentURLsFromContent } = Helpers;
+import { ShareFactory } from "applesauce-common/factories";
 import { getMediaAttachments } from "applesauce-common/helpers";
-import { useActiveAccount, useEventFactory } from "applesauce-react/hooks";
+import { useActiveAccount } from "applesauce-react/hooks";
 import { createUploadAuth } from "blossom-client-sdk";
 import { mirrorBlob } from "blossom-client-sdk/actions/mirror";
 import { EventTemplate, NostrEvent } from "nostr-tools";
@@ -37,7 +38,6 @@ export default function ShareModal({
   const { mirrorBlobsOnShare } = useAppSettings();
   const account = useActiveAccount();
   const publish = usePublishEvent();
-  const factory = useEventFactory();
   const toast = useToast();
 
   const servers = useUsersMediaServers(account?.pubkey) || [];
@@ -105,7 +105,7 @@ export default function ShareModal({
     }
 
     setLoading("Sharing...");
-    const draft = await factory.share(event);
+    const draft = await ShareFactory.create(event);
 
     setLoading("Publishing...");
     await publish("Share", draft);

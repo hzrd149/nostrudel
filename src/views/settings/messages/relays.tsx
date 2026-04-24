@@ -1,7 +1,7 @@
 import { Alert, AlertDescription, AlertIcon, Heading, Link, Text, VStack } from "@chakra-ui/react";
-import { TagOperations } from "applesauce-core/operations";
+import { EventFactory } from "applesauce-core/factories";
 import { addRelayTag, removeRelayTag } from "applesauce-core/operations/tag/relay";
-import { useActiveAccount, useEventFactory, useObservableMemo } from "applesauce-react/hooks";
+import { useActiveAccount, useObservableMemo } from "applesauce-react/hooks";
 import { kinds } from "nostr-tools";
 
 import { getRelaysFromList } from "../../../helpers/nostr/lists";
@@ -48,7 +48,6 @@ function RelayEntry({ url, onRemove }: { url: string; onRemove: () => void }) {
 export default function DirectMessageRelaysSection() {
   const account = useActiveAccount();
   const publish = usePublishEvent();
-  const factory = useEventFactory();
 
   const dmRelayList = useAddressableEvent(
     account ? { kind: kinds.DirectMessageRelaysList, pubkey: account.pubkey } : undefined,
@@ -57,24 +56,16 @@ export default function DirectMessageRelaysSection() {
   const relays = dmRelayList ? getRelaysFromList(dmRelayList) : [];
 
   const addRelay = useAsyncAction(async (relay: string) => {
-    const draft = await factory.modifyTags(
-      dmRelayList || {
-        kind: kinds.DirectMessageRelaysList,
-        content: "",
-        tags: [],
-        created_at: Math.floor(Date.now() / 1000),
-      },
-      addRelayTag(relay),
-    );
-    const signed = await factory.sign(draft);
-    await publish("Add DM relay", signed);
+    const draft = await (dmRelayList
+      ? EventFactory.fromEvent(dmRelayList).modifyPublicTags(addRelayTag(relay))
+      : EventFactory.fromKind(kinds.DirectMessageRelaysList).modifyPublicTags(addRelayTag(relay)));
+    await publish("Add DM relay", draft);
   });
 
   const removeRelay = useAsyncAction(async (relay: string) => {
     if (!dmRelayList) return;
-    const draft = await factory.modifyTags(dmRelayList, removeRelayTag(relay));
-    const signed = await factory.sign(draft);
-    await publish("Remove DM relay", signed);
+    const draft = await EventFactory.fromEvent(dmRelayList).modifyPublicTags(removeRelayTag(relay));
+    await publish("Remove DM relay", draft);
   });
 
   return (

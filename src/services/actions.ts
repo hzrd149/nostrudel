@@ -3,10 +3,10 @@ import { kinds } from "nostr-tools";
 import { getOutboxes } from "applesauce-core/helpers";
 
 import { eventStore } from "./event-store";
-import factory from "./event-factory";
+import accounts from "./accounts";
 import pool from "./pool";
 
-const actions = new ActionHub(eventStore, factory, async (event) => {
+const actions = new ActionHub(eventStore, accounts.signer, async (event) => {
   const mailboxes = eventStore.getReplaceable(kinds.RelayList, event.pubkey);
   const outboxes = mailboxes && getOutboxes(mailboxes);
 

@@ -1,8 +1,8 @@
 import { Button, Flex, FlexProps, Heading, Textarea } from "@chakra-ui/react";
-import { includeSingletonTag } from "applesauce-core/operations";
+import { EventFactory } from "applesauce-core/factories";
+import { TagOperations } from "applesauce-core/operations";
 import { useState } from "react";
 
-import { useEventFactory } from "applesauce-react/hooks";
 import StarRating from "../../../../components/star-rating";
 import useAsyncAction from "../../../../hooks/use-async-action";
 import { usePublishEvent } from "../../../../providers/global/publish-provider";
@@ -15,7 +15,6 @@ export type BlossomServerReviewFormProps = FlexProps & {
 
 export default function BlossomServerReviewForm({ server, onClose, ...props }: BlossomServerReviewFormProps) {
   const publish = usePublishEvent();
-  const factory = useEventFactory();
   const [content, setContent] = useState("");
   const [rating, setRating] = useState(0.6); // 0-5 stars for UI
 
@@ -23,14 +22,12 @@ export default function BlossomServerReviewForm({ server, onClose, ...props }: B
     e.preventDefault();
     if (!content.trim()) return;
 
-    const draft = await factory.build(
-      {
-        kind: BLOSSOM_SERVER_REVIEW_KIND,
-        content: content.trim(),
-      },
-      includeSingletonTag(["d", server]),
-      includeSingletonTag(["rating", rating.toFixed(1)]),
-    );
+    const draft = await EventFactory.fromKind(BLOSSOM_SERVER_REVIEW_KIND)
+      .content(content.trim())
+      .modifyPublicTags(
+        TagOperations.addNameValueTag(["d", server]),
+        TagOperations.addNameValueTag(["rating", rating.toFixed(1)]),
+      );
 
     await publish("Submit Review", draft);
     onClose();

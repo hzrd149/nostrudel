@@ -189,16 +189,6 @@ export default function AppHandlerModal({
 
         <ModalFooter display="flex" gap="2" p="4">
           <Button onClick={onClose}>Cancel</Button>
-          <Button
-            as={Link}
-            variant="outline"
-            href={`https://nostrapp.link/#${address}?select=true`}
-            isExternal
-            rightIcon={<ExternalLinkIcon />}
-            colorScheme="primary"
-          >
-            nostrapp.link
-          </Button>
         </ModalFooter>
       </ModalContent>
     </Modal>

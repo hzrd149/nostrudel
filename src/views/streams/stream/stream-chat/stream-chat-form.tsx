@@ -1,7 +1,6 @@
 import { Box, Button, Flex, useToast } from "@chakra-ui/react";
+import { StreamChatMessageFactory } from "applesauce-common/factories";
 import { Emoji } from "applesauce-common/helpers";
-import { LiveChatMessageBlueprint } from "applesauce-common/blueprints";
-import { useEventFactory } from "applesauce-react/hooks";
 import { NostrEvent } from "nostr-tools";
 import { useMemo, useRef } from "react";
 import { useForm } from "react-hook-form";
@@ -20,7 +19,6 @@ import StreamZapButton from "../components/stream-zap-button";
 export default function ChatMessageForm({ stream, hideZapButton }: { stream: NostrEvent; hideZapButton?: boolean }) {
   const toast = useToast();
   const publish = usePublishEvent();
-  const factory = useEventFactory();
   const emojis = useContextEmojis();
   const streamRelays = useReadRelays();
   const host = getStreamHost(stream);
@@ -36,7 +34,7 @@ export default function ChatMessageForm({ stream, hideZapButton }: { stream: Nos
   });
   const sendMessage = handleSubmit(async (values) => {
     try {
-      const draft = await factory.create(LiveChatMessageBlueprint, stream, values.content, {
+      const draft = await StreamChatMessageFactory.create(stream, values.content, {
         emojis: emojis.filter((e) => !!e.url) as Emoji[],
       });
 

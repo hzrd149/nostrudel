@@ -13,8 +13,9 @@ import {
   Spacer,
   Text,
 } from "@chakra-ui/react";
+import { EventFactory } from "applesauce-core/factories";
 import { addRelayTag, removeRelayTag } from "applesauce-core/operations/tag/relay";
-import { useActiveAccount, useEventFactory, useObservableEagerState } from "applesauce-react/hooks";
+import { useActiveAccount, useObservableEagerState } from "applesauce-react/hooks";
 import { kinds } from "nostr-tools";
 
 import SimpleView from "../../../components/layout/presets/simple-view";
@@ -68,40 +69,30 @@ function RelayEntry({
 export default function SearchSettings() {
   const publish = usePublishEvent();
   const account = useActiveAccount();
-  const factory = useEventFactory();
   const searchRelayList = useUserSearchRelayList(account && { pubkey: account.pubkey });
 
   const searchRelays = searchRelayList ? getRelaysFromList(searchRelayList) : [];
 
   const addRelay = useAsyncAction(async (url: string) => {
-    const draft = await factory.modifyTags(
-      searchRelayList || {
-        kind: kinds.SearchRelaysList,
-        content: "",
-        tags: [],
-        created_at: Math.floor(Date.now() / 1000),
-      },
-      addRelayTag(url),
-    );
-    const signed = await factory.sign(draft);
-    await publish("Add search relay", signed);
+    const draft = await (searchRelayList
+      ? EventFactory.fromEvent(searchRelayList).modifyPublicTags(addRelayTag(url))
+      : EventFactory.fromKind(kinds.SearchRelaysList).modifyPublicTags(addRelayTag(url)));
+    await publish("Add search relay", draft);
   });
 
   const makeDefault = useAsyncAction(async (url: string) => {
     if (!searchRelayList) throw new Error("Missing search relay list");
 
-    const draft = await factory.modifyTags(searchRelayList, (tags) =>
+    const draft = await EventFactory.fromEvent(searchRelayList).modifyPublicTags((tags) =>
       Array.from(tags).sort((a, b) => (a[1] === url ? -1 : 1)),
     );
-    const signed = await factory.sign(draft);
-    await publish("Set default search relay", signed);
+    await publish("Set default search relay", draft);
   });
 
   const removeRelay = useAsyncAction(async (url: string) => {
     if (!searchRelayList) return;
-    const draft = await factory.modifyTags(searchRelayList, removeRelayTag(url));
-    const signed = await factory.sign(draft);
-    await publish("Remove search relay", signed);
+    const draft = await EventFactory.fromEvent(searchRelayList).modifyPublicTags(removeRelayTag(url));
+    await publish("Remove search relay", draft);
   });
 
   return (

@@ -1,4 +1,4 @@
-import { FileMetadata } from "applesauce-common/helpers";
+import { FileMetadataFields } from "applesauce-common/helpers";
 import { useActiveAccount } from "applesauce-react/hooks";
 
 import { EventTemplate } from "nostr-tools";
@@ -24,7 +24,7 @@ export default function useUploadFile() {
   );
 
   return useAsyncAction(
-    async (file: File): Promise<FileMetadata | undefined> => {
+    async (file: File): Promise<FileMetadataFields | undefined> => {
       const safeFile = await stripSensitiveMetadataOnFile(file);
 
       if (mediaUploadService === "blossom" && mediaServers.length) {

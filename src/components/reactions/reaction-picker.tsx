@@ -1,7 +1,7 @@
 import { useMemo } from "react";
-import { getPackName } from "applesauce-common/helpers";
+import { getEmojiPackName } from "applesauce-common/helpers";
 import { getEventUID } from "applesauce-core/helpers";
-import { Emoji, getEmojis } from "applesauce-common/helpers";
+import { Emoji, getEmojiPackEmojis } from "applesauce-common/helpers";
 import { getAddressPointersFromList } from "applesauce-common/helpers/lists";
 import { useActiveAccount } from "applesauce-react/hooks";
 
@@ -23,8 +23,8 @@ export default function ReactionPicker({
     () =>
       packs.map((pack) => {
         const id = getEventUID(pack);
-        const name = getPackName(pack) || "Unnamed";
-        const emojis = getEmojis(pack);
+        const name = getEmojiPackName(pack) || "Unnamed";
+        const emojis = getEmojiPackEmojis(pack);
 
         return {
           id,

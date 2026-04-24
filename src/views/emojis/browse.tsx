@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 import { Flex, SimpleGrid, Switch, useDisclosure } from "@chakra-ui/react";
 import { getEventUID } from "applesauce-core/helpers";
-import { getEmojis } from "applesauce-common/helpers/emoji";
+import { getEmojiPackEmojis } from "applesauce-common/helpers";
 import { kinds } from "nostr-tools";
 
 import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
@@ -20,7 +20,7 @@ function EmojiPacksBrowsePage() {
 
   const eventFilter = useCallback(
     (event: NostrEvent) => {
-      if (!showEmpty.isOpen && getEmojis(event).length === 0) return false;
+      if (!showEmpty.isOpen && getEmojiPackEmojis(event).length === 0) return false;
       return true;
     },
     [showEmpty.isOpen],

@@ -1,15 +1,22 @@
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/react";
 import styled from "@emotion/styled";
 import { ThreadItem } from "applesauce-common/models";
-import { kinds } from "nostr-tools";
-import { ReactNode } from "react";
+import { getProfileContent, isReplaceable } from "applesauce-core/helpers";
+import { useActiveAccount } from "applesauce-react/hooks";
+import { kinds, NostrEvent } from "nostr-tools";
+import { ReactNode, useCallback, useMemo } from "react";
 
+import { CAP_IS_WEB } from "../../../env";
 import { getContentTagRefs } from "../../../helpers/nostr/event";
 import { repliesByDate } from "../../../helpers/thread";
 import { useReadRelays } from "../../../hooks/use-client-relays";
 import useEventZaps from "../../../hooks/use-event-zaps";
 import useRouteSearchValue from "../../../hooks/use-route-search-value";
+import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
 import useTimelineLoader from "../../../hooks/use-timeline-loader";
+import useUserContacts from "../../../hooks/use-user-contacts";
+import { getSharableEventAddress } from "../../../services/relay-hints";
+import OtherAppsTab, { AppWithLink } from "./tabs/other-apps";
 import PostQuotesTab from "./tabs/quotes";
 import PostReactionsTab from "./tabs/reactions";
 import PostRepostsTab from "./tabs/reposts";
@@ -55,6 +62,48 @@ export default function DetailsTabs({ post }: { post: ThreadItem }) {
       !reposts.includes(e) &&
       !quotes.includes(e),
   );
+
+  const sharableAddress = useMemo(() => getSharableEventAddress(post.event), [post.event]);
+  const addressType = isReplaceable(post.event.kind) ? "naddr" : "nevent";
+  const account = useActiveAccount();
+  const contacts = useUserContacts(CAP_IS_WEB ? account?.pubkey : undefined);
+  const contactPubkeys = useMemo(() => contacts?.map((c) => c.pubkey), [contacts]);
+  const appHandlerEventFilter = useCallback((e: NostrEvent) => e.content.length > 0, []);
+  const appHandlerFilter = useMemo(() => {
+    if (!CAP_IS_WEB) return undefined;
+    if (!contactPubkeys || contactPubkeys.length === 0) return undefined;
+    return {
+      kinds: [kinds.Handlerinformation],
+      "#k": [String(post.event.kind)],
+      authors: contactPubkeys,
+    };
+  }, [post.event.kind, contactPubkeys]);
+  const { loader: appHandlersLoader, timeline: appHandlers } = useTimelineLoader(
+    `${post.event.id}-app-handlers`,
+    readRelays,
+    appHandlerFilter,
+    { eventFilter: appHandlerEventFilter },
+  );
+  const appHandlersCallback = useTimelineCurserIntersectionCallback(appHandlersLoader);
+
+  const appsWithLinks = useMemo<AppWithLink[]>(() => {
+    if (!sharableAddress) return [];
+    const seen = new Set<string>();
+    return appHandlers.reduce<AppWithLink[]>((acc, app) => {
+      if (seen.has(app.pubkey)) return acc;
+      try {
+        getProfileContent(app);
+      } catch {
+        return acc;
+      }
+      const tag =
+        app.tags.find((t) => t[0] === "web" && t[2] === addressType) || app.tags.find((t) => t[0] === "web");
+      if (!tag || !tag[1]) return acc;
+      seen.add(app.pubkey);
+      acc.push({ app, link: tag[1].replace("<bech32>", sharableAddress) });
+      return acc;
+    }, []);
+  }, [appHandlers, sharableAddress, addressType]);
 
   const tabs: { id: string; name: string; element: ReactNode; visible: boolean; right?: boolean }[] = [
     {
@@ -116,6 +165,17 @@ export default function DetailsTabs({ post }: { post: ThreadItem }) {
       element: (
         <TabPanel key="unknown" p="0" py="2">
           <UnknownTab post={post} events={unknown} />
+        </TabPanel>
+      ),
+    },
+    {
+      id: "other-apps",
+      name: `Other Apps (${appsWithLinks.length})`,
+      visible: CAP_IS_WEB && appsWithLinks.length > 0,
+      right: true,
+      element: (
+        <TabPanel key="other-apps" p="0" py="2">
+          <OtherAppsTab post={post} apps={appsWithLinks} intersectionCallback={appHandlersCallback} />
         </TabPanel>
       ),
     },

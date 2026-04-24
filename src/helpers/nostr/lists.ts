@@ -49,7 +49,7 @@ export function getListTitle(event: NostrEvent) {
   );
 }
 
-/** @deprecated use factory.modifyEvent instead */
+/** @deprecated use EventFactory operations instead */
 export function setListName(draft: EventTemplate, name: string) {
   replaceOrAddSimpleTag(draft, "name", name);
 }
@@ -58,7 +58,7 @@ export function getListDescription(event: NostrEvent) {
   return event.tags.find((t) => t[0] === "description")?.[1];
 }
 
-/** @deprecated use factory.modifyEvent instead */
+/** @deprecated use EventFactory operations instead */
 export function setListDescription(draft: EventTemplate, description: string) {
   replaceOrAddSimpleTag(draft, "description", description);
 }

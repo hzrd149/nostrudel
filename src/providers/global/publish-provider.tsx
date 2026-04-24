@@ -1,7 +1,8 @@
 import { useToast } from "@chakra-ui/react";
 import { addSeenRelay } from "applesauce-core/helpers";
 import { mergeRelaySets } from "applesauce-core/helpers";
-import { useActiveAccount, useEventFactory, useObservableEagerState } from "applesauce-react/hooks";
+import { setClient } from "applesauce-core/operations";
+import { useActiveAccount, useObservableEagerState } from "applesauce-react/hooks";
 import { PublishResponse } from "applesauce-relay";
 import { nanoid } from "nanoid";
 import { EventTemplate, NostrEvent, UnsignedEvent } from "nostr-tools";
@@ -11,6 +12,7 @@ import { BehaviorSubject, map, Observable, share } from "rxjs";
 import { scanToArray } from "../../helpers/observable";
 import { useWriteRelays } from "../../hooks/use-client-relays";
 import useUserMailboxes from "../../hooks/use-user-mailboxes";
+import { NIP_89_CLIENT_APP } from "../../const";
 import { writeEvent } from "../../services/event-cache";
 import { eventStore } from "../../services/event-store";
 import pool from "../../services/pool";
@@ -99,24 +101,41 @@ export function useFinalizeDraft() {
   return useContext(PublishContext).finalizeDraft;
 }
 
+function isSignedEvent(event: EventTemplate | UnsignedEvent | NostrEvent): event is NostrEvent {
+  return Reflect.has(event, "id") && Reflect.has(event, "sig");
+}
+
 export default function PublishProvider({ children }: PropsWithChildren) {
   const toast = useToast();
   const [log, setLog] = useState<PublishLogEntry[]>([]);
   const account = useActiveAccount();
   const mailboxes = useUserMailboxes(account?.pubkey);
   const fallbackRelays = useObservableEagerState(localSettings.fallbackRelays);
+  const addClientTag = useObservableEagerState(localSettings.addClientTag);
   const writeRelays = useWriteRelays();
-  const factory = useEventFactory();
+
+  const applyClientTag = useCallback(
+    async (event: EventTemplate | UnsignedEvent | NostrEvent) => {
+      if (!addClientTag) return event;
+      return await setClient(NIP_89_CLIENT_APP.name, NIP_89_CLIENT_APP.address)(event);
+    },
+    [addClientTag],
+  );
 
   const finalizeDraft = useCallback<PublishContextType["finalizeDraft"]>(
-    (event: EventTemplate | NostrEvent) => factory.stamp(event),
-    [factory],
+    async (event: EventTemplate | NostrEvent) => {
+      if (!account) throw new Error("No active account");
+
+      const draft = await applyClientTag(event);
+      return { ...draft, pubkey: account.pubkey };
+    },
+    [account, applyClientTag],
   );
 
   const publishEvent = useCallback(
     async (
       label: string,
-      event: EventTemplate | NostrEvent,
+      event: EventTemplate | UnsignedEvent | NostrEvent,
       additionalRelays?: string[],
       quite = true,
       onlyAdditionalRelays = false,
@@ -126,11 +145,14 @@ export default function PublishProvider({ children }: PropsWithChildren) {
         if (onlyAdditionalRelays) relays = mergeRelaySets(additionalRelays ?? []);
         else relays = mergeRelaySets(writeRelays, mailboxes?.outboxes || fallbackRelays, additionalRelays);
 
-        // add pubkey to event
-        if (!Reflect.has(event, "pubkey")) event = await finalizeDraft(event);
+        if (!isSignedEvent(event)) {
+          // add pubkey to event
+          if (!Reflect.has(event, "pubkey")) event = await finalizeDraft(event);
+          else event = await applyClientTag(event);
+        }
 
         // sign event
-        const signed = !Reflect.has(event, "sig") ? await account!.signEvent(event) : (event as NostrEvent);
+        const signed = isSignedEvent(event) ? event : await account!.signEvent(event);
 
         const entry = new PublishLogEntry(label, signed, [...relays]);
 
@@ -147,7 +169,7 @@ export default function PublishProvider({ children }: PropsWithChildren) {
         if (!quite) throw e;
       }
     },
-    [toast, setLog, account, finalizeDraft, writeRelays, mailboxes, fallbackRelays],
+    [toast, setLog, account, applyClientTag, finalizeDraft, writeRelays, mailboxes, fallbackRelays],
   ) as PublishContextType["publishEvent"];
 
   const context = useMemo<PublishContextType>(

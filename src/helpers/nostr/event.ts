@@ -111,7 +111,7 @@ export function sortByDate<T extends { created_at: number }>(a: T, b: T) {
 
 /**
  * create a copy of the event with a new created_at
- * @deprecated use factory.modify instead */
+ * @deprecated use EventFactory operations instead */
 export function cloneEvent(kind: number, event?: EventTemplate | NostrEvent): EventTemplate {
   return {
     kind: event?.kind ?? kind,
@@ -123,7 +123,7 @@ export function cloneEvent(kind: number, event?: EventTemplate | NostrEvent): Ev
 
 /**
  * either replaces the existing tag or adds a new one
- * @deprecated use factory.modifyTags with includeNameValueTag
+ * @deprecated use EventFactory operations with includeNameValueTag
  */
 export function replaceOrAddSimpleTag(draft: EventTemplate, tagName: string, value: string) {
   if (draft.tags.some((t) => t[0] === tagName)) {

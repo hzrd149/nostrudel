@@ -12,6 +12,7 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
+import { DeleteFactory } from "applesauce-core/factories";
 import { useActiveAccount, useEventModel, useEventStore } from "applesauce-react/hooks";
 import { getHistoryContent, isHistoryContentUnlocked, unlockHistoryContent } from "applesauce-wallet/helpers";
 import { WalletHistoryModel } from "applesauce-wallet/models";
@@ -32,7 +33,6 @@ import useEventUpdate from "../../../hooks/use-event-update";
 import { WalletHistoryRedeemedQuery } from "../../../models/wallet";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
 import { useDeleteEventContext } from "../../../providers/route/delete-event-provider";
-import factory from "../../../services/event-factory";
 import { ErrorBoundary } from "../../../components/error-boundary";
 
 function HistoryEntry({ entry }: { entry: NostrEvent }) {
@@ -141,9 +141,9 @@ export default function WalletHistoryTab() {
 
   const clear = useAsyncAction(async () => {
     if (confirm("Are you sure you want to clear history?") !== true) return;
-    const draft = await factory.delete(history);
+    const draft = await DeleteFactory.fromEvents(history);
     await publish("Clear history", draft);
-  }, [factory, publish, history]);
+  }, [publish, history]);
 
   return (
     <Flex direction="column" gap="2" w="full">

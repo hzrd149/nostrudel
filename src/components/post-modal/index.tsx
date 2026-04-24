@@ -26,9 +26,10 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { ZapSplit } from "applesauce-common/helpers";
+import { NoteFactory } from "applesauce-common/factories";
 import { getEventPointerFromQTag, processTags, EventPointer } from "applesauce-core/helpers";
 import { Emoji } from "applesauce-common/helpers";
-import { useActiveAccount, useEventFactory, useEventStore, useObservableEagerState } from "applesauce-react/hooks";
+import { useActiveAccount, useEventStore, useObservableEagerState } from "applesauce-react/hooks";
 import { UnsignedEvent } from "nostr-tools";
 import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -40,7 +41,7 @@ import useLocalStorageDisclosure from "../../hooks/use-localstorage-disclosure";
 import useTextAreaUploadFile, { useTextAreaInsertTextWithForm } from "../../hooks/use-textarea-upload-file";
 import useAppSettings from "../../hooks/use-user-app-settings";
 import { useContextEmojis } from "../../providers/global/emoji-provider";
-import { PublishLogEntry, usePublishEvent } from "../../providers/global/publish-provider";
+import { PublishLogEntry, useFinalizeDraft, usePublishEvent } from "../../providers/global/publish-provider";
 import { ContentSettingsProvider } from "../../providers/local/content-settings";
 import UploadProvider, { useUploadContext } from "../../providers/local/upload-provider";
 import localSettings from "../../services/preferences";
@@ -84,7 +85,7 @@ function PostModalInner({
   const moreOptions = useDisclosure();
   const eventStore = useEventStore();
 
-  const factory = useEventFactory();
+  const finalizeDraft = useFinalizeDraft();
   const [draft, setDraft] = useState<UnsignedEvent>();
   const { getValues, setValue, watch, register, handleSubmit, formState, reset } = useForm<FormValues>({
     defaultValues: {
@@ -109,14 +110,16 @@ function PostModalInner({
   useCacheForm<FormValues>(cacheFormKey, getValues, reset, formState);
 
   const createDraft = async (values = getValues()) => {
-    // build draft using factory
-    let draft = await factory.note(values.content, {
+    const options = {
       emojis: emojis.filter((e) => !!e.url) as Emoji[],
       contentWarning: values.nsfw ? values.nsfwReason || values.nsfw : false,
       splits: values.split,
-    });
+    };
+    let draft = NoteFactory.create(values.content).text(values.content, options);
+    if (options.splits.length) draft = draft.zapSplit(options);
+    if (options.contentWarning) draft = draft.contentWarning(options.contentWarning);
 
-    const unsigned = await factory.stamp(draft);
+    const unsigned = await finalizeDraft(await draft);
     setDraft(unsigned);
     return unsigned;
   };

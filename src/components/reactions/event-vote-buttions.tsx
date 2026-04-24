@@ -2,7 +2,8 @@ import { Flex, FlexProps, IconButton, IconButtonProps, Text } from "@chakra-ui/r
 import { NostrEvent } from "nostr-tools";
 import { useCallback, useMemo, useState } from "react";
 
-import { useActiveAccount, useEventFactory } from "applesauce-react/hooks";
+import { ReactionFactory } from "applesauce-common/factories";
+import { useActiveAccount } from "applesauce-react/hooks";
 import { getEventReactionScore, groupReactions } from "../../helpers/nostr/reactions";
 import useEventReactions from "../../hooks/use-event-reactions";
 import { usePublishEvent } from "../../providers/global/publish-provider";
@@ -23,7 +24,6 @@ export default function EventVoteButtons({
   const account = useActiveAccount();
   const publish = usePublishEvent();
   const reactions = useEventReactions(event);
-  const factory = useEventFactory();
 
   const grouped = useMemo(() => groupReactions(reactions ?? []), [reactions]);
   const { vote, up, down } = getEventReactionScore(grouped);
@@ -35,11 +35,11 @@ export default function EventVoteButtons({
   const addVote = useCallback(
     async (vote: string) => {
       setLoading(true);
-      const draft = await factory.reaction(event, vote);
+      const draft = await ReactionFactory.create(event, vote);
       await publish("Vote", draft);
       setLoading(false);
     },
-    [event, publish, factory],
+    [event, publish],
   );
 
   const upIcon = chevrons ? <ChevronUpIcon boxSize={6} /> : <LikeIcon />;

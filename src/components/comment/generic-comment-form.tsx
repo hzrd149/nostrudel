@@ -1,7 +1,7 @@
 import { useRef } from "react";
 import { NostrEvent } from "nostr-tools";
-import { useEventFactory } from "applesauce-react/hooks";
 import { getEventUID } from "applesauce-core/helpers";
+import { CommentFactory } from "applesauce-common/factories";
 import { useForm } from "react-hook-form";
 import { useAsync, useThrottle } from "react-use";
 
@@ -29,7 +29,6 @@ function GenericCommentFormInner({
   onCancel?: () => void;
 }) {
   const publish = usePublishEvent();
-  const factory = useEventFactory();
   const emojis = useContextEmojis();
 
   const { setValue, getValues, watch, handleSubmit, formState, reset } = useForm({
@@ -50,7 +49,7 @@ function GenericCommentFormInner({
   const { onPaste } = useTextAreaUploadFile(insertText);
 
   const submit = handleSubmit(async (values) => {
-    const draft = await factory.comment(event, values.content, { emojis });
+    const draft = await CommentFactory.create(event, values.content, { emojis });
 
     const pub = await publish("Comment", draft);
 
@@ -63,7 +62,7 @@ function GenericCommentFormInner({
   // throttle preview
   const throttleValues = useThrottle(getValues(), 500);
   const { value: preview } = useAsync(
-    () => factory.comment(event, throttleValues.content, { emojis }),
+    () => CommentFactory.create(event, throttleValues.content, { emojis }),
     [throttleValues, emojis],
   );
 

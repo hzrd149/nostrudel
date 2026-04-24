@@ -1,7 +1,7 @@
 import { Box, Button, ButtonGroup, Flex, Input, Switch, useDisclosure } from "@chakra-ui/react";
+import { NoteFactory } from "applesauce-common/factories";
 import { Emoji } from "applesauce-common/helpers";
 import { ThreadItem } from "applesauce-common/models";
-import { useEventFactory } from "applesauce-react/hooks";
 import { kinds, NostrEvent } from "nostr-tools";
 import { useMemo, useRef } from "react";
 import { useForm } from "react-hook-form";
@@ -30,7 +30,6 @@ export type ReplyFormProps = {
 
 function ReplyFormInner({ item, onCancel, onSubmitted, replyKind = kinds.ShortTextNote }: ReplyFormProps) {
   const publish = usePublishEvent();
-  const factory = useEventFactory();
   const emojis = useContextEmojis();
   const advanced = useDisclosure();
   const customEmojis = useMemo(() => emojis.filter((e) => !!e.url) as Emoji[], [emojis]);
@@ -60,12 +59,13 @@ function ReplyFormInner({ item, onCancel, onSubmitted, replyKind = kinds.ShortTe
   const { onPaste } = useTextAreaUploadFile(insertText);
 
   const submit = handleSubmit(async (values) => {
-    const draft = await factory.noteReply(item.event, values.content, {
+    let draft = NoteFactory.reply(item.event, values.content).text(values.content, {
       emojis: customEmojis,
       contentWarning: values.nsfw ? values.nsfwReason || values.nsfw : false,
     });
+    if (values.nsfw) draft = draft.contentWarning(values.nsfwReason || true);
 
-    const pub = await publish("Reply", draft);
+    const pub = await publish("Reply", await draft);
 
     if (pub && onSubmitted) onSubmitted(pub.event);
     clearCache();
@@ -76,7 +76,7 @@ function ReplyFormInner({ item, onCancel, onSubmitted, replyKind = kinds.ShortTe
   // throttle preview
   const throttleValues = useThrottle(getValues(), 500);
   const { value: preview } = useAsync(
-    () => factory.noteReply(item.event, throttleValues.content, { emojis: customEmojis }),
+    () => NoteFactory.reply(item.event, throttleValues.content).text(throttleValues.content, { emojis: customEmojis }),
     [throttleValues, customEmojis],
   );
 

@@ -1,7 +1,7 @@
 import { NostrEvent } from "nostr-tools";
 import { PropsWithChildren, createContext, useCallback, useContext, useMemo, useState } from "react";
 
-import EventDebugModal from "../../components/debug-modal/event-debug-modal";
+import EventDebugModal from "../../components/debug-modal";
 import useRouteStateValue from "../../hooks/use-route-state-value";
 import { UNSAFE_DataRouterContext } from "react-router-dom";
 import useRouterMarker from "../../hooks/use-router-marker";

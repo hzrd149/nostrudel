@@ -1,10 +1,9 @@
 import { Button, ButtonGroup, Flex, FlexProps, Heading } from "@chakra-ui/react";
+import { GroupMessageFactory } from "applesauce-common/factories";
 import { encodeGroupPointer, GroupPointer } from "applesauce-common/helpers";
-import { useEventFactory } from "applesauce-react/hooks";
 import { useRef } from "react";
 import { useForm } from "react-hook-form";
 
-import { GroupMessageBlueprint } from "applesauce-common/blueprints";
 import InsertGifButton from "../../../components/gif/insert-gif-button";
 import MagicTextArea, { RefType } from "../../../components/magic-textarea";
 import InsertReactionButton from "../../../components/reactions/insert-reaction-button";
@@ -15,7 +14,6 @@ import InsertImageButton from "../../../views/new/note/insert-image-button";
 
 export default function GroupMessageForm({ group, ...props }: { group: GroupPointer } & Omit<FlexProps, "children">) {
   const publish = usePublishEvent();
-  const factory = useEventFactory();
 
   const { getValues, setValue, watch, reset, handleSubmit, formState } = useForm({
     defaultValues: {
@@ -39,12 +37,11 @@ export default function GroupMessageForm({ group, ...props }: { group: GroupPoin
   const { onPaste } = useTextAreaUploadFile(insertText);
 
   const sendMessage = handleSubmit(async (values) => {
-    if (!values.content || !factory) return;
+    if (!values.content) return;
 
     // Create a NIP-29 group message (kind 1 with h tag)
-    const draft = await factory.create(GroupMessageBlueprint, group, values.content);
-    const signed = await factory.sign(draft);
-    await publish("Send group message", signed, [group.relay], false, true);
+    const draft = await GroupMessageFactory.create(group, values.content);
+    await publish("Send group message", draft, [group.relay], false, true);
 
     reset();
 

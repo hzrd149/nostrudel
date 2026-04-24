@@ -11,8 +11,7 @@ import {
   Link,
   Text,
 } from "@chakra-ui/react";
-import { getPackName } from "applesauce-common/helpers/emoji";
-import { getEmojis } from "applesauce-common/helpers/emoji";
+import { getEmojiPackEmojis, getEmojiPackName } from "applesauce-common/helpers";
 import { NostrEvent } from "nostr-tools";
 import { Link as RouterLink } from "react-router-dom";
 
@@ -24,7 +23,7 @@ import UserAvatarLink from "../../user/user-avatar-link";
 import UserLink from "../../user/user-link";
 
 export default function EmbeddedEmojiPack({ pack, ...props }: Omit<CardProps, "children"> & { pack: NostrEvent }) {
-  const emojis = getEmojis(pack);
+  const emojis = getEmojiPackEmojis(pack);
   const naddr = getSharableEventAddress(pack);
 
   return (
@@ -32,7 +31,7 @@ export default function EmbeddedEmojiPack({ pack, ...props }: Omit<CardProps, "c
       <CardHeader display="flex" gap="2" alignItems="center" p="2" pb="0" flexWrap="wrap">
         <Heading size="md">
           <Link as={RouterLink} to={`/emojis/${naddr}`}>
-            {getPackName(pack)}
+            {getEmojiPackName(pack)}
           </Link>
         </Heading>
         <Text>by</Text>

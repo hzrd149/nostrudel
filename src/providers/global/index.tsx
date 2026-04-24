@@ -1,11 +1,10 @@
 import { ChakraProvider, localStorageManager } from "@chakra-ui/react";
-import { AccountsProvider, ActionsProvider, EventStoreProvider, FactoryProvider } from "applesauce-react/providers";
+import { AccountsProvider, ActionsProvider, EventStoreProvider } from "applesauce-react/providers";
 import React, { useMemo } from "react";
 
 import useAppSettings from "../../hooks/use-user-app-settings";
 import accounts from "../../services/accounts";
 import actions from "../../services/actions";
-import factory from "../../services/event-factory";
 import { eventStore } from "../../services/event-store";
 import buildTheme from "../../theme";
 import BreakpointProvider from "./breakpoint-provider";
@@ -29,13 +28,11 @@ export const GlobalProviders = ({ children }: { children: React.ReactNode }) => 
     <EventStoreProvider eventStore={eventStore}>
       <AccountsProvider manager={accounts}>
         <ActionsProvider runner={actions}>
-          <FactoryProvider factory={factory}>
-            <ThemeProviders>
-              <PublishProvider>
-                <UserEmojiProvider>{children}</UserEmojiProvider>
-              </PublishProvider>
-            </ThemeProviders>
-          </FactoryProvider>
+          <ThemeProviders>
+            <PublishProvider>
+              <UserEmojiProvider>{children}</UserEmojiProvider>
+            </PublishProvider>
+          </ThemeProviders>
         </ActionsProvider>
       </AccountsProvider>
     </EventStoreProvider>

@@ -11,8 +11,7 @@ import {
   Image,
   Text,
 } from "@chakra-ui/react";
-import { getPackName } from "applesauce-common/helpers/emoji";
-import { getEmojis } from "applesauce-common/helpers/emoji";
+import { getEmojiPackEmojis, getEmojiPackName } from "applesauce-common/helpers";
 
 import UserAvatarLink from "../../../components/user/user-avatar-link";
 import UserLink from "../../../components/user/user-link";
@@ -25,7 +24,7 @@ import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
 import useShareableEventAddress from "../../../hooks/use-shareable-event-address";
 
 export default function EmojiPackCard({ pack, ...props }: Omit<CardProps, "children"> & { pack: NostrEvent }) {
-  const emojis = getEmojis(pack);
+  const emojis = getEmojiPackEmojis(pack);
   const address = useShareableEventAddress(pack);
 
   // if there is a parent intersection observer, register this card
@@ -36,7 +35,7 @@ export default function EmojiPackCard({ pack, ...props }: Omit<CardProps, "child
       <CardHeader display="flex" gap="2" alignItems="center" p="2" pb="0" flexWrap="wrap">
         <Heading size="md">
           <HoverLinkOverlay as={RouterLink} to={`/emojis/${address}`}>
-            {getPackName(pack)}
+            {getEmojiPackName(pack)}
           </HoverLinkOverlay>
         </Heading>
         <Text>by</Text>

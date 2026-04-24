@@ -1,7 +1,8 @@
 import { Button, Card, CardBody, CardProps, Flex } from "@chakra-ui/react";
+import { EventFactory } from "applesauce-core/factories";
 import { removeProfilePointerTag } from "applesauce-core/operations/tag/common";
 
-import { useActiveAccount, useEventFactory } from "applesauce-react/hooks";
+import { useActiveAccount } from "applesauce-react/hooks";
 import { NostrEvent } from "nostr-tools";
 import UserAvatar from "../../../components/user/user-avatar";
 import UserDnsIdentity from "../../../components/user/user-dns-identity";
@@ -15,12 +16,10 @@ export type UserCardProps = { pubkey: string; relay?: string; list: NostrEvent }
 export default function UserCard({ pubkey, relay, list, ...props }: UserCardProps) {
   const account = useActiveAccount();
   const publish = usePublishEvent();
-  const factory = useEventFactory();
 
   const remove = useAsyncAction(async () => {
-    const draft = await factory.modifyTags(list, removeProfilePointerTag(pubkey));
-    const signed = await factory.sign(draft);
-    await publish("Remove from list", signed);
+    const draft = await EventFactory.fromEvent(list).modifyPublicTags(removeProfilePointerTag(pubkey));
+    await publish("Remove from list", draft);
   }, [list, publish]);
 
   return (

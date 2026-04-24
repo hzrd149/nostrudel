@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { ButtonProps, useToast } from "@chakra-ui/react";
 import { NostrEvent } from "nostr-tools";
+import { ReactionFactory } from "applesauce-common/factories";
 import { Emoji } from "applesauce-common/helpers";
-import { useEventFactory } from "applesauce-react/hooks";
 
 import { usePublishEvent } from "../../../../providers/global/publish-provider";
 import SelectReactionButton from "../../../reactions/select-reaction-button";
@@ -10,7 +10,6 @@ import SelectReactionButton from "../../../reactions/select-reaction-button";
 export default function AddReactionButton({
   event,
 }: { event: NostrEvent; portal?: boolean } & Omit<ButtonProps, "children">) {
-  const factory = useEventFactory();
   const toast = useToast();
   const publish = usePublishEvent();
 
@@ -18,7 +17,7 @@ export default function AddReactionButton({
   const addReaction = async (emoji: string | Emoji) => {
     setLoading(true);
     try {
-      const draft = await factory.reaction(event, emoji);
+      const draft = await ReactionFactory.create(event, emoji);
       await publish("Reaction", draft);
     } catch (error) {
       if (error instanceof Error) toast({ description: error.message, status: "error" });

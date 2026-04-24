@@ -1,5 +1,5 @@
 import { PropsWithChildren, createContext, useContext } from "react";
-import { Emoji, getEmojis } from "applesauce-common/helpers";
+import { Emoji, getEmojiPackEmojis } from "applesauce-common/helpers";
 import { useActiveAccount } from "applesauce-react/hooks";
 
 import useReplaceableEvents from "../../hooks/use-replaceable-events";
@@ -17,7 +17,7 @@ export function UserEmojiProvider({ children, pubkey }: PropsWithChildren & { pu
   const favoriteList = useFavoriteEmojiPacks(pubkey || account?.pubkey);
 
   const favoritePacks = useReplaceableEvents(favoriteList && getPackCordsFromFavorites(favoriteList));
-  const emojis = favoritePacks.map((pack) => getEmojis(pack)).flat();
+  const emojis = favoritePacks.map((pack) => getEmojiPackEmojis(pack)).flat();
 
   return <EmojiProvider emojis={emojis}>{children}</EmojiProvider>;
 }

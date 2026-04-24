@@ -1,5 +1,6 @@
+import { ReactionFactory } from "applesauce-common/factories";
 import { Emoji } from "applesauce-common/helpers";
-import { useActiveAccount, useEventFactory } from "applesauce-react/hooks";
+import { useActiveAccount } from "applesauce-react/hooks";
 import { NostrEvent } from "nostr-tools";
 import { useCallback } from "react";
 
@@ -9,17 +10,15 @@ import { usePublishEvent } from "../../providers/global/publish-provider";
 export function useAddReaction(event: NostrEvent, grouped: ReactionGroup[]) {
   const account = useActiveAccount();
   const publish = usePublishEvent();
-  const factory = useEventFactory();
 
   return useCallback(
     async (emoji: string | Emoji = "+") => {
       const group = grouped.find((g) => g.emoji === emoji);
       if (account && group && group.pubkeys.includes(account?.pubkey)) return;
 
-      const draft = await factory.reaction(event, emoji);
-      const signed = await factory.sign(draft);
-      await publish("Reaction", signed);
+      const draft = await ReactionFactory.create(event, emoji);
+      await publish("Reaction", draft);
     },
-    [grouped, account, publish, event, factory],
+    [grouped, account, publish, event],
   );
 }

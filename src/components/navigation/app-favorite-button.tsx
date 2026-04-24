@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { IconButton, IconButtonProps } from "@chakra-ui/react";
 import { kinds } from "nostr-tools";
-import { useEventFactory } from "applesauce-react/hooks";
-import { NameValueTag, unixNow } from "applesauce-core/helpers";
+import { EventFactory } from "applesauce-core/factories";
+import { NameValueTag } from "applesauce-core/helpers";
 import { TagOperations } from "applesauce-core/operations";
 
 import { App, defaultUserFavoriteApps } from "./apps";
@@ -15,25 +15,21 @@ export default function AppFavoriteButton({
   ...props
 }: { app: App } & Omit<IconButtonProps, "children" | "aria-label" | "isLoading" | "onClick">) {
   const publish = usePublishEvent();
-  const factory = useEventFactory();
   const { favorites } = useFavoriteInternalIds("apps", "app");
   const isFavorite = favorites?.tags.some((t) => t[0] === "app" && t[1] === app.id);
   const [loading, setLoading] = useState(false);
 
   const handleClick = async () => {
-    const prev = favorites || {
-      kind: kinds.Application,
-      tags: [["d", "nostrudel-favorite-apps"], ...defaultUserFavoriteApps.map((id) => ["app", id])],
-      created_at: unixNow(),
-      content: "",
-    };
-
     setLoading(true);
     const tag: NameValueTag = ["app", app.id];
-    const draft = await factory.modifyTags(
-      prev,
-      isFavorite ? TagOperations.removeNameValueTag(tag) : TagOperations.addNameValueTag(tag),
-    );
+    const operation = isFavorite ? TagOperations.removeNameValueTag(tag) : TagOperations.addNameValueTag(tag);
+    const draft = await (favorites
+      ? EventFactory.fromEvent(favorites).modifyPublicTags(operation)
+      : EventFactory.fromKind(kinds.Application).modifyPublicTags(
+          TagOperations.addNameValueTag(["d", "nostrudel-favorite-apps"]),
+          ...defaultUserFavoriteApps.map((id) => TagOperations.addNameValueTag(["app", id] as NameValueTag)),
+          operation,
+        ));
     await publish(isFavorite ? "Unfavorite app" : "Favorite app", draft);
     setLoading(false);
   };

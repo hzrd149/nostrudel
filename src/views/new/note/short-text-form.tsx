@@ -23,7 +23,8 @@ import {
 } from "@chakra-ui/react";
 import { getEventPointerFromQTag, processTags } from "applesauce-core/helpers";
 import { Emoji } from "applesauce-common/helpers";
-import { useEventFactory, useObservableEagerState } from "applesauce-react/hooks";
+import { NoteFactory } from "applesauce-common/factories";
+import { useObservableEagerState } from "applesauce-react/hooks";
 import { UnsignedEvent } from "nostr-tools";
 import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -44,7 +45,7 @@ import useTextAreaUploadFile, { useTextAreaInsertTextWithForm } from "../../../h
 import useAppSettings from "../../../hooks/use-user-app-settings";
 import UploadProvider, { useUploadContext } from "../../../providers/local/upload-provider";
 import { useContextEmojis } from "../../../providers/global/emoji-provider";
-import { PublishLogEntry, usePublishEvent } from "../../../providers/global/publish-provider";
+import { PublishLogEntry, useFinalizeDraft, usePublishEvent } from "../../../providers/global/publish-provider";
 import { ContentSettingsProvider } from "../../../providers/local/content-settings";
 import { eventStore } from "../../../services/event-store";
 import localSettings from "../../../services/preferences";
@@ -80,7 +81,7 @@ function ShortTextNoteFormInner({
   const emojis = useContextEmojis();
   const advanced = useDisclosure();
 
-  const factory = useEventFactory();
+  const finalizeDraft = useFinalizeDraft();
   const [draft, setDraft] = useState<UnsignedEvent>();
   const { getValues, setValue, watch, register, handleSubmit, formState, reset } = useForm<FormValues>({
     defaultValues: {
@@ -105,14 +106,16 @@ function ShortTextNoteFormInner({
   useCacheForm<FormValues>(cacheFormKey, getValues, reset, formState);
 
   const createDraft = async (values = getValues()) => {
-    // build draft using factory
-    let draft = await factory.note(values.content, {
+    const options = {
       emojis: emojis.filter((e) => !!e.url) as Emoji[],
       contentWarning: values.nsfw ? values.nsfwReason || values.nsfw : false,
       splits: values.split,
-    });
+    };
+    let draft = NoteFactory.create(values.content).text(values.content, options);
+    if (options.splits.length) draft = draft.zapSplit(options);
+    if (options.contentWarning) draft = draft.contentWarning(options.contentWarning);
 
-    const unsigned = await factory.stamp(draft);
+    const unsigned = await finalizeDraft(await draft);
     setDraft(unsigned);
     return unsigned;
   };
