@@ -1,14 +1,13 @@
+import { mapEventsToStore } from "applesauce-core";
+import { getOutboxes } from "applesauce-core/helpers";
 import { SocialGraph } from "nostr-social-graph";
-import { kinds, NostrEvent } from "nostr-tools";
+import { kinds } from "nostr-tools";
 import {
   BehaviorSubject,
   combineLatest,
   exhaustMap,
-  finalize,
-  map,
-  Observable,
-  scan,
   skip,
+  Subscription,
   tap,
   throttleTime,
 } from "rxjs";
@@ -21,6 +20,7 @@ import accounts from "./accounts";
 import idbKeyValueStore from "./database/kv";
 import { eventStore } from "./event-store";
 import { socialGraphLoader } from "./loaders";
+import localSettings from "./preferences";
 
 const log = logger.extend("SocialGraph");
 
@@ -31,103 +31,150 @@ export const socialGraph$ = new BehaviorSubject<SocialGraph>(
   new SocialGraph(accounts.active?.pubkey ?? SOCIAL_GRAPH_FALLBACK_PUBKEY),
 );
 
+/** The current state of the social graph sync */
+export const syncState$ = new BehaviorSubject<{ loaded: number } | null>(null);
+
+/** The currently running sync subscription, or null when idle */
+export const sync$ = new BehaviorSubject<Subscription | null>(null);
+
+/** The current state of persisting the graph to local storage */
+export const saveState$ = new BehaviorSubject<"idle" | "saving" | "saved">("idle");
+
+/** Save the social graph to the cache */
+export async function persistGraph(): Promise<void> {
+  const graph = socialGraph$.value;
+  const size = graph.size();
+
+  saveState$.next("saving");
+  try {
+    if (size.users === 0) {
+      log("Social graph is empty, deleting cache");
+      await idbKeyValueStore.deleteItem(cacheKey);
+    } else {
+      log(`Saving social graph (${size.users} users, ${size.mutes} mutes)`);
+      const blob = await graph.toBinary();
+      await idbKeyValueStore.setItem(cacheKey, blob);
+      log(`Saved social graph to cache (${formatBytes(blob.length)})`);
+    }
+    saveState$.next("saved");
+    setTimeout(() => {
+      if (saveState$.value === "saved") saveState$.next("idle");
+    }, 2000);
+  } catch (err) {
+    saveState$.next("idle");
+    throw err;
+  }
+}
+
+/** Backwards-compatible alias for {@link persistGraph} */
+export const saveSocialGraph = persistGraph;
+
+/** Loads the social graph from local storage if a cached blob is present */
+async function loadGraph(): Promise<void> {
+  const cached = (await idbKeyValueStore.getItem(cacheKey)) as Uint8Array | undefined;
+  if (!cached) return;
+
+  const root = accounts.active?.pubkey ?? SOCIAL_GRAPH_FALLBACK_PUBKEY;
+  const graph = await SocialGraph.fromBinary(root, cached);
+  log(`Loaded social graph from cache with ${graph.size().users} users (${formatBytes(cached.length)})`);
+  socialGraph$.next(graph);
+}
+
+/** Returns the root user's outbox relays from the event store, if available */
+function getRootOutboxes(): string[] | undefined {
+  const root = socialGraph$.value.getRoot();
+  const mailboxes = eventStore.getReplaceable(kinds.RelayList, root);
+  return mailboxes ? getOutboxes(mailboxes) : undefined;
+}
+
+/** Start a new social graph crawler */
+export function startSocialGraphSync(opts: { relays?: string[]; distance: number; since?: number }): void {
+  // Cancel any previous sync first
+  stopSocialGraphSync();
+
+  const root = socialGraph$.value.getRoot();
+  const relays = opts.relays ?? getRootOutboxes();
+
+  // Reset the sync state
+  syncState$.next({ loaded: 0 });
+
+  log(`Starting social graph sync (distance=${opts.distance}, relays=${relays?.join(",") ?? "default"})`);
+
+  const sub = socialGraphLoader({
+    pubkey: root,
+    relays,
+    distance: opts.distance,
+    since: opts.since,
+  })
+    .pipe(
+      tap((event) => socialGraph$.value.handleEvent(event)),
+      mapEventsToStore(eventStore),
+      tap(() => {
+        const current = syncState$.value ?? { loaded: 0 };
+        syncState$.next({ loaded: current.loaded + 1 });
+      }),
+      throttleTime(1000),
+      exhaustMap(async () => {
+        await socialGraph$.value.recalculateFollowDistances();
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+      }),
+    )
+    .subscribe({
+      next: () => {
+        socialGraph$.next(socialGraph$.value);
+      },
+      complete: () => {
+        sync$.next(null);
+        localSettings.lastUpdatedSocialGraph.next(Date.now());
+        const size = socialGraph$.value.size();
+        log(`Social graph sync complete (${size.users} users, ${size.mutes} mutes)`);
+        persistGraph().catch((err) => log("Failed to persist social graph", err));
+      },
+    });
+
+  sync$.next(sub);
+}
+
+/** Cancel the current running sync */
+export function stopSocialGraphSync(): void {
+  const sub = sync$.value;
+  if (sub) {
+    sub.unsubscribe();
+    sync$.next(null);
+  }
+}
+
+/** Clears the social graph and the cached blob from storage */
+export async function clearSocialGraph(): Promise<void> {
+  stopSocialGraphSync();
+  const root = socialGraph$.value.getRoot();
+  const emptyGraph = new SocialGraph(root);
+  socialGraph$.next(emptyGraph);
+  syncState$.next(null);
+  await idbKeyValueStore.deleteItem(cacheKey);
+}
+
 // NOTE: social graph is killing android for some reason (probably too much data in JS thread)
 if (CAP_IS_WEB) {
-  function autoSave() {
-    socialGraph$
-      .pipe(
-        skip(1),
-        throttleTime(20_000),
-        exhaustMap((graph) => saveSocialGraph(graph)),
-      )
-      .subscribe();
-  }
-
-  // Load the social graph from the cache
+  // Load the social graph from the cache on boot
   console.time("SocialGraph:load");
-  const cached = (await idbKeyValueStore.getItem(cacheKey)) as Uint8Array | undefined;
+  await loadGraph();
   console.timeEnd("SocialGraph:load");
-  // Load the social graph from the cache and start auto saving
-  if (cached) {
-    log("Loading social graph from cache");
-    console.time("SocialGraph:fromBinary");
-    SocialGraph.fromBinary(accounts.active?.pubkey ?? SOCIAL_GRAPH_FALLBACK_PUBKEY, cached).then((graph) => {
-      log(`Loaded social graph from cache with ${graph.size().users} user (${formatBytes(cached.length)})`);
-      socialGraph$.next(graph);
-      console.timeEnd("SocialGraph:fromBinary");
 
-      autoSave();
-    });
-  } else {
-    autoSave();
-  }
+  // Auto-save throttled whenever the graph is updated
+  socialGraph$
+    .pipe(
+      skip(1),
+      throttleTime(20_000),
+      exhaustMap(() => persistGraph()),
+    )
+    .subscribe();
 }
 
 // Set the social graph root to the active account pubkey
 combineLatest([socialGraph$, accounts.active$]).subscribe(([graph, account]) => {
   graph.setRoot(account?.pubkey ?? SOCIAL_GRAPH_FALLBACK_PUBKEY);
 });
-
-// Update the social graph with all contacts and mutelist events
-eventStore
-  .filters({ kinds: [kinds.Contacts, kinds.Mutelist] })
-  .pipe(
-    // Add event to graph
-    tap((event) => socialGraph$.value.handleEvent(event)),
-    // Only update the graph every 15s
-    throttleTime(15_000),
-  )
-  .subscribe(() => {
-    // Notify subscribers of the updated graph
-    socialGraph$.next(socialGraph$.value);
-  });
-
-/** Save the social graph to the cache */
-export async function saveSocialGraph(graph: SocialGraph) {
-  const size = graph.size();
-
-  // Don't save empty graphs
-  if (size.users === 0) {
-    log("Social graph is empty, deleting cache");
-    await idbKeyValueStore.deleteItem(cacheKey);
-  } else {
-    log(`Saving social graph (${size.users} users, ${size.mutes} mutes)`);
-    const blob = await graph.toBinary();
-    await idbKeyValueStore.setItem(cacheKey, blob);
-    log(`Saved social graph to cache (${formatBytes(blob.length)})`);
-  }
-}
-
-/** Updates the social graph out to a given distance */
-export function updateSocialGraph(distance = 2): Observable<string> {
-  const root = socialGraph$.value.getRoot();
-
-  log(`Updating social graph out to ${distance} degrees`);
-  return socialGraphLoader({ pubkey: root, distance }).pipe(
-    scan((acc, events) => acc.concat(events), [] as NostrEvent[]),
-    // Only update the graph every 10 seconds
-    throttleTime(10_000),
-    map((events) => {
-      log("Updating social graph");
-      // Notify subscribers of the updated graph
-      socialGraph$.next(socialGraph$.value);
-
-      return `Loaded ${events.length} follow lists`;
-    }),
-    finalize(() => {
-      const size = socialGraph$.value.size();
-      return `Social graph update complete (${size.users} users, ${size.mutes} mutes)`;
-    }),
-  );
-}
-
-/** Clears the social graph */
-export async function clearSocialGraph() {
-  const root = socialGraph$.value.getRoot();
-  const emptyGraph = new SocialGraph(root);
-  socialGraph$.next(emptyGraph);
-  await idbKeyValueStore.deleteItem(cacheKey);
-}
 
 /** Sort an array of things by their authors distance from the root */
 export function sortByDistanceAndConnections(keys: string[]): string[];

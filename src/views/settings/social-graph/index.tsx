@@ -3,18 +3,24 @@ import {
   Badge,
   Box,
   Button,
-  Card,
+  ButtonGroup,
   Flex,
   Heading,
   HStack,
   Select,
   Spinner,
+  Table,
+  TableContainer,
+  Tbody,
+  Td,
   Text,
+  Th,
+  Thead,
+  Tr,
   useToast,
-  VStack,
 } from "@chakra-ui/react";
 import { use$ } from "applesauce-react/hooks";
-import { map } from "rxjs";
+import { useMemo, useState } from "react";
 
 import SimpleView from "../../../components/layout/presets/simple-view";
 import Timestamp from "../../../components/timestamp";
@@ -24,51 +30,168 @@ import UserLink from "../../../components/user/user-link";
 import { humanReadableSats } from "../../../helpers/lightning";
 import { useAppTitle } from "../../../hooks/use-app-title";
 import useAsyncAction from "../../../hooks/use-async-action";
+import { useUserOutbox } from "../../../hooks/use-user-mailboxes";
 import { useBreakpointValue } from "../../../providers/global/breakpoint-provider";
 import { updateSocialGraphCron } from "../../../services/cron";
 import localSettings from "../../../services/preferences";
-import { clearSocialGraph, socialGraph$ } from "../../../services/social-graph";
+import {
+  clearSocialGraph,
+  persistGraph,
+  saveState$,
+  socialGraph$,
+  startSocialGraphSync,
+  stopSocialGraphSync,
+  sync$,
+  syncState$,
+} from "../../../services/social-graph";
 
-function FollowDistanceGroup({ distance, max, label }: { distance: number; max: number; label: string }) {
-  const users = use$(() => socialGraph$.pipe(map((graph) => graph.getUsersByFollowDistance(distance))), [distance]);
+const SINCE_OPTIONS: { label: string; value: number | null }[] = [
+  { label: "All time", value: null },
+  { label: "Last 24 hours", value: 60 * 60 * 24 },
+  { label: "Last 7 days", value: 60 * 60 * 24 * 7 },
+  { label: "Last 30 days", value: 60 * 60 * 24 * 30 },
+  { label: "Last 3 months", value: 60 * 60 * 24 * 90 },
+  { label: "Last 6 months", value: 60 * 60 * 24 * 180 },
+  { label: "Last year", value: 60 * 60 * 24 * 365 },
+];
 
-  // Don't show empty groups
-  if (users?.size === 0) return null;
+function DistanceRow({ distance, max }: { distance: number; max: number }) {
+  const graph = use$(socialGraph$);
+
+  const pubkeys = useMemo(() => (graph ? Array.from(graph.getUsersByFollowDistance(distance)) : []), [graph, distance]);
+
+  const total = pubkeys.length;
+
+  if (total === 0 && distance > 0) return null;
+
+  const preview = pubkeys.slice(0, max);
 
   return (
-    <Flex key={distance} direction="row" justify="space-between" align="center" minH="16" gap={4} wrap="wrap">
-      <Box fontWeight="bold">
-        <Text>{label}</Text>
-        <Text color="gray.500" fontSize="lg">
-          {humanReadableSats(users?.size ?? 0)}
-        </Text>
-      </Box>
-      <AvatarGroup spacing={2}>
-        {Array.from(users ?? [])
-          .sort((a, b) => Math.random() - 0.5)
-          .slice(0, max)
-          .map((pubkey) => (
-            <UserAvatarLink pubkey={pubkey} size="md" />
-          ))}
-      </AvatarGroup>
-    </Flex>
+    <Tr>
+      <Td verticalAlign="top" fontWeight="bold" fontSize="lg" w="16">
+        {distance}
+      </Td>
+      <Td verticalAlign="top" w="24">
+        {humanReadableSats(total)}
+      </Td>
+      <Td>
+        {preview.length > 0 ? (
+          <AvatarGroup spacing={2} max={max}>
+            {preview.map((pubkey) => (
+              <UserAvatarLink key={pubkey} pubkey={pubkey} size="md" />
+            ))}
+          </AvatarGroup>
+        ) : (
+          <Text>No users</Text>
+        )}
+      </Td>
+    </Tr>
   );
 }
 
-function SocialGraphCronSettings() {
-  const running = use$(updateSocialGraphCron.running);
-  const status = use$(updateSocialGraphCron.status);
+export default function SocialGraphSettings() {
+  useAppTitle("Social Graph");
+  const toast = useToast();
+
+  const graph = use$(socialGraph$);
+  const sync = use$(sync$);
+  const syncState = use$(syncState$);
+  const saveState = use$(saveState$);
+  const isRunning = !!sync;
+
+  const root = graph?.getRoot();
+  const size = graph?.size();
+  const outboxes = useUserOutbox(root);
+
   const interval = use$(updateSocialGraphCron.interval);
   const distance = use$(localSettings.updateSocialGraphDistance);
   const lastUpdated = use$(localSettings.lastUpdatedSocialGraph);
 
+  // Local UI-only state for manual syncs; not persisted.
+  const [sinceSeconds, setSinceSeconds] = useState<number | null>(null);
+
+  const displayMaxPeople = useBreakpointValue({ base: 6, lg: 12, xl: 16 }) || 6;
+
+  const handleStart = () => {
+    const since = sinceSeconds != null ? Math.floor(Date.now() / 1000) - sinceSeconds : undefined;
+    startSocialGraphSync({
+      distance,
+      since,
+      relays: outboxes,
+    });
+  };
+
+  const handleSave = useAsyncAction(async () => {
+    await persistGraph();
+  }, []);
+
+  const clearGraph = useAsyncAction(async () => {
+    await clearSocialGraph();
+    toast({ title: "Social graph cleared", status: "success" });
+  }, []);
+
   return (
-    <Card direction="row" p={4} rounded="md" flexWrap="wrap" gap={4}>
-      <VStack align="start" spacing={2} flex={1} minW="xs">
-        <HStack spacing={4} wrap="wrap">
-          <Flex alignItems="center" gap={2}>
-            <Text fontWeight="semibold" whiteSpace="nowrap">
-              Update Interval:
+    <SimpleView title="Social Graph" maxW="container.xl">
+      {root && (
+        <Flex alignItems="center" direction="row" flexWrap="wrap" gap="2">
+          <Flex align="center" gap={4}>
+            <UserAvatarLink pubkey={root} size="lg" />
+            <Box>
+              <UserLink pubkey={root} fontSize="xl" fontWeight="bold" />
+              <br />
+              <UserDnsIdentity pubkey={root} fontSize="md" />
+            </Box>
+          </Flex>
+          <HStack spacing={2} ms="auto">
+            <Text fontSize="sm">{size ? `${humanReadableSats(size.users)} users` : "0 users"}</Text>
+          </HStack>
+        </Flex>
+      )}
+
+      <Flex direction="column" gap={4}>
+        <Heading size="md">Update social graph</Heading>
+        <Flex wrap="wrap" gap={4} align="end">
+          <Box>
+            <Text fontWeight="semibold" mb={1} fontSize="sm">
+              Sync depth
+            </Text>
+            <Select
+              value={distance}
+              onChange={(e) => localSettings.updateSocialGraphDistance.next(Number(e.target.value))}
+              size="sm"
+              w="auto"
+              isDisabled={isRunning}
+            >
+              <option value={1}>1 (friends)</option>
+              <option value={2}>2 (friends of friends)</option>
+              <option value={3}>3</option>
+              <option value={4}>4</option>
+              <option value={5}>5</option>
+            </Select>
+          </Box>
+
+          <Box>
+            <Text fontWeight="semibold" mb={1} fontSize="sm">
+              Since
+            </Text>
+            <Select
+              value={sinceSeconds ?? ""}
+              onChange={(e) => setSinceSeconds(e.target.value === "" ? null : Number(e.target.value))}
+              size="sm"
+              w="auto"
+              isDisabled={isRunning}
+            >
+              {SINCE_OPTIONS.map((opt) => (
+                <option key={opt.label} value={opt.value ?? ""}>
+                  {opt.label}
+                </option>
+              ))}
+            </Select>
+          </Box>
+
+          <Box>
+            <Text fontWeight="semibold" mb={1} fontSize="sm">
+              Auto update
             </Text>
             <Select
               value={interval / (1000 * 60 * 60)}
@@ -76,157 +199,102 @@ function SocialGraphCronSettings() {
                 const hours = Number(e.target.value);
                 localSettings.updateSocialGraphInterval.next(hours * 1000 * 60 * 60);
               }}
-              w="auto"
               size="sm"
-              rounded="md"
-            >
-              <option value={1}>1 hour</option>
-              <option value={6}>6 hours</option>
-              <option value={12}>12 hours</option>
-              <option value={24}>1 day</option>
-              <option value={48}>2 days</option>
-              <option value={168}>1 week</option>
-            </Select>
-          </Flex>
-          <Flex alignItems="center" gap={2}>
-            <Text fontWeight="semibold" whiteSpace="nowrap">
-              Distance:
-            </Text>
-            <Select
-              value={distance}
-              onChange={(e) => localSettings.updateSocialGraphDistance.next(Number(e.target.value))}
               w="auto"
-              size="sm"
-              rounded="md"
             >
-              <option value={1}>1st degree</option>
-              <option value={2}>2nd degree</option>
-              <option value={3}>3rd degree</option>
+              <option value={1}>Every 1 hour</option>
+              <option value={6}>Every 6 hours</option>
+              <option value={12}>Every 12 hours</option>
+              <option value={24}>Every 1 day</option>
+              <option value={48}>Every 2 days</option>
+              <option value={168}>Every 1 week</option>
             </Select>
-          </Flex>
-        </HStack>
+          </Box>
+        </Flex>
 
-        <HStack spacing={2}>
-          <Text fontSize="sm" color="gray.600" _dark={{ color: "gray.400" }}>
-            Status:
-          </Text>
-          <Badge colorScheme={running ? "blue" : "gray"} variant="subtle">
-            {running ? "Running" : "Idle"}
+        <ButtonGroup size="sm" isAttached variant="outline" alignSelf="start">
+          {isRunning ? (
+            <Button colorScheme="red" onClick={stopSocialGraphSync}>
+              Stop
+            </Button>
+          ) : (
+            <Button colorScheme="primary" variant="solid" onClick={handleStart} isDisabled={!root}>
+              Start
+            </Button>
+          )}
+          <Button
+            colorScheme={saveState === "saved" ? "green" : undefined}
+            onClick={handleSave.run}
+            isLoading={handleSave.loading || saveState === "saving"}
+            isDisabled={!size || size.users === 0 || saveState !== "idle"}
+          >
+            {saveState === "saved" ? "Saved" : "Save"}
+          </Button>
+          <Button colorScheme="red" variant="ghost" onClick={clearGraph.run} isLoading={clearGraph.loading}>
+            Clear
+          </Button>
+        </ButtonGroup>
+
+        <Flex align="center" gap={3} flexWrap="wrap">
+          <Badge colorScheme={isRunning ? "green" : "gray"} variant={isRunning ? "solid" : "subtle"}>
+            {isRunning ? "Running" : "Idle"}
           </Badge>
-          {status && (
-            <Text fontSize="sm" color="gray.600" _dark={{ color: "gray.400" }}>
-              {status}
+          {isRunning && <Spinner size="xs" />}
+          <Text fontSize="sm">
+            Loaded{" "}
+            <Text as="span" fontWeight="bold">
+              {syncState?.loaded ?? 0}
+            </Text>{" "}
+            follow events
+          </Text>
+          {size && (
+            <Text fontSize="sm" ms="auto">
+              Graph size:{" "}
+              <Text as="span" fontFamily="mono">
+                {humanReadableSats(size.users)}
+              </Text>{" "}
+              users
             </Text>
           )}
-        </HStack>
-      </VStack>
+          {lastUpdated > 0 && (
+            <Text fontSize="sm">
+              Last updated: <Timestamp timestamp={lastUpdated / 1000} />
+            </Text>
+          )}
+        </Flex>
+      </Flex>
 
-      <VStack alignItems="flex-end" spacing={2} ms="auto">
-        {running ? (
-          <Flex alignItems="center" gap={2}>
-            <Spinner />
-            <Button colorScheme="red" onClick={() => updateSocialGraphCron.cancel()}>
-              Cancel
-            </Button>
-          </Flex>
-        ) : (
-          <Button
-            colorScheme="primary"
-            onClick={() => updateSocialGraphCron.run()}
-            isLoading={running}
-            isDisabled={running}
-          >
-            Run Now
+      <Heading size="md">Your graph by follow distance</Heading>
+      {!size || size.users <= 1 ? (
+        <Flex p={4} align="center" justify="center" direction="column" gap={2}>
+          <Text fontSize="lg">Your graph is empty.</Text>
+          <Button colorScheme="primary" onClick={handleStart} isDisabled={!root || isRunning}>
+            Start sync
           </Button>
-        )}
-        {lastUpdated > 0 && (
-          <Text fontSize="sm" color="gray.500">
-            Last updated: <Timestamp timestamp={lastUpdated / 1000} />
-          </Text>
-        )}
-      </VStack>
-    </Card>
-  );
-}
-
-export default function SocialGraphSettings() {
-  useAppTitle("Social Graph");
-  const toast = useToast();
-  const root = use$(() => socialGraph$.pipe(map((graph) => graph.getRoot())), []);
-  const size = use$(() => socialGraph$.pipe(map((graph) => graph.size())), []);
-
-  const updating = use$(updateSocialGraphCron.running);
-
-  const displayMaxPeople = useBreakpointValue({ base: 4, lg: 5, xl: 10 }) || 4;
-
-  const clearGraph = useAsyncAction(async () => {
-    await clearSocialGraph();
-    toast({
-      title: "Social graph cleared",
-      status: "success",
-    });
-  }, []);
-
-  return (
-    <SimpleView title="Social Graph" maxW="container.xl">
-      {root && (
-        <>
-          <Card alignItems="center" rounded="md" p={4} direction="row" flexWrap="wrap" gap="2">
-            <Flex align="center" gap={4}>
-              <UserAvatarLink pubkey={root} size="lg" />
-              <Box>
-                <UserLink pubkey={root} fontSize="xl" fontWeight="bold" />
-                <br />
-                <UserDnsIdentity pubkey={root} fontSize="md" color="gray.500" />
-              </Box>
-            </Flex>
-            <HStack spacing={2} ms="auto">
-              <Text fontSize="sm" color="gray.500" display="flex" alignItems="center">
-                {size ? `${humanReadableSats(size.users)} users` : "0 users"}
-              </Text>
-              <Button
-                size="sm"
-                colorScheme="red"
-                variant="outline"
-                onClick={clearGraph.run}
-                isLoading={clearGraph.loading}
-              >
-                Reset Graph
-              </Button>
-            </HStack>
-          </Card>
-          <Card direction="column" gap={4} p={4} rounded="md">
-            <Heading size="md" mt={4}>
-              Your graph by follow distance
-            </Heading>
-            {!size || size.users <= 1 ? (
-              <Flex p={4} align="center" justify="center" direction="column" gap={2}>
-                <Text fontSize="lg">Your graph is empty.</Text>
-                <Button colorScheme="primary" onClick={() => updateSocialGraphCron.run()} isLoading={updating}>
-                  Update Graph
-                </Button>
-              </Flex>
-            ) : (
-              <>
-                <FollowDistanceGroup distance={1} max={displayMaxPeople} label="Friends (1st degree)" />
-                <FollowDistanceGroup distance={2} max={displayMaxPeople} label="Friends of Friends (2nd degree)" />
-                <FollowDistanceGroup distance={3} max={displayMaxPeople} label="3rd degree" />
-                <FollowDistanceGroup distance={4} max={displayMaxPeople} label="4th degree" />
-                <FollowDistanceGroup distance={5} max={displayMaxPeople} label="5th degree" />
-              </>
-            )}
-          </Card>
-        </>
+        </Flex>
+      ) : (
+        <TableContainer>
+          <Table variant="simple">
+            <Thead>
+              <Tr>
+                <Th>Distance</Th>
+                <Th>Count</Th>
+                <Th>Users (preview)</Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              {[0, 1, 2, 3, 4, 5].map((d) => (
+                <DistanceRow key={d} distance={d} max={displayMaxPeople} />
+              ))}
+            </Tbody>
+          </Table>
+        </TableContainer>
       )}
 
-      {/* Cron Job Configuration Section */}
-      <Heading size="md" mt="8">
-        Automatic Social Graph Updates
-      </Heading>
-      <Text fontSize="sm" color="gray.500">
-        Configure automatic updates to keep your social graph current with new follows and connections.
+      <Text fontSize="sm">
+        Crawl and persist a social graph rooted at your account. The graph is saved to local storage so it can be
+        reloaded later, and is updated automatically as new follow lists arrive.
       </Text>
-      <SocialGraphCronSettings />
     </SimpleView>
   );
 }

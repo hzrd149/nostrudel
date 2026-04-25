@@ -4,7 +4,7 @@ import { BehaviorSubject, filter, interval, Observable, startWith, Subscription 
 import { CAP_IS_WEB } from "../env";
 import { logger } from "../helpers/debug";
 import localSettings from "./preferences";
-import { socialGraph$, updateSocialGraph } from "./social-graph";
+import { socialGraph$, startSocialGraphSync, stopSocialGraphSync, sync$, syncState$ } from "./social-graph";
 
 export class CronTask {
   log: Debugger;
@@ -71,9 +71,34 @@ export class CronTask {
   }
 }
 
-export const updateSocialGraphCron = new CronTask("update-social-graph", () =>
-  updateSocialGraph(localSettings.updateSocialGraphDistance.value),
-);
+/** Drives the social graph sync as an `Observable<string>` so it can be plugged into a `CronTask`. */
+function syncSocialGraphTask(): Observable<string> {
+  return new Observable<string>((subscriber) => {
+    const stateSub = syncState$.subscribe((state) => {
+      if (state) subscriber.next(`Loaded ${state.loaded} follow events`);
+    });
+    const syncSub = sync$.subscribe((active) => {
+      if (active === null) subscriber.complete();
+    });
+
+    // Use the previous successful run as the `since` window so each cron run only fetches new follow lists.
+    const lastRunMs = localSettings.lastUpdatedSocialGraph.value;
+    const since = lastRunMs > 0 ? Math.floor(lastRunMs / 1000) : undefined;
+
+    startSocialGraphSync({
+      distance: localSettings.updateSocialGraphDistance.value,
+      since,
+    });
+
+    return () => {
+      stateSub.unsubscribe();
+      syncSub.unsubscribe();
+      stopSocialGraphSync();
+    };
+  });
+}
+
+export const updateSocialGraphCron = new CronTask("update-social-graph", syncSocialGraphTask);
 updateSocialGraphCron.interval = localSettings.updateSocialGraphInterval;
 updateSocialGraphCron.lastRun = localSettings.lastUpdatedSocialGraph;
 updateSocialGraphCron.start();

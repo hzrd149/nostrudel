@@ -68,7 +68,6 @@ import UserJoinedGroups from "./user-joined-groups";
 import UserPinnedEvents from "./user-pinned-events";
 import UserProfileBadges from "./user-profile-badges";
 import UserRecentEvents from "./user-recent-events";
-import UserStatsAccordion from "./user-stats-accordion";
 
 function FollowedBy({ pubkey }: { pubkey: string }) {
   const socialGraph = use$(socialGraph$);
@@ -295,7 +294,6 @@ export default function UserAboutView() {
         <Heading size="md">Recent events:</Heading>
         <UserRecentEvents pubkey={user.pubkey} />
       </Box>
-      <UserStatsAccordion pubkey={user.pubkey} />
 
       <UserJoinedGroups pubkey={user.pubkey} />
       <UserJoinedChannels pubkey={user.pubkey} />
