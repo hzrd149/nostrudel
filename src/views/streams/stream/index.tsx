@@ -23,9 +23,7 @@ import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
 import { CopyIconButton } from "../../../components/copy-icon-button";
-import DebugEventButton from "../../../components/debug-modal/debug-event-button";
 import { ChevronLeftIcon, ExternalLinkIcon } from "../../../components/icons";
-import EventQuoteButton from "../../../components/note/event-quote-button";
 import UserAvatarLink from "../../../components/user/user-avatar-link";
 import UserLink from "../../../components/user/user-link";
 import VerticalPageLayout from "../../../components/vertical-page-layout";
@@ -42,7 +40,7 @@ import StreamStatusBadge from "../components/status-badge";
 import StreamFavoriteButton from "../components/stream-favorite-button";
 import StreamGoal from "./components/stream-goal";
 import StreamHashtags from "./components/stream-hashtags";
-import StreamOpenButton from "./components/stream-open-button";
+import StreamMenu from "../components/stream-menu";
 import StreamSatsPerMinute from "./components/stream-sats-per-minute";
 import StreamSummaryContent from "./components/stream-summary-content";
 import StreamTopZappers from "./components/stream-top-zappers";
@@ -109,9 +107,7 @@ function DesktopStreamPage({ stream, cast }: { stream: NostrEvent; cast: Stream 
 
         <ButtonGroup ml="auto">
           <StreamFavoriteButton stream={cast} />
-          <StreamOpenButton stream={stream} />
-          <EventQuoteButton event={stream} title="Share stream" />
-          <DebugEventButton event={stream} />
+          <StreamMenu stream={stream} aria-label="Stream menu" />
           <Button onClick={() => setShowChat((v) => !v)}>{showChat ? "Hide" : "Show"} Chat</Button>
         </ButtonGroup>
       </Flex>
@@ -173,9 +169,7 @@ function MobileStreamPage({ stream, cast }: { stream: NostrEvent; cast: Stream }
           </Button>
           <ButtonGroup size="sm" ml="auto">
             <StreamFavoriteButton stream={cast} />
-            <StreamOpenButton stream={stream} />
-            <EventQuoteButton event={stream} title="Share stream" />
-            <DebugEventButton event={stream} />
+            <StreamMenu stream={stream} aria-label="Stream menu" />
             <Button onClick={showChat.onOpen}>Show Chat</Button>
           </ButtonGroup>
         </Flex>

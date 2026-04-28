@@ -2,15 +2,7 @@ import { mapEventsToStore } from "applesauce-core";
 import { getOutboxes } from "applesauce-core/helpers";
 import { SocialGraph } from "nostr-social-graph";
 import { kinds } from "nostr-tools";
-import {
-  BehaviorSubject,
-  combineLatest,
-  exhaustMap,
-  skip,
-  Subscription,
-  tap,
-  throttleTime,
-} from "rxjs";
+import { BehaviorSubject, combineLatest, exhaustMap, skip, Subscription, tap, throttleTime } from "rxjs";
 
 import { SOCIAL_GRAPH_FALLBACK_PUBKEY } from "../const";
 import { CAP_IS_WEB } from "../env";
