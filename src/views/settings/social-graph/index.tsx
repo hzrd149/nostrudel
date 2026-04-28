@@ -290,11 +290,6 @@ export default function SocialGraphSettings() {
           </Table>
         </TableContainer>
       )}
-
-      <Text fontSize="sm">
-        Crawl and persist a social graph rooted at your account. The graph is saved to local storage so it can be
-        reloaded later, and is updated automatically as new follow lists arrive.
-      </Text>
     </SimpleView>
   );
 }
