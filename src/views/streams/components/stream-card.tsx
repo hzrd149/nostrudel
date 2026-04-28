@@ -14,7 +14,7 @@ import { Stream } from "applesauce-common/casts";
 import { memo } from "react";
 import { Link as RouterLink } from "react-router-dom";
 
-import DebugEventButton from "../../../components/debug-modal/debug-event-button";
+import StreamMenuButton from "./stream-menu";
 import Timestamp from "../../../components/timestamp";
 import UserAvatar from "../../../components/user/user-avatar";
 import UserDnsIdentityIcon from "../../../components/user/user-dns-identity-icon";
@@ -70,7 +70,7 @@ function StreamCard({ stream, ...props }: CardProps & { stream: Stream }) {
       </CardBody>
       <ButtonGroup size="sm" variant="ghost" position="absolute" right="2" top="2" zIndex={1}>
         <StreamFavoriteButton stream={stream} />
-        <DebugEventButton event={stream.event} />
+        <StreamMenuButton stream={stream.event} aria-label="Stream options" />
       </ButtonGroup>
     </Card>
   );

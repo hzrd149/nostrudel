@@ -1,37 +1,28 @@
-import { memo } from "react";
-import { Box, Text, Tooltip } from "@chakra-ui/react";
-import { StreamChatMessage } from "applesauce-common/casts";
+import { Box, Text } from "@chakra-ui/react";
 import { NostrEvent } from "nostr-tools";
+import { memo } from "react";
 
 import UserAvatar from "../../../../components/user/user-avatar";
 import UserLink from "../../../../components/user/user-link";
 import EventZapButton from "../../../../components/zap/event-zap-button";
 import { getStreamHost } from "../../../../helpers/nostr/stream";
-import useCastEvent from "../../../../hooks/use-cast-event";
 import useEventIntersectionRef from "../../../../hooks/use-event-intersection-ref";
 import { ContentSettingsProvider } from "../../../../providers/local/content-settings";
 import ChatMessageContent from "./chat-message-content";
 
-function ChatMessage({ event, stream, relays }: { event: NostrEvent; stream: NostrEvent; relays?: string[] }) {
+function ChatMessage({ event, stream }: { event: NostrEvent; stream: NostrEvent }) {
   const ref = useEventIntersectionRef(event);
-  const cast = useCastEvent(event, StreamChatMessage);
   const host = getStreamHost(stream);
-
-  const seenCount = cast?.seen?.size ?? 0;
-  const totalRelays = relays?.length ?? 0;
-  const seenTitle = relays ? `Seen on ${seenCount}/${totalRelays} chat relays` : undefined;
 
   return (
     <ContentSettingsProvider event={event}>
       <Box>
         <Box overflow="hidden" maxH="lg" ref={ref}>
           <UserAvatar pubkey={event.pubkey} size="xs" display="inline-block" mr="2" />
-          <Tooltip label={seenTitle} openDelay={400} isDisabled={!seenTitle}>
-            <Text as="span" fontWeight="bold" color={event.pubkey === host ? "rgb(248, 56, 217)" : "cyan.500"}>
-              <UserLink pubkey={event.pubkey} />
-              {": "}
-            </Text>
-          </Tooltip>
+          <Text as="span" fontWeight="bold" color={event.pubkey === host ? "rgb(248, 56, 217)" : "cyan.500"}>
+            <UserLink pubkey={event.pubkey} />
+            {": "}
+          </Text>
           <EventZapButton
             display="inline-block"
             event={event}

@@ -20,13 +20,13 @@ import { Global, css } from "@emotion/react";
 import { Stream } from "applesauce-common/casts";
 import { NostrEvent } from "nostr-tools";
 import { useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 
 import { CopyIconButton } from "../../../components/copy-icon-button";
-import { ChevronLeftIcon, ExternalLinkIcon } from "../../../components/icons";
+import { ExternalLinkIcon } from "../../../components/icons";
+import SimpleView from "../../../components/layout/presets/simple-view";
 import UserAvatarLink from "../../../components/user/user-avatar-link";
 import UserLink from "../../../components/user/user-link";
-import VerticalPageLayout from "../../../components/vertical-page-layout";
 import { getStreamHost } from "../../../helpers/nostr/stream";
 import { useAppTitle } from "../../../hooks/use-app-title";
 import useCastEvent from "../../../hooks/use-cast-event";
@@ -36,11 +36,10 @@ import useSetColorMode from "../../../hooks/use-set-color-mode";
 import { useBreakpointValue } from "../../../providers/global/breakpoint-provider";
 import { UserEmojiProvider } from "../../../providers/global/emoji-provider";
 import { ContentSettingsProvider } from "../../../providers/local/content-settings";
-import StreamStatusBadge from "../components/status-badge";
 import StreamFavoriteButton from "../components/stream-favorite-button";
+import StreamMenu from "../components/stream-menu";
 import StreamGoal from "./components/stream-goal";
 import StreamHashtags from "./components/stream-hashtags";
-import StreamMenu from "../components/stream-menu";
 import StreamSatsPerMinute from "./components/stream-sats-per-minute";
 import StreamSummaryContent from "./components/stream-summary-content";
 import StreamTopZappers from "./components/stream-top-zappers";
@@ -51,9 +50,26 @@ import StreamChat, { ChatDisplayMode } from "./stream-chat";
 import StreamChatLog from "./stream-chat/chat-log";
 import ChatMessageForm from "./stream-chat/stream-chat-form";
 
-function DesktopStreamPage({ stream, cast }: { stream: NostrEvent; cast: Stream }) {
-  const navigate = useNavigate();
+function StreamPageTitle({ stream, cast }: { stream: NostrEvent; cast: Stream }) {
+  const host = getStreamHost(stream);
+  const viewers = cast.viewers;
 
+  return (
+    <Flex gap="2" alignItems="center" minW={0}>
+      <UserAvatarLink pubkey={host} size="sm" showNip05={false} />
+      <Box as="span" minW={0} overflow="hidden" textOverflow="ellipsis" whiteSpace="nowrap">
+        {cast.title}
+      </Box>
+      {viewers !== undefined && (
+        <Badge variant="outline" fontSize="sm" flexShrink={0}>
+          {viewers} viewers
+        </Badge>
+      )}
+    </Flex>
+  );
+}
+
+function DesktopStreamPage({ stream, cast }: { stream: NostrEvent; cast: Stream }) {
   const [showChat, setShowChat] = useState(true);
 
   const renderChatActions = () => {
@@ -84,33 +100,20 @@ function DesktopStreamPage({ stream, cast }: { stream: NostrEvent; cast: Stream 
 
   const title = cast.title;
   const host = getStreamHost(stream);
-  const viewers = cast.viewers;
 
   useAppTitle(title);
 
   return (
-    <VerticalPageLayout>
-      <Flex gap="2" alignItems="center">
-        <Button onClick={() => navigate(-1)} leftIcon={<ChevronLeftIcon boxSize={6} />}>
-          Back
-        </Button>
-        <UserAvatarLink pubkey={host} size="sm" display={{ base: "none", md: "block" }} />
-        <Heading size="md" isTruncated display={{ base: "none", md: "initial" }}>
-          {title}
-        </Heading>
-        <StreamStatusBadge stream={cast} fontSize="lg" />
-        {viewers !== undefined && (
-          <Badge variant="outline" fontSize="md">
-            {viewers} viewers
-          </Badge>
-        )}
-
+    <SimpleView
+      title={<StreamPageTitle stream={stream} cast={cast} />}
+      actions={
         <ButtonGroup ml="auto">
           <StreamFavoriteButton stream={cast} />
           <StreamMenu stream={stream} aria-label="Stream menu" />
           <Button onClick={() => setShowChat((v) => !v)}>{showChat ? "Hide" : "Show"} Chat</Button>
         </ButtonGroup>
-      </Flex>
+      }
+    >
       <Flex gap="2" maxH="calc(100vh - 4rem)" overflow="hidden">
         <StreamVideoArea
           cast={cast}
@@ -147,12 +150,11 @@ function DesktopStreamPage({ stream, cast }: { stream: NostrEvent; cast: Stream 
           <StreamerCards pubkey={host} maxW="lg" minW="md" />
         </Flex>
       </ContentSettingsProvider>
-    </VerticalPageLayout>
+    </SimpleView>
   );
 }
 
 function MobileStreamPage({ stream, cast }: { stream: NostrEvent; cast: Stream }) {
-  const navigate = useNavigate();
   const showChat = useDisclosure();
 
   const title = cast.title;
@@ -161,40 +163,42 @@ function MobileStreamPage({ stream, cast }: { stream: NostrEvent; cast: Stream }
   useAppTitle(title);
 
   return (
-    <VerticalPageLayout px={0}>
-      <ContentSettingsProvider blurMedia={false}>
-        <Flex gap="2" alignItems="center" px="2" flexShrink={0}>
-          <Button onClick={() => navigate(-1)} leftIcon={<ChevronLeftIcon />} size="sm">
-            Back
-          </Button>
+    <>
+      <SimpleView
+        title={<StreamPageTitle stream={stream} cast={cast} />}
+        actions={
           <ButtonGroup size="sm" ml="auto">
             <StreamFavoriteButton stream={cast} />
             <StreamMenu stream={stream} aria-label="Stream menu" />
             <Button onClick={showChat.onOpen}>Show Chat</Button>
           </ButtonGroup>
-        </Flex>
-        <StreamVideoArea cast={cast} />
-        <Flex direction="column" gap="2" overflow="hidden" px="2">
-          <Flex gap="2">
-            <UserAvatarLink pubkey={host} noProxy />
-            <Box>
-              <Heading size="md">{title}</Heading>
-              <UserLink pubkey={host} />
-            </Box>
-          </Flex>
-          <StreamSummaryContent stream={stream} />
-          {stream.tags.length > 0 && (
-            <Flex gap="2" wrap="wrap">
-              <StreamHashtags stream={stream} />
+        }
+        flush
+      >
+        <ContentSettingsProvider blurMedia={false}>
+          <StreamVideoArea cast={cast} />
+          <Flex direction="column" gap="2" overflow="hidden" px="2" pb="max(1rem, var(--safe-bottom))">
+            <Flex gap="2">
+              <UserAvatarLink pubkey={host} noProxy />
+              <Box>
+                <Heading size="md">{title}</Heading>
+                <UserLink pubkey={host} />
+              </Box>
             </Flex>
-          )}
-          <StreamZapButton stream={stream} label="Zap Stream" />
-          <Heading size="sm">Stream goal</Heading>
-          <Divider />
-          <StreamGoal stream={stream} />
-          <StreamerCards pubkey={host} />
-        </Flex>
-      </ContentSettingsProvider>
+            <StreamSummaryContent stream={stream} />
+            {stream.tags.length > 0 && (
+              <Flex gap="2" wrap="wrap">
+                <StreamHashtags stream={stream} />
+              </Flex>
+            )}
+            <StreamZapButton stream={stream} label="Zap Stream" />
+            <Heading size="sm">Stream goal</Heading>
+            <Divider />
+            <StreamGoal stream={stream} />
+            <StreamerCards pubkey={host} />
+          </Flex>
+        </ContentSettingsProvider>
+      </SimpleView>
       <Drawer onClose={showChat.onClose} isOpen={showChat.isOpen} size="full" isFullHeight>
         <DrawerOverlay />
         <DrawerContent>
@@ -209,7 +213,7 @@ function MobileStreamPage({ stream, cast }: { stream: NostrEvent; cast: Stream }
           </DrawerBody>
         </DrawerContent>
       </Drawer>
-    </VerticalPageLayout>
+    </>
   );
 }
 
