@@ -38,6 +38,10 @@ export default defineConfig({
       },
     },
   },
+  define: {
+    // Fix libraries trying to reference 'global' instead of 'window' or 'globalThis'
+    global: "window",
+  },
   plugins: [
     react(),
     tsconfigPaths(),
