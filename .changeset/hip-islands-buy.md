@@ -2,4 +2,4 @@
 "nostrudel": minor
 ---
 
-Remove broken advanced tag on relay details page
+Remove broken advanced tab on relay details page
