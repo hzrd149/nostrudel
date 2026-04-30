@@ -11,6 +11,7 @@ import { eventStore } from "../../../services/event-store";
 import pool from "../../../services/pool";
 import { lookupUsers, SearchResult } from "../../../services/user-lookup";
 import useAsyncAction from "../../../hooks/use-async-action";
+import useClientSideMuteFilter from "../../../hooks/use-client-side-mute-filter";
 import ArticleSearchResults from "./article-results";
 import NoteSearchResults from "./note-results";
 import ProfileSearchResults from "./profile-results";
@@ -95,11 +96,13 @@ export default function SearchResults({ query, relay }: { query: string; relay: 
     }
   }, [query, search, searchProfiles]);
 
-  const notes = results.filter((e) => e.kind === kinds.ShortTextNote);
-  const articles = results.filter((e) => e.kind === kinds.LongFormArticle);
+  const muteFilter = useClientSideMuteFilter();
+  const visibleResults = useMemo(() => results.filter((e) => !muteFilter(e)), [results, muteFilter]);
+  const notes = visibleResults.filter((e) => e.kind === kinds.ShortTextNote);
+  const articles = visibleResults.filter((e) => e.kind === kinds.LongFormArticle);
 
-  const hasResults = profileResults.length > 0 || results.length > 0;
-  const totalResults = profileResults.length + results.length;
+  const hasResults = profileResults.length > 0 || visibleResults.length > 0;
+  const totalResults = profileResults.length + visibleResults.length;
   const allSearchesComplete = !searching && !searchingProfiles;
 
   if (error) {
