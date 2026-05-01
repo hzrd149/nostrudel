@@ -1,7 +1,7 @@
 import { Select, SelectProps } from "@chakra-ui/react";
 import dayjs from "dayjs";
 
-export type TimeRange = "all" | "yesterday" | "2days" | "lastWeek";
+export type TimeRange = "all" | "24h" | "2days" | "lastWeek";
 
 export function getTimeRangeSince(range: TimeRange): number | undefined {
   if (range === "all") return undefined;
@@ -9,7 +9,7 @@ export function getTimeRangeSince(range: TimeRange): number | undefined {
   const now = dayjs();
 
   switch (range) {
-    case "yesterday":
+    case "24h":
       return now.subtract(1, "day").startOf("day").unix();
     case "2days":
       return now.subtract(2, "days").startOf("day").unix();
@@ -24,8 +24,8 @@ export function getTimeRangeLabel(range: TimeRange): string {
   switch (range) {
     case "all":
       return "All Known";
-    case "yesterday":
-      return "Yesterday";
+    case "24h":
+      return "24h";
     case "2days":
       return "Last 2 Days";
     case "lastWeek":
@@ -51,7 +51,7 @@ export default function TimeRangeSelect({ value, onChange, ...props }: TimeRange
       {...props}
     >
       <option value="custom">Custom Range</option>
-      <option value="yesterday">Yesterday</option>
+      <option value="24h">Last 24 Hours</option>
       <option value="2days">Last 2 Days</option>
       <option value="lastWeek">Last Week</option>
     </Select>

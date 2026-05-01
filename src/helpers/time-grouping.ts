@@ -28,8 +28,8 @@ export function getDefaultTimePeriods(): TimePeriod[] {
       threshold: now.startOf("day").unix(),
     },
     {
-      key: "yesterday",
-      label: "Yesterday",
+      key: "24h",
+      label: "Last 24 Hours",
       timestamp: now.subtract(1, "day").startOf("day").unix(),
       threshold: now.subtract(1, "day").startOf("day").unix(),
     },
