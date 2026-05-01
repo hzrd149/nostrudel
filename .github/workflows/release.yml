@@ -34,3 +34,21 @@ jobs:
         uses: changesets/action@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install ngit
+        run: curl -Ls https://ngit.dev/install.sh | bash
+
+      - name: Mirror changeset branch to nostr remote
+        env:
+          NGIT_NSEC: ${{ secrets.NGIT_NSEC }}
+        run: |
+          git fetch origin
+          if ! git ls-remote --exit-code --heads origin changeset-release/master >/dev/null; then
+            echo "No changeset-release/master branch on origin; skipping nostr mirror."
+            exit 0
+          fi
+          git config user.email "actions@github.com"
+          git config user.name  "github-actions[bot]"
+          git config nostr.nsec "$NGIT_NSEC"
+          git remote add nostr "nostr://npub1ye5ptcxfyyxl5vjvdjar2ua3f0hynkjzpx552mu5snj3qmx5pzjscpknpr/relay.ngit.dev/noStrudel"
+          git push --force nostr "refs/remotes/origin/changeset-release/master:refs/heads/changeset-release/master"
