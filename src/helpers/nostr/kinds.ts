@@ -22,6 +22,7 @@ export const KindNames: Record<number, string> = {
   1984: "Reporting",
   1985: "Label",
   4550: "Community Post Approval",
+  6969: "Zapless Poll",
   7000: "Job Feedback",
   9041: "Zap Goal",
   9734: "Zap Request",

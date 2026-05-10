@@ -15,6 +15,7 @@ import NoteProxyLink from "../../../components/timeline/note/components/note-pro
 import NoteReactions from "../../../components/timeline/note/components/note-reactions";
 import ZapBubbles from "../../../components/timeline/note/components/zap-bubbles";
 import { TextNoteContents } from "../../../components/timeline/note/text-note-contents";
+import ZaplessPollContent from "../../../components/zapless-poll/zapless-poll-content";
 import POWIcon from "../../../components/pow/pow-icon";
 import Timestamp from "../../../components/timestamp";
 import UserAvatarLink from "../../../components/user/user-avatar-link";
@@ -22,6 +23,7 @@ import UserDnsIdentity from "../../../components/user/user-dns-identity";
 import UserLink from "../../../components/user/user-link";
 import EventZapButton from "../../../components/zap/event-zap-button";
 import { countReplies, repliesByDate } from "../../../helpers/thread";
+import { isZaplessPoll } from "../../../helpers/nostr/polls";
 import useClientSideMuteFilter from "../../../hooks/use-client-side-mute-filter";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
 import useThreadColorLevelProps from "../../../hooks/use-thread-color-level-props";
@@ -99,6 +101,10 @@ function ThreadPost({ post, initShowReplies, focusId, level = -1 }: ThreadItemPr
 
     return isMuted && !alwaysShow ? (
       muteAlert
+    ) : isZaplessPoll(post.event) ? (
+      <ContentSettingsProvider blurMedia={override} hideEmbeds={override} event={post.event}>
+        <ZaplessPollContent event={post.event} pl="2" />
+      </ContentSettingsProvider>
     ) : (
       <ContentSettingsProvider blurMedia={override} hideEmbeds={override} event={post.event}>
         <TextNoteContents event={post.event} pl="2" />
@@ -107,7 +113,7 @@ function ThreadPost({ post, initShowReplies, focusId, level = -1 }: ThreadItemPr
   };
 
   const showReactionsOnNewLine = useBreakpointValue({ base: true, lg: false });
-  const reactionButtons = showReactions && (
+  const reactionButtons = showReactions && !isZaplessPoll(post.event) && (
     <NoteReactions event={post.event} flexWrap="wrap" variant="ghost" size="sm" />
   );
   const footer = (

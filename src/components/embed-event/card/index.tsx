@@ -6,6 +6,7 @@ import { lazy, Suspense } from "react";
 
 import { safeDecode } from "../../../helpers/nip19";
 import { LIST_KINDS, SET_KINDS } from "../../../helpers/nostr/lists";
+import { isZaplessPoll } from "../../../helpers/nostr/polls";
 import { TORRENT_COMMENT_KIND, TORRENT_KIND } from "../../../helpers/nostr/torrents";
 import { FLARE_VIDEO_KIND } from "../../../helpers/nostr/video";
 import { WIKI_PAGE_KIND } from "../../../helpers/nostr/wiki";
@@ -37,9 +38,12 @@ const EmbeddedStream = lazy(() => import("./embedded-stream"));
 const EmbeddedStreamMessage = lazy(() => import("./embedded-stream-message"));
 const EmbeddedFile = lazy(() => import("./embedded-file"));
 const EmbeddedHighlight = lazy(() => import("./embedded-highlight"));
+const EmbeddedZaplessPoll = lazy(() => import("./embedded-zapless-poll"));
 
 export function EmbedEventCard({ event, ...props }: Omit<CardProps, "children" | "as"> & { event: NostrEvent }) {
   const renderContent = () => {
+    if (isZaplessPoll(event)) return <EmbeddedZaplessPoll event={event} {...props} />;
+
     switch (event.kind) {
       case kinds.ShortTextNote:
         return <EmbeddedNote event={event} {...props} />;
