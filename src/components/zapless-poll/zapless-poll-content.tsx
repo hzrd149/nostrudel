@@ -47,7 +47,6 @@ export default function ZaplessPollContent({
     try {
       const draft = await ReactionFactory.create(event, optionId);
       await publish("Poll vote", draft);
-      reactionsLoader(event, stableReadRelays).subscribe();
     } catch (error) {
       if (error instanceof Error) toast({ description: error.message, status: "error" });
     } finally {
