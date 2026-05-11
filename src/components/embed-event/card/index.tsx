@@ -6,7 +6,7 @@ import { lazy, Suspense } from "react";
 
 import { safeDecode } from "../../../helpers/nip19";
 import { LIST_KINDS, SET_KINDS } from "../../../helpers/nostr/lists";
-import { TORRENT_COMMENT_KIND, TORRENT_KIND } from "../../../helpers/nostr/torrents";
+import { TORRENT_KIND } from "../../../helpers/nostr/torrents";
 import { FLARE_VIDEO_KIND } from "../../../helpers/nostr/video";
 import { WIKI_PAGE_KIND } from "../../../helpers/nostr/wiki";
 import useReplaceableEvent from "../../../hooks/use-replaceable-event";
@@ -27,7 +27,6 @@ const EmbeddedArticle = lazy(() => import("./embedded-article"));
 const EmbeddedCommunity = lazy(() => import("./embedded-community"));
 const EmbeddedBadge = lazy(() => import("./embedded-badge"));
 const EmbeddedTorrent = lazy(() => import("./embedded-torrent"));
-const EmbeddedTorrentComment = lazy(() => import("./embedded-torrent-comment"));
 const EmbeddedChannel = lazy(() => import("./embedded-channel"));
 const EmbeddedFlareVideo = lazy(() => import("./embedded-flare-video"));
 const EmbeddedEmojiPack = lazy(() => import("./embedded-emoji-pack"));
@@ -63,8 +62,6 @@ export function EmbedEventCard({ event, ...props }: Omit<CardProps, "children" |
         return <EmbeddedCommunity community={event} {...props} />;
       case TORRENT_KIND:
         return <EmbeddedTorrent torrent={event} {...props} />;
-      case TORRENT_COMMENT_KIND:
-        return <EmbeddedTorrentComment comment={event} {...props} />;
       case FLARE_VIDEO_KIND:
         return <EmbeddedFlareVideo video={event} {...props} />;
       case kinds.ChannelCreation:

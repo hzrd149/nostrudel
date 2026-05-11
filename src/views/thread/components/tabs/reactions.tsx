@@ -1,12 +1,30 @@
 import { Box, Button, Divider, Flex, SimpleGrid, SimpleGridProps, useDisclosure } from "@chakra-ui/react";
-import { NostrEvent } from "nostr-tools";
+import { Reaction } from "applesauce-common/casts";
 import { useMemo } from "react";
-import { ThreadItem } from "applesauce-common/models";
 
 import ReactionIcon from "../../../../components/event-reactions/reaction-icon";
 import UserAvatarLink from "../../../../components/user/user-avatar-link";
 import UserLink from "../../../../components/user/user-link";
-import { groupReactions } from "../../../../helpers/nostr/reactions";
+
+type ReactionCastGroup = { emoji: string; url?: string; name?: string; pubkeys: string[] };
+
+function groupReactionCasts(reactions: Reaction[]): ReactionCastGroup[] {
+  const groups: Record<string, ReactionCastGroup> = {};
+  for (const reaction of reactions) {
+    const emoji = reaction.content;
+    const customEmoji = reaction.emoji;
+    groups[emoji] = groups[emoji] || {
+      emoji,
+      url: customEmoji?.url,
+      name: customEmoji?.shortcode,
+      pubkeys: [],
+    };
+    if (!groups[emoji].pubkeys.includes(reaction.event.pubkey)) {
+      groups[emoji].pubkeys.push(reaction.event.pubkey);
+    }
+  }
+  return Object.values(groups).sort((a, b) => b.pubkeys.length - a.pubkeys.length);
+}
 
 function ShowMoreGrid({
   pubkeys,
@@ -35,8 +53,8 @@ function ShowMoreGrid({
   );
 }
 
-export default function PostReactionsTab({ post, reactions }: { post: ThreadItem; reactions: NostrEvent[] }) {
-  const groups = useMemo(() => groupReactions(reactions), [reactions]);
+export default function PostReactionsTab({ reactions }: { reactions: Reaction[] }) {
+  const groups = useMemo(() => groupReactionCasts(reactions), [reactions]);
 
   return (
     <Flex gap="2" direction="column" px="2">

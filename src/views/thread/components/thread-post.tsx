@@ -1,6 +1,7 @@
 import { Alert, AlertIcon, Button, ButtonGroup, Flex, IconButton, Link, Spacer, useDisclosure } from "@chakra-ui/react";
-import { ThreadItem } from "applesauce-common/models";
-import { memo, useState } from "react";
+import { Note } from "applesauce-common/casts";
+import { use$, useEventStore } from "applesauce-react/hooks";
+import { memo, useMemo, useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
 
 import { ReplyIcon } from "../../../components/icons";
@@ -10,6 +11,7 @@ import BookmarkEventButton from "../../../components/note/bookmark-button";
 import EventQuoteButton from "../../../components/note/event-quote-button";
 import NoteMenu from "../../../components/note/note-menu";
 import NotePublishedUsing from "../../../components/note/note-published-using";
+import SeenOnRelaysButton from "../../../components/note/seen-on-relays-button";
 import EventShareButton from "../../../components/timeline/note/components/event-share-button";
 import NoteProxyLink from "../../../components/timeline/note/components/note-proxy-link";
 import NoteReactions from "../../../components/timeline/note/components/note-reactions";
@@ -21,7 +23,6 @@ import UserAvatarLink from "../../../components/user/user-avatar-link";
 import UserDnsIdentity from "../../../components/user/user-dns-identity";
 import UserLink from "../../../components/user/user-link";
 import EventZapButton from "../../../components/zap/event-zap-button";
-import { countReplies, repliesByDate } from "../../../helpers/thread";
 import useClientSideMuteFilter from "../../../hooks/use-client-side-mute-filter";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
 import useThreadColorLevelProps from "../../../hooks/use-thread-color-level-props";
@@ -29,29 +30,36 @@ import useAppSettings from "../../../hooks/use-user-app-settings";
 import { useBreakpointValue } from "../../../providers/global/breakpoint-provider";
 import { ContentSettingsProvider } from "../../../providers/local/content-settings";
 import { getSharableEventAddress } from "../../../services/relay-hints";
+import { countDescendantsInStore, repliesByDate } from "../helpers";
 import DetailsTabs from "./details-tabs";
 import MutedNotePlaceholder from "./muted-note-placeholder";
 import ReplyForm from "./reply-form";
-import SeenOnRelaysButton from "../../../components/note/seen-on-relays-button";
 
-export type ThreadItemProps = {
-  post: ThreadItem;
+export type ThreadPostProps = {
+  note: Note;
   initShowReplies?: boolean;
   focusId?: string;
   level?: number;
 };
 
-function ThreadPost({ post, initShowReplies, focusId, level = -1 }: ThreadItemProps) {
+function ThreadPost({ note, initShowReplies, focusId, level = -1 }: ThreadPostProps) {
   const { showReactions } = useAppSettings();
-  const expanded = useDisclosure({ defaultIsOpen: initShowReplies ?? (level < 2 || post.replies.size <= 1) });
+  const replies = use$(() => note.replies$, [note]) ?? [];
+  const expanded = useDisclosure({ defaultIsOpen: initShowReplies ?? (level < 2 || replies.length <= 1) });
   const replyForm = useDisclosure();
 
   const muteFilter = useClientSideMuteFilter();
+  const eventStore = useEventStore();
 
   const isFocused = level === -1;
-  // Count all replies including muted ones for accurate thread structure
-  const numberOfReplies = countReplies(post.replies);
-  const isMuted = muteFilter(post.event);
+  // Recursive count over what's currently in the event store — no extra subscriptions.
+  // Recomputes whenever this post's direct replies change.
+  const numberOfReplies = useMemo(
+    () => countDescendantsInStore(note.event.id, eventStore),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [note.event.id, eventStore, replies],
+  );
+  const isMuted = muteFilter(note.event);
 
   const [alwaysShow, setAlwaysShow] = useState(false);
   const muteAlert = (
@@ -64,21 +72,21 @@ function ThreadPost({ post, initShowReplies, focusId, level = -1 }: ThreadItemPr
     </Alert>
   );
 
-  const colorProps = useThreadColorLevelProps(level, focusId === post.event.id);
+  const colorProps = useThreadColorLevelProps(level, focusId === note.event.id);
 
   const header = (
     <Flex gap="2" alignItems="center">
-      <UserAvatarLink pubkey={post.event.pubkey} size="sm" />
-      <UserLink pubkey={post.event.pubkey} fontWeight="bold" isTruncated />
-      <UserDnsIdentity pubkey={post.event.pubkey} onlyIcon />
-      <Link as={RouterLink} whiteSpace="nowrap" color="current" to={`/n/${getSharableEventAddress(post.event)}`}>
-        <Timestamp timestamp={post.event.created_at} />
+      <UserAvatarLink pubkey={note.event.pubkey} size="sm" />
+      <UserLink pubkey={note.event.pubkey} fontWeight="bold" isTruncated />
+      <UserDnsIdentity pubkey={note.event.pubkey} onlyIcon />
+      <Link as={RouterLink} whiteSpace="nowrap" color="current" to={`/n/${getSharableEventAddress(note.event)}`}>
+        <Timestamp timestamp={note.event.created_at} />
       </Link>
-      <POWIcon event={post.event} boxSize={5} />
-      <NotePublishedUsing event={post.event} />
+      <POWIcon event={note.event} boxSize={5} />
+      <NotePublishedUsing event={note.event} />
       <Spacer />
       {!isFocused &&
-        (post.replies.size > 0 ? (
+        (replies.length > 0 ? (
           <Button variant="ghost" onClick={expanded.onToggle} rightIcon={expanded.isOpen ? <Minus /> : <Expand01 />}>
             ({numberOfReplies})
           </Button>
@@ -95,56 +103,58 @@ function ThreadPost({ post, initShowReplies, focusId, level = -1 }: ThreadItemPr
   );
 
   const renderContent = () => {
-    const override = focusId === post.event.id ? false : undefined;
+    const override = focusId === note.event.id ? false : undefined;
 
     return isMuted && !alwaysShow ? (
       muteAlert
     ) : (
-      <ContentSettingsProvider blurMedia={override} hideEmbeds={override} event={post.event}>
-        <TextNoteContents event={post.event} pl="2" />
+      <ContentSettingsProvider blurMedia={override} hideEmbeds={override} event={note.event}>
+        <TextNoteContents event={note.event} pl="2" />
       </ContentSettingsProvider>
     );
   };
 
   const showReactionsOnNewLine = useBreakpointValue({ base: true, lg: false });
   const reactionButtons = showReactions && (
-    <NoteReactions event={post.event} flexWrap="wrap" variant="ghost" size="sm" />
+    <NoteReactions event={note.event} flexWrap="wrap" variant="ghost" size="sm" />
   );
   const footer = (
     <Flex gap="2" alignItems="center">
       <ButtonGroup variant="ghost" size="sm">
         <IconButton aria-label="Reply" title="Reply" onClick={replyForm.onToggle} icon={<ReplyIcon />} />
-        <EventShareButton event={post.event} />
-        <EventQuoteButton event={post.event} />
-        <EventZapButton event={post.event} />
+        <EventShareButton event={note.event} />
+        <EventQuoteButton event={note.event} />
+        <EventZapButton event={note.event} />
       </ButtonGroup>
       {!showReactionsOnNewLine && reactionButtons}
       <Spacer />
       <ButtonGroup size="sm" variant="ghost">
-        <NoteProxyLink event={post.event} />
-        <BookmarkEventButton event={post.event} aria-label="Bookmark" />
-        <SeenOnRelaysButton event={post.event} />
-        <NoteMenu event={post.event} aria-label="More Options" />
+        <NoteProxyLink event={note.event} />
+        <BookmarkEventButton event={note.event} aria-label="Bookmark" />
+        <SeenOnRelaysButton event={note.event} />
+        <NoteMenu event={note.event} aria-label="More Options" />
       </ButtonGroup>
     </Flex>
   );
 
-  const ref = useEventIntersectionRef(post.event);
+  const ref = useEventIntersectionRef(note.event);
 
   // If muted and has no replies, show placeholder instead of returning null
   // But still show the header and allow expansion
-  if (isMuted && post.replies.size === 0 && !alwaysShow) {
+  if (isMuted && replies.length === 0 && !alwaysShow) {
     return (
       <>
         <Flex direction="column" gap="2" px="2" py="0" borderWidth="0 1px 0 .35rem" {...colorProps} ref={ref}>
           {header}
           {expanded.isOpen && (
             <>
-              <MutedNotePlaceholder event={post.event} onShowAnyway={() => setAlwaysShow(true)} />
+              <MutedNotePlaceholder event={note.event} onShowAnyway={() => setAlwaysShow(true)} />
             </>
           )}
         </Flex>
-        {replyForm.isOpen && <ReplyForm item={post} onCancel={replyForm.onClose} onSubmitted={replyForm.onClose} />}
+        {replyForm.isOpen && (
+          <ReplyForm event={note.event} onCancel={replyForm.onClose} onSubmitted={replyForm.onClose} />
+        )}
       </>
     );
   }
@@ -156,21 +166,23 @@ function ThreadPost({ post, initShowReplies, focusId, level = -1 }: ThreadItemPr
         {expanded.isOpen && (
           <>
             {renderContent()}
-            <ZapBubbles event={post.event} />
+            <ZapBubbles event={note.event} />
             {showReactionsOnNewLine && reactionButtons}
             {footer}
           </>
         )}
       </Flex>
-      {replyForm.isOpen && <ReplyForm item={post} onCancel={replyForm.onClose} onSubmitted={replyForm.onClose} />}
+      {replyForm.isOpen && (
+        <ReplyForm event={note.event} onCancel={replyForm.onClose} onSubmitted={replyForm.onClose} />
+      )}
       {isFocused ? (
-        <DetailsTabs post={post} />
+        <DetailsTabs note={note} />
       ) : (
         expanded.isOpen &&
-        post.replies.size > 0 && (
+        replies.length > 0 && (
           <Flex direction="column" gap="2" pl={{ base: 2, md: 4 }}>
-            {repliesByDate(post).map((child) => (
-              <ThreadPost key={child.event.id} post={child} focusId={focusId} level={level + 1} />
+            {repliesByDate(replies).map((child) => (
+              <ThreadPost key={child.event.id} note={child} focusId={focusId} level={level + 1} />
             ))}
           </Flex>
         )

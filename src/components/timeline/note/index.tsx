@@ -17,7 +17,6 @@ import { NostrEvent } from "nostr-tools";
 import { memo } from "react";
 import { Link as RouterLink } from "react-router-dom";
 
-import { getThreadReferences } from "../../../helpers/nostr/event";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
 import useAppSettings from "../../../hooks/use-user-app-settings";
 import { useBreakpointValue } from "../../../providers/global/breakpoint-provider";
@@ -133,13 +132,7 @@ export function TimelineNote({
           </Flex>
         </Flex>
       </ExpandProvider>
-      {replyForm.isOpen && (
-        <ReplyForm
-          item={{ event, replies: new Set(), refs: getThreadReferences(event) }}
-          onCancel={replyForm.onClose}
-          onSubmitted={replyForm.onClose}
-        />
-      )}
+      {replyForm.isOpen && <ReplyForm event={event} onCancel={replyForm.onClose} onSubmitted={replyForm.onClose} />}
     </ContentSettingsProvider>
   );
 }

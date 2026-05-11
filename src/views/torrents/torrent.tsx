@@ -19,6 +19,8 @@ import {
 } from "@chakra-ui/react";
 import { NostrEvent } from "nostr-tools";
 
+import GenericCommentForm from "../../components/comment/generic-comment-form";
+import { GenericComments } from "../../components/comment/generic-comments";
 import { ErrorBoundary } from "../../components/error-boundary";
 import Magnet from "../../components/icons/magnet";
 import MessageTextCircle01 from "../../components/icons/message-text-circle-01";
@@ -29,24 +31,15 @@ import UserAvatarLink from "../../components/user/user-avatar-link";
 import UserLink from "../../components/user/user-link";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 import EventZapButton from "../../components/zap/event-zap-button";
-import { getThreadReferences } from "../../helpers/nostr/event";
-import {
-  TORRENT_COMMENT_KIND,
-  getTorrentFiles,
-  getTorrentMagnetLink,
-  getTorrentSize,
-  getTorrentTitle,
-} from "../../helpers/nostr/torrents";
+import { getTorrentFiles, getTorrentMagnetLink, getTorrentSize, getTorrentTitle } from "../../helpers/nostr/torrents";
 import { formatBytes } from "../../helpers/number";
 import useParamsEventPointer from "../../hooks/use-params-event-pointer";
 import useSingleEvent from "../../hooks/use-single-event";
-import ReplyForm from "../thread/components/reply-form";
 import TorrentMenu from "./components/torrent-menu";
-import TorrentComments from "./components/torrents-comments";
 
 function TorrentDetailsPage({ torrent }: { torrent: NostrEvent }) {
   const files = getTorrentFiles(torrent);
-  const replyForm = useDisclosure();
+  const commentForm = useDisclosure();
 
   return (
     <VerticalPageLayout>
@@ -118,21 +111,16 @@ function TorrentDetailsPage({ torrent }: { torrent: NostrEvent }) {
         <Heading size="md" mt="2">
           Comments
         </Heading>
-        {!replyForm.isOpen && (
-          <Button leftIcon={<MessageTextCircle01 />} size="sm" ml="auto" onClick={replyForm.onOpen}>
+        {!commentForm.isOpen && (
+          <Button leftIcon={<MessageTextCircle01 />} size="sm" ml="auto" onClick={commentForm.onOpen}>
             New Comment
           </Button>
         )}
       </Flex>
-      {replyForm.isOpen && (
-        <ReplyForm
-          item={{ event: torrent, refs: getThreadReferences(torrent), replies: new Set() }}
-          onCancel={replyForm.onClose}
-          onSubmitted={replyForm.onClose}
-          replyKind={TORRENT_COMMENT_KIND}
-        />
+      {commentForm.isOpen && (
+        <GenericCommentForm event={torrent} onCancel={commentForm.onClose} onSubmitted={commentForm.onClose} />
       )}
-      <TorrentComments torrent={torrent} />
+      <GenericComments event={torrent} />
     </VerticalPageLayout>
   );
 }
