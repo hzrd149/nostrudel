@@ -11,10 +11,7 @@ import UserAvatarLink from "../../user/user-avatar-link";
 import UserLink from "../../user/user-link";
 import PollContent from "../../poll/poll-content";
 
-export default function EmbeddedPoll({
-  event,
-  ...props
-}: Omit<BoxProps, "children" | "as"> & { event: NostrEvent }) {
+export default function EmbeddedPoll({ event, ...props }: Omit<BoxProps, "children" | "as"> & { event: NostrEvent }) {
   const navigate = useNavigate();
   const to = `/poll/${getSharableEventAddress(event)}`;
 

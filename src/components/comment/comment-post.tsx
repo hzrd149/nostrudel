@@ -112,9 +112,7 @@ function CommentPost({ event, level = 0 }: CommentPostProps) {
   };
 
   const showReactionsOnNewLine = useBreakpointValue({ base: true, lg: false });
-  const reactionButtons = showReactions && (
-    <NoteReactions event={event} flexWrap="wrap" variant="ghost" size="sm" />
-  );
+  const reactionButtons = showReactions && <NoteReactions event={event} flexWrap="wrap" variant="ghost" size="sm" />;
   const footer = (
     <Flex gap="2" alignItems="center">
       <ButtonGroup variant="ghost" size="sm">

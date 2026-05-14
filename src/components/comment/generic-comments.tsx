@@ -35,10 +35,7 @@ export function GenericComments({ event, ...flexProps }: GenericCommentsProps) {
   const comments = useEventModel(CommentsModel, [event]);
   const callback = useTimelineCurserIntersectionCallback(loader);
 
-  const sorted = useMemo(
-    () => (comments ? [...comments].sort((a, b) => sortByDate(a, b)) : undefined),
-    [comments],
-  );
+  const sorted = useMemo(() => (comments ? [...comments].sort((a, b) => sortByDate(a, b)) : undefined), [comments]);
 
   return (
     <IntersectionObserverProvider callback={callback}>
