@@ -1,4 +1,4 @@
-import { Box, BoxProps, Flex, LinkBox, Spacer, Text } from "@chakra-ui/react";
+import { Box, BoxProps, Flex, Link, LinkBox, Spacer, Text } from "@chakra-ui/react";
 import { NostrEvent } from "nostr-tools";
 import { MouseEventHandler, useCallback } from "react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
@@ -6,7 +6,6 @@ import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { getSharableEventAddress } from "../../../services/relay-hints";
 import HoverLinkOverlay from "../../hover-link-overlay";
 import BarChart09 from "../../icons/bar-chart-09";
-import { NoteLink } from "../../note/note-link";
 import Timestamp from "../../timestamp";
 import UserAvatarLink from "../../user/user-avatar-link";
 import UserLink from "../../user/user-link";
@@ -17,7 +16,7 @@ export default function EmbeddedZaplessPoll({
   ...props
 }: Omit<BoxProps, "children" | "as"> & { event: NostrEvent }) {
   const navigate = useNavigate();
-  const to = `/n/${getSharableEventAddress(event)}`;
+  const to = `/poll/${getSharableEventAddress(event)}`;
 
   const handleClick = useCallback<MouseEventHandler>(
     (e) => {
@@ -43,9 +42,9 @@ export default function EmbeddedZaplessPoll({
         <Text fontWeight="bold">Poll</Text>
         <UserAvatarLink pubkey={event.pubkey} size="xs" showNip05={false} />
         <UserLink pubkey={event.pubkey} isTruncated fontSize="md" />
-        <NoteLink noteId={event.id} whiteSpace="nowrap" color="GrayText">
+        <Link as={RouterLink} to={to} whiteSpace="nowrap" color="GrayText">
           <Timestamp timestamp={event.created_at} />
-        </NoteLink>
+        </Link>
         <HoverLinkOverlay as={RouterLink} to={to} onClick={handleClick} />
         <Spacer />
       </Flex>

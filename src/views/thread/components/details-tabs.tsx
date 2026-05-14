@@ -48,7 +48,7 @@ export default function DetailsTabs({ note }: { note: Note }) {
       .pipe(mapEventsToStore(eventStore));
   }, [note.id, readRelays.join(",")]);
 
-  console.log('focused', note)
+  console.log("focused", note);
 
   const replies = use$(note.replies$);
   const reactions = use$(note.reactions$);
@@ -151,7 +151,7 @@ export default function DetailsTabs({ note }: { note: Note }) {
       right: true,
       element: (
         <TabPanel key="other-apps" p="0" py="2">
-          <OtherAppsTab note={note} />
+          <OtherAppsTab event={note.event} />
         </TabPanel>
       ),
     },

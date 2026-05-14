@@ -78,12 +78,17 @@ export function TimelinePoll({
             ref={registerIntersectionEntity ? ref : undefined}
             data-event-id={event.id}
           >
-            {clickable && <HoverLinkOverlay as={RouterLink} to={`/n/${getSharableEventAddress(event)}`} />}
+            {clickable && <HoverLinkOverlay as={RouterLink} to={`/poll/${getSharableEventAddress(event)}`} />}
             <CardHeader p="2">
               <Flex flex="1" gap="2" alignItems="center">
                 <UserAvatarLink pubkey={event.pubkey} size="sm" />
                 <UserLink pubkey={event.pubkey} isTruncated fontWeight="bold" fontSize="lg" />
-                <Link as={RouterLink} whiteSpace="nowrap" color="current" to={`/n/${getSharableEventAddress(event)}`}>
+                <Link
+                  as={RouterLink}
+                  whiteSpace="nowrap"
+                  color="current"
+                  to={`/poll/${getSharableEventAddress(event)}`}
+                >
                   <Timestamp timestamp={event.created_at} />
                 </Link>
                 <POWIcon event={event} boxSize={5} />
@@ -117,9 +122,7 @@ export function TimelinePoll({
           </Flex>
         </Flex>
       </ExpandProvider>
-      {replyForm.isOpen && (
-        <ReplyForm event={event} onCancel={replyForm.onClose} onSubmitted={replyForm.onClose} />
-      )}
+      {replyForm.isOpen && <ReplyForm event={event} onCancel={replyForm.onClose} onSubmitted={replyForm.onClose} />}
     </ContentSettingsProvider>
   );
 }

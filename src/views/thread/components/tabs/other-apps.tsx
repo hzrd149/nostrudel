@@ -1,5 +1,4 @@
 import { Box, Flex, LinkBox, Text } from "@chakra-ui/react";
-import { Note } from "applesauce-common/casts";
 import { getProfileContent, isReplaceable } from "applesauce-core/helpers";
 import { useActiveAccount } from "applesauce-react/hooks";
 import { kinds, NostrEvent } from "nostr-tools";
@@ -39,13 +38,13 @@ function AppHandler({ app, link }: AppWithLink) {
   );
 }
 
-export default function OtherAppsTab({ note }: { note: Note }) {
+export default function OtherAppsTab({ event }: { event: NostrEvent }) {
   const account = useActiveAccount();
-  const inboxes = useUserInbox(note.event.pubkey);
+  const inboxes = useUserInbox(event.pubkey);
   const readRelays = useReadRelays(inboxes);
 
-  const sharableAddress = useMemo(() => getSharableEventAddress(note.event), [note.event]);
-  const addressType = isReplaceable(note.event.kind) ? "naddr" : "nevent";
+  const sharableAddress = useMemo(() => getSharableEventAddress(event), [event]);
+  const addressType = isReplaceable(event.kind) ? "naddr" : "nevent";
 
   const contacts = useUserContacts(CAP_IS_WEB ? account?.pubkey : undefined);
   const contactPubkeys = useMemo(() => contacts?.map((c) => c.pubkey), [contacts]);
@@ -55,13 +54,13 @@ export default function OtherAppsTab({ note }: { note: Note }) {
     if (!contactPubkeys || contactPubkeys.length === 0) return undefined;
     return {
       kinds: [kinds.Handlerinformation],
-      "#k": [String(note.event.kind)],
+      "#k": [String(event.kind)],
       authors: contactPubkeys,
     };
-  }, [note.event.kind, contactPubkeys]);
+  }, [event.kind, contactPubkeys]);
 
   const { loader, timeline: appHandlers } = useTimelineLoader(
-    `${note.event.id}-app-handlers`,
+    `${event.kind}-app-handlers`,
     readRelays,
     appHandlerFilter,
     { eventFilter: appHandlerEventFilter },

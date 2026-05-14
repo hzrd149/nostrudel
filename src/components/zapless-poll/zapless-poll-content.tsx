@@ -82,6 +82,7 @@ export default function ZaplessPollContent({
               isDisabled={readOnly || !account || selected}
               isLoading={loadingOption === option.id}
               onClick={() => vote(option.id)}
+              zIndex={1}
             >
               <Progress
                 value={option.percent}
@@ -92,7 +93,7 @@ export default function ZaplessPollContent({
                 colorScheme={selected ? "primary" : "gray"}
                 pointerEvents="none"
               />
-              <Flex position="relative" zIndex={1} w="full" gap="3" alignItems="center">
+              <Flex position="relative" w="full" gap="3" alignItems="center">
                 {selected && <CheckIcon flexShrink={0} />}
                 <Text flex={1}>{option.label}</Text>
                 <Tooltip label={option.count === 1 ? "1 vote" : `${option.count} votes`}>
