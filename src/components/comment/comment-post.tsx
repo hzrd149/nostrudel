@@ -29,14 +29,12 @@ import NoteProxyLink from "../timeline/note/components/note-proxy-link";
 import NoteReactions from "../timeline/note/components/note-reactions";
 import ZapBubbles from "../timeline/note/components/zap-bubbles";
 import { TextNoteContents } from "../timeline/note/text-note-contents";
-import ZaplessPollContent from "../zapless-poll/zapless-poll-content";
 import POWIcon from "../pow/pow-icon";
 import Timestamp from "../timestamp";
 import UserAvatarLink from "../user/user-avatar-link";
 import UserDnsIdentity from "../user/user-dns-identity";
 import UserLink from "../user/user-link";
 import EventZapButton from "../zap/event-zap-button";
-import { isZaplessPoll } from "../../helpers/nostr/polls";
 import GenericCommentForm from "./generic-comment-form";
 
 export type CommentPostProps = {
@@ -106,10 +104,6 @@ function CommentPost({ event, level = 0 }: CommentPostProps) {
   const renderContent = () => {
     return isMuted && !alwaysShow ? (
       muteAlert
-    ) : isZaplessPoll(event) ? (
-      <ContentSettingsProvider blurMedia={false} hideEmbeds={false} event={event}>
-        <ZaplessPollContent event={event} pl="2" />
-      </ContentSettingsProvider>
     ) : (
       <ContentSettingsProvider blurMedia={false} hideEmbeds={false} event={event}>
         <TextNoteContents event={event} pl="2" />
@@ -118,7 +112,7 @@ function CommentPost({ event, level = 0 }: CommentPostProps) {
   };
 
   const showReactionsOnNewLine = useBreakpointValue({ base: true, lg: false });
-  const reactionButtons = showReactions && !isZaplessPoll(event) && (
+  const reactionButtons = showReactions && (
     <NoteReactions event={event} flexWrap="wrap" variant="ghost" size="sm" />
   );
   const footer = (

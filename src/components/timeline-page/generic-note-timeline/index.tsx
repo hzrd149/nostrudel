@@ -9,7 +9,7 @@ import { useTimelineDates } from "../../../hooks/timeline/use-timeline-dates";
 import useTimelineLocationCacheKey from "../../../hooks/timeline/use-timeline-cache-key";
 import TimelineItem from "../../timeline/timeline-item";
 import { getEventUID } from "applesauce-core/helpers";
-import { ZAPLESS_POLL_KIND } from "../../../helpers/nostr/polls";
+import { POLL_KIND } from "../../../helpers/nostr/polls";
 
 const INITIAL_NOTES = 10;
 const NOTE_BUFFER = 5;
@@ -20,7 +20,7 @@ export const GENERIC_TIMELINE_KINDS = [
   kinds.Repost,
   kinds.GenericRepost,
   kinds.Highlights,
-  ZAPLESS_POLL_KIND,
+  POLL_KIND,
 ];
 
 function GenericNoteTimeline({ timeline }: { timeline: NostrEvent[] }) {

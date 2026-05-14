@@ -1,11 +1,15 @@
-import { kinds, NostrEvent } from "nostr-tools";
+import {
+  getPollEndsAt,
+  getPollOptions,
+  getPollResponseVotes,
+  POLL_KIND,
+  POLL_RESPONSE_KIND,
+  type PollOption,
+} from "applesauce-common/helpers";
+import { NostrEvent } from "nostr-tools";
 
-export const ZAPLESS_POLL_KIND = 6969;
-
-export type PollOption = {
-  id: string;
-  label: string;
-};
+export { POLL_KIND, POLL_RESPONSE_KIND, getPollOptions };
+export type { PollOption };
 
 export type PollResult = PollOption & {
   count: number;
@@ -13,56 +17,46 @@ export type PollResult = PollOption & {
   voters: string[];
 };
 
-export function getPollOptions(event: NostrEvent): PollOption[] {
-  return event.tags
-    .filter((tag) => tag[0] === "poll_option" && tag[1] && tag[2])
-    .map((tag) => ({ id: tag[1], label: tag[2] }))
-    .sort((a, b) => {
-      const aIndex = Number(a.id);
-      const bIndex = Number(b.id);
-      if (Number.isFinite(aIndex) && Number.isFinite(bIndex)) return aIndex - bIndex;
-      return a.id.localeCompare(b.id);
-    });
+export function isPoll(event: NostrEvent) {
+  return event.kind === POLL_KIND && getPollOptions(event).length > 0;
 }
 
-function getNumericTag(event: NostrEvent, tagName: string) {
-  const value = event.tags.find((tag) => tag[0] === tagName)?.[1];
-  if (value === undefined) return undefined;
+export function getPollResponses(poll: NostrEvent, responses: NostrEvent[]) {
+  const endsAt = getPollEndsAt(poll);
+  const latestResponseByPubkey = new Map<string, NostrEvent>();
 
-  const number = Number(value);
-  return Number.isFinite(number) ? number : undefined;
+  for (const response of responses) {
+    if (response.kind !== POLL_RESPONSE_KIND) continue;
+    if (endsAt && response.created_at > endsAt) continue;
+
+    const votes = getPollResponseVotes(poll, response);
+    if (!votes || votes.length === 0) continue;
+
+    const previous = latestResponseByPubkey.get(response.pubkey);
+    if (!previous || response.created_at > previous.created_at) latestResponseByPubkey.set(response.pubkey, response);
+  }
+
+  return Array.from(latestResponseByPubkey.values()).sort((a, b) => a.created_at - b.created_at);
 }
 
-export function isZaplessPoll(event: NostrEvent) {
-  if (event.kind !== ZAPLESS_POLL_KIND) return false;
-
-  const minimum = getNumericTag(event, "value_minimum");
-  const maximum = getNumericTag(event, "value_maximum");
-  return minimum === 0 && maximum === 0 && getPollOptions(event).length > 0;
-}
-
-export function getPollResults(poll: NostrEvent, reactions: NostrEvent[]) {
+export function getPollResults(poll: NostrEvent, responses: NostrEvent[]) {
   const options = getPollOptions(poll);
   const optionIds = new Set(options.map((option) => option.id));
-  const latestVoteByPubkey = new Map<string, NostrEvent>();
-
-  for (const reaction of reactions) {
-    if (reaction.kind !== kinds.Reaction) continue;
-    if (!optionIds.has(reaction.content)) continue;
-    if (!reaction.tags.some((tag) => tag[0] === "e" && tag[1] === poll.id)) continue;
-
-    const previous = latestVoteByPubkey.get(reaction.pubkey);
-    if (!previous || reaction.created_at > previous.created_at) latestVoteByPubkey.set(reaction.pubkey, reaction);
-  }
-
   const votersByOption = new Map<string, string[]>();
-  for (const vote of latestVoteByPubkey.values()) {
-    const voters = votersByOption.get(vote.content) ?? [];
-    voters.push(vote.pubkey);
-    votersByOption.set(vote.content, voters);
+  const latestResponses = getPollResponses(poll, responses);
+
+  for (const response of latestResponses) {
+    const votes = getPollResponseVotes(poll, response) ?? [];
+    for (const optionId of votes) {
+      if (!optionIds.has(optionId)) continue;
+
+      const voters = votersByOption.get(optionId) ?? [];
+      voters.push(response.pubkey);
+      votersByOption.set(optionId, voters);
+    }
   }
 
-  const total = latestVoteByPubkey.size;
+  const total = latestResponses.length;
   const results: PollResult[] = options.map((option) => {
     const voters = votersByOption.get(option.id) ?? [];
     return {
@@ -76,16 +70,12 @@ export function getPollResults(poll: NostrEvent, reactions: NostrEvent[]) {
   return { results, total };
 }
 
-export function getAccountPollVote(poll: NostrEvent, reactions: NostrEvent[], pubkey?: string) {
-  if (!pubkey) return undefined;
+export function getAccountPollVote(poll: NostrEvent, responses: NostrEvent[], pubkey?: string) {
+  if (!pubkey) return [];
 
-  return reactions
-    .filter(
-      (reaction) =>
-        reaction.kind === kinds.Reaction &&
-        reaction.pubkey === pubkey &&
-        reaction.tags.some((tag) => tag[0] === "e" && tag[1] === poll.id),
-    )
-    .sort((a, b) => b.created_at - a.created_at)
-    .find((reaction) => getPollOptions(poll).some((option) => option.id === reaction.content))?.content;
+  const response = getPollResponses(poll, responses)
+    .filter((response) => response.pubkey === pubkey)
+    .at(-1);
+
+  return response ? (getPollResponseVotes(poll, response) ?? []) : [];
 }

@@ -1,24 +1,29 @@
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/react";
 import styled from "@emotion/styled";
-import { COMMENT_KIND } from "applesauce-common/helpers";
+import { COMMENT_KIND, getPollRelays } from "applesauce-common/helpers";
 import { CommentsModel } from "applesauce-common/models";
 import { mapEventsToStore } from "applesauce-core";
+import { getSeenRelays, mergeRelaySets } from "applesauce-core/helpers";
 import { use$, useEventModel } from "applesauce-react/hooks";
 import { kinds, NostrEvent } from "nostr-tools";
-import { ReactNode } from "react";
+import { ReactNode, useEffect, useMemo } from "react";
 import { map } from "rxjs";
 
+import GenericCommentForm from "../../../components/comment/generic-comment-form";
 import { GenericComments } from "../../../components/comment/generic-comments";
 import { CAP_IS_WEB } from "../../../env";
 import { getContentTagRefs } from "../../../helpers/nostr/event";
+import { getPollResponses, POLL_RESPONSE_KIND } from "../../../helpers/nostr/polls";
 import { useReadRelays } from "../../../hooks/use-client-relays";
 import useRouteSearchValue from "../../../hooks/use-route-search-value";
 import { useUserInbox } from "../../../hooks/use-user-mailboxes";
 import { eventStore } from "../../../services/event-store";
+import { pollResponseLoader } from "../../../services/loaders";
 import pool from "../../../services/pool";
 import OtherAppsTab from "../../thread/components/tabs/other-apps";
 import PostQuotesTab from "../../thread/components/tabs/quotes";
 import PostRepostsTab from "../../thread/components/tabs/reposts";
+import PollVotesTab from "./votes-tab";
 
 const HiddenScrollbarTabList = styled(TabList)`
   -ms-overflow-style: none;
@@ -28,10 +33,23 @@ const HiddenScrollbarTabList = styled(TabList)`
   }
 `;
 
-export default function PollDetailsTabs({ poll }: { poll: NostrEvent }) {
+export default function PollDetailsTabs({
+  poll,
+  showCommentForm,
+  onCloseCommentForm,
+}: {
+  poll: NostrEvent;
+  showCommentForm?: boolean;
+  onCloseCommentForm?: () => void;
+}) {
   const selected = useRouteSearchValue("tab", "comments");
   const inboxes = useUserInbox(poll.pubkey);
   const readRelays = useReadRelays(inboxes);
+  const pollResponseRelays = useMemo(
+    () => mergeRelaySets(getPollRelays(poll), getSeenRelays(poll), readRelays),
+    [poll, readRelays.join(",")],
+  );
+  const pollResponseRelayKey = pollResponseRelays.join(",");
 
   use$(() => {
     return pool
@@ -42,6 +60,11 @@ export default function PollDetailsTabs({ poll }: { poll: NostrEvent }) {
       ])
       .pipe(mapEventsToStore(eventStore));
   }, [poll.id, readRelays.join(",")]);
+
+  useEffect(() => {
+    const sub = pollResponseLoader({ value: poll.id, relays: pollResponseRelays }).subscribe();
+    return () => sub.unsubscribe();
+  }, [poll.id, pollResponseRelayKey]);
 
   const comments = useEventModel(CommentsModel, [poll]);
   const quotes = use$(
@@ -60,6 +83,12 @@ export default function PollDetailsTabs({ poll }: { poll: NostrEvent }) {
   );
   const events = use$(() => eventStore.timeline({ "#e": [poll.id] }), [poll.id, readRelays.join(",")]);
   const reposts = events?.filter((event) => event.kind === kinds.Repost || event.kind === kinds.GenericRepost);
+  const responseEvents =
+    use$(
+      () => eventStore.timeline({ kinds: [POLL_RESPONSE_KIND], "#e": [poll.id] }),
+      [poll.id, pollResponseRelayKey],
+    ) ?? [];
+  const votes = useMemo(() => getPollResponses(poll, responseEvents), [poll, responseEvents]);
 
   const tabs: { id: string; name: string; element: ReactNode; visible: boolean; right?: boolean }[] = [
     {
@@ -68,7 +97,20 @@ export default function PollDetailsTabs({ poll }: { poll: NostrEvent }) {
       visible: true,
       element: (
         <TabPanel key="comments" p="0" py="2">
+          {showCommentForm && (
+            <GenericCommentForm event={poll} onCancel={onCloseCommentForm} onSubmitted={onCloseCommentForm} />
+          )}
           <GenericComments event={poll} />
+        </TabPanel>
+      ),
+    },
+    {
+      id: "votes",
+      name: `Votes (${votes.length})`,
+      visible: true,
+      element: (
+        <TabPanel key="votes" p="0" py="2">
+          <PollVotesTab poll={poll} responses={votes} />
         </TabPanel>
       ),
     },

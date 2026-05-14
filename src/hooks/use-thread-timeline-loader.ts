@@ -3,7 +3,6 @@ import { useMemo } from "react";
 
 import { unique } from "../helpers/array";
 import { getThreadReferences } from "../helpers/nostr/event";
-import { ZAPLESS_POLL_KIND } from "../helpers/nostr/polls";
 import useTimelineLoader from "./use-timeline-loader";
 
 /**
@@ -25,7 +24,7 @@ export default function useThreadTimelineLoader(
 
   const readRelays = useMemo(() => unique([...relays, ...(rootPointer?.relays ?? [])]), [relays, rootPointer?.relays]);
 
-  const kindArr = kinds ? (kinds.length > 0 ? kinds : undefined) : [eventKinds.ShortTextNote, ZAPLESS_POLL_KIND];
+  const kindArr = kinds ? (kinds.length > 0 ? kinds : undefined) : [eventKinds.ShortTextNote];
   const timelineId = `${rootPointer?.id}-thread`;
   const { loader } = useTimelineLoader(
     timelineId,

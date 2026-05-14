@@ -8,7 +8,7 @@ import SimpleView from "../../components/layout/presets/simple-view";
 
 const NEW_TYPES: { title: string; path: string; summary?: string; icon: ComponentWithAs<"svg", IconProps> }[] = [
   { title: "Text Note", path: "/new/note", summary: "A short text post with media", icon: NotesIcon },
-  { title: "Poll", path: "/new/poll", summary: "A zapless reaction poll", icon: BarChart09 },
+  { title: "Poll", path: "/new/poll", summary: "A NIP-88 poll", icon: BarChart09 },
   { title: "Media Post", path: "/new/media", summary: "Image and video posts", icon: MediaIcon },
 ];
 

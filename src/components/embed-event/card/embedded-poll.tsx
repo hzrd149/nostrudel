@@ -9,9 +9,9 @@ import BarChart09 from "../../icons/bar-chart-09";
 import Timestamp from "../../timestamp";
 import UserAvatarLink from "../../user/user-avatar-link";
 import UserLink from "../../user/user-link";
-import ZaplessPollContent from "../../zapless-poll/zapless-poll-content";
+import PollContent from "../../poll/poll-content";
 
-export default function EmbeddedZaplessPoll({
+export default function EmbeddedPoll({
   event,
   ...props
 }: Omit<BoxProps, "children" | "as"> & { event: NostrEvent }) {
@@ -48,7 +48,7 @@ export default function EmbeddedZaplessPoll({
         <HoverLinkOverlay as={RouterLink} to={to} onClick={handleClick} />
         <Spacer />
       </Flex>
-      <ZaplessPollContent px="2" event={event} position="relative" zIndex={1} />
+      <PollContent px="2" event={event} position="relative" zIndex={1} />
     </Box>
   );
 }

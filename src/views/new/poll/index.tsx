@@ -8,49 +8,60 @@ import {
   Heading,
   IconButton,
   Input,
+  Select,
   Spinner,
   Text,
   Textarea,
 } from "@chakra-ui/react";
+import { POLL_KIND, type PollType } from "applesauce-common/helpers";
 import { EventTemplate } from "nostr-tools";
 import { useMemo, useState } from "react";
 
 import { AddIcon, TrashIcon } from "../../../components/icons";
 import SimpleView from "../../../components/layout/presets/simple-view";
-import ZaplessPollContent from "../../../components/zapless-poll/zapless-poll-content";
-import { ZAPLESS_POLL_KIND } from "../../../helpers/nostr/polls";
+import PollContent from "../../../components/poll/poll-content";
+import { useWriteRelays } from "../../../hooks/use-client-relays";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
 import { PublishLogEntryDetails } from "../../task-manager/publish-log/entry-details";
 import { PublishLogEntry } from "../../../providers/global/publish-provider";
 
-function createPreviewEvent(content: string, options: string[]) {
+function createPollTags(options: string[], relays: string[], pollType: PollType) {
+  return [
+    ...options.map((option, index) => ["option", String(index), option]),
+    ...relays.map((relay) => ["relay", relay]),
+    ["polltype", pollType],
+    ["alt", "Poll event"],
+  ];
+}
+
+function createPreviewEvent(content: string, options: string[], relays: string[], pollType: PollType) {
   return {
     id: "preview",
     pubkey: "preview",
     created_at: Math.round(Date.now() / 1000),
-    kind: ZAPLESS_POLL_KIND,
+    kind: POLL_KIND,
     content,
-    tags: [
-      ...options.map((option, index) => ["poll_option", String(index), option]),
-      ["value_minimum", "0"],
-      ["value_maximum", "0"],
-      ["alt", "Poll event"],
-    ],
+    tags: createPollTags(options, relays, pollType),
     sig: "",
   };
 }
 
 export default function NewPollView() {
   const publish = usePublishEvent();
+  const writeRelays = useWriteRelays();
   const [question, setQuestion] = useState("");
   const [options, setOptions] = useState(["", ""]);
+  const [pollType, setPollType] = useState<PollType>("singlechoice");
   const [loading, setLoading] = useState(false);
   const [published, setPublished] = useState<PublishLogEntry>();
 
   const cleanOptions = useMemo(() => options.map((option) => option.trim()).filter(Boolean), [options]);
   const canSubmit = question.trim().length > 0 && cleanOptions.length >= 2;
 
-  const preview = useMemo(() => createPreviewEvent(question, cleanOptions), [question, cleanOptions]);
+  const preview = useMemo(
+    () => createPreviewEvent(question, cleanOptions, writeRelays, pollType),
+    [question, cleanOptions, writeRelays, pollType],
+  );
 
   const publishPoll = async () => {
     if (!canSubmit) return;
@@ -58,14 +69,9 @@ export default function NewPollView() {
     setLoading(true);
     try {
       const poll: EventTemplate = {
-        kind: ZAPLESS_POLL_KIND,
+        kind: POLL_KIND,
         content: question.trim(),
-        tags: [
-          ...cleanOptions.map((option, index) => ["poll_option", String(index), option]),
-          ["value_minimum", "0"],
-          ["value_maximum", "0"],
-          ["alt", "Poll event"],
-        ],
+        tags: createPollTags(cleanOptions, writeRelays, pollType),
         created_at: Math.round(Date.now() / 1000),
       };
       const entry = await publish("Poll", poll, undefined, false);
@@ -100,6 +106,14 @@ export default function NewPollView() {
         <FormControl isRequired>
           <FormLabel>Question</FormLabel>
           <Textarea value={question} onChange={(e) => setQuestion(e.target.value)} rows={4} autoFocus />
+        </FormControl>
+
+        <FormControl>
+          <FormLabel>Poll type</FormLabel>
+          <Select value={pollType} onChange={(e) => setPollType(e.target.value as PollType)}>
+            <option value="singlechoice">Single choice</option>
+            <option value="multiplechoice">Multiple choice</option>
+          </Select>
         </FormControl>
 
         <FormControl isRequired>
@@ -142,7 +156,7 @@ export default function NewPollView() {
               <Heading size="sm" mb="3">
                 Preview
               </Heading>
-              <ZaplessPollContent event={preview} readOnly />
+              <PollContent event={preview} readOnly />
             </CardBody>
           </Card>
         )}
