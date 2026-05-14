@@ -7,10 +7,7 @@ import { DotsMenuButton, MenuIconButtonProps } from "../menu/dots-menu-button";
 import OpenInAppMenuItem from "../menu/open-in-app";
 import ShareLinkMenuItem from "../menu/share-link";
 
-export default function PollMenu({
-  event,
-  ...props
-}: { event: NostrEvent } & Omit<MenuIconButtonProps, "children">) {
+export default function PollMenu({ event, ...props }: { event: NostrEvent } & Omit<MenuIconButtonProps, "children">) {
   return (
     <DotsMenuButton {...props}>
       <OpenInAppMenuItem event={event} />

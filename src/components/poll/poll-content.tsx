@@ -3,16 +3,19 @@ import { Box, Button, Flex, Progress, Text, Tooltip, type FlexProps } from "@cha
 import { PollResponseFactory } from "applesauce-common/factories";
 import { getPollEndsAt, getPollQuestion, getPollRelays, getPollType } from "applesauce-common/helpers";
 import { getSeenRelays, mergeRelaySets } from "applesauce-core/helpers";
-import { use$ , useActiveAccount } from "applesauce-react/hooks";
+import { use$, useActiveAccount } from "applesauce-react/hooks";
 import { NostrEvent } from "nostr-tools";
 import { useEffect, useMemo, useState } from "react";
 
 import { getAccountPollVote, getPollResults, POLL_RESPONSE_KIND } from "../../helpers/nostr/polls";
 import useAsyncAction from "../../hooks/use-async-action";
 import { useReadRelays } from "../../hooks/use-client-relays";
+import { ContentSettingsProvider } from "../../providers/local/content-settings";
 import { usePublishEvent } from "../../providers/global/publish-provider";
 import { eventStore } from "../../services/event-store";
 import { pollResponseLoader } from "../../services/loaders";
+import { ErrorBoundary } from "../error-boundary";
+import TextNoteContents from "../timeline/note/text-note-contents";
 
 export default function PollContent({
   event,
@@ -38,10 +41,8 @@ export default function PollContent({
   }, [event.id, responseRelayKey, readOnly]);
 
   const responses =
-    use$(
-      () => eventStore.timeline({ kinds: [POLL_RESPONSE_KIND], "#e": [event.id] }),
-      [event.id, responseRelayKey],
-    ) ?? [];
+    use$(() => eventStore.timeline({ kinds: [POLL_RESPONSE_KIND], "#e": [event.id] }), [event.id, responseRelayKey]) ??
+    [];
 
   const pollType = getPollType(event);
   const endsAt = getPollEndsAt(event);
@@ -84,7 +85,11 @@ export default function PollContent({
     <Flex direction="column" gap="3" {...props}>
       {getPollQuestion(event) && (
         <Box fontSize="md">
-          <Text whiteSpace="pre-wrap">{getPollQuestion(event)}</Text>
+          <ErrorBoundary>
+            <ContentSettingsProvider blurMedia={false}>
+              <TextNoteContents event={event} />
+            </ContentSettingsProvider>
+          </ErrorBoundary>
         </Box>
       )}
 
