@@ -94,7 +94,7 @@ export function TimelinePoll({
               {showReplyLine && <ReplyContext event={event} />}
             </CardHeader>
             <CardBody px="2">
-              <ZaplessPollContent event={event} />
+              <ZaplessPollContent event={event} position="relative" zIndex={1} />
             </CardBody>
             <CardFooter p="2" display="flex" gap="2" flexDirection="column" alignItems="flex-start">
               {!hideZapBubbles && <ZapBubbles event={event} w="full" />}

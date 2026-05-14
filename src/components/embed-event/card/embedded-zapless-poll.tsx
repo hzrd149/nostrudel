@@ -49,7 +49,7 @@ export default function EmbeddedZaplessPoll({
         <HoverLinkOverlay as={RouterLink} to={to} onClick={handleClick} />
         <Spacer />
       </Flex>
-      <ZaplessPollContent px="2" event={event} />
+      <ZaplessPollContent px="2" event={event} position="relative" zIndex={1} />
     </Box>
   );
 }
