@@ -1,10 +1,8 @@
 import { Box, Heading, Link, LinkBox, Spinner, useDisclosure } from "@chakra-ui/react";
-import { getNip10References } from "applesauce-common/helpers";
-import { ThreadModel, Thread } from "applesauce-common/models";
-import { useEventModel } from "applesauce-react/hooks";
-import { nip19, NostrEvent } from "nostr-tools";
-import { EventPointer } from "nostr-tools/nip19";
-import { ReactNode, useState } from "react";
+import { Note } from "applesauce-common/casts";
+import { use$ } from "applesauce-react/hooks";
+import { NostrEvent } from "nostr-tools";
+import { useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
 
 import ExpandableToggleButton from "../../components/expandable-toggle-button";
@@ -15,6 +13,7 @@ import UserAvatarLink from "../../components/user/user-avatar-link";
 import UserDnsIdentityIcon from "../../components/user/user-dns-identity-icon";
 import UserLink from "../../components/user/user-link";
 import VerticalPageLayout from "../../components/vertical-page-layout";
+import useCastEvent from "../../hooks/use-cast-event";
 import { useReadRelays } from "../../hooks/use-client-relays";
 import useClientSideMuteFilter from "../../hooks/use-client-side-mute-filter";
 import useEventIntersectionRef from "../../hooks/use-event-intersection-ref";
@@ -28,11 +27,11 @@ import { getSharableEventAddress } from "../../services/relay-hints";
 import MutedNotePlaceholder from "./components/muted-note-placeholder";
 import ThreadPost from "./components/thread-post";
 
-function ParentNote({ note, level = 0 }: { note: NostrEvent; level?: number }) {
-  const ref = useEventIntersectionRef(note);
+function ParentCard({ event, level }: { event: NostrEvent; level: number }) {
+  const ref = useEventIntersectionRef(event);
   const more = useDisclosure({ defaultIsOpen: level < 2 });
   const muteFilter = useClientSideMuteFilter();
-  const isMuted = muteFilter(note);
+  const isMuted = muteFilter(event);
   const [alwaysShow, setAlwaysShow] = useState(false);
 
   return (
@@ -54,97 +53,64 @@ function ParentNote({ note, level = 0 }: { note: NostrEvent; level?: number }) {
         float="right"
       />
       <Box float="left" mr="2">
-        <UserAvatarLink pubkey={note.pubkey} size="xs" mr="2" aria-label="avatar" />
-        <UserLink pubkey={note.pubkey} fontWeight="bold" mr="1" />
-        <UserDnsIdentityIcon pubkey={note.pubkey} mr="2" />
+        <UserAvatarLink pubkey={event.pubkey} size="xs" mr="2" aria-label="avatar" />
+        <UserLink pubkey={event.pubkey} fontWeight="bold" mr="1" />
+        <UserDnsIdentityIcon pubkey={event.pubkey} mr="2" />
         <Link
           as={RouterLink}
-          to={`/n/${getSharableEventAddress(note)}`}
-          aria-label={`Posted at ${new Date(note.created_at * 1000).toLocaleString()}`}
+          to={`/n/${getSharableEventAddress(event)}`}
+          aria-label={`Posted at ${new Date(event.created_at * 1000).toLocaleString()}`}
         >
-          <Timestamp timestamp={note.created_at} />
+          <Timestamp timestamp={event.created_at} />
         </Link>
       </Box>
       {more.isOpen ? (
         isMuted && !alwaysShow ? (
-          <MutedNotePlaceholder event={note} showHeader={false} onShowAnyway={() => setAlwaysShow(true)} />
+          <MutedNotePlaceholder event={event} showHeader={false} onShowAnyway={() => setAlwaysShow(true)} />
         ) : (
           <ContentSettingsProvider blurMedia={false}>
             <br />
-            <TextNoteContents event={note} aria-expanded="true" />
+            <TextNoteContents event={event} aria-expanded="true" />
           </ContentSettingsProvider>
         )
       ) : (
         <Link
           as={RouterLink}
-          to={`/n/${getSharableEventAddress(note)}`}
+          to={`/n/${getSharableEventAddress(event)}`}
           noOfLines={1}
           fontStyle="italic"
           aria-expanded="false"
         >
-          {isMuted ? "Muted user or note" : note.content}
+          {isMuted ? "Muted user or note" : event.content}
         </Link>
       )}
     </LinkBox>
   );
 }
 
-function Parents({ pointer, thread }: { pointer: nip19.EventPointer; thread: Thread }) {
-  const posts: ReactNode[] = [];
+/**
+ * Recursively walks up the NIP-10 reply chain via Note.replyingTo$, rendering
+ * each ancestor above the current note. Each level only subscribes to its own
+ * parent observable.
+ */
+function ParentChain({ note, level = 0 }: { note: Note; level?: number }) {
+  const parentEvent = use$(() => note.replyingTo$, [note]);
+  const parentNote = useCastEvent(parentEvent, Note);
+  const replyPointer = note.references.reply?.e;
 
-  let level = 0;
-  let cursor: EventPointer | undefined = pointer;
-  while (cursor) {
-    const post = thread.all.get(cursor.id);
+  // No parent referenced — we're at the top of the chain.
+  if (!replyPointer) return null;
 
-    if (post) {
-      posts.unshift(<ParentNote note={post.event} key={post.event.id} level={level} />);
-      // attempt to walk up the "e" reply tree
-      cursor = getNip10References(post.event).reply?.e;
-      level++;
-    } else {
-      // failed to find parent post, append loading and done
-      posts.unshift(<LoadingNostrLink link={{ type: "nevent", data: cursor }} key={cursor.id} />);
-      cursor = undefined;
-    }
-  }
+  // Parent referenced but not yet in the event store — show a loading placeholder.
+  if (!parentEvent) return <LoadingNostrLink link={{ type: "nevent", data: replyPointer }} />;
 
-  return <>{posts}</>;
-}
-
-function ThreadPage({
-  thread,
-  rootPointer,
-  focusId,
-}: {
-  thread: Thread;
-  rootPointer: nip19.EventPointer;
-  focusId: string;
-}) {
-  const isRoot = rootPointer.id === focusId;
-
-  const focusedPost = thread.all.get(focusId);
-  if (isRoot && thread.root) {
-    return <ThreadPost post={thread.root} initShowReplies focusId={focusId} />;
-  }
-
-  if (!focusedPost) return null;
-
-  const parentPosts = [];
-  if (focusedPost.parent) {
-    let p = focusedPost;
-    while (p.parent) {
-      parentPosts.unshift(p.parent);
-      p = p.parent;
-    }
-  }
-
-  const parent = getNip10References(focusedPost.event).reply?.e;
+  // Parent loaded but not a kind 1 note (cast failed) — render it as a leaf without recursing.
+  if (!parentNote) return <ParentCard event={parentEvent} level={level} />;
 
   return (
     <>
-      {parent && <Parents pointer={parent} thread={thread} />}
-      <ThreadPost post={focusedPost} initShowReplies focusId={focusId} />
+      <ParentChain note={parentNote} level={level + 1} />
+      <ParentCard event={parentNote.event} level={level} />
     </>
   );
 }
@@ -154,10 +120,15 @@ export default function ThreadView() {
   const readRelays = useReadRelays(pointer.relays);
 
   const focusedEvent = useSingleEvent(pointer);
-  const { rootPointer, timeline } = useThreadTimelineLoader(focusedEvent, readRelays);
-  const thread = useEventModel(ThreadModel, rootPointer ? [rootPointer] : undefined);
+  const { rootPointer, loader } = useThreadTimelineLoader(focusedEvent, readRelays);
+  const rootEvent = useSingleEvent(rootPointer);
 
-  const callback = useTimelineCurserIntersectionCallback(timeline);
+  const focusedNote = useCastEvent(focusedEvent, Note);
+  const rootNote = useCastEvent(rootEvent, Note);
+
+  const callback = useTimelineCurserIntersectionCallback(loader);
+
+  const isFocusedRoot = !!focusedNote && !!rootNote && focusedNote.event.id === rootNote.event.id;
 
   return (
     <VerticalPageLayout maxW="6xl" mx="auto" w="full">
@@ -170,9 +141,15 @@ export default function ThreadView() {
         </>
       )}
       <IntersectionObserverProvider callback={callback}>
-        {thread && focusedEvent && rootPointer && (
-          <ThreadPage thread={thread} rootPointer={rootPointer} focusId={focusedEvent.id} />
-        )}
+        {focusedNote &&
+          (isFocusedRoot ? (
+            <ThreadPost note={rootNote} initShowReplies focusId={focusedNote.event.id} />
+          ) : (
+            <>
+              <ParentChain note={focusedNote} />
+              <ThreadPost note={focusedNote} initShowReplies focusId={focusedNote.event.id} />
+            </>
+          ))}
       </IntersectionObserverProvider>
     </VerticalPageLayout>
   );

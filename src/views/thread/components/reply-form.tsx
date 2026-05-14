@@ -1,7 +1,6 @@
 import { Box, Button, ButtonGroup, Flex, Input, Switch, useDisclosure } from "@chakra-ui/react";
 import { NoteFactory } from "applesauce-common/factories";
 import { Emoji } from "applesauce-common/helpers";
-import { ThreadItem } from "applesauce-common/models";
 import { kinds, NostrEvent } from "nostr-tools";
 import { useMemo, useRef } from "react";
 import { useForm } from "react-hook-form";
@@ -22,13 +21,13 @@ import UploadProvider, { useUploadContext } from "../../../providers/local/uploa
 import InsertImageButton from "../../new/note/insert-image-button";
 
 export type ReplyFormProps = {
-  item: ThreadItem;
+  event: NostrEvent;
   replyKind?: number;
   onCancel?: () => void;
   onSubmitted?: (event: NostrEvent) => void;
 };
 
-function ReplyFormInner({ item, onCancel, onSubmitted, replyKind = kinds.ShortTextNote }: ReplyFormProps) {
+function ReplyFormInner({ event, onCancel, onSubmitted, replyKind = kinds.ShortTextNote }: ReplyFormProps) {
   const publish = usePublishEvent();
   const emojis = useContextEmojis();
   const advanced = useDisclosure();
@@ -44,7 +43,7 @@ function ReplyFormInner({ item, onCancel, onSubmitted, replyKind = kinds.ShortTe
   });
 
   const clearCache = useCacheForm<{ content: string; nsfw: boolean; nsfwReason: string }>(
-    `reply-${item.event.id}`,
+    `reply-${event.id}`,
     getValues,
     reset,
     formState,
@@ -59,7 +58,7 @@ function ReplyFormInner({ item, onCancel, onSubmitted, replyKind = kinds.ShortTe
   const { onPaste } = useTextAreaUploadFile(insertText);
 
   const submit = handleSubmit(async (values) => {
-    let draft = NoteFactory.reply(item.event, values.content).text(values.content, {
+    let draft = NoteFactory.reply(event, values.content).text(values.content, {
       emojis: customEmojis,
       contentWarning: values.nsfw ? values.nsfwReason || values.nsfw : false,
     });
@@ -76,7 +75,7 @@ function ReplyFormInner({ item, onCancel, onSubmitted, replyKind = kinds.ShortTe
   // throttle preview
   const throttleValues = useThrottle(getValues(), 500);
   const { value: preview } = useAsync(
-    () => NoteFactory.reply(item.event, throttleValues.content).text(throttleValues.content, { emojis: customEmojis }),
+    () => NoteFactory.reply(event, throttleValues.content).text(throttleValues.content, { emojis: customEmojis }),
     [throttleValues, customEmojis],
   );
 

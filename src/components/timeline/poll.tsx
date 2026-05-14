@@ -17,7 +17,6 @@ import { NostrEvent } from "nostr-tools";
 import { memo } from "react";
 import { Link as RouterLink } from "react-router-dom";
 
-import { getThreadReferences } from "../../helpers/nostr/event";
 import useEventIntersectionRef from "../../hooks/use-event-intersection-ref";
 import { ExpandProvider } from "../../providers/local/expanded";
 import { ContentSettingsProvider } from "../../providers/local/content-settings";
@@ -119,11 +118,7 @@ export function TimelinePoll({
         </Flex>
       </ExpandProvider>
       {replyForm.isOpen && (
-        <ReplyForm
-          item={{ event, replies: new Set(), refs: getThreadReferences(event) }}
-          onCancel={replyForm.onClose}
-          onSubmitted={replyForm.onClose}
-        />
+        <ReplyForm event={event} onCancel={replyForm.onClose} onSubmitted={replyForm.onClose} />
       )}
     </ContentSettingsProvider>
   );

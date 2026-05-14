@@ -2,7 +2,6 @@ import { Box, ButtonGroup, Flex, Text } from "@chakra-ui/react";
 import { Zap } from "applesauce-common/casts";
 import { KnownEvent } from "applesauce-core/helpers";
 import { getZapPayment, isValidZap } from "applesauce-common/helpers";
-import { ThreadItem } from "applesauce-common/models";
 import { kinds, NostrEvent } from "nostr-tools";
 import { memo } from "react";
 
@@ -43,7 +42,7 @@ const ZapEvent = memo(({ zap }: { zap: KnownEvent<kinds.Zap> }) => {
   );
 });
 
-export default function PostZapsTab({ post, zaps }: { post: ThreadItem; zaps: NostrEvent[] }) {
+export default function PostZapsTab({ zaps }: { zaps: NostrEvent[] }) {
   return (
     <Flex px="2" direction="column" gap="2" mb="2">
       {Array.from(zaps)

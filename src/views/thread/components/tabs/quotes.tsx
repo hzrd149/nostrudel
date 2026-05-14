@@ -1,10 +1,9 @@
 import { Flex } from "@chakra-ui/react";
-import { ThreadItem } from "applesauce-common/models";
 import { NostrEvent } from "nostr-tools";
 
 import { TimelineNote } from "../../../../components/timeline/note";
 
-export default function PostQuotesTab({ post, quotes }: { post: ThreadItem; quotes: NostrEvent[] }) {
+export default function PostQuotesTab({ quotes }: { quotes: NostrEvent[] }) {
   return (
     <Flex gap="2" direction="column">
       {quotes.map((quote) => (
