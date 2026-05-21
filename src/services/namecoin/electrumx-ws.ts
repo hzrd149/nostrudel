@@ -208,9 +208,22 @@ interface VerboseTxResult {
 
 interface RpcResponse {
   jsonrpc?: string;
-  id: number;
+  id?: number;
+  method?: string;
   result?: unknown;
   error?: { code: number; message: string };
+}
+
+// ElectrumX is bidirectional JSON-RPC: the server may push notifications
+// (server-initiated frames with a `method` field and no matching id) on
+// the same socket. The browser WSS helpers below give each request an
+// explicit `id` and ignore frames whose id does not match, mirroring the
+// Node-TLS `ElectrumxClient` pending-map dispatch in
+// `proxy/electrumx-client.mjs`.
+
+/** True if the frame is a server-initiated notification rather than a response. */
+function isNotification(msg: RpcResponse): boolean {
+  return typeof msg.method === "string" && msg.id === undefined;
 }
 
 /**
@@ -218,10 +231,15 @@ interface RpcResponse {
  *
  * Opens a WebSocket, sends the request, waits for the response, and closes.
  * This is simple and stateless — appropriate for infrequent name lookups.
+ *
+ * Frames whose `id` does not match the request (including server-initiated
+ * notifications) are dropped, mirroring the Node-TLS `ElectrumxClient`
+ * pattern in `proxy/electrumx-client.mjs`.
  */
 function wsRpcCall(url: string, method: string, params: unknown[], timeoutMs = 15000): Promise<unknown> {
   return new Promise((resolve, reject) => {
     let settled = false;
+    const callId = 1;
     const ws = new WebSocket(url);
     const timer = setTimeout(() => {
       if (!settled) {
@@ -232,7 +250,7 @@ function wsRpcCall(url: string, method: string, params: unknown[], timeoutMs = 1
     }, timeoutMs);
 
     ws.addEventListener("open", () => {
-      const payload = JSON.stringify({ jsonrpc: "2.0", method, params, id: 1 }) + "\n";
+      const payload = JSON.stringify({ jsonrpc: "2.0", method, params, id: callId }) + "\n";
       ws.send(payload);
     });
 
@@ -241,6 +259,9 @@ function wsRpcCall(url: string, method: string, params: unknown[], timeoutMs = 1
       try {
         const data = typeof ev.data === "string" ? ev.data : String(ev.data);
         const msg: RpcResponse = JSON.parse(data.trim());
+        // Bidirectional JSON-RPC: ignore server-initiated notifications
+        // and any responses for unrelated ids; keep listening.
+        if (isNotification(msg) || msg.id !== callId) return;
         settled = true;
         clearTimeout(timer);
         ws.close();
@@ -315,6 +336,10 @@ function wsRpcBatch(
       try {
         const data = typeof ev.data === "string" ? ev.data : String(ev.data);
         const msg: RpcResponse = JSON.parse(data.trim());
+        // Bidirectional JSON-RPC: drop server-initiated notifications and
+        // any frame whose id does not match the in-flight call. Mirrors
+        // the Node-TLS `ElectrumxClient` pending-map dispatch.
+        if (isNotification(msg) || msg.id !== currentId) return;
         if (msg.error) {
           settled = true;
           clearTimeout(timer);
