@@ -36,7 +36,7 @@
     "@codemirror/lang-json": "^6.0.2",
     "@codemirror/language": "^6.12.3",
     "@codemirror/view": "^6.43.0",
-    "@contextvm/sdk": "^0.1.48",
+    "@contextvm/sdk": "^0.11.10",
     "@emoji-mart/data": "^1.2.1",
     "@emoji-mart/react": "^1.1.1",
     "@emotion/react": "^11.14.0",
@@ -169,29 +169,9 @@
     "workbox-build": "^7.4.1",
     "workbox-window": "^7.4.1"
   },
-  "resolutions": {
-    "nostr-tools": "^2.19"
-  },
   "funding": {
     "type": "lightning",
     "url": "lightning:nostrudel@geyser.fund"
   },
-  "packageManager": "pnpm@11.2.2",
-  "pnpm": {
-    "overrides": {
-      "tar@<7.5.7": ">=7.5.7",
-      "tar@<=7.5.2": ">=7.5.3",
-      "tar@<7.5.8": ">=7.5.8",
-      "minimatch@<3.1.3": ">=3.1.3",
-      "minimatch@<3.1.4": ">=3.1.4",
-      "serialize-javascript@<=7.0.2": ">=7.0.3",
-      "tar@<=7.5.9": ">=7.5.10",
-      "tar@<=7.5.10": ">=7.5.11",
-      "tar@<=7.5.3": ">=7.5.4",
-      "serialize-javascript@<7.0.5": ">=7.0.5",
-      "@xmldom/xmldom@<0.8.13": ">=0.8.13",
-      "uuid@<14.0.0": ">=14.0.0",
-      "@xmldom/xmldom@<0.8.12": ">=0.8.12"
-    }
-  }
+  "packageManager": "pnpm@11.2.2"
 }
