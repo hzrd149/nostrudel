@@ -274,7 +274,7 @@ importers:
         specifier: ^1.0.36
         version: 1.0.36
       nostr-tools:
-        specifier: ^2.23.5
+        specifier: ^2.19
         version: 2.23.5(typescript@5.9.3)
       nostr-wasm:
         specifier: ^0.1.0
