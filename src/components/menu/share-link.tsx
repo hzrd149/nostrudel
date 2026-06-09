@@ -44,7 +44,7 @@ export default function ShareLinkMenuItem({ event }: { event: NostrEvent }) {
     } catch (err) {
       if (err instanceof Error) toast({ status: "error", description: err.message });
     }
-  }, [metadata, event, toast]);
+  }, [address, metadata, event, shareService, toast]);
 
   return (
     address && (

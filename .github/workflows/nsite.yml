@@ -42,7 +42,7 @@ jobs:
       # Pushes to master deploy to the "next" build channel for testing
       - name: Deploy next version
         if: github.ref == 'refs/heads/master'
-        uses: sandwichfarm/nsite-action@v0.3.1
+        uses: sandwichfarm/nsite-action@v0.4.0
         with:
           nbunksec: ${{ secrets.NSITE_BUNKER }}
           directory: "./dist"

@@ -106,6 +106,10 @@ export default function AppHandlerModal({
   const kind = event?.kind ?? getKindFromDecoded(decoded);
   const alt = event?.tags.find((t) => t[0] === "alt")?.[1];
   const address = encodeDecodeResult(decoded);
+  const shareUrl = useMemo(
+    () => new URL(address, shareService || DEFAULT_SHARE_SERVICE).toString(),
+    [address, shareService],
+  );
   const eventFilter = useCallback((event: NostrEvent) => {
     return event.content.length > 0;
   }, []);
@@ -208,12 +212,8 @@ export default function AppHandlerModal({
           <FormControl px="4">
             <FormLabel>Share URL</FormLabel>
             <Flex gap="2" overflow="hidden">
-              <Input readOnly value={(shareService || DEFAULT_SHARE_SERVICE) + address} size="sm" />
-              <CopyIconButton
-                value={(shareService || DEFAULT_SHARE_SERVICE) + address}
-                size="sm"
-                aria-label="Copy embed code"
-              />
+              <Input readOnly value={shareUrl} size="sm" />
+              <CopyIconButton value={shareUrl} size="sm" aria-label="Copy embed code" />
             </Flex>
           </FormControl>
         </ModalBody>
