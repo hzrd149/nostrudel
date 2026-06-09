@@ -69,8 +69,10 @@ export default function PollContent({
   );
 
   const toggleOption = (optionId: string) => {
+    // Single choice: replace the draft selection. The vote is only published once
+    // the user confirms with the "Submit vote" button, to avoid accidental votes.
     if (pollType === "singlechoice") {
-      vote([optionId]);
+      setDraftSelection((current) => (current.includes(optionId) ? [] : [optionId]));
       return;
     }
 
@@ -112,7 +114,7 @@ export default function PollContent({
               colorScheme={selected || pending ? "primary" : undefined}
               variant={selected || pending ? "solid" : "outline"}
               isDisabled={disabled || (pollType === "singlechoice" && selected)}
-              isLoading={loading && (pollType === "singlechoice" ? pending || !draftSelection.length : pending)}
+              isLoading={loading && pending}
               onClick={() => toggleOption(option.id)}
               zIndex={1}
             >
@@ -144,12 +146,12 @@ export default function PollContent({
           {total === 1 ? "1 vote" : `${total} votes`}
           {isExpired ? " · Poll ended" : pollType === "multiplechoice" ? " · Multiple choice" : ""}
         </Text>
-        {pollType === "multiplechoice" && !readOnly && (
+        {!readOnly && draftSelection.length > 0 && (
           <Button
             size="sm"
             colorScheme="primary"
             ml="auto"
-            isDisabled={disabled || draftSelection.length === 0}
+            isDisabled={disabled}
             isLoading={loading}
             onClick={() => vote(draftSelection)}
           >

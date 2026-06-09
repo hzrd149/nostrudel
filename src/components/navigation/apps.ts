@@ -15,6 +15,7 @@ import {
   VideoIcon,
   WikiIcon,
 } from "../icons";
+import BarChart09 from "../icons/bar-chart-09";
 import FileAttachment01 from "../icons/file-attachment-01";
 import GamingPad01 from "../icons/gaming-pad-01";
 import PuzzlePiece01 from "../icons/puzzle-piece-01";
@@ -93,6 +94,7 @@ export const internalApps: App[] = [
     to: "/lists",
   },
   { title: "Articles", description: "Browse articles", icon: ArticleIcon, id: "articles", to: "/articles" },
+  { title: "Polls", description: "Vote on polls from your contacts", icon: BarChart09, id: "polls", to: "/polls" },
   { title: "Files", description: "Browse files", icon: FileAttachment01, id: "files", to: "/files" },
   { title: "Wallet", description: "Receive and send cashu tokens", icon: Wallet02, id: "wallet", to: "/wallet" },
   { title: "Relay map", description: "Discover relays on a map", icon: Globe01, id: "relay-map", to: "/relays/map" },
