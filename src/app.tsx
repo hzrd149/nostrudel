@@ -16,6 +16,7 @@ import NoteFoundView from "./views/404";
 import HomeView from "./views/home";
 import NostrLinkView from "./views/link";
 import OtherStuffView from "./views/other-stuff";
+import PollHomeView from "./views/poll/home";
 import PollView from "./views/poll/poll";
 import SearchView from "./views/search";
 import SupportView from "./views/support";
@@ -98,6 +99,7 @@ export const router = createBrowserRouter(
         { path: "u/:pubkey", children: userRoutes },
         { path: "note/:id", Component: ThreadView },
         { path: "n/:id", Component: ThreadView },
+        { path: "polls", Component: PollHomeView },
         { path: "poll/:id", Component: PollView },
         { path: "search", Component: SearchView },
         { path: "other-stuff", Component: OtherStuffView },
