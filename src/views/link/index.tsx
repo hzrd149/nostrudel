@@ -13,6 +13,7 @@ import SimpleView from "../../components/layout/presets/simple-view";
 import { TORRENT_KIND } from "../../helpers/nostr/torrents";
 import { FLARE_VIDEO_KIND } from "../../helpers/nostr/video";
 import { WIKI_PAGE_KIND } from "../../helpers/nostr/wiki";
+import { POLL_KIND } from "../../helpers/nostr/polls";
 import useReplaceableEvent from "../../hooks/use-replaceable-event";
 import useSingleEvent from "../../hooks/use-single-event";
 
@@ -64,6 +65,7 @@ function RenderRedirect({ event, link }: { event?: NostrEvent; link: string }) {
     case "naddr": {
       const k = decoded.data.kind || event?.kind;
       if (k === kinds.ShortTextNote) return <Navigate to={`/n/${link}`} replace />;
+      if (k === POLL_KIND) return <Navigate to={`/poll/${link}`} replace />;
       if (k === TORRENT_KIND) return <Navigate to={`/torrents/${link}`} replace />;
       if (k === kinds.LiveEvent) return <Navigate to={`/streams/${link}`} replace />;
       if (k === kinds.Emojisets) return <Navigate to={`/emojis/${link}`} replace />;

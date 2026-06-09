@@ -18,9 +18,15 @@ import {
   ModalProps,
   Text,
 } from "@chakra-ui/react";
-import { NostrEvent, kinds, nip19 } from "nostr-tools";
-import { DecodeResult, encodeDecodeResult } from "applesauce-core/helpers";
-import { getProfileContent } from "applesauce-core/helpers";
+import { NostrEvent, kinds } from "nostr-tools";
+import {
+  DecodeResult,
+  encodeDecodeResult,
+  getProfileContent,
+  getReplaceableAddress,
+  getReplaceableAddressFromPointer,
+} from "applesauce-core/helpers";
+import { getHandlerLinkTemplate } from "applesauce-common/helpers";
 
 import { ExternalLinkIcon } from "../icons";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
@@ -28,6 +34,7 @@ import useSingleEvent from "../../hooks/use-single-event";
 import useReplaceableEvent from "../../hooks/use-replaceable-event";
 import { useReadRelays } from "../../hooks/use-client-relays";
 import { getDisplayName } from "../../helpers/nostr/profile";
+import { parseCoordinate } from "../../helpers/nostr/event";
 import { MetadataAvatar } from "../user/user-avatar";
 import HoverLinkOverlay from "../hover-link-overlay";
 import ArrowRight from "../icons/arrow-right";
@@ -66,10 +73,10 @@ function getKindFromDecoded(decoded: DecodeResult) {
 
 function AppHandler({ app, decoded }: { app: NostrEvent; decoded: DecodeResult }) {
   const metadata = useMemo(() => getProfileContent(app), [app]);
-  const link = useMemo(() => {
-    const tag = app.tags.find((t) => t[0] === "web" && t[2] === decoded.type) || app.tags.find((t) => t[0] === "web");
-    return tag ? tag[1].replace("<bech32>", encodeDecodeResult(decoded)) : undefined;
-  }, [decoded, app]);
+  const link = useMemo(
+    () => getHandlerLinkTemplate(app, "web", decoded.type)?.replace("<bech32>", encodeDecodeResult(decoded)),
+    [decoded, app],
+  );
 
   const ref = useEventIntersectionRef(app);
 
@@ -137,6 +144,30 @@ export default function AppHandlerModal({
         return false;
       }
     });
+  const clientTag = useMemo(() => event?.tags.find((t) => t[0] === "client"), [event]);
+  const clientPointer = useMemo(() => {
+    const value = clientTag?.[2]?.trim();
+    if (!value) return undefined;
+    try {
+      return parseCoordinate(value, true) ?? undefined;
+    } catch {
+      return undefined;
+    }
+  }, [clientTag]);
+  const preferredApp = useReplaceableEvent(clientPointer);
+
+  const orderedFilteredApps = useMemo(() => {
+    if (!clientPointer) return filteredApps;
+    const preferredAddress = getReplaceableAddressFromPointer(clientPointer);
+
+    const inTimeline = filteredApps.find((app) => getReplaceableAddress(app) === preferredAddress);
+    const preferred = inTimeline ?? preferredApp;
+    if (!preferred) return filteredApps;
+
+    const rest = filteredApps.filter((app) => getReplaceableAddress(app) !== preferredAddress);
+    return [preferred, ...rest];
+  }, [filteredApps, clientPointer, preferredApp]);
+
   const callback = useTimelineCurserIntersectionCallback(loader);
 
   return (
@@ -165,7 +196,7 @@ export default function AppHandlerModal({
 
           <Flex gap="2" direction="column" overflowX="hidden" overflowY="auto" maxH="sm">
             <IntersectionObserverProvider callback={callback}>
-              {filteredApps.map((app) => (
+              {orderedFilteredApps.map((app) => (
                 <AppHandler decoded={decoded} app={app} key={app.id} />
               ))}
             </IntersectionObserverProvider>

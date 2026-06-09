@@ -14,7 +14,7 @@ import { cacheRequest } from "./event-cache";
 import { eventStore } from "./event-store";
 import localSettings from "./preferences";
 import pool from "./pool";
-import { BLOSSOM_SERVER_LIST_KIND } from "applesauce-common/helpers";
+import { BLOSSOM_SERVER_LIST_KIND, POLL_RESPONSE_KIND } from "applesauce-common/helpers";
 
 /** Loader for replaceable events based on coordinate */
 export const replaceableLoader = createAddressLoader(pool, {
@@ -68,6 +68,13 @@ export const zapsLoader = createZapsLoader(pool, {
 });
 
 export const reactionsLoader = createReactionsLoader(pool, {
+  cacheRequest,
+  eventStore,
+  extraRelays: localSettings.fallbackRelays,
+});
+
+export const pollResponseLoader = createTagValueLoader(pool, "e", {
+  kinds: [POLL_RESPONSE_KIND],
   cacheRequest,
   eventStore,
   extraRelays: localSettings.fallbackRelays,

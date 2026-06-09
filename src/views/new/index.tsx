@@ -2,11 +2,13 @@ import { Card, CardBody, ComponentWithAs, Flex, Heading, IconProps, LinkBox, Sim
 import { Link as RouterLink } from "react-router-dom";
 
 import { MediaIcon, NotesIcon } from "../../components/icons";
+import BarChart09 from "../../components/icons/bar-chart-09";
 import HoverLinkOverlay from "../../components/hover-link-overlay";
 import SimpleView from "../../components/layout/presets/simple-view";
 
 const NEW_TYPES: { title: string; path: string; summary?: string; icon: ComponentWithAs<"svg", IconProps> }[] = [
   { title: "Text Note", path: "/new/note", summary: "A short text post with media", icon: NotesIcon },
+  { title: "Poll", path: "/new/poll", summary: "A single or multiple choice poll", icon: BarChart09 },
   { title: "Media Post", path: "/new/media", summary: "Image and video posts", icon: MediaIcon },
 ];
 

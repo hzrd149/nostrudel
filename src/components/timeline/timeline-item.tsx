@@ -4,6 +4,7 @@ import { NostrEvent, kinds } from "nostr-tools";
 import { Suspense, lazy, memo } from "react";
 
 import { isReply } from "../../helpers/nostr/event";
+import { isPoll } from "../../helpers/nostr/polls";
 import { FLARE_VIDEO_KIND } from "../../helpers/nostr/video";
 import useEventIntersectionRef from "../../hooks/use-event-intersection-ref";
 import ArticleCard from "../../views/articles/components/article-card";
@@ -12,6 +13,7 @@ import { ErrorBoundary } from "../error-boundary";
 import PicturePost from "../picture-post/picture-post-card";
 import { TimelineHighlight } from "./highlight";
 import { TimelineNote } from "./note";
+import TimelinePoll from "./poll";
 import TimelineShare from "./share";
 import ReplyNote from "./reply";
 
@@ -21,6 +23,8 @@ const BadgeAwardCard = lazy(() => import("../../views/badges/components/badge-aw
 const EmbeddedFlareVideo = lazy(() => import("../embed-event/card/embedded-flare-video"));
 
 export function TimelineItemContent({ event }: { event: NostrEvent }) {
+  if (isPoll(event)) return <TimelinePoll event={event} showReplyButton />;
+
   switch (event.kind) {
     case kinds.ShortTextNote:
       return isReply(event) ? <ReplyNote event={event} /> : <TimelineNote event={event} showReplyButton />;

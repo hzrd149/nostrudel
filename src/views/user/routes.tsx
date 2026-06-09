@@ -19,6 +19,7 @@ import {
   SettingsIcon,
   TorrentIcon,
 } from "../../components/icons";
+import BarChart09 from "../../components/icons/bar-chart-09";
 import PenTool01 from "../../components/icons/pen-tool-01";
 import UserPlus01 from "../../components/icons/user-plus-01";
 import SimpleHeader from "../../components/layout/components/simple-header";
@@ -45,12 +46,14 @@ const UserReportsTab = lazy(() => import("./tabs/reports"));
 const UserMutedByTab = lazy(() => import("./tabs/muted-by"));
 const UserTorrentsTab = lazy(() => import("./tabs/torrents"));
 const UserAdvancedTab = lazy(() => import("./tabs/advanced"));
+const UserPollsTab = lazy(() => import("./tabs/polls"));
 
 export const userProfileTabs: AppTabs[] = [
   { label: "About", path: "", icon: ProfileIcon },
   { label: "Notes", path: "notes", icon: NotesIcon, Component: UserNotesTab },
   { label: "Articles", path: "articles", icon: ArticleIcon, Component: UserArticlesTab },
   { label: "Highlights", path: "highlights", icon: PenTool01, Component: UserHighlightsTab },
+  { label: "Polls", path: "polls", icon: BarChart09, Component: UserPollsTab },
   { label: "Streams", path: "streams", icon: LiveStreamIcon, Component: UserStreamsTab },
   { label: "Media", path: "media", icon: MediaIcon, Component: UserPicturePostsTab },
   { label: "Zaps", path: "zaps", icon: LightningIcon, Component: UserZapsTab },

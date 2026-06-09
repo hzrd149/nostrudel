@@ -4,6 +4,7 @@ import { NostrEvent } from "nostr-tools";
 import GenericCommentForm from "./generic-comment-form";
 import { GenericComments } from "./generic-comments";
 
+/** @deprecated use GenericComments and GenericCommentForm instead */
 export default function GenericCommentSection({ event }: { event: NostrEvent }) {
   const comment = useDisclosure();
 

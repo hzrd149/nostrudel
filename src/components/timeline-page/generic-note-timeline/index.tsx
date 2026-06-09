@@ -9,12 +9,19 @@ import { useTimelineDates } from "../../../hooks/timeline/use-timeline-dates";
 import useTimelineLocationCacheKey from "../../../hooks/timeline/use-timeline-cache-key";
 import TimelineItem from "../../timeline/timeline-item";
 import { getEventUID } from "applesauce-core/helpers";
+import { POLL_KIND } from "../../../helpers/nostr/polls";
 
 const INITIAL_NOTES = 10;
 const NOTE_BUFFER = 5;
 
 /** The kinds of events that the generic timeline can display */
-export const GENERIC_TIMELINE_KINDS = [kinds.ShortTextNote, kinds.Repost, kinds.GenericRepost, kinds.Highlights];
+export const GENERIC_TIMELINE_KINDS = [
+  kinds.ShortTextNote,
+  kinds.Repost,
+  kinds.GenericRepost,
+  kinds.Highlights,
+  POLL_KIND,
+];
 
 function GenericNoteTimeline({ timeline }: { timeline: NostrEvent[] }) {
   const [latest, setLatest] = useState(() => dayjs().unix());
