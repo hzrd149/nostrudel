@@ -1,0 +1,106 @@
+# Examples
+
+Example source files included with this skill. Read the matching file from `assets/examples/` when you need a complete implementation.
+
+- `assets/examples/app-data/manager.tsx` — Store and retrieve application-specific data using NIP-78 app-specific events
+- `assets/examples/articles/blog.tsx` — Browse a user's blog: pick a pubkey, see all their articles, and read them
+- `assets/examples/articles/rendering.tsx` — Create and display long-form articles with comments using NIP-23
+- `assets/examples/badges/editor.tsx` — Edit profile badge pins: reorder, add from awards, and remove
+- `assets/examples/badges/profile.tsx` — Render profile badges via casts and inspect who issued each award
+- `assets/examples/blossom/server-manager.tsx` — Blossom Server Manager for managing Blossom servers for decentralized content hosting
+- `assets/examples/bookmarks/manager.tsx` — Bookmarks Manager to create, manage, and organize bookmarks for notes and events
+- `assets/examples/cache/nostr-idb.tsx` — Nostr IDB Cache for caching events using IndexedDB with nostr-idb for offline support and faster loading
+- `assets/examples/cache/window.nostrdb.tsx` — Window NostrDB Cache for caching events using window.nostrdb.js for fast local storage and retrieval
+- `assets/examples/cache/worker-relay.tsx` — Worker Relay Cache using Web Workers with worker-relay for background event caching and processing
+- `assets/examples/calendar/create-event.tsx` — Create date-based and time-based calendar events (NIP-52) with location and details
+- `assets/examples/calendar/map.tsx` — Display calendar events on an interactive map with geolocation
+- `assets/examples/calendar/timeline.tsx` — Display a timeline of calendar events with filtering and details
+- `assets/examples/casting/custom.tsx` — Example of using a custom cast class for NIP-34 Git Repository announcements
+- `assets/examples/comment/feed.tsx` — Display a feed of comments with threading and reply functionality
+- `assets/examples/contacts/manager.tsx` — Manage your contact list (follows) with the ability to add and remove contacts
+- `assets/examples/database/turso-wasm.tsx` — Store and query events using Turso WASM database with SQLite in the browser
+- `assets/examples/database/worker-relay.tsx` — An example of using Web Workers and SQLite WASM with the @snort/worker-relay package for persisting events to a SQLite database
+- `assets/examples/emojis/packs.tsx` — Browse emoji packs published on a relay and inspect every emoji in a selected pack
+- `assets/examples/feed/app-handlers.tsx` — Browse and interact with Nostr app handlers (NIP-89) to discover applications and their supported event kinds
+- `assets/examples/feed/loading-reactions.tsx` — Display reactions (likes, reposts) with loading states and user information
+- `assets/examples/feed/pow-notes.tsx` — Display notes with proof of work (mining difficulty) requirements
+- `assets/examples/feed/reactions-timeline.tsx` — Display a timeline of reactions (likes, reposts) with user profiles and caching
+- `assets/examples/feed/relay-timeline.tsx` — Display a real-time timeline of notes from a selected relay with caching support
+- `assets/examples/file/explorer.tsx` — Browse kind 1063 file metadata events with reactive filters and cast-driven UI
+- `assets/examples/file/publisher.tsx` — Upload a file to the user's blossom servers, build a kind 1063 event, and publish it to outbox relays.
+- `assets/examples/gift-wrap/dashboard.tsx` — Dashboard for managing gift-wrapped events (NIP-59) with encryption
+- `assets/examples/gift-wrap/generator.tsx` — Generate gift-wrapped events (NIP-59) with encryption for private sharing
+- `assets/examples/gift-wrap/timeline.tsx` — Display a timeline of gift-wrapped events with decryption support
+- `assets/examples/git/favorite-repos-feed.tsx` — Public feed of users' favorite Git repositories from NIP-51 lists
+- `assets/examples/git/grasp-server-manager.tsx` — Grasp server manager for NIP-34 user grasp lists (kind 10317)
+- `assets/examples/git/repo-search-feed.tsx` — Search NIP-34 repository announcements via NIP-50 on ngit index relay
+- `assets/examples/git/repository-manager.tsx` — Login, select one of your git repositories, edit it, and republish updates
+- `assets/examples/group/communikeys.tsx` — Display and manage communikey groups with member lists
+- `assets/examples/group/groups.tsx` — Browse and manage Nostr groups with metadata and member information
+- `assets/examples/group/relay-chat.tsx` — Group chat functionality using relay-based messaging
+- `assets/examples/group/threads.tsx` — Display threaded conversations within groups with replies
+- `assets/examples/hashtags/explore.tsx` — Explore and browse content by hashtags with filtering
+- `assets/examples/highlight/article.tsx` — Create and publish highlights on articles by selecting text, with markdown rendering and mention support
+- `assets/examples/highlight/timeline.tsx` — Display a timeline of highlighted articles and content
+- `assets/examples/loader/paginated-timeline.tsx` — Load timeline events with pagination support for efficient data loading
+- `assets/examples/loader/parallel-async-loading.tsx` — Load multiple user profiles in parallel with async operations
+- `assets/examples/loader/timeline-scrolling.tsx` — Visualize timeline events on a canvas with time-based scrolling and relay visualization
+- `assets/examples/loader/using-ndk.tsx` — Integrate NDK (Nostr Development Kit) with Applesauce loaders for event loading
+- `assets/examples/loader/using-nostr-tools.tsx` — Integrate nostr-tools library with Applesauce loaders for event loading
+- `assets/examples/loader/using-nostrify.tsx` — Integrate Nostrify library with Applesauce loaders for event loading
+- `assets/examples/messages/gift-wrap.tsx` — Send and receive encrypted gift-wrapped direct messages
+- `assets/examples/messages/legacy.tsx` — Send and receive legacy encrypted direct messages (NIP-04)
+- `assets/examples/messages/personal-notes.tsx` — A personal notes app built on NIP-17 direct messages
+- `assets/examples/misc/nip-19-links.tsx` — Parse and display NIP-19 encoded links (npub, nprofile, note, nevent, etc.)
+- `assets/examples/mutes/manager.tsx` — Manage your mute list to hide content from specific users
+- `assets/examples/negentrapy/mentions.tsx` — Display notes with user mentions and highlight mentioned users
+- `assets/examples/negentrapy/note-reactions.tsx` — Display reactions (likes, reposts) on notes with user information
+- `assets/examples/negentrapy/relay-difference.tsx` — Compare events across different relays to see differences in data availability
+- `assets/examples/notes/composing.tsx` — Compose a kind 1 note with nostr-editor, build it with NoteFactory, then confirm and publish to outbox relays. Supports uploading images, videos, and files to the user's configured blossom servers.
+- `assets/examples/notes/rendering.tsx` — Render simple text notes with basic formatting, media detection, and image galleries. Uses blossom-client-sdk `handleBrokenMedia` so img/video/audio under each note (including galleries) get blossom server fallbacks when URLs fail or `blossom:` cannot load directly.
+- `assets/examples/notes/simple-composer.tsx` — Simple note composer using a plain textarea with a live content preview toggle. Supports uploading files to the user's configured blossom servers.
+- `assets/examples/nutzap/contacts.tsx` — Send nutzaps (Lightning payments via Cashu) to contacts with mint quotes
+- `assets/examples/nutzap/zap-feed.tsx` — Display a feed of nutzaps (Lightning payments) with user information
+- `assets/examples/nutzap/zap-profile.tsx` — Display nutzap information on user profiles with mint details
+- `assets/examples/nwc/auth-uri.tsx` — Create and parse wallet authentication URIs for Nostr Wallet Connect (NIP-47)
+- `assets/examples/nwc/connection-string.tsx` — Parse and display wallet connection strings with support detection
+- `assets/examples/nwc/simple-wallet.tsx` — Simple wallet interface for paying invoices and sending Lightning payments via Nostr Wallet Connect
+- `assets/examples/nwc/transactions.tsx` — View and manage wallet transaction history with filtering and details
+- `assets/examples/nwc/wallet-info.tsx` — Display wallet information including balance, capabilities, and connection status
+- `assets/examples/nwc/wallet-service.tsx` — Implement a wallet service that handles Nostr Wallet Connect requests and payments
+- `assets/examples/outbox/relay-selection.tsx` — Select optimal relays for publishing events based on mailbox discovery
+- `assets/examples/outbox/social-feed.tsx` — Display a social feed using outbox relays for optimal event distribution
+- `assets/examples/poll/timeline.tsx` — Display polls with voting functionality and results
+- `assets/examples/relay-discovery/attributes.tsx` — Discover and display relay attributes and metadata
+- `assets/examples/relay-discovery/contacts-relays.tsx` — Discover relays from user contact lists and recommendations
+- `assets/examples/relay-discovery/mailbox-map.tsx` — Visualize mailbox relays on a map with geolocation data
+- `assets/examples/relay-discovery/monitor-feed.tsx` — Display relay monitor announcements and status information
+- `assets/examples/relay-discovery/monitors-map.tsx` — Visualize relay monitors on a map with status and location data
+- `assets/examples/relay/completion-conditions.tsx` — Visualize how different pool.request completion conditions work in real-time
+- `assets/examples/rx-views/contacts-latest-posts.tsx` — Latest kind 1 post from each contact, fetched from the 3 fastest outbox relays (by RTT from a single monitor)
+- `assets/examples/rx-views/friends-of-friends.tsx` — Browse a user's contact network — click any contact to navigate their connections
+- `assets/examples/rx-views/mailbox-statuses.tsx` — Check the health of a user's inbox and outbox relays using a relay monitor
+- `assets/examples/rx-views/metadata-distribution.tsx` — Check which metadata events are present on a user's outbox relays
+- `assets/examples/search/mentions.tsx` — Search a user's NIP-50 capable inbox relays for events that tag their pubkey
+- `assets/examples/search/primal.tsx` — Search for users and content using Primal search API
+- `assets/examples/search/relay.tsx` — Search for users on a NIP-50 capable relay (default relay.ditto.pub)
+- `assets/examples/search/vertex.tsx` — Search for users and content using Vertex search API
+- `assets/examples/signers/accounts.tsx` — Manage multiple Nostr accounts with different signers and switch between them
+- `assets/examples/signers/bunker-provider.tsx` — Create a Nostr Connect provider that allows remote signers to authenticate and sign events
+- `assets/examples/signers/bunker.tsx` — Authenticate and sign events using Nostr Connect (NIP-46) bunker protocol
+- `assets/examples/signers/password.tsx` — Create and manage signers with password-based encryption for private keys
+- `assets/examples/simple/event-deletion.tsx` — Delete notes and events from the Nostr network using deletion events
+- `assets/examples/simple/profile-editor.tsx` — Edit and update your Nostr profile with a live preview of changes
+- `assets/examples/social-graph/nostr-social-graph.tsx` — Load and display social graph connections (follows, followers) between users
+- `assets/examples/stream/viewer.tsx` — View live streams with chat functionality and stream metadata
+- `assets/examples/threading/note-thread.tsx` — Display threaded conversations with replies and zaps
+- `assets/examples/torrent/feed.tsx` — Display torrent files shared on Nostr with metadata and download information
+- `assets/examples/wallet/admin.tsx` — Full-page admin dashboard for the NutWallet class with wallet management and debugging panels
+- `assets/examples/wallet/mint-discovery.tsx` — Discover and browse Cashu mint information and recommendations from the Nostr network
+- `assets/examples/wallet/multiple-wallets.tsx` — Minimal lightning wallet that switches between WebLN, NWC, and a NIP-60 Cashu backend
+- `assets/examples/wallet/wallet.tsx` — Full-featured Cashu wallet with token management, nutzaps, and Lightning integration
+- `assets/examples/zap/live-graph.tsx` — Live space-themed force graph of zaps across multiple relays. Designed as a TV screensaver.
+- `assets/examples/zap/loading-zaps.tsx` — Display a timeline of kind 1 notes with zaps loaded per note via createZapsLoader.
+- `assets/examples/zap/timeline.tsx` — Display a timeline of zaps (Lightning payments) with amounts and recipients
+- `assets/examples/zap/zap-history.tsx` — Visualize zap (Lightning payment) relationships as a graph
+- `assets/examples/zap/zap-modal.tsx` — Zap modal example showing how to fetch a lightning invoice and display it as a QR code
