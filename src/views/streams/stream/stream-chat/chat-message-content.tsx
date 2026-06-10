@@ -12,9 +12,10 @@ import {
 } from "../../../../components/content/links";
 import { bipDefinitions } from "../../../../components/content/transform/bip-notation";
 import { nipDefinitions } from "../../../../components/content/transform/nip-notation";
+import { moneroAddresses } from "../../../../components/content/transform/monero-address";
 
 const StreamChatMessageContentSymbol = Symbol.for("stream-chat-message-content");
-const transformers = [...textNoteTransformers, nipDefinitions, bipDefinitions];
+const transformers = [...textNoteTransformers, nipDefinitions, bipDefinitions, moneroAddresses];
 const linkRenderers = [renderImageUrl, renderWavlakeUrl, renderSoundCloudUrl, renderGenericUrl];
 
 const ChatMessageContent = React.memo(({ event }: { event: NostrEvent }) => {

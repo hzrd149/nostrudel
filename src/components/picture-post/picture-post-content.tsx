@@ -7,8 +7,9 @@ import { components } from "../content";
 import { renderGenericUrl } from "../content/links";
 import { nipDefinitions } from "../content/transform/nip-notation";
 import { bipDefinitions } from "../content/transform/bip-notation";
+import { moneroAddresses } from "../content/transform/monero-address";
 
-const transformers = [links, nostrMentions, emojis, hashtags, nipDefinitions, bipDefinitions];
+const transformers = [links, nostrMentions, emojis, hashtags, nipDefinitions, bipDefinitions, moneroAddresses];
 
 const linkRenderers = [renderGenericUrl];
 

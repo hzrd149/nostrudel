@@ -70,6 +70,7 @@ import BookOpen01 from "./icons/book-open-01";
 import Edit04 from "./icons/edit-04";
 import Film02 from "./icons/film-02";
 import Camera01 from "./icons/camera-01";
+import Monero from "./icons/monero";
 
 const defaultProps: IconProps = { boxSize: 4 };
 
@@ -97,6 +98,7 @@ export const ChevronLeftIcon = ChevronLeft;
 export const ChevronRightIcon = ChevronRight;
 
 export const LightningIcon = Zap;
+export const MoneroIcon = Monero;
 export const RelayIcon = Modem02;
 export const MediaServerIcon = Database01;
 export const BroadcastEventIcon = Share07;

@@ -31,8 +31,9 @@ import MediaOwnerProvider from "../../../providers/local/media-owner";
 import { components } from "../../content";
 import { nipDefinitions } from "../../content/transform/nip-notation";
 import { bipDefinitions } from "../../content/transform/bip-notation";
+import { moneroAddresses } from "../../content/transform/monero-address";
 
-const transformers = [...textNoteTransformers, galleries, nipDefinitions, bipDefinitions];
+const transformers = [...textNoteTransformers, galleries, nipDefinitions, bipDefinitions, moneroAddresses];
 
 export type TextNoteContentsProps = {
   event: NostrEvent | EventTemplate | string;
