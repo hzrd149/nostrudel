@@ -13,7 +13,6 @@ import {
   IconButton,
   Input,
   Spinner,
-  Switch,
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
@@ -22,7 +21,7 @@ import { use$ } from "applesauce-react/hooks";
 import { TrashIcon } from "../../../components/icons";
 import SimpleView from "../../../components/layout/presets/simple-view";
 import { useActiveWallet, useNutWalletState, useNutWalletUnlocked, useWallets } from "../../../hooks/use-wallets";
-import { removeNwcWallet, setActiveWallet, type WalletBackend } from "../../../services/wallets";
+import { hasWebln, removeNwcWallet, setActiveWallet, type WalletBackend } from "../../../services/wallets";
 import useSettingsForm from "../use-settings-form";
 import AddWalletModal from "./add-wallet-modal";
 import UnlockNutWalletModal from "./unlock-nut-wallet-modal";
@@ -128,6 +127,7 @@ function WeblnSection() {
   const wallets = useWallets();
   const active = useActiveWallet();
   const webln = wallets.find((w) => w.type === "webln");
+  if (!webln) return null;
 
   return (
     <Flex direction="column" gap="2">
@@ -135,15 +135,7 @@ function WeblnSection() {
       <Text fontSize="sm" color="GrayText">
         A lightning wallet provided by your browser or a browser extension.
       </Text>
-
-      {webln ? (
-        <WalletCard wallet={webln} active={webln.id === active?.id} />
-      ) : (
-        <Alert status="info" borderRadius="md">
-          <AlertIcon />
-          No WebLN provider is available in this browser.
-        </Alert>
-      )}
+      <WalletCard wallet={webln} active={webln.id === active?.id} />
     </Flex>
   );
 }
@@ -193,18 +185,6 @@ function ZapSettingsForm() {
       <Heading size="md">Zaps</Heading>
 
       <FormControl>
-        <Flex alignItems="center">
-          <FormLabel htmlFor="autoPayWithWebLN" mb="0">
-            Auto pay with WebLN
-          </FormLabel>
-          <Switch id="autoPayWithWebLN" {...register("autoPayWithWebLN")} />
-        </Flex>
-        <FormHelperText>
-          <span>Enabled: Attempt to automatically pay with WebLN if its available</span>
-        </FormHelperText>
-      </FormControl>
-
-      <FormControl>
         <FormLabel htmlFor="customZapAmounts" mb="0">
           Zap Amounts
         </FormLabel>
@@ -246,7 +226,7 @@ export default function WalletSettings() {
   return (
     <SimpleView gap="6" title="Wallet" maxW="4xl">
       <CashuSection />
-      <WeblnSection />
+      {hasWebln() && <WeblnSection />}
       <WalletConnectSection />
       <ZapSettingsForm />
     </SimpleView>

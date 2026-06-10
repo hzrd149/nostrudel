@@ -5,16 +5,21 @@ import {
   Flex,
   FlexProps,
   IconButton,
+  Menu,
+  MenuButton,
+  MenuDivider,
+  MenuItem,
+  MenuList,
   Spacer,
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
-import { PropsWithChildren, useEffect, useState } from "react";
-import { useMount } from "react-use";
+import { PropsWithChildren, useEffect, useRef, useState } from "react";
 
 import { PayRequest } from ".";
-import useAppSettings from "../../hooks/use-user-app-settings";
-import { CheckIcon, ChevronDownIcon, ChevronUpIcon, ErrorIcon, LightningIcon } from "../icons";
+import { useActiveWallet, useWallets } from "../../hooks/use-wallets";
+import { type WalletBackend } from "../../services/wallets";
+import { CheckIcon, ChevronDownIcon, ErrorIcon, LightningIcon } from "../icons";
 import { InvoiceModalContent } from "../invoice-modal";
 import UserAvatar from "../user/user-avatar";
 import UserLink from "../user/user-link";
@@ -29,60 +34,107 @@ function UserCard({ children, pubkey }: PropsWithChildren & { pubkey: string }) 
     </Flex>
   );
 }
-function PayRequestCard({ pubkey, invoice, onPaid }: { pubkey: string; invoice: string; onPaid: () => void }) {
-  const toast = useToast();
-  const showMore = useDisclosure({ defaultIsOpen: !window.webln });
 
-  const payWithWebLn = async () => {
-    try {
-      if (window.webln && invoice) {
-        if (!window.webln.enabled) await window.webln.enable();
-        await window.webln.sendPayment(invoice);
-        onPaid();
-      }
-    } catch (e) {
-      if (e instanceof Error) toast({ description: e.message, status: "error" });
-    }
-  };
-
+function PaidCard({ pubkey }: { pubkey: string }) {
   return (
-    <Flex direction="column" gap="2">
-      <UserCard pubkey={pubkey}>
-        <ButtonGroup size="sm">
-          {!!window.webln && (
-            <Button
-              variant="outline"
-              colorScheme="yellow"
-              size="sm"
-              leftIcon={<LightningIcon />}
-              isDisabled={!window.webln}
-              onClick={payWithWebLn}
-            >
-              Pay
-            </Button>
-          )}
-          <IconButton
-            icon={showMore.isOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}
-            aria-label="More Options"
-            onClick={showMore.onToggle}
-          />
-        </ButtonGroup>
-      </UserCard>
-      {showMore.isOpen && <InvoiceModalContent invoice={invoice} onPaid={onPaid} />}
-    </Flex>
+    <UserCard pubkey={pubkey}>
+      <Button size="sm" variant="outline" leftIcon={<CheckIcon />}>
+        Paid
+      </Button>
+    </UserCard>
   );
 }
+
 function ErrorCard({ pubkey, error }: { pubkey: string; error: any }) {
   const showMore = useDisclosure();
 
   return (
     <Flex direction="column" gap="2">
       <UserCard pubkey={pubkey}>
-        <Button size="sm" variant="outline" colorScheme="red" leftIcon={<ErrorIcon />} onClick={showMore.onToggle}>
+        <Button size="sm" variant="outline" leftIcon={<ErrorIcon />} onClick={showMore.onToggle}>
           Error
         </Button>
       </UserCard>
       {showMore.isOpen && <Alert status="error">{error.message}</Alert>}
+    </Flex>
+  );
+}
+
+/**
+ * A single zap invoice. Offers to pay with the active wallet, a menu to pay with any other connected wallet,
+ * and a manual invoice (QR / copy / open in app) fallback.
+ */
+function PayRequestCard({
+  pubkey,
+  invoice,
+  onPaid,
+  disabled,
+}: {
+  pubkey: string;
+  invoice: string;
+  onPaid: () => void;
+  disabled?: boolean;
+}) {
+  const toast = useToast();
+  const wallets = useWallets();
+  const active = useActiveWallet();
+  const [paying, setPaying] = useState(false);
+  // Default to showing the manual invoice when there is no wallet to pay with
+  const showInvoice = useDisclosure({ defaultIsOpen: !active });
+
+  const payWith = async (wallet: WalletBackend) => {
+    setPaying(true);
+    try {
+      await wallet.payInvoice(invoice);
+      onPaid();
+    } catch (e) {
+      if (e instanceof Error) toast({ description: e.message, status: "error" });
+      // Reveal the manual options so the user can still pay another way
+      showInvoice.onOpen();
+    }
+    setPaying(false);
+  };
+
+  const others = wallets.filter((w) => w.id !== active?.id);
+
+  return (
+    <Flex direction="column" gap="2">
+      <UserCard pubkey={pubkey}>
+        {active ? (
+          <ButtonGroup size="sm" isAttached variant="outline">
+            <Button
+              leftIcon={<LightningIcon />}
+              onClick={() => payWith(active)}
+              isLoading={paying}
+              isDisabled={paying || disabled}
+            >
+              {active.name}
+            </Button>
+            <Menu>
+              <MenuButton
+                as={IconButton}
+                icon={<ChevronDownIcon />}
+                aria-label="Other payment options"
+                isDisabled={paying || disabled}
+              />
+              <MenuList>
+                {others.map((wallet) => (
+                  <MenuItem key={wallet.id} icon={<LightningIcon />} onClick={() => payWith(wallet)} isDisabled={paying || disabled}>
+                    {wallet.name}
+                  </MenuItem>
+                ))}
+                {others.length > 0 && <MenuDivider />}
+                <MenuItem onClick={showInvoice.onToggle}>Show invoice</MenuItem>
+              </MenuList>
+            </Menu>
+          </ButtonGroup>
+        ) : (
+          <Button size="sm" variant="outline" onClick={showInvoice.onToggle}>
+            Show invoice
+          </Button>
+        )}
+      </UserCard>
+      {showInvoice.isOpen && <InvoiceModalContent invoice={invoice} onPaid={onPaid} />}
     </Flex>
   );
 }
@@ -93,52 +145,43 @@ export default function PayStep({
   ...props
 }: Omit<FlexProps, "children"> & { callbacks: PayRequest[]; onComplete: () => void }) {
   const [paid, setPaid] = useState<string[]>([]);
-  const { autoPayWithWebLN } = useAppSettings();
+  const active = useActiveWallet();
 
+  const markPaid = (pubkey: string) => setPaid((a) => (a.includes(pubkey) ? a : a.concat(pubkey)));
+
+  // Always attempt to pay every invoice with the active wallet once it is available
+  const attempted = useRef(false);
   const [payingAll, setPayingAll] = useState(false);
-  const payAllWithWebLN = async () => {
-    if (!window.webln) return;
+  useEffect(() => {
+    if (attempted.current || !active) return;
+    attempted.current = true;
 
-    setPayingAll(true);
-    if (!window.webln.enabled) await window.webln.enable();
-
-    for (const { invoice, pubkey } of callbacks) {
-      try {
-        if (invoice && !paid.includes(pubkey)) {
-          await window.webln.sendPayment(invoice);
-          setPaid((a) => a.concat(pubkey));
+    (async () => {
+      setPayingAll(true);
+      for (const { invoice, pubkey } of callbacks) {
+        if (!invoice) continue;
+        try {
+          await active.payInvoice(invoice);
+          markPaid(pubkey);
+        } catch (e) {
+          // Leave it for the user to pay manually or with another wallet
         }
-      } catch (e) {}
-    }
-    setPayingAll(false);
-  };
+      }
+      setPayingAll(false);
+    })();
+  }, [active]);
 
+  // Complete once every invoice has been paid
   useEffect(() => {
     const withInvoice = callbacks.filter((p) => !!p.invoice);
     const hasUnpaid = withInvoice.some(({ pubkey }) => !paid.includes(pubkey));
-    if (withInvoice.length > 0 && !hasUnpaid) {
-      onComplete();
-    }
+    if (withInvoice.length > 0 && !hasUnpaid) onComplete();
   }, [paid]);
-
-  // if autoPayWithWebLN is enabled, try to pay all immediately
-  useMount(() => {
-    if (autoPayWithWebLN) {
-      payAllWithWebLN();
-    }
-  });
 
   return (
     <Flex direction="column" gap="4" {...props}>
       {callbacks.map(({ pubkey, invoice, error }) => {
-        if (paid.includes(pubkey))
-          return (
-            <UserCard key={pubkey} pubkey={pubkey}>
-              <Button size="sm" variant="outline" colorScheme="green" leftIcon={<CheckIcon />}>
-                Paid
-              </Button>
-            </UserCard>
-          );
+        if (paid.includes(pubkey)) return <PaidCard key={pubkey} pubkey={pubkey} />;
         if (error) return <ErrorCard key={pubkey} pubkey={pubkey} error={error} />;
         if (invoice)
           return (
@@ -146,21 +189,15 @@ export default function PayStep({
               key={pubkey}
               pubkey={pubkey}
               invoice={invoice}
-              onPaid={() => setPaid((a) => a.concat(pubkey))}
+              onPaid={() => markPaid(pubkey)}
+              disabled={payingAll}
             />
           );
         return null;
       })}
-      {!!window.webln && (
-        <Button
-          variant="outline"
-          size="md"
-          leftIcon={<LightningIcon />}
-          colorScheme="yellow"
-          onClick={payAllWithWebLN}
-          isLoading={payingAll}
-        >
-          Pay All
+      {payingAll && (
+        <Button isLoading loadingText="Paying…" variant="outline" isDisabled>
+          Paying…
         </Button>
       )}
     </Flex>

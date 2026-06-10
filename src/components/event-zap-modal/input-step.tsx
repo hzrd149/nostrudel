@@ -113,6 +113,7 @@ export default function InputStep({
             leftIcon={<LightningIcon />}
             type="submit"
             isLoading={isSubmitting}
+            colorScheme="primary"
             variant="solid"
             size="md"
             autoFocus
