@@ -1,237 +1,255 @@
-import { Button, ButtonGroup, Divider, Flex, Heading, Input, Text } from "@chakra-ui/react";
-import { useActionRunner, useActiveAccount } from "applesauce-react/hooks";
 import {
-  AddNutzapInfoMint,
-  ConsolidateTokens,
-  RecoverFromCouch,
-  RemoveNutzapInfoMint,
-  SetWalletMints,
-  SetWalletRelays,
-} from "applesauce-wallet/actions";
-import {
-  getNutzapInfoMints,
-  getWalletMints,
-  getWalletRelays,
-  isWalletUnlocked,
-  NUTZAP_INFO_KIND,
-  WALLET_KIND,
-} from "applesauce-wallet/helpers";
-import { NostrEvent } from "nostr-tools";
-import { useState } from "react";
+  Button,
+  ButtonGroup,
+  Flex,
+  FormControl,
+  FormHelperText,
+  FormLabel,
+  Heading,
+  Select,
+  SimpleGrid,
+  Switch,
+  Text,
+} from "@chakra-ui/react";
+import { DeleteFactory } from "applesauce-core/factories";
+import { unixNow } from "applesauce-core/helpers";
+import { use$ } from "applesauce-react/hooks";
+import { ReactNode, useMemo, useState } from "react";
 
-import CashuMintFavicon from "../../../components/cashu/cashu-mint-favicon";
-import CashuMintName from "../../../components/cashu/cashu-mint-name";
+import AddMintForm from "../../../components/cashu/add-mint-form";
+import MintControl from "../../../components/cashu/mint-control";
 import useAsyncAction from "../../../hooks/use-async-action";
-import useEventUpdate from "../../../hooks/use-event-update";
-import useReplaceableEvent from "../../../hooks/use-replaceable-event";
-import couch from "../../../services/cashu-couch";
+import { useNutWallet, useNutWalletUnlocked } from "../../../hooks/use-wallets";
+import { usePublishEvent } from "../../../providers/global/publish-provider";
+import localSettings from "../../../services/preferences";
+import { setNutWalletAutoUnlock } from "../../../services/wallets";
+import AddRelayForm from "../../settings/relays/components/add-relay-form";
+import RelayControl from "../../settings/relays/components/relay-control";
 
-function MintManagement({ wallet }: { wallet: NostrEvent }) {
-  const actions = useActionRunner();
-  const [newMint, setNewMint] = useState("");
-  const mints = isWalletUnlocked(wallet) ? getWalletMints(wallet) : [];
+/** Wrapper so each settings section reads as a panel in the grid */
+function SettingsSection({ title, children }: { title: string; children: ReactNode }) {
+  return (
+    <Flex direction="column" gap="2">
+      <Heading size="sm">{title}</Heading>
+      {children}
+    </Flex>
+  );
+}
 
-  const { run: addMint, loading: adding } = useAsyncAction(async () => {
-    if (!newMint.trim()) return;
-    await actions.run(SetWalletMints, [...mints, newMint.trim()]);
-    setNewMint("");
-  }, [actions, mints, newMint]);
+/** Edits the mints configured on the NIP-60 wallet via NutWallet.setMints */
+function MintManagement() {
+  const wallet = useNutWallet();
+  const mints = use$(wallet?.mintUrls$);
 
-  const { run: removeMint } = useAsyncAction(
+  const addMint = useAsyncAction(
+    async (url: string) => {
+      if (!wallet || !url) return;
+      if (mints?.some((m) => new URL(m).toString() === url)) throw new Error("This mint is already in your wallet");
+      await wallet.setMints([...(mints ?? []), url]);
+    },
+    [wallet, mints],
+  );
+
+  const removeMint = useAsyncAction(
     async (mint: string) => {
-      await actions.run(
-        SetWalletMints,
-        mints.filter((m) => m !== mint),
-      );
+      if (!wallet || !mints) return;
+      await wallet.setMints(mints.filter((m) => m !== mint));
     },
-    [actions, mints],
+    [wallet, mints],
   );
 
-  if (!isWalletUnlocked(wallet)) {
-    return <Text color="gray.500">Unlock wallet to manage mints</Text>;
-  }
+  if (mints === undefined)
+    return (
+      <SettingsSection title="Mints">
+        <Text color="GrayText">Unlock the wallet to manage mints</Text>
+      </SettingsSection>
+    );
 
   return (
-    <Flex direction="column" gap="2">
-      <Heading size="sm">Wallet Mints</Heading>
+    <SettingsSection title="Mints">
       {mints.map((mint) => (
-        <Flex key={mint} alignItems="center" gap="2" p="2" borderWidth="1px" borderRadius="md">
-          <CashuMintFavicon mint={mint} size="xs" />
-          <CashuMintName mint={mint} flex={1} fontSize="sm" />
-          <Text fontSize="xs" fontFamily="mono" color="gray.500" noOfLines={1} maxW="40">
-            {mint}
-          </Text>
-          <Button size="xs" colorScheme="red" variant="ghost" onClick={() => removeMint(mint)}>
-            Remove
-          </Button>
-        </Flex>
+        <MintControl key={mint} url={mint} onRemove={() => removeMint.run(mint)} />
       ))}
-      <Flex gap="2">
-        <Input
-          value={newMint}
-          onChange={(e) => setNewMint(e.target.value)}
-          placeholder="https://mint.example.com"
-          size="sm"
-          onKeyDown={(e) => e.key === "Enter" && addMint()}
-        />
-        <Button size="sm" onClick={addMint} isLoading={adding} isDisabled={!newMint.trim()} flexShrink={0}>
-          Add Mint
-        </Button>
-      </Flex>
-    </Flex>
+      <AddMintForm onSubmit={addMint.run} />
+    </SettingsSection>
   );
 }
 
-function RelayManagement({ wallet }: { wallet: NostrEvent }) {
-  const actions = useActionRunner();
-  const [newRelay, setNewRelay] = useState("");
-  const relays = (isWalletUnlocked(wallet) ? getWalletRelays(wallet) : undefined) ?? [];
+/** Edits the relays configured on the NIP-60 wallet via NutWallet.setRelays */
+function RelayManagement() {
+  const wallet = useNutWallet();
+  const relays = use$(wallet?.walletRelays$);
 
-  const { run: addRelay, loading: adding } = useAsyncAction(async () => {
-    if (!newRelay.trim()) return;
-    await actions.run(SetWalletRelays, [...relays, newRelay.trim()]);
-    setNewRelay("");
-  }, [actions, relays, newRelay]);
+  const addRelay = useAsyncAction(
+    async (url: string) => {
+      if (!wallet || !url) return;
+      if (relays?.includes(url)) throw new Error("This relay is already in your wallet");
+      await wallet.setRelays([...(relays ?? []), url]);
+    },
+    [wallet, relays],
+  );
 
-  const { run: removeRelay } = useAsyncAction(
+  const removeRelay = useAsyncAction(
     async (relay: string) => {
-      await actions.run(
-        SetWalletRelays,
-        relays.filter((r) => r !== relay),
-      );
+      if (!wallet || !relays) return;
+      await wallet.setRelays(relays.filter((r) => r !== relay));
     },
-    [actions, relays],
+    [wallet, relays],
   );
 
-  if (!isWalletUnlocked(wallet)) {
-    return <Text color="gray.500">Unlock wallet to manage relays</Text>;
-  }
+  if (relays === undefined)
+    return (
+      <SettingsSection title="Relays">
+        <Text color="GrayText">Unlock the wallet to manage relays</Text>
+      </SettingsSection>
+    );
 
   return (
-    <Flex direction="column" gap="2">
-      <Heading size="sm">Wallet Relays</Heading>
-      {relays.map((relay) => (
-        <Flex key={relay} alignItems="center" gap="2" p="2" borderWidth="1px" borderRadius="md">
-          <Text flex={1} fontSize="sm" fontFamily="mono">
-            {relay}
-          </Text>
-          <Button size="xs" colorScheme="red" variant="ghost" onClick={() => removeRelay(relay)}>
-            Remove
-          </Button>
-        </Flex>
-      ))}
-      <Flex gap="2">
-        <Input
-          value={newRelay}
-          onChange={(e) => setNewRelay(e.target.value)}
-          placeholder="wss://relay.example.com"
-          size="sm"
-          onKeyDown={(e) => e.key === "Enter" && addRelay()}
-        />
-        <Button size="sm" onClick={addRelay} isLoading={adding} isDisabled={!newRelay.trim()} flexShrink={0}>
-          Add Relay
-        </Button>
-      </Flex>
-    </Flex>
-  );
-}
-
-function NutzapInfoMintManagement() {
-  const account = useActiveAccount()!;
-  const actions = useActionRunner();
-  const [newMint, setNewMint] = useState("");
-
-  const nutzapInfo = useReplaceableEvent({ kind: NUTZAP_INFO_KIND as number, pubkey: account.pubkey });
-  useEventUpdate(nutzapInfo?.id);
-  const mints = nutzapInfo ? getNutzapInfoMints(nutzapInfo) : [];
-
-  const { run: addMint, loading: adding } = useAsyncAction(async () => {
-    if (!newMint.trim()) return;
-    await actions.run(AddNutzapInfoMint, { url: newMint.trim(), units: ["sat"] });
-    setNewMint("");
-  }, [actions, newMint]);
-
-  const { run: removeMint } = useAsyncAction(
-    async (mintUrl: string) => {
-      await actions.run(RemoveNutzapInfoMint, mintUrl);
-    },
-    [actions],
-  );
-
-  return (
-    <Flex direction="column" gap="2">
-      <Heading size="sm">Nutzap Receive Mints</Heading>
-      <Text fontSize="sm" color="gray.500">
-        These mints will be published so others know where to send nutzaps.
+    <SettingsSection title="Relays">
+      <Text fontSize="sm" color="GrayText">
+        The relays your wallet, token and history events are stored on.
       </Text>
-      {mints.map(({ mint }) => (
-        <Flex key={mint} alignItems="center" gap="2" p="2" borderWidth="1px" borderRadius="md">
-          <CashuMintFavicon mint={mint} size="xs" />
-          <CashuMintName mint={mint} flex={1} fontSize="sm" />
-          <Button size="xs" colorScheme="red" variant="ghost" onClick={() => removeMint(mint)}>
-            Remove
-          </Button>
-        </Flex>
+      {relays.map((relay) => (
+        <RelayControl key={relay} url={relay} onRemove={() => removeRelay.run(relay)} />
       ))}
-      <Flex gap="2">
-        <Input
-          value={newMint}
-          onChange={(e) => setNewMint(e.target.value)}
-          placeholder="https://mint.example.com"
-          size="sm"
-          onKeyDown={(e) => e.key === "Enter" && addMint()}
-        />
-        <Button size="sm" onClick={addMint} isLoading={adding} isDisabled={!newMint.trim()} flexShrink={0}>
-          Add
-        </Button>
-      </Flex>
-    </Flex>
+      <AddRelayForm onSubmit={addRelay.run} />
+    </SettingsSection>
   );
 }
 
+/** Token maintenance operations exposed by the NutWallet class */
 function TokenTools() {
-  const actions = useActionRunner();
+  const wallet = useNutWallet();
+  const ops = use$(wallet?.operationsState$) ?? {};
 
-  const { run: consolidate, loading: consolidating } = useAsyncAction(async () => {
-    await actions.run(ConsolidateTokens, { unlockTokens: true });
-  }, [actions]);
+  const consolidate = useAsyncAction(async () => {
+    await wallet?.consolidateTokens();
+  }, [wallet]);
 
-  const { run: recover, loading: recovering } = useAsyncAction(async () => {
-    await actions.run(RecoverFromCouch, couch);
-  }, [actions]);
+  const sync = useAsyncAction(async () => {
+    await wallet?.syncTokens();
+  }, [wallet]);
+
+  const recover = useAsyncAction(async () => {
+    await wallet?.recoverFromCouch();
+  }, [wallet]);
 
   return (
-    <Flex direction="column" gap="2">
-      <Heading size="sm">Token Tools</Heading>
-      <ButtonGroup>
-        <Button onClick={consolidate} isLoading={consolidating} size="sm">
+    <SettingsSection title="Token Tools">
+      <ButtonGroup size="sm" flexWrap="wrap" spacing="0" gap="2">
+        <Button onClick={consolidate.run} isLoading={ops.consolidate || consolidate.loading}>
           Consolidate Tokens
         </Button>
-        <Button onClick={recover} isLoading={recovering} size="sm" colorScheme="orange">
+        <Button onClick={sync.run} isLoading={ops.sync || sync.loading}>
+          Sync Tokens
+        </Button>
+        <Button onClick={recover.run} isLoading={ops.recover || recover.loading} colorScheme="orange">
           Recover from Couch
         </Button>
       </ButtonGroup>
-      <Text fontSize="xs" color="gray.500">
-        "Recover from Couch" restores tokens that were staged during a failed send/receive operation.
+      <Text fontSize="xs" color="GrayText">
+        "Consolidate" combines all token events into a single event per mint. "Sync" re-publishes every token event to
+        the wallet's relays. "Recover from Couch" restores tokens that were staged during a failed send/receive
+        operation.
       </Text>
-    </Flex>
+    </SettingsSection>
+  );
+}
+
+/** Toggles whether the wallet decrypts automatically when it loads */
+function AutoUnlockSetting() {
+  const autoUnlock = use$(localSettings.autoUnlockNutWallet) ?? false;
+  const unlocked = useNutWalletUnlocked();
+
+  return (
+    <SettingsSection title="General">
+      <FormControl>
+        <Flex alignItems="center">
+          <FormLabel htmlFor="autoUnlockNutWallet" mb="0">
+            Automatically unlock wallet
+          </FormLabel>
+          <Switch
+            id="autoUnlockNutWallet"
+            isChecked={autoUnlock}
+            onChange={(e) => setNutWalletAutoUnlock(e.target.checked)}
+          />
+        </Flex>
+        <FormHelperText>
+          Decrypt the wallet automatically each time it loads.{" "}
+          {!unlocked && "Enabling this will unlock the wallet now (your signer may prompt you)."}
+        </FormHelperText>
+      </FormControl>
+    </SettingsSection>
+  );
+}
+
+const DAY_IN_SECONDS = 60 * 60 * 24;
+
+/** Deletes wallet history events older than a selected age */
+function ClearHistorySetting() {
+  const wallet = useNutWallet();
+  const publish = usePublishEvent();
+  const history = use$(wallet?.history$);
+
+  // Age cutoff in days, "0" means delete everything
+  const [age, setAge] = useState("30");
+
+  const matching = useMemo(() => {
+    if (!history) return [];
+    const days = parseInt(age, 10);
+    const cutoff = unixNow() - days * DAY_IN_SECONDS;
+    return history.filter((entry) => entry.event.created_at < cutoff);
+  }, [history, age]);
+
+  const clear = useAsyncAction(async () => {
+    if (!matching.length) return;
+    const label = age === "0" ? "all" : "older";
+    if (confirm(`Delete ${matching.length} ${label} history event${matching.length === 1 ? "" : "s"}?`) !== true)
+      return;
+    const draft = await DeleteFactory.fromEvents(matching.map((entry) => entry.event));
+    await publish("Clear history", draft);
+  }, [publish, matching, age]);
+
+  return (
+    <SettingsSection title="Advanced">
+      <FormControl>
+        <FormLabel mb="1">Clear history</FormLabel>
+        <Flex gap="2">
+          <Select size="sm" value={age} onChange={(e) => setAge(e.target.value)} flex={1}>
+            <option value="7">Older than a week</option>
+            <option value="30">Older than a month</option>
+            <option value="90">Older than 3 months</option>
+            <option value="365">Older than a year</option>
+            <option value="0">Everything</option>
+          </Select>
+          <Button
+            size="sm"
+            colorScheme="red"
+            variant="outline"
+            onClick={clear.run}
+            isLoading={clear.loading}
+            isDisabled={matching.length === 0}
+            flexShrink={0}
+          >
+            Clear {history !== undefined && `(${matching.length})`}
+          </Button>
+        </Flex>
+        <FormHelperText>
+          Publishes a delete request for old wallet history events. Keeping the last month is recommended.
+        </FormHelperText>
+      </FormControl>
+    </SettingsSection>
   );
 }
 
 export default function WalletSettingsTab() {
-  const account = useActiveAccount()!;
-  const wallet = useReplaceableEvent({ kind: WALLET_KIND, pubkey: account.pubkey });
-  useEventUpdate(wallet?.id);
-
   return (
-    <Flex direction="column" gap="6" w="full">
-      <NutzapInfoMintManagement />
-      <Divider />
-      {wallet && <MintManagement wallet={wallet} />}
-      <Divider />
-      {wallet && <RelayManagement wallet={wallet} />}
-      <Divider />
+    <SimpleGrid columns={{ base: 1, lg: 2 }} spacing="6" w="full">
+      <MintManagement />
+      <RelayManagement />
       <TokenTools />
-    </Flex>
+      <AutoUnlockSetting />
+      <ClearHistorySetting />
+    </SimpleGrid>
   );
 }

@@ -1,4 +1,3 @@
-import { useMemo, useState } from "react";
 import {
   Button,
   ButtonGroup,
@@ -7,169 +6,193 @@ import {
   CardFooter,
   CardHeader,
   Flex,
-  FlexProps,
   IconButton,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalHeader,
+  ModalOverlay,
+  SimpleGrid,
   Spacer,
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
-import { useActiveAccount, useEventModel, useEventStore } from "applesauce-react/hooks";
-import { WalletTokensModel } from "applesauce-wallet/models";
-import { getTokenContent, isTokenContentUnlocked, unlockTokenContent } from "applesauce-wallet/helpers";
-import { NostrEvent } from "nostr-tools";
 import { getEncodedToken, normalizeProofAmounts, ProofState } from "@cashu/cashu-ts";
+import { use$, useActiveAccount } from "applesauce-react/hooks";
+import { WalletToken } from "applesauce-wallet/casts";
+import { useMemo, useState } from "react";
 
-import useAsyncAction from "../../../hooks/use-async-action";
-import useEventUpdate from "../../../hooks/use-event-update";
-import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
-import { ChevronDownIcon, ChevronUpIcon, ECashIcon, ExternalLinkIcon, TrashIcon } from "../../../components/icons";
-import DebugEventButton from "../../../components/debug-modal/debug-event-button";
-import { useDeleteEventContext } from "../../../providers/route/delete-event-provider";
-import Timestamp from "../../../components/timestamp";
-import { getCashuWallet } from "../../../services/cashu-mints";
-import ConsolidateTokensButton from "../components/consolidate-tokens-button";
 import CashuMintFavicon from "../../../components/cashu/cashu-mint-favicon";
 import CashuMintName from "../../../components/cashu/cashu-mint-name";
 import { CopyIconButton } from "../../../components/copy-icon-button";
-import RouterLink from "../../../components/router-link";
+import DebugEventButton from "../../../components/debug-modal/debug-event-button";
+import { ErrorBoundary } from "../../../components/error-boundary";
+import { ECashIcon, QrCodeIcon, TrashIcon } from "../../../components/icons";
+import Lock01 from "../../../components/icons/lock-01";
+import QrCodeSvg from "../../../components/qr-code/qr-code-svg";
+import Timestamp from "../../../components/timestamp";
+import useAsyncAction from "../../../hooks/use-async-action";
+import { useNutWallet } from "../../../hooks/use-wallets";
+import { useDeleteEventContext } from "../../../providers/route/delete-event-provider";
+import { getCashuWallet } from "../../../services/cashu-mints";
+import ReceiveTokenModal from "../components/receive-token-modal";
+import SendTokenModal from "../components/send-token-modal";
 
-function TokenEvent({ token }: { token: NostrEvent }) {
-  const more = useDisclosure();
-  const account = useActiveAccount();
-  const eventStore = useEventStore();
-  useEventUpdate(token.id);
-  const ref = useEventIntersectionRef(token);
+/** A simple modal showing a token as a QR code */
+function TokenQrModal({ token, onClose }: { token: string; onClose: () => void }) {
+  return (
+    <Modal isOpen onClose={onClose} size="md">
+      <ModalOverlay />
+      <ModalContent>
+        <ModalHeader>Cashu Token</ModalHeader>
+        <ModalCloseButton />
+        <ModalBody pb="4">
+          <QrCodeSvg content={token} w="full" aspectRatio={1} aria-label="Cashu token QR code" />
+        </ModalBody>
+      </ModalContent>
+    </Modal>
+  );
+}
 
-  const locked = isTokenContentUnlocked(token) === false;
-  const details = !locked ? getTokenContent(token) : undefined;
-  const amount = details?.proofs.reduce((t, p) => t + p.amount, 0);
-
-  const [spentState, setSpentState] = useState<ProofState[]>();
-  const { run: check } = useAsyncAction(async () => {
-    if (!details) return;
-    const wallet = await getCashuWallet(details.mint, details.unit);
-    const state = await wallet.checkProofsStates(details.proofs);
-
-    setSpentState(state);
-  }, [details, setSpentState]);
-
+/** A compact card for a single NIP-60 token event with its value, mint and actions */
+function TokenCard({ token }: { token: WalletToken }) {
+  const account = useActiveAccount()!;
+  const qrModal = useDisclosure();
   const { deleteEvent } = useDeleteEventContext();
 
-  const { run: unlock } = useAsyncAction(async () => {
-    if (!account) return;
-    await unlockTokenContent(token, account);
-    eventStore.update(token);
-  }, [token, account, eventStore]);
+  // meta$ emits once the token content is decrypted, re-rendering the card
+  const meta = use$(token.meta$);
+  const unlocked = token.unlocked && !!meta;
 
-  const encoded = useMemo(
-    () => details && getEncodedToken({ ...details, proofs: normalizeProofAmounts(details.proofs) }),
-    [details],
-  );
+  const encoded = useMemo(() => {
+    if (!unlocked || !token.mint || !token.proofs) return undefined;
+    return getEncodedToken({ mint: token.mint, proofs: normalizeProofAmounts(token.proofs), unit: "sat" });
+  }, [unlocked, token.mint, token.proofs]);
+
+  const unlock = useAsyncAction(async () => {
+    await token.unlock(account);
+  }, [token, account]);
+
+  const [spentState, setSpentState] = useState<ProofState[]>();
+  const check = useAsyncAction(async () => {
+    if (!token.mint || !token.proofs) return;
+    const cashuWallet = await getCashuWallet(token.mint);
+    setSpentState(await cashuWallet.checkProofsStates(token.proofs));
+  }, [token.mint, token.proofs]);
+
+  const unspent = spentState?.filter((s) => s.state === "UNSPENT").length;
 
   return (
-    <Card ref={ref} w="full">
-      <CardHeader p="2" alignItems="center" flexDirection="row" display="flex" gap="2">
-        <ECashIcon color="green.400" boxSize={8} />
-        {amount && <Text fontSize="xl">{amount}</Text>}
-        <ButtonGroup size="sm" ms="auto" alignItems="center">
-          {locked && (
-            <Button onClick={unlock} variant="link" p="2">
-              Unlock
-            </Button>
+    <Card variant="outline">
+      <CardHeader p="3" pb="0" display="flex" flexDirection="row" alignItems="center" gap="2">
+        {unlocked ? <ECashIcon color="green.400" boxSize={6} /> : <Lock01 boxSize={6} color="GrayText" />}
+        <Text fontSize="xl" fontWeight="bold">
+          {unlocked ? (
+            <>
+              {token.amount}
+              <Text as="span" fontSize="sm" fontWeight="normal" color="GrayText" ms="1">
+                sats
+              </Text>
+            </>
+          ) : (
+            "Locked"
           )}
-          <Timestamp timestamp={token.created_at} />
-        </ButtonGroup>
-      </CardHeader>
-      <CardBody display="flex" gap="2" px="2" pt="0" pb="2">
-        {details && (
-          <>
-            <CashuMintFavicon mint={details.mint} size="xs" />
-            <CashuMintName mint={details.mint} />
-          </>
-        )}
+        </Text>
         <Spacer />
-        <Button
-          variant="link"
-          onClick={more.onToggle}
-          rightIcon={more.isOpen ? <ChevronUpIcon boxSize={6} /> : <ChevronDownIcon boxSize={6} />}
-        >
-          Details
-        </Button>
+        <Timestamp timestamp={token.event.created_at} fontSize="sm" color="GrayText" />
+      </CardHeader>
+      <CardBody px="3" py="2" display="flex" alignItems="center" gap="2">
+        {unlocked && token.mint ? (
+          <>
+            <CashuMintFavicon mint={token.mint} size="xs" />
+            <CashuMintName mint={token.mint} fontSize="sm" isTruncated />
+          </>
+        ) : (
+          <Button size="xs" variant="link" onClick={unlock.run} isLoading={unlock.loading}>
+            Unlock
+          </Button>
+        )}
       </CardBody>
-      {more.isOpen && (
-        <CardFooter px="2" pt="0" pb="2" gap="2" display="flex">
-          <ButtonGroup size="sm">
-            <Button
-              variant="ghost"
-              colorScheme={
-                spentState === undefined ? undefined : spentState.some((s) => s.state === "UNSPENT") ? "green" : "red"
-              }
-              onClick={check}
-            >
-              {spentState === undefined
-                ? "Check"
-                : (spentState.some((s) => s.state === "UNSPENT") ? "Unspent" : "Spent") +
-                  ` ${spentState.filter((s) => s.state === "UNSPENT").length}/${spentState.length}`}
-            </Button>
-          </ButtonGroup>
-          <ButtonGroup ms="auto" size="sm">
-            {encoded && (
-              <>
-                <CopyIconButton value={encoded} aria-label="Copy token" variant="ghost" />
-                <IconButton
-                  as={RouterLink}
-                  to="/wallet/send/token"
-                  state={{ token: encoded }}
-                  icon={<ExternalLinkIcon />}
-                  aria-label="Show token"
-                  variant="ghost"
-                />
-              </>
-            )}
-            <DebugEventButton variant="ghost" event={token} />
+      <CardFooter px="3" pt="0" pb="2" display="flex" gap="2">
+        <Button
+          size="xs"
+          variant="ghost"
+          onClick={check.run}
+          isLoading={check.loading}
+          isDisabled={!unlocked}
+          colorScheme={spentState === undefined ? undefined : unspent ? "green" : "red"}
+        >
+          {spentState === undefined ? "Check" : `${unspent ? "Unspent" : "Spent"} ${unspent}/${spentState.length}`}
+        </Button>
+        <ButtonGroup size="xs" variant="ghost" ms="auto">
+          {encoded && (
+            <>
+              <CopyIconButton value={encoded} aria-label="Copy token" />
+              <IconButton icon={<QrCodeIcon boxSize={4} />} aria-label="Show QR code" onClick={qrModal.onOpen} />
+            </>
+          )}
+          <DebugEventButton event={token.event} />
+          <IconButton
+            icon={<TrashIcon boxSize={4} />}
+            aria-label="Delete token"
+            colorScheme="red"
+            onClick={() => deleteEvent(token.event)}
+          />
+        </ButtonGroup>
+      </CardFooter>
 
-            <IconButton
-              aria-label="Delete entry"
-              onClick={() => deleteEvent(token)}
-              colorScheme="red"
-              variant="ghost"
-              icon={<TrashIcon />}
-            />
-          </ButtonGroup>
-        </CardFooter>
-      )}
+      {qrModal.isOpen && encoded && <TokenQrModal token={encoded} onClose={qrModal.onClose} />}
     </Card>
   );
 }
 
-export default function WalletTokensTab({ ...props }: Omit<FlexProps, "children">) {
-  const account = useActiveAccount()!;
-  const eventStore = useEventStore();
+export default function WalletTokensTab() {
+  const wallet = useNutWallet();
+  const tokens = use$(wallet?.tokens$);
+  const unlocked = use$(wallet?.unlocked$);
+  const sendModal = useDisclosure();
+  const receiveModal = useDisclosure();
 
-  const tokens = useEventModel(WalletTokensModel, [account.pubkey]) ?? [];
-  const locked = useEventModel(WalletTokensModel, [account.pubkey, true]) ?? [];
+  const unlockAll = useAsyncAction(async () => {
+    await wallet?.unlock();
+  }, [wallet]);
 
-  const { run: unlock } = useAsyncAction(async () => {
-    if (!locked) return;
-    for (const token of locked) {
-      await unlockTokenContent(token, account);
-      eventStore.update(token);
-    }
-  }, [locked, account, eventStore]);
+  const hasLocked = tokens?.some((token) => !token.unlocked) ?? false;
 
   return (
-    <Flex direction="column" gap="2" {...props}>
-      <ButtonGroup variant="link">
-        <ConsolidateTokensButton />
-        <Spacer />
-        <Button onClick={unlock} isDisabled={!locked || locked.length === 0}>
-          Unlock all ({locked?.length})
+    <Flex direction="column" gap="2" w="full">
+      <ButtonGroup size="sm">
+        <Button colorScheme="primary" variant="outline" onClick={sendModal.onOpen} isDisabled={!unlocked}>
+          Send token
         </Button>
+        <Button colorScheme="primary" variant="outline" onClick={receiveModal.onOpen} isDisabled={!unlocked}>
+          Receive token
+        </Button>
+        <Spacer />
+        {hasLocked && (
+          <Button variant="link" onClick={unlockAll.run} isLoading={unlockAll.loading}>
+            Unlock all
+          </Button>
+        )}
       </ButtonGroup>
 
-      {tokens.map((token) => (
-        <TokenEvent key={token.id} token={token} />
-      ))}
+      {tokens === undefined ? (
+        <Text color="GrayText">Loading tokens…</Text>
+      ) : tokens.length === 0 ? (
+        <Text color="GrayText">No tokens yet — receive a cashu token or a lightning payment to get started.</Text>
+      ) : (
+        <SimpleGrid columns={{ base: 1, sm: 2, lg: 3, xl: 4 }} spacing="2">
+          {tokens.map((token) => (
+            <ErrorBoundary key={token.id} event={token.event}>
+              <TokenCard token={token} />
+            </ErrorBoundary>
+          ))}
+        </SimpleGrid>
+      )}
+
+      {sendModal.isOpen && <SendTokenModal isOpen onClose={sendModal.onClose} />}
+      {receiveModal.isOpen && <ReceiveTokenModal isOpen onClose={receiveModal.onClose} />}
     </Flex>
   );
 }

@@ -28,20 +28,14 @@ export default function InlineInvoiceCard({
     setLoading(true);
     try {
       const provider = await requestProvider();
-      const response = await provider.sendPayment(paymentRequest);
-      if (response.preimage) {
-        console.log("Paid");
-      }
+      await provider.sendPayment(paymentRequest);
     } catch (e) {
-      console.log("Failed to pay invoice");
-      console.log(e);
+      // Ignore failed payments, the user can retry or pay with another wallet via the lightning: link
     }
     setLoading(false);
   };
 
-  if (error) {
-    <>{paymentRequest}</>;
-  }
+  if (error) return <>{paymentRequest}</>;
 
   if (!invoice) return <>Loading Invoice...</>;
 

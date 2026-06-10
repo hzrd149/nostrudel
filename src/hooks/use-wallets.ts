@@ -1,6 +1,6 @@
 import { use$ } from "applesauce-react/hooks";
 
-import { activeWallet$, nutWalletState$, nutWalletUnlocked$, wallets$ } from "../services/wallets";
+import { activeWallet$, nutWallet$, nutWalletState$, nutWalletUnlocked$, wallets$ } from "../services/wallets";
 
 /** Returns all usable wallet backends */
 export function useWallets() {
@@ -10,6 +10,11 @@ export function useWallets() {
 /** Returns the currently selected wallet backend, or null */
 export function useActiveWallet() {
   return use$(activeWallet$) ?? null;
+}
+
+/** Returns the active account's NIP-60 (Cashu) NutWallet instance, or null when signed out */
+export function useNutWallet() {
+  return use$(nutWallet$) ?? null;
 }
 
 /** Returns the state of the active account's NIP-60 (Cashu) wallet */

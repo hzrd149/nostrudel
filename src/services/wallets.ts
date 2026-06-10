@@ -39,6 +39,21 @@ export type WalletBackendType = "webln" | "nwc" | "nutwallet";
 /** The result of creating an invoice: the bolt11 string plus a promise that resolves once it is paid */
 export type ReceiveResult = { invoice: string; paid: Promise<void> };
 
+/** A normalized transaction entry shown in a wallet's history */
+export interface WalletTransaction {
+  id: string;
+  direction: "in" | "out";
+  /** Amount in sats */
+  amount: number;
+  /** Fees paid in sats */
+  fee?: number;
+  /** Unix timestamp (seconds) of when the payment settled (or was created) */
+  timestamp: number;
+  description?: string;
+  /** Whether the payment is still pending */
+  pending?: boolean;
+}
+
 /** A unified interface every wallet type (WebLN, NWC, NIP-60) implements */
 export interface WalletBackend {
   id: string;
@@ -46,8 +61,15 @@ export interface WalletBackend {
   name: string;
   /** Balance in sats, or undefined while unknown/loading */
   balance$: Observable<number | undefined>;
-  /** Re-poll the balance */
+  /**
+   * Recent transactions, or undefined while loading (refreshed by {@link refresh}).
+   * Omitted when the wallet cannot list its history (e.g. WebLN).
+   */
+  history$?: Observable<WalletTransaction[] | undefined>;
+  /** Re-poll the balance (and transaction history when supported) */
   refresh(): Promise<void>;
+  /** Change the wallet's display name. Omitted for wallets whose name is a fixed type label (WebLN, NIP-60). */
+  rename?(name: string): Promise<void>;
   /**
    * Create a bolt11 invoice to add sats to this wallet. Returns the invoice plus a `paid` promise that
    * resolves when that specific invoice is paid (and rejects if `options.signal` aborts).
@@ -198,16 +220,38 @@ function waitForNwcPaid(client: WalletConnect, tx: Transaction, signal?: AbortSi
   });
 }
 
+/** Maps a NIP-47 transaction onto the normalized {@link WalletTransaction} shape (msats -> sats) */
+function fromNwcTransaction(tx: Transaction): WalletTransaction {
+  return {
+    id: tx.payment_hash || tx.invoice || `${tx.created_at}:${tx.amount}`,
+    direction: tx.type === "incoming" ? "in" : "out",
+    amount: Math.floor(tx.amount / 1000),
+    fee: tx.fees_paid ? Math.floor(tx.fees_paid / 1000) : undefined,
+    timestamp: tx.settled_at ?? tx.created_at,
+    description: tx.description,
+    pending: tx.state === "pending",
+  };
+}
+
 function createNwcBackend(stored: StoredNwcWallet): WalletBackend {
   const client = WalletConnect.fromConnectURI(stored.uri);
 
   const balance$ = new BehaviorSubject<number | undefined>(undefined);
+  const history$ = new BehaviorSubject<WalletTransaction[] | undefined>(undefined);
   const refresh = async () => {
     try {
       const { balance } = await client.getBalance();
       balance$.next(Math.floor(balance / 1000)); // msats -> sats
     } catch (error) {
       log("NWC getBalance failed:", error);
+    }
+    try {
+      const { transactions } = await client.listTransactions({ limit: 50 });
+      history$.next(
+        transactions.filter((tx) => tx.state === "settled" || tx.state === "pending").map(fromNwcTransaction),
+      );
+    } catch (error) {
+      log("NWC listTransactions failed:", error);
     }
   };
   refresh();
@@ -217,7 +261,13 @@ function createNwcBackend(stored: StoredNwcWallet): WalletBackend {
     type: "nwc",
     name: stored.name,
     balance$,
+    history$,
     refresh,
+    rename: async (name) => {
+      await localSettings.wallets.next(
+        localSettings.wallets.value.map((w) => (w.id === stored.id ? { ...w, name } : w)),
+      );
+    },
     makeInvoice: async (sats, options) => {
       const tx = await client.makeInvoice(sats * 1000, { description: options?.description }); // amount is msats
       if (!tx.invoice) throw new Error("Wallet did not return an invoice");
@@ -293,10 +343,10 @@ export type NutWalletState =
 export const nutWalletState$ = new BehaviorSubject<NutWalletState>({ status: "signed-out" });
 
 /** The active account's NIP-60 wallet instance, or null when signed out */
-const nutWalletInstance$ = new BehaviorSubject<NutWallet | null>(null);
+export const nutWallet$ = new BehaviorSubject<NutWallet | null>(null);
 
 /** Whether the active account's NIP-60 wallet is currently decrypted */
-export const nutWalletUnlocked$: Observable<boolean> = nutWalletInstance$.pipe(
+export const nutWalletUnlocked$: Observable<boolean> = nutWallet$.pipe(
   switchMap((wallet) => (wallet ? wallet.unlocked$ : of(false))),
   shareReplay(1),
 );
@@ -308,7 +358,7 @@ function teardownNutWallet() {
   currentNut.sub.unsubscribe();
   currentNut.wallet.stop();
   currentNut = null;
-  nutWalletInstance$.next(null);
+  nutWallet$.next(null);
 }
 
 /**
@@ -347,13 +397,13 @@ function syncNutWallet() {
     else nutWalletState$.next({ status: "loading" });
   });
   currentNut = { pubkey, wallet, backend, sub };
-  nutWalletInstance$.next(wallet);
+  nutWallet$.next(wallet);
   wallet.start().catch((error) => log("Failed to start NIP-60 wallet", error));
 }
 
 /** Decrypts the active account's NIP-60 wallet, tokens and history (prompts the signer) */
 export async function unlockNutWallet(): Promise<void> {
-  const wallet = nutWalletInstance$.value;
+  const wallet = nutWallet$.value;
   if (!wallet) throw new Error("No Cashu wallet is loaded");
   await wallet.unlock();
 }
@@ -364,13 +414,13 @@ export async function unlockNutWallet(): Promise<void> {
  */
 export async function setNutWalletAutoUnlock(enabled: boolean): Promise<void> {
   await localSettings.autoUnlockNutWallet.next(enabled);
-  const wallet = nutWalletInstance$.value;
+  const wallet = nutWallet$.value;
   wallet?.setAutoUnlock(enabled);
   if (enabled && wallet) await wallet.unlock();
 }
 
 // ---- Nostr Wallet Connect registry (the only persisted, multi-instance wallets) ----
-const nwcInstances = new Map<string, WalletBackend>();
+const nwcInstances = new Map<string, { config: StoredNwcWallet; backend: WalletBackend }>();
 const nwcBackends$ = new BehaviorSubject<WalletBackend[]>([]);
 
 /** Reconciles the loaded NWC backends to the persisted config */
@@ -378,22 +428,31 @@ function reconcileNwc(stored: StoredNwcWallet[]) {
   const keep = new Set(stored.map((w) => w.id));
 
   for (const config of stored) {
-    if (!nwcInstances.has(config.id)) {
+    const existing = nwcInstances.get(config.id);
+    if (!existing) {
       try {
-        nwcInstances.set(config.id, createNwcBackend(config));
+        nwcInstances.set(config.id, { config, backend: createNwcBackend(config) });
       } catch (error) {
         log("Failed to load NWC wallet", config.id, error);
       }
+    } else if (existing.config.uri !== config.uri) {
+      // Connection string changed — recreate the backend
+      existing.backend.dispose();
+      nwcInstances.set(config.id, { config, backend: createNwcBackend(config) });
+    } else if (existing.config.name !== config.name) {
+      // Only the name changed — update it in place so the live backend reflects the rename
+      existing.backend.name = config.name;
+      existing.config = config;
     }
   }
-  for (const [id, backend] of nwcInstances) {
+  for (const [id, { backend }] of nwcInstances) {
     if (!keep.has(id)) {
       backend.dispose();
       nwcInstances.delete(id);
     }
   }
 
-  nwcBackends$.next([...nwcInstances.values()]);
+  nwcBackends$.next([...nwcInstances.values()].map((entry) => entry.backend));
 }
 
 // ---- Unified, reactive wallet list ----
@@ -462,6 +521,7 @@ if (import.meta.env.DEV) {
   window.wallets = {
     wallets$,
     activeWallet$,
+    nutWallet$,
     nutWalletState$,
     nutWalletUnlocked$,
     addNwcWallet,

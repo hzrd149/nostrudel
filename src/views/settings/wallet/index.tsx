@@ -1,5 +1,6 @@
 import {
   Alert,
+  AlertDescription,
   AlertIcon,
   Button,
   Card,
@@ -80,6 +81,14 @@ function CashuSection() {
       <Text fontSize="sm" color="GrayText">
         A NIP-60 ecash wallet stored on your nostr relays and tied to your account.
       </Text>
+
+      <Alert status="error" borderRadius="md">
+        <AlertIcon />
+        <AlertDescription>
+          The Cashu (NIP-60) wallet is experimental and unstable! It will probably lose your money. Do not put any
+          funds into it that you are not willing to lose.
+        </AlertDescription>
+      </Alert>
 
       {state.status === "signed-out" && (
         <Alert status="info" borderRadius="md">

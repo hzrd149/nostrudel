@@ -48,8 +48,6 @@ export default function DetailsTabs({ note }: { note: Note }) {
       .pipe(mapEventsToStore(eventStore));
   }, [note.id, readRelays.join(",")]);
 
-  console.log("focused", note);
-
   const replies = use$(note.replies$);
   const reactions = use$(note.reactions$);
   const zaps = useEventZaps(note.event);
