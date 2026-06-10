@@ -14,6 +14,7 @@ import {
   IconButton,
   Input,
   Spinner,
+  Switch,
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
@@ -22,7 +23,14 @@ import { use$ } from "applesauce-react/hooks";
 import { TrashIcon } from "../../../components/icons";
 import SimpleView from "../../../components/layout/presets/simple-view";
 import { useActiveWallet, useNutWalletState, useNutWalletUnlocked, useWallets } from "../../../hooks/use-wallets";
-import { hasWebln, removeNwcWallet, setActiveWallet, type WalletBackend } from "../../../services/wallets";
+import localSettings from "../../../services/preferences";
+import {
+  hasWebln,
+  removeNwcWallet,
+  setActiveWallet,
+  setNutWalletEnabled,
+  type WalletBackend,
+} from "../../../services/wallets";
 import useSettingsForm from "../use-settings-form";
 import AddWalletModal from "./add-wallet-modal";
 import UnlockNutWalletModal from "./unlock-nut-wallet-modal";
@@ -74,54 +82,70 @@ function CashuSection() {
   const active = useActiveWallet();
   const unlocked = useNutWalletUnlocked();
   const unlockModal = useDisclosure();
+  const enabled = use$(localSettings.enableNutWallet) ?? true;
 
   return (
     <Flex direction="column" gap="2">
-      <Heading size="md">Cashu Wallet</Heading>
+      <FormControl as={Flex} alignItems="center" gap="3">
+        <Heading size="md">Cashu Wallet</Heading>
+        <FormLabel htmlFor="enableNutWallet" mb="0" ml="auto" fontSize="sm" color="GrayText">
+          {enabled ? "Enabled" : "Disabled"}
+        </FormLabel>
+        <Switch id="enableNutWallet" isChecked={enabled} onChange={(e) => setNutWalletEnabled(e.target.checked)} />
+      </FormControl>
       <Text fontSize="sm" color="GrayText">
         A NIP-60 ecash wallet stored on your nostr relays and tied to your account.
       </Text>
 
-      <Alert status="error" borderRadius="md">
-        <AlertIcon />
-        <AlertDescription>
-          The Cashu (NIP-60) wallet is experimental and unstable! It will probably lose your money. Do not put any
-          funds into it that you are not willing to lose.
-        </AlertDescription>
-      </Alert>
-
-      {state.status === "signed-out" && (
+      {!enabled ? (
         <Alert status="info" borderRadius="md">
           <AlertIcon />
-          Sign in to use a Cashu wallet.
+          The Cashu wallet is disabled. Enable it to load and use your ecash wallet.
         </Alert>
-      )}
-      {state.status === "loading" && (
-        <Flex gap="2" alignItems="center" color="GrayText">
-          <Spinner size="sm" /> Looking for your Cashu wallet…
-        </Flex>
-      )}
-      {state.status === "missing" && (
-        <Alert status="info" borderRadius="md">
-          <AlertIcon />
-          You don't have a Cashu wallet set up yet.
-        </Alert>
-      )}
-      {state.status === "ready" && (
+      ) : (
         <>
-          <WalletCard wallet={state.backend} active={state.backend.id === active?.id} />
-          {!unlocked && (
-            <Alert status="warning" borderRadius="md">
+          <Alert status="error" borderRadius="md">
+            <AlertIcon />
+            <AlertDescription>
+              The Cashu (NIP-60) wallet is experimental and unstable! It will probably lose your money. Do not put any
+              funds into it that you are not willing to lose.
+            </AlertDescription>
+          </Alert>
+
+          {state.status === "signed-out" && (
+            <Alert status="info" borderRadius="md">
               <AlertIcon />
-              <Flex align="center" gap="3" w="full">
-                <Text fontSize="sm" flex={1}>
-                  Your Cashu wallet is locked. Unlock it to see your balance and make payments.
-                </Text>
-                <Button size="sm" colorScheme="primary" onClick={unlockModal.onOpen}>
-                  Unlock
-                </Button>
-              </Flex>
+              Sign in to use a Cashu wallet.
             </Alert>
+          )}
+          {state.status === "loading" && (
+            <Flex gap="2" alignItems="center" color="GrayText">
+              <Spinner size="sm" /> Looking for your Cashu wallet…
+            </Flex>
+          )}
+          {state.status === "missing" && (
+            <Alert status="info" borderRadius="md">
+              <AlertIcon />
+              You don't have a Cashu wallet set up yet.
+            </Alert>
+          )}
+          {state.status === "ready" && (
+            <>
+              <WalletCard wallet={state.backend} active={state.backend.id === active?.id} />
+              {!unlocked && (
+                <Alert status="warning" borderRadius="md">
+                  <AlertIcon />
+                  <Flex align="center" gap="3" w="full">
+                    <Text fontSize="sm" flex={1}>
+                      Your Cashu wallet is locked. Unlock it to see your balance and make payments.
+                    </Text>
+                    <Button size="sm" colorScheme="primary" onClick={unlockModal.onOpen}>
+                      Unlock
+                    </Button>
+                  </Flex>
+                </Alert>
+              )}
+            </>
           )}
         </>
       )}

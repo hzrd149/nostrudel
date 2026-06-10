@@ -25,6 +25,11 @@ export type StoredNwcWallet = { id: string; name: string; uri: string };
 const wallets = await PreferenceSubject.array<StoredNwcWallet>("wallets", []);
 const activeWallet = await PreferenceSubject.stringNullable("active-wallet", null);
 /**
+ * Whether the NIP-60 (Cashu) wallet is enabled. Defaults to true; when false the wallet is never loaded
+ * for the active account (and excluded from the wallet list), regardless of whether one exists on relays.
+ */
+const enableNutWallet = await PreferenceSubject.boolean("enable-nut-wallet", true);
+/**
  * Whether to automatically decrypt the NIP-60 wallet (and its tokens/history) as it loads. Defaults to
  * false so the user's signer is not spammed with decrypt requests on every load; unlocking is opt-in.
  */
@@ -119,6 +124,7 @@ const localSettings = {
   // Wallets
   wallets,
   activeWallet,
+  enableNutWallet,
   autoUnlockNutWallet,
 
   // Relays

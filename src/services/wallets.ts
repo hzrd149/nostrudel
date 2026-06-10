@@ -336,6 +336,7 @@ const weblnBackend$ = new BehaviorSubject<WalletBackend | null>(hasWebln() ? cre
 /** The state of the active account's NIP-60 wallet, used to drive the Cashu settings section */
 export type NutWalletState =
   | { status: "signed-out" }
+  | { status: "disabled" }
   | { status: "loading" }
   | { status: "missing" }
   | { status: "ready"; backend: WalletBackend };
@@ -370,14 +371,22 @@ function syncNutWallet() {
   const signer = accounts.active;
   const pubkey = signer?.pubkey;
 
-  // Already tracking this account's wallet
-  if (currentNut?.pubkey === pubkey) return;
-  teardownNutWallet();
-
   if (!signer || !pubkey) {
+    teardownNutWallet();
     nutWalletState$.next({ status: "signed-out" });
     return;
   }
+
+  // The wallet has been turned off globally — never load it
+  if (!localSettings.enableNutWallet.value) {
+    teardownNutWallet();
+    nutWalletState$.next({ status: "disabled" });
+    return;
+  }
+
+  // Already tracking this account's wallet
+  if (currentNut?.pubkey === pubkey) return;
+  teardownNutWallet();
 
   nutWalletState$.next({ status: "loading" });
   const wallet = new NutWallet({
@@ -399,6 +408,14 @@ function syncNutWallet() {
   currentNut = { pubkey, wallet, backend, sub };
   nutWallet$.next(wallet);
   wallet.start().catch((error) => log("Failed to start NIP-60 wallet", error));
+}
+
+/**
+ * Enables or disables the NIP-60 (Cashu) wallet globally and persists the choice. Disabling tears down the
+ * loaded wallet immediately; enabling reloads it for the active account (handled by the subscription below).
+ */
+export async function setNutWalletEnabled(enabled: boolean): Promise<void> {
+  await localSettings.enableNutWallet.next(enabled);
 }
 
 /** Decrypts the active account's NIP-60 wallet, tokens and history (prompts the signer) */
@@ -515,6 +532,8 @@ export async function resolveInvoice(input: string, sats?: number): Promise<stri
 localSettings.wallets.subscribe(reconcileNwc);
 // Load the NIP-60 wallet for the active account and reload it when the account changes
 accounts.active$.subscribe(() => syncNutWallet());
+// Reload (or tear down) the NIP-60 wallet whenever it is enabled or disabled
+localSettings.enableNutWallet.subscribe(() => syncNutWallet());
 
 if (import.meta.env.DEV) {
   // @ts-expect-error debug
@@ -528,6 +547,7 @@ if (import.meta.env.DEV) {
     removeNwcWallet,
     setActiveWallet,
     unlockNutWallet,
+    setNutWalletEnabled,
     setNutWalletAutoUnlock,
   };
 }
