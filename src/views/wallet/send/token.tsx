@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Button, ButtonGroup, Flex, IconButton, Spacer } from "@chakra-ui/react";
 import { ANIMATED_QR_INTERVAL, encodeTokenToEmoji, sendAnimated } from "applesauce-wallet/helpers";
-import { getDecodedToken, Proof, ProofState } from "@cashu/cashu-ts";
+import { getTokenMetadata, ProofLike, ProofState } from "@cashu/cashu-ts";
 import { ReceiveToken } from "applesauce-wallet/actions";
 import { useActionRunner } from "applesauce-react/hooks";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
@@ -42,15 +42,16 @@ export default function WalletSendTokenView() {
   const cancellerRef = useRef<(() => void) | null>(null);
   useEffect(() => {
     let active = true;
-    const decoded = getDecodedToken(token);
+    const metadata = getTokenMetadata(token);
 
-    getCashuWallet(decoded.mint).then((wallet) => {
+    getCashuWallet(metadata.mint, metadata.unit).then((wallet) => {
       if (!active) return;
+      const decoded = wallet.decodeToken(token);
 
-      wallet
-        .onProofStateUpdates(
+      wallet.on
+        .proofStateUpdates(
           decoded.proofs,
-          (state: ProofState & { proof: Proof }) => {
+          (state: ProofState & { proof: ProofLike }) => {
             if (state.state === "SPENT" && active) {
               active = false;
               cancellerRef.current?.();
@@ -59,7 +60,7 @@ export default function WalletSendTokenView() {
           },
           (err: Error) => console.error("Proof state update error:", err),
         )
-        .then((canceller) => {
+        .then((canceller: () => void) => {
           if (!active) {
             // subscription started but we already unmounted – cancel immediately
             canceller();
@@ -67,7 +68,7 @@ export default function WalletSendTokenView() {
             cancellerRef.current = canceller;
           }
         })
-        .catch((err) => console.error("Failed to subscribe to proof states:", err));
+        .catch((err: Error) => console.error("Failed to subscribe to proof states:", err));
     });
 
     return () => {
@@ -78,8 +79,10 @@ export default function WalletSendTokenView() {
   }, [token, navigate]);
 
   const { run: cancel, loading: canceling } = useAsyncAction(async () => {
+    const metadata = getTokenMetadata(token);
+    const wallet = await getCashuWallet(metadata.mint, metadata.unit);
     // Reclaim the token back into the wallet using couch for safety
-    await actions.run(ReceiveToken, getDecodedToken(token), { couch });
+    await actions.run(ReceiveToken, wallet.decodeToken(token), { couch });
     navigate("/wallet");
   }, [actions, token, navigate]);
 

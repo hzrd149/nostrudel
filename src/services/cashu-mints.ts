@@ -1,27 +1,29 @@
-import { CashuMint, CashuWallet, GetInfoResponse } from "@cashu/cashu-ts";
+import { Mint, Wallet, GetInfoResponse } from "@cashu/cashu-ts";
 import { normalizeURL } from "applesauce-core/helpers";
 import { from, Observable, ReplaySubject, share, switchMap } from "rxjs";
 
-const mints = new Map<string, CashuMint>();
-const wallets = new Map<string, CashuWallet>();
+const mints = new Map<string, Mint>();
+const wallets = new Map<string, Wallet>();
 
 export async function getCashuMint(url: string) {
   const formatted = new URL(url).toString();
   if (!mints.has(formatted)) {
-    const mint = new CashuMint(formatted);
+    const mint = new Mint(formatted);
     mints.set(formatted, mint);
   }
   return mints.get(formatted)!;
 }
 
-export async function getCashuWallet(url: string) {
+export async function getCashuWallet(url: string, unit = "sat") {
   const formatted = new URL(url).toString();
-  if (!wallets.has(formatted)) {
+  const key = `${formatted}:${unit}`;
+  if (!wallets.has(key)) {
     const mint = await getCashuMint(url);
-    const wallet = new CashuWallet(mint);
-    wallets.set(formatted, wallet);
+    const wallet = new Wallet(mint, { unit });
+    await wallet.loadMint();
+    wallets.set(key, wallet);
   }
-  return wallets.get(formatted)!;
+  return wallets.get(key)!;
 }
 
 const mintInfo = new Map<string, Observable<GetInfoResponse>>();

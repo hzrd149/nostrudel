@@ -17,7 +17,7 @@ import { useActiveAccount, useEventModel, useEventStore } from "applesauce-react
 import { WalletTokensModel } from "applesauce-wallet/models";
 import { getTokenContent, isTokenContentUnlocked, unlockTokenContent } from "applesauce-wallet/helpers";
 import { NostrEvent } from "nostr-tools";
-import { getEncodedToken, ProofState } from "@cashu/cashu-ts";
+import { getEncodedToken, normalizeProofAmounts, ProofState } from "@cashu/cashu-ts";
 
 import useAsyncAction from "../../../hooks/use-async-action";
 import useEventUpdate from "../../../hooks/use-event-update";
@@ -47,7 +47,7 @@ function TokenEvent({ token }: { token: NostrEvent }) {
   const [spentState, setSpentState] = useState<ProofState[]>();
   const { run: check } = useAsyncAction(async () => {
     if (!details) return;
-    const wallet = await getCashuWallet(details.mint);
+    const wallet = await getCashuWallet(details.mint, details.unit);
     const state = await wallet.checkProofsStates(details.proofs);
 
     setSpentState(state);
@@ -61,7 +61,10 @@ function TokenEvent({ token }: { token: NostrEvent }) {
     eventStore.update(token);
   }, [token, account, eventStore]);
 
-  const encoded = useMemo(() => details && getEncodedToken(details), [details]);
+  const encoded = useMemo(
+    () => details && getEncodedToken({ ...details, proofs: normalizeProofAmounts(details.proofs) }),
+    [details],
+  );
 
   return (
     <Card ref={ref} w="full">

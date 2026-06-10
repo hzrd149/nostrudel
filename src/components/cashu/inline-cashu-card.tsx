@@ -1,6 +1,6 @@
 import { useAsync } from "react-use";
 import { Box, ButtonGroup, Card, CardProps, Heading, IconButton, Link, Spinner, Text } from "@chakra-ui/react";
-import { Token, getEncodedToken, CheckStateEnum } from "@cashu/cashu-ts";
+import { Amount, Token, getEncodedToken, CheckStateEnum } from "@cashu/cashu-ts";
 
 import { CopyIconButton } from "../copy-icon-button";
 import { ECashIcon, WalletIcon } from "../icons";
@@ -20,12 +20,12 @@ export default function InlineCachuCard({
   encoded = encoded || getEncodedToken(token);
   const { value: spendable, loading } = useAsync(async () => {
     if (!token) return;
-    const wallet = await getCashuWallet(token.mint);
+    const wallet = await getCashuWallet(token.mint, token.unit);
     const status = await wallet.checkProofsStates(token.proofs);
     return status.some((s) => s.state === CheckStateEnum.UNSPENT);
   }, [token]);
 
-  const amount = token?.proofs.reduce((acc, v) => acc + v.amount, 0);
+  const amount = Amount.sum(token.proofs.map((p) => p.amount)).toNumber();
 
   let UnitIcon = ECashIcon;
   let unitColor = "green.500";

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button, Flex, IconButton, Spacer, Textarea, useToast } from "@chakra-ui/react";
-import { getDecodedToken, getEncodedToken } from "@cashu/cashu-ts";
+import { getEncodedToken, getTokenMetadata } from "@cashu/cashu-ts";
 import { decodeTokenFromEmojiString } from "applesauce-wallet/helpers";
 import { useLocation, useNavigate } from "react-router-dom";
 
@@ -18,8 +18,9 @@ export default function WalletReceiveView() {
 
   const handleScannerResult = (result: string) => {
     try {
-      const token = getDecodedToken(result.trim());
-      navigate("/wallet/receive/token", { state: { token: getEncodedToken(token) }, replace: true });
+      const token = result.trim();
+      getTokenMetadata(token);
+      navigate("/wallet/receive/token", { state: { token }, replace: true });
     } catch (error) {
       setInput(result);
     }
@@ -27,8 +28,9 @@ export default function WalletReceiveView() {
 
   const receive = () => {
     try {
-      const token = getDecodedToken(input.trim());
-      navigate("/wallet/receive/token", { state: { token: getEncodedToken(token) }, replace: true });
+      const token = input.trim();
+      getTokenMetadata(token);
+      navigate("/wallet/receive/token", { state: { token }, replace: true });
     } catch (error) {
       if (error instanceof Error) toast({ status: "error", description: error.message });
     }

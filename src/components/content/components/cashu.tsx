@@ -1,4 +1,4 @@
-import { CashuToken } from "applesauce-content/nast";
+import { type CashuToken } from "applesauce-content/text/cashu";
 
 import InlineCachuCard from "../../cashu/inline-cashu-card";
 
