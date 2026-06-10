@@ -1,0 +1,23 @@
+import { use$ } from "applesauce-react/hooks";
+
+import { activeWallet$, nutWalletState$, nutWalletUnlocked$, wallets$ } from "../services/wallets";
+
+/** Returns all usable wallet backends */
+export function useWallets() {
+  return use$(wallets$) ?? [];
+}
+
+/** Returns the currently selected wallet backend, or null */
+export function useActiveWallet() {
+  return use$(activeWallet$) ?? null;
+}
+
+/** Returns the state of the active account's NIP-60 (Cashu) wallet */
+export function useNutWalletState() {
+  return use$(nutWalletState$) ?? { status: "signed-out" as const };
+}
+
+/** Returns whether the active account's NIP-60 (Cashu) wallet is currently decrypted */
+export function useNutWalletUnlocked() {
+  return use$(nutWalletUnlocked$) ?? false;
+}

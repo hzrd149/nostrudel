@@ -15,6 +15,21 @@ import { type RelayAuthMode } from "./authentication-signer";
 const accounts = await PreferenceSubject.array<SerializedAccount<any, any>>("accounts", []);
 const activeAccount = await PreferenceSubject.stringNullable("active-account", null);
 
+// Wallets
+/**
+ * The persisted configuration for a Nostr Wallet Connect (NIP-47) wallet. WebLN and NIP-60 (Cashu) wallets
+ * are auto-detected from `window.webln` and the active account, so only NWC wallets need to be stored.
+ */
+export type StoredNwcWallet = { id: string; name: string; uri: string };
+
+const wallets = await PreferenceSubject.array<StoredNwcWallet>("wallets", []);
+const activeWallet = await PreferenceSubject.stringNullable("active-wallet", null);
+/**
+ * Whether to automatically decrypt the NIP-60 wallet (and its tokens/history) as it loads. Defaults to
+ * false so the user's signer is not spammed with decrypt requests on every load; unlocking is opt-in.
+ */
+const autoUnlockNutWallet = await PreferenceSubject.boolean("auto-unlock-nut-wallet", false);
+
 // Relays
 const fallbackRelays = await PreferenceSubject.array<string>("fallback-relays", DEFAULT_FALLBACK_RELAYS);
 const lookupRelays = await PreferenceSubject.array<string>("lookup-relays", DEFAULT_LOOKUP_RELAYS);
@@ -100,6 +115,11 @@ const localSettings = {
   // Accounts
   accounts,
   activeAccount,
+
+  // Wallets
+  wallets,
+  activeWallet,
+  autoUnlockNutWallet,
 
   // Relays
   fallbackRelays,

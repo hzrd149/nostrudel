@@ -9,6 +9,9 @@ import { URLOpenListenerEvent, App as CapacitorApp } from "@capacitor/app";
 import "./services/debug-api";
 import "./services/decryption-cache";
 import "./services/lifecycle";
+import "./services/wallets";
+// Optional: one-time migration of a bitcoin-connect NWC wallet into the applesauce wallet system
+import "./services/wallet-migration";
 
 // setup bitcoin connect
 import { init, onConnected } from "@getalby/bitcoin-connect-react";

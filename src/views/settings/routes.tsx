@@ -7,7 +7,7 @@ import AuthenticationSettingsView from "./authentication";
 import BackgroundWorkerSettings from "./background-worker";
 import CacheRelayView from "./cache";
 import DisplaySettings from "./display";
-import LightningSettings from "./lightning";
+import WalletSettings from "./wallet";
 import MailboxesView from "./mailboxes";
 import MediaServersView from "./media-servers";
 import MessagesSettings from "./messages";
@@ -57,7 +57,9 @@ export default [
       { path: "cache", Component: CacheRelayView },
       { path: "post", Component: PostSettings },
       { path: "privacy", Component: PrivacySettings },
-      { path: "lightning", Component: LightningSettings },
+      { path: "wallet", Component: WalletSettings },
+      // Redirect the old lightning settings path to the new wallet settings
+      { path: "lightning", Component: WalletSettings },
       { path: "messages", Component: MessagesSettings },
       { path: "background-worker", Component: BackgroundWorkerSettings },
     ],

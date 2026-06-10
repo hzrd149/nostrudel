@@ -5,13 +5,13 @@ import {
   AppearanceIcon,
   DatabaseIcon,
   GithubIcon,
-  LightningIcon,
   MuteIcon,
   NotesIcon,
   RelayIcon,
   SearchIcon,
   SpyIcon,
 } from "../../components/icons";
+import Wallet01 from "../../components/icons/wallet-01";
 import CheckCircleBroken from "../../components/icons/check-circle-broken";
 import CpuChip01 from "../../components/icons/cpu-chip-01";
 import Database01 from "../../components/icons/database-01";
@@ -95,8 +95,8 @@ export default function SettingsView() {
       <SimpleNavItem to="/settings/post" leftIcon={<NotesIcon boxSize={5} />}>
         Posts
       </SimpleNavItem>
-      <SimpleNavItem to="/settings/lightning" leftIcon={<LightningIcon boxSize={5} />}>
-        Lightning
+      <SimpleNavItem to="/settings/wallet" leftIcon={<Wallet01 boxSize={5} />}>
+        Wallet
       </SimpleNavItem>
       <SimpleNavItem to="/settings/privacy" leftIcon={<SpyIcon boxSize={5} />}>
         Privacy
