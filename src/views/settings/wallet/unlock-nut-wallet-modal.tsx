@@ -25,6 +25,7 @@ import { firstValueFrom } from "rxjs";
 
 import EncryptedStorage from "../../../classes/encrypted-storage";
 import useAsyncAction from "../../../hooks/use-async-action";
+import useForceUpdate from "../../../hooks/use-force-update";
 import { useNutWalletUnlocked } from "../../../hooks/use-wallets";
 import { decryptionCache$, decryptionCacheStats$ } from "../../../services/decryption-cache";
 import localSettings from "../../../services/preferences";
@@ -34,7 +35,7 @@ import { setNutWalletAutoUnlock, unlockNutWallet } from "../../../services/walle
  * Step 1: unlock (or disable) the encrypted decryption cache, mirroring the direct message flow. Decrypted
  * wallet content is cached here, so unlocking it first means the wallet only has to be decrypted once.
  */
-function CacheStep() {
+function CacheStep({ onUnlocked }: { onUnlocked: () => void }) {
   const stats = use$(decryptionCacheStats$);
   const [password, setPassword] = useState("");
   const toast = useToast();
@@ -47,7 +48,10 @@ function CacheStep() {
     const success = await cache.unlock(password);
     if (!success) throw new Error("The password you entered is incorrect");
     setPassword("");
-  }, [password]);
+    // Unlocking mutates the cache in place (same object reference), so decryptionCache$ won't emit a new
+    // value. Nudge the modal to re-render so it can advance past this step.
+    onUnlocked();
+  }, [password, onUnlocked]);
 
   const disableCache = useAsyncAction(async () => {
     const cache = await firstValueFrom(decryptionCache$);
@@ -141,6 +145,7 @@ function UnlockStep({ onClose }: { onClose: () => void }) {
 export default function UnlockNutWalletModal({ onClose, ...props }: Omit<ModalProps, "children">) {
   const cache = use$(decryptionCache$);
   const unlocked = useNutWalletUnlocked();
+  const forceUpdate = useForceUpdate();
 
   // The cache step is only required while an encrypted cache is still locked
   const cacheLocked = cache instanceof EncryptedStorage && !cache.unlocked;
@@ -158,7 +163,7 @@ export default function UnlockNutWalletModal({ onClose, ...props }: Omit<ModalPr
               Your Cashu wallet is unlocked.
             </Alert>
           ) : cacheLocked ? (
-            <CacheStep />
+            <CacheStep onUnlocked={forceUpdate} />
           ) : (
             <UnlockStep onClose={onClose} />
           )}

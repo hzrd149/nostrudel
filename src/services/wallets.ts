@@ -1,4 +1,5 @@
 import { parseBolt11, parseLNURLOrAddress } from "applesauce-common/helpers";
+import type { EncryptedContentCache } from "applesauce-common/helpers";
 import type { ISigner } from "applesauce-signers";
 import { WalletConnect } from "applesauce-wallet-connect";
 import type { Transaction } from "applesauce-wallet-connect/helpers";
@@ -21,6 +22,7 @@ import {
 import { logger } from "../helpers/debug";
 import accounts from "./accounts";
 import couch from "./cashu-couch";
+import { decryptionCache$ } from "./decryption-cache";
 import { eventStore } from "./event-store";
 import pool from "./pool";
 import localSettings, { type StoredNwcWallet } from "./preferences";
@@ -354,6 +356,12 @@ export const nutWalletUnlocked$: Observable<boolean> = nutWallet$.pipe(
 
 let currentNut: { pubkey: string; wallet: NutWallet; backend: WalletBackend; sub: Subscription } | null = null;
 
+// Track the latest decryption cache so a new NIP-60 wallet can be handed it at construction. The wallet
+// restores decrypted tokens from this cache before decrypting them itself, avoiding a race where tokens
+// would otherwise be re-decrypted before the cache had a chance to restore them.
+let decryptionCache: EncryptedContentCache | undefined;
+decryptionCache$.subscribe((cache) => (decryptionCache = cache ?? undefined));
+
 function teardownNutWallet() {
   if (!currentNut) return;
   currentNut.sub.unsubscribe();
@@ -396,6 +404,7 @@ function syncNutWallet() {
     eventStore,
     couch,
     autoUnlock: localSettings.autoUnlockNutWallet.value,
+    decryptionCache,
   });
   const backend = nutWalletBackend(wallet, pubkey);
   const sub = wallet.status$.subscribe((status) => {
