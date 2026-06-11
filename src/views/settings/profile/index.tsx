@@ -15,7 +15,7 @@ import useUploadFile from "../../../hooks/use-upload-file";
 import useUserProfile from "../../../hooks/use-user-profile";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
 import { profileLoader } from "../../../services/loaders";
-import localSettings from "../../../services/preferences";
+import { getLookupRelays } from "../../../services/lookup-relays";
 import ProfileEditForm from "./components/profile-edit-form";
 import ProfilePreview from "./components/profile-preview";
 import { eventStore } from "../../../services/event-store";
@@ -108,14 +108,11 @@ export default function ProfileSettingsView() {
         }
 
         setUploadStatus("Signing and publishing...");
+        const lookupRelays = await getLookupRelays();
         if (eventStore.hasReplaceable(0, account.pubkey)) {
-          await actions
-            .exec(UpdateProfile, newMetadata)
-            .forEach((e) => publish("Update profile", e, localSettings.lookupRelays.value));
+          await actions.exec(UpdateProfile, newMetadata).forEach((e) => publish("Update profile", e, lookupRelays));
         } else {
-          await actions
-            .exec(CreateProfile, newMetadata)
-            .forEach((e) => publish("Create profile", e, localSettings.lookupRelays.value));
+          await actions.exec(CreateProfile, newMetadata).forEach((e) => publish("Create profile", e, lookupRelays));
         }
 
         // Navigate to user profile

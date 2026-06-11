@@ -35,10 +35,7 @@ export const DEFAULT_MAX_CONNECTIONS = 20;
 /** Default max number of relays to select per user for outbox selection */
 export const DEFAULT_MAX_RELAYS_PER_USER = 5;
 
-/** The default lookup relays used to fetch users profiles and outboxes */
-export const DEFAULT_LOOKUP_RELAYS = relays(["wss://purplepag.es/"]);
-
-/** Extra recommended lookup relays */
+/** The recommended lookup relays used to fetch users profiles and outboxes when the user has no published lookup relay list */
 export const RECOMMENDED_LOOKUP_RELAYS = relays([
   "wss://purplepag.es/",
   "wss://index.hzrd149.com",
@@ -54,6 +51,12 @@ export const RECOMMENDED_FALLBACK_RELAYS = relays([
   "wss://relay.damus.io/",
   "wss://nos.lol/",
 ]);
+
+/** Default NIP-66 relay discovery relays */
+export const DEFAULT_RELAY_DISCOVERY_RELAYS = relays(["wss://relay.nostr.watch/", "wss://monitorlizard.nostr1.com/"]);
+
+/** Default NIP-66 monitor pubkeys (nostr.watch) */
+export const DEFAULT_RELAY_DISCOVERY_MONITORS = ["9bbbb845e5b6c831c29789900769843ab43bb5047abe697870cb50b6fc9bf923"];
 
 /** The default relay to recommend for remote signers */
 export const DEFAULT_NOSTR_CONNECT_RELAY = normalizeURL("wss://bucket.coracle.social/");

@@ -7,7 +7,7 @@ import { useAccountManager } from "applesauce-react/hooks";
 import { EventTemplate, finalizeEvent, generateSecretKey, kinds } from "nostr-tools";
 import { useEffect, useState } from "react";
 
-import { DEFAULT_LOOKUP_RELAYS } from "../../../const";
+import { RECOMMENDED_LOOKUP_RELAYS } from "../../../const";
 import { nostrBuildUploadImage } from "../../../helpers/media-upload/nostr-build";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
 import { containerProps } from "./common";
@@ -59,7 +59,7 @@ export default function CreateStep({
         key,
       );
 
-      await publish("Create Profile", kind0, [...relays, ...DEFAULT_LOOKUP_RELAYS]);
+      await publish("Create Profile", kind0, [...relays, ...RECOMMENDED_LOOKUP_RELAYS]);
 
       // login
       const account = SimpleAccount.fromKey(key);

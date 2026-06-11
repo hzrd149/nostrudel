@@ -13,7 +13,9 @@ import UserLink from "../../../components/user/user-link";
 import useAsyncAction from "../../../hooks/use-async-action";
 import { useVirtualListScrollRestore } from "../../../hooks/use-scroll-restore";
 import useUserMutes from "../../../hooks/use-user-mutes";
+import useUserMuteList from "../../../hooks/use-user-mute-list";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
+import ListMenu from "../components/list-menu";
 
 function UserCard({ pubkey, ...props }: { pubkey: string } & Omit<CardProps, "children">) {
   const hub = useActionRunner();
@@ -60,9 +62,15 @@ function MutedPage() {
   const account = useActiveAccount()!;
   const scroll = useVirtualListScrollRestore("muted");
   const muted = useUserMutes(account.pubkey);
+  const muteListEvent = useUserMuteList(account.pubkey);
 
   return (
-    <SimpleView title="Muted" scroll={false} flush>
+    <SimpleView
+      title="Muted"
+      scroll={false}
+      flush
+      actions={muteListEvent && <ListMenu ms="auto" list={muteListEvent} aria-label="List options" variant="ghost" />}
+    >
       <Flex direction="column" flex={1}>
         <AutoSizer>
           {({ height, width }) => (

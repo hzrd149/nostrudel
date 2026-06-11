@@ -14,7 +14,9 @@ import UserLink from "../../../components/user/user-link";
 import useAsyncAction from "../../../hooks/use-async-action";
 import { useVirtualListScrollRestore } from "../../../hooks/use-scroll-restore";
 import useUserContacts from "../../../hooks/use-user-contacts";
+import useUserContactList from "../../../hooks/use-user-contact-list";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
+import ListMenu from "../components/list-menu";
 
 function UserCard({ person, ...props }: { person: ProfilePointer } & Omit<CardProps, "children">) {
   const hub = useActionRunner();
@@ -62,9 +64,15 @@ function FollowingPage() {
   const scroll = useVirtualListScrollRestore("following");
 
   const contactsList = useUserContacts(account.pubkey);
+  const contactsEvent = useUserContactList(account.pubkey);
 
   return (
-    <SimpleView title="Following" scroll={false} flush>
+    <SimpleView
+      title="Following"
+      scroll={false}
+      flush
+      actions={contactsEvent && <ListMenu ms="auto" list={contactsEvent} aria-label="List options" variant="ghost" />}
+    >
       <Flex direction="column" flex={1}>
         <AutoSizer>
           {({ height, width }) => (

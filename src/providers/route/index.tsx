@@ -2,6 +2,7 @@ import AppHandlerProvider from "./app-handler-provider";
 import DebugModalProvider from "./debug-modal-provider";
 import DeleteEventProvider from "./delete-event-provider";
 import InvoiceModalProvider from "./invoice-modal-provider";
+import ListHistoryModalProvider from "./list-history-modal-provider";
 import MuteModalProvider from "./mute-modal-provider";
 import PostModalProvider from "./post-modal-provider";
 
@@ -13,7 +14,9 @@ export function RouteProviders({ children }: { children: React.ReactNode }) {
         <DebugModalProvider>
           <InvoiceModalProvider>
             <PostModalProvider>
-              <AppHandlerProvider>{children}</AppHandlerProvider>
+              <ListHistoryModalProvider>
+                <AppHandlerProvider>{children}</AppHandlerProvider>
+              </ListHistoryModalProvider>
             </PostModalProvider>
           </InvoiceModalProvider>
         </DebugModalProvider>

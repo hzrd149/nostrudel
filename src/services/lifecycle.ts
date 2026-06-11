@@ -1,5 +1,6 @@
 import { IAccount } from "applesauce-accounts";
-import { isFromCache } from "applesauce-core/helpers";
+import { LOOKUP_RELAY_LIST_KIND } from "applesauce-common/helpers";
+import { isFromCache, relaySet } from "applesauce-core/helpers";
 import { defined, mapEventsToStore } from "applesauce-core/observable";
 import { onlyEvents } from "applesauce-relay";
 import { USER_BLOSSOM_SERVER_LIST_KIND } from "blossom-client-sdk";
@@ -20,6 +21,7 @@ import {
   timer,
 } from "rxjs";
 
+import { RECOMMENDED_LOOKUP_RELAYS } from "../const";
 import { APP_SETTING_IDENTIFIER, APP_SETTINGS_KIND } from "../helpers/app-settings";
 import { DirectMessageRelaysModel } from "../models/messages";
 import accounts from "./accounts";
@@ -58,6 +60,7 @@ combineLatest([
         addressable(account, mailboxes?.outboxes, kinds.Contacts),
         addressable(account, mailboxes?.outboxes, USER_BLOSSOM_SERVER_LIST_KIND),
         addressable(account, mailboxes?.outboxes, kinds.SearchRelaysList),
+        addressable(account, relaySet(mailboxes.outboxes, RECOMMENDED_LOOKUP_RELAYS), LOOKUP_RELAY_LIST_KIND),
         addressable(account, mailboxes?.outboxes, APP_SETTINGS_KIND, APP_SETTING_IDENTIFIER),
       );
 

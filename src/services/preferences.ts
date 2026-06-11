@@ -1,14 +1,10 @@
+import { Preferences } from "@capacitor/preferences";
 import { bytesToHex, hexToBytes } from "@noble/hashes/utils";
 import { type SerializedAccount } from "applesauce-accounts";
 import type { ProfilePointer } from "nostr-tools/nip19";
 
 import { PreferenceSubject } from "../classes/preference-subject";
-import {
-  DEFAULT_FALLBACK_RELAYS,
-  DEFAULT_LOOKUP_RELAYS,
-  DEFAULT_MAX_CONNECTIONS,
-  DEFAULT_MAX_RELAYS_PER_USER,
-} from "../const";
+import { DEFAULT_FALLBACK_RELAYS, DEFAULT_MAX_CONNECTIONS, DEFAULT_MAX_RELAYS_PER_USER } from "../const";
 import { type RelayAuthMode } from "./authentication-signer";
 
 // Accounts
@@ -37,8 +33,10 @@ const autoUnlockNutWallet = await PreferenceSubject.boolean("auto-unlock-nut-wal
 
 // Relays
 const fallbackRelays = await PreferenceSubject.array<string>("fallback-relays", DEFAULT_FALLBACK_RELAYS);
-const lookupRelays = await PreferenceSubject.array<string>("lookup-relays", DEFAULT_LOOKUP_RELAYS);
 const extraPublishRelays = await PreferenceSubject.array<string>("extra-publish-relays", []);
+
+// Remove the legacy lookup relays preference, lookup relays are now stored in a kind 10086 list on nostr
+await Preferences.remove({ key: "lookup-relays" });
 
 // Event cache
 const idbMaxEvents = await PreferenceSubject.number("nostr-idb-max-events", 10_000);
@@ -130,7 +128,6 @@ const localSettings = {
   // Relays
   fallbackRelays,
   extraPublishRelays,
-  lookupRelays,
 
   // Event cache
   idbMaxEvents,

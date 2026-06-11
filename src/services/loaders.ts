@@ -12,6 +12,7 @@ import {
 import { kinds } from "nostr-tools";
 import { cacheRequest } from "./event-cache";
 import { eventStore } from "./event-store";
+import { lookupRelays$ } from "./lookup-relays";
 import localSettings from "./preferences";
 import pool from "./pool";
 import { BLOSSOM_SERVER_LIST_KIND, POLL_RESPONSE_KIND } from "applesauce-common/helpers";
@@ -30,7 +31,7 @@ export const profileLoader = createAddressLoader(pool, {
   eventStore,
   bufferTime: 200,
   extraRelays: localSettings.fallbackRelays,
-  lookupRelays: localSettings.lookupRelays,
+  lookupRelays: lookupRelays$,
 });
 
 /** Address loader that switches based on kind */
@@ -100,7 +101,7 @@ export const groupInfoLoader = createTagValueLoader(pool, "d", {
 /** Loader for loading a users social graph */
 export const socialGraphLoader = createSocialGraphLoader(pool, {
   eventStore,
-  extraRelays: localSettings.lookupRelays,
+  extraRelays: lookupRelays$,
   hints: false,
 });
 

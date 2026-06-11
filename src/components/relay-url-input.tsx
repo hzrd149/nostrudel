@@ -1,5 +1,6 @@
-import { forwardRef, useEffect, useState } from "react";
+import { ChangeEvent, FocusEventHandler, forwardRef, KeyboardEventHandler, useEffect, useState } from "react";
 import { Input, InputProps, Text } from "@chakra-ui/react";
+import { normalizeRelayUrl } from "applesauce-core/helpers";
 
 import { unique } from "../helpers/array";
 import nip66Discovery from "../services/nip66-relay-discovery";
@@ -7,6 +8,7 @@ import nip66Discovery from "../services/nip66-relay-discovery";
 export type RelayUrlInputProps = Omit<InputProps, "type">;
 
 export const RelayUrlInput = forwardRef(({ nips, ...props }: { nips?: number[] } & Omit<InputProps, "type">, ref) => {
+  const { onChange, onBlur, onKeyDown } = props;
   const [relaysJson, setRelaysJson] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
@@ -46,6 +48,33 @@ export const RelayUrlInput = forwardRef(({ nips, ...props }: { nips?: number[] }
 
   const relaySuggestions = unique(relaysJson ?? []);
 
+  // Normalize the value (add wss:// if missing) and notify the form of the change
+  const normalizeValue = (event: { currentTarget: HTMLInputElement }) => {
+    const value = event.currentTarget.value;
+    if (!value) return;
+
+    try {
+      const normalized = normalizeRelayUrl(value);
+      if (normalized !== value) {
+        event.currentTarget.value = normalized;
+        onChange?.(event as ChangeEvent<HTMLInputElement>);
+      }
+    } catch (err) {
+      // Ignore invalid URLs, let form validation handle them
+    }
+  };
+
+  const handleBlur: FocusEventHandler<HTMLInputElement> = (event) => {
+    normalizeValue(event);
+    onBlur?.(event);
+  };
+
+  // Normalize before the browser validates the URL on Enter-key form submission
+  const handleKeyDown: KeyboardEventHandler<HTMLInputElement> = (event) => {
+    if (event.key === "Enter") normalizeValue(event);
+    onKeyDown?.(event);
+  };
+
   return (
     <>
       <Input
@@ -60,6 +89,8 @@ export const RelayUrlInput = forwardRef(({ nips, ...props }: { nips?: number[] }
         aria-autocomplete="list"
         aria-expanded={relaySuggestions.length > 0}
         {...props}
+        onBlur={handleBlur}
+        onKeyDown={handleKeyDown}
       />
       <Text id="relay-suggestions-description" srOnly>
         {loading
