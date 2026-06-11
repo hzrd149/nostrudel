@@ -2,14 +2,14 @@ allowBuilds:
   better-sqlite3: true
   sharp: true
 minimumReleaseAgeExclude:
-  - applesauce-accounts@0.0.0-next-20260610164519
-  - applesauce-actions@0.0.0-next-20260610164519
-  - applesauce-common@0.0.0-next-20260610164519
-  - applesauce-content@0.0.0-next-20260610164519
-  - applesauce-extra@0.0.0-next-20260610164519
-  - applesauce-react@0.0.0-next-20260610164519
-  - applesauce-signers@0.0.0-next-20260610164519
-  - applesauce-wallet-connect@0.0.0-next-20260610164519
-  - applesauce-wallet@0.0.0-next-20260610164519
+  - applesauce-accounts@0.0.0-next-20260611173729
+  - applesauce-actions@0.0.0-next-20260611173729
+  - applesauce-common@0.0.0-next-20260611173729
+  - applesauce-content@0.0.0-next-20260611173729
+  - applesauce-extra@0.0.0-next-20260611173729
+  - applesauce-react@0.0.0-next-20260611173729
+  - applesauce-signers@0.0.0-next-20260611173729
+  - applesauce-wallet-connect@0.0.0-next-20260611173729
+  - applesauce-wallet@0.0.0-next-20260611173729
 overrides:
   nostr-tools: 2.23.5

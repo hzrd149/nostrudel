@@ -1,7 +1,6 @@
 import { Preferences } from "@capacitor/preferences";
 import { bytesToHex, hexToBytes } from "@noble/hashes/utils";
 import { type SerializedAccount } from "applesauce-accounts";
-import type { ProfilePointer } from "nostr-tools/nip19";
 
 import { PreferenceSubject } from "../classes/preference-subject";
 import { DEFAULT_FALLBACK_RELAYS, DEFAULT_MAX_CONNECTIONS, DEFAULT_MAX_RELAYS_PER_USER } from "../const";
@@ -109,10 +108,6 @@ const usernameLookupProvider = await PreferenceSubject.string("username-lookup-p
 const primalCacheUrl = await PreferenceSubject.stringNullable("primal-cache-url", null);
 const vertexRelayUrl = await PreferenceSubject.stringNullable("vertex-relay-url", null);
 const vertexSortMethod = await PreferenceSubject.string("vertex-sort-method", "globalPagerank");
-const relatrServer = await PreferenceSubject.create<ProfilePointer | null>("relatr-server", null, {
-  decode: (raw) => JSON.parse(raw),
-  encode: (value) => JSON.stringify(value),
-});
 
 const localSettings = {
   // Accounts
@@ -176,7 +171,6 @@ const localSettings = {
   primalCacheUrl,
   vertexRelayUrl,
   vertexSortMethod,
-  relatrServer,
 } satisfies Record<string, PreferenceSubject<any>>;
 
 // Migrate legacy local storage settings

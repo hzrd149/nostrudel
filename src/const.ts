@@ -1,6 +1,6 @@
 import { EventFactoryClient } from "applesauce-core/factories";
 import { isSafeRelayURL } from "applesauce-core/helpers/relays";
-import { normalizeURL, ProfilePointer } from "applesauce-core/helpers";
+import { normalizeURL } from "applesauce-core/helpers";
 
 function relays(relays: string[]) {
   return relays.filter(isSafeRelayURL).map(normalizeURL);
@@ -94,10 +94,6 @@ export const TENOR_API_KEY = import.meta.env.VITE_TENOR_API_KEY as string | unde
 
 // Username Lookup defaults
 export const DEFAULT_PRIMAL_CACHE_URL = "wss://cache2.primal.net/v1";
-export const DEFAULT_RELATR_SERVER = {
-  pubkey: "750682303c9f0ddad75941b49edc9d46e3ed306b9ee3335338a21a3e404c5fa3",
-  relays: ["wss://relay.contextvm.org"],
-} satisfies ProfilePointer;
 
 // copied from github
 export const NIP_NAMES: Record<string, string> = {

@@ -1,11 +1,10 @@
 import localSettings from "./preferences";
 import { primalLookup } from "./lookup/primal";
 import { vertexLookup } from "./lookup/vertex";
-import { lookupRelatr } from "./lookup/relatr";
 import { ProfilePointer } from "nostr-tools/nip19";
 import accounts from "./accounts";
 
-export type LookupProvider = "primal" | "vertex" | "relatr";
+export type LookupProvider = "primal" | "vertex";
 export type SearchResult = ProfilePointer & { query: string };
 
 /**
@@ -25,9 +24,6 @@ export async function lookupUsers(query: string, limit: number = 10): Promise<Se
         break;
       case "vertex":
         results = await vertexLookup(query, limit);
-        break;
-      case "relatr":
-        results = await lookupRelatr(query, limit);
         break;
     }
   }

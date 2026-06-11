@@ -29,7 +29,6 @@ import { LookupProvider } from "../../../services/user-lookup";
 import AddRelayForm from "../relays/components/add-relay-form";
 import RelayControl from "../relays/components/relay-control";
 import { PrimalConfig } from "./components/primal-config";
-import { RelatrConfig } from "./components/relatr-config";
 import { VertexConfig } from "./components/vertex-config";
 
 function RelayEntry({
@@ -166,13 +165,11 @@ function UsernameLookupSettings() {
         >
           <option value="primal">Primal - Uses Primal cache server</option>
           <option value="vertex">Vertex - Uses Vertex relay with ranked results</option>
-          <option value="relatr">Relatr - Uses Relatr search server</option>
         </Select>
       </FormControl>
 
       {selectedProvider === "primal" && <PrimalConfig />}
       {selectedProvider === "vertex" && <VertexConfig />}
-      {selectedProvider === "relatr" && <RelatrConfig />}
     </>
   );
 }
