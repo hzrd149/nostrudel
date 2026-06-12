@@ -13,7 +13,6 @@ import {
   SearchIcon,
   TorrentIcon,
   VideoIcon,
-  WikiIcon,
 } from "../icons";
 import BarChart09 from "../icons/bar-chart-09";
 import FileAttachment01 from "../icons/file-attachment-01";
@@ -74,7 +73,6 @@ export const internalApps: App[] = [
     id: "pictures",
     to: "/pictures",
   },
-  { title: "Wiki", description: "Browse wiki pages", icon: WikiIcon, id: "wiki", to: "/wiki" },
   {
     title: "Channels",
     description: "Browse and talk in channels",

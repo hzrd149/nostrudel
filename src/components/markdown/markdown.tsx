@@ -27,11 +27,9 @@ import { nip19, NostrEvent } from "nostr-tools";
 import { forwardRef, memo } from "react";
 import Markdown, { Components, defaultUrlTransform, ExtraProps } from "react-markdown";
 import remarkGfm from "remark-gfm";
-import wikiLinkPlugin from "remark-wiki-link";
 
 import { EmbedEventPointerCard } from "../embed-event/card";
 import UserLink from "../user/user-link";
-import WikiLink from "./wiki-link";
 
 const StyledMarkdown = styled(Markdown)`
   pre > code {
@@ -85,16 +83,6 @@ function H6({ children, node, ...props }: HeadingProps & ExtraProps) {
 }
 
 function A({ children, node, href, ...props }: LinkProps & ExtraProps) {
-  const properties: { className?: string; href?: string } | undefined = node?.properties;
-
-  if (properties?.className?.includes("internal") && properties.href) {
-    return (
-      <WikiLink href={href} node={node} {...props}>
-        {children}
-      </WikiLink>
-    );
-  }
-
   // render nostr: mentions
   if (href?.startsWith("nostr:")) {
     try {
@@ -180,7 +168,7 @@ export const CharkaMarkdown = memo(
     return (
       <div ref={ref}>
         <StyledMarkdown
-          remarkPlugins={[remarkGfm, wikiLinkPlugin, remarkNostrMentions]}
+          remarkPlugins={[remarkGfm, remarkNostrMentions]}
           components={components}
           skipHtml
           urlTransform={urlTransform}

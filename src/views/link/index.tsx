@@ -12,7 +12,6 @@ import { ThreadIcon } from "../../components/icons";
 import SimpleView from "../../components/layout/presets/simple-view";
 import { TORRENT_KIND } from "../../helpers/nostr/torrents";
 import { FLARE_VIDEO_KIND } from "../../helpers/nostr/video";
-import { WIKI_PAGE_KIND } from "../../helpers/nostr/wiki";
 import { POLL_KIND } from "../../helpers/nostr/polls";
 import useReplaceableEvent from "../../hooks/use-replaceable-event";
 import useSingleEvent from "../../hooks/use-single-event";
@@ -77,7 +76,6 @@ function RenderRedirect({ event, link }: { event?: NostrEvent; link: string }) {
       if (k === kinds.ChannelCreation) return <Navigate to={`/channels/${link}`} replace />;
       if (k === kinds.ShortTextNote) return <Navigate to={`/n/${link}`} replace />;
       if (k === kinds.LongFormArticle) return <Navigate to={`/articles/${link}`} replace />;
-      if (k === WIKI_PAGE_KIND) return <Navigate to={`/wiki/page/${link}`} replace />;
       if (k === PICTURE_POST_KIND) return <Navigate to={`/pictures/${link}`} replace />;
       if (k === kinds.FileMetadata) return <Navigate to={`/files/${link}`} replace />;
 

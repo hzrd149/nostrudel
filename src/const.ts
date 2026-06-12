@@ -27,7 +27,6 @@ export const DEFAULT_SEARCH_RELAYS = relays([
   "wss://relay.noswhere.com",
   "wss://filter.nostr.wine",
 ]);
-export const WIKI_RELAYS = relays(["wss://relay.wikifreedia.xyz/"]);
 
 /** The default maximum number of connections to make for outbox selection */
 export const DEFAULT_MAX_CONNECTIONS = 20;

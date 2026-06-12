@@ -9,5 +9,3 @@ export * from "./mutes.js";
 export * from "./reactions.js";
 export * from "./stream.js";
 export * from "./trusted-mints.js";
-export * from "./wiki-pages.js";
-export * from "./wiki-topics.js";

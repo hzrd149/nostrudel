@@ -50,7 +50,6 @@ import torrentsRoutes from "./views/torrents/routes";
 import userRoutes from "./views/user/routes";
 import webxdcRoutes from "./views/webxdc/routes";
 import walletRoutes from "./views/wallet/routes";
-import wikiRoutes from "./views/wiki/routes";
 
 // Redirect old hash routing
 const hashPath = window.location.hash.match(/^#(\/.+)/);
@@ -111,7 +110,6 @@ export const router = createBrowserRouter(
         { path: "streams", children: streamsRoutes },
         { path: "groups", children: groupsRoutes },
         { path: "tools", children: toolsRoutes },
-        { path: "wiki", children: wikiRoutes },
         { path: "support", Component: SupportView },
         { path: "l/:link", Component: NostrLinkView },
         { path: "t", Component: HashTagView },

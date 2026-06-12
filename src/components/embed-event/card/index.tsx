@@ -9,7 +9,6 @@ import { LIST_KINDS, SET_KINDS } from "../../../helpers/nostr/lists";
 import { isPoll } from "../../../helpers/nostr/polls";
 import { TORRENT_KIND } from "../../../helpers/nostr/torrents";
 import { FLARE_VIDEO_KIND } from "../../../helpers/nostr/video";
-import { WIKI_PAGE_KIND } from "../../../helpers/nostr/wiki";
 import useReplaceableEvent from "../../../hooks/use-replaceable-event";
 import useSingleEvent from "../../../hooks/use-single-event";
 import EmbeddedNote from "./embedded-note";
@@ -32,7 +31,6 @@ const EmbeddedChannel = lazy(() => import("./embedded-channel"));
 const EmbeddedFlareVideo = lazy(() => import("./embedded-flare-video"));
 const EmbeddedEmojiPack = lazy(() => import("./embedded-emoji-pack"));
 const EmbeddedZapRecept = lazy(() => import("./embedded-zap-receipt"));
-const EmbeddedWikiPage = lazy(() => import("./embedded-wiki-page"));
 const EmbeddedStream = lazy(() => import("./embedded-stream"));
 const EmbeddedStreamMessage = lazy(() => import("./embedded-stream-message"));
 const EmbeddedFile = lazy(() => import("./embedded-file"));
@@ -73,8 +71,6 @@ export function EmbedEventCard({ event, ...props }: Omit<CardProps, "children" |
       case kinds.Repost:
       case kinds.GenericRepost:
         return <EmbeddedRepost repost={event} {...props} />;
-      case WIKI_PAGE_KIND:
-        return <EmbeddedWikiPage page={event} {...props} />;
       case kinds.FileMetadata:
         return <EmbeddedFile file={event} {...props} />;
       case kinds.Highlights:

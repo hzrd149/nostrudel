@@ -66,7 +66,6 @@ import Magnet from "./icons/magnet";
 import Recording02 from "./icons/recording-02";
 import Upload01 from "./icons/upload-01";
 import Modem02 from "./icons/modem-02";
-import BookOpen01 from "./icons/book-open-01";
 import Edit04 from "./icons/edit-04";
 import Film02 from "./icons/film-02";
 import Camera01 from "./icons/camera-01";
@@ -243,8 +242,6 @@ export const TrackIcon = Recording02;
 
 export const InboxIcon = Download01;
 export const OutboxIcon = Upload01;
-
-export const WikiIcon = BookOpen01;
 
 export const ArticleIcon = Edit04;
 export const VideoIcon = Film02;
