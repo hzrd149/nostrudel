@@ -354,6 +354,15 @@ export const nutWalletUnlocked$: Observable<boolean> = nutWallet$.pipe(
   shareReplay(1),
 );
 
+/**
+ * The number of stale (deleted-but-still-present) token events in the active NIP-60 wallet. These pile up
+ * when delete events are disabled and can be cleaned up with {@link cleanupNutWalletDeletedTokens}.
+ */
+export const nutWalletStaleTokenCount$: Observable<number> = nutWallet$.pipe(
+  switchMap((wallet) => (wallet ? wallet.staleTokenCount$ : of(0))),
+  shareReplay(1),
+);
+
 let currentNut: { pubkey: string; wallet: NutWallet; backend: WalletBackend; sub: Subscription } | null = null;
 
 // Track the latest decryption cache so a new NIP-60 wallet can be handed it at construction. The wallet
@@ -444,6 +453,29 @@ export async function setNutWalletAutoUnlock(enabled: boolean): Promise<void> {
   wallet?.setAutoUnlock(enabled);
   if (enabled && wallet) await wallet.unlock();
 }
+
+/**
+ * Publishes a single NIP-09 (kind 5) delete event covering every stale token event the wallet has left on
+ * relays (the deleted-but-still-present token events that accumulate because the wallet does not publish
+ * delete events when it spends tokens).
+ */
+export async function cleanupNutWalletDeletedTokens(): Promise<void> {
+  const wallet = nutWallet$.value;
+  if (!wallet) throw new Error("No Cashu wallet is loaded");
+  await wallet.cleanupDeletedTokens();
+}
+
+// Automatically clean up stale token events once they reach the configured threshold (only relevant when
+// delete events are disabled). Guarded so a new cleanup is never started while one is already running.
+let autoCleanupRunning = false;
+combineLatest([nutWalletStaleTokenCount$, localSettings.cleanupNutWalletThreshold]).subscribe(([count, threshold]) => {
+  if (threshold == null || count < threshold || autoCleanupRunning) return;
+  autoCleanupRunning = true;
+  log(`Auto-cleaning up ${count} stale token events (threshold ${threshold})`);
+  cleanupNutWalletDeletedTokens()
+    .catch((error) => log("Automatic stale token cleanup failed", error))
+    .finally(() => (autoCleanupRunning = false));
+});
 
 // ---- Nostr Wallet Connect registry (the only persisted, multi-instance wallets) ----
 const nwcInstances = new Map<string, { config: StoredNwcWallet; backend: WalletBackend }>();
@@ -552,11 +584,13 @@ if (import.meta.env.DEV) {
     nutWallet$,
     nutWalletState$,
     nutWalletUnlocked$,
+    nutWalletStaleTokenCount$,
     addNwcWallet,
     removeNwcWallet,
     setActiveWallet,
     unlockNutWallet,
     setNutWalletEnabled,
     setNutWalletAutoUnlock,
+    cleanupNutWalletDeletedTokens,
   };
 }

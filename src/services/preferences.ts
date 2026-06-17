@@ -29,6 +29,13 @@ const enableNutWallet = await PreferenceSubject.boolean("enable-nut-wallet", tru
  * false so the user's signer is not spammed with decrypt requests on every load; unlocking is opt-in.
  */
 const autoUnlockNutWallet = await PreferenceSubject.boolean("auto-unlock-nut-wallet", false);
+/**
+ * The NIP-60 wallet does not publish NIP-09 (kind 5) delete events when it spends tokens, so the old token
+ * events accumulate on relays. This setting automatically cleans up those stale (deleted-but-still-present)
+ * token events once this many have accumulated. Null disables automatic cleanup, leaving the user to clean
+ * them up manually.
+ */
+const cleanupNutWalletThreshold = await PreferenceSubject.numberNullable("cleanup-nut-wallet-threshold", null);
 
 // Relays
 const fallbackRelays = await PreferenceSubject.array<string>("fallback-relays", DEFAULT_FALLBACK_RELAYS);
@@ -119,6 +126,7 @@ const localSettings = {
   activeWallet,
   enableNutWallet,
   autoUnlockNutWallet,
+  cleanupNutWalletThreshold,
 
   // Relays
   fallbackRelays,

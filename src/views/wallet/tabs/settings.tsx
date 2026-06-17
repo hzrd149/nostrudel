@@ -6,6 +6,7 @@ import {
   FormHelperText,
   FormLabel,
   Heading,
+  Input,
   Select,
   SimpleGrid,
   Switch,
@@ -19,10 +20,10 @@ import { ReactNode, useMemo, useState } from "react";
 import AddMintForm from "../../../components/cashu/add-mint-form";
 import MintControl from "../../../components/cashu/mint-control";
 import useAsyncAction from "../../../hooks/use-async-action";
-import { useNutWallet, useNutWalletUnlocked } from "../../../hooks/use-wallets";
+import { useNutWallet, useNutWalletStaleTokenCount, useNutWalletUnlocked } from "../../../hooks/use-wallets";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
 import localSettings from "../../../services/preferences";
-import { setNutWalletAutoUnlock } from "../../../services/wallets";
+import { cleanupNutWalletDeletedTokens, setNutWalletAutoUnlock } from "../../../services/wallets";
 import AddRelayForm from "../../settings/relays/components/add-relay-form";
 import RelayControl from "../../settings/relays/components/relay-control";
 
@@ -183,6 +184,73 @@ function AutoUnlockSetting() {
   );
 }
 
+/**
+ * Surfaces the old "deleted" token events the wallet leaves on relays when it spends tokens (it does not
+ * publish kind 5 delete events) with a way to clean them up — manually or automatically once they reach a
+ * configured threshold.
+ */
+function CleanupTokensSetting() {
+  const threshold = use$(localSettings.cleanupNutWalletThreshold) ?? null;
+  const staleCount = useNutWalletStaleTokenCount();
+  const unlocked = useNutWalletUnlocked();
+
+  const cleanup = useAsyncAction(async () => {
+    await cleanupNutWalletDeletedTokens();
+  }, []);
+
+  return (
+    <SettingsSection title="Cleanup Tokens">
+      <Text fontSize="sm" color="GrayText">
+        The wallet does not publish kind 5 delete events when it spends tokens, so the old token events pile up on relays
+        and your balance may be temporarily incorrect until they are cleaned up.
+      </Text>
+
+      <Flex alignItems="center" gap="2">
+        <Text fontSize="sm" color="GrayText" flex={1}>
+          {unlocked
+            ? `${staleCount} old token ${staleCount === 1 ? "event is" : "events are"} waiting to be deleted`
+            : "Unlock the wallet to see old token events"}
+        </Text>
+        <Button
+          size="sm"
+          colorScheme="primary"
+          onClick={cleanup.run}
+          isLoading={cleanup.loading}
+          isDisabled={!unlocked || staleCount === 0}
+          flexShrink={0}
+        >
+          Clean up
+        </Button>
+      </Flex>
+
+      <FormControl>
+        <FormLabel htmlFor="cleanupNutWalletThreshold" mb="1">
+          Automatic cleanup threshold
+        </FormLabel>
+        <Input
+          id="cleanupNutWalletThreshold"
+          type="number"
+          size="sm"
+          maxW="3xs"
+          min={1}
+          placeholder="Off"
+          value={threshold ?? ""}
+          onChange={(e) => {
+            const value = e.target.value.trim();
+            const parsed = Number.parseInt(value, 10);
+            localSettings.cleanupNutWalletThreshold.next(
+              value === "" || Number.isNaN(parsed) || parsed <= 0 ? null : parsed,
+            );
+          }}
+        />
+        <FormHelperText>
+          Automatically delete old token events once this many have piled up. Leave empty to only clean them up manually.
+        </FormHelperText>
+      </FormControl>
+    </SettingsSection>
+  );
+}
+
 const DAY_IN_SECONDS = 60 * 60 * 24;
 
 /** Deletes wallet history events older than a selected age */
@@ -211,7 +279,7 @@ function ClearHistorySetting() {
   }, [publish, matching, age]);
 
   return (
-    <SettingsSection title="Advanced">
+    <SettingsSection title="History">
       <FormControl>
         <FormLabel mb="1">Clear history</FormLabel>
         <Flex gap="2">
@@ -249,6 +317,7 @@ export default function WalletSettingsTab() {
       <RelayManagement />
       <TokenTools />
       <AutoUnlockSetting />
+      <CleanupTokensSetting />
       <ClearHistorySetting />
     </SimpleGrid>
   );
