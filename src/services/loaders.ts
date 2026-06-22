@@ -8,6 +8,7 @@ import {
   createUserListsLoader,
   createZapsLoader,
   createEventLoaderForStore,
+  LoadableAddressPointer,
 } from "applesauce-loaders/loaders";
 import { kinds } from "nostr-tools";
 import { cacheRequest } from "./event-cache";
@@ -35,7 +36,7 @@ export const profileLoader = createAddressLoader(pool, {
 });
 
 /** Address loader that switches based on kind */
-export const addressLoader: AddressPointerLoader = (pointer) => {
+export const addressLoader = (pointer: LoadableAddressPointer) => {
   if (
     pointer.kind === kinds.Metadata ||
     pointer.kind === kinds.RelayList ||
