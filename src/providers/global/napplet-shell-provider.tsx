@@ -15,6 +15,7 @@ import {
 } from "@chakra-ui/react";
 import {
   createIdentityService,
+  createLinkService,
   createNotifyService,
   createOutboxService,
   createRelayPoolOutboxRouter,
@@ -33,13 +34,14 @@ import {
   type ShellBridge,
 } from "@kehto/shell";
 import { getContacts, getInboxes, getOutboxes } from "applesauce-core/helpers";
-import { EventTemplate, kinds, NostrEvent } from "nostr-tools";
+import { EventTemplate, Filter, kinds, NostrEvent } from "nostr-tools";
 import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { catchError, filter, firstValueFrom, Observable, of, take, timeout } from "rxjs";
+import { catchError, filter, firstValueFrom, Observable, of, take, timeout, toArray } from "rxjs";
 
 import { unique } from "../../helpers/array";
 import { getNappletTitle } from "../../helpers/nostr/napplets";
 import accounts from "../../services/accounts";
+import { cacheRequest, eventCache$, writeEvent } from "../../services/event-cache";
 import { eventStore } from "../../services/event-store";
 import pool from "../../services/pool";
 import localSettings from "../../services/preferences";
@@ -195,8 +197,27 @@ function createAdapter(toast: ReturnType<typeof useToast>): ShellAdapter {
     hotkeys: {
       executeHotkeyFromForward: () => {},
     },
+    // NAP-CACHE: back the runtime cache with noStrudel's local event cache so napplet
+    // relay subscriptions are served from cache first and incoming events are persisted.
     workerRelay: {
-      getWorkerRelay: () => null,
+      getWorkerRelay: () =>
+        eventCache$.value
+          ? {
+              // req is a NIP-01 REQ frame: ["REQ", subId, ...filters]
+              query: (req: unknown) =>
+                firstValueFrom(cacheRequest((req as unknown[]).slice(2) as Filter[]).pipe(toArray()), {
+                  defaultValue: [],
+                }),
+              // Only cache validly-signed events so a napplet can't poison the shared cache.
+              event: async (event: NostrEvent) => {
+                if (verifyEvent(event)) writeEvent(event);
+              },
+            }
+          : null,
+    },
+    // NAP-LINK availability flag (the handler lives in adapter.services.link).
+    link: {
+      isAvailable: () => true,
     },
     crypto: {
       verifyEvent: async (event) => verifyEvent(event as NostrEvent),
@@ -262,6 +283,13 @@ function createAdapter(toast: ReturnType<typeof useToast>): ShellAdapter {
       getFollows: (pubkey) => getIdentityFollows(pubkey),
     }),
     outbox: createOutboxService({ router: outboxRouter }),
+    // NAP-LINK handler: open an external URL in a new tab (advertised via adapter.link below).
+    link: createLinkService({
+      open: ({ url }) => {
+        const opened = window.open(url.toString(), "_blank", "noopener,noreferrer");
+        return { status: opened ? "opened" : "denied" };
+      },
+    }),
     notify: createNotifyService({
       onSend: (_windowId, message) => {
         toast({ title: message.title, description: message.body, status: "info" });
