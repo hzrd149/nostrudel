@@ -11,6 +11,6 @@ export default [
   { index: true, Component: ToolsHomeView },
   { path: "console", Component: EventConsoleView },
   { path: "publisher", Component: EventPublisherView },
-  { path: "napplets", Component: NappletToolView },
+  { path: "napplets/:address?", Component: NappletToolView },
   { path: "external/:id", Component: ExternalAppView },
 ] satisfies RouteObject[];

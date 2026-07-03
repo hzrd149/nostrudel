@@ -13,30 +13,36 @@ import {
   UnorderedList,
   useToast,
 } from "@chakra-ui/react";
-import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
-import { NostrEvent } from "nostr-tools";
+import {
+  createIdentityService,
+  createNotifyService,
+  createOutboxService,
+  createRelayPoolOutboxRouter,
+  createRelayPoolService,
+  createThemeService,
+  type OutboxRelayPool,
+  type RelayListEntry,
+} from "@kehto/services";
 import {
   createShellBridge,
   originRegistry,
   sessionRegistry,
   type Capability,
+  type RelayPoolLike,
   type ShellAdapter,
   type ShellBridge,
-  type RelayPoolLike,
 } from "@kehto/shell";
-import {
-  createIdentityService,
-  createNotifyService,
-  createRelayPoolService,
-  createThemeService,
-} from "@kehto/services";
+import { getContacts, getInboxes, getOutboxes } from "applesauce-core/helpers";
+import { EventTemplate, kinds, NostrEvent } from "nostr-tools";
+import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { catchError, filter, firstValueFrom, Observable, of, take, timeout } from "rxjs";
 
 import { unique } from "../../helpers/array";
-import { getNappletRequiredCapabilities, getNappletTitle } from "../../helpers/nostr/napplets";
+import { getNappletTitle } from "../../helpers/nostr/napplets";
 import accounts from "../../services/accounts";
 import { eventStore } from "../../services/event-store";
-import localSettings from "../../services/preferences";
 import pool from "../../services/pool";
+import localSettings from "../../services/preferences";
 import verifyEvent from "../../services/verify-event";
 
 type NappletIdentity = {
@@ -103,6 +109,46 @@ function getSigner() {
   };
 }
 
+/** Resolve the first non-empty value from a reactive event-store model, or undefined on timeout. */
+async function firstOrUndefined<T>(observable: Observable<T>, ms = 4000): Promise<T | undefined> {
+  return firstValueFrom(
+    observable.pipe(
+      filter((value): value is T => value !== undefined && value !== null),
+      take(1),
+      timeout(ms),
+      catchError(() => of(undefined)),
+    ),
+    { defaultValue: undefined },
+  );
+}
+
+// NAP-IDENTITY read hooks resolve the *current user's* data from the event store, which
+// auto-loads the backing events (kind 0 profile, kind 3 contacts) from relays on demand.
+async function getIdentityProfile(pubkey: string) {
+  if (!pubkey) return null;
+  const content = await firstOrUndefined(eventStore.profile(pubkey));
+  if (!content) return null;
+
+  return {
+    name: content.name,
+    displayName: content.display_name ?? content.displayName,
+    about: content.about,
+    picture: content.picture,
+    banner: content.banner,
+    nip05: content.nip05,
+    lud16: content.lud16,
+    website: content.website,
+  };
+}
+
+async function getIdentityFollows(pubkey: string) {
+  if (!pubkey) return [];
+  // Load the kind-3 event itself (auto-loaded from relays); the contacts model would
+  // emit an empty array before the event arrives, so `take(1)` must wait on the event.
+  const event = await firstOrUndefined(eventStore.replaceable({ kind: kinds.Contacts, pubkey }));
+  return event ? getContacts(event).map((contact) => contact.pubkey) : [];
+}
+
 function getReadRelays() {
   return localSettings.fallbackRelays.value;
 }
@@ -163,8 +209,59 @@ function createAdapter(toast: ReturnType<typeof useToast>): ShellAdapter {
     },
   };
 
+  // NAP-OUTBOX: shell-mediated, outbox-model (NIP-65) relay routing. The shell owns
+  // relay discovery, signing, and fanout so napplets never touch keys or pick relays.
+  const outboxRelayPool: OutboxRelayPool = {
+    subscribe: (filters, relayUrls, callback) => {
+      const sub = pool.subscription(relayUrls, filters as any).subscribe((item) => {
+        callback((item as unknown) === "EOSE" ? "EOSE" : (item as NostrEvent));
+      });
+      return { unsubscribe: () => sub.unsubscribe() };
+    },
+    publish: (event, relayUrls) => {
+      pool.publish(relayUrls, event);
+    },
+    isAvailable: () => true,
+  };
+
+  const outboxRouter = createRelayPoolOutboxRouter({
+    relayPool: outboxRelayPool,
+    // Resolve NIP-65 relay lists on demand; the event store auto-loads missing lists.
+    loadRelayLists: async (pubkeys) => {
+      const lists = new Map<string, RelayListEntry>();
+      await Promise.all(
+        pubkeys.map(async (pubkey) => {
+          const list = await firstValueFrom(
+            eventStore.replaceable({ kind: kinds.RelayList, pubkey }).pipe(
+              filter((event): event is NostrEvent => !!event),
+              take(1),
+              timeout(3000),
+              catchError(() => of(undefined)),
+            ),
+            { defaultValue: undefined },
+          );
+          if (list) lists.set(pubkey, { read: getInboxes(list), write: getOutboxes(list) });
+        }),
+      );
+      return lists;
+    },
+    fallbackRelays: getReadRelays(),
+    // Napplets never sign; the shell signs with the active account.
+    signEvent: async (template: EventTemplate) => {
+      const account = accounts.active;
+      if (!account) throw new Error("No active account to sign with");
+      return account.signEvent(template);
+    },
+    verifyEvent: (event) => verifyEvent(event),
+  });
+
   adapter.services = {
-    identity: createIdentityService({ getSigner }),
+    identity: createIdentityService({
+      getSigner,
+      getProfile: (pubkey) => getIdentityProfile(pubkey),
+      getFollows: (pubkey) => getIdentityFollows(pubkey),
+    }),
+    outbox: createOutboxService({ router: outboxRouter }),
     notify: createNotifyService({
       onSend: (_windowId, message) => {
         toast({ title: message.title, description: message.body, status: "info" });

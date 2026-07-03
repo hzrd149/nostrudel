@@ -3,7 +3,10 @@ allowBuilds:
   sharp: true
 minimumReleaseAgeExclude:
   - "@kehto/nip@0.4.0"
-  - "@kehto/services@0.11.1"
-  - "@kehto/shell@0.13.0"
+  - "@kehto/runtime@0.18.0"
+  - "@kehto/services@0.15.0"
+  - "@kehto/shell@0.16.2"
+  - "@napplet/core@0.25.0"
+  - "@napplet/nap@0.25.0"
 overrides:
   nostr-tools: 2.23.5
