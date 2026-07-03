@@ -9,6 +9,7 @@ import { eventStore } from "../../services/event-store";
 import buildTheme from "../../theme";
 import BreakpointProvider from "./breakpoint-provider";
 import { UserEmojiProvider } from "./emoji-provider";
+import { NappletShellProvider } from "./napplet-shell-provider";
 import PublishProvider from "./publish-provider";
 
 function ThemeProviders({ children }: { children: React.ReactNode }) {
@@ -30,7 +31,9 @@ export const GlobalProviders = ({ children }: { children: React.ReactNode }) => 
         <ActionsProvider runner={actions}>
           <ThemeProviders>
             <PublishProvider>
-              <UserEmojiProvider>{children}</UserEmojiProvider>
+              <NappletShellProvider>
+                <UserEmojiProvider>{children}</UserEmojiProvider>
+              </NappletShellProvider>
             </PublishProvider>
           </ThemeProviders>
         </ActionsProvider>

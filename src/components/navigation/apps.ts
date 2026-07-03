@@ -114,6 +114,13 @@ export const internalTools: App[] = [
     to: "/tools/publisher",
   },
   {
+    title: "Napplet Frame",
+    description: "Mount NIP-5D napplets",
+    icon: PuzzlePiece01,
+    id: "napplets",
+    to: "/tools/napplets",
+  },
+  {
     title: "Stream Moderation",
     description: "A dashboard for moderating streams",
     icon: LiveStreamIcon,
