@@ -13,6 +13,7 @@ import { CloseIcon, RepeatIcon } from "@chakra-ui/icons";
 import { NostrEvent } from "nostr-tools";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { openNappletArtifactCache, resolveNapplet, type ResolvedNapplet } from "@kehto/nip";
+import { injectNappletNamespacePrelude } from "@kehto/shell";
 
 import SimpleView from "../layout/presets/simple-view";
 import {
@@ -21,6 +22,8 @@ import {
   getUnsupportedNappletRequirements,
 } from "../../helpers/nostr/napplets";
 import { useNappletShell } from "../../providers/global/napplet-shell-provider";
+
+const NAPPLET_DOMAINS = ["identity", "link", "notify", "outbox", "relay", "theme"] as const;
 
 export type NappletFrameProps = {
   event: NostrEvent;
@@ -115,7 +118,7 @@ export default function NappletFrame({ event, onClose, onResolved, onError }: Na
         aggregateHash: napplet.aggregateHash,
       });
 
-      node.srcdoc = napplet.indexHtml;
+      node.srcdoc = injectNappletNamespacePrelude(napplet.indexHtml, { domains: NAPPLET_DOMAINS });
     },
     [event.id, napplet, registerFrame, reloadKey, unregisterFrame],
   );
