@@ -25,6 +25,7 @@ import {
   type RelayListEntry,
 } from "@kehto/services";
 import {
+  buildShellCapabilities,
   createShellBridge,
   originRegistry,
   sessionRegistry,
@@ -32,6 +33,7 @@ import {
   type RelayPoolLike,
   type ShellAdapter,
   type ShellBridge,
+  type ShellCapabilities,
 } from "@kehto/shell";
 import { getContacts, getInboxes, getOutboxes } from "applesauce-core/helpers";
 import { EventTemplate, Filter, kinds, NostrEvent } from "nostr-tools";
@@ -62,6 +64,8 @@ type ConsentRequest = {
 
 type NappletShellContextValue = {
   bridge: ShellBridge;
+  /** Shell capability set computed from the adapter via buildShellCapabilities. */
+  capabilities: ShellCapabilities;
   requestConsent: (event: NostrEvent, identity: NappletIdentity, capabilities: Capability[]) => Promise<boolean>;
   registerFrame: (windowId: string, win: Window, identity: Pick<NappletIdentity, "dTag" | "aggregateHash">) => void;
   unregisterFrame: (windowId: string) => void;
@@ -70,6 +74,18 @@ type NappletShellContextValue = {
 const NappletShellContext = createContext<NappletShellContextValue | null>(null);
 
 const ALWAYS_ALLOW_STORAGE_KEY = "nostrudel:napplet:always-allow";
+
+/**
+ * NAP domains the shell advertises by default that noStrudel does not back with
+ * a service handler. Disabling them here keeps `shell.init` capabilities, the
+ * injected `window.napplet.<domain>` prelude, and `adapter.services` in sync —
+ * a napplet's `supports('<domain>')` only returns true when the domain actually
+ * works. Wire a service + remove the entry here to enable one.
+ *
+ * `storage` and `inc` are intentionally NOT listed: @kehto/runtime backs them
+ * directly (state-handler + default localStorage persistence; inc fanout router).
+ */
+const DISABLED_NAP_DOMAINS = ["keys", "media", "config", "resource", "cvm"] as const;
 
 function identityKey(identity: NappletIdentity) {
   return `${identity.pubkey}:${identity.dTag}:${identity.aggregateHash}`;
@@ -228,6 +244,8 @@ function createAdapter(toast: ReturnType<typeof useToast>): ShellAdapter {
     onHashMismatch: (dTag, claimed, computed) => {
       toast({ status: "error", description: `Napplet ${dTag} hash mismatch: ${claimed} != ${computed}` });
     },
+    // Narrow shell.init to domains noStrudel actually backs. See DISABLED_NAP_DOMAINS.
+    capabilities: { disabledDomains: [...DISABLED_NAP_DOMAINS] },
   };
 
   // NAP-OUTBOX: shell-mediated, outbox-model (NIP-65) relay routing. The shell owns
@@ -320,7 +338,11 @@ function createAdapter(toast: ReturnType<typeof useToast>): ShellAdapter {
 export function NappletShellProvider({ children }: PropsWithChildren) {
   const toast = useToast();
   const [consent, setConsent] = useState<ConsentRequest>();
-  const bridge = useMemo(() => createShellBridge(createAdapter(toast)), [toast]);
+  const adapter = useMemo(() => createAdapter(toast), [toast]);
+  const bridge = useMemo(() => createShellBridge(adapter), [adapter]);
+  // Single source of truth for advertised NAP domains: derived from the same
+  // adapter the bridge uses, so shell.init and the namespace prelude can't drift.
+  const capabilities = useMemo(() => buildShellCapabilities(adapter), [adapter]);
 
   useEffect(() => {
     window.addEventListener("message", bridge.handleMessage);
@@ -359,8 +381,8 @@ export function NappletShellProvider({ children }: PropsWithChildren) {
   );
 
   const context = useMemo(
-    () => ({ bridge, requestConsent, registerFrame, unregisterFrame }),
-    [bridge, requestConsent, registerFrame, unregisterFrame],
+    () => ({ bridge, capabilities, requestConsent, registerFrame, unregisterFrame }),
+    [bridge, capabilities, requestConsent, registerFrame, unregisterFrame],
   );
 
   const respond = useCallback(

@@ -23,8 +23,6 @@ import {
 } from "../../helpers/nostr/napplets";
 import { useNappletShell } from "../../providers/global/napplet-shell-provider";
 
-const NAPPLET_DOMAINS = ["identity", "link", "notify", "outbox", "relay", "theme"] as const;
-
 export type NappletFrameProps = {
   event: NostrEvent;
   onClose?: () => void;
@@ -48,7 +46,7 @@ async function fetchNappletBlob(sha256Hex: string, servers: readonly string[]) {
 
 /** Renders a NIP-5D napplet full-page: a simple title/action header and the sandboxed frame below. */
 export default function NappletFrame({ event, onClose, onResolved, onError }: NappletFrameProps) {
-  const { requestConsent, registerFrame, unregisterFrame } = useNappletShell();
+  const { requestConsent, registerFrame, unregisterFrame, capabilities } = useNappletShell();
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
   const windowIdRef = useRef<string>();
   const [reloadKey, setReloadKey] = useState(0);
@@ -118,9 +116,11 @@ export default function NappletFrame({ event, onClose, onResolved, onError }: Na
         aggregateHash: napplet.aggregateHash,
       });
 
-      node.srcdoc = injectNappletNamespacePrelude(napplet.indexHtml, { domains: NAPPLET_DOMAINS });
+      // Inject the same domain set shell.init advertises, so supports() and the
+      // materialised window.napplet.<domain> proxies never diverge.
+      node.srcdoc = injectNappletNamespacePrelude(napplet.indexHtml, { domains: capabilities.domains });
     },
-    [event.id, napplet, registerFrame, reloadKey, unregisterFrame],
+    [event.id, napplet, registerFrame, reloadKey, unregisterFrame, capabilities.domains],
   );
 
   const reload = useCallback(() => {
