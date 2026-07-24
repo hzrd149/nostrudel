@@ -20,11 +20,14 @@ import {
   getNappletRequiredCapabilities,
   getNappletTitle,
   getUnsupportedNappletRequirements,
+  type NappletIntent,
 } from "../../helpers/nostr/napplets";
 import { useNappletShell } from "../../providers/global/napplet-shell-provider";
+import { createNappletIntentDelivery, type NappletIntentDelivery } from "../../services/napplet-intent-delivery";
 
 export type NappletFrameProps = {
   event: NostrEvent;
+  intent?: NappletIntent;
   onClose?: () => void;
   onResolved?: (napplet: ResolvedNapplet) => void;
   onError?: (error: Error) => void;
@@ -45,16 +48,24 @@ async function fetchNappletBlob(sha256Hex: string, servers: readonly string[]) {
 }
 
 /** Renders a NIP-5D napplet full-page: a simple title/action header and the sandboxed frame below. */
-export default function NappletFrame({ event, onClose, onResolved, onError }: NappletFrameProps) {
+export default function NappletFrame({ event, intent, onClose, onResolved, onError }: NappletFrameProps) {
   const { requestConsent, registerFrame, unregisterFrame, capabilities } = useNappletShell();
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
   const windowIdRef = useRef<string>();
+  const deliveryRef = useRef<NappletIntentDelivery | null>(null);
+  const deliveredKeyRef = useRef("");
+  const intentKey = intent ? JSON.stringify(intent) : "";
+  const intentRef = useRef(intent);
   const [reloadKey, setReloadKey] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error>();
   const [napplet, setNapplet] = useState<ResolvedNapplet>();
 
   const title = getNappletTitle(event);
+
+  useEffect(() => {
+    intentRef.current = intent;
+  }, [intent]);
 
   // Resolve (and re-resolve on reload) the napplet from its manifest event.
   useEffect(() => {
@@ -98,8 +109,19 @@ export default function NappletFrame({ event, onClose, onResolved, onError }: Na
   useEffect(() => {
     return () => {
       if (windowIdRef.current) unregisterFrame(windowIdRef.current);
+      deliveryRef.current?.dispose();
     };
   }, [unregisterFrame]);
+
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      if (event.source !== iframeRef.current?.contentWindow) return;
+      deliveryRef.current?.observeReady(event);
+    };
+
+    window.addEventListener("message", handleMessage);
+    return () => window.removeEventListener("message", handleMessage);
+  }, []);
 
   const setIframe = useCallback(
     (node: HTMLIFrameElement | null) => {
@@ -108,6 +130,7 @@ export default function NappletFrame({ event, onClose, onResolved, onError }: Na
 
       // Register before assigning srcdoc so early shell.ready messages can route.
       if (windowIdRef.current) unregisterFrame(windowIdRef.current);
+      deliveryRef.current?.dispose();
 
       const windowId = `napplet:${event.id}:${reloadKey}`;
       windowIdRef.current = windowId;
@@ -115,6 +138,17 @@ export default function NappletFrame({ event, onClose, onResolved, onError }: Na
         dTag: napplet.dTag,
         aggregateHash: napplet.aggregateHash,
       });
+
+      const delivery = createNappletIntentDelivery({ getTarget: () => iframeRef.current?.contentWindow ?? null });
+      deliveryRef.current = delivery;
+
+      const seeded = intentRef.current;
+      if (seeded) {
+        delivery.seed(seeded);
+        deliveredKeyRef.current = JSON.stringify(seeded);
+      } else {
+        deliveredKeyRef.current = "";
+      }
 
       // Inject the same domain set shell.init advertises, so supports() and the
       // materialised window.napplet.<domain> proxies never diverge.
@@ -125,9 +159,23 @@ export default function NappletFrame({ event, onClose, onResolved, onError }: Na
 
   const reload = useCallback(() => {
     if (windowIdRef.current) unregisterFrame(windowIdRef.current);
+    deliveryRef.current?.dispose();
     windowIdRef.current = undefined;
+    deliveryRef.current = null;
+    deliveredKeyRef.current = "";
     setReloadKey((key) => key + 1);
   }, [unregisterFrame]);
+
+  useEffect(() => {
+    if (!intent || !intentKey) return;
+    if (deliveredKeyRef.current === intentKey) return;
+
+    const delivery = deliveryRef.current;
+    if (!delivery) return;
+
+    deliveredKeyRef.current = intentKey;
+    delivery.redeliver(intent);
+  }, [intent, intentKey]);
 
   return (
     <SimpleView

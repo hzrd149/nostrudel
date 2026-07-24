@@ -37,6 +37,7 @@ export type App = {
 export const internalApps: App[] = [
   { title: "Notes", description: "Short text posts from your friends", icon: NotesIcon, id: "notes", to: "/notes" },
   { title: "Feeds", description: "Discover new feeds", icon: PuzzlePiece01, id: "feeds", to: "/feeds" },
+  { title: "Napplets", description: "Installed NIP-5D mini apps", icon: PuzzlePiece01, id: "napplets", to: "/napplets" },
   {
     title: "Notifications",
     description: "Notifications feed",
@@ -114,10 +115,10 @@ export const internalTools: App[] = [
     to: "/tools/publisher",
   },
   {
-    title: "Napplet Frame",
-    description: "Mount NIP-5D napplets",
+    title: "Napplet Installer",
+    description: "Install NIP-5D napplets",
     icon: PuzzlePiece01,
-    id: "napplets",
+    id: "napplet-installer",
     to: "/tools/napplets",
   },
   {

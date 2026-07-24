@@ -11,6 +11,7 @@ import { defaultAnonFavoriteApps, defaultUserFavoriteApps, internalApps, interna
 import NavItem from "./nav-item";
 import Plus from "../../icons/plus";
 import useFavoriteInternalIds from "../../../hooks/use-favorite-internal-ids";
+import { getInstalledNapplets } from "../../../services/installed-napplets";
 
 export default function NavItems() {
   const account = useActiveAccount();
@@ -25,7 +26,12 @@ export default function NavItems() {
   }, [favorites]);
 
   const recentApps = useMemo(() => {
-    const internal = [...internalApps, ...internalTools];
+    const installedNapplets = getInstalledNapplets().map((napplet) => ({
+      id: `napplet:${napplet.address}`,
+      title: napplet.title,
+      to: `/napplets/${napplet.address}`,
+    }));
+    const internal = [...internalApps, ...internalTools, ...installedNapplets];
     return recent
       .filter((id) => !favorites.includes(id))
       .map((id) => internal.find((app) => app.id === id))

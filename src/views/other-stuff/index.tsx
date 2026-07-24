@@ -1,13 +1,14 @@
 import { Box, Heading, Input, SimpleGrid, Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
-import { allApps, App, externalTools, internalTools } from "../../components/navigation/apps";
+import { allApps as staticApps, App, externalTools, internalTools } from "../../components/navigation/apps";
 import SimpleNavBox from "../../components/layout/box-layout/simple-nav-box";
 import SimpleView from "../../components/layout/presets/simple-view";
 import AppFavoriteButton from "../../components/navigation/app-favorite-button";
 import useRecentIds from "../../hooks/use-recent-ids";
 import useRouteSearchValue from "../../hooks/use-route-search-value";
 import { useBreakpointValue } from "../../providers/global/breakpoint-provider";
+import { getInstalledNapplets } from "../../services/installed-napplets";
 import { AppIcon } from "./component/app-card";
 
 const tabs = ["all", "tools", "3rd-party-tools"];
@@ -26,11 +27,26 @@ function AppRow({ app, canFavorite = true, onUse }: { app: App; canFavorite?: bo
   );
 }
 
+function canFavoriteApp(app: App) {
+  return !externalTools.includes(app) && !app.id.startsWith("napplet:");
+}
+
 export default function OtherStuffView() {
   const [search, setSearch] = useState("");
   const tab = useRouteSearchValue("tab", "all");
   const { recent: recentApps, useThing: useApp } = useRecentIds("apps");
   const autoFocusSearch = useBreakpointValue({ base: false, lg: true });
+  const installedNappletApps = useMemo<App[]>(
+    () =>
+      getInstalledNapplets().map((napplet) => ({
+        id: `napplet:${napplet.address}`,
+        title: napplet.title,
+        description: napplet.description || "Installed NIP-5D napplet",
+        to: `/napplets/${napplet.address}`,
+      })),
+    [],
+  );
+  const allApps = useMemo(() => [...staticApps, ...installedNappletApps], [installedNappletApps]);
 
   const columns = { base: 1, lg: 2, xl: 3, "2xl": 4 };
 
@@ -51,7 +67,7 @@ export default function OtherStuffView() {
                 app.description.toLowerCase().includes(search.toLowerCase()),
             )
             .map((app) => (
-              <AppRow key={app.id} app={app} onUse={useApp} />
+              <AppRow key={app.id} app={app} canFavorite={canFavoriteApp(app)} onUse={useApp} />
             ))}
         </SimpleGrid>
       );
@@ -67,7 +83,7 @@ export default function OtherStuffView() {
               {recentApps.slice(0, 6).map((id) => {
                 const app = allApps.find((a) => a.id === id);
                 return app ? (
-                  <AppRow key={app.id} app={app} canFavorite={!externalTools.includes(app)} onUse={useApp} />
+                  <AppRow key={app.id} app={app} canFavorite={canFavoriteApp(app)} onUse={useApp} />
                 ) : null;
               })}
             </SimpleGrid>
@@ -89,7 +105,7 @@ export default function OtherStuffView() {
           <TabPanels>
             <TabPanel as={SimpleGrid} columns={columns} px="0" py="0" borderTopWidth={1}>
               {allApps.sort(sortByName).map((app) => (
-                <AppRow key={app.id} app={app} canFavorite={!externalTools.includes(app)} onUse={useApp} />
+                <AppRow key={app.id} app={app} canFavorite={canFavoriteApp(app)} onUse={useApp} />
               ))}
             </TabPanel>
             <TabPanel as={SimpleGrid} columns={columns} px="0" py="0" borderTopWidth={1}>

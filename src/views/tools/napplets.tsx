@@ -4,70 +4,70 @@ import {
   AlertIcon,
   Box,
   Button,
-  Card,
-  CardBody,
   Flex,
   FormControl,
   FormLabel,
   Heading,
-  IconButton,
   Input,
   Spinner,
   Text,
 } from "@chakra-ui/react";
-import { CloseIcon } from "@chakra-ui/icons";
 import { DecodeResult } from "applesauce-core/helpers";
-import { nip19, NostrEvent } from "nostr-tools";
+import { NostrEvent } from "nostr-tools";
 import { FormEventHandler, useCallback, useEffect, useMemo, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 
-import NappletFrame from "../../components/napplets/napplet-frame";
 import SimpleView from "../../components/layout/presets/simple-view";
-import UserAvatar from "../../components/user/user-avatar";
-import UserName from "../../components/user/user-name";
-import Timestamp from "../../components/timestamp";
-import { getNappletTitle, isNappletManifestKind } from "../../helpers/nostr/napplets";
-import useEvent from "../../hooks/use-event";
 import {
-  addRecentNapplet,
-  getRecentNapplets,
-  removeRecentNapplet,
-  type RecentNapplet,
-} from "../../services/recent-napplets";
-
-function parsePointer(value: string): DecodeResult | undefined {
-  try {
-    return nip19.decode(value.trim()) as DecodeResult;
-  } catch {
-    return undefined;
-  }
-}
-
-// The three NIP-19 entities that can point to a napplet manifest event:
-// note/nevent -> a snapshot/root/named event by id, naddr -> a root/named event by coordinate.
-function nappletEventPointer(pointer: DecodeResult) {
-  switch (pointer.type) {
-    case "note":
-    case "nevent":
-    case "naddr":
-      return pointer.data;
-    default:
-      return undefined;
-  }
-}
+  getNappletArchetypes,
+  getNappletEventPointer,
+  getNappletNaddr,
+  getNappletTitle,
+  NAPPLET_INTENT_PARAM,
+  encodeNappletIntent,
+  isNappletManifestKind,
+  parseNappletIntent,
+  parseNappletPointer,
+  type NappletIntent,
+} from "../../helpers/nostr/napplets";
+import useEvent from "../../hooks/use-event";
+import { useNappletShell } from "../../providers/global/napplet-shell-provider";
+import { addRecentNappletEvent } from "../../services/recent-napplets";
+import { getInstalledNapplets, installNapplet, uninstallNapplet } from "../../services/installed-napplets";
+import InstalledNappletCard from "../napplets/components/installed-napplet-card";
 
 // Loads the manifest event for a pointer, then mounts it full-page. The napplet
 // auto-launches — there is no manual launch step once an address is set.
-function NappletLoader({ address, pointer, onClose }: { address: string; pointer: DecodeResult; onClose: () => void }) {
+function NappletLoader({
+  pointer,
+  intent,
+}: {
+  pointer: DecodeResult;
+  intent?: NappletIntent;
+}) {
+  const navigate = useNavigate();
   // Call useEvent unconditionally (rules of hooks); it no-ops on an undefined pointer.
-  const eventPointer = useMemo(() => nappletEventPointer(pointer), [pointer]);
+  const eventPointer = useMemo(() => getNappletEventPointer(pointer), [pointer]);
   const event: NostrEvent | undefined = useEvent(eventPointer);
 
-  // Remember loaded napplets so they can be re-selected from the home view.
+  // Install loaded napplets locally and hand off to the first-class route.
   useEffect(() => {
-    if (event && isNappletManifestKind(event.kind))
-      addRecentNapplet({ address, title: getNappletTitle(event), pubkey: event.pubkey });
-  }, [event, address]);
+    if (!event || !isNappletManifestKind(event.kind)) return;
+
+    const naddr = getNappletNaddr(event);
+    if (!naddr) return;
+
+    installNapplet(event, naddr);
+    addRecentNappletEvent({
+      address: naddr,
+      title: getNappletTitle(event),
+      event,
+      archetypes: getNappletArchetypes(event),
+    });
+
+    const search = intent ? `?${NAPPLET_INTENT_PARAM}=${encodeNappletIntent(intent)}` : "";
+    navigate(`/napplets/${naddr}${search}`, { replace: true });
+  }, [event, intent, navigate]);
 
   if (!eventPointer)
     return (
@@ -101,46 +101,23 @@ function NappletLoader({ address, pointer, onClose }: { address: string; pointer
       </SimpleView>
     );
 
-  return <NappletFrame event={event} onClose={onClose} />;
-}
+  if (!getNappletNaddr(event))
+    return (
+      <SimpleView title="Napplet">
+        <Alert status="warning">
+          <AlertIcon />
+          <AlertDescription>This napplet manifest cannot be installed because it does not have a naddr.</AlertDescription>
+        </Alert>
+      </SimpleView>
+    );
 
-function RecentNappletCard({
-  napplet,
-  onSelect,
-  onRemove,
-}: {
-  napplet: RecentNapplet;
-  onSelect: () => void;
-  onRemove: () => void;
-}) {
   return (
-    <Card variant="outline" size="sm" cursor="pointer" onClick={onSelect} _hover={{ borderColor: "primary.500" }}>
-      <CardBody p="2">
-        <Flex alignItems="center" gap="3">
-          <UserAvatar pubkey={napplet.pubkey} size="sm" />
-          <Box flex="1" minW="0">
-            <Text fontWeight="semibold" noOfLines={1}>
-              {napplet.title}
-            </Text>
-            <Flex gap="1" fontSize="xs" color="GrayText" alignItems="center" minW="0">
-              <UserName pubkey={napplet.pubkey} fontSize="xs" isTruncated />
-              <Text>·</Text>
-              <Timestamp timestamp={Math.round(napplet.loadedAt / 1000)} whiteSpace="nowrap" />
-            </Flex>
-          </Box>
-          <IconButton
-            size="sm"
-            variant="ghost"
-            aria-label="Remove from recent"
-            icon={<CloseIcon />}
-            onClick={(e) => {
-              e.stopPropagation();
-              onRemove();
-            }}
-          />
-        </Flex>
-      </CardBody>
-    </Card>
+    <SimpleView title="Napplet" scroll={false}>
+      <Flex flexGrow={1} h={0} direction="column" alignItems="center" justifyContent="center" gap="2">
+        <Spinner />
+        <Text color="GrayText">Installing napplet...</Text>
+      </Flex>
+    </SimpleView>
   );
 }
 
@@ -148,15 +125,18 @@ export default function NappletToolView() {
   // The loaded napplet address is stored in the URL (/tools/napplets/<address>)
   const { address } = useParams<{ address: string }>();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const { setIntentNavigator } = useNappletShell();
   const [value, setValue] = useState(address ?? "");
-  const [recent, setRecent] = useState<RecentNapplet[]>(() => getRecentNapplets());
+  const [installed, setInstalled] = useState(() => getInstalledNapplets());
 
-  const pointer = useMemo(() => (address ? parsePointer(address) : undefined), [address]);
+  const pointer = useMemo(() => (address ? parseNappletPointer(address) : undefined), [address]);
+  const intent = useMemo(() => parseNappletIntent(searchParams.get(NAPPLET_INTENT_PARAM)), [searchParams]);
 
-  // Keep the input in sync with the URL, and refresh the recent feed when returning home.
+  // Keep the input in sync with the URL, and refresh installed napplets when returning home.
   useEffect(() => {
     setValue(address ?? "");
-    if (!address) setRecent(getRecentNapplets());
+    if (!address) setInstalled(getInstalledNapplets());
   }, [address]);
 
   const submit = useCallback<FormEventHandler<HTMLFormElement>>(
@@ -168,11 +148,17 @@ export default function NappletToolView() {
     [navigate, value],
   );
 
-  const close = useCallback(() => navigate("/tools/napplets"), [navigate]);
+  useEffect(() => {
+    setIntentNavigator((nextIntent, handler) => {
+      navigate(`/napplets/${handler.address}?${NAPPLET_INTENT_PARAM}=${encodeNappletIntent(nextIntent)}`);
+    });
 
-  const removeRecent = useCallback((target: string) => {
-    removeRecentNapplet(target);
-    setRecent(getRecentNapplets());
+    return () => setIntentNavigator(null);
+  }, [navigate, setIntentNavigator]);
+
+  const removeInstalled = useCallback((target: string) => {
+    uninstallNapplet(target);
+    setInstalled(getInstalledNapplets());
   }, []);
 
   // When an address is set, auto-launch the napplet full-page (no input bar).
@@ -187,13 +173,13 @@ export default function NappletToolView() {
         </SimpleView>
       );
 
-    return <NappletLoader address={address} pointer={pointer} onClose={close} />;
+    return <NappletLoader pointer={pointer} intent={intent} />;
   }
 
-  // No address: prompt for a manifest pointer, and list recently loaded napplets.
+  // No address: prompt for a manifest pointer, and list installed napplets.
   return (
     <SimpleView title="Napplets">
-      <Text color="GrayText">Paste a NIP-5D manifest pointer to resolve and mount it in a sandboxed frame.</Text>
+      <Text color="GrayText">Paste a NIP-5D manifest pointer to install and mount it as a local mini app.</Text>
       <Box as="form" onSubmit={submit}>
         <Flex gap="2" alignItems="flex-end">
           <FormControl>
@@ -210,18 +196,17 @@ export default function NappletToolView() {
         </Flex>
       </Box>
 
-      {recent.length > 0 && (
+      {installed.length > 0 && (
         <>
           <Heading size="sm" mt="2">
-            Recent
+            Installed
           </Heading>
           <Flex direction="column" gap="2">
-            {recent.map((napplet) => (
-              <RecentNappletCard
+            {installed.map((napplet) => (
+              <InstalledNappletCard
                 key={napplet.address}
                 napplet={napplet}
-                onSelect={() => navigate(`/tools/napplets/${napplet.address}`)}
-                onRemove={() => removeRecent(napplet.address)}
+                onUninstall={() => removeInstalled(napplet.address)}
               />
             ))}
           </Flex>

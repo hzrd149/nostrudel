@@ -27,6 +27,7 @@ import {
   getReplaceableAddressFromPointer,
 } from "applesauce-core/helpers";
 import { getHandlerLinkTemplate } from "applesauce-common/helpers";
+import { useNavigate } from "react-router-dom";
 
 import { ExternalLinkIcon } from "../icons";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
@@ -45,6 +46,7 @@ import useEventIntersectionRef from "../../hooks/use-event-intersection-ref";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import useAppSettings from "../../hooks/use-user-app-settings";
 import { DEFAULT_SHARE_SERVICE } from "../../const";
+import { getNappletNaddr, isNappletManifestKind } from "../../helpers/nostr/napplets";
 
 function useEventFromDecode(decoded: DecodeResult) {
   switch (decoded.type) {
@@ -101,6 +103,7 @@ export default function AppHandlerModal({
   onClose,
 }: { decoded: DecodeResult } & Omit<ModalProps, "children">) {
   const { shareService } = useAppSettings();
+  const navigate = useNavigate();
   const readRelays = useReadRelays();
   const event = useEventFromDecode(decoded);
   const kind = event?.kind ?? getKindFromDecoded(decoded);
@@ -155,6 +158,7 @@ export default function AppHandlerModal({
     }
   }, [clientTag]);
   const preferredApp = useReplaceableEvent(clientPointer);
+  const nappletAddress = event && isNappletManifestKind(event.kind) ? getNappletNaddr(event) : undefined;
 
   const orderedFilteredApps = useMemo(() => {
     if (!clientPointer) return filteredApps;
@@ -219,6 +223,17 @@ export default function AppHandlerModal({
         </ModalBody>
 
         <ModalFooter display="flex" gap="2" p="4">
+          {nappletAddress && (
+            <Button
+              colorScheme="primary"
+              onClick={() => {
+                navigate(`/napplets/${nappletAddress}`);
+                onClose();
+              }}
+            >
+              Open napplet
+            </Button>
+          )}
           <Button onClick={onClose}>Cancel</Button>
         </ModalFooter>
       </ModalContent>

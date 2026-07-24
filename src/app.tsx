@@ -37,6 +37,7 @@ import goalsRoutes from "./views/goals/routes";
 import groupsRoutes from "./views/groups/routes";
 import listsRoutes from "./views/lists/routes";
 import messagesRoutes from "./views/messages/routes";
+import nappletsRoutes from "./views/napplets/routes";
 import newRoutes from "./views/new/routes";
 import notificationsRoutes from "./views/notifications/routes";
 import picturesRoutes from "./views/pictures/routes";
@@ -94,6 +95,7 @@ export const router = createBrowserRouter(
         { path: "notes", Component: HomeView },
         { path: "feeds", children: feedsRoutes },
         { path: "messages", children: messagesRoutes },
+        { path: "napplets", children: nappletsRoutes },
         { path: "user/:pubkey", children: userRoutes },
         { path: "u/:pubkey", children: userRoutes },
         { path: "note/:id", Component: ThreadView },

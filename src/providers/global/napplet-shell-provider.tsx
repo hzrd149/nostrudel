@@ -15,12 +15,17 @@ import {
 } from "@chakra-ui/react";
 import {
   createIdentityService,
+  createIntentService,
   createLinkService,
   createNotifyService,
   createOutboxService,
   createRelayPoolOutboxRouter,
   createRelayPoolService,
   createThemeService,
+  type IntentAvailability,
+  type IntentCandidate,
+  type IntentRequest,
+  type IntentResult,
   type OutboxRelayPool,
   type RelayListEntry,
 } from "@kehto/services";
@@ -37,16 +42,17 @@ import {
 } from "@kehto/shell";
 import { getContacts, getInboxes, getOutboxes } from "applesauce-core/helpers";
 import { EventTemplate, Filter, kinds, NostrEvent } from "nostr-tools";
-import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { catchError, filter, firstValueFrom, Observable, of, take, timeout, toArray } from "rxjs";
 
 import { unique } from "../../helpers/array";
-import { getNappletTitle } from "../../helpers/nostr/napplets";
+import { conventionId, getNappletTitle, type NappletIntent } from "../../helpers/nostr/napplets";
 import accounts from "../../services/accounts";
 import { cacheRequest, eventCache$, writeEvent } from "../../services/event-cache";
 import { eventStore } from "../../services/event-store";
 import pool from "../../services/pool";
 import localSettings from "../../services/preferences";
+import { getRecentNapplets, type RecentNapplet } from "../../services/recent-napplets";
 import verifyEvent from "../../services/verify-event";
 
 type NappletIdentity = {
@@ -69,6 +75,7 @@ type NappletShellContextValue = {
   requestConsent: (event: NostrEvent, identity: NappletIdentity, capabilities: Capability[]) => Promise<boolean>;
   registerFrame: (windowId: string, win: Window, identity: Pick<NappletIdentity, "dTag" | "aggregateHash">) => void;
   unregisterFrame: (windowId: string) => void;
+  setIntentNavigator: (navigate: ((intent: NappletIntent, handler: RecentNapplet) => void) | null) => void;
 };
 
 const NappletShellContext = createContext<NappletShellContextValue | null>(null);
@@ -127,6 +134,108 @@ function getSigner() {
   };
 }
 
+function asIntentPayload(value: unknown): Record<string, string> {
+  if (!value || typeof value !== "object") return {};
+
+  const payload: Record<string, string> = {};
+  for (const [key, item] of Object.entries(value as Record<string, unknown>)) {
+    if (typeof item === "string") payload[key] = item;
+  }
+  return payload;
+}
+
+function recentHandlersFor(archetype: string) {
+  return getRecentNapplets().flatMap((napplet) => {
+    const entry = napplet.archetypes.find((item) => item.name === archetype);
+    return entry ? [{ napplet, entry }] : [];
+  });
+}
+
+function candidateFor(handler: ReturnType<typeof recentHandlersFor>[number]): IntentCandidate {
+  return {
+    dTag: handler.napplet.dTag ?? handler.napplet.address,
+    title: handler.napplet.title,
+    actions: handler.entry.actions,
+    protocols: handler.entry.protocols.length
+      ? handler.entry.protocols
+      : handler.entry.actions.map((action) => conventionId(handler.entry.name, action)),
+    isDefault: true,
+  };
+}
+
+function availabilityFor(archetype: string): IntentAvailability {
+  const handlers = recentHandlersFor(archetype);
+  return {
+    archetype,
+    available: handlers.length > 0,
+    candidates: handlers.map(candidateFor),
+    hasDefault: handlers.length > 0,
+  };
+}
+
+function failed(archetype: string, action: string, error: string): IntentResult {
+  return { ok: false, archetype, action, handled: false, error };
+}
+
+function handlerMatchesPreference(napplet: RecentNapplet, preference: string) {
+  return preference === napplet.dTag || preference === napplet.address;
+}
+
+function createNappletIntentService(options: {
+  navigate: () => ((intent: NappletIntent, handler: RecentNapplet) => void) | null;
+}) {
+  return createIntentService({
+    resolver: {
+      available: (archetype) => availabilityFor(archetype),
+
+      handlers: () => {
+        const archetypes = new Set<string>();
+        for (const napplet of getRecentNapplets()) {
+          for (const archetype of napplet.archetypes) archetypes.add(archetype.name);
+        }
+        return Array.from(archetypes).map(availabilityFor);
+      },
+
+      invoke: (request: IntentRequest) => {
+        const { archetype } = request;
+        const action = request.action ?? "open";
+        const handlers = recentHandlersFor(archetype).filter((handler) => handler.entry.actions.includes(action));
+        if (handlers.length === 0) return failed(archetype, action, `no recent napplet handles ${archetype}/${action}`);
+
+        const preference = request.handler;
+        const handler =
+          typeof preference === "string" && preference !== "default" && preference !== "choose"
+            ? handlers.find((item) => handlerMatchesPreference(item.napplet, preference))
+            : handlers[0];
+        if (!handler) return failed(archetype, action, `${preference} does not handle ${archetype}`);
+
+        const protocols = handler.entry.protocols.length
+          ? handler.entry.protocols
+          : handler.entry.actions.map((item) => conventionId(archetype, item));
+        if (request.protocol && !protocols.includes(request.protocol)) {
+          return failed(archetype, action, `unsupported protocol ${request.protocol}`);
+        }
+
+        const navigate = options.navigate();
+        if (!navigate) return failed(archetype, action, "napplet frame is not available");
+
+        const intent = { archetype, action, payload: asIntentPayload(request.payload) };
+        window.setTimeout(() => navigate(intent, handler.napplet), 0);
+
+        return {
+          ok: true,
+          archetype,
+          action,
+          handled: true,
+          handler: handler.napplet.dTag ?? handler.napplet.address,
+          windowId: `napplet:${handler.napplet.address}`,
+          protocol: request.protocol ?? protocols[0],
+        };
+      },
+    },
+  });
+}
+
 /** Resolve the first non-empty value from a reactive event-store model, or undefined on timeout. */
 async function firstOrUndefined<T>(observable: Observable<T>, ms = 4000): Promise<T | undefined> {
   return firstValueFrom(
@@ -175,7 +284,10 @@ function getWriteRelays() {
   return unique([...localSettings.extraPublishRelays.value, ...localSettings.fallbackRelays.value]);
 }
 
-function createAdapter(toast: ReturnType<typeof useToast>): ShellAdapter {
+function createAdapter(
+  toast: ReturnType<typeof useToast>,
+  getIntentNavigator: () => ((intent: NappletIntent, handler: RecentNapplet) => void) | null,
+): ShellAdapter {
   const subscriptions = new Map<string, () => void>();
   const poolLike = pool as unknown as RelayPoolLike;
 
@@ -313,6 +425,7 @@ function createAdapter(toast: ReturnType<typeof useToast>): ShellAdapter {
         toast({ title: message.title, description: message.body, status: "info" });
       },
     }),
+    intent: createNappletIntentService({ navigate: getIntentNavigator }),
     relay: createRelayPoolService({
       subscribe: (filters, callback, relayUrls) => {
         const sub = pool.subscription(relayUrls ?? selectRelayTier(filters), filters as any).subscribe((item) => {
@@ -338,7 +451,9 @@ function createAdapter(toast: ReturnType<typeof useToast>): ShellAdapter {
 export function NappletShellProvider({ children }: PropsWithChildren) {
   const toast = useToast();
   const [consent, setConsent] = useState<ConsentRequest>();
-  const adapter = useMemo(() => createAdapter(toast), [toast]);
+  const intentNavigatorRef = useRef<((intent: NappletIntent, handler: RecentNapplet) => void) | null>(null);
+  const getIntentNavigator = useCallback(() => intentNavigatorRef.current, []);
+  const adapter = useMemo(() => createAdapter(toast, getIntentNavigator), [toast, getIntentNavigator]);
   const bridge = useMemo(() => createShellBridge(adapter), [adapter]);
   // Single source of truth for advertised NAP domains: derived from the same
   // adapter the bridge uses, so shell.init and the namespace prelude can't drift.
@@ -380,9 +495,13 @@ export function NappletShellProvider({ children }: PropsWithChildren) {
     [bridge],
   );
 
+  const setIntentNavigator = useCallback<NappletShellContextValue["setIntentNavigator"]>((navigate) => {
+    intentNavigatorRef.current = navigate;
+  }, []);
+
   const context = useMemo(
-    () => ({ bridge, capabilities, requestConsent, registerFrame, unregisterFrame }),
-    [bridge, capabilities, requestConsent, registerFrame, unregisterFrame],
+    () => ({ bridge, capabilities, requestConsent, registerFrame, unregisterFrame, setIntentNavigator }),
+    [bridge, capabilities, requestConsent, registerFrame, unregisterFrame, setIntentNavigator],
   );
 
   const respond = useCallback(
