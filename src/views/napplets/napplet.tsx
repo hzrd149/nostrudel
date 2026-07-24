@@ -8,9 +8,7 @@ import NappletFrame from "../../components/napplets/napplet-frame";
 import SimpleView from "../../components/layout/presets/simple-view";
 import {
   getNappletEventPointer,
-  getNappletArchetypes,
   getNappletNaddr,
-  getNappletTitle,
   NAPPLET_INTENT_PARAM,
   encodeNappletIntent,
   isNappletManifestKind,
@@ -20,10 +18,16 @@ import {
 } from "../../helpers/nostr/napplets";
 import useEvent from "../../hooks/use-event";
 import { useNappletShell } from "../../providers/global/napplet-shell-provider";
-import { addRecentNappletEvent } from "../../services/recent-napplets";
-import { installNapplet } from "../../services/installed-napplets";
 
-export function NappletRouteLoader({ address, pointer, intent }: { address: string; pointer: DecodeResult; intent?: NappletIntent }) {
+export function NappletRouteLoader({
+  address,
+  pointer,
+  intent,
+}: {
+  address: string;
+  pointer: DecodeResult;
+  intent?: NappletIntent;
+}) {
   const navigate = useNavigate();
   const eventPointer = useMemo(() => getNappletEventPointer(pointer), [pointer]);
   const event: NostrEvent | undefined = useEvent(eventPointer);
@@ -34,13 +38,6 @@ export function NappletRouteLoader({ address, pointer, intent }: { address: stri
     const naddr = getNappletNaddr(event);
     if (!naddr) return;
 
-    installNapplet(event, naddr);
-    addRecentNappletEvent({
-      address: naddr,
-      title: getNappletTitle(event),
-      event,
-      archetypes: getNappletArchetypes(event),
-    });
     if (naddr !== address) {
       const search = intent ? `?${NAPPLET_INTENT_PARAM}=${encodeNappletIntent(intent)}` : "";
       navigate(`/app/${naddr}${search}`, { replace: true });
@@ -82,7 +79,9 @@ export function NappletRouteLoader({ address, pointer, intent }: { address: stri
       <SimpleView title="Napplet">
         <Alert status="warning">
           <AlertIcon />
-          <AlertDescription>This napplet manifest cannot be installed because it does not have a naddr.</AlertDescription>
+          <AlertDescription>
+            This napplet manifest cannot be installed because it does not have a naddr.
+          </AlertDescription>
         </Alert>
       </SimpleView>
     );

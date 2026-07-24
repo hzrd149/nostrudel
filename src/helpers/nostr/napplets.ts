@@ -46,6 +46,7 @@ const REQUIRED_CAPABILITY_MAP: Record<string, Capability[]> = {
   common: [],
   upload: ["upload:write"],
   intent: ["intent:read", "intent:write"],
+  link: [],
 };
 
 export function validateNappletManifest(event: NostrEvent) {

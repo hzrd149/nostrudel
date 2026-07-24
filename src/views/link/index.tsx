@@ -13,6 +13,7 @@ import SimpleView from "../../components/layout/presets/simple-view";
 import { TORRENT_KIND } from "../../helpers/nostr/torrents";
 import { FLARE_VIDEO_KIND } from "../../helpers/nostr/video";
 import { POLL_KIND } from "../../helpers/nostr/polls";
+import { isNappletManifestKind } from "../../helpers/nostr/napplets";
 import useReplaceableEvent from "../../hooks/use-replaceable-event";
 import useSingleEvent from "../../hooks/use-single-event";
 
@@ -78,6 +79,7 @@ function RenderRedirect({ event, link }: { event?: NostrEvent; link: string }) {
       if (k === kinds.LongFormArticle) return <Navigate to={`/articles/${link}`} replace />;
       if (k === PICTURE_POST_KIND) return <Navigate to={`/pictures/${link}`} replace />;
       if (k === kinds.FileMetadata) return <Navigate to={`/files/${link}`} replace />;
+      if (k && isNappletManifestKind(k)) return <Navigate to={`/app/store/${link}`} replace />;
 
       if (!event && decoded.type === "naddr") return <LoadUnknownAddress pointer={decoded.data} link={link} />;
       if (!event && decoded.type === "nevent") return <LoadUnknownEvent pointer={decoded.data} link={link} />;

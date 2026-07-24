@@ -6,8 +6,6 @@ import {
   Box,
   Button,
   ButtonGroup,
-  Card,
-  CardBody,
   Code,
   Divider,
   Flex,
@@ -19,11 +17,12 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { NostrEvent } from "nostr-tools";
-import { ReactNode, useMemo, useState } from "react";
+import { ReactNode, useEffect, useMemo, useState } from "react";
 import { Link as RouterLink, useParams } from "react-router-dom";
 
 import GenericCommentForm from "../../components/comment/generic-comment-form";
 import { GenericComments } from "../../components/comment/generic-comments";
+import DebugEventButton from "../../components/debug-modal/debug-event-button";
 import { ErrorBoundary } from "../../components/error-boundary";
 import { ThreadIcon } from "../../components/icons";
 import SimpleView from "../../components/layout/presets/simple-view";
@@ -35,6 +34,8 @@ import UserAvatar from "../../components/user/user-avatar";
 import UserName from "../../components/user/user-name";
 import EventZapButton from "../../components/zap/event-zap-button";
 import {
+  NAPPLET_KIND_NAMED,
+  NAPPLET_KIND_ROOT,
   getNappletArchetypes,
   getNappletDescription,
   getNappletEventPointer,
@@ -46,8 +47,12 @@ import {
   parseNappletPointer,
   validateNappletManifest,
 } from "../../helpers/nostr/napplets";
+import { useReadRelays } from "../../hooks/use-client-relays";
 import useEvent from "../../hooks/use-event";
+import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { getInstalledNapplet, installNapplet, uninstallNapplet } from "../../services/installed-napplets";
+
+const RELATED_NAPPLETS_LIMIT = 6;
 
 function DetailRow({ label, children }: { label: string; children: ReactNode }) {
   return (
@@ -57,6 +62,78 @@ function DetailRow({ label, children }: { label: string; children: ReactNode }) 
       </Text>
       {children}
     </Box>
+  );
+}
+
+function RelatedNappletCard({ event }: { event: NostrEvent }) {
+  const address = getNappletNaddr(event);
+  if (!address) return null;
+
+  return (
+    <Box
+      as={RouterLink}
+      to={`/app/store/${address}`}
+      display="block"
+      borderRadius="md"
+      p="2"
+      _hover={{ textDecoration: "none", bg: "blackAlpha.50", _dark: { bg: "whiteAlpha.100" } }}
+    >
+      <Heading size="sm" noOfLines={1} mb="1">
+        {getNappletTitle(event)}
+      </Heading>
+      <Text color="GrayText" fontSize="sm" noOfLines={2} mb="2">
+        {getNappletDescription(event) || "No description provided."}
+      </Text>
+      <Flex gap="1" wrap="wrap">
+        {getNappletArchetypes(event)
+          .slice(0, 3)
+          .map((archetype) => (
+            <Badge key={archetype.name}>{archetype.name}</Badge>
+          ))}
+      </Flex>
+    </Box>
+  );
+}
+
+function RelatedNapplets({ event }: { event: NostrEvent }) {
+  const relays = useReadRelays();
+  const eventFilter = useMemo(
+    () => (candidate: NostrEvent) => {
+      return candidate.id !== event.id && isNappletManifestKind(candidate.kind) && validateNappletManifest(candidate) && !!getNappletNaddr(candidate);
+    },
+    [event.id],
+  );
+  const { loader, timeline } = useTimelineLoader(
+    `${event.pubkey}-related-napplets`,
+    relays,
+    { kinds: [NAPPLET_KIND_ROOT, NAPPLET_KIND_NAMED], authors: [event.pubkey], limit: RELATED_NAPPLETS_LIMIT + 1 },
+    { eventFilter },
+  );
+  const related = timeline.slice(0, RELATED_NAPPLETS_LIMIT);
+
+  useEffect(() => {
+    const sub = loader?.(-Infinity).subscribe();
+    return () => sub?.unsubscribe();
+  }, [loader]);
+
+  if (related.length === 0) return null;
+
+  return (
+    <Flex direction="column" gap="3">
+      <Flex alignItems="center" gap="3">
+        <Box flex="1">
+          <Heading size="sm">More by this author</Heading>
+          <Text color="GrayText" fontSize="sm">
+            Showing up to {RELATED_NAPPLETS_LIMIT} related apps.
+          </Text>
+        </Box>
+      </Flex>
+      <SimpleGrid columns={{ base: 1, md: 2, xl: 3 }} spacing="2">
+        {related.map((napplet) => (
+          <RelatedNappletCard key={napplet.id} event={napplet} />
+        ))}
+      </SimpleGrid>
+    </Flex>
   );
 }
 
@@ -79,6 +156,7 @@ function NappletStoreDetailPage({ event, address }: { event: NostrEvent; address
       }
       actions={
         <ButtonGroup variant="ghost" size="sm" ms="auto">
+          <DebugEventButton event={event} />
           <EventShareButton event={event} />
           <EventQuoteButton event={event} />
         </ButtonGroup>
@@ -128,73 +206,73 @@ function NappletStoreDetailPage({ event, address }: { event: NostrEvent; address
           </ButtonGroup>
         </Flex>
 
-        <SimpleGrid columns={{ base: 1, lg: 2 }} spacing="3">
-          <Card variant="outline">
-            <CardBody display="flex" flexDirection="column" gap="3">
-              <Heading size="sm">Supported intents</Heading>
-              {archetypes.length === 0 ? (
-                <Text color="GrayText">No archetypes declared.</Text>
-              ) : (
-                <Flex direction="column" gap="3">
-                  {archetypes.map((archetype) => (
-                    <Box key={archetype.name}>
-                      <Heading size="xs" mb="1">
-                        {archetype.name}
-                      </Heading>
-                      <Flex gap="1" wrap="wrap">
-                        {archetype.actions.map((action) => (
-                          <Badge key={action}>{action}</Badge>
-                        ))}
-                      </Flex>
-                    </Box>
-                  ))}
-                </Flex>
-              )}
-            </CardBody>
-          </Card>
+        <Divider />
 
-          <Card variant="outline">
-            <CardBody display="flex" flexDirection="column" gap="3">
-              <Heading size="sm">Details</Heading>
-              <DetailRow label="Kind">
-                <Text>{event.kind}</Text>
-              </DetailRow>
-              <DetailRow label="Manifest pointer">
-                <Code userSelect="all" whiteSpace="normal">
-                  {naddr || address}
-                </Code>
-              </DetailRow>
-              <DetailRow label="Author">
-                <Link as={RouterLink} to={`/u/${event.pubkey}`}>
-                  <UserName pubkey={event.pubkey} />
-                </Link>
-              </DetailRow>
-            </CardBody>
-          </Card>
-        </SimpleGrid>
-
-        <Card variant="outline">
-          <CardBody display="flex" flexDirection="column" gap="3">
-            <Heading size="sm">Capabilities</Heading>
-            {capabilities.length === 0 ? (
-              <Text color="GrayText">No shell capabilities requested.</Text>
+        <SimpleGrid columns={{ base: 1, lg: 2 }} spacing="8">
+          <Flex direction="column" gap="3">
+            <Heading size="sm">Supported intents</Heading>
+            {archetypes.length === 0 ? (
+              <Text color="GrayText">No archetypes declared.</Text>
             ) : (
-              <Flex gap="1" wrap="wrap">
-                {capabilities.map((capability) => (
-                  <Badge key={capability} colorScheme="primary">
-                    {capability}
-                  </Badge>
+              <Flex direction="column" gap="3">
+                {archetypes.map((archetype) => (
+                  <Box key={archetype.name}>
+                    <Heading size="xs" mb="1">
+                      {archetype.name}
+                    </Heading>
+                    <Flex gap="1" wrap="wrap">
+                      {archetype.actions.map((action) => (
+                        <Badge key={action}>{action}</Badge>
+                      ))}
+                    </Flex>
+                  </Box>
                 ))}
               </Flex>
             )}
-            {unsupported.length > 0 && (
-              <Alert status="warning">
-                <AlertIcon />
-                <AlertDescription>Unsupported requirements: {unsupported.join(", ")}</AlertDescription>
-              </Alert>
-            )}
-          </CardBody>
-        </Card>
+          </Flex>
+
+          <Flex direction="column" gap="3">
+            <Heading size="sm">Details</Heading>
+            <DetailRow label="Kind">
+              <Text>{event.kind}</Text>
+            </DetailRow>
+            <DetailRow label="Manifest pointer">
+              <Code userSelect="all" whiteSpace="normal">
+                {naddr || address}
+              </Code>
+            </DetailRow>
+            <DetailRow label="Author">
+              <Link as={RouterLink} to={`/u/${event.pubkey}`}>
+                <UserName pubkey={event.pubkey} />
+              </Link>
+            </DetailRow>
+          </Flex>
+        </SimpleGrid>
+
+        <Divider />
+
+        <Flex direction="column" gap="3">
+          <Heading size="sm">Capabilities</Heading>
+          {capabilities.length === 0 ? (
+            <Text color="GrayText">No shell capabilities requested.</Text>
+          ) : (
+            <Flex gap="1" wrap="wrap">
+              {capabilities.map((capability) => (
+                <Badge key={capability} colorScheme="primary">
+                  {capability}
+                </Badge>
+              ))}
+            </Flex>
+          )}
+          {unsupported.length > 0 && (
+            <Alert status="warning">
+              <AlertIcon />
+              <AlertDescription>Unsupported requirements: {unsupported.join(", ")}</AlertDescription>
+            </Alert>
+          )}
+        </Flex>
+
+        <RelatedNapplets event={event} />
 
         <Divider />
 

@@ -86,8 +86,8 @@ export default function PeopleListProvider({ children, initList }: PeopleListPro
 
   // When logged out and no selection, default to anon contact list instead of "global"
   const defaultSelected = useMemo(() => {
-    if (account) return "following";
     if (initList) return initList as ListId;
+    if (account) return "following";
     // Default to anon contact list when logged out
     return `${kinds.Contacts}:${DEFAULT_ANON_PUBKEY}`;
   }, [account, initList]);

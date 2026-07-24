@@ -3,6 +3,7 @@ import {
   AlertDescription,
   AlertIcon,
   Box,
+  Button,
   ButtonGroup,
   Flex,
   IconButton,
@@ -25,6 +26,7 @@ import {
   type NappletIntent,
 } from "../../helpers/nostr/napplets";
 import { useNappletShell } from "../../providers/global/napplet-shell-provider";
+import { installNapplet, isNappletInstalled } from "../../services/installed-napplets";
 import { createNappletIntentDelivery, type NappletIntentDelivery } from "../../services/napplet-intent-delivery";
 
 export type NappletFrameProps = {
@@ -65,6 +67,11 @@ export default function NappletFrame({ event, intent, onClose, onResolved, onErr
 
   const title = getNappletTitle(event);
   const address = getNappletNaddr(event);
+  const [installed, setInstalled] = useState(() => (address ? isNappletInstalled(address) : true));
+
+  useEffect(() => {
+    setInstalled(address ? isNappletInstalled(address) : true);
+  }, [address]);
 
   useEffect(() => {
     intentRef.current = intent;
@@ -194,6 +201,17 @@ export default function NappletFrame({ event, intent, onClose, onResolved, onErr
             <Tooltip label="App details" openDelay={500}>
               <IconButton as={RouterLink} to={`/app/store/${address}`} icon={<InfoIcon />} aria-label="App details" />
             </Tooltip>
+          )}
+          {address && !installed && (
+            <Button
+              colorScheme="primary"
+              onClick={() => {
+                installNapplet(event, address);
+                setInstalled(true);
+              }}
+            >
+              Install
+            </Button>
           )}
           <Tooltip label="Reload" openDelay={500}>
             <IconButton icon={<RepeatIcon />} aria-label="Reload napplet" onClick={reload} />

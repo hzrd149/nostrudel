@@ -1,35 +1,15 @@
 import { Alert, AlertDescription, AlertIcon, AlertTitle, Heading, Spinner, Text } from "@chakra-ui/react";
-import { mapEventsToStore } from "applesauce-core";
 import { LRU } from "applesauce-core/helpers";
-import { onlyEvents } from "applesauce-relay";
-import { Filter, kinds, NostrEvent } from "nostr-tools";
+import { kinds, NostrEvent } from "nostr-tools";
 import { useEffect, useMemo, useState } from "react";
-import { Observable } from "rxjs";
 
-import { eventCache$ } from "../../../services/event-cache";
-import { eventStore } from "../../../services/event-store";
-import pool from "../../../services/pool";
+import { createSearchAction } from "../../../services/search";
 import { lookupUsers, SearchResult } from "../../../services/user-lookup";
 import useAsyncAction from "../../../hooks/use-async-action";
 import useClientSideMuteFilter from "../../../hooks/use-client-side-mute-filter";
 import ArticleSearchResults from "./article-results";
 import NoteSearchResults from "./note-results";
 import ProfileSearchResults from "./profile-results";
-
-export function createSearchAction(relays?: string[]): (filters: Filter[]) => Observable<NostrEvent> {
-  return (filters: Filter[]) => {
-    // search local
-    if (!relays || relays.length === 0) {
-      if (!eventCache$.value) throw new Error("No event cache");
-      if (!eventCache$.value.search) throw new Error("Event cache does not support search");
-
-      return eventCache$.value.search(filters).pipe(mapEventsToStore(eventStore));
-    }
-
-    // search remote
-    return pool.request(relays, filters).pipe(onlyEvents(), mapEventsToStore(eventStore));
-  };
-}
 
 const searchCache = new LRU<NostrEvent[]>(10);
 const profileSearchCache = new LRU<SearchResult[]>(10);
