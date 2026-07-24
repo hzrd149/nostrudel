@@ -9,6 +9,7 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  Stack,
   Text,
   UnorderedList,
   useToast,
@@ -99,6 +100,13 @@ type ResourceConsentRequest = {
   identity: ResourceIdentity;
   origin: string;
   resolve: (value: "deny" | "once" | "always") => void;
+};
+
+type IntentChoiceRequest = {
+  archetype: string;
+  action: string;
+  payload: Record<string, string>;
+  resolve: (handler?: InstalledNapplet) => void;
 };
 
 type UploadConfig = {
@@ -246,6 +254,7 @@ function handlerMatchesPreference(napplet: InstalledNapplet, preference: string)
 
 function createNappletIntentService(options: {
   navigate: () => ((intent: NappletIntent, handler: InstalledNapplet) => void) | null;
+  chooseHandler: (intent: NappletIntent) => Promise<InstalledNapplet | undefined>;
 }) {
   return createIntentService({
     resolver: {
@@ -259,11 +268,31 @@ function createNappletIntentService(options: {
         return Array.from(archetypes).map(availabilityFor);
       },
 
-      invoke: (request: IntentRequest) => {
+      invoke: async (request: IntentRequest) => {
         const { archetype } = request;
         const action = request.action ?? "open";
         const handlers = installedHandlersFor(archetype).filter((handler) => handler.entry.actions.includes(action));
-        if (handlers.length === 0) return failed(archetype, action, `no installed app handles ${archetype}/${action}`);
+        const payload = asIntentPayload(request.payload);
+
+        if (handlers.length === 0) {
+          const handler = await options.chooseHandler({ archetype, action, payload });
+          if (!handler) return failed(archetype, action, "no napplet selected");
+
+          const navigate = options.navigate();
+          if (!navigate) return failed(archetype, action, "napplet frame is not available");
+
+          window.setTimeout(() => navigate({ archetype, action, payload }, handler), 0);
+
+          return {
+            ok: true,
+            archetype,
+            action,
+            handled: true,
+            handler: handler.address,
+            windowId: `napplet:${handler.address}`,
+            protocol: request.protocol ?? conventionId(archetype, action),
+          };
+        }
 
         const preference = request.handler;
         const defaultHandler = getDefaultIntentHandler(archetype, action);
@@ -273,7 +302,9 @@ function createNappletIntentService(options: {
             : defaultHandler
               ? handlers.find((item) => item.napplet.address === defaultHandler.address)
               : getInstalledNappletsForIntent(archetype, action).length > 0
-                ? handlers.find((item) => item.napplet.address === getInstalledNappletsForIntent(archetype, action)[0].address)
+                ? handlers.find(
+                    (item) => item.napplet.address === getInstalledNappletsForIntent(archetype, action)[0].address,
+                  )
                 : handlers[0];
         if (!handler) return failed(archetype, action, `${preference} does not handle ${archetype}`);
 
@@ -287,16 +318,16 @@ function createNappletIntentService(options: {
         const navigate = options.navigate();
         if (!navigate) return failed(archetype, action, "napplet frame is not available");
 
-        const intent = { archetype, action, payload: asIntentPayload(request.payload) };
+        const intent = { archetype, action, payload };
         window.setTimeout(() => navigate(intent, handler.napplet), 0);
 
         return {
           ok: true,
           archetype,
-            action,
-            handled: true,
-            handler: handler.napplet.address,
-            windowId: `napplet:${handler.napplet.address}`,
+          action,
+          handled: true,
+          handler: handler.napplet.address,
+          windowId: `napplet:${handler.napplet.address}`,
           protocol: request.protocol ?? protocols[0],
         };
       },
@@ -369,7 +400,8 @@ function normalizeCommonEventId(value: string) {
 }
 
 function getProfilePointer(target: CommonProfileTarget) {
-  if (/^[0-9a-f]{64}$/i.test(target)) return { pubkey: target.toLowerCase(), relays: undefined as string[] | undefined };
+  if (/^[0-9a-f]{64}$/i.test(target))
+    return { pubkey: target.toLowerCase(), relays: undefined as string[] | undefined };
 
   try {
     const decoded = nip19.decode(target);
@@ -385,7 +417,8 @@ async function publishCommonEvent(label: string, draft: EventTemplate | NostrEve
     const account = accounts.active;
     if (!account) return { ok: false, error: "not-signed-in" };
 
-    const event = Reflect.has(draft, "id") && Reflect.has(draft, "sig") ? (draft as NostrEvent) : await account.signEvent(draft);
+    const event =
+      Reflect.has(draft, "id") && Reflect.has(draft, "sig") ? (draft as NostrEvent) : await account.signEvent(draft);
 
     await writeEvent(event);
     eventStore.add(event);
@@ -452,11 +485,20 @@ async function reactCommon(
   return publishCommonEvent("Reaction", draft as unknown as EventTemplate);
 }
 
-function createReportDraft(target: CommonReportTarget, reason: CommonReportReason, text: string): EventTemplate | undefined {
+function createReportDraft(
+  target: CommonReportTarget,
+  reason: CommonReportReason,
+  text: string,
+): EventTemplate | undefined {
   if (target.type === "pubkey") {
     const pubkey = normalizeCommonPubkey(target.pubkey);
     if (!pubkey) return;
-    return { kind: kinds.Report, created_at: Math.floor(Date.now() / 1000), tags: [["p", pubkey, reason]], content: text };
+    return {
+      kind: kinds.Report,
+      created_at: Math.floor(Date.now() / 1000),
+      tags: [["p", pubkey, reason]],
+      content: text,
+    };
   }
 
   const eventId = normalizeCommonEventId(target.id);
@@ -572,7 +614,13 @@ function createResourceService(options: {
     perWindow.get(windowId)?.delete(requestId);
   };
 
-  const fetchOne = async (windowId: string, requestId: string, url: string, init: any, send: (message: any) => void) => {
+  const fetchOne = async (
+    windowId: string,
+    requestId: string,
+    url: string,
+    init: any,
+    send: (message: any) => void,
+  ) => {
     let parsed: URL;
     try {
       parsed = new URL(url);
@@ -615,14 +663,23 @@ function createResourceService(options: {
       });
     } catch (e) {
       const aborted = controller.signal.aborted || (e instanceof Error && e.name === "AbortError");
-      sendResourceError(send, requestId, aborted ? "canceled" : "network-error", e instanceof Error ? e.message : String(e));
+      sendResourceError(
+        send,
+        requestId,
+        aborted ? "canceled" : "network-error",
+        e instanceof Error ? e.message : String(e),
+      );
     } finally {
       untrack(windowId, requestId);
     }
   };
 
   return {
-    descriptor: { name: "resource", version: "1.0.0", description: "NAP-RESOURCE shell fetch with noStrudel origin policy" },
+    descriptor: {
+      name: "resource",
+      version: "1.0.0",
+      description: "NAP-RESOURCE shell fetch with noStrudel origin policy",
+    },
     handleMessage(windowId: string, message: any, send: (message: any) => void) {
       switch (message.type) {
         case "resource.info": {
@@ -643,8 +700,15 @@ function createResourceService(options: {
               const itemId = `${id}:${url}`;
               let result: any;
               await fetchOne(windowId, itemId, url, message.init, (response) => (result = response));
-              if (result?.type === "resource.bytes.result") return { url, ok: true, blob: result.blob, mime: result.mime };
-              return { url, ok: false, error: result?.error ?? "network-error", code: result?.code, message: result?.message };
+              if (result?.type === "resource.bytes.result")
+                return { url, ok: true, blob: result.blob, mime: result.mime };
+              return {
+                url,
+                ok: false,
+                error: result?.error ?? "network-error",
+                code: result?.code,
+                message: result?.message,
+              };
             }),
           ).then((items) => send({ type: "resource.bytesMany.result", id, requestId: id, items }));
           return;
@@ -674,7 +738,11 @@ function getWriteRelays() {
 function createAdapter(
   toast: ReturnType<typeof useToast>,
   getIntentNavigator: () => ((intent: NappletIntent, handler: InstalledNapplet) => void) | null,
-  resource: { blossomOrigins: string[]; requestGrant: (identity: ResourceIdentity, origin: string) => Promise<boolean> },
+  chooseIntentHandler: (intent: NappletIntent) => Promise<InstalledNapplet | undefined>,
+  resource: {
+    blossomOrigins: string[];
+    requestGrant: (identity: ResourceIdentity, origin: string) => Promise<boolean>;
+  },
   upload: UploadConfig,
 ): ShellAdapter {
   const subscriptions = new Map<string, () => void>();
@@ -827,7 +895,7 @@ function createAdapter(
     }),
     resource: createResourceService(resource),
     upload: createBlossomUploadService(upload),
-    intent: createNappletIntentService({ navigate: getIntentNavigator }),
+    intent: createNappletIntentService({ navigate: getIntentNavigator, chooseHandler: chooseIntentHandler }),
     relay: createRelayPoolService({
       subscribe: (filters, callback, relayUrls) => {
         const sub = pool.subscription(relayUrls ?? selectRelayTier(filters), filters as any).subscribe((item) => {
@@ -861,50 +929,57 @@ export function NappletShellProvider({ children }: PropsWithChildren) {
     [blossomServerUrls],
   );
   const upload = useMemo<UploadConfig>(
-    () => ({ enabled: settings.mediaUploadService === "blossom" && blossomServerUrls.length > 0, servers: blossomServerUrls }),
+    () => ({
+      enabled: settings.mediaUploadService === "blossom" && blossomServerUrls.length > 0,
+      servers: blossomServerUrls,
+    }),
     [settings.mediaUploadService, blossomServerUrls],
   );
   const [consent, setConsent] = useState<ConsentRequest>();
   const [resourceConsent, setResourceConsent] = useState<ResourceConsentRequest>();
+  const [intentChoice, setIntentChoice] = useState<IntentChoiceRequest>();
   const sessionResourceGrantsRef = useRef(new Set<string>());
   const resourceGrantQueueRef = useRef(Promise.resolve());
   const intentNavigatorRef = useRef<((intent: NappletIntent, handler: InstalledNapplet) => void) | null>(null);
   const getIntentNavigator = useCallback(() => intentNavigatorRef.current, []);
+  const installedNapplets = useMemo(() => getInstalledNapplets(), [intentChoice]);
 
-  const requestResourceGrant = useCallback(
-    (identity: ResourceIdentity, origin: string) => {
-      const ask = async () => {
-        const key = resourceGrantKey(identity, origin);
-        if (sessionResourceGrantsRef.current.has(key) || isAlwaysAllowedResourceOrigin(identity, origin)) return true;
+  const requestResourceGrant = useCallback((identity: ResourceIdentity, origin: string) => {
+    const ask = async () => {
+      const key = resourceGrantKey(identity, origin);
+      if (sessionResourceGrantsRef.current.has(key) || isAlwaysAllowedResourceOrigin(identity, origin)) return true;
 
-        const response = await new Promise<"deny" | "once" | "always">((resolve) =>
-          setResourceConsent({ identity, origin, resolve }),
-        );
-
-        if (response === "deny") return false;
-        if (response === "always") addAlwaysAllowedResourceOrigin(identity, origin);
-        else sessionResourceGrantsRef.current.add(key);
-        return true;
-      };
-
-      const next = resourceGrantQueueRef.current.then(ask, ask);
-      resourceGrantQueueRef.current = next.then(
-        () => undefined,
-        () => undefined,
+      const response = await new Promise<"deny" | "once" | "always">((resolve) =>
+        setResourceConsent({ identity, origin, resolve }),
       );
-      return next;
-    },
-    [],
-  );
+
+      if (response === "deny") return false;
+      if (response === "always") addAlwaysAllowedResourceOrigin(identity, origin);
+      else sessionResourceGrantsRef.current.add(key);
+      return true;
+    };
+
+    const next = resourceGrantQueueRef.current.then(ask, ask);
+    resourceGrantQueueRef.current = next.then(
+      () => undefined,
+      () => undefined,
+    );
+    return next;
+  }, []);
 
   const resource = useMemo(
     () => ({ blossomOrigins, requestGrant: requestResourceGrant }),
     [blossomOrigins, requestResourceGrant],
   );
 
+  const chooseIntentHandler = useCallback((intent: NappletIntent) => {
+    if (getInstalledNapplets().length === 0) return Promise.resolve(undefined);
+    return new Promise<InstalledNapplet | undefined>((resolve) => setIntentChoice({ ...intent, resolve }));
+  }, []);
+
   const adapter = useMemo(
-    () => createAdapter(toast, getIntentNavigator, resource, upload),
-    [toast, getIntentNavigator, resource, upload],
+    () => createAdapter(toast, getIntentNavigator, chooseIntentHandler, resource, upload),
+    [toast, getIntentNavigator, chooseIntentHandler, resource, upload],
   );
   const bridge = useMemo(() => createShellBridge(adapter), [adapter]);
   // Single source of truth for advertised NAP domains: derived from the same
@@ -980,6 +1055,15 @@ export function NappletShellProvider({ children }: PropsWithChildren) {
     [resourceConsent],
   );
 
+  const respondIntentChoice = useCallback(
+    (handler?: InstalledNapplet) => {
+      if (!intentChoice) return;
+      intentChoice.resolve(handler);
+      setIntentChoice(undefined);
+    },
+    [intentChoice],
+  );
+
   return (
     <NappletShellContext.Provider value={context}>
       {children}
@@ -1038,6 +1122,42 @@ export function NappletShellProvider({ children }: PropsWithChildren) {
                 Always allow
               </Button>
             </ButtonGroup>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+      <Modal isOpen={!!intentChoice} onClose={() => respondIntentChoice()} isCentered>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Choose a napplet</ModalHeader>
+          <ModalBody>
+            {intentChoice && (
+              <Stack spacing="3">
+                <Text>
+                  No installed napplet declares support for <Code>{intentChoice.archetype}</Code>/
+                  <Code>{intentChoice.action}</Code>. Choose a napplet to handle this intent.
+                </Text>
+                <Stack spacing="2">
+                  {installedNapplets.map((napplet) => (
+                    <Button
+                      key={napplet.address}
+                      variant="outline"
+                      justifyContent="flex-start"
+                      whiteSpace="normal"
+                      h="auto"
+                      py="3"
+                      onClick={() => respondIntentChoice(napplet)}
+                    >
+                      {napplet.title}
+                    </Button>
+                  ))}
+                </Stack>
+              </Stack>
+            )}
+          </ModalBody>
+          <ModalFooter>
+            <Button variant="ghost" onClick={() => respondIntentChoice()}>
+              Cancel
+            </Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
