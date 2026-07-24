@@ -11,7 +11,7 @@ import { defaultAnonFavoriteApps, defaultUserFavoriteApps, internalApps, interna
 import NavItem from "./nav-item";
 import Plus from "../../icons/plus";
 import useFavoriteInternalIds from "../../../hooks/use-favorite-internal-ids";
-import { getInstalledNapplets } from "../../../services/installed-napplets";
+import { getInstalledNappletPath, getInstalledNapplets } from "../../../services/installed-napplets";
 
 export default function NavItems() {
   const account = useActiveAccount();
@@ -29,7 +29,9 @@ export default function NavItems() {
     const installedNapplets = getInstalledNapplets().map((napplet) => ({
       id: `napplet:${napplet.address}`,
       title: napplet.title,
-      to: `/napplets/${napplet.address}`,
+      description: napplet.description || "Installed NIP-5D napplet",
+      icon: undefined,
+      to: getInstalledNappletPath(napplet),
     }));
     const internal = [...internalApps, ...internalTools, ...installedNapplets];
     return recent

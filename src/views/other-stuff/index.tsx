@@ -1,17 +1,18 @@
 import { Box, Heading, Input, SimpleGrid, Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/react";
 import { useMemo, useState } from "react";
 
-import { allApps as staticApps, App, externalTools, internalTools } from "../../components/navigation/apps";
+import { allApps as staticApps, App, internalTools } from "../../components/navigation/apps";
 import SimpleNavBox from "../../components/layout/box-layout/simple-nav-box";
 import SimpleView from "../../components/layout/presets/simple-view";
 import AppFavoriteButton from "../../components/navigation/app-favorite-button";
+import PuzzlePiece01 from "../../components/icons/puzzle-piece-01";
 import useRecentIds from "../../hooks/use-recent-ids";
 import useRouteSearchValue from "../../hooks/use-route-search-value";
 import { useBreakpointValue } from "../../providers/global/breakpoint-provider";
-import { getInstalledNapplets } from "../../services/installed-napplets";
+import { getInstalledNappletPath, getInstalledNapplets } from "../../services/installed-napplets";
 import { AppIcon } from "./component/app-card";
 
-const tabs = ["all", "tools", "3rd-party-tools"];
+const tabs = ["all", "tools"];
 
 function AppRow({ app, canFavorite = true, onUse }: { app: App; canFavorite?: boolean; onUse: (id: string) => void }) {
   return (
@@ -19,8 +20,7 @@ function AppRow({ app, canFavorite = true, onUse }: { app: App; canFavorite?: bo
       icon={<AppIcon app={app} size="14" />}
       title={app.title}
       description={app.description}
-      to={app.isExternal ? undefined : app.to}
-      href={app.isExternal && typeof app.to === "string" ? app.to : undefined}
+      to={app.to}
       onClick={() => onUse(app.id)}
       actions={canFavorite ? <AppFavoriteButton app={app} variant="ghost" /> : undefined}
     />
@@ -28,7 +28,7 @@ function AppRow({ app, canFavorite = true, onUse }: { app: App; canFavorite?: bo
 }
 
 function canFavoriteApp(app: App) {
-  return !externalTools.includes(app) && !app.id.startsWith("napplet:");
+  return !app.id.startsWith("napplet:");
 }
 
 export default function OtherStuffView() {
@@ -42,7 +42,8 @@ export default function OtherStuffView() {
         id: `napplet:${napplet.address}`,
         title: napplet.title,
         description: napplet.description || "Installed NIP-5D napplet",
-        to: `/napplets/${napplet.address}`,
+        icon: PuzzlePiece01,
+        to: getInstalledNappletPath(napplet),
       })),
     [],
   );
@@ -94,13 +95,12 @@ export default function OtherStuffView() {
           mt="4"
           variant="soft-rounded"
           colorScheme="primary"
-          index={tabs.indexOf(tab.value)}
+          index={tabs.includes(tab.value) ? tabs.indexOf(tab.value) : 0}
           onChange={(v) => tab.setValue(tabs[v])}
         >
           <TabList gap="2" px="4">
             <Tab>All</Tab>
             <Tab>Tools</Tab>
-            <Tab>3rd Party Tools</Tab>
           </TabList>
           <TabPanels>
             <TabPanel as={SimpleGrid} columns={columns} px="0" py="0" borderTopWidth={1}>
@@ -111,11 +111,6 @@ export default function OtherStuffView() {
             <TabPanel as={SimpleGrid} columns={columns} px="0" py="0" borderTopWidth={1}>
               {internalTools.sort(sortByName).map((app) => (
                 <AppRow key={app.id} app={app} onUse={useApp} />
-              ))}
-            </TabPanel>
-            <TabPanel as={SimpleGrid} columns={columns} px="0" py="0" borderTopWidth={1}>
-              {externalTools.sort(sortByName).map((app) => (
-                <AppRow key={app.id} app={app} canFavorite={false} onUse={useApp} />
               ))}
             </TabPanel>
           </TabPanels>

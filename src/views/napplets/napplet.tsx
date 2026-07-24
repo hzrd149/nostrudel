@@ -2,7 +2,7 @@ import { Alert, AlertDescription, AlertIcon, Flex, Spinner, Text } from "@chakra
 import { DecodeResult } from "applesauce-core/helpers";
 import { NostrEvent } from "nostr-tools";
 import { useEffect, useMemo } from "react";
-import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { Navigate, useNavigate, useParams, useSearchParams } from "react-router-dom";
 
 import NappletFrame from "../../components/napplets/napplet-frame";
 import SimpleView from "../../components/layout/presets/simple-view";
@@ -23,7 +23,7 @@ import { useNappletShell } from "../../providers/global/napplet-shell-provider";
 import { addRecentNappletEvent } from "../../services/recent-napplets";
 import { installNapplet } from "../../services/installed-napplets";
 
-function NappletRouteLoader({ address, pointer, intent }: { address: string; pointer: DecodeResult; intent?: NappletIntent }) {
+export function NappletRouteLoader({ address, pointer, intent }: { address: string; pointer: DecodeResult; intent?: NappletIntent }) {
   const navigate = useNavigate();
   const eventPointer = useMemo(() => getNappletEventPointer(pointer), [pointer]);
   const event: NostrEvent | undefined = useEvent(eventPointer);
@@ -43,7 +43,7 @@ function NappletRouteLoader({ address, pointer, intent }: { address: string; poi
     });
     if (naddr !== address) {
       const search = intent ? `?${NAPPLET_INTENT_PARAM}=${encodeNappletIntent(intent)}` : "";
-      navigate(`/napplets/${naddr}${search}`, { replace: true });
+      navigate(`/app/${naddr}${search}`, { replace: true });
     }
   }, [address, event, intent, navigate]);
 
@@ -100,7 +100,8 @@ export default function NappletView() {
 
   useEffect(() => {
     setIntentNavigator((nextIntent, handler) => {
-      navigate(`/napplets/${handler.address}?${NAPPLET_INTENT_PARAM}=${encodeNappletIntent(nextIntent)}`);
+      const archetype = handler.archetypes.find((entry) => entry.name === nextIntent.archetype)?.name;
+      navigate(`/app/${archetype || handler.address}?${NAPPLET_INTENT_PARAM}=${encodeNappletIntent(nextIntent)}`);
     });
 
     return () => setIntentNavigator(null);
@@ -116,5 +117,5 @@ export default function NappletView() {
       </SimpleView>
     );
 
-  return <NappletRouteLoader address={address} pointer={pointer} intent={intent} />;
+  return <Navigate to={`/app/${address}${searchParams.size > 0 ? `?${searchParams.toString()}` : ""}`} replace />;
 }

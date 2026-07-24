@@ -35,15 +35,9 @@ export default function AppCard({
       </Card>
       <Flex direction="column" gap="2" py="2">
         <Heading size="md" id={`app-title-${app.title.toLowerCase().replace(/\s+/g, "-")}`}>
-          {app.isExternal && typeof app.to === "string" ? (
-            <HoverLinkOverlay href={app.to} isExternal onClick={onClick} aria-label={`${app.title} (opens in new tab)`}>
-              {app.title}
-            </HoverLinkOverlay>
-          ) : (
-            <HoverLinkOverlay as={RouterLink} to={app.to} onClick={onClick} aria-label={`${app.title}`}>
-              {app.title}
-            </HoverLinkOverlay>
-          )}
+          <HoverLinkOverlay as={RouterLink} to={app.to} onClick={onClick} aria-label={`${app.title}`}>
+            {app.title}
+          </HoverLinkOverlay>
         </Heading>
         <Text aria-label={app.description}>{app.description}</Text>
       </Flex>

@@ -30,14 +30,13 @@ export type App = {
   title: string;
   description: string;
   id: string;
-  isExternal?: boolean;
   to: string;
 };
 
 export const internalApps: App[] = [
   { title: "Notes", description: "Short text posts from your friends", icon: NotesIcon, id: "notes", to: "/notes" },
   { title: "Feeds", description: "Discover new feeds", icon: PuzzlePiece01, id: "feeds", to: "/feeds" },
-  { title: "Napplets", description: "Installed NIP-5D mini apps", icon: PuzzlePiece01, id: "napplets", to: "/napplets" },
+  { title: "Store", description: "Discover and manage NIP-5D apps", icon: PuzzlePiece01, id: "napplets", to: "/app/store" },
   {
     title: "Notifications",
     description: "Notifications feed",
@@ -115,13 +114,6 @@ export const internalTools: App[] = [
     to: "/tools/publisher",
   },
   {
-    title: "Napplet Installer",
-    description: "Install NIP-5D napplets",
-    icon: PuzzlePiece01,
-    id: "napplet-installer",
-    to: "/tools/napplets",
-  },
-  {
     title: "Stream Moderation",
     description: "A dashboard for moderating streams",
     icon: LiveStreamIcon,
@@ -130,90 +122,7 @@ export const internalTools: App[] = [
   },
 ];
 
-export const externalTools: App[] = [
-  {
-    id: "nak",
-    title: "Nostr Army Knife",
-    description: "Universal NIP-19 tool",
-    to: "https://nak.nostr.com/",
-    image: "https://nak.nostr.com/favicon.ico",
-    isExternal: true,
-  },
-  {
-    id: "nostrdebug.co",
-    title: "Nostr Debug",
-    description: "Debug nostr relays and sign events",
-    to: "https://nostrdebug.com/",
-    image: "https://nostrdebug.com/favicon.ico",
-    isExternal: true,
-  },
-  {
-    id: "dtan.xyz",
-    title: "DTAN",
-    description: "Torrents over nostr",
-    to: "https://dtan.xyz/",
-    image: "https://dtan.xyz/logo_256.jpg",
-    isExternal: true,
-  },
-  {
-    id: "nostrapps.com",
-    title: "Nostr Apps",
-    description: "Curated directory of nostr apps",
-    image: "https://uploads-ssl.webflow.com/641d0d46d5c124ac928a6027/64b1dd06d59d8f1e530d2926_32x32.png",
-    to: "https://www.nostrapps.com/",
-    isExternal: true,
-  },
-  {
-    id: "metadata.nostr.com",
-    title: "Nostr Profile Manager",
-    description: "Backup and manage your profile",
-    to: "https://metadata.nostr.com/",
-    image: "https://metadata.nostr.com/img/git.png",
-    isExternal: true,
-  },
-  {
-    id: "nostr-delete.vercel.app",
-    title: "Nostr Event Deletion",
-    description: "Advanced event deletion",
-    to: "https://nostr-delete.vercel.app/",
-    image: "https://nostr-delete.vercel.app/favicon.png",
-    isExternal: true,
-  },
-  {
-    title: "Satellite CDN",
-    description: "Scalable media hosting for the nostr ecosystem",
-    image: "https://satellite.earth/image.png",
-    id: "satellite-cdn",
-    to: "https://satellite.earth/cdn",
-    isExternal: true,
-  },
-  {
-    id: "nosbin.com",
-    title: "nosbin",
-    description: "Upload code snippets to nostr",
-    to: "https://nosbin.com/",
-    image: "https://nosbin.com/logo.png",
-    isExternal: true,
-  },
-  {
-    id: "bouquet.slidestr.net",
-    title: "Bouquet",
-    description: "Manage your blobs on multiple servers",
-    to: "https://bouquet.slidestr.net/",
-    image: "https://bouquet.slidestr.net/bouquet.png",
-    isExternal: true,
-  },
-  {
-    id: "hzrd149.wifistr",
-    title: "Wifi Networks",
-    description: "Discover free wifi networks",
-    to: "https://hzrd149.github.io/wifistr",
-    image: "https://hzrd149.github.io/wifistr/favicon.ico",
-    isExternal: true,
-  },
-];
-
 export const defaultAnonFavoriteApps = ["notes", "discover", "search", "articles", "streams"];
 export const defaultUserFavoriteApps = ["notes", "discover", "notifications", "messages", "search"];
 
-export const allApps = [...internalApps, ...internalTools, ...externalTools];
+export const allApps = [...internalApps, ...internalTools];

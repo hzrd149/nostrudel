@@ -9,15 +9,17 @@ import {
   Spinner,
   Tooltip,
 } from "@chakra-ui/react";
-import { CloseIcon, RepeatIcon } from "@chakra-ui/icons";
+import { CloseIcon, InfoIcon, RepeatIcon } from "@chakra-ui/icons";
 import { NostrEvent } from "nostr-tools";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { Link as RouterLink } from "react-router-dom";
 import { openNappletArtifactCache, resolveNapplet, type ResolvedNapplet } from "@kehto/nip";
 import { injectNappletNamespacePrelude } from "@kehto/shell";
 
 import SimpleView from "../layout/presets/simple-view";
 import {
   getNappletRequiredCapabilities,
+  getNappletNaddr,
   getNappletTitle,
   getUnsupportedNappletRequirements,
   type NappletIntent,
@@ -62,6 +64,7 @@ export default function NappletFrame({ event, intent, onClose, onResolved, onErr
   const [napplet, setNapplet] = useState<ResolvedNapplet>();
 
   const title = getNappletTitle(event);
+  const address = getNappletNaddr(event);
 
   useEffect(() => {
     intentRef.current = intent;
@@ -135,8 +138,10 @@ export default function NappletFrame({ event, intent, onClose, onResolved, onErr
       const windowId = `napplet:${event.id}:${reloadKey}`;
       windowIdRef.current = windowId;
       registerFrame(windowId, node.contentWindow, {
+        pubkey: event.pubkey,
         dTag: napplet.dTag,
         aggregateHash: napplet.aggregateHash,
+        title,
       });
 
       const delivery = createNappletIntentDelivery({ getTarget: () => iframeRef.current?.contentWindow ?? null });
@@ -154,7 +159,7 @@ export default function NappletFrame({ event, intent, onClose, onResolved, onErr
       // materialised window.napplet.<domain> proxies never diverge.
       node.srcdoc = injectNappletNamespacePrelude(napplet.indexHtml, { domains: capabilities.domains });
     },
-    [event.id, napplet, registerFrame, reloadKey, unregisterFrame, capabilities.domains],
+    [event.id, event.pubkey, napplet, registerFrame, reloadKey, unregisterFrame, capabilities.domains, title],
   );
 
   const reload = useCallback(() => {
@@ -185,6 +190,11 @@ export default function NappletFrame({ event, intent, onClose, onResolved, onErr
       gap={0}
       actions={
         <ButtonGroup size="sm" variant="ghost" ms="auto">
+          {address && (
+            <Tooltip label="App details" openDelay={500}>
+              <IconButton as={RouterLink} to={`/app/store/${address}`} icon={<InfoIcon />} aria-label="App details" />
+            </Tooltip>
+          )}
           <Tooltip label="Reload" openDelay={500}>
             <IconButton icon={<RepeatIcon />} aria-label="Reload napplet" onClick={reload} />
           </Tooltip>

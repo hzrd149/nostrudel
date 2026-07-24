@@ -1,12 +1,12 @@
 import { CloseIcon } from "@chakra-ui/icons";
-import { Box, Card, CardBody, Flex, IconButton, Text } from "@chakra-ui/react";
+import { Box, Button, Card, CardBody, Flex, IconButton, Text } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 
 import HoverLinkOverlay from "../../../components/hover-link-overlay";
 import Timestamp from "../../../components/timestamp";
 import UserAvatar from "../../../components/user/user-avatar";
 import UserName from "../../../components/user/user-name";
-import { InstalledNapplet } from "../../../services/installed-napplets";
+import { getInstalledNappletPath, InstalledNapplet } from "../../../services/installed-napplets";
 
 export default function InstalledNappletCard({
   napplet,
@@ -21,7 +21,7 @@ export default function InstalledNappletCard({
         <Flex alignItems="center" gap="3">
           <UserAvatar pubkey={napplet.pubkey} size="sm" />
           <Box flex="1" minW="0">
-            <HoverLinkOverlay as={RouterLink} to={`/napplets/${napplet.address}`} fontWeight="semibold" noOfLines={1}>
+            <HoverLinkOverlay as={RouterLink} to={getInstalledNappletPath(napplet)} fontWeight="semibold" noOfLines={1}>
               {napplet.title}
             </HoverLinkOverlay>
             <Flex gap="1" fontSize="xs" color="GrayText" alignItems="center" minW="0">
@@ -35,13 +35,18 @@ export default function InstalledNappletCard({
               </Text>
             )}
           </Box>
-          <IconButton
-            size="sm"
-            variant="ghost"
-            aria-label="Uninstall napplet"
-            icon={<CloseIcon />}
-            onClick={onUninstall}
-          />
+          <Flex gap="1" zIndex={1}>
+            <Button as={RouterLink} to={`/app/store/${napplet.address}`} size="sm" variant="ghost">
+              Details
+            </Button>
+            <IconButton
+              size="sm"
+              variant="ghost"
+              aria-label="Uninstall napplet"
+              icon={<CloseIcon />}
+              onClick={onUninstall}
+            />
+          </Flex>
         </Flex>
       </CardBody>
     </Card>

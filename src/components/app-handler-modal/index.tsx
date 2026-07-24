@@ -47,6 +47,7 @@ import IntersectionObserverProvider from "../../providers/local/intersection-obs
 import useAppSettings from "../../hooks/use-user-app-settings";
 import { DEFAULT_SHARE_SERVICE } from "../../const";
 import { getNappletNaddr, isNappletManifestKind } from "../../helpers/nostr/napplets";
+import { getInstalledNapplet, getInstalledNappletPath } from "../../services/installed-napplets";
 
 function useEventFromDecode(decoded: DecodeResult) {
   switch (decoded.type) {
@@ -159,6 +160,7 @@ export default function AppHandlerModal({
   }, [clientTag]);
   const preferredApp = useReplaceableEvent(clientPointer);
   const nappletAddress = event && isNappletManifestKind(event.kind) ? getNappletNaddr(event) : undefined;
+  const installedNapplet = nappletAddress ? getInstalledNapplet(nappletAddress) : undefined;
 
   const orderedFilteredApps = useMemo(() => {
     if (!clientPointer) return filteredApps;
@@ -227,7 +229,7 @@ export default function AppHandlerModal({
             <Button
               colorScheme="primary"
               onClick={() => {
-                navigate(`/napplets/${nappletAddress}`);
+                navigate(installedNapplet ? getInstalledNappletPath(installedNapplet) : `/app/${nappletAddress}`);
                 onClose();
               }}
             >

@@ -15,6 +15,9 @@ import TaskManagerProvider from "./views/task-manager/provider";
 import NoteFoundView from "./views/404";
 import HomeView from "./views/home";
 import NostrLinkView from "./views/link";
+import AppView from "./views/app";
+import NappletStoreDetail from "./views/app/store-detail";
+import AppStoreView from "./views/app/store";
 import OtherStuffView from "./views/other-stuff";
 import PollHomeView from "./views/poll/home";
 import PollView from "./views/poll/poll";
@@ -100,6 +103,9 @@ export const router = createBrowserRouter(
         { path: "u/:pubkey", children: userRoutes },
         { path: "note/:id", Component: ThreadView },
         { path: "n/:id", Component: ThreadView },
+        { path: "app/store/:address", Component: NappletStoreDetail },
+        { path: "app/store", Component: AppStoreView },
+        { path: "app/:id", Component: AppView },
         { path: "polls", Component: PollHomeView },
         { path: "poll/:id", Component: PollView },
         { path: "search", Component: SearchView },
