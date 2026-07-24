@@ -43,6 +43,7 @@ const REQUIRED_CAPABILITY_MAP: Record<string, Capability[]> = {
   config: ["config:read"],
   resource: ["resource:fetch"],
   cvm: ["cvm:call"],
+  common: [],
   upload: ["upload:write"],
   intent: ["intent:read", "intent:write"],
 };
