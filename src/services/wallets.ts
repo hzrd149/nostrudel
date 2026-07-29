@@ -31,7 +31,7 @@ const log = logger.extend("Wallets");
 
 // Suggested mints + relays used when creating a brand new NIP-60 wallet (setup flow, not built yet)
 const SUGGESTED_MINTS = ["https://mint.minibits.cash/Bitcoin", "https://21mint.me"];
-const DEFAULT_WALLET_RELAYS = ["wss://relay.damus.io", "wss://nos.lol", "wss://relay.primal.net"];
+const DEFAULT_WALLET_RELAYS = ["wss://nos.lol", "wss://relay.primal.net"];
 
 // Route the Nostr Wallet Connect transport through the shared relay pool
 WalletConnect.pool = pool;

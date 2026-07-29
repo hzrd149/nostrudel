@@ -2,7 +2,6 @@
   "relays": [
     "wss://relay.primal.net",
     "wss://nos.lol",
-    "wss://relay.damus.io",
     "wss://nsite.run",
     "wss://relay.nsite.lol"
   ],

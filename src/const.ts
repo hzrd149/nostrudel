@@ -42,12 +42,11 @@ export const RECOMMENDED_LOOKUP_RELAYS = relays([
 ]);
 
 /** The default set of relays to use for fetching users events who have out published outboxes */
-export const DEFAULT_FALLBACK_RELAYS = relays(["wss://relay.primal.net/", "wss://relay.damus.io/"]);
+export const DEFAULT_FALLBACK_RELAYS = relays(["wss://relay.primal.net/", "wss://nos.lol/"]);
 
 /** The default recommended relays to use when a user has not outboxes */
 export const RECOMMENDED_FALLBACK_RELAYS = relays([
   "wss://relay.primal.net/",
-  "wss://relay.damus.io/",
   "wss://nos.lol/",
 ]);
 

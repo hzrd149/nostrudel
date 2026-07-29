@@ -25,7 +25,6 @@ import useAsyncAction from "../../../hooks/use-async-action";
 import { useNutWallet } from "../../../hooks/use-wallets";
 
 const DEFAULT_WALLET_RELAYS = [
-  "wss://relay.damus.io",
   "wss://nos.lol",
   "wss://relay.snort.social",
   "wss://relay.nostr.band",
