@@ -12,17 +12,20 @@ import {
   getCommentReplyPointer,
   getCommentRootPointer,
   getNip10References,
+  type MutedThings,
 } from "applesauce-common/helpers";
 import { kinds } from "nostr-tools";
-import { map, Observable, of, scan, switchMap, throttleTime } from "rxjs";
+import { combineLatest, map, Observable, of, scan, switchMap, throttleTime } from "rxjs";
 
 // v5: getCoordinateFromAddressPointer was removed, create inline
 const getCoordinateFromAddressPointer = (pointer: any) => `${pointer.kind}:${pointer.pubkey}:${pointer.identifier}`;
 
 import { shareAndHold } from "../../helpers/observable";
+import { MutesQuery } from "../../models";
 import { getNotificationsFromState, ThreadNotification } from "../../views/notifications/threads/helpers";
 import accounts from "../accounts";
 import { eventStore } from "../event-store";
+import { filterNotificationEvents } from "./common";
 
 /**
  * Get the thread root pointer from an event
@@ -165,6 +168,34 @@ export function processThreadNotification(state: ThreadNotificationState, event:
   return state;
 }
 
+function filterThreadNotificationsByMutes(
+  notifications: ThreadNotification[],
+  user: string,
+  mutes: MutedThings | undefined,
+): ThreadNotification[] {
+  return notifications
+    .flatMap((notification) => {
+      const replies = filterNotificationEvents(notification.data.replies, user, mutes);
+      if (replies.length === 0) return [];
+
+      const latest = Math.max(...replies.map((reply) => reply.created_at));
+
+      return [
+        {
+          type: notification.type,
+          data: {
+            ...notification.data,
+            replies,
+            repliers: Array.from(new Set(replies.map((reply) => reply.pubkey))),
+            latest,
+          },
+          timestamp: latest,
+        },
+      ];
+    })
+    .sort((a, b) => b.timestamp - a.timestamp);
+}
+
 /** Observable stream of processed thread notifications (only thread groups, excluding direct replies) */
 export const threadNotifications$: Observable<ThreadNotification[]> = accounts.active$.pipe(
   switchMap((account) => {
@@ -182,7 +213,7 @@ export const threadNotifications$: Observable<ThreadNotification[]> = accounts.a
     });
 
     // Use switchMap on userEvents$ to reset state when user events change
-    return replyEvents$.pipe(
+    const notifications$ = replyEvents$.pipe(
       scan((state, event) => {
         // Skip user's own events
         if (event.pubkey === account.pubkey) return state;
@@ -201,6 +232,10 @@ export const threadNotifications$: Observable<ThreadNotification[]> = accounts.a
       }, initialState),
       // Convert state to sorted notifications array
       map(getNotificationsFromState),
+    );
+
+    return combineLatest([notifications$, eventStore.model(MutesQuery, account.pubkey)]).pipe(
+      map(([notifications, mutes]) => filterThreadNotificationsByMutes(notifications, account.pubkey, mutes)),
     );
   }),
   // Ensure observable has an immediate value

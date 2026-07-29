@@ -7,6 +7,7 @@ import { filter, Observable, of, switchMap, throttleTime } from "rxjs";
 import { shareAndHold } from "../../helpers/observable";
 import accounts from "../accounts";
 import { eventStore } from "../event-store";
+import { filterNotificationsByMutes } from "./common";
 
 /** Check if an event mentions the user's pubkey in its content */
 function isMentionEvent(event: NostrEvent, userPubkey: string): boolean {
@@ -41,6 +42,7 @@ export const mentionNotifications$: Observable<NostrEvent[]> = accounts.active$.
         filter((event) => isMentionEvent(event, account.pubkey)),
         // Build timeline from events
         mapEventsToTimeline(),
+        filterNotificationsByMutes(account.pubkey),
       );
   }),
   // Ensure observable has an immediate value

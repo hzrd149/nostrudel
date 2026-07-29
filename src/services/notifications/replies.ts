@@ -16,7 +16,7 @@ import { combineLatest, Observable, of, scan, switchMap, throttleTime } from "rx
 import { shareAndHold } from "../../helpers/observable";
 import accounts from "../accounts";
 import { eventStore } from "../event-store";
-import { userEvents$ } from "./common";
+import { filterNotificationsByMutes, userEvents$ } from "./common";
 import { getReplyPointer } from "./threads";
 
 /** Observable stream of direct reply notifications (replies directly to user's notes) */
@@ -63,6 +63,7 @@ export const replyNotifications$: Observable<NostrEvent[]> = accounts.active$.pi
       }, [] as NostrEvent[]),
       // Throttle updates to avoid excessive re-renders
       throttleTime(500, undefined, { leading: true, trailing: true }),
+      filterNotificationsByMutes(account.pubkey),
     );
   }),
   // Ensure observable has an immediate value
