@@ -67,12 +67,17 @@ function getNappletSearchValues(event: NostrEvent) {
   ].filter((value): value is string => !!value);
 }
 
-const NappletStoreCard = memo(function NappletStoreCard({ event }: { event: NostrEvent }) {
+const NappletStoreCard = memo(function NappletStoreCard({
+  event,
+  installed,
+}: {
+  event: NostrEvent;
+  installed: boolean;
+}) {
   const address = getNappletNaddr(event);
   const title = getNappletTitle(event);
   const description = getNappletDescription(event);
   const archetypes = getNappletArchetypes(event);
-  const installed = address ? getInstalledNapplets().some((napplet) => napplet.address === address) : false;
 
   return (
     <Card
@@ -326,17 +331,28 @@ const DiscoverSearchForm = memo(function DiscoverSearchForm({
   );
 });
 
-function NappletGrid({ events }: { events: NostrEvent[] }) {
+function NappletGrid({ events, installedAddresses }: { events: NostrEvent[]; installedAddresses: Set<string> }) {
   return (
     <SimpleGrid columns={{ base: 1, md: 2, xl: 3 }} spacing="4">
-      {events.map((event) => (
-        <NappletStoreCard key={event.id} event={event} />
-      ))}
+      {events.map((event) => {
+        const address = getNappletNaddr(event);
+        return (
+          <NappletStoreCard key={event.id} event={event} installed={!!address && installedAddresses.has(address)} />
+        );
+      })}
     </SimpleGrid>
   );
 }
 
-function DiscoverTimeline({ timeline, callback }: { timeline: NostrEvent[]; callback: IntersectionObserverCallback }) {
+function DiscoverTimeline({
+  timeline,
+  callback,
+  installedAddresses,
+}: {
+  timeline: NostrEvent[];
+  callback: IntersectionObserverCallback;
+  installedAddresses: Set<string>;
+}) {
   return (
     <>
       {timeline[0] && (
@@ -345,13 +361,13 @@ function DiscoverTimeline({ timeline, callback }: { timeline: NostrEvent[]; call
         </Box>
       )}
       <IntersectionObserverProvider callback={callback}>
-        <NappletGrid events={timeline} />
+        <NappletGrid events={timeline} installedAddresses={installedAddresses} />
       </IntersectionObserverProvider>
     </>
   );
 }
 
-function DiscoverPanel() {
+function DiscoverPanel({ installedAddresses }: { installedAddresses: Set<string> }) {
   const relays = useReadRelays();
   const { filter, listId } = usePeopleListContext();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -401,10 +417,10 @@ function DiscoverPanel() {
               ? "No apps found in loaded apps."
               : `Found ${searchResults.length} app${searchResults.length === 1 ? "" : "s"}`}
           </Text>
-          {searchResults.length > 0 && <NappletGrid events={searchResults} />}
+          {searchResults.length > 0 && <NappletGrid events={searchResults} installedAddresses={installedAddresses} />}
         </Flex>
       ) : (
-        <DiscoverTimeline timeline={timeline} callback={callback} />
+        <DiscoverTimeline timeline={timeline} callback={callback} installedAddresses={installedAddresses} />
       )}
     </>
   );
@@ -413,6 +429,7 @@ function DiscoverPanel() {
 function AppStoreContent() {
   const [installed, setInstalled] = useState(() => getInstalledNapplets());
   const refreshInstalled = useCallback(() => setInstalled(getInstalledNapplets()), []);
+  const installedAddresses = useMemo(() => new Set(installed.map((napplet) => napplet.address)), [installed]);
 
   return (
     <SimpleView title="App Store">
@@ -424,7 +441,7 @@ function AppStoreContent() {
         </TabList>
         <TabPanels>
           <TabPanel px="0">
-            <DiscoverPanel />
+            <DiscoverPanel installedAddresses={installedAddresses} />
           </TabPanel>
           <TabPanel px="0">
             <InstalledPanel installed={installed} refresh={refreshInstalled} />

@@ -37,13 +37,21 @@ export type NappletFrameProps = {
   onError?: (error: Error) => void;
 };
 
-async function fetchNappletBlob(sha256Hex: string, servers: readonly string[]) {
+let nappletArtifactCachePromise: ReturnType<typeof openNappletArtifactCache> | undefined;
+
+function getNappletArtifactCache() {
+  nappletArtifactCachePromise ??= openNappletArtifactCache();
+  return nappletArtifactCachePromise;
+}
+
+async function fetchNappletBlob(sha256Hex: string, servers: readonly string[], signal?: AbortSignal) {
   for (const server of servers) {
     const url = `${server.replace(/\/$/, "")}/${sha256Hex}`;
     try {
-      const response = await fetch(url, { cache: "no-store" });
+      const response = await fetch(url, { cache: "no-store", signal });
       if (response.ok) return new Uint8Array(await response.arrayBuffer());
     } catch {
+      if (signal?.aborted) throw new DOMException("Napplet fetch aborted", "AbortError");
       // Try the next server hint.
     }
   }
@@ -80,6 +88,7 @@ export default function NappletFrame({ event, intent, onClose, onResolved, onErr
   // Resolve (and re-resolve on reload) the napplet from its manifest event.
   useEffect(() => {
     let mounted = true;
+    const controller = new AbortController();
     const capabilities = getNappletRequiredCapabilities(event);
     const unsupported = getUnsupportedNappletRequirements(event);
 
@@ -91,8 +100,12 @@ export default function NappletFrame({ event, intent, onClose, onResolved, onErr
       try {
         if (unsupported.length > 0) throw new Error(`Unsupported napplet requirements: ${unsupported.join(", ")}`);
 
-        const cache = await openNappletArtifactCache();
-        const resolved = await resolveNapplet({ event, cache, fetchBlob: fetchNappletBlob });
+        const cache = await getNappletArtifactCache();
+        const resolved = await resolveNapplet({
+          event,
+          cache,
+          fetchBlob: (sha256Hex, servers) => fetchNappletBlob(sha256Hex, servers, controller.signal),
+        });
         const identity = { pubkey: event.pubkey, dTag: resolved.dTag, aggregateHash: resolved.aggregateHash };
         const allowed = await requestConsent(event, identity, capabilities);
         if (!allowed) throw new Error("Napplet access denied");
@@ -113,6 +126,7 @@ export default function NappletFrame({ event, intent, onClose, onResolved, onErr
     load();
     return () => {
       mounted = false;
+      controller.abort();
     };
   }, [event, reloadKey, requestConsent, onResolved, onError]);
 

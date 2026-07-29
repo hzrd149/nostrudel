@@ -128,6 +128,9 @@ const NappletShellContext = createContext<NappletShellContextValue | null>(null)
 
 const ALWAYS_ALLOW_STORAGE_KEY = "nostrudel:napplet:always-allow";
 const RESOURCE_ALWAYS_ALLOW_STORAGE_KEY = "nostrudel:napplet:resource:always-allow";
+const MAX_RESOURCE_BYTES = 25 * 1024 * 1024;
+const MAX_RESOURCE_URLS = 16;
+const MAX_CONCURRENT_RESOURCE_FETCHES = 4;
 
 /**
  * NAP domains the shell advertises by default that noStrudel does not back with
@@ -298,15 +301,14 @@ function createNappletIntentService(options: {
 
         const preference = request.handler;
         const defaultHandler = getDefaultIntentHandler(archetype, action);
+        const installedIntentHandlers = getInstalledNappletsForIntent(archetype, action);
         const handler =
           typeof preference === "string" && preference !== "default" && preference !== "choose"
             ? handlers.find((item) => handlerMatchesPreference(item.napplet, preference))
             : defaultHandler
               ? handlers.find((item) => item.napplet.address === defaultHandler.address)
-              : getInstalledNappletsForIntent(archetype, action).length > 0
-                ? handlers.find(
-                    (item) => item.napplet.address === getInstalledNappletsForIntent(archetype, action)[0].address,
-                  )
+              : installedIntentHandlers.length > 0
+                ? handlers.find((item) => item.napplet.address === installedIntentHandlers[0].address)
                 : handlers[0];
         if (!handler) return failed(archetype, action, `${preference} does not handle ${archetype}`);
 
@@ -462,9 +464,11 @@ async function changeCommonFollow(pubkeys: string[], follow: boolean): Promise<C
 
   let result: CommonActionResult = { ok: true };
   for (const pubkey of normalized as string[]) {
-    await actions.exec(follow ? FollowUser : UnfollowUser, pubkey).forEach(async (event) => {
+    const events = await firstValueFrom(actions.exec(follow ? FollowUser : UnfollowUser, pubkey).pipe(toArray()));
+    for (const event of events) {
       result = await publishCommonEvent(follow ? "Follow user" : "Unfollow user", event);
-    });
+      if (!result.ok) return result;
+    }
     if (!result.ok) return result;
   }
 
@@ -525,19 +529,22 @@ function blobToFile(data: ArrayBuffer | Blob, filename: string | undefined, mime
   return new File([blob], filename || "upload", { type: mimeType || blob.type });
 }
 
-function createBlossomUploadService(upload: UploadConfig) {
+function createBlossomUploadService(getUpload: () => UploadConfig) {
+  const initialUpload = getUpload();
+
   return createUploadService({
     uploadInfo: {
       rails: [
         {
           rail: "blossom",
-          enabled: upload.enabled,
+          enabled: initialUpload.enabled,
           returns: ["url", "sha256", "size", "mimeType", "nip94"],
         },
       ],
     },
     uploader: {
       upload: async (request: any, ctx: any) => {
+        const upload = getUpload();
         if (!upload.enabled) throw new Error("Blossom upload is not configured");
         if (request.rail && request.rail !== "blossom") throw new Error("Only Blossom uploads are supported");
 
@@ -592,28 +599,58 @@ function sendResourceError(send: (message: any) => void, requestId: string, code
   });
 }
 
+function resourceRequestKey(windowId: string, requestId: string) {
+  return `${windowId}:${requestId}`;
+}
+
+function getContentLength(headers: Headers) {
+  const value = headers.get("content-length");
+  if (!value) return undefined;
+
+  const length = Number(value);
+  return Number.isFinite(length) ? length : undefined;
+}
+
+async function mapWithConcurrency<T, R>(items: T[], limit: number, mapper: (item: T) => Promise<R>): Promise<R[]> {
+  const results = new Array<R>(items.length);
+  let index = 0;
+
+  await Promise.all(
+    Array.from({ length: Math.min(limit, items.length) }, async () => {
+      while (index < items.length) {
+        const current = index++;
+        results[current] = await mapper(items[current]);
+      }
+    }),
+  );
+
+  return results;
+}
+
 function createResourceService(options: {
-  blossomOrigins: string[];
+  getBlossomOrigins: () => string[];
   requestGrant: (identity: ResourceIdentity, origin: string) => Promise<boolean>;
 }) {
   const inFlight = new Map<string, AbortController>();
   const perWindow = new Map<string, Set<string>>();
 
   const isGranted = async (identity: ResourceIdentity, origin: string) => {
-    if (options.blossomOrigins.includes(origin)) return true;
+    if (options.getBlossomOrigins().includes(origin)) return true;
     if (isAlwaysAllowedResourceOrigin(identity, origin)) return true;
     return options.requestGrant(identity, origin);
   };
 
   const track = (windowId: string, requestId: string, controller: AbortController) => {
-    inFlight.set(requestId, controller);
+    const key = resourceRequestKey(windowId, requestId);
+    inFlight.set(key, controller);
     if (!perWindow.has(windowId)) perWindow.set(windowId, new Set());
-    perWindow.get(windowId)!.add(requestId);
+    perWindow.get(windowId)!.add(key);
   };
 
   const untrack = (windowId: string, requestId: string) => {
-    inFlight.delete(requestId);
-    perWindow.get(windowId)?.delete(requestId);
+    const key = resourceRequestKey(windowId, requestId);
+    inFlight.delete(key);
+    perWindow.get(windowId)?.delete(key);
   };
 
   const fetchOne = async (
@@ -649,7 +686,16 @@ function createResourceService(options: {
         headers: init?.headers ? { ...init.headers } : undefined,
         signal: controller.signal,
       });
+      const contentLength = getContentLength(response.headers);
+      if (contentLength !== undefined && contentLength > MAX_RESOURCE_BYTES) {
+        sendResourceError(send, requestId, "response-too-large", `resource exceeds ${MAX_RESOURCE_BYTES} bytes`);
+        return;
+      }
       const buffer = await response.arrayBuffer();
+      if (buffer.byteLength > MAX_RESOURCE_BYTES) {
+        sendResourceError(send, requestId, "response-too-large", `resource exceeds ${MAX_RESOURCE_BYTES} bytes`);
+        return;
+      }
       const headers: Record<string, string> = {};
       response.headers.forEach((value, key) => (headers[key] = value));
       const mime = response.headers.get("content-type") || "application/octet-stream";
@@ -697,8 +743,20 @@ function createResourceService(options: {
         case "resource.bytesMany": {
           const id = requestIdFromMessage(message);
           if (!id || !Array.isArray(message.urls)) return;
-          Promise.all(
-            message.urls.map(async (url: string) => {
+          if (message.urls.length > MAX_RESOURCE_URLS) {
+            sendResourceError(
+              send,
+              id,
+              "too-many-urls",
+              `resource.bytesMany accepts at most ${MAX_RESOURCE_URLS} URLs`,
+            );
+            return;
+          }
+
+          mapWithConcurrency(
+            message.urls.filter((url: unknown): url is string => typeof url === "string"),
+            MAX_CONCURRENT_RESOURCE_FETCHES,
+            async (url: string) => {
               const itemId = `${id}:${url}`;
               let result: any;
               await fetchOne(windowId, itemId, url, message.init, (response) => (result = response));
@@ -711,19 +769,19 @@ function createResourceService(options: {
                 code: result?.code,
                 message: result?.message,
               };
-            }),
+            },
           ).then((items) => send({ type: "resource.bytesMany.result", id, requestId: id, items }));
           return;
         }
         case "resource.cancel": {
           const id = requestIdFromMessage(message);
-          if (id) inFlight.get(id)?.abort();
+          if (id) inFlight.get(resourceRequestKey(windowId, id))?.abort();
           return;
         }
       }
     },
     onWindowDestroyed(windowId: string) {
-      for (const id of perWindow.get(windowId) ?? []) inFlight.get(id)?.abort();
+      for (const key of perWindow.get(windowId) ?? []) inFlight.get(key)?.abort();
       perWindow.delete(windowId);
     },
   };
@@ -742,10 +800,11 @@ function createAdapter(
   getIntentNavigator: () => ((intent: NappletIntent, handler: InstalledNapplet) => void) | null,
   chooseIntentHandler: (intent: NappletIntent) => Promise<InstalledNapplet | undefined>,
   resource: {
-    blossomOrigins: string[];
+    getBlossomOrigins: () => string[];
     requestGrant: (identity: ResourceIdentity, origin: string) => Promise<boolean>;
   },
-  upload: UploadConfig,
+  getUpload: () => UploadConfig,
+  uploadEnabled: boolean,
 ): ShellAdapter {
   const subscriptions = new Map<string, () => void>();
   const poolLike = pool as unknown as RelayPoolLike;
@@ -819,7 +878,7 @@ function createAdapter(
       toast({ status: "error", description: `Napplet ${dTag} hash mismatch: ${claimed} != ${computed}` });
     },
     // Narrow shell.init to domains noStrudel actually backs. See DISABLED_NAP_DOMAINS.
-    capabilities: { disabledDomains: [...DISABLED_NAP_DOMAINS, ...(upload.enabled ? [] : ["upload"])] },
+    capabilities: { disabledDomains: [...DISABLED_NAP_DOMAINS, ...(uploadEnabled ? [] : ["upload"])] },
   };
 
   // NAP-OUTBOX: shell-mediated, outbox-model (NIP-65) relay routing. The shell owns
@@ -896,7 +955,7 @@ function createAdapter(
       report: reportCommon,
     }),
     resource: createResourceService(resource),
-    upload: createBlossomUploadService(upload),
+    upload: createBlossomUploadService(getUpload),
     intent: createNappletIntentService({ navigate: getIntentNavigator, chooseHandler: chooseIntentHandler }),
     relay: createRelayPoolService({
       subscribe: (filters, callback, relayUrls) => {
@@ -937,6 +996,10 @@ export function NappletShellProvider({ children }: PropsWithChildren) {
     }),
     [settings.mediaUploadService, blossomServerUrls],
   );
+  const blossomOriginsRef = useRef(blossomOrigins);
+  const uploadRef = useRef(upload);
+  blossomOriginsRef.current = blossomOrigins;
+  uploadRef.current = upload;
   const [consent, setConsent] = useState<ConsentRequest>();
   const [resourceConsent, setResourceConsent] = useState<ResourceConsentRequest>();
   const [intentChoice, setIntentChoice] = useState<IntentChoiceRequest>();
@@ -969,19 +1032,22 @@ export function NappletShellProvider({ children }: PropsWithChildren) {
     return next;
   }, []);
 
-  const resource = useMemo(
-    () => ({ blossomOrigins, requestGrant: requestResourceGrant }),
-    [blossomOrigins, requestResourceGrant],
-  );
-
   const chooseIntentHandler = useCallback((intent: NappletIntent) => {
     if (getInstalledNapplets().length === 0) return Promise.resolve(undefined);
     return new Promise<InstalledNapplet | undefined>((resolve) => setIntentChoice({ ...intent, resolve }));
   }, []);
 
   const adapter = useMemo(
-    () => createAdapter(toast, getIntentNavigator, chooseIntentHandler, resource, upload),
-    [toast, getIntentNavigator, chooseIntentHandler, resource, upload],
+    () =>
+      createAdapter(
+        toast,
+        getIntentNavigator,
+        chooseIntentHandler,
+        { getBlossomOrigins: () => blossomOriginsRef.current, requestGrant: requestResourceGrant },
+        () => uploadRef.current,
+        upload.enabled,
+      ),
+    [toast, getIntentNavigator, chooseIntentHandler, requestResourceGrant, upload.enabled],
   );
   const bridge = useMemo(() => createShellBridge(adapter), [adapter]);
   // Single source of truth for advertised NAP domains: derived from the same
