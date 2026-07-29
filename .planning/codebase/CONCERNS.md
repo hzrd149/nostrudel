@@ -1,147 +1,203 @@
 # Codebase Concerns
 
-**Analysis Date:** 2026-07-01
+**Analysis Date:** 2026-07-29
 
 ## Tech Debt
 
-**Prerelease/nightly dependency pinning (`applesauce-*` packages):**
-- Issue: Several core `applesauce-*` packages are pinned to dated prerelease tags instead of semver ranges: `applesauce-accounts`, `applesauce-actions`, `applesauce-common`, `applesauce-content`, `applesauce-extra`, `applesauce-loaders`, `applesauce-react`, `applesauce-signers`, `applesauce-wallet`, `applesauce-wallet-connect` are all `"0.0.0-next-20260617211338"` in `package.json`. Only `applesauce-core`, `applesauce-relay`, and `applesauce-sqlite` use semver ranges.
-- Files: `package.json`
-- Impact: The app depends on unpublished/unstable nightly builds of its most central library (nostr event store, signers, wallet, accounts). Any upstream nightly regression breaks the whole app, and there is no way to safely bump one package without bumping all others to a matching nightly snapshot.
-- Fix approach: Track upstream `applesauce` release milestones and migrate to stable semver ranges once available; until then, pin exact versions (already effectively pinned) and add a documented upgrade process for bumping all `applesauce-*` packages together.
+**TypeScript suppression and loose typing hotspots:**
+- Issue: Strict TypeScript is enabled in `tsconfig.json`, but multiple core paths rely on `any`, `@ts-ignore`, and `@ts-expect-error` to bypass type safety.
+- Files: `src/services/database/index.ts`, `src/services/preferences.ts`, `src/services/outbox-cache.ts`, `src/services/loaders.ts`, `src/lib/open-graph-scraper/extract.ts`, `src/lib/open-graph-scraper/media.ts`, `src/services/notifications/zaps.ts`, `src/sw/common/interface.ts`
+- Impact: API drift and dependency upgrades surface as runtime bugs instead of compile-time failures. The current `pnpm build` fails on unchecked type mismatches in Webxdc and nostr-idb code.
+- Fix approach: Replace suppressions with typed adapter functions at dependency boundaries. Treat external library return types as `unknown`, validate/normalize them once, and export project-owned typed values.
 
-**`event-zap-modal` complexity:**
-- Issue: Self-documented as overly complex; combines invoice fetching, relay hint resolution, zap splits, LNURL metadata, and UI stepping in one entry point.
-- Files: `src/components/event-zap-modal/index.tsx` (see inline `// TODO: this is way to complicated, it needs to be broken into multiple parts / hooks`, line 30), `src/components/event-zap-modal/pay-step.tsx`, `src/components/event-zap-modal/input-step.tsx`
-- Impact: Hard to modify safely; zap flow bugs are likely to hide in this file. Signing is coupled to invoice-fetch flow (`// TODO: move this out to a separate step so the user can choose when to sign`, line 102) meaning users cannot review a zap before it's signed.
-- Fix approach: Extract invoice resolution, relay-hint resolution, and signing into separate hooks/services; add a distinct "review" step before signing.
+**Build-breaking type errors:**
+- Issue: `pnpm build` fails during `tsc --project tsconfig.json`.
+- Files: `src/components/webxdc/webxdc.tsx`, `src/services/event-cache/nostr-idb.ts`, `src/views/settings/cache/database/internal.tsx`
+- Impact: Production builds cannot complete until these compile errors are fixed. The Webxdc realtime channel API is called as mandatory even though the type marks it optional, and nostr-idb returns `StoredEvent` values that may not satisfy `NostrEvent` because `sig` can be missing.
+- Fix approach: Guard optional Webxdc methods before invocation in `src/components/webxdc/webxdc.tsx`; filter or assert only signed events from nostr-idb in `src/services/event-cache/nostr-idb.ts`; update export typing in `src/views/settings/cache/database/internal.tsx` to return only valid `NostrEvent[]`.
 
-**NIP-60 wallet setup flow incomplete:**
-- Issue: `SUGGESTED_MINTS` / `DEFAULT_WALLET_RELAYS` constants exist for a "brand new NIP-60 wallet" creation flow that is explicitly marked as not built.
-- Files: `src/services/wallets.ts:32` (`// ... setup flow, not built yet`)
-- Impact: Users cannot currently create a new NIP-60 (nut) wallet from scratch through the intended guided flow; likely relies on manual configuration elsewhere.
-- Fix approach: Build the guided creation flow using the existing suggested mints/relays constants, or remove the dead constants if abandoned.
+**Oversized provider module:**
+- Issue: `src/providers/global/napplet-shell-provider.tsx` is 1174 lines and owns consent UI, resource permission persistence, relay/upload adapters, shell bridge lifecycle, identity, follows, profiles, reactions, reports, intent routing, and modals.
+- Files: `src/providers/global/napplet-shell-provider.tsx`
+- Impact: Changes to napplet permissions or service adapters are high-risk because UI state, security policy, and bridge side effects are coupled in one component.
+- Fix approach: Split into `src/services/napplet-shell/*` adapter modules, a small `NappletShellProvider`, and separate modal components. Keep permission storage and grant decisions in pure functions with unit tests.
 
-**Large, monolithic files:**
-- Issue: Several files exceed 300-600 lines and mix concerns (state, network I/O, UI rendering, formatting logic).
-- Files: `src/services/wallets.ts` (596 lines - manages webln/nwc/nutwallet backends, transactions, and balances all together), `src/views/lists/components/list-history-modal.tsx` (563 lines), `src/views/messages/chat/components/direct-message-form.tsx` (432 lines), `src/views/new/poll/poll-form.tsx` (381 lines), `src/const.ts` (363 lines)
-- Impact: High cognitive load for changes; higher risk of regressions when touching wallet or messaging code since backend-specific logic is interleaved.
-- Fix approach: Split `wallets.ts` by backend type (webln/nwc/nutwallet) behind a common interface; extract list-history diffing/rendering logic in `list-history-modal.tsx` into helpers.
+**Vendored/embedded library code in `src/lib`:**
+- Issue: Large third-party-like modules are committed directly in application source.
+- Files: `src/lib/qrcodegen.ts`, `src/lib/open-graph-scraper/fields.ts`, `src/lib/open-graph-scraper/extract.ts`, `src/lib/open-graph-scraper/media.ts`, `src/lib/bencode/encode.ts`
+- Impact: These files increase maintenance burden, are weakly typed, and are easy to accidentally modify without upstream test coverage.
+- Fix approach: Prefer package dependencies where possible. If vendoring is required, isolate under `src/lib/vendor/`, document source/version/license, and avoid application-specific edits in vendor files.
 
-**Scattered `TODO` markers indicating incomplete or unpolished features:**
-- Files (representative sample):
-  - `src/services/authentication-signer.ts:51` - unclear error-handling decision (`// TODO: maybe throw here?`)
-  - `src/services/notifications/zaps.ts:78` - workaround for `isValidZap` throwing instead of returning
-  - `src/helpers/nostr/list-history.ts:92` - hidden/private list tags not merged, decryption incomplete
-  - `src/views/settings/mutes/muted-hashtags.tsx:34` - missing auto-creation of mute list
-  - `src/hooks/use-cache-form.ts:7` - form cache does not support `File`/`Blob` persistence, only text (see also `src/views/new/picture/picture-post-form.tsx:40`)
-  - `src/views/new/note/short-text-form.tsx:193` and `src/components/post-modal/index.tsx:180` - forms not wrapped in native `<form>` (impacts accessibility/enter-to-submit/browser autofill)
-  - `src/components/timeline/note/components/share-modal.tsx:90` - dead code flagged for removal but still present
-- Impact: Each represents a known incomplete feature or workaround; low individual impact but cumulative maintenance burden.
-- Fix approach: Triage TODOs into backlog items; remove dead code flagged for removal.
+**Database migrations perform asynchronous writes inside the upgrade callback without awaiting transaction completion:**
+- Issue: Migrations schedule `getAll().then(...)` work inside the IndexedDB upgrade callback.
+- Files: `src/services/database/index.ts`
+- Impact: Account migrations from schema v4/v6 can race transaction lifetime, especially across browsers, risking partial migration or lost account metadata.
+- Fix approach: Use `await`-compatible migration helpers where supported by `idb`, or keep migration operations strictly transaction-bound and return/chain all promises from upgrade logic.
 
 ## Known Bugs
 
-**`isValidZap` throws instead of returning a validation result:**
-- Symptoms: Zap notification processing must wrap validation in try/catch as a workaround rather than checking a boolean/result.
-- Files: `src/services/notifications/zaps.ts:78`
-- Trigger: Any malformed or edge-case zap receipt event during notification processing.
-- Workaround: Currently swallowed via try/catch (see `// TODO: remove when isValidZap does not throw`).
+**Cache clear calls a deleted object store:**
+- Symptoms: Clicking the internal cache clear action can fail on current schema databases because `clearCacheData()` clears `dnsIdentifiers` even schema v12 deletes that store and replaces it with `identities`.
+- Files: `src/services/database/index.ts`, `src/services/database/schema.ts`, `src/views/settings/cache/database/internal.tsx`
+- Trigger: Navigate to the internal database cache settings and click **Clear cache** on a database at version 13.
+- Workaround: Use **Delete database** instead of **Clear cache** when the clear action fails.
 
-**Silent failures from empty catch blocks (24 occurrences):**
-- Symptoms: Errors are caught and discarded with no logging, making failures invisible to users and developers.
-- Files: `src/helpers/nip19.ts:11`, `src/helpers/nostr/goal.ts:105`, `src/helpers/parse.ts:4`, `src/helpers/nostr/dms.ts:31`, `src/services/lnurl-metadata.ts:31`, `src/services/event-cache/index.ts:40`, `src/views/streams/stream/components/stream-top-zappers.tsx:19`, `src/views/tools/event-publisher/index.tsx:74`, `src/views/messages/chat/components/decrypt-placeholder.tsx:23`, `src/views/settings/cache/database/components/import-events-button.tsx:22`, `src/views/settings/cache/components/enable-with-delete.tsx:32`, `src/views/settings/relays/components/relay-control.tsx:27`, `src/views/wallet/components/receive-token-modal.tsx:36`, `src/providers/route/invoice-modal-provider.tsx:34`, `src/lib/open-graph-scraper/utils.ts:12`, `src/hooks/use-open-graph-data.ts:34`, `src/hooks/use-cache-form.ts:48`, `src/components/blob-details-modal.tsx:146,153`, `src/components/debug-modal/event-tags.tsx:74`, `src/components/cashu/mint-control.tsx:28`, `src/components/app-handler-modal/index.tsx:134`, `src/components/content/transform/nip-notation.ts:42`, `src/components/content/transform/bip-notation.ts:42`
-- Trigger: Any parse/decrypt/network failure in these code paths (includes decryption of direct messages, cashu token receiving, and event caching -- all financially/privacy sensitive).
-- Workaround: None currently; failures are invisible.
+**Event verification can be called before verifier initialization finishes:**
+- Symptoms: `eventStore.verifyEvent` delegates to `verifyEventMethod` before `updateVerifyMethod()` has necessarily loaded wasm or selected the internal verifier.
+- Files: `src/services/verify-event.ts`, `src/services/event-store.ts`
+- Trigger: Insert a non-cache event very early during startup while `nostr-wasm` initialization is still pending.
+- Workaround: Set `verify-event-method` to `internal` or ensure event ingestion starts only after verifier initialization resolves.
+
+**Webxdc realtime channel support is assumed even when absent:**
+- Symptoms: TypeScript reports `api.joinRealtimeChannel` may be undefined, and runtime calls can throw for Webxdc API implementations that do not support realtime channels.
+- Files: `src/components/webxdc/webxdc.tsx`
+- Trigger: A Webxdc iframe calls `webxdc.joinRealtimeChannel` while the provided `WebxdcAPI` object lacks that method.
+- Workaround: Avoid Webxdc apps that require realtime channels until the method is guarded.
+
+**NWC wallet secrets are stored as preference values:**
+- Symptoms: Nostr Wallet Connect URIs are persisted as plain `StoredNwcWallet.uri` values.
+- Files: `src/services/preferences.ts`, `src/services/wallets.ts`, `src/services/wallet-migration.ts`
+- Trigger: Add or migrate a NWC wallet.
+- Workaround: Remove NWC wallets from settings on shared devices; prefer wallets with external permission prompts.
 
 ## Security Considerations
 
-**Custom AES-CBC encrypted key/value store for local secrets:**
-- Risk: `src/classes/encrypted-storage.tsx` implements its own PBKDF2 (10,000 iterations, SHA-256) + AES-CBC + manual PKCS#7 padding for encrypting locally-stored secrets (used to protect account keys/nsecs at rest). CBC without a MAC (no HMAC / AEAD such as GCM) is vulnerable to padding-oracle and bit-flipping style attacks if any code path surfaces distinguishable decrypt errors to an attacker-controlled boundary. PBKDF2 iteration count of 10,000 is low by current standards (OWASP recommends 600,000+ for PBKDF2-HMAC-SHA256 as of recent guidance).
-- Files: `src/classes/encrypted-storage.tsx`
-- Current mitigation: A `TEST_KEY`/`TEST_VALUE` marker pattern is used to verify password correctness before general decryption; unpad validates padding structure strictly and throws on mismatch.
-- Recommendations: Migrate to an authenticated cipher (AES-GCM) to get both confidentiality and integrity in one primitive; increase PBKDF2 iterations substantially or move to Argon2/scrypt for password-based key derivation; ensure decrypt error messages/timing don't leak information distinguishing padding failures.
+**Encrypted decryption cache uses AES-CBC without authentication and a low PBKDF2 work factor:**
+- Risk: CBC encryption does not provide integrity; tampered ciphertext is detected indirectly through padding/UTF-8 errors only. PBKDF2 uses 10,000 iterations, which is low for user PIN/password-derived keys.
+- Files: `src/classes/encrypted-storage.tsx`, `src/services/decryption-cache.ts`, `src/services/preferences.ts`
+- Current mitigation: Random IV per item, PKCS#7 padding validation, and optional encrypted cache enabled by default.
+- Recommendations: Use an authenticated encryption mode such as AES-GCM or XChaCha20-Poly1305. Increase KDF cost and store KDF parameters with cache metadata for migration.
 
-**Widespread use of `@ts-ignore` and loose typing:**
-- Risk: 19 `@ts-ignore`/`@ts-nocheck` occurrences and 56 `: any` / `as any` usages bypass TypeScript's type safety, several in security/data-sensitive contexts (event relay parsing, database indexing, event publishing tool).
-- Files: `src/helpers/media-upload/nostr-build.ts:44`, `src/services/relay-info.ts:31`, `src/services/database/index.ts:117,246`, `src/services/outbox-cache.ts:54`, `src/views/tools/event-publisher/index.tsx:259`, `src/lib/open-graph-scraper/extract.ts:34,36,38,40,42`, `src/lib/open-graph-scraper/media.ts:218`, `src/components/magic-textarea.tsx:169`, `src/polyfill.ts:3`, `src/hooks/use-route-state-value.ts:29`
-- Current mitigation: None beyond code review.
-- Recommendations: Audit each `@ts-ignore` to confirm the underlying type mismatch is benign; replace `any` with concrete types incrementally, prioritizing `src/services/database/index.ts` (persisted data layer) and `src/services/wallets.ts`-adjacent code (financial data).
+**Third-party pages are embedded without sandboxing:**
+- Risk: Relay and Blossom homepage iframes load arbitrary remote origins without a `sandbox` attribute.
+- Files: `src/views/relays/relay/tabs/homepage.tsx`, `src/views/blossom/server/tabs/homepage.tsx`
+- Current mitigation: Browser same-origin policy limits direct DOM access.
+- Recommendations: Add restrictive `sandbox` and `referrerPolicy` attributes, or open untrusted relay/server homepages in a new tab instead of embedding them.
 
-**Signing flow does not have a mandatory review step before invoice signing in the zap modal:**
-- Risk: Per the TODO in `src/components/event-zap-modal/index.tsx:102`, signing happens inline as part of the invoice flow rather than as an explicit user-controlled step, increasing risk of unintended signing if flow logic changes.
-- Files: `src/components/event-zap-modal/index.tsx`
-- Recommendations: Introduce an explicit confirm/sign step decoupled from invoice fetching.
+**Napplet persistent grants are stored in localStorage and keyed only by event identity/hash:**
+- Risk: Users can permanently grant capabilities or resource origins to napplets, and those decisions persist in localStorage without an expiration or centralized revocation UI in the provider.
+- Files: `src/providers/global/napplet-shell-provider.tsx`, `src/components/napplets/napplet-frame.tsx`
+- Current mitigation: Initial consent modal, per-origin resource prompts, sandboxed napplet iframe with `sandbox="allow-scripts"`.
+- Recommendations: Add a settings screen to review/revoke grants, include grant timestamps, and require re-consent when capability sets change.
+
+**Debug globals expose powerful internals in development builds:**
+- Risk: Development sessions attach database, relay/cache, social graph, settings, and wallet internals to `window`.
+- Files: `src/services/database/index.ts`, `src/services/event-store.ts`, `src/services/preferences.ts`, `src/services/social-graph.ts`, `src/services/wallets.ts`, `src/services/event-cache/index.ts`
+- Current mitigation: Most globals are gated by `import.meta.env.DEV`.
+- Recommendations: Keep debug exposure dev-only and avoid enabling development builds for real accounts or production-like deployments.
 
 ## Performance Bottlenecks
 
-**Large monolithic wallet service recomputes/subscribes across all backend types:**
-- Problem: `src/services/wallets.ts` (596 lines) manages `webln`, `nwc`, and `nutwallet` backends together using RxJS combinators (`combineLatest`, `switchMap`, `shareReplay`) in one module; any change to shared observables risks broad re-subscription/re-computation across unrelated wallet backends.
-- Files: `src/services/wallets.ts`
-- Cause: Lack of per-backend isolation; all backend state flows through shared top-level observables.
-- Improvement path: Split into per-backend services combined by a thin coordinator, so a change/update in one backend (e.g., NWC balance polling) doesn't force recomputation of unrelated backend state.
+**Social graph sync runs heavy recalculation and persistence on the main thread:**
+- Problem: Social graph loading, follow-distance recalculation, binary serialization, and IndexedDB persistence run from app services.
+- Files: `src/services/social-graph.ts`, `src/services/cron.ts`
+- Cause: `recalculateFollowDistances()` and `graph.toBinary()` operate on potentially large social graphs; a code comment notes the graph is disabled on Android because it is likely too much data on the JS thread.
+- Improvement path: Move graph crawling/recalculation/persistence to a worker, cap sync distance aggressively, and persist incremental deltas instead of full graph blobs.
 
-**Large `list-history-modal.tsx` (563 lines) diffing UI:**
-- Problem: Computes and renders list/mute-list history diffs in a single large component.
-- Files: `src/views/lists/components/list-history-modal.tsx`
-- Cause: Diff computation and rendering logic co-located instead of memoized/extracted.
-- Improvement path: Extract diff computation into a pure helper/hook with memoization to avoid recomputation on unrelated re-renders.
+**Relay score persistence rewrites all known relay stats every 30 seconds:**
+- Problem: `saveStats()` writes every relay score record on an interval regardless of whether scores changed.
+- Files: `src/services/relay-scoreboard.ts`
+- Cause: Module-level `setInterval` calls `saveStats()` every 30 seconds and iterates all relay maps.
+- Improvement path: Track dirty relays, debounce saves after score changes, and flush on page visibility/background lifecycle events.
+
+**Read-status cache prunes IndexedDB every 30 seconds:**
+- Problem: Expired read-status keys are scanned and deleted frequently.
+- Files: `src/services/read-status.ts`
+- Cause: Module-level `setInterval(readStatusService.prune.bind(readStatusService), 30_000)` runs for every app session.
+- Improvement path: Prune on startup and then at a longer interval, or schedule by nearest TTL expiration.
+
+**Webxdc file transfer serializes files through base64 strings:**
+- Problem: Imported files are converted to base64 using a byte-by-byte string loop.
+- Files: `src/components/webxdc/webxdc.tsx`
+- Cause: `bufToBase64()` builds a binary string in JavaScript before calling `btoa`, which is memory-heavy for large files.
+- Improvement path: Transfer `ArrayBuffer` values directly where the protocol allows, or stream/chunk large files.
 
 ## Fragile Areas
 
-**`event-zap-modal` (zap payment flow):**
-- Files: `src/components/event-zap-modal/index.tsx`, `input-step.tsx`, `pay-step.tsx`
-- Why fragile: Explicitly flagged by the author as "way too complicated" and needing to be broken into multiple parts/hooks; combines relay-hint resolution, outbox/inbox relay merging, zap splits, LNURL metadata fetch, and signing in one flow.
-- Safe modification: Add tests/manual QA around zap-splitting and multi-relay hint merging before making changes; avoid changing signing timing without also addressing the "sign as separate step" TODO.
-- Test coverage: None (no test suite exists in this repository at all).
+**Local account and preference migration:**
+- Files: `src/services/accounts.ts`, `src/services/preferences.ts`, `src/services/database/index.ts`, `src/services/wallet-migration.ts`
+- Why fragile: Migration code runs at module top level and mutates persistent storage immediately on import. Account migration clears old stores after copying, while preference migration iterates all `localStorage` entries and removes matching keys.
+- Safe modification: Add migration version markers, make migrations idempotent, and test migrations from each historical schema/key format.
+- Test coverage: No `*.test.*` or `*.spec.*` files detected in the repo.
 
-**Wallet service (`wallets.ts`) covering three distinct backend types:**
-- Files: `src/services/wallets.ts`
-- Why fragile: Single 596-line file mixes `webln`, `nwc` (Nostr Wallet Connect), and `nutwallet` (NIP-60/Cashu) logic; changes to shared types or observables can silently affect unrelated backends.
-- Safe modification: Confirm changes don't alter shared `WalletBackendType`/`WalletTransaction` interfaces used across all three backends; manually test each backend type after any shared-code change.
-- Test coverage: None.
+**Event cache backend selection and fallback:**
+- Files: `src/services/event-cache/index.ts`, `src/services/event-cache/wasm-worker.ts`, `src/services/event-cache/nostr-idb.ts`, `src/services/event-cache/native-sqlite.ts`, `src/services/event-cache/hosted-relay.ts`
+- Why fragile: Cache backend selection is asynchronous at module load, falls back through multiple implementations, and writes are buffered without surfacing write failures to callers.
+- Safe modification: Keep `EventCache` behavior consistent across backends; add explicit health state and error reporting before changing fallback order.
+- Test coverage: No automated tests detected for cache fallback, write buffering, or backend switching.
 
-**Encrypted local storage (`encrypted-storage.tsx`):**
-- Files: `src/classes/encrypted-storage.tsx`
-- Why fragile: Hand-rolled cryptographic padding/encryption code; any subtle bug in `pad`/`unpad` or key derivation could corrupt or expose locally stored secrets (account keys).
-- Safe modification: Do not modify padding/encryption logic without cryptographic review; consider replacing with a vetted AEAD scheme rather than patching in place.
-- Test coverage: None (no automated tests exist for cryptographic correctness of padding/unpadding edge cases).
+**Nostr event parsing/validation in notification grouping:**
+- Files: `src/services/notifications/zaps.ts`, `src/services/notifications/reposts.ts`, `src/services/notifications/threads.ts`, `src/helpers/nostr/zaps.ts`
+- Why fragile: Zap validation currently wraps `isValidZap(event)` in try/catch due to known throwing behavior, and address pointer coordinate helpers are duplicated inline with `any`.
+- Safe modification: Centralize pointer-to-coordinate helpers in `src/helpers/nostr/`, normalize invalid zap events once, and keep grouping functions pure.
+- Test coverage: No automated tests detected for malformed zap events or grouping edge cases.
+
+**Shell and iframe message routing:**
+- Files: `src/providers/global/napplet-shell-provider.tsx`, `src/components/napplets/napplet-frame.tsx`, `src/components/webxdc/webxdc.tsx`, `src/services/napplet-intent-delivery.ts`
+- Why fragile: Message routing depends on iframe `contentWindow`, origin/window registries, local refs, and cleanup ordering. Small lifecycle changes can leak sessions or route a message to the wrong handler.
+- Safe modification: Keep origin/source checks mandatory, unregister frames before reload/unmount, and test reload plus close flows manually after any changes.
+- Test coverage: No automated tests detected for iframe messaging or permission grants.
 
 ## Scaling Limits
 
-**Not applicable** - noStrudel is a client-side Nostr web/mobile application (Vite + Capacitor); there is no server-side infrastructure in this repository to reach conventional scaling limits. Client-side concerns are instead performance/memory related (see Performance Bottlenecks).
+**Event cache size defaults to 10,000 events for nostr-idb:**
+- Current capacity: `localSettings.idbMaxEvents` defaults to `10_000`.
+- Limit: Large feeds or long-lived use will prune older cached events, and export/import paths assume signed `NostrEvent` values.
+- Scaling path: Make cache capacity visible per backend, add storage usage warnings, and use typed event validation during import/export.
+
+**Outbox map cache holds 30 list observables:**
+- Current capacity: `MAX_CACHE = 30`.
+- Limit: Users switching among many people lists can evict outbox maps and recompute relay selections repeatedly.
+- Scaling path: Tune cache size from observed usage and dispose shared observables when evicted if upstream subscriptions stay active.
 
 ## Dependencies at Risk
 
-**`applesauce-*` prerelease packages (10 of 13 packages on nightly tags):**
-- Risk: Depends on unpublished nightly snapshots (`0.0.0-next-20260617211338`) rather than stable releases for core Nostr primitives (event store, actions, signers, accounts, wallet, wallet-connect, content parsing, loaders, react bindings, extras).
-- Impact: No guaranteed backward compatibility between nightly builds; upgrading any single feature may require bumping all ten packages simultaneously to a compatible nightly snapshot, and there's no semver contract to rely on.
-- Migration plan: Coordinate with the `applesauce` project's release cadence; move to first-class semver releases as they become available (already true for `applesauce-core`, `applesauce-relay`, `applesauce-sqlite`).
+**React type/runtime version mismatch:**
+- Risk: Runtime dependencies use React `^19.2.8`, while dev types use `@types/react` `^18.3.31` and `@types/react-dom` `^18.3.7`.
+- Impact: Type coverage may not match runtime behavior and can hide or introduce React 19-specific typing issues.
+- Migration plan: Align React type packages with the installed React major version or confirm React 19 bundles its own compatible types for this setup.
 
-**`@noble/secp256k1` alongside `@noble/curves`:**
-- Risk: Both `@noble/secp256k1` (older/legacy standalone package) and `@noble/curves` (newer, includes secp256k1) are listed as dependencies, suggesting overlapping cryptographic libraries in use.
-- Files: `package.json`
-- Impact: Potential for inconsistent crypto primitive usage/version drift across the codebase if both are actively imported in different places.
-- Migration plan: Audit imports to confirm which package is authoritative and remove the redundant one if only one is truly needed.
+**nostr-idb typed event drift:**
+- Risk: `nostr-idb` returns `StoredEvent` values that include unsigned events, while project cache interfaces expect `NostrEvent`.
+- Impact: Compile errors and possible runtime assumptions that `sig` exists on cached events.
+- Migration plan: Add a project adapter that filters `StoredEvent` to signed events, or widen `EventCache` read types and verify/normalize before insertion into `eventStore`.
 
 ## Missing Critical Features
 
-**No automated test suite:**
-- Problem: No `*.test.*` or `*.spec.*` files exist anywhere under `src/`, and no test runner (`vitest`, `jest`, etc.) is present in `package.json` dependencies or devDependencies.
-- Blocks: Safe refactoring of fragile areas (wallet service, zap modal, encrypted storage) without manual regression testing; CI cannot catch regressions before release.
+**Automated test suite is not detected:**
+- Problem: No `*.test.*` or `*.spec.*` files were found, and `package.json` has no `test` script.
+- Blocks: Safe refactors of migrations, wallet flows, event cache backends, napplet permissions, and notification grouping.
 
-**No linter configuration detected:**
-- Problem: No `.eslintrc*` or `eslint.config.*` file found in the repository root; only `prettier` is configured for formatting (`format` script in `package.json`).
-- Blocks: Automated enforcement of code quality/conventions (e.g., catching unused variables, unsafe `any` usage, or empty catch blocks) prior to commit/CI.
+**Lint script is not detected:**
+- Problem: `package.json` includes formatting and build scripts but no lint script.
+- Blocks: Systematic enforcement of hook dependency rules, import consistency, unsafe `any`, and iframe security attributes.
 
 ## Test Coverage Gaps
 
-**Entire codebase (no tests exist):**
-- What's not tested: Everything - wallet backends (`src/services/wallets.ts`), encrypted local storage (`src/classes/encrypted-storage.tsx`), zap flow (`src/components/event-zap-modal/`), Nostr event parsing/caching (`src/services/event-cache/`, `src/services/database/index.ts`), and all UI components/views.
-- Files: entire `src/` tree
-- Risk: Regressions in financially sensitive code (wallet balances, Cashu tokens, zap payments) and cryptographically sensitive code (encrypted key storage) can ship undetected.
-- Priority: High - especially for `src/services/wallets.ts`, `src/classes/encrypted-storage.tsx`, and `src/components/event-zap-modal/`.
+**Database migrations:**
+- What's not tested: Schema upgrades from v1 through v13, account migration, deleted object-store handling, and cache clear/delete actions.
+- Files: `src/services/database/index.ts`, `src/services/database/schema.ts`, `src/views/settings/cache/database/internal.tsx`
+- Risk: Users can lose accounts/settings or hit storage exceptions after upgrades.
+- Priority: High
+
+**Wallet backends:**
+- What's not tested: WebLN balance polling, NWC notifications, NIP-60 unlock/cleanup, NWC URI migration, and active wallet reconciliation.
+- Files: `src/services/wallets.ts`, `src/services/wallet-migration.ts`, `src/views/wallet/components/create-wallet-modal.tsx`, `src/views/wallet/components/send-lightning-modal.tsx`
+- Risk: Wallet UI can show stale balances, miss paid invoices, or mishandle wallet secrets.
+- Priority: High
+
+**Napplet/Webxdc sandbox and permissions:**
+- What's not tested: Consent prompts, persistent grants, resource-origin prompts, iframe reload cleanup, message origin checks, and unsupported Webxdc APIs.
+- Files: `src/providers/global/napplet-shell-provider.tsx`, `src/components/napplets/napplet-frame.tsx`, `src/components/webxdc/webxdc.tsx`, `src/views/webxdc/components/webxdc-player.tsx`
+- Risk: Capability regressions can become security issues or break embedded app execution.
+- Priority: High
+
+**Event cache and verification startup:**
+- What's not tested: Event insertion before verifier initialization, wasm timeout fallback, cache backend fallback, write buffering, and cache read timeout behavior.
+- Files: `src/services/verify-event.ts`, `src/services/event-store.ts`, `src/services/event-cache/index.ts`, `src/services/event-cache/wasm-worker.ts`, `src/services/event-cache/nostr-idb.ts`
+- Risk: Valid events can be rejected, invalid events can be accepted, or cache writes can disappear silently.
+- Priority: High
 
 ---
 
-*Concerns audit: 2026-07-01*
+*Concerns audit: 2026-07-29*

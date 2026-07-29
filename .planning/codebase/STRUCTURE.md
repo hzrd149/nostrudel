@@ -1,200 +1,266 @@
 # Codebase Structure
 
-**Analysis Date:** 2026-07-01
+**Analysis Date:** 2026-07-29
 
 ## Directory Layout
 
-```
+```text
 noStrudel/
-├── src/                    # Application source (React + TypeScript SPA)
-│   ├── app.tsx             # Route tree + app shell
-│   ├── index.tsx           # Bootstrap / entry point
-│   ├── env.ts              # Platform/env flags (CAP_IS_NATIVE, feature flags)
-│   ├── const.ts             # App-wide constants
-│   ├── polyfill.ts          # Runtime polyfills loaded first
-│   ├── classes/             # Custom domain classes (accounts, signers, misc utils)
-│   ├── components/          # Reusable UI components, one dir per feature/widget
-│   ├── helpers/              # Pure utility functions (nostr, blossom, lightning, etc.)
-│   ├── hooks/                # React hooks bridging RxJS/services into components
-│   ├── lib/                  # Vendored/adapted third-party libraries
-│   ├── models/                # Reactive read-projections over the EventStore
-│   ├── providers/              # React context providers (global/local/route scoped)
-│   ├── services/                # Singleton app-wide services (pool, store, cache, wallets)
-│   ├── styles/                  # Global CSS-in-JS / style resets
-│   ├── sw/                       # Service worker (worker/client/common)
-│   ├── theme/                     # Chakra UI theme customization
-│   ├── types/                      # Shared TypeScript type declarations
-│   └── views/                       # Route-level pages, one dir per top-level route
-├── android/                # Capacitor native Android wrapper project
-├── ios/                    # Capacitor native iOS wrapper project (if present)
-├── public/                 # Static assets served as-is
-├── assets/                 # Source design assets (icons, etc.) for build-icons script
-├── screenshots/            # README/marketing screenshots
-├── scripts/                # Build/tooling scripts (e.g. build-icons.mjs)
-├── .agents/skills/          # Agent skill references (e.g. applesauce SDK skill)
-├── .claude/                 # Claude Code project config
-├── .planning/                # GSD planning artifacts (this doc lives here)
-├── .changeset/                # Changesets for versioning/changelog
-├── .github/                    # CI workflows
-├── docker-compose.yaml, dockerfile, docker-entrypoint.sh  # Container deployment
-├── capacitor.config.ts       # Capacitor native app config
-├── vite.config.ts             # Vite build config (PWA plugin, chunking)
-├── tsconfig.json               # TypeScript config, path alias `~/*` -> `src/*`
-└── package.json                  # Scripts and dependencies (pnpm)
+├── src/                    # React/TypeScript application source
+│   ├── app.tsx             # Router and app shell
+│   ├── index.tsx           # Browser/native bootstrap entry
+│   ├── env.ts              # Capacitor/platform feature flags
+│   ├── assets/             # Static assets imported by source
+│   ├── classes/            # Reusable class implementations
+│   ├── components/         # Shared reusable UI components
+│   ├── helpers/            # Pure helpers and Nostr protocol helpers
+│   ├── hooks/              # React hooks for app/service data
+│   ├── lib/                # Vendored or low-level utility libraries
+│   ├── models/             # Applesauce EventStore model queries
+│   ├── providers/          # Global, route, and local React providers
+│   ├── services/           # Singleton services and business logic
+│   ├── styles/             # Global style modules
+│   ├── sw/                 # Service worker client/common/worker code
+│   ├── theme/              # Chakra UI theme customizations
+│   ├── types/              # Ambient TypeScript declarations
+│   └── views/              # Route-level feature pages
+├── android/                # Capacitor Android native project
+├── ios/                    # Capacitor iOS native project
+├── assets/                 # Root-level generated/source app assets
+├── screenshots/            # README/project screenshots
+├── dist/                   # Built web output
+├── .github/workflows/      # CI and deployment workflows
+├── .changeset/             # Changeset release notes/config
+├── .planning/codebase/     # Generated GSD codebase maps
+├── package.json            # Scripts and npm dependencies
+├── pnpm-lock.yaml          # pnpm lockfile
+├── vite.config.ts          # Vite/PWA/build configuration
+├── tsconfig.json           # TypeScript configuration and `~/*` path alias
+├── capacitor.config.ts     # Capacitor app configuration
+├── dockerfile              # Docker image build
+├── docker-compose.yaml     # Local service composition example
+└── index.html              # Vite HTML entry
 ```
 
 ## Directory Purposes
 
+**`src/`:**
+- Purpose: All web application TypeScript and React source.
+- Contains: Entry files, app shell, feature views, shared components, hooks, helpers, services, models, providers, theme, service worker code.
+- Key files: `src/index.tsx`, `src/app.tsx`, `src/env.ts`, `src/const.ts`.
+
 **`src/views/`:**
-- Purpose: one directory per top-level route/feature (articles, badges, blossom, channels, messages, settings, streams, wallet, etc.)
-- Contains: `index.tsx` (page component), `routes.tsx` (react-router `RouteObject[]` for the feature's sub-routes), `components/` (view-local components), nested route directories for sub-pages (e.g. `src/views/user/tabs/`, `src/views/settings/relays/`)
-- Key files: `src/app.tsx` imports each feature's `routes.tsx` and mounts it under a path segment
+- Purpose: Route-level feature modules.
+- Contains: Page components, nested `routes.tsx` files, feature-local components, tabs, detail pages, create forms.
+- Key files: `src/views/home/index.tsx`, `src/views/torrents/routes.tsx`, `src/views/settings/routes.tsx`, `src/views/user/routes.tsx`.
 
 **`src/components/`:**
-- Purpose: shared, reusable UI components used across multiple views
-- Contains: one subdirectory per feature/widget (`note/`, `timeline/`, `layout/`, `user/`, `zap/`, `wallet` bits under `cashu/`, `relay/`, `relays/`) each with its own `components/` for internals; some flat files for simple single-file components
-- Key files: `src/components/layout/` (app shell/desktop/mobile layout), `src/components/error-boundary` (referenced from `app.tsx`), `src/components/timeline/` and `src/components/timeline-page/` (feed rendering)
-
-**`src/services/`:**
-- Purpose: singleton, app-wide infrastructure and domain services (no React dependency)
-- Contains: flat `*.ts` files each exporting one default singleton (e.g. `pool.ts`, `event-store.ts`, `accounts.ts`, `actions.ts`, `preferences.ts`, `wallets.ts`, `social-graph.ts`), plus subfolders for multi-file concerns: `event-cache/` (pluggable local persistence backends), `sqlite/` (SQLite driver + migrations), `database/` (IndexedDB/localforage key-value wrapper), `notifications/`, `lookup/` (NIP-05/user lookup)
-- Key files: `src/services/event-store.ts` (the single EventStore), `src/services/pool.ts` (RelayPool), `src/services/loaders.ts` (all data loaders), `src/services/actions.ts` (ActionHub wiring)
-
-**`src/models/`:**
-- Purpose: app-specific reactive query functions over the EventStore, consumed via `useEventModel`
-- Contains: one file per data domain (`lists.ts`, `mutes.ts`, `messages.ts`, `badges.ts`, `stream.ts`, `event-zaps.ts`, `reactions.ts`, `app-settings.ts`, `outbox-selection.ts`, `trusted-mints.ts`, `blossom-servers.ts`, `dvm-responses.ts`, `channel-metadata.ts`, `group.ts`)
-- Key files: `src/models/index.ts` (barrel export)
+- Purpose: Shared UI used by multiple views.
+- Contains: Layout components, timeline renderers, note/content rendering, modals, forms, user widgets, relay widgets, media components, wallet/cashu widgets.
+- Key files: `src/components/layout/index.tsx`, `src/components/timeline-page/index.tsx`, `src/components/error-boundary.tsx`, `src/components/vertical-page-layout.tsx`.
 
 **`src/hooks/`:**
-- Purpose: React hooks that adapt services/models/RxJS into component-friendly state
-- Contains: flat `use-*.ts`/`use-*.tsx` files, plus `timeline/` subfolder for feed pagination hooks
-- Key files: `src/hooks/timeline/` (timeline loading patterns reused by multiple feed views)
-
-**`src/providers/`:**
-- Purpose: React context providers grouped by scope
-- Contains:
-  - `global/` — mounted once at app root (`index.tsx`): theme, breakpoint, emoji, publish status, event store/accounts/actions providers
-  - `local/` — mounted around specific feature subtrees (content settings, upload, thread, people-list, kind-selection, media-owner)
-  - `route/` — mounted per route-tree via `RouteProviders` in `src/providers/route/index.tsx` (delete-event modal, mute modal, invoice modal, post modal, app-handler modal, debug modal, decryption-cache gate)
-
-**`src/classes/`:**
-- Purpose: custom class-based domain objects not provided by applesauce
-- Contains: `accounts/android-signer-account.ts`, `signers/android-native-signer.ts`, plus utility classes at top level: `super-map.ts`, `preference-subject.ts`, `encrypted-storage.tsx`, `article-speech-reader.ts`
+- Purpose: React-facing adapters for services, EventStore, route state, local browser state, and reusable UI behavior.
+- Contains: Timeline loaders, user/profile hooks, relay hooks, wallet hooks, route parameter/search helpers, upload hooks, mute/read status hooks.
+- Key files: `src/hooks/use-timeline-loader.ts`, `src/hooks/use-outbox-timeline-loader.ts`, `src/hooks/use-client-relays.ts`, `src/hooks/use-params-event-pointer.ts`.
 
 **`src/helpers/`:**
-- Purpose: pure, stateless utility functions grouped by domain
-- Contains: `nostr/` (nostr-specific helpers subfolder), `media-upload/` (upload helpers subfolder), flat files for blossom, lightning/lnurl, color, identicon, image, string, time-grouping, url, parse, request, debug (logger factory), applesauce (small applesauce glue helpers)
+- Purpose: Pure utility functions and protocol helpers that are not React components.
+- Contains: Generic helpers and `src/helpers/nostr/` event-specific helpers.
+- Key files: `src/helpers/nostr/event.ts`, `src/helpers/nostr/profile.ts`, `src/helpers/nostr/torrents.ts`, `src/helpers/nip19.ts`, `src/helpers/applesauce.ts`.
 
-**`src/lib/`:**
-- Purpose: vendored or heavily adapted third-party code not published as an npm package
-- Contains: `qrcodegen.ts`, `bencode/`, `open-graph-scraper/`, `fix-image-orientation/`
+**`src/models/`:**
+- Purpose: Applesauce model query wrappers consumed by `useEventModel` and EventStore model APIs.
+- Contains: Query functions for reactions, mutes, lists, messages, badges, streams, app settings, outbox selection, and related projections.
+- Key files: `src/models/index.ts`, `src/models/reactions.ts`, `src/models/outbox-selection.ts`, `src/models/messages.ts`.
+
+**`src/providers/`:**
+- Purpose: React context providers grouped by required scope.
+- Contains: `global/` providers close to root, `route/` providers under router, and `local/` providers for feature-local state.
+- Key files: `src/providers/global/index.tsx`, `src/providers/route/index.tsx`, `src/providers/local/people-list-provider.tsx`, `src/providers/local/intersection-observer.tsx`.
+
+**`src/services/`:**
+- Purpose: Singleton services, persistence, relay IO, account/signing, cache, lookup, wallet, and background business logic.
+- Contains: Top-level service modules plus subdirectories for database, event cache, notifications, lookup, and SQLite.
+- Key files: `src/services/event-store.ts`, `src/services/pool.ts`, `src/services/accounts.ts`, `src/services/actions.ts`, `src/services/loaders.ts`, `src/services/preferences.ts`.
+
+**`src/services/event-cache/`:**
+- Purpose: Runtime-selectable event cache backends.
+- Contains: Common interface, orchestrator, and adapters for hosted relay, local relay, native SQLite, `nostr-idb`, and WASM worker.
+- Key files: `src/services/event-cache/index.ts`, `src/services/event-cache/interface.ts`, `src/services/event-cache/nostr-idb.ts`, `src/services/event-cache/wasm-worker.ts`, `src/services/event-cache/native-sqlite.ts`.
+
+**`src/services/database/`:**
+- Purpose: IndexedDB app database and legacy data migrations.
+- Contains: DB open/migration logic, schema types, key-value helpers.
+- Key files: `src/services/database/index.ts`, `src/services/database/schema.ts`, `src/services/database/kv.ts`.
 
 **`src/sw/`:**
-- Purpose: service worker implementation split by execution context
-- Contains: `worker/` (runs in the SW: `sw.ts`, `cache.ts`, `error-handler.ts`, `rpc.ts`), `client/` (runs in the page, talks to SW: `cache.ts`, `error-logger.ts`, `rpc.ts`, `index.ts`), `common/` (shared RPC/interface types used by both sides)
+- Purpose: Service worker implementation and main-thread client APIs.
+- Contains: `client/` utilities, `common/` RPC contracts/client/server, `worker/` service worker modules.
+- Key files: `src/sw/worker/sw.ts`, `src/sw/worker/cache.ts`, `src/sw/common/rpc-client.ts`, `src/sw/common/rpc-server.ts`, `src/sw/client/index.ts`.
 
 **`src/theme/`:**
-- Purpose: Chakra UI theme customization
-- Contains: `default/` with a `components/` subfolder for per-component theme overrides
+- Purpose: Chakra UI theme construction and component overrides.
+- Contains: Theme entry point, default theme tokens, container/drawer overrides, helper functions.
+- Key files: `src/theme/index.ts`, `src/theme/container.ts`, `src/theme/drawer.ts`, `src/theme/default/`.
 
-**`android/`, `ios/`:**
-- Purpose: native Capacitor wrapper projects generated/maintained for native app distribution
-- Generated: partially (native project scaffolding is generated by Capacitor CLI, but app-specific native code such as `android/app/src/main/java/earth/satellite` is hand-maintained)
-- Committed: yes
+**`src/classes/`:**
+- Purpose: Reusable class abstractions that do not fit hooks/services.
+- Contains: Account classes, signer classes, encrypted storage, preference subject, utility maps, article speech reader.
+- Key files: `src/classes/preference-subject.ts`, `src/classes/encrypted-storage.tsx`, `src/classes/accounts/`, `src/classes/signers/`.
+
+**`src/lib/`:**
+- Purpose: Low-level helper libraries and vendored-style utilities.
+- Contains: Bencode, image orientation fixing, open graph scraper, QR code generator.
+- Key files: `src/lib/qrcodegen.ts`, `src/lib/bencode/`, `src/lib/fix-image-orientation/`, `src/lib/open-graph-scraper/`.
+
+**`src/types/`:**
+- Purpose: Ambient declarations for browser/global integrations.
+- Contains: Extension, WebLN, and window type augmentations.
+- Key files: `src/types/nostr-extensions.d.ts`, `src/types/webln.d.ts`, `src/types/window.d.ts`.
+
+**`android/` and `ios/`:**
+- Purpose: Capacitor native app projects.
+- Contains: Native build files, app delegates/activities, resources, icons, splash screens.
+- Key files: `android/app/src/main/java/earth/satellite/MainActivity.java`, `android/app/src/main/AndroidManifest.xml`, `ios/App/App/AppDelegate.swift`, `ios/App/App/Info.plist`.
 
 ## Key File Locations
 
 **Entry Points:**
-- `src/index.tsx`: app bootstrap, mounts React root, registers service worker and protocol handlers
-- `src/app.tsx`: route tree definition and app shell (`App` component)
-- `src/sw/worker/sw.ts`: service worker entry (built via `vite-plugin-pwa` injectManifest)
+- `src/index.tsx`: Main React bootstrap and service worker registration.
+- `src/app.tsx`: Router tree and top-level app component.
+- `index.html`: Vite HTML entry containing the `#root` mount target.
+- `src/sw/worker/sw.ts`: PWA service worker entry configured by Vite PWA.
+- `android/app/src/main/java/earth/satellite/MainActivity.java`: Android native entry activity.
+- `ios/App/App/AppDelegate.swift`: iOS native application delegate.
 
 **Configuration:**
-- `vite.config.ts`: build config, PWA plugin, manual chunking (Capacitor bundle isolation)
-- `tsconfig.json`: path alias `~/*` → `src/*`, strict mode
-- `capacitor.config.ts`: native app configuration
-- `src/env.ts`: runtime platform/feature flags (`CAP_IS_NATIVE`, `CAP_IS_WEB`, `IS_SERVICE_WORKER_SUPPORTED`)
-- `src/const.ts`: app-wide constants (default relays, kinds, limits)
+- `package.json`: Scripts, package manager, dependencies, project metadata.
+- `tsconfig.json`: TypeScript strict settings and `~/*` alias to `src/*`.
+- `vite.config.ts`: Vite, React, tsconfig-paths, PWA manifest/service worker, and build output configuration.
+- `capacitor.config.ts`: Capacitor app configuration.
+- `.prettierrc`: Formatting configuration.
+- `pnpm-workspace.yaml`: Workspace configuration.
+- `.github/workflows/`: Docker image, Pages, release, and nsite workflows.
 
 **Core Logic:**
-- `src/services/event-store.ts`: the single EventStore instance
-- `src/services/pool.ts`: RelayPool + connection/notice tracking
-- `src/services/loaders.ts`: all data-loading observables
-- `src/services/actions.ts`: ActionHub wiring for writes
-- `src/services/accounts.ts`: AccountManager for signed-in identities
-- `src/services/event-cache/`: pluggable local persistence
+- `src/services/event-store.ts`: Singleton Applesauce EventStore and verification policy.
+- `src/services/pool.ts`: Singleton RelayPool, relay liveness, connection state, notices, request helper.
+- `src/services/loaders.ts`: Shared profile/address/event/reaction/zap/social graph loaders.
+- `src/services/actions.ts`: Applesauce ActionHub and publish callback.
+- `src/services/accounts.ts`: Account manager, signer setup, account persistence/migration.
+- `src/services/preferences.ts`: Reactive app settings backed by Capacitor Preferences.
+- `src/services/event-cache/index.ts`: Active event cache selection, buffered writes, cache reads.
+- `src/hooks/use-timeline-loader.ts`: Generic historical timeline loader hook.
+- `src/hooks/use-outbox-timeline-loader.ts`: Outbox-aware timeline loader hook.
+
+**Feature Implementation:**
+- `src/views/<feature>/index.tsx`: Main feature route/page.
+- `src/views/<feature>/routes.tsx`: Nested route definitions when a feature has multiple pages.
+- `src/views/<feature>/components/`: Components only used by that feature.
+- `src/views/<feature>/tabs/`: Tab pages for tabbed features such as `src/views/wallet/tabs/` and `src/views/user/tabs/`.
+- `src/helpers/nostr/<feature>.ts`: Event kind constants, tag getters, and validation for feature-specific Nostr event types.
 
 **Testing:**
-- Not detected — no dedicated test directory or `*.test.*`/`*.spec.*` files found under `src/`. See TESTING.md (quality focus) for confirmation and details.
+- `android/app/src/test/java/com/getcapacitor/myapp/ExampleUnitTest.java`: Android template unit test.
+- `android/app/src/androidTest/java/com/getcapacitor/myapp/ExampleInstrumentedTest.java`: Android template instrumented test.
+- JavaScript/TypeScript test files and test runner configuration: Not detected in the source tree.
 
 ## Naming Conventions
 
 **Files:**
-- kebab-case for all TypeScript/TSX files: `use-event-zaps.ts`, `note-published-using.tsx`, `direct-message-form.tsx`
-- React hooks always prefixed `use-`: `src/hooks/use-*.ts`
-- Route definition files always named `routes.tsx` inside each feature's `src/views/<feature>/` directory
-- Page/entry component for a feature directory is `index.tsx`
+- Use kebab-case for source files: `src/hooks/use-timeline-loader.ts`, `src/components/compact-note-content.tsx`, `src/views/settings/use-settings-form.ts`.
+- Use `index.tsx` for a directory's main React module: `src/views/home/index.tsx`, `src/components/layout/index.tsx`, `src/components/timeline-page/index.tsx`.
+- Use `routes.tsx` for nested React Router route arrays: `src/views/torrents/routes.tsx`, `src/views/settings/routes.tsx`.
+- Use `.ts` for non-JSX services/helpers/models: `src/services/pool.ts`, `src/helpers/nostr/torrents.ts`, `src/models/reactions.ts`.
+- Use `.tsx` for React components/providers/hooks that return JSX: `src/providers/global/index.tsx`, `src/views/torrents/index.tsx`.
 
 **Directories:**
-- Feature/domain-named, singular or plural matching the domain concept (`note/`, `relays/`, `messages/`, `wallet/`)
-- Nested `components/` subdirectory holds internals private to that view/component (e.g. `src/views/articles/components/`, `src/components/timeline/note/components/`)
-- Nested `tabs/` subdirectory for tabbed sub-views within a feature (e.g. `src/views/wallet/tabs/`, `src/views/relays/relay/tabs/`)
+- Use kebab-case for feature/component directories: `src/views/other-stuff/`, `src/views/task-manager/`, `src/components/people-list-selection/`.
+- Use feature folders under `src/views/` for route families: `src/views/torrents/`, `src/views/wallet/`, `src/views/settings/`.
+- Use scope folders under `src/providers/`: `src/providers/global/`, `src/providers/route/`, `src/providers/local/`.
+- Use backend folders under `src/services/` when a service has multiple implementations: `src/services/event-cache/`, `src/services/database/`, `src/services/notifications/`.
 
 ## Where to Add New Code
 
-**New top-level route/feature:**
-- Create `src/views/<feature>/index.tsx` (landing page) and `src/views/<feature>/routes.tsx` (exporting `RouteObject[]`)
-- Register the path in `src/app.tsx` (`import <feature>Routes from "./views/<feature>/routes"` and add `{ path: "<feature>", children: <feature>Routes }`)
-- Feature-local components go in `src/views/<feature>/components/`
+**New Feature:**
+- Primary code: create `src/views/<feature>/index.tsx` and, if there are multiple pages, `src/views/<feature>/routes.tsx`.
+- Register route: import the route module or view in `src/app.tsx` and add it to the `children` array near related routes.
+- Feature helpers: create `src/helpers/nostr/<feature>.ts` for event kinds, tag extraction, and validation before building UI.
+- Feature components: place feature-only components in `src/views/<feature>/components/`.
+- Shared UI promoted from feature code: move to `src/components/<component-name>/` or `src/components/<component-name>.tsx`.
+- Tests: JavaScript/TypeScript test structure is not detected; if tests are added, colocate feature tests beside source or establish a repo-wide test convention first.
 
-**New shared UI component:**
-- Add under `src/components/<feature>/` if it belongs to an existing feature area, or create a new top-level folder under `src/components/` for a new cross-cutting widget
-- Icons go in `src/components/icons/svg/`
-
-**New service/singleton state:**
-- Add a new file in `src/services/` exporting a default singleton instance, following the pattern in `src/services/pool.ts`/`event-store.ts`
-- If it needs multiple files, create a subfolder (see `src/services/event-cache/`, `src/services/lookup/` as examples)
-
-**New reactive read-model:**
-- Add a file in `src/models/` following the pattern in existing files (e.g. `src/models/mutes.ts`), export from `src/models/index.ts`
-
-**New React hook:**
-- Add `src/hooks/use-<name>.ts` (or `.tsx` if it returns JSX); timeline-specific hooks go in `src/hooks/timeline/`
+**New Component/Module:**
+- Shared component implementation: `src/components/<domain>/<component-name>.tsx` for domain-specific widgets, or `src/components/<component-name>.tsx` for small generic components.
+- Component directory entry: use `src/components/<component-name>/index.tsx` when the component has subcomponents or companion files.
+- Feature-local component: `src/views/<feature>/components/<component-name>.tsx`.
+- Layout/navigation component: `src/components/layout/` or `src/components/navigation/`.
 
 **Utilities:**
-- Pure, stateless helpers: `src/helpers/<domain>.ts` (create a subfolder if multi-file, as with `src/helpers/nostr/` and `src/helpers/media-upload/`)
-- Vendored/adapted third-party code with no natural npm home: `src/lib/<name>/`
+- Generic pure helper: `src/helpers/<name>.ts`.
+- Nostr event helper: `src/helpers/nostr/<feature-or-kind>.ts`.
+- React hook: `src/hooks/use-<name>.ts` or `src/hooks/use-<name>.tsx` if it returns JSX.
+- EventStore model: `src/models/<name>.ts` and export it from `src/models/index.ts` when shared.
+- Singleton service: `src/services/<name>.ts`.
+- Service with multiple backends: `src/services/<name>/index.ts` plus implementation files in that folder.
+- Ambient type augmentation: `src/types/<name>.d.ts`.
 
-**Custom account/signer types:**
-- `src/classes/accounts/` and `src/classes/signers/`, following `android-signer-account.ts`/`android-native-signer.ts`
+**New Nostr Data Flow:**
+- Event kind/tag helpers: `src/helpers/nostr/<feature>.ts`.
+- Query projection: `src/models/<feature>.ts` when data is derived from EventStore.
+- Loader integration: prefer existing loaders in `src/services/loaders.ts`; add new configured loader there only when multiple features need it.
+- Timeline view: use `src/hooks/use-timeline-loader.ts` for generic relays or `src/hooks/use-outbox-timeline-loader.ts` for NIP-65/outbox-based timelines.
+- Live subscription: use patterns from `src/services/outbox-subscriptions.ts` and consume results from EventStore rather than local component arrays.
+
+**New Persistence or Integration:**
+- User/app preference: add a `PreferenceSubject` in `src/services/preferences.ts`.
+- Legacy IndexedDB store/migration: update `src/services/database/index.ts` and `src/services/database/schema.ts`.
+- Event cache backend: add an adapter in `src/services/event-cache/<backend>.ts` that implements `src/services/event-cache/interface.ts`, then register it in `src/services/event-cache/index.ts`.
+- Service worker functionality: add shared types in `src/sw/common/interface.ts`, worker handler in `src/sw/worker/`, and client wrapper in `src/sw/client/`.
 
 ## Special Directories
 
-**`src/sw/`:**
-- Purpose: service worker source, built into the PWA's `sw.js` via `vite-plugin-pwa` injectManifest
-- Generated: no (source is hand-written; the final `sw.js` bundle is generated at build time)
-- Committed: yes (source only)
-
-**`android/`, `ios/`:**
-- Purpose: native Capacitor projects for app-store distribution
-- Generated: scaffolding generated by Capacitor CLI; app-specific native code is committed
-- Committed: yes
-
 **`dist/`:**
-- Purpose: Vite production build output
-- Generated: yes
-- Committed: no
+- Purpose: Built web assets and PWA output.
+- Generated: Yes.
+- Committed: Present in repository.
 
-**`.planning/`:**
-- Purpose: GSD planning artifacts (phase plans, codebase maps)
-- Generated: partially (written by GSD tooling)
-- Committed: yes (per project convention)
+**`node_modules/`:**
+- Purpose: Installed npm dependencies.
+- Generated: Yes.
+- Committed: No.
 
-**`.agents/skills/`:**
-- Purpose: local agent skill definitions (e.g. `applesauce` SDK reference skill) used by Claude Code to understand the applesauce framework in depth
-- Generated: no
-- Committed: yes
+**`.changeset/`:**
+- Purpose: Release notes and versioning metadata for Changesets.
+- Generated: Partially; change files are authored, release metadata is tool-managed.
+- Committed: Yes.
+
+**`.planning/codebase/`:**
+- Purpose: GSD codebase mapping documents consumed by planning/execution agents.
+- Generated: Yes.
+- Committed: Project-dependent; current mapping files are present in the working tree.
+
+**`.github/workflows/`:**
+- Purpose: CI/CD workflows for Docker image, GitHub Pages, releases, and nsite deployment.
+- Generated: No.
+- Committed: Yes.
+
+**`android/`:**
+- Purpose: Capacitor Android native project and resources.
+- Generated: Partially by Capacitor; native source/config is maintained.
+- Committed: Yes.
+
+**`ios/`:**
+- Purpose: Capacitor iOS native project and resources.
+- Generated: Partially by Capacitor/CocoaPods; native source/config is maintained.
+- Committed: Yes.
+
+**`src/sw/`:**
+- Purpose: Source service worker modules and RPC helpers.
+- Generated: No; built service worker output is generated into `dist/`.
+- Committed: Yes.
 
 ---
 
-*Structure analysis: 2026-07-01*
+*Structure analysis: 2026-07-29*

@@ -1,161 +1,137 @@
 # Coding Conventions
 
-**Analysis Date:** 2026-07-01
+**Analysis Date:** 2026-07-29
 
 ## Naming Patterns
 
 **Files:**
-- Always kebab-case, no exceptions: `user-avatar.tsx`, `compact-note-content.tsx`, `use-async-action.ts`, `app-settings.ts`
-- Custom hooks are prefixed with `use-`: `src/hooks/use-event-reactions.ts`, `src/hooks/use-client-relays.ts`
-- View directories mirror route names: `src/views/torrents/`, `src/views/messages/inbox/`
-- Main module export per directory uses `index.tsx`/`index.ts`
+- Use kebab-case for source files and feature directories. Examples: `src/hooks/use-async-action.ts`, `src/views/torrents/components/torrent-table-row.tsx`, `src/views/settings/accounts/components/simple-signer-backup.tsx`.
+- Use `index.tsx` as the main module/view file inside a feature directory. Examples: `src/views/torrents/index.tsx`, `src/providers/route/index.tsx`, `src/views/wallet/index.tsx`.
+- Use `routes.tsx` for route arrays in view directories. Example: `src/views/torrents/routes.tsx` exports a `RouteObject[]` via `satisfies RouteObject[]`.
+- Hook files must start with `use-`. Examples: `src/hooks/use-timeline-loader.ts`, `src/hooks/use-route-search-value.ts`, `src/hooks/use-client-side-mute-filter.ts`.
+- Nostr event helper modules live under `src/helpers/nostr/` and use feature names. Example: `src/helpers/nostr/torrents.ts`.
 
-**Functions/Variables:**
-- camelCase throughout: `getDisplayName`, `useClientSideMuteFilter`, `validateFeature`
-- Boolean-returning helpers read as predicates: `isGiftWrapUnlocked`, `isHiddenTagsUnlocked`
-- Event-kind constants are SCREAMING_SNAKE_CASE: `YOUR_FEATURE_KIND`, defined near the helpers that use them (see `src/helpers/nostr/*`)
+**Functions:**
+- React components use PascalCase and are usually default-exported function declarations: `export default function TorrentsView()` in `src/views/torrents/index.tsx`, `export default function SendTokenModal()` in `src/views/wallet/components/send-token-modal.tsx`.
+- Internal component helpers use PascalCase when returning JSX, even when not exported. Examples: `Warning()` and `TorrentsPage()` in `src/views/torrents/index.tsx`.
+- Custom hooks use camelCase names prefixed with `use`. Examples: `useTimelineLoader()` in `src/hooks/use-timeline-loader.ts`, `usePeopleListContext()` in `src/providers/local/people-list-provider.tsx`.
+- Pure helpers use camelCase verb/noun names. Examples: `getTorrentTitle()`, `getTorrentBtih()`, `validateTorrent()` in `src/helpers/nostr/torrents.ts`.
+- Model query factories use PascalCase with `Query`/`Model` suffixes. Examples: `UserSetsQuery()` in `src/models/lists.ts`, `TrustedMintsModel()` in `src/models/trusted-mints.ts`.
 
-**Components:**
-- PascalCase component names, default export, function declaration preferred:
-  ```typescript
-  export default function HomePage() { ... }
-  ```
-- When memoized, use `React.memo`/`memo()` with a named function and a separate default export:
-  ```typescript
-  export const CompactNoteContent = React.memo(({ event, maxLength, ...props }: Props) => { ... });
-  ```
-  or
-  ```typescript
-  function ItemRow({ item }: { item: NostrEvent }) { ... }
-  export default memo(ItemRow);
-  ```
+**Variables:**
+- Use camelCase for local variables and props: `peopleParam`, `defaultSelected`, `eventFilter`, `muteFilter` in `src/providers/local/people-list-provider.tsx` and `src/views/torrents/index.tsx`.
+- Use uppercase constants for fixed event kinds and global identifiers. Examples: `TORRENT_KIND` in `src/helpers/nostr/torrents.ts`, `DEFAULT_ANON_PUBKEY` imported by `src/providers/local/people-list-provider.tsx`.
+- RxJS observable variables use a trailing `$` where applicable. Examples are referenced via `wallet?.balance$` in `src/views/wallet/components/send-token-modal.tsx` and `eventCache$.value` in `src/services/search.ts`.
+- Boolean/derived UI state names should be direct and readable: `loading`, `creating`, `sensitive`, `account`, `metadata` in `src/hooks/use-async-action.ts`, `src/views/torrents/index.tsx`, and `src/views/settings/accounts/components/simple-signer-backup.tsx`.
 
 **Types:**
-- PascalCase for types/interfaces, colocated with the component/helper that uses them (`NoteContentsProps`, `Category`)
-- Prop types typically extend/omit Chakra UI prop types: `Omit<ButtonProps, "children"> & { customProp?: string }`
+- Use PascalCase for types and interfaces. Examples: `PeopleListContextType`, `PeopleListProviderProps`, and `ListId` in `src/providers/local/people-list-provider.tsx`; `Category` in `src/helpers/nostr/torrents.ts`.
+- Prefer inline prop object types for small components and extracted `type` aliases for shared or non-trivial props. Examples: `{ torrent: NostrEvent }` in `src/views/torrents/components/torrent-table-row.tsx`; `PeopleListProviderProps` in `src/providers/local/people-list-provider.tsx`.
+- Use `Omit<ChakraProps, "children">` when wrapping Chakra components that own their children. Example: `Omit<ModalProps, "children">` in `src/views/wallet/components/send-token-modal.tsx`.
 
 ## Code Style
 
 **Formatting:**
-- Prettier, config in `.prettierrc`: `tabWidth: 2`, `useTabs: false`, `printWidth: 120`
-- Run via `pnpm format` (`prettier --ignore-path .prettierignore -w .`)
-- `.prettierignore` excludes generated/build output
+- Use Prettier only. `CONTRIBUTING.md` states all code is formatted with Prettier and `package.json` exposes `pnpm run format`.
+- Prettier config is `/.prettierrc`: 2 spaces, no tabs, 120-column print width.
+- Keep JSX props multiline when long, matching `src/views/wallet/components/send-token-modal.tsx` and `src/views/torrents/components/torrent-table-row.tsx`.
+- Keep compact conditional returns for simple helpers, as in `src/providers/local/people-list-provider.tsx`:
+```typescript
+if (selected === "self") {
+  if (account) return { authors: [account.pubkey] };
+  else return undefined;
+}
+```
 
 **Linting:**
-- No ESLint config present in the repo (no `.eslintrc*` / `eslint.config.*`). Style is enforced only by Prettier and `tsc` (strict TypeScript), not by a linter.
-
-**TypeScript strictness:**
-- `tsconfig.json` has `"strict": true`, `"isolatedModules": true`, `"noEmit": true` (build script runs `tsc` then `vite build`)
-- Target `ESNext`, module resolution `Bundler`, JSX `react-jsx`
-- Path alias `~/*` → `./src/*` is configured but rarely used in practice — prefer relative imports (see below)
+- ESLint/Biome configuration is not detected: no `.eslintrc*`, `eslint.config.*`, or `biome.json` files are present at the repo root.
+- TypeScript strict mode is enforced by `tsconfig.json` with `strict: true`, `isolatedModules: true`, `forceConsistentCasingInFileNames: true`, and `noEmit: true`.
+- `pnpm build` in `package.json` runs `tsc --project tsconfig.json && vite build`; use it as the primary static quality gate.
+- Prefer type-safe `satisfies` where constraining literals. Example: `src/views/torrents/routes.tsx` uses `satisfies RouteObject[]`.
 
 ## Import Organization
 
-**Order (observed convention, not enforced by tooling):**
-1. External libraries (React, Chakra UI, `nostr-tools`, `applesauce-*`, `react-router-dom`)
-2. Internal modules via relative paths — components, hooks, services, helpers, models (deepest first is common but not strict)
-
-Example from `src/views/messages/inbox/components/locked-messages.tsx`:
-```typescript
-import { getGiftWrapRumor, isGiftWrapUnlocked, Rumor, unlockGiftWrap } from "applesauce-common/helpers";
-import { GiftWrapsModel } from "applesauce-common/models";
-import { useActiveAccount, useEventModel, use$ } from "applesauce-react/hooks";
-import { kinds } from "nostr-tools";
-import { useEffect, useMemo, useRef } from "react";
-import { Link as RouterLink } from "react-router-dom";
-
-import { UnlockIcon } from "../../../../components/icons";
-import SimpleView from "../../../../components/layout/presets/simple-view";
-import Timestamp from "../../../../components/timestamp";
-import useAsyncAction from "../../../../hooks/use-async-action";
-```
+**Order:**
+1. External library imports first: React, Chakra UI, router, applesauce, nostr-tools. Example: `src/views/torrents/index.tsx` lines 1-5.
+2. Blank line, then internal shared modules via relative paths: `../../components/...`, `../../hooks/...`, `../../helpers/...`, `../../providers/...`.
+3. Feature-local component imports last: `./components/torrent-table-row`, `./components/category-select` in `src/views/torrents/index.tsx`.
+4. In route files, import `RouteObject` first, then local views. Example: `src/views/torrents/routes.tsx`.
 
 **Path Aliases:**
-- `~/*` maps to `src/*` (configured in `tsconfig.json` and via `vite-tsconfig-paths`), but the codebase overwhelmingly uses relative imports (`../../../../hooks/use-async-action`) even in deeply nested files. Prefer relative imports to match existing style; only the AGENTS.md examples reference `~/hooks/...`.
-
-**applesauce SDK imports:**
-- Import from public package entry points only, never `dist/` paths: `applesauce-core`, `applesauce-core/models`, `applesauce-core/helpers`, `applesauce-common/factories`, `applesauce-common/helpers`, `applesauce-common/models`, `applesauce-loaders/loaders`, `applesauce-react/hooks`.
-- See `.claude/skills/applesauce/SKILL.md` for the full package map and hard rules (one `EventStore` per app, every event must reach `eventStore.add(...)`, loader observables must be subscribed, subscriptions must be torn down).
+- `tsconfig.json` configures `~/*` to `./src/*`.
+- Use relative imports by default. Existing source predominantly imports internal code with `../` and `./`, as seen in `src/app.tsx`, `src/views/torrents/index.tsx`, and `src/providers/local/people-list-provider.tsx`.
+- The project agent guide in `AGENTS.md` explicitly prefers relative imports and notes that `~/` exists but is rarely used.
+- Barrel files are used selectively. Example: `src/models/index.ts` re-exports model modules, while most component/view imports target concrete files directly.
 
 ## Error Handling
 
-**Required pattern for async actions/callbacks in components — `useAsyncAction`:**
-`src/hooks/use-async-action.ts` wraps a function, tracks `loading` state, and shows a Chakra `useToast` error on failure instead of manual `try/catch` in the component body:
+**Patterns:**
+- Use `useAsyncAction` for async component actions that should surface user-facing errors. `src/hooks/use-async-action.ts` sets `loading`, catches thrown `Error` objects, displays a Chakra toast, logs the error, and returns `{ loading, run }`.
 ```typescript
-const { loading, run } = useAsyncAction(async () => {
-  await someAsyncOperation();
-}, [dependencies]);
-
-<Button onClick={run} isLoading={loading}>Submit</Button>
+const create = useAsyncAction(async () => {
+  if (!wallet) throw new Error("No Cashu wallet is loaded");
+  const sats = parseInt(amount, 10);
+  if (!sats || sats <= 0) throw new Error("Enter a valid amount");
+  setToken(await wallet.sendToken(sats, { mint: mint || undefined }));
+}, [wallet, amount, mint]);
 ```
-Do NOT hand-roll `try/catch` + toast in components — use this hook (per `AGENTS.md`).
-
-**Error type checking:**
-- Guard with `if (e instanceof Error)` before accessing `.message` (see `use-async-action.ts:20`)
-
-**Error Boundaries:**
-- Wrap critical/detail-view sections with `<ErrorBoundary>` from `react-error-boundary`, using project component `src/components/error-boundary` and a `fallback={<ErrorFallback />}`
-
-**Service/helper-level errors:**
-- Non-component code (services, service worker) mostly logs and continues rather than throwing, e.g. `src/services/verify-event.ts`, `src/services/event-cache/index.ts`, `src/services/nip66-relay-discovery.ts` all catch and `console.error(...)` with a descriptive prefix like `"Failed to load cached relay events:"`.
-- Validation helpers in `src/helpers/nostr/*` typically throw inside a getter (`throw new Error("Missing title")`) and provide a paired `validateX(event)` boolean wrapper that catches internally:
-  ```typescript
-  export function getFeatureTitle(event: NostrEvent) {
-    const title = event.tags.find((t) => t[0] === "title")?.[1];
-    if (!title) throw new Error("Missing title");
-    return title;
-  }
-  export function validateFeature(event: NostrEvent) {
-    try {
-      getFeatureTitle(event);
-      return true;
-    } catch (e) {
-      return false;
-    }
-  }
-  ```
+- Throw `new Error(...)` from helpers when required Nostr event fields are missing, then validate by catching internally. Example: `getTorrentTitle()`, `getTorrentBtih()`, and `validateTorrent()` in `src/helpers/nostr/torrents.ts`.
+- Wrap critical UI with `ErrorBoundary` from `src/components/error-boundary.tsx`. `src/app.tsx` wraps the full app in `<ErrorBoundary>`.
+- When using manual try/catch in components, type-check before showing messages: `if (e instanceof Error) toast({ description: e.message, status: "error" })` in `src/views/torrents/index.tsx`.
+- Service and platform modules may reject/throw directly. Example: `src/services/sqlite/index.ts` throws on web import and returns rejected promises from database operations.
 
 ## Logging
 
-**Framework:** `debug` package, exposed as a shared logger in `src/helpers/debug.ts`:
-```typescript
-import debug from "debug";
-export const logger = debug("noStrudel");
-```
-Modules typically create a namespaced child logger from this (`logger.extend("feature-name")`) rather than importing `debug` directly, though many files still use raw `console.log`/`console.error`/`console.time` (see `src/services/social-graph.ts`, `src/sw/worker/sw.ts`, `src/index.tsx`).
+**Framework:** console/debug
 
 **Patterns:**
-- Prefer `console.error("Failed to X:", error)` — a short present-tense description ending in a colon, followed by the error value — for caught exceptions in services and settings views.
-- `console.log` is used for lifecycle/status messages (service worker init, migrations) rather than for errors.
+- Use `console.log`, `console.warn`, and `console.error` sparingly for platform/service diagnostics. Examples: `src/sw/worker/sw.ts`, `src/sw/worker/error-handler.ts`, `src/sw/common/rpc-client.ts`.
+- Use the `debug` package for scoped runtime diagnostics where imported. `package.json` includes `debug`; `src/services/social-graph.ts` uses timing/logging around graph loading.
+- Do not use console logging as the only user-facing error path in components. Prefer `useToast` directly or `useAsyncAction` from `src/hooks/use-async-action.ts`.
+- `vite.config.ts` logs `VITE_*` build variables during build startup; avoid logging secrets or non-`VITE_` environment variables.
 
 ## Comments
 
-- Sparse; code is generally self-documenting through descriptive function/variable names.
-- No enforced JSDoc/TSDoc convention. Comments appear mainly as short inline clarifications or `// TODO`/`// eslint-disable`-style markers rather than full doc blocks.
+**When to Comment:**
+- Add comments to explain non-obvious platform/build constraints. Example: `vite.config.ts` explains bundled Capacitor chunks and Workbox cache limits.
+- Add comments for migration compatibility or deliberate coercions. Example: `src/providers/local/people-list-provider.tsx` comments default logged-out list behavior and null-to-undefined conversion.
+- Keep comments concise and close to the line they explain.
+- Avoid comments that restate obvious JSX; use descriptive component and helper names instead.
+
+**JSDoc/TSDoc:**
+- JSDoc is lightweight and used for context on exported UI/service helpers, not required for every function. Example: `src/views/wallet/components/send-token-modal.tsx` documents the Cashu token modal.
+- Use `@deprecated` only when preserving compatibility. Example: `timeline` return value in `src/hooks/use-timeline-loader.ts` is marked deprecated.
+- Use `@ts-expect-error` with a short reason when intentionally exposing dev-only globals. Example: `src/services/event-store.ts` uses `// @ts-expect-error debug` before `window.eventStore`.
 
 ## Function Design
 
-**Size:** Small, single-purpose functions/hooks; complex UI is decomposed into `components/` subdirectories per view (see `src/views/<feature>/components/`).
+**Size:**
+- Keep hooks and helpers focused. Examples: `src/hooks/use-timeline-loader.ts` is a 45-line loader hook; `src/hooks/use-async-action.ts` is a 27-line async action wrapper.
+- Split page-level views into internal helper components when a page has distinct sections or providers. Example: `src/views/torrents/index.tsx` uses `Warning`, `TorrentsPage`, and exported `TorrentsView`.
+- Extract repeated Nostr parsing and validation into `src/helpers/nostr/` before rendering UI. Example: `src/helpers/nostr/torrents.ts` owns torrent title, BTIH, size, magnet, and validation logic.
 
-**Parameters:** Destructured props objects for components; hooks take explicit typed args plus an optional `DependencyList` (mirroring React's `useCallback`/`useMemo` signature), e.g. `useAsyncAction<Args, T>(fn, deps = [])`.
+**Parameters:**
+- Destructure React props in the function signature and spread remaining Chakra props into the wrapped component. Example: `SendTokenModal({ onClose, ...props }: Omit<ModalProps, "children">)` in `src/views/wallet/components/send-token-modal.tsx`.
+- Pass domain objects directly to feature components when they render a single entity. Example: `TorrentTableRow({ torrent }: { torrent: NostrEvent })` in `src/views/torrents/components/torrent-table-row.tsx`.
+- For hooks with reactive dependencies, accept primitive/domain inputs and memoize derived objects internally. Example: `useTimelineLoader(key, relays, filters, opts)` in `src/hooks/use-timeline-loader.ts`.
 
-**Return Values:** Hooks that expose multiple values return an object (`{ loading, run }`, `{ loader, timeline }`) rather than a tuple.
+**Return Values:**
+- Hooks returning multiple values should return objects. Example: `useAsyncAction()` returns `{ loading, run }`; `useTimelineLoader()` returns `{ loader, timeline }`.
+- Validation helpers return booleans and hide thrown parsing errors. Example: `validateTorrent()` in `src/helpers/nostr/torrents.ts`.
+- Components return `null` for unsupported/non-applicable UI state. Example: `SimpleSignerBackup()` returns `null` when the signer is not a `SimpleSigner` in `src/views/settings/accounts/components/simple-signer-backup.tsx`.
 
 ## Module Design
 
 **Exports:**
-- Components and hooks: default export is the norm.
-- Helpers/services: named exports for individual functions and constants (e.g. `src/helpers/nostr/*`, `src/services/*`).
+- Components are usually default exports, especially files containing one visual component. Examples: `src/views/torrents/index.tsx`, `src/views/wallet/components/send-token-modal.tsx`, `src/views/torrents/components/torrent-table-row.tsx`.
+- Export named hooks/helpers when multiple related exports live together. Examples: `usePeopleListContext()` and `usePeopleListSelect()` in `src/providers/local/people-list-provider.tsx`; `getTorrentTitle()` and `validateTorrent()` in `src/helpers/nostr/torrents.ts`.
+- Export constants and types beside domain helpers. Example: `TORRENT_KIND`, `Trackers`, `Category`, and `torrentCatagories` in `src/helpers/nostr/torrents.ts`.
+- Use singleton service modules for app-wide state. Example: `src/services/event-store.ts` exports `eventStore` initialized once.
 
-**Barrel files:** Not a general pattern — most directories are imported from directly by file path rather than through an `index.ts` re-export barrel, except each view module's own `index.tsx`.
-
-## Project-Specific Architecture Conventions (from AGENTS.md)
-
-- Directory roles: `components/` (reusable UI), `views/` (route pages), `hooks/`, `helpers/` (pure functions), `providers/` (React context), `services/` (singletons/business logic), `models/` (applesauce query models), `classes/`, `types/`, `theme/`, `sw/` (service worker).
-- New Nostr-event-backed features: put kind constants + tag getters + a `validateX` boolean guard in `src/helpers/nostr/<feature>.ts` before writing any UI.
-- State layering: React Context (global/shared, e.g. EventStore/Accounts) → RxJS Observables (`BehaviorSubject`) → Singleton services (pool, accounts, eventStore) → local React hook state.
-- Use `useEventModel(SomeModel, [...])` for reading Nostr data reactively and `useTimelineLoader` for paginated feeds, per the applesauce pattern.
+**Barrel Files:**
+- Barrel files are limited and should not be the default for components. `src/models/index.ts` is a barrel for model queries, but `src/app.tsx` imports views/routes directly from their concrete modules.
+- Prefer explicit concrete imports for feature components and helpers so dependencies remain navigable. Examples: `src/views/torrents/index.tsx` and `src/views/torrents/components/torrent-table-row.tsx`.
 
 ---
 
-*Convention analysis: 2026-07-01*
+*Convention analysis: 2026-07-29*
