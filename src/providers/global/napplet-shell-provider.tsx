@@ -223,13 +223,15 @@ function installedHandlersFor(archetype: string) {
 }
 
 function candidateFor(handler: ReturnType<typeof installedHandlersFor>[number], action?: string): IntentCandidate {
+  const conventions = handler.entry.protocols.length
+    ? handler.entry.protocols
+    : handler.entry.actions.map((action) => conventionId(handler.entry.name, action));
+
   return {
     dTag: handler.napplet.address,
     title: handler.napplet.title,
     actions: handler.entry.actions,
-    protocols: handler.entry.protocols.length
-      ? handler.entry.protocols
-      : handler.entry.actions.map((action) => conventionId(handler.entry.name, action)),
+    conventions,
     isDefault: getDefaultIntentHandler(handler.entry.name, action)?.address === handler.napplet.address,
   };
 }
@@ -290,7 +292,7 @@ function createNappletIntentService(options: {
             handled: true,
             handler: handler.address,
             windowId: `napplet:${handler.address}`,
-            protocol: request.protocol ?? conventionId(archetype, action),
+            convention: request.convention ?? conventionId(archetype, action),
           };
         }
 
@@ -308,11 +310,11 @@ function createNappletIntentService(options: {
                 : handlers[0];
         if (!handler) return failed(archetype, action, `${preference} does not handle ${archetype}`);
 
-        const protocols = handler.entry.protocols.length
+        const conventions = handler.entry.protocols.length
           ? handler.entry.protocols
           : handler.entry.actions.map((item) => conventionId(archetype, item));
-        if (request.protocol && !protocols.includes(request.protocol)) {
-          return failed(archetype, action, `unsupported protocol ${request.protocol}`);
+        if (request.convention && !conventions.includes(request.convention)) {
+          return failed(archetype, action, `unsupported convention ${request.convention}`);
         }
 
         const navigate = options.navigate();
@@ -328,7 +330,7 @@ function createNappletIntentService(options: {
           handled: true,
           handler: handler.napplet.address,
           windowId: `napplet:${handler.napplet.address}`,
-          protocol: request.protocol ?? protocols[0],
+          convention: request.convention ?? conventions[0],
         };
       },
     },
