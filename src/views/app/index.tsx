@@ -29,7 +29,8 @@ export default function AppView() {
 
   if (id && installedNapplet) {
     const installedPointer = parseNappletPointer(installedNapplet.address);
-    if (installedPointer) return <NappletRouteLoader address={installedNapplet.address} pointer={installedPointer} intent={intent} />;
+    if (installedPointer)
+      return <NappletRouteLoader address={installedNapplet.address} pointer={installedPointer} intent={intent} />;
 
     return (
       <SimpleView title="App">

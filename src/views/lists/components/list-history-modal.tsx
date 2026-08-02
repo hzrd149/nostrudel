@@ -24,12 +24,7 @@ import {
   Tabs,
   Text,
 } from "@chakra-ui/react";
-import {
-  getHiddenTags,
-  hasHiddenTags,
-  isHiddenTagsUnlocked,
-  unlockHiddenTags,
-} from "applesauce-core/helpers";
+import { getHiddenTags, hasHiddenTags, isHiddenTagsUnlocked, unlockHiddenTags } from "applesauce-core/helpers";
 import { useActiveAccount } from "applesauce-react/hooks";
 import { NostrEvent } from "nostr-tools";
 import { useCallback, useMemo, useReducer, useState } from "react";
@@ -191,9 +186,7 @@ function VersionRow({
       <Text color="GrayText" fontSize="sm" whiteSpace="nowrap" flexShrink={0}>
         ({version.tags.length} tag{version.tags.length === 1 ? "" : "s"})
       </Text>
-      {!current && (
-        <TagChange label="vs current" added={vsCurrent.added.length} removed={vsCurrent.removed.length} />
-      )}
+      {!current && <TagChange label="vs current" added={vsCurrent.added.length} removed={vsCurrent.removed.length} />}
       {current && (
         <Badge colorScheme="green" flexShrink={0} fontSize="xs">
           Current
@@ -238,7 +231,7 @@ function HiddenVersionRow({
 }) {
   const current = version.id === list.id;
   const unlocked = isHiddenTagsUnlocked(version);
-  const hidden = unlocked ? getHiddenTags(version) ?? [] : [];
+  const hidden = unlocked ? (getHiddenTags(version) ?? []) : [];
 
   const canMerge = !current && mergeWouldChangeList(list, version);
   const canRestore = !current && restoreWouldChangeList(list, version);
@@ -270,9 +263,7 @@ function HiddenVersionRow({
           Locked
         </Badge>
       )}
-      {vsCurrent && (
-        <TagChange label="vs current" added={vsCurrent.added.length} removed={vsCurrent.removed.length} />
-      )}
+      {vsCurrent && <TagChange label="vs current" added={vsCurrent.added.length} removed={vsCurrent.removed.length} />}
       {current && (
         <Badge colorScheme="green" flexShrink={0} fontSize="xs">
           Current

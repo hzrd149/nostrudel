@@ -5,6 +5,7 @@
 ## APIs & External Services
 
 **Nostr Protocol / Relays:**
+
 - Public and user-configured Nostr relays - Primary data transport for profiles, feeds, messages, reactions, lists, wallets, search, relay discovery, and publishing.
   - SDK/Client: `applesauce-relay`, `applesauce-loaders`, `applesauce-actions`, `nostr-tools`
   - Implementation: single `RelayPool` with liveness tracking in `src/services/pool.ts`; default relay constants in `src/const.ts`; loading/publishing helpers in `src/services/loaders.ts` and `src/services/actions.ts`.
@@ -31,6 +32,7 @@
   - Auth: Controlled by deployment; client-side auth not detected.
 
 **Identity, Search, and Discovery:**
+
 - NIP-05 DNS identity lookup - Resolves `name@domain` identifiers.
   - SDK/Client: `applesauce-loaders/loaders/dns-identity-loader`
   - Implementation: `src/services/dns-identity-loader.ts` persists identities in IndexedDB and uses `fetchWithProxy` from `src/helpers/request.ts`.
@@ -49,6 +51,7 @@
   - Auth: None unless target endpoint requires it.
 
 **Media and Files:**
+
 - Blossom media servers - User-configured media upload, mirroring, blob details, and media fallback.
   - SDK/Client: `blossom-client-sdk`
   - Implementation: `src/helpers/media-upload/blossom.ts`, `src/hooks/use-upload-file.ts`, media server settings in `src/views/settings/media-servers/index.tsx`, and mirroring in `src/components/timeline/note/components/share-modal.tsx`.
@@ -75,6 +78,7 @@
   - Auth: None.
 
 **GIF, Embeds, Maps, and Rich Content:**
+
 - Tenor GIF search - Optional GIF picker when API key is configured.
   - SDK/Client: `gif-picker-react`
   - Implementation: `src/components/gif/tenor-gif-icon-button.tsx`; enabled by `TENOR_API_KEY` from `src/const.ts`.
@@ -89,6 +93,7 @@
   - Auth: None detected.
 
 **Lightning, Cashu, and Wallets:**
+
 - WebLN providers - Lightning invoice payment and invoice generation through browser extensions or Bitcoin Connect.
   - SDK/Client: `webln`, `@getalby/bitcoin-connect-react`, `@getalby/bitcoin-connect`
   - Implementation: Bitcoin Connect initialization in `src/index.tsx`; WebLN backend in `src/services/wallets.ts`; invoice UI in `src/components/invoice-modal.tsx`.
@@ -111,6 +116,7 @@
   - Auth: External app handles payment authorization.
 
 **Signing and Authentication:**
+
 - NIP-07 browser extensions - Browser signer extension login.
   - SDK/Client: `applesauce-signers` `ExtensionSigner`
   - Implementation: `src/views/signin/start.tsx`; type augmentation in `src/types/nostr-extensions.d.ts`.
@@ -137,6 +143,7 @@
   - Auth: User password prompt; README warns users not to trust web clients with nsec in `README.md`.
 
 **Native Device Capabilities:**
+
 - Capacitor App plugin - Native `nostr:` deep link handling.
   - SDK/Client: `@capacitor/app`
   - Implementation: `src/index.tsx` handles `appUrlOpen`; web protocol handler configured in `vite.config.ts`.
@@ -159,6 +166,7 @@
   - Auth: Camera permission.
 
 **Embedded Apps and Mini-App Runtimes:**
+
 - Napplets / Kehto runtime - Nostr app/napplet loading and sandboxed shell integration.
   - SDK/Client: `@napplet/core`, `@napplet/nap`, `@kehto/runtime`, `@kehto/services`, `@kehto/shell`
   - Implementation: `src/providers/global/napplet-shell-provider.tsx`, `src/components/napplets/`, and `src/views/napplets/`.
@@ -171,6 +179,7 @@
 ## Data Storage
 
 **Databases:**
+
 - Browser IndexedDB app database `storage` version 13.
   - Connection: browser IndexedDB; no env var.
   - Client: `idb` in `src/services/database/index.ts`.
@@ -189,11 +198,13 @@
   - Client: `@capacitor/preferences` via `src/services/preferences.ts` and `src/classes/preference-subject.ts`.
 
 **File Storage:**
+
 - Blossom media servers for user-selected uploads and mirroring (`src/helpers/media-upload/blossom.ts`).
 - nostr.build media upload endpoint for optional uploads (`src/helpers/media-upload/nostr-build.ts`).
 - Browser/native local caches through service worker/IndexedDB/SQLite; no server-side file storage is implemented in app source.
 
 **Caching:**
+
 - PWA Workbox precache and SPA navigation fallback in `vite.config.ts` and `src/sw/worker/sw.ts`.
 - Event cache abstraction in `src/services/event-cache/index.ts` supports `wasm-worker`, `native-sqlite`, `nostr-idb`, `local-relay`, `hosted-relay`, and `none`.
 - Relay liveness cache persisted by `localforage` in `src/services/pool.ts`.
@@ -204,6 +215,7 @@
 ## Authentication & Identity
 
 **Auth Provider:**
+
 - Nostr-native multi-signer authentication.
   - Implementation: `AccountManager` in `src/services/accounts.ts` with common Applesauce account types, Amber clipboard accounts, Android signer accounts on native, NIP-07 extension accounts, Nostr Connect accounts, password accounts, serial signer accounts, and read-only/pubkey accounts.
   - Session/current account: active account is persisted through `src/services/preferences.ts` and set in `src/services/accounts.ts`.
@@ -213,9 +225,11 @@
 ## Monitoring & Observability
 
 **Error Tracking:**
+
 - None detected. No Sentry, Datadog, Bugsnag, LogRocket, OpenTelemetry, or equivalent external error tracking SDK is present in `package.json`.
 
 **Logs:**
+
 - Namespaced `debug` logging through helper usage and service modules; service worker explicitly enables `noStrudel:*` in `src/sw/worker/sw.ts`.
 - Browser console logging is used for startup/build diagnostics in `vite.config.ts`, app rendering in `src/index.tsx`, service worker lifecycle in `src/sw/worker/sw.ts`, and errors in service modules.
 - Development-only globals expose service internals (`window.pool`, `window.eventStore`, `window.db`, `window.eventCache`, etc.) in files such as `src/services/pool.ts`, `src/services/event-store.ts`, and `src/services/database/index.ts`.
@@ -223,6 +237,7 @@
 ## CI/CD & Deployment
 
 **Hosting:**
+
 - Static web/PWA deployment from Vite `dist/` output.
 - Public live instance: `https://nostrudel.ninja` documented in `README.md`.
 - Docker image: `ghcr.io/hzrd149/nostrudel:master` documented in `README.md`.
@@ -230,15 +245,18 @@
 - Zapstore metadata/configuration exists in `zapstore.yaml`.
 
 **CI Pipeline:**
+
 - Not detected in repo scan. No `.github/workflows/*` files were found.
 - Release/versioning support is present through `.changeset/` and `@changesets/cli` in `package.json`.
 
 ## Environment Configuration
 
 **Required env vars:**
+
 - None required for baseline local development (`pnpm run dev`) or build (`pnpm build`) based on `package.json` and `vite.config.ts`.
 
 **Optional env/runtime vars and globals:**
+
 - `VITE_BASE` - Vite base path in `vite.config.ts`.
 - `VITE_APP_VERSION` - displayed by `src/components/version-button.tsx`; set to `dev` by `pnpm dev`.
 - `VITE_COMMIT_HASH` - displayed by `src/components/version-button.tsx` when available.
@@ -249,6 +267,7 @@
 - `PROXY_FIRST` - documented Docker option in `README.md`; direct client-side usage was not detected in `src/`.
 
 **Secrets location:**
+
 - No `.env*` files detected in repo root during scan.
 - Client-exposed Vite values are not suitable for secrets; `VITE_TENOR_API_KEY` is public by design once bundled.
 - NWC connection URI secrets and account metadata are persisted locally through `@capacitor/preferences` in `src/services/preferences.ts`; local password accounts are handled by Applesauce password signer/account classes.
@@ -257,6 +276,7 @@
 ## Webhooks & Callbacks
 
 **Incoming:**
+
 - Web protocol handlers for `web+nostr` and `nostr` are declared in the PWA manifest in `vite.config.ts`; production web registers `web+nostr` in `src/index.tsx`.
 - Native app URL callback for `nostr:` links is handled with Capacitor App `appUrlOpen` in `src/index.tsx`.
 - Nostr Connect remote signer handshake listens over relays through `NostrConnectSigner` in `src/views/signin/connect/index.tsx` and `src/services/accounts.ts`.
@@ -265,6 +285,7 @@
 - Service worker messages are handled in `src/sw/worker/sw.ts`.
 
 **Outgoing:**
+
 - Nostr relay WebSocket subscriptions and event publishing via `src/services/pool.ts`, `src/services/actions.ts`, and loaders.
 - Blossom uploads/mirrors to user-selected media servers via `src/helpers/media-upload/blossom.ts` and `src/components/timeline/note/components/share-modal.tsx`.
 - nostr.build multipart upload requests with optional NIP-98 auth via `src/helpers/media-upload/nostr-build.ts`.
@@ -275,4 +296,4 @@
 
 ---
 
-*Integration audit: 2026-07-29*
+_Integration audit: 2026-07-29_

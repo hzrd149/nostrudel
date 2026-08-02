@@ -83,9 +83,7 @@ export default function OtherStuffView() {
             <SimpleGrid columns={columns} borderTopWidth={1}>
               {recentApps.slice(0, 6).map((id) => {
                 const app = allApps.find((a) => a.id === id);
-                return app ? (
-                  <AppRow key={app.id} app={app} canFavorite={canFavoriteApp(app)} onUse={useApp} />
-                ) : null;
+                return app ? <AppRow key={app.id} app={app} canFavorite={canFavoriteApp(app)} onUse={useApp} /> : null;
               })}
             </SimpleGrid>
           </>

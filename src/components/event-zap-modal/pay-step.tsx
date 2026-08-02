@@ -119,7 +119,12 @@ function PayRequestCard({
               />
               <MenuList>
                 {others.map((wallet) => (
-                  <MenuItem key={wallet.id} icon={<LightningIcon />} onClick={() => payWith(wallet)} isDisabled={paying || disabled}>
+                  <MenuItem
+                    key={wallet.id}
+                    icon={<LightningIcon />}
+                    onClick={() => payWith(wallet)}
+                    isDisabled={paying || disabled}
+                  >
                     {wallet.name}
                   </MenuItem>
                 ))}

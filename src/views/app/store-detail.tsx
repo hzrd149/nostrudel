@@ -99,7 +99,12 @@ function RelatedNapplets({ event }: { event: NostrEvent }) {
   const relays = useReadRelays();
   const eventFilter = useMemo(
     () => (candidate: NostrEvent) => {
-      return candidate.id !== event.id && isNappletManifestKind(candidate.kind) && validateNappletManifest(candidate) && !!getNappletNaddr(candidate);
+      return (
+        candidate.id !== event.id &&
+        isNappletManifestKind(candidate.kind) &&
+        validateNappletManifest(candidate) &&
+        !!getNappletNaddr(candidate)
+      );
     },
     [event.id],
   );
@@ -325,7 +330,9 @@ function NappletStoreDetailView() {
       <SimpleView title="App not found">
         <Alert status="warning">
           <AlertIcon />
-          <AlertDescription>Loaded event kind {event.kind}, but it is not a valid NIP-5D app manifest.</AlertDescription>
+          <AlertDescription>
+            Loaded event kind {event.kind}, but it is not a valid NIP-5D app manifest.
+          </AlertDescription>
         </Alert>
       </SimpleView>
     );

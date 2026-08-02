@@ -45,10 +45,7 @@ export const RECOMMENDED_LOOKUP_RELAYS = relays([
 export const DEFAULT_FALLBACK_RELAYS = relays(["wss://relay.primal.net/", "wss://nos.lol/"]);
 
 /** The default recommended relays to use when a user has not outboxes */
-export const RECOMMENDED_FALLBACK_RELAYS = relays([
-  "wss://relay.primal.net/",
-  "wss://nos.lol/",
-]);
+export const RECOMMENDED_FALLBACK_RELAYS = relays(["wss://relay.primal.net/", "wss://nos.lol/"]);
 
 /** Default NIP-66 relay discovery relays */
 export const DEFAULT_RELAY_DISCOVERY_RELAYS = relays(["wss://relay.nostr.watch/", "wss://monitorlizard.nostr1.com/"]);

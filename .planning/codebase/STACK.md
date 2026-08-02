@@ -5,10 +5,12 @@
 ## Languages
 
 **Primary:**
+
 - TypeScript 5.9.3 - Browser, service worker, Capacitor configuration, and all application source under `src/`; strict mode is enabled in `tsconfig.json`.
 - TSX / React JSX - Page-level views and reusable UI components under `src/views/`, `src/components/`, and `src/providers/`.
 
 **Secondary:**
+
 - JavaScript / Node ESM - Build scripts and package scripts, including `scripts/build-icons.mjs` referenced by `package.json`.
 - Swift - iOS Capacitor shell in `ios/App/App/AppDelegate.swift` and Xcode project files under `ios/App/`.
 - Java - Android Capacitor host entry point in `android/app/src/main/java/earth/satellite/MainActivity.java`.
@@ -18,6 +20,7 @@
 ## Runtime
 
 **Environment:**
+
 - Browser runtime - Main React app starts in `src/index.tsx`; supported build targets are Chrome 89, Edge 89, Firefox 89, and Safari 15 in `vite.config.ts`.
 - Service Worker runtime - PWA worker entry is `src/sw/worker/sw.ts`; registration is handled by `src/services/worker.ts`.
 - Capacitor 7 native runtime - Platform detection is centralized in `src/env.ts`; native app metadata and plugin settings live in `capacitor.config.ts`.
@@ -25,12 +28,14 @@
 - iOS runtime - iOS deployment target 14.0 configured in `ios/App/Podfile`.
 
 **Package Manager:**
+
 - pnpm 11.2.2 - Declared by `package.json` `packageManager`.
 - Lockfile: present (`pnpm-lock.yaml`, lockfile version 9.0).
 
 ## Frameworks
 
 **Core:**
+
 - React 19.2.8 - UI rendering via `createRoot` in `src/index.tsx`; routes are rendered by `src/app.tsx`.
 - React Router 6.30.4 - Browser routing via `createBrowserRouter` in `src/app.tsx`.
 - Chakra UI 2.10.10 - Component system and theming used across `src/components/`, `src/views/`, and `src/theme/`.
@@ -40,10 +45,12 @@
 - RxJS 7.8.2 - Reactive service and state streams in `src/services/pool.ts`, `src/services/preferences.ts`, `src/services/wallets.ts`, and loaders.
 
 **Testing:**
+
 - Not detected for the web app. No Jest/Vitest/Mocha dependency or root test script exists in `package.json`.
 - Android template test dependencies exist in `android/app/build.gradle` (`junit`, AndroidX JUnit, Espresso) with generated example test files under `android/app/src/test/` and `android/app/src/androidTest/`.
 
 **Build/Dev:**
+
 - TypeScript compiler 5.9.3 - `pnpm build` runs `tsc --project tsconfig.json` before Vite bundling.
 - `@vitejs/plugin-react` 6.0.4 - React transform configured in `vite.config.ts`.
 - `vite-tsconfig-paths` 6.1.1 - Enables `~/*` path alias from `tsconfig.json`.
@@ -56,6 +63,7 @@
 ## Key Dependencies
 
 **Critical:**
+
 - `nostr-tools` 2.23.5 - Core Nostr event, key, NIP-19, NIP-98, and protocol types throughout `src/helpers/`, `src/services/`, and `src/views/`.
 - `applesauce-core` 6.2.0 - In-memory `EventStore` in `src/services/event-store.ts`, model abstraction in `src/models/*`, and event helpers.
 - `applesauce-relay` 6.2.1 - `RelayPool`, `Relay`, and relay liveness in `src/services/pool.ts` and event-cache relay adapters.
@@ -70,6 +78,7 @@
 - `@capacitor/core`, `@capacitor/app`, `@capacitor/preferences`, `@capacitor/share`, `@capacitor-community/sqlite`, `@capacitor-mlkit/barcode-scanning` - Native platform, app links, persistence, share sheet, SQLite cache, and QR/barcode scanning.
 
 **Infrastructure:**
+
 - `idb` 8.0.3 - Browser IndexedDB wrapper for app storage in `src/services/database/index.ts`.
 - `nostr-idb` 5.1.0 - IndexedDB-backed Nostr event cache in `src/services/event-cache/nostr-idb.ts`.
 - `@snort/worker-relay` 1.5.0 and `nostr-wasm` 0.1.0 - WASM/worker event cache and verification support used by event-cache modules and preferences.
@@ -87,6 +96,7 @@
 ## Configuration
 
 **Environment:**
+
 - Vite env vars are read from `process.env` only in `vite.config.ts` and logged when prefixed with `VITE_`; do not add secret values to `VITE_*` because they are client-exposed.
 - `VITE_BASE` controls Vite `base` in `vite.config.ts`.
 - `VITE_APP_VERSION` and `VITE_COMMIT_HASH` are displayed by `src/components/version-button.tsx`; `pnpm dev` sets `VITE_APP_VERSION=dev` in `package.json`.
@@ -96,6 +106,7 @@
 - `.env` files: Not detected in repo root by mapping scan; continue to treat any `.env*` as secret configuration and do not commit values.
 
 **Build:**
+
 - `package.json` scripts: `start` (`vite serve`), `dev` (`VITE_APP_VERSION=dev vite serve`), `build` (`tsc --project tsconfig.json && vite build`), `format`, `analyze`, `build-icons`, `build-native-icons`, and `cap-sync-version`.
 - `tsconfig.json` enables strict TS, `moduleResolution: Bundler`, DOM/WebWorker libs, React JSX transform, `noEmit`, and `~/*` alias to `src/*`.
 - `vite.config.ts` sets browser build targets, sourcemaps, `global: "window"`, PWA inject-manifest options, and a manual `capacitor` chunk for Capacitor packages.
@@ -107,12 +118,14 @@
 ## Platform Requirements
 
 **Development:**
+
 - Install dependencies with `pnpm install` and run locally with `pnpm run dev` as documented in `README.md`.
 - Use Node.js compatible with Vite 8 and pnpm 11; no `.nvmrc` or explicit Node version file was detected.
 - Browser features required by code paths include IndexedDB, WebSocket, WebCrypto, WebAssembly/Worker for WASM relay cache, service workers for PWA caching, optional Web Serial for signing devices, optional `window.nostr` for NIP-07, and optional `window.webln` for Lightning.
 - Native development requires Capacitor 7 tooling plus Android SDK (compile/target SDK 35) or Xcode/CocoaPods for iOS target 14.0.
 
 **Production:**
+
 - Static web/PWA build output is `dist/` from Vite, with service worker generated through `vite-plugin-pwa`.
 - Live instance documented in `README.md`: `https://nostrudel.ninja`.
 - Docker image documented in `README.md`: `ghcr.io/hzrd149/nostrudel:master`, served on port 80 when run with Docker.
@@ -120,4 +133,4 @@
 
 ---
 
-*Stack analysis: 2026-07-29*
+_Stack analysis: 2026-07-29_

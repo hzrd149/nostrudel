@@ -43,13 +43,7 @@ export default function InlineMoneroCard({ address, ...props }: Omit<BoxProps, "
       </Flex>
 
       {qr.isOpen && (
-        <QrCodeModal
-          isOpen={qr.isOpen}
-          onClose={qr.onClose}
-          title="Monero Address"
-          content={uri}
-          value={address}
-        />
+        <QrCodeModal isOpen={qr.isOpen} onClose={qr.onClose} title="Monero Address" content={uri} value={address} />
       )}
     </Flex>
   );

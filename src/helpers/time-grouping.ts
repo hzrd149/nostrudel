@@ -55,8 +55,7 @@ export function getDefaultTimePeriods(): TimePeriod[] {
 }
 
 export type TimeGroupedListItem<T> =
-  | { type: "header"; timestamp: number; key: string; label: string }
-  | { type: "item"; item: T; key: string };
+  { type: "header"; timestamp: number; key: string; label: string } | { type: "item"; item: T; key: string };
 
 /**
  * Generic function to group items by time period and flatten into a list with headers

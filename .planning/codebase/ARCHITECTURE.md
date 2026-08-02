@@ -1,4 +1,5 @@
 <!-- refreshed: 2026-07-29 -->
+
 # Architecture
 
 **Analysis Date:** 2026-07-29
@@ -29,27 +30,28 @@
 
 ## Component Responsibilities
 
-| Component | Responsibility | File |
-|-----------|----------------|------|
-| Browser/native bootstrap | Loads polyfills, initializes Bitcoin Connect/dayjs, mounts React, handles native `nostr:` URLs, registers service worker | `src/index.tsx` |
-| Router shell | Defines top-level routes and wraps all rendered pages in layout, suspense, and error boundary | `src/app.tsx` |
-| Global providers | Provides Applesauce EventStore, account manager, action runner, Chakra theme, publishing, napplet shell, and emoji context | `src/providers/global/index.tsx` |
-| Route providers | Provides route-scoped modal/action contexts for delete, mute, debug, invoice, post, list history, and app handler functionality | `src/providers/route/index.tsx` |
-| Layout selector | Chooses mobile or desktop application layout from breakpoint state | `src/components/layout/index.tsx` |
-| Views | Own route-level page composition, URL parameters, filtering controls, and feature-specific provider wrappers | `src/views/` |
-| Shared components | Own reusable UI primitives and feature widgets used across views | `src/components/` |
-| Hooks | Bridge React components to RxJS, EventStore, relay loaders, route state, account state, and browser APIs | `src/hooks/` |
-| Nostr helpers | Encapsulate event kind constants, tag extraction, validation, and protocol-specific pure functions | `src/helpers/nostr/` |
-| Applesauce models | Define EventStore query projections consumed by `useEventModel` | `src/models/` |
-| Singleton services | Own process-wide relay pool, accounts, event store, action hub, cache, preferences, lookups, wallets, and background tasks | `src/services/` |
-| Service worker | Handles PWA precache, navigation fallback, cache RPC, and worker error logging | `src/sw/` |
-| Native shells | Capacitor Android/iOS wrappers for mobile app builds | `android/`, `ios/` |
+| Component                | Responsibility                                                                                                                  | File                              |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------- | --------------------------------- |
+| Browser/native bootstrap | Loads polyfills, initializes Bitcoin Connect/dayjs, mounts React, handles native `nostr:` URLs, registers service worker        | `src/index.tsx`                   |
+| Router shell             | Defines top-level routes and wraps all rendered pages in layout, suspense, and error boundary                                   | `src/app.tsx`                     |
+| Global providers         | Provides Applesauce EventStore, account manager, action runner, Chakra theme, publishing, napplet shell, and emoji context      | `src/providers/global/index.tsx`  |
+| Route providers          | Provides route-scoped modal/action contexts for delete, mute, debug, invoice, post, list history, and app handler functionality | `src/providers/route/index.tsx`   |
+| Layout selector          | Chooses mobile or desktop application layout from breakpoint state                                                              | `src/components/layout/index.tsx` |
+| Views                    | Own route-level page composition, URL parameters, filtering controls, and feature-specific provider wrappers                    | `src/views/`                      |
+| Shared components        | Own reusable UI primitives and feature widgets used across views                                                                | `src/components/`                 |
+| Hooks                    | Bridge React components to RxJS, EventStore, relay loaders, route state, account state, and browser APIs                        | `src/hooks/`                      |
+| Nostr helpers            | Encapsulate event kind constants, tag extraction, validation, and protocol-specific pure functions                              | `src/helpers/nostr/`              |
+| Applesauce models        | Define EventStore query projections consumed by `useEventModel`                                                                 | `src/models/`                     |
+| Singleton services       | Own process-wide relay pool, accounts, event store, action hub, cache, preferences, lookups, wallets, and background tasks      | `src/services/`                   |
+| Service worker           | Handles PWA precache, navigation fallback, cache RPC, and worker error logging                                                  | `src/sw/`                         |
+| Native shells            | Capacitor Android/iOS wrappers for mobile app builds                                                                            | `android/`, `ios/`                |
 
 ## Pattern Overview
 
 **Overall:** Feature-sliced React SPA with singleton service layer, RxJS reactive streams, and Applesauce EventStore for Nostr data.
 
 **Key Characteristics:**
+
 - Route modules under `src/views/<feature>/` compose page UI and import shared logic instead of owning global state.
 - Nostr data flows through `src/services/pool.ts`, `src/services/loaders.ts`, `src/hooks/use-timeline-loader.ts`, `src/hooks/use-outbox-timeline-loader.ts`, and the singleton `src/services/event-store.ts`.
 - Persistent client settings use `PreferenceSubject` in `src/classes/preference-subject.ts` and are centralized in `src/services/preferences.ts`.
@@ -59,6 +61,7 @@
 ## Layers
 
 **Bootstrap Layer:**
+
 - Purpose: Initialize global runtime side effects before React renders.
 - Location: `src/index.tsx`
 - Contains: Polyfill import, Capacitor platform checks, Bitcoin Connect setup, dayjs plugin setup, protocol handler registration, React root mount, service worker registration.
@@ -66,6 +69,7 @@
 - Used by: Vite entry from `index.html`.
 
 **Routing and Layout Layer:**
+
 - Purpose: Convert URLs into view components and provide responsive app chrome.
 - Location: `src/app.tsx`, `src/components/layout/`
 - Contains: `createBrowserRouter` route tree, top-level `RootPage`, no-layout auth pages, mobile/desktop layout selection.
@@ -73,6 +77,7 @@
 - Used by: `src/index.tsx` through `<App />`.
 
 **View Layer:**
+
 - Purpose: Own route-level page composition, filters, tab/detail pages, and feature-specific components.
 - Location: `src/views/`
 - Contains: Feature directories such as `src/views/torrents/`, `src/views/articles/`, `src/views/settings/`, `src/views/user/`, and `src/views/wallet/`.
@@ -80,6 +85,7 @@
 - Used by: `src/app.tsx` route tree.
 
 **Component Layer:**
+
 - Purpose: Provide reusable UI blocks that do not define routes.
 - Location: `src/components/`
 - Contains: Layout, timelines, note rendering, content rendering, user widgets, modals, forms, relay widgets, wallet/cashu widgets, and media components.
@@ -87,6 +93,7 @@
 - Used by: `src/views/` and other components.
 
 **Reactive Data Layer:**
+
 - Purpose: Query, derive, and distribute Nostr data to React using Applesauce and RxJS.
 - Location: `src/services/event-store.ts`, `src/models/`, `src/hooks/`
 - Contains: Singleton `EventStore`, model projections like `ReactionsQuery`, hook wrappers like `useTimelineLoader`, direct `eventStore.timeline(...)` subscriptions.
@@ -94,6 +101,7 @@
 - Used by: Views and components that render profiles, timelines, reactions, zaps, lists, and settings.
 
 **Relay and Loader Layer:**
+
 - Purpose: Connect to Nostr relays, request historical data, keep live subscriptions open, and route events into EventStore.
 - Location: `src/services/pool.ts`, `src/services/loaders.ts`, `src/services/outbox-cache.ts`, `src/services/outbox-subscriptions.ts`, `src/hooks/use-outbox-timeline-loader.ts`
 - Contains: `RelayPool`, relay liveness tracking, profile/address/event/zap/reaction loaders, outbox map cache, live outbox subscriptions.
@@ -101,6 +109,7 @@
 - Used by: Timeline hooks, feature views, event helpers, and services.
 
 **Persistence Layer:**
+
 - Purpose: Persist preferences, legacy app data, event caches, and native/web storage.
 - Location: `src/services/preferences.ts`, `src/services/database/`, `src/services/event-cache/`, `src/services/sqlite/`
 - Contains: Capacitor Preferences settings, IndexedDB schema migrations, cache adapters for local relay, hosted relay, `nostr-idb`, WASM worker, native SQLite.
@@ -108,6 +117,7 @@
 - Used by: Accounts, event loaders, settings views, relay lookup services, and cache settings pages.
 
 **Protocol Helper Layer:**
+
 - Purpose: Keep Nostr event parsing, validation, and pointer formatting out of UI code.
 - Location: `src/helpers/nostr/`, `src/helpers/nip19.ts`, `src/helpers/applesauce.ts`
 - Contains: Kind constants, tag getters, validation functions, list/profile/reaction/zap/poll/file/torrent helpers.
@@ -115,6 +125,7 @@
 - Used by: Views, components, models, and services.
 
 **Background Worker Layer:**
+
 - Purpose: Provide PWA offline behavior and typed main-thread/service-worker RPC.
 - Location: `src/sw/`, `src/services/worker.ts`
 - Contains: Service worker registration, Workbox routes, cache handlers, error logging, RPC client/server.
@@ -157,6 +168,7 @@
 5. IndexedDB migrations and legacy stores are managed by `src/services/database/index.ts:23`; event cache-specific storage uses adapters under `src/services/event-cache/`.
 
 **State Management:**
+
 - Use React state for transient UI state inside views/components.
 - Use React Context providers in `src/providers/global/`, `src/providers/route/`, and `src/providers/local/` for cross-component UI state.
 - Use RxJS `BehaviorSubject` and Observable streams for service state, preferences, relay connection state, and live data.
@@ -166,31 +178,37 @@
 ## Key Abstractions
 
 **EventStore Singleton:**
+
 - Purpose: Central in-memory Nostr event database with verification hook and query APIs.
 - Examples: `src/services/event-store.ts`, `src/providers/global/index.tsx`, `src/views/home/index.tsx`.
 - Pattern: Module-level singleton injected into React through `EventStoreProvider`.
 
 **RelayPool Singleton:**
+
 - Purpose: Shared relay connection manager for requests, live subscriptions, notices, liveness, and publishing.
 - Examples: `src/services/pool.ts`, `src/services/loaders.ts`, `src/services/actions.ts`.
 - Pattern: Module-level singleton with RxJS observables for connection state.
 
 **Applesauce Loaders:**
+
 - Purpose: Encapsulate request/cache/EventStore loading for events, addresses, profiles, timelines, reactions, zaps, and outbox timelines.
 - Examples: `src/services/loaders.ts`, `src/hooks/use-timeline-loader.ts`, `src/hooks/use-outbox-timeline-loader.ts`.
 - Pattern: Loader factory functions configured with `pool`, `eventStore`, `cacheRequest`, and fallback relays.
 
 **Feature Route Modules:**
+
 - Purpose: Keep each page family self-contained with route config, views, and local components.
 - Examples: `src/views/torrents/routes.tsx`, `src/views/wallet/routes.tsx`, `src/views/settings/routes.tsx`.
 - Pattern: `routes.tsx` exports `RouteObject[]`; `index.tsx` is the default list/home page for the feature.
 
 **PreferenceSubject:**
+
 - Purpose: Reactive preference wrapper that persists values to Capacitor Preferences while exposing `BehaviorSubject` semantics.
 - Examples: `src/classes/preference-subject.ts`, `src/services/preferences.ts`.
 - Pattern: Static async constructors create typed settings; `next` persists before notifying subscribers.
 
 **Event Cache Interface:**
+
 - Purpose: Abstract interchangeable event cache backends.
 - Examples: `src/services/event-cache/interface.ts`, `src/services/event-cache/nostr-idb.ts`, `src/services/event-cache/wasm-worker.ts`, `src/services/event-cache/native-sqlite.ts`.
 - Pattern: Dynamic module loading in `src/services/event-cache/index.ts` behind `EventCache` read/write/clear shape.
@@ -198,36 +216,43 @@
 ## Entry Points
 
 **Web application:**
+
 - Location: `src/index.tsx`
 - Triggers: Vite loads the script referenced by `index.html`.
 - Responsibilities: Initialize runtime side effects, mount React, register service worker.
 
 **Router configuration:**
+
 - Location: `src/app.tsx`
 - Triggers: Rendered by `src/index.tsx`.
 - Responsibilities: Define route tree, choose layout wrappers, provide suspense/error handling.
 
 **PWA service worker:**
+
 - Location: `src/sw/worker/sw.ts`
 - Triggers: Registered by `src/services/worker.ts` using `virtual:pwa-register` and configured in `vite.config.ts`.
 - Responsibilities: Precache, SPA navigation fallback, cache RPC handlers, worker error handling.
 
 **Vite build config:**
+
 - Location: `vite.config.ts`
 - Triggers: `pnpm dev`, `pnpm build`, Vite tooling.
 - Responsibilities: React plugin, tsconfig paths, PWA manifest/service worker, build target, manual Capacitor chunk.
 
 **Capacitor config:**
+
 - Location: `capacitor.config.ts`
 - Triggers: Capacitor sync/build commands.
 - Responsibilities: Native app identity and web asset/native bridge settings.
 
 **Android shell:**
+
 - Location: `android/app/src/main/java/earth/satellite/MainActivity.java`
 - Triggers: Android app launch.
 - Responsibilities: Host Capacitor WebView and native plugins.
 
 **iOS shell:**
+
 - Location: `ios/App/App/AppDelegate.swift`
 - Triggers: iOS app launch.
 - Responsibilities: Host Capacitor WebView and native plugins.
@@ -272,6 +297,7 @@
 **Strategy:** Use error boundaries for render failures, toasts for user-facing action failures, Observable fallbacks for stream failures, and console/debug logging for infrastructure failures.
 
 **Patterns:**
+
 - Wrap the app with `<ErrorBoundary>` in `src/app.tsx:144` and use feature boundaries for detail pages that parse events.
 - Use Chakra `useToast` for direct user actions, as in `src/views/torrents/index.tsx:24` through `src/views/torrents/index.tsx:39`.
 - Return `EMPTY`, `NEVER`, or caught fallback values for optional streams in `src/services/event-cache/index.ts:101`, `src/views/home/index.tsx:50`, and `src/services/local-relay.ts:7`.
@@ -285,4 +311,4 @@
 
 ---
 
-*Architecture analysis: 2026-07-29*
+_Architecture analysis: 2026-07-29_

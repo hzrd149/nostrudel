@@ -31,10 +31,13 @@ export default function WalletBalanceCard({
   const receiveModal = useDisclosure();
 
   const refresh = useAsyncAction(() => wallet.refresh(), [wallet]);
-  const rename = useAsyncAction(async (name: string) => {
-    const trimmed = name.trim();
-    if (trimmed && trimmed !== wallet.name) await wallet.rename?.(trimmed);
-  }, [wallet]);
+  const rename = useAsyncAction(
+    async (name: string) => {
+      const trimmed = name.trim();
+      if (trimmed && trimmed !== wallet.name) await wallet.rename?.(trimmed);
+    },
+    [wallet],
+  );
 
   return (
     <Card {...props}>

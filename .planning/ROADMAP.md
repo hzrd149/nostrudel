@@ -15,4 +15,5 @@ decryption cache so that on app reload the hidden mutes are auto-unlocked (as lo
 the mute list event has not been updated).
 
 Plans:
+
 - [ ] TBD (promote with /gsd-review-backlog when ready)

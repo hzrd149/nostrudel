@@ -8,13 +8,13 @@ minimumReleaseAgeExclude:
   - "@kehto/shell@0.16.2"
   - "@napplet/core@0.25.0"
   - "@napplet/nap@0.25.0"
-  - '@kehto/acl@0.17.0'
-  - '@kehto/firewall@0.5.0'
-  - '@kehto/nip@0.5.0'
-  - '@kehto/runtime@0.20.0'
-  - '@kehto/services@0.18.0'
-  - '@kehto/shell@0.19.0'
-  - '@napplet/core@0.31.0'
-  - '@napplet/nap@0.31.0'
+  - "@kehto/acl@0.17.0"
+  - "@kehto/firewall@0.5.0"
+  - "@kehto/nip@0.5.0"
+  - "@kehto/runtime@0.20.0"
+  - "@kehto/services@0.18.0"
+  - "@kehto/shell@0.19.0"
+  - "@napplet/core@0.31.0"
+  - "@napplet/nap@0.31.0"
 overrides:
   nostr-tools: 2.23.5

@@ -201,8 +201,8 @@ function CleanupTokensSetting() {
   return (
     <SettingsSection title="Cleanup Tokens">
       <Text fontSize="sm" color="GrayText">
-        The wallet does not publish kind 5 delete events when it spends tokens, so the old token events pile up on relays
-        and your balance may be temporarily incorrect until they are cleaned up.
+        The wallet does not publish kind 5 delete events when it spends tokens, so the old token events pile up on
+        relays and your balance may be temporarily incorrect until they are cleaned up.
       </Text>
 
       <Flex alignItems="center" gap="2">
@@ -244,7 +244,8 @@ function CleanupTokensSetting() {
           }}
         />
         <FormHelperText>
-          Automatically delete old token events once this many have piled up. Leave empty to only clean them up manually.
+          Automatically delete old token events once this many have piled up. Leave empty to only clean them up
+          manually.
         </FormHelperText>
       </FormControl>
     </SettingsSection>

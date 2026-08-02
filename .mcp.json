@@ -7,10 +7,7 @@
     "nostr": {
       "type": "stdio",
       "command": "npx",
-      "args": [
-        "-y",
-        "@nostrbook/mcp@latest"
-      ],
+      "args": ["-y", "@nostrbook/mcp@latest"],
       "env": {}
     }
   }
