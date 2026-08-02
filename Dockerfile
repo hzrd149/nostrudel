@@ -3,12 +3,13 @@ FROM node:24-alpine AS base
 
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
-RUN npm install -g pnpm@9.14.4
+RUN npm install -g pnpm@11.2.2
 
 WORKDIR /app
 
 COPY ./package*.json .
 COPY ./pnpm-lock.yaml .
+COPY ./pnpm-workspace.yaml .
 
 FROM base AS prod-deps
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --prod --frozen-lockfile

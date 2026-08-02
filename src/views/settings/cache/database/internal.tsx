@@ -41,9 +41,9 @@ async function importEvents(events: NostrEvent[]) {
   );
 }
 async function exportEvents() {
-  const database = await getDatabase();
+  const { database, isSignedNostrEvent } = await import("../../../../services/event-cache/nostr-idb");
 
-  return (await database.getAll("events")).map((row) => row.event);
+  return (await database.getAll("events")).map((row) => row.event).filter(isSignedNostrEvent);
 }
 
 export default function InternalDatabasePage() {

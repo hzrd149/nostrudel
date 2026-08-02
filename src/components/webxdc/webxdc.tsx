@@ -22,6 +22,8 @@ export interface WebxdcHandle {
   focus: () => void;
 }
 
+type RealtimeChannel = ReturnType<NonNullable<WebxdcAPI<unknown>["joinRealtimeChannel"]>>;
+
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
@@ -188,6 +190,11 @@ export const Webxdc = forwardRef<WebxdcHandle, WebxdcProps>(function Webxdc({ id
           }
 
           case "webxdc.joinRealtimeChannel": {
+            if (!api.joinRealtimeChannel) {
+              respondError(-32601, "Realtime channels are not supported");
+              break;
+            }
+
             const rt = api.joinRealtimeChannel();
             // Generate a channel id to track this listener.
             const channelId = crypto.randomUUID();
@@ -236,7 +243,7 @@ export const Webxdc = forwardRef<WebxdcHandle, WebxdcProps>(function Webxdc({ id
   }, [origin, post]);
 
   // Realtime channel handles, keyed by channelId.
-  const realtimeChannels = useRef<Map<string, ReturnType<WebxdcAPI<unknown>["joinRealtimeChannel"]>>>(new Map());
+  const realtimeChannels = useRef<Map<string, RealtimeChannel>>(new Map());
 
   // Clean up realtime channels on unmount.
   useEffect(() => {
