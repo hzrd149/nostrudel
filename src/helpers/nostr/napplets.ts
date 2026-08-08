@@ -7,6 +7,7 @@ import {
   isNappletManifestKind,
   parseNappletManifest,
 } from "@kehto/nip";
+import { manifestToIntentCatalogEntry } from "@kehto/services";
 import { ALL_CAPABILITIES, type Capability } from "@kehto/shell";
 
 export { NAPPLET_KIND_NAMED, NAPPLET_KIND_ROOT, NAPPLET_KIND_SNAPSHOT, isNappletManifestKind };
@@ -144,51 +145,19 @@ export function readyTopic(archetype: string) {
   return `${archetype}:ready`;
 }
 
-function actionFromProtocol(archetype: string, protocol: string) {
-  const prefix = `napplet:${archetype}/`;
-  if (!protocol.startsWith(prefix)) return undefined;
-
-  const action = protocol.slice(prefix.length).trim();
-  return action || undefined;
-}
-
 export function getNappletArchetypes(event: NostrEvent): NappletArchetype[] {
-  const archetypes = new Map<string, Set<string>>();
-  const protocolsByArchetype = new Map<string, Set<string>>();
+  try {
+    const manifest = parseNappletManifest(event);
+    const catalog = manifestToIntentCatalogEntry(manifest);
 
-  for (const tag of event.tags) {
-    if (tag[0] !== "archetype" || !tag[1]) continue;
-
-    const archetype = tag[1].trim();
-    if (!archetype) continue;
-
-    const actions = archetypes.get(archetype) ?? new Set<string>();
-    const protocols = protocolsByArchetype.get(archetype) ?? new Set<string>();
-
-    for (const value of tag.slice(2)) {
-      const protocol = value.trim();
-      if (!protocol) continue;
-      const action = actionFromProtocol(archetype, protocol);
-      if (action) {
-        actions.add(action);
-        protocols.add(protocol);
-      }
-    }
-
-    if (actions.size === 0) {
-      actions.add("open");
-      protocols.add(conventionId(archetype, "open"));
-    }
-
-    archetypes.set(archetype, actions);
-    protocolsByArchetype.set(archetype, protocols);
+    return Object.entries(catalog.archetypes).map(([name, support]) => ({
+      name,
+      actions: support.actions,
+      protocols: support.conventions,
+    }));
+  } catch {
+    return [];
   }
-
-  return Array.from(archetypes.entries()).map(([name, actions]) => ({
-    name,
-    actions: Array.from(actions),
-    protocols: Array.from(protocolsByArchetype.get(name) ?? []),
-  }));
 }
 
 export function getNappletRequiredCapabilities(event: NostrEvent): Capability[] {

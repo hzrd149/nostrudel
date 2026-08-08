@@ -16,6 +16,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import { openNappletArtifactCache, resolveNapplet, type ResolvedNapplet } from "@kehto/nip";
 import { injectNappletNamespacePrelude } from "@kehto/shell";
+import { resolveBlob } from "blossom-client-sdk/actions/resolve";
 
 import SimpleView from "../layout/presets/simple-view";
 import {
@@ -44,19 +45,9 @@ function getNappletArtifactCache() {
   return nappletArtifactCachePromise;
 }
 
-async function fetchNappletBlob(sha256Hex: string, servers: readonly string[], signal?: AbortSignal) {
-  for (const server of servers) {
-    const url = `${server.replace(/\/$/, "")}/${sha256Hex}`;
-    try {
-      const response = await fetch(url, { cache: "no-store", signal });
-      if (response.ok) return new Uint8Array(await response.arrayBuffer());
-    } catch {
-      if (signal?.aborted) throw new DOMException("Napplet fetch aborted", "AbortError");
-      // Try the next server hint.
-    }
-  }
-
-  throw new Error(`Failed to fetch napplet blob ${sha256Hex}`);
+async function fetchNappletBlob(sha256Hex: string, servers: readonly string[], signal: AbortSignal) {
+  const response = await resolveBlob({ sha256: sha256Hex, ext: "", servers: [...servers], authors: [] }, { signal });
+  return new Uint8Array(await response.arrayBuffer());
 }
 
 /** Renders a NIP-5D napplet full-page: a simple title/action header and the sandboxed frame below. */
