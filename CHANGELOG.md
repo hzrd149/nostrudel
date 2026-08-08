@@ -1,5 +1,29 @@
 # nostrudel
 
+## 1.2.0
+
+### Minor Changes
+
+- 2be34d6: Remove Launchpad view
+- dddbd43: Removed support for wiki articles
+- f28717f: Add muted users to mute settings view
+- 214c6f7: Cleanup remote signer signin flow
+- 5188d7a: Add NAP-COMMON support for NIP-5D napplets
+- 46be2b2: Cleanup event debug model
+- 46be2b2: Add "Other apps" tab under threads
+- 52301c4: Add support for webxdc apps
+- 46be2b2: Update to applesauce v6
+- f28717f: Remove broken advanced tab on relay details page
+- 9d25aa3: Remove support for relatr user lookup
+- 137e3e7: Support showing sats in currencies from mempool.space
+- e4011ff: Redesign signin flow: merge nostr connect pages into one, card-based option layout
+- d7e15c2: Add reusable NappletFrame support for mounting NIP-5D napplets
+
+### Patch Changes
+
+- 56d972b: Support `requires: link` in NAP-LINK napplet manifests
+- 660f081: Allow pinning any kind 1 note with relay hints while hiding non-NIP-51 pin actions
+
 ## 1.1.0
 
 ### Minor Changes
