@@ -15,7 +15,7 @@ import { containerProps } from "./common";
 import { CopyIconButton } from "../../../components/copy-icon-button";
 import styled from "@emotion/styled";
 import { useState } from "react";
-import { hexToBytes } from "@noble/hashes/utils";
+import { hexToBytes } from "@noble/hashes/utils.js";
 
 const Blockquote = styled.figure`
   padding: var(--chakra-sizes-2) var(--chakra-sizes-4);

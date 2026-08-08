@@ -18,8 +18,8 @@ import {
   useRadio,
   useRadioGroup,
 } from "@chakra-ui/react";
-import { sha1 } from "@noble/hashes/sha1";
-import { bytesToHex } from "@noble/hashes/utils";
+import { sha1 } from "@noble/hashes/legacy.js";
+import { bytesToHex } from "@noble/hashes/utils.js";
 import dayjs from "dayjs";
 import { EventTemplate, nip19 } from "nostr-tools";
 import { PropsWithChildren, ReactNode, useRef } from "react";

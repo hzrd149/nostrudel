@@ -1,6 +1,6 @@
 // copied from https://git.v0l.io/Kieran/dtan/src/branch/main/src/bencode/decode.ts
 
-import { bytesToHex } from "@noble/hashes/utils";
+import { bytesToHex } from "@noble/hashes/utils.js";
 
 const INTEGER_START = 0x69; // 'i'
 const STRING_DELIM = 0x3a; // ':'

@@ -18,8 +18,8 @@ import {
   useToast,
   VStack,
 } from "@chakra-ui/react";
-import { sha256 } from "@noble/hashes/sha2";
-import { bytesToHex } from "@noble/hashes/utils";
+import { sha256 } from "@noble/hashes/sha2.js";
+import { bytesToHex } from "@noble/hashes/utils.js";
 import { createUploadAuth } from "blossom-client-sdk";
 import { downloadBlob } from "blossom-client-sdk/actions/download";
 import { hasBlob } from "blossom-client-sdk/actions/has";

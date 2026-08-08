@@ -1,5 +1,5 @@
 import { Avatar, Button, Flex, Heading, Text, useToast } from "@chakra-ui/react";
-import { bytesToHex } from "@noble/hashes/utils";
+import { bytesToHex } from "@noble/hashes/utils.js";
 import { SimpleAccount } from "applesauce-accounts/accounts";
 import { unixNow } from "applesauce-core/helpers";
 import { ProfileContent } from "applesauce-core/helpers";

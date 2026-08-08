@@ -1,5 +1,5 @@
 import { Preferences } from "@capacitor/preferences";
-import { bytesToHex, hexToBytes } from "@noble/hashes/utils";
+import { bytesToHex, hexToBytes } from "@noble/hashes/utils.js";
 import { type SerializedAccount } from "applesauce-accounts";
 
 import { PreferenceSubject } from "../classes/preference-subject";
