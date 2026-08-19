@@ -134,25 +134,71 @@ export function getNappletDTag(event: NostrEvent) {
   return getTagValue(event, "d") || event.id;
 }
 
+export type NappletCoordinate = { kind: number; pubkey: string; identifier: string };
+
 /**
- * Builds the filter used to query every historical version of a napplet manifest's
- * coordinate. Intentionally matches the whole coordinate (kind + author, plus `#d` for
- * addressable kinds) rather than a single event id, so relays that retain overwritten
- * versions of a replaceable event can answer with more than one event.
+ * The replaceable coordinate a napplet's releases live at — the anchor both the version
+ * history and the snapshot list are queried from.
  *
- * Returns undefined for kinds with no replaceable history to rewind through (the
- * immutable snapshot kind 5129, or any non-napplet kind).
+ * A snapshot (kind 5129) is an immutable release and is forbidden from carrying a `d` tag,
+ * so it has no coordinate of its own; it points back at the napplet it was cut from with an
+ * `a` tag. Resolving through that tag means a running snapshot still shows the history and
+ * sibling snapshots of its parent napplet.
  */
-export function getNappletHistoryFilter(event: NostrEvent): Filter | undefined {
-  if (isAddressableKind(event.kind)) {
-    return { kinds: [event.kind], authors: [event.pubkey], "#d": [getNappletDTag(event)] };
+export function getNappletCoordinate(event: NostrEvent): NappletCoordinate | undefined {
+  if (event.kind === NAPPLET_KIND_SNAPSHOT) {
+    const address = getTagValue(event, "a");
+    if (!address) return undefined;
+
+    const [kind, pubkey, identifier = ""] = address.split(":");
+    const parsed = Number(kind);
+    if (!Number.isFinite(parsed) || !pubkey) return undefined;
+
+    return { kind: parsed, pubkey, identifier };
   }
 
-  if (isReplaceable(event.kind)) {
-    return { kinds: [event.kind], authors: [event.pubkey] };
+  if (isAddressableKind(event.kind)) {
+    const identifier = getTagValue(event, "d");
+    if (!identifier) return undefined;
+
+    return { kind: event.kind, pubkey: event.pubkey, identifier };
   }
+
+  // Root manifests are replaceable with no `d` tag — (kind, pubkey) is the whole coordinate.
+  if (isReplaceable(event.kind)) return { kind: event.kind, pubkey: event.pubkey, identifier: "" };
 
   return undefined;
+}
+
+export function encodeNappletCoordinate({ kind, pubkey, identifier }: NappletCoordinate) {
+  return `${kind}:${pubkey}:${identifier}`;
+}
+
+/**
+ * Builds the filter used to query every historical version of a napplet's coordinate.
+ * Intentionally matches the whole coordinate rather than a single event id, so relays that
+ * retain overwritten versions of a replaceable event can answer with more than one event.
+ */
+export function getNappletHistoryFilter(event: NostrEvent): Filter | undefined {
+  const coordinate = getNappletCoordinate(event);
+  if (!coordinate) return undefined;
+
+  const filter: Filter = { kinds: [coordinate.kind], authors: [coordinate.pubkey] };
+  if (coordinate.identifier) filter["#d"] = [coordinate.identifier];
+
+  return filter;
+}
+
+/**
+ * Builds the filter for the immutable snapshot releases cut from a napplet's coordinate.
+ * Snapshots reference their napplet with an `a` tag, which is the only link between the two
+ * (they carry no `d` tag of their own).
+ */
+export function getNappletSnapshotsFilter(event: NostrEvent): Filter | undefined {
+  const coordinate = getNappletCoordinate(event);
+  if (!coordinate) return undefined;
+
+  return { kinds: [NAPPLET_KIND_SNAPSHOT], "#a": [encodeNappletCoordinate(coordinate)] };
 }
 
 export function conventionId(archetype: string, action: string) {

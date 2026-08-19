@@ -20,9 +20,9 @@ import { resolveBlob } from "blossom-client-sdk/actions/resolve";
 
 import SimpleView from "../layout/presets/simple-view";
 import Timestamp from "../timestamp";
-import NappletHistoryDrawer from "./napplet-history-drawer";
+import NappletInfoDrawer from "./napplet-info-drawer";
 import {
-  getNappletHistoryFilter,
+  NAPPLET_KIND_SNAPSHOT,
   getNappletRequiredCapabilities,
   getNappletNaddr,
   getNappletTitle,
@@ -67,11 +67,10 @@ export default function NappletFrame({ event, intent, onClose, onResolved, onErr
   const [error, setError] = useState<Error>();
   const [napplet, setNapplet] = useState<ResolvedNapplet>();
   const [version, setVersion] = useState<NostrEvent>();
-  const history = useDisclosure();
+  const info = useDisclosure();
 
-  // The version currently running in the iframe: the selected historical version, or the latest.
+  // The release currently running in the iframe: the selected historical one, or the latest.
   const active = version ?? event;
-  const canRewind = !!getNappletHistoryFilter(event);
 
   // A rewind must never survive navigating to a different napplet.
   useEffect(() => {
@@ -232,11 +231,9 @@ export default function NappletFrame({ event, intent, onClose, onResolved, onErr
       gap={0}
       actions={
         <ButtonGroup size="sm" variant="ghost" ms="auto">
-          {canRewind && (
-            <Tooltip label="Version history" openDelay={500}>
-              <IconButton icon={<InfoIcon />} aria-label="Version history" onClick={history.onOpen} />
-            </Tooltip>
-          )}
+          <Tooltip label="Napplet info" openDelay={500}>
+            <IconButton icon={<InfoIcon />} aria-label="Napplet info" onClick={info.onOpen} />
+          </Tooltip>
           {address && !installed && (
             <Button
               colorScheme="primary"
@@ -263,7 +260,8 @@ export default function NappletFrame({ event, intent, onClose, onResolved, onErr
         <Alert status="info" flexShrink={0}>
           <AlertIcon />
           <AlertDescription flexGrow={1}>
-            Viewing a historical version from <Timestamp timestamp={version.created_at} fontWeight="bold" />
+            Viewing {version.kind === NAPPLET_KIND_SNAPSHOT ? "a snapshot" : "a historical version"} from{" "}
+            <Timestamp timestamp={version.created_at} fontWeight="bold" />
           </AlertDescription>
           <Button variant="ghost" size="sm" flexShrink={0} onClick={() => selectVersion(event)}>
             Back to latest
@@ -294,9 +292,9 @@ export default function NappletFrame({ event, intent, onClose, onResolved, onErr
           display="block"
         />
       )}
-      <NappletHistoryDrawer
-        isOpen={history.isOpen}
-        onClose={history.onClose}
+      <NappletInfoDrawer
+        isOpen={info.isOpen}
+        onClose={info.onClose}
         event={event}
         active={active}
         onSelect={selectVersion}
