@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 current_phase: 01
 status: executing
-stopped_at: Completed 01-02-PLAN.md
-last_updated: "2026-08-19T16:46:22.088Z"
-state_head: 0d9e83f88b821447ff1298fc3dd8d7ffaef37e8b
+stopped_at: Completed 01-03-PLAN.md
+last_updated: "2026-08-19T16:56:57.576Z"
+state_head: 1a4f0549342814caef5a42c601f0318179131483
 progress:
   total_phases: 2
   completed_phases: 0
   total_plans: 6
-  completed_plans: 2
+  completed_plans: 3
 milestone_name: milestone
 current_phase_name: Hidden mutes support with unlock UX and decryption cache
 ---
@@ -37,15 +37,18 @@ See: .planning/PROJECT.md
 |------|----------|-------|-------|
 | Phase 01 P01 | 15 min | 3 tasks | 2 files |
 | Phase 01 P02 | 20 min | 3 tasks | 3 files |
+| Phase 01 P03 | 18min | 3 tasks | 4 files |
 
 ## Decisions
 
 - [Phase 01]: Pending-unlock registry built as an RxJS singleton mirroring decryption-cache.ts; unlockPendingCategories rethrows signer-refusal errors immediately, logs and continues on others, then throws the first-seen failure for useAsyncAction to toast (D-08).
 - [Phase 01]: Auto-unlock driver gates on isAutoUnlockEnabled(category.id) plus an accountId:categoryId attempted-set reset only on distinct-account emissions (app start / explicit switch) — never on mute-list updates — satisfying D-01/D-06 and mitigating signer-prompt fatigue (T-01-01).
 - [Phase 01]: getMuteHalf resolves public first, then hidden only when isHiddenMutesUnlocked; unmute throws a descriptive Error on unknown half instead of publishing an unchanged list (D-13/D-14).
+- [Phase 01]: canUnlock$ for the mutes category reports false only for a ReadonlyAccount, never hides the pending count — a signer-less account still sees it has locked content (D-01 discretion resolution).
+- [Phase 01]: The decryption-cache category's unlock() is a narrow guard (resolves if already unlocked, otherwise throws); unlockComponent excludes it from the batch/auto-unlock drivers, so the password form is the only real unlock entry point (D-09).
 
 ## Session
 
-**Last session:** 2026-08-19T16:46:22.076Z
-**Stopped at:** Completed 01-02-PLAN.md
+**Last session:** 2026-08-19T16:56:57.314Z
+**Stopped at:** Completed 01-03-PLAN.md
 **Resume file:** None

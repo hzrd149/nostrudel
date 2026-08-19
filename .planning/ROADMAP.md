@@ -12,7 +12,7 @@ and correctly removable from whichever half they live in.
 **Requirements:** D-01, D-02, D-03, D-04, D-05, D-06, D-07, D-08, D-09, D-10, D-11, D-12, D-13, D-14, D-15
 (no REQUIREMENTS.md exists; the requirement set is the locked decisions in `01-CONTEXT.md`)
 **Depends on:** Nothing
-**Plans:** 2/6 plans executed
+**Plans:** 3/6 plans executed
 
 Support hidden (encrypted) mutes in the user's mute lists. applesauce provides APIs for
 reading, subscribing to, and unlocking hidden mute entries — the open question is UX:
@@ -28,7 +28,7 @@ Plans:
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
-- [ ] 01-03-PLAN.md — Register the mute-list and decryption-cache pending-unlock categories (wave 2)
+- [x] 01-03-PLAN.md — Register the mute-list and decryption-cache pending-unlock categories (wave 2)
 
 **Wave 3** *(blocked on Wave 2 completion)*
 

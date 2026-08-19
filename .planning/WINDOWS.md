@@ -1,10 +1,10 @@
 ---
 schema_version: 1
-open_count: 2
+open_count: 5
 waived_count: 0
 fixed_count: 0
-total_count: 2
-last_updated: 2026-08-19T16:45:43.871Z
+total_count: 5
+last_updated: 2026-08-19T16:55:29.468Z
 ---
 
 # Broken Windows Ledger
@@ -17,6 +17,9 @@ last_updated: 2026-08-19T16:45:43.871Z
 |----|-------|------|------|------|-------------|--------|--------|-------------|-------------|
 | 1 | 01 | unrun-verify | src/hooks/use-user-mute-actions.ts |  | M-9: merged isMuted flip from Mute to Unmute on hidden-mutes unlock without reload — needs a live signer/relay session, not run in this environment | open |  | 2026-08-19T16:45:43.767Z |  |
 | 2 | 01 | unrun-verify | src/components/menu/mute-user.tsx |  | M-8 part 1: public unmute regression (published kind-10000 drops p tag and stale mute_expiration tag) — needs a live signer/relay session, not run in this environment | open |  | 2026-08-19T16:45:43.871Z |  |
+| 3 | 01 | unrun-verify | src/services/pending-unlock-mutes.ts |  | M-4 (D-07): timelines silently under-filter while hidden mutes are locked, no banner appears anywhere - needs a live signer/relay session, not run in this environment | open |  | 2026-08-19T16:55:29.272Z |  |
+| 4 | 01 | unrun-verify | src/index.tsx |  | M-3 (D-06): a cross-device mute-list replacement returns the mutes pending count to 1 with no automatic re-unlock - needs a live signer/relay session, not run in this environment | open |  | 2026-08-19T16:55:29.373Z |  |
+| 5 | 01 | unrun-verify | src/services/pending-unlock-cache.ts |  | M-6 mechanism half (D-09): pending decryption-cache item visible via debug console at default encryptDecryptionCache=true, count drops to zero after correct password - needs a live browser session with enableDebugApi on, not run in this environment | open |  | 2026-08-19T16:55:29.468Z |  |
 
 ````json
 [
@@ -42,6 +45,42 @@ last_updated: 2026-08-19T16:45:43.871Z
     "status": "open",
     "reason": "",
     "recorded_at": "2026-08-19T16:45:43.871Z",
+    "resolved_at": null
+  },
+  {
+    "id": 3,
+    "kind": "unrun-verify",
+    "phase": "01",
+    "file": "src/services/pending-unlock-mutes.ts",
+    "line": null,
+    "description": "M-4 (D-07): timelines silently under-filter while hidden mutes are locked, no banner appears anywhere - needs a live signer/relay session, not run in this environment",
+    "status": "open",
+    "reason": "",
+    "recorded_at": "2026-08-19T16:55:29.272Z",
+    "resolved_at": null
+  },
+  {
+    "id": 4,
+    "kind": "unrun-verify",
+    "phase": "01",
+    "file": "src/index.tsx",
+    "line": null,
+    "description": "M-3 (D-06): a cross-device mute-list replacement returns the mutes pending count to 1 with no automatic re-unlock - needs a live signer/relay session, not run in this environment",
+    "status": "open",
+    "reason": "",
+    "recorded_at": "2026-08-19T16:55:29.373Z",
+    "resolved_at": null
+  },
+  {
+    "id": 5,
+    "kind": "unrun-verify",
+    "phase": "01",
+    "file": "src/services/pending-unlock-cache.ts",
+    "line": null,
+    "description": "M-6 mechanism half (D-09): pending decryption-cache item visible via debug console at default encryptDecryptionCache=true, count drops to zero after correct password - needs a live browser session with enableDebugApi on, not run in this environment",
+    "status": "open",
+    "reason": "",
+    "recorded_at": "2026-08-19T16:55:29.468Z",
     "resolved_at": null
   }
 ]
