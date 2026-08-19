@@ -9,17 +9,20 @@ import {
   IconButton,
   Spinner,
   Tooltip,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { CloseIcon, InfoIcon, RepeatIcon } from "@chakra-ui/icons";
 import { NostrEvent } from "nostr-tools";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Link as RouterLink } from "react-router-dom";
 import { openNappletArtifactCache, resolveNapplet, type ResolvedNapplet } from "@kehto/nip";
 import { injectNappletNamespacePrelude } from "@kehto/shell";
 import { resolveBlob } from "blossom-client-sdk/actions/resolve";
 
 import SimpleView from "../layout/presets/simple-view";
+import Timestamp from "../timestamp";
+import NappletHistoryDrawer from "./napplet-history-drawer";
 import {
+  getNappletHistoryFilter,
   getNappletRequiredCapabilities,
   getNappletNaddr,
   getNappletTitle,
@@ -63,8 +66,19 @@ export default function NappletFrame({ event, intent, onClose, onResolved, onErr
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error>();
   const [napplet, setNapplet] = useState<ResolvedNapplet>();
+  const [version, setVersion] = useState<NostrEvent>();
+  const history = useDisclosure();
 
-  const title = getNappletTitle(event);
+  // The version currently running in the iframe: the selected historical version, or the latest.
+  const active = version ?? event;
+  const canRewind = !!getNappletHistoryFilter(event);
+
+  // A rewind must never survive navigating to a different napplet.
+  useEffect(() => {
+    setVersion(undefined);
+  }, [event.id]);
+
+  const title = getNappletTitle(active);
   const address = getNappletNaddr(event);
   const [installed, setInstalled] = useState(() => (address ? isNappletInstalled(address) : true));
 
@@ -76,12 +90,12 @@ export default function NappletFrame({ event, intent, onClose, onResolved, onErr
     intentRef.current = intent;
   }, [intent]);
 
-  // Resolve (and re-resolve on reload) the napplet from its manifest event.
+  // Resolve (and re-resolve on reload/rewind) the napplet from its active manifest event.
   useEffect(() => {
     let mounted = true;
     const controller = new AbortController();
-    const capabilities = getNappletRequiredCapabilities(event);
-    const unsupported = getUnsupportedNappletRequirements(event);
+    const capabilities = getNappletRequiredCapabilities(active);
+    const unsupported = getUnsupportedNappletRequirements(active);
 
     async function load() {
       setLoading(true);
@@ -93,12 +107,12 @@ export default function NappletFrame({ event, intent, onClose, onResolved, onErr
 
         const cache = await getNappletArtifactCache();
         const resolved = await resolveNapplet({
-          event,
+          event: active,
           cache,
           fetchBlob: (sha256Hex, servers) => fetchNappletBlob(sha256Hex, servers, controller.signal),
         });
-        const identity = { pubkey: event.pubkey, dTag: resolved.dTag, aggregateHash: resolved.aggregateHash };
-        const allowed = await requestConsent(event, identity, capabilities);
+        const identity = { pubkey: active.pubkey, dTag: resolved.dTag, aggregateHash: resolved.aggregateHash };
+        const allowed = await requestConsent(active, identity, capabilities);
         if (!allowed) throw new Error("Napplet access denied");
         if (!mounted) return;
 
@@ -119,7 +133,7 @@ export default function NappletFrame({ event, intent, onClose, onResolved, onErr
       mounted = false;
       controller.abort();
     };
-  }, [event, reloadKey, requestConsent, onResolved, onError]);
+  }, [active, reloadKey, requestConsent, onResolved, onError]);
 
   useEffect(() => {
     return () => {
@@ -147,10 +161,11 @@ export default function NappletFrame({ event, intent, onClose, onResolved, onErr
       if (windowIdRef.current) unregisterFrame(windowIdRef.current);
       deliveryRef.current?.dispose();
 
-      const windowId = `napplet:${event.id}:${reloadKey}`;
+      // A rewound version has a different aggregateHash and must register as a distinct frame.
+      const windowId = `napplet:${active.id}:${reloadKey}`;
       windowIdRef.current = windowId;
       registerFrame(windowId, node.contentWindow, {
-        pubkey: event.pubkey,
+        pubkey: active.pubkey,
         dTag: napplet.dTag,
         aggregateHash: napplet.aggregateHash,
         title,
@@ -171,17 +186,32 @@ export default function NappletFrame({ event, intent, onClose, onResolved, onErr
       // materialised window.napplet.<domain> proxies never diverge.
       node.srcdoc = injectNappletNamespacePrelude(napplet.indexHtml, { domains: capabilities.domains });
     },
-    [event.id, event.pubkey, napplet, registerFrame, reloadKey, unregisterFrame, capabilities.domains, title],
+    [active.id, active.pubkey, napplet, registerFrame, reloadKey, unregisterFrame, capabilities.domains, title],
   );
 
-  const reload = useCallback(() => {
+  // Shared frame teardown for both a plain reload and a rewind to a different version, so the
+  // two paths cannot drift.
+  const teardownFrame = useCallback(() => {
     if (windowIdRef.current) unregisterFrame(windowIdRef.current);
     deliveryRef.current?.dispose();
     windowIdRef.current = undefined;
     deliveryRef.current = null;
     deliveredKeyRef.current = "";
-    setReloadKey((key) => key + 1);
   }, [unregisterFrame]);
+
+  const reload = useCallback(() => {
+    teardownFrame();
+    setReloadKey((key) => key + 1);
+  }, [teardownFrame]);
+
+  const selectVersion = useCallback(
+    (next: NostrEvent) => {
+      teardownFrame();
+      setVersion(next.id === event.id ? undefined : next);
+      setReloadKey((key) => key + 1);
+    },
+    [teardownFrame, event.id],
+  );
 
   useEffect(() => {
     if (!intent || !intentKey) return;
@@ -202,9 +232,9 @@ export default function NappletFrame({ event, intent, onClose, onResolved, onErr
       gap={0}
       actions={
         <ButtonGroup size="sm" variant="ghost" ms="auto">
-          {address && (
-            <Tooltip label="App details" openDelay={500}>
-              <IconButton as={RouterLink} to={`/app/store/${address}`} icon={<InfoIcon />} aria-label="App details" />
+          {canRewind && (
+            <Tooltip label="Version history" openDelay={500}>
+              <IconButton icon={<InfoIcon />} aria-label="Version history" onClick={history.onOpen} />
             </Tooltip>
           )}
           {address && !installed && (
@@ -229,6 +259,17 @@ export default function NappletFrame({ event, intent, onClose, onResolved, onErr
         </ButtonGroup>
       }
     >
+      {version && (
+        <Alert status="info" flexShrink={0}>
+          <AlertIcon />
+          <AlertDescription flexGrow={1}>
+            Viewing a historical version from <Timestamp timestamp={version.created_at} fontWeight="bold" />
+          </AlertDescription>
+          <Button variant="ghost" size="sm" flexShrink={0} onClick={() => selectVersion(event)}>
+            Back to latest
+          </Button>
+        </Alert>
+      )}
       {loading && (
         <Flex flexGrow={1} h={0} alignItems="center" justifyContent="center">
           <Spinner />
@@ -253,6 +294,13 @@ export default function NappletFrame({ event, intent, onClose, onResolved, onErr
           display="block"
         />
       )}
+      <NappletHistoryDrawer
+        isOpen={history.isOpen}
+        onClose={history.onClose}
+        event={event}
+        active={active}
+        onSelect={selectVersion}
+      />
     </SimpleView>
   );
 }
