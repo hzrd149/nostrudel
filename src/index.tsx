@@ -8,6 +8,8 @@ import { URLOpenListenerEvent, App as CapacitorApp } from "@capacitor/app";
 
 import "./services/debug-api";
 import "./services/decryption-cache";
+import "./services/pending-unlock-mutes";
+import "./services/pending-unlock-cache";
 import "./services/lifecycle";
 import "./services/wallets";
 // Optional: one-time migration of a bitcoin-connect NWC wallet into the applesauce wallet system
