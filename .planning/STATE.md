@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 current_phase: 01
 status: executing
-stopped_at: Completed 01-05-PLAN.md
-last_updated: "2026-08-19T17:13:14.536Z"
-state_head: b098f881414ae199e2f87b9f9fc244062834e674
+stopped_at: Completed 01-06-PLAN.md (last plan in Phase 01)
+last_updated: "2026-08-19T17:25:47.464Z"
+state_head: 36448a977ba484cafbc2b0d7c7dadfb69e0f003a
 progress:
   total_phases: 2
   completed_phases: 0
   total_plans: 6
-  completed_plans: 5
+  completed_plans: 6
 milestone_name: milestone
 current_phase_name: Hidden mutes support with unlock UX and decryption cache
 ---
@@ -40,6 +40,7 @@ See: .planning/PROJECT.md
 | Phase 01 P03 | 18min | 3 tasks | 4 files |
 | Phase 01 P04 | ~15min | 3 tasks | 5 files |
 | Phase 01 P05 | ~12min | 2 tasks | 1 files |
+| Phase 01 P06 | ~15min | 3 tasks | 5 files |
 
 ## Decisions
 
@@ -51,9 +52,10 @@ See: .planning/PROJECT.md
 - [Phase 01]: The unlockComponent row's onUnlocked callback closes the whole pending-unlock modal, not just that row, per the plan's explicit instruction for the single-category case today (D-09).
 - [Phase 01]: nav-drawer.tsx wraps PendingUnlockButton in a stopPropagation Box placed above the ButtonGroup, because both DrawerBody's handleClickItem and the ButtonGroup's own onClick={onClose} close the drawer on any button click, which would unmount the button's modal mid-interaction.
 - [Phase 01]: Per-category auto-unlock rows render conditionally on !autoUnlockAll immediately below the unlock-all switch; the .map() over pendingUnlockCategories$ naturally produces zero elements when the registry is empty, satisfying D-05's no-placeholder-rows requirement without a separate empty-check branch. — Phase 01 Plan 05
+- [Phase 01]: PrivateMutesSection derives locked=row.count>0 from the pending-unlock registry row (never isHiddenMutesUnlocked directly), and is deliberately unvirtualized (maxH+overflow, no AutoSizer/react-window) per RESEARCH.md Assumption A3 — Phase 01 Plan 06
 
 ## Session
 
-**Last session:** 2026-08-19T17:13:14.512Z
-**Stopped at:** Completed 01-05-PLAN.md
+**Last session:** 2026-08-19T17:25:47.450Z
+**Stopped at:** Completed 01-06-PLAN.md (last plan in Phase 01)
 **Resume file:** None

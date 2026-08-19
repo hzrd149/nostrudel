@@ -1,10 +1,10 @@
 ---
 schema_version: 1
-open_count: 9
+open_count: 11
 waived_count: 0
 fixed_count: 0
-total_count: 9
-last_updated: 2026-08-19T17:12:08.254Z
+total_count: 11
+last_updated: 2026-08-19T17:23:53.068Z
 ---
 
 # Broken Windows Ledger
@@ -24,6 +24,8 @@ last_updated: 2026-08-19T17:12:08.254Z
 | 7 | 01 | unrun-verify | src/components/pending-unlock/pending-unlock-modal.tsx |  | M-5 (D-08): rejecting the signer prompt in the nav modal toasts once, leaves count unchanged, and Unlock is immediately retryable with no reload - needs a live signer/relay session, not run in this environment | open |  | 2026-08-19T17:04:03.829Z |  |
 | 8 | 01 | unrun-verify | src/components/pending-unlock/pending-unlock-modal.tsx |  | M-6 (D-09): decryption-cache password row reachable and functional from the side-nav affordance without visiting /messages - needs a live browser session with a real signer, not run in this environment | open |  | 2026-08-19T17:04:03.936Z |  |
 | 9 | 01 | unrun-verify | src/views/settings/privacy/index.tsx |  | D-04/D-05 manual UAT procedure (Task 2) not executed — requires a live signer session with a hidden mute list; deferred to end-of-phase UAT alongside plans 01-01 and 01-03's deferred manual checks. | open |  | 2026-08-19T17:12:08.254Z |  |
+| 10 | 01 | unrun-verify | src/views/lists/muted/components/private-mutes-section.tsx |  | M-7 (D-10/D-11/D-12): Private section locked placeholder, unlock, and re-render without reload — needs a live signer/relay session, not run in this environment | open |  | 2026-08-19T17:23:52.870Z |  |
+| 11 | 01 | unrun-verify | src/views/lists/muted/components/muted-user-card.tsx |  | M-8 part 2 (D-13/D-14 hidden half): Remove on a Private-section row publishes a real replacement kind-10000 event and survives reload+re-unlock — needs a live signer/relay session, not run in this environment | open |  | 2026-08-19T17:23:53.068Z |  |
 
 ````json
 [
@@ -133,6 +135,30 @@ last_updated: 2026-08-19T17:12:08.254Z
     "status": "open",
     "reason": "",
     "recorded_at": "2026-08-19T17:12:08.254Z",
+    "resolved_at": null
+  },
+  {
+    "id": 10,
+    "kind": "unrun-verify",
+    "phase": "01",
+    "file": "src/views/lists/muted/components/private-mutes-section.tsx",
+    "line": null,
+    "description": "M-7 (D-10/D-11/D-12): Private section locked placeholder, unlock, and re-render without reload — needs a live signer/relay session, not run in this environment",
+    "status": "open",
+    "reason": "",
+    "recorded_at": "2026-08-19T17:23:52.870Z",
+    "resolved_at": null
+  },
+  {
+    "id": 11,
+    "kind": "unrun-verify",
+    "phase": "01",
+    "file": "src/views/lists/muted/components/muted-user-card.tsx",
+    "line": null,
+    "description": "M-8 part 2 (D-13/D-14 hidden half): Remove on a Private-section row publishes a real replacement kind-10000 event and survives reload+re-unlock — needs a live signer/relay session, not run in this environment",
+    "status": "open",
+    "reason": "",
+    "recorded_at": "2026-08-19T17:23:53.068Z",
     "resolved_at": null
   }
 ]
