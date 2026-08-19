@@ -1,5 +1,6 @@
 import { DecodeResult, getTagValue, isReplaceable } from "applesauce-core/helpers";
-import { nip19, NostrEvent } from "nostr-tools";
+import { Filter, nip19, NostrEvent } from "nostr-tools";
+import { isAddressableKind } from "nostr-tools/kinds";
 import {
   NAPPLET_KIND_NAMED,
   NAPPLET_KIND_ROOT,
@@ -131,6 +132,27 @@ export function parseNappletIntent(value: string | null): NappletIntent | undefi
 
 export function getNappletDTag(event: NostrEvent) {
   return getTagValue(event, "d") || event.id;
+}
+
+/**
+ * Builds the filter used to query every historical version of a napplet manifest's
+ * coordinate. Intentionally matches the whole coordinate (kind + author, plus `#d` for
+ * addressable kinds) rather than a single event id, so relays that retain overwritten
+ * versions of a replaceable event can answer with more than one event.
+ *
+ * Returns undefined for kinds with no replaceable history to rewind through (the
+ * immutable snapshot kind 5129, or any non-napplet kind).
+ */
+export function getNappletHistoryFilter(event: NostrEvent): Filter | undefined {
+  if (isAddressableKind(event.kind)) {
+    return { kinds: [event.kind], authors: [event.pubkey], "#d": [getNappletDTag(event)] };
+  }
+
+  if (isReplaceable(event.kind)) {
+    return { kinds: [event.kind], authors: [event.pubkey] };
+  }
+
+  return undefined;
 }
 
 export function conventionId(archetype: string, action: string) {
