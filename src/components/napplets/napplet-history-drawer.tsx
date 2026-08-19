@@ -15,6 +15,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { NostrEvent } from "nostr-tools";
+import { useEffect, useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
 
 import ClockRewind from "../icons/clock-rewind";
@@ -91,7 +92,16 @@ export default function NappletHistoryDrawer({
   isOpen,
   ...props
 }: NappletHistoryDrawerProps) {
-  const { versions } = useNappletHistory(event);
+  // The drawer stays mounted so it keeps its results across open/close, but the relay query
+  // must not run for every napplet the user merely views — only once they ask for the history.
+  const [everOpened, setEverOpened] = useState(false);
+  useEffect(() => {
+    if (isOpen) setEverOpened(true);
+  }, [isOpen]);
+
+  // `isOpen || everOpened` (not `everOpened` alone) so the query starts on the same render the
+  // drawer opens, instead of flashing the empty state for one frame before the effect lands.
+  const { versions } = useNappletHistory(isOpen || everOpened ? event : undefined);
   const address = getNappletNaddr(event);
 
   const loading = versions === undefined;
