@@ -3,6 +3,7 @@ import {
   BehaviorSubject,
   combineLatest,
   distinctUntilChanged,
+  EMPTY,
   firstValueFrom,
   map,
   Observable,
@@ -11,6 +12,7 @@ import {
   switchMap,
 } from "rxjs";
 
+import accounts from "./accounts";
 import localSettings from "./preferences";
 
 /**
@@ -139,3 +141,41 @@ export async function unlockPendingCategories(): Promise<void> {
 
   if (firstError) throw firstError;
 }
+
+// --- Auto-unlock driver (D-01/D-06, mitigates T-01-01 signer-prompt fatigue) ---
+//
+// The only place in the codebase that may call category.unlock() without a click. Gated so it
+// does nothing while both auto-unlock preferences are at their defaults (D-01). Triggered only by
+// app start (the first emission below) or an explicit account switch — never by a mute-list
+// update — and attempts each category at most once per account per app session, satisfying D-06
+// (a mute list replaced from another device mid-session returns to locked and waits for the user).
+
+/** Already-attempted `${accountId}:${categoryId}` pairs for the current app session. */
+const attemptedAutoUnlocks = new Set<string>();
+
+accounts.active$
+  .pipe(
+    distinctUntilChanged((a, b) => a?.id === b?.id),
+    switchMap((account) => {
+      // Explicit account switch (or app start, for the first emission) — reset attempts
+      attemptedAutoUnlocks.clear();
+
+      if (!account) return EMPTY;
+      return pendingUnlockState$.pipe(map((rows) => ({ account, rows })));
+    }),
+  )
+  .subscribe(({ account, rows }) => {
+    for (const row of rows) {
+      if (row.count <= 0 || !row.canUnlock || row.category.unlockComponent !== undefined) continue;
+      if (!isAutoUnlockEnabled(row.category.id)) continue;
+
+      const key = `${account.id}:${row.category.id}`;
+      if (attemptedAutoUnlocks.has(key)) continue;
+
+      // Mark attempted before awaiting so a slow/failing unlock never triggers a retry loop
+      attemptedAutoUnlocks.add(key);
+      row.category
+        .unlock()
+        .catch((error) => console.error(`Auto-unlock failed for category "${row.category.id}":`, error));
+    }
+  });
