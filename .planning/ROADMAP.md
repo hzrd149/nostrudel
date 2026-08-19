@@ -4,10 +4,15 @@
 
 ### Phase 1: Hidden mutes support with unlock UX and decryption cache
 
-**Goal:** [Captured for future planning]
-**Requirements:** TBD
+**Goal:** A generic, application-wide pending-unlock mechanism — a side-nav indicator offering
+unlock-once or enable-auto-unlock, Privacy-settings preferences driven by a registry of sources,
+and mute lists as the only registered source — so hidden (encrypted) mute entries are readable,
+unlockable by a deliberate action, kept unlocked across reloads by the existing decryption cache,
+and correctly removable from whichever half they live in.
+**Requirements:** D-01, D-02, D-03, D-04, D-05, D-06, D-07, D-08, D-09, D-10, D-11, D-12, D-13, D-14, D-15
+(no REQUIREMENTS.md exists; the requirement set is the locked decisions in `01-CONTEXT.md`)
 **Depends on:** Nothing
-**Plans:** 0 plans
+**Plans:** 6 plans
 
 Support hidden (encrypted) mutes in the user's mute lists. applesauce provides APIs for
 reading, subscribing to, and unlocking hidden mute entries — the open question is UX:
@@ -17,7 +22,12 @@ the mute list event has not been updated).
 
 Plans:
 
-- [ ] TBD (run /gsd-plan-phase to break down)
+- [ ] 01-01-PLAN.md — Pending-unlock registry service + auto-unlock preferences (wave 1)
+- [ ] 01-02-PLAN.md — Unmute correctness: getMuteHalf, split write path, merged isMuted (wave 1)
+- [ ] 01-03-PLAN.md — Register the mute-list and decryption-cache pending-unlock categories (wave 2)
+- [ ] 01-04-PLAN.md — Side-nav pending-unlock affordance and unlock modal (wave 3)
+- [ ] 01-05-PLAN.md — Privacy settings auto-unlock preferences, registry-driven (wave 3)
+- [ ] 01-06-PLAN.md — Muted view Private section: locked placeholder and private pubkey list (wave 3)
 
 ### Phase 2: Adopt a lint config and CI quality gate
 
