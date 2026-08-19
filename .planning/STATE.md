@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 current_phase: 01
 status: executing
-stopped_at: Completed 01-01-PLAN.md
-last_updated: "2026-08-19T16:39:10.916Z"
-state_head: 1ab96654a8788d03cca11c66aabfe568e5b75248
+stopped_at: Completed 01-02-PLAN.md
+last_updated: "2026-08-19T16:46:22.088Z"
+state_head: 0d9e83f88b821447ff1298fc3dd8d7ffaef37e8b
 progress:
   total_phases: 2
   completed_phases: 0
   total_plans: 6
-  completed_plans: 1
+  completed_plans: 2
 milestone_name: milestone
 current_phase_name: Hidden mutes support with unlock UX and decryption cache
 ---
@@ -36,14 +36,16 @@ See: .planning/PROJECT.md
 | Plan | Duration | Tasks | Files |
 |------|----------|-------|-------|
 | Phase 01 P01 | 15 min | 3 tasks | 2 files |
+| Phase 01 P02 | 20 min | 3 tasks | 3 files |
 
 ## Decisions
 
 - [Phase 01]: Pending-unlock registry built as an RxJS singleton mirroring decryption-cache.ts; unlockPendingCategories rethrows signer-refusal errors immediately, logs and continues on others, then throws the first-seen failure for useAsyncAction to toast (D-08).
 - [Phase 01]: Auto-unlock driver gates on isAutoUnlockEnabled(category.id) plus an accountId:categoryId attempted-set reset only on distinct-account emissions (app start / explicit switch) — never on mute-list updates — satisfying D-01/D-06 and mitigating signer-prompt fatigue (T-01-01).
+- [Phase 01]: getMuteHalf resolves public first, then hidden only when isHiddenMutesUnlocked; unmute throws a descriptive Error on unknown half instead of publishing an unchanged list (D-13/D-14).
 
 ## Session
 
-**Last session:** 2026-08-19T16:39:10.905Z
-**Stopped at:** Completed 01-01-PLAN.md
+**Last session:** 2026-08-19T16:46:22.076Z
+**Stopped at:** Completed 01-02-PLAN.md
 **Resume file:** None
