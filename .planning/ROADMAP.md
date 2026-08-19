@@ -21,10 +21,17 @@ decryption cache so that on app reload the hidden mutes are auto-unlocked (as lo
 the mute list event has not been updated).
 
 Plans:
+**Wave 1**
 
 - [ ] 01-01-PLAN.md — Pending-unlock registry service + auto-unlock preferences (wave 1)
 - [ ] 01-02-PLAN.md — Unmute correctness: getMuteHalf, split write path, merged isMuted (wave 1)
+
+**Wave 2** *(blocked on Wave 1 completion)*
+
 - [ ] 01-03-PLAN.md — Register the mute-list and decryption-cache pending-unlock categories (wave 2)
+
+**Wave 3** *(blocked on Wave 2 completion)*
+
 - [ ] 01-04-PLAN.md — Side-nav pending-unlock affordance and unlock modal (wave 3)
 - [ ] 01-05-PLAN.md — Privacy settings auto-unlock preferences, registry-driven (wave 3)
 - [ ] 01-06-PLAN.md — Muted view Private section: locked placeholder and private pubkey list (wave 3)
@@ -46,12 +53,15 @@ Scope:
 
 - `aislop init` to commit a config, and decide per-rule what the project actually adopts
   (notably `no-autofocus`, `trivial-comment`, `exhaustive-deps` severity).
+
 - Exclude vendored/ported third-party code from scoring: `src/lib/qrcodegen.ts` (12
   findings), `src/lib/open-graph-scraper/*` (~15), `src/lib/bencode/*`. These inflate the
   score without being ours to fix.
+
 - Exclude or downgrade `sw/client/error-logger.ts` console rules.
 - Add a `lint` script and wire `aislop ci` (or `aislop scan --changes`) into CI so the score
   ratchets instead of regressing.
+
 - Optionally `aislop hook install` so agent edits are checked at write time.
 
 Doing this before the remaining backlog items means they are measured against a threshold

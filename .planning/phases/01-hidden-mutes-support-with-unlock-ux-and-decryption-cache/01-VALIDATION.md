@@ -1,9 +1,9 @@
 ---
 phase: 1
 slug: hidden-mutes-support-with-unlock-ux-and-decryption-cache
-status: draft
-nyquist_compliant: false
-wave_0_complete: false
+status: approved
+nyquist_compliant: true
+wave_0_complete: true
 created: 2026-08-19
 ---
 
@@ -39,11 +39,16 @@ created: 2026-08-19
 
 ## Per-Task Verification Map
 
-*Populated after `/gsd-plan-phase` produces PLAN.md files. Each task must map to either the `pnpm build` automated signal or a numbered row in Manual-Only Verifications below.*
+*Populated after planning. Verified by `gsd-plan-checker`: all nine M-rows trace to concrete manual blocks in the plans listed below.*
 
-| Task ID | Plan | Wave | Requirement | Threat Ref | Secure Behavior | Test Type | Automated Command | File Exists | Status |
-|---------|------|------|-------------|------------|-----------------|-----------|-------------------|-------------|--------|
-| *pending planning* | — | — | D-01…D-15 | — | — | — | `pnpm build` | n/a | ⬜ pending |
+| Plan | Wave | Requirements | Threat Refs | Test Type | Automated Command | Manual Rows | Status |
+|------|------|--------------|-------------|-----------|-------------------|-------------|--------|
+| 01-01 | 1 | D-01, D-02, D-05, D-08 | T-01-01…T-01-04 | build + manual | `pnpm build` | M-1 | ⬜ pending |
+| 01-02 | 1 | D-13, D-14, D-15 | T-01-05…T-01-08 | build + manual | `pnpm build` | M-8 (public half), M-9 | ⬜ pending |
+| 01-03 | 2 | D-01, D-03, D-06, D-07, D-09 | T-01-09…T-01-13 | build + manual | `pnpm build` | M-3, M-4, M-6 | ⬜ pending |
+| 01-04 | 3 | D-02, D-03, D-08, D-09 | T-01-14…T-01-17 | build + manual | `pnpm build` | M-2, M-5, M-6 | ⬜ pending |
+| 01-05 | 3 | D-04, D-05 | T-01-18…T-01-19 | build + manual | `pnpm build` | M-1 | ⬜ pending |
+| 01-06 | 3 | D-10, D-11, D-12 | T-01-20, T-01-21 | build + manual | `pnpm build` | M-7, M-8 (hidden half) | ⬜ pending |
 
 *Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky*
 
@@ -51,9 +56,9 @@ created: 2026-08-19
 
 ## Wave 0 Requirements
 
-- [ ] **No framework install.** No test runner is added this phase — deliberate, see Scope fence above.
-- [ ] **Manual checklist must land in PLAN.md.** The real Wave 0 gap: every Manual-Only Verification row below must be written into the relevant plan's `<verify>` / acceptance criteria, because this project's Nyquist gate rests entirely on precise manual procedures rather than automated tests.
-- [ ] No `tests/` directory or fixtures exist. If a smoke check for a pure function is wanted, the smallest addition is an ad hoc `pnpm exec tsx` scratch script — **not** a full runner, and only with explicit user approval.
+- [x] **No framework install.** No test runner is added this phase — deliberate, see Scope fence above.
+- [x] **Manual checklist landed in PLAN.md.** The real Wave 0 gap: every Manual-Only Verification row below must be written into the relevant plan's `<verify>` / acceptance criteria, because this project's Nyquist gate rests entirely on precise manual procedures rather than automated tests.
+- [x] No `tests/` directory or fixtures exist. If a smoke check for a pure function is wanted, the smallest addition is an ad hoc `pnpm exec tsx` scratch script — **not** a full runner, and only with explicit user approval.
 
 ---
 
@@ -75,11 +80,11 @@ created: 2026-08-19
 
 ## Validation Sign-Off
 
-- [ ] All tasks map to `pnpm build` or a numbered M-row above
-- [ ] Sampling continuity: no 3 consecutive tasks without a `pnpm build` checkpoint
-- [ ] Every M-row is written into a PLAN.md `<verify>` / acceptance criteria block (the real Wave 0 gap)
-- [ ] No watch-mode flags in any verify command
-- [ ] Feedback latency < 120s for automated signal
-- [ ] `nyquist_compliant: true` set in frontmatter
+- [x] All tasks map to `pnpm build` or a numbered M-row above
+- [x] Sampling continuity: no 3 consecutive tasks without a `pnpm build` checkpoint
+- [x] Every M-row is written into a PLAN.md `<verify>` / acceptance criteria block (the real Wave 0 gap)
+- [x] No watch-mode flags in any verify command
+- [x] Feedback latency < 120s for automated signal
+- [x] `nyquist_compliant: true` set in frontmatter
 
-**Approval:** pending
+**Approval:** approved 2026-08-19 — gsd-plan-checker VERIFICATION PASSED against plans 01-01…01-06
