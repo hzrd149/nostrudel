@@ -48,6 +48,7 @@ export default function PrivacySettings() {
   const { register, submit, formState } = useSettingsForm();
 
   const debugApi = use$(localSettings.enableDebugApi);
+  const autoUnlockAll = use$(localSettings.autoUnlockAll);
 
   return (
     <SimpleView
@@ -234,6 +235,24 @@ export default function PrivacySettings() {
             </Link>{" "}
             data for links
           </span>
+        </FormHelperText>
+      </FormControl>
+      <FormControl>
+        <Flex alignItems="center">
+          <FormLabel htmlFor="autoUnlockAll" mb="0">
+            Automatically unlock all encrypted content
+          </FormLabel>
+          <Switch
+            id="autoUnlockAll"
+            isChecked={autoUnlockAll}
+            onChange={(e) => localSettings.autoUnlockAll.next(e.currentTarget.checked)}
+          />
+        </Flex>
+        <FormHelperText>
+          <Text>
+            When enabled, the app will ask your signer to decrypt all locked content (mute lists, message
+            cache, etc.) as soon as it starts, instead of waiting for you to unlock it deliberately.
+          </Text>
         </FormHelperText>
       </FormControl>
       <FormControl>
