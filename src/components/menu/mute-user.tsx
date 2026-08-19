@@ -1,33 +1,27 @@
 import { MenuItem } from "@chakra-ui/react";
-import { UnmuteUser } from "applesauce-actions/actions";
-import { useActionRunner, useActiveAccount } from "applesauce-react/hooks";
+import { useActiveAccount } from "applesauce-react/hooks";
 import { NostrEvent } from "nostr-tools";
 
-import useAsyncAction from "../../hooks/use-async-action";
 import useUserMuteActions from "../../hooks/use-user-mute-actions";
-import { usePublishEvent } from "../../providers/global/publish-provider";
 import { useMuteModalContext } from "../../providers/route/mute-modal-provider";
 import { MuteIcon, UnmuteIcon } from "../icons";
 
 export default function MuteUserMenuItem({ event }: { event: NostrEvent }) {
   const account = useActiveAccount();
-  const { isMuted } = useUserMuteActions(event.pubkey);
+  const { isMuted, unmute, canUnmute, unmuting } = useUserMuteActions(event.pubkey);
   const { openModal } = useMuteModalContext();
-  const actions = useActionRunner();
-  const publish = usePublishEvent();
 
   if (account?.pubkey === event.pubkey) return null;
 
-  const unmute = useAsyncAction(async () => {
-    await actions.exec(UnmuteUser, event.pubkey).forEach((e) => publish("Unmute", e));
-  });
+  const disabled = isMuted ? unmuting || !canUnmute : false;
 
   return (
     <MenuItem
-      onClick={isMuted ? unmute.run : () => openModal(event.pubkey)}
-      isDisabled={unmute.loading}
+      onClick={isMuted ? unmute : () => openModal(event.pubkey)}
+      isDisabled={disabled}
       icon={isMuted ? <UnmuteIcon /> : <MuteIcon />}
       color="red.500"
+      title={isMuted && !canUnmute ? "Unlock your private mute list to unmute this user" : undefined}
     >
       {isMuted ? "Unmute User" : "Mute User"}
     </MenuItem>
