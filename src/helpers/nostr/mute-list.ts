@@ -1,4 +1,5 @@
 import { isPTag } from "applesauce-core/helpers";
+import { getHiddenMutedThings, getPublicMutedThings, isHiddenMutesUnlocked } from "applesauce-common/helpers";
 import dayjs from "dayjs";
 import { EventTemplate, kinds, NostrEvent } from "nostr-tools";
 import { getPubkeysFromList, isPubkeyInList, listAddPerson, listRemovePerson } from "./lists";
@@ -69,6 +70,18 @@ export function muteListRemovePubkey(muteList: NostrEvent | EventTemplate, pubke
   };
 
   return draft;
+}
+
+/** Returns which half of the mute list (public or hidden) a pubkey is muted in, or "unknown" if it isn't muted or the hidden half is locked */
+export function getMuteHalf(muteListEvent: NostrEvent | undefined, pubkey: string): "public" | "hidden" | "unknown" {
+  if (!muteListEvent) return "unknown";
+
+  if (getPublicMutedThings(muteListEvent).pubkeys.has(pubkey)) return "public";
+
+  if (!isHiddenMutesUnlocked(muteListEvent)) return "unknown";
+  if (getHiddenMutedThings(muteListEvent)?.pubkeys.has(pubkey)) return "hidden";
+
+  return "unknown";
 }
 
 /** @todo this should be updated to use applesauce-factory when it supports updating lists */
