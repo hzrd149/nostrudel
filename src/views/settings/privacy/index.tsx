@@ -20,6 +20,7 @@ import localSettings from "../../../services/preferences";
 import DefaultAuthModeSelect from "../../../components/settings/default-auth-mode-select";
 import SimpleView from "../../../components/layout/presets/simple-view";
 import { DEFAULT_SHARE_SERVICE } from "../../../const";
+import { pendingUnlockCategories$, setAutoUnlockCategory } from "../../../services/pending-unlock";
 
 async function validateInvidiousUrl(url?: string) {
   if (!url) return true;
@@ -49,6 +50,8 @@ export default function PrivacySettings() {
 
   const debugApi = use$(localSettings.enableDebugApi);
   const autoUnlockAll = use$(localSettings.autoUnlockAll);
+  const pendingUnlockCategories = use$(pendingUnlockCategories$) ?? [];
+  const autoUnlockCategories = use$(localSettings.autoUnlockCategories) ?? {};
 
   return (
     <SimpleView
@@ -255,6 +258,22 @@ export default function PrivacySettings() {
           </Text>
         </FormHelperText>
       </FormControl>
+      {!autoUnlockAll &&
+        pendingUnlockCategories.map((category) => (
+          <FormControl key={category.id} ps="6">
+            <Flex alignItems="center">
+              <FormLabel htmlFor={`autoUnlock-${category.id}`} mb="0">
+                {category.label}
+              </FormLabel>
+              <Switch
+                id={`autoUnlock-${category.id}`}
+                isChecked={autoUnlockCategories[category.id] === true}
+                onChange={(e) => setAutoUnlockCategory(category.id, e.currentTarget.checked)}
+              />
+            </Flex>
+            {category.description && <FormHelperText>{category.description}</FormHelperText>}
+          </FormControl>
+        ))}
       <FormControl>
         <Flex alignItems="center">
           <FormLabel htmlFor="debugApi" mb="0">
