@@ -1,10 +1,10 @@
 ---
 schema_version: 1
-open_count: 8
+open_count: 9
 waived_count: 0
 fixed_count: 0
-total_count: 8
-last_updated: 2026-08-19T17:04:03.936Z
+total_count: 9
+last_updated: 2026-08-19T17:12:08.254Z
 ---
 
 # Broken Windows Ledger
@@ -23,6 +23,7 @@ last_updated: 2026-08-19T17:04:03.936Z
 | 6 | 01 | unrun-verify | src/components/layout/components/pending-unlock-button.tsx |  | M-2 (D-02/D-03/D-09): side-nav pending count 2, collapse-to-icon-badge, unlock-one-drops-to-1, cache-unlock-hides-affordance, plus mobile drawer parity - needs a live signer/relay session, not run in this environment | open |  | 2026-08-19T17:04:03.716Z |  |
 | 7 | 01 | unrun-verify | src/components/pending-unlock/pending-unlock-modal.tsx |  | M-5 (D-08): rejecting the signer prompt in the nav modal toasts once, leaves count unchanged, and Unlock is immediately retryable with no reload - needs a live signer/relay session, not run in this environment | open |  | 2026-08-19T17:04:03.829Z |  |
 | 8 | 01 | unrun-verify | src/components/pending-unlock/pending-unlock-modal.tsx |  | M-6 (D-09): decryption-cache password row reachable and functional from the side-nav affordance without visiting /messages - needs a live browser session with a real signer, not run in this environment | open |  | 2026-08-19T17:04:03.936Z |  |
+| 9 | 01 | unrun-verify | src/views/settings/privacy/index.tsx |  | D-04/D-05 manual UAT procedure (Task 2) not executed — requires a live signer session with a hidden mute list; deferred to end-of-phase UAT alongside plans 01-01 and 01-03's deferred manual checks. | open |  | 2026-08-19T17:12:08.254Z |  |
 
 ````json
 [
@@ -120,6 +121,18 @@ last_updated: 2026-08-19T17:04:03.936Z
     "status": "open",
     "reason": "",
     "recorded_at": "2026-08-19T17:04:03.936Z",
+    "resolved_at": null
+  },
+  {
+    "id": 9,
+    "kind": "unrun-verify",
+    "phase": "01",
+    "file": "src/views/settings/privacy/index.tsx",
+    "line": null,
+    "description": "D-04/D-05 manual UAT procedure (Task 2) not executed — requires a live signer session with a hidden mute list; deferred to end-of-phase UAT alongside plans 01-01 and 01-03's deferred manual checks.",
+    "status": "open",
+    "reason": "",
+    "recorded_at": "2026-08-19T17:12:08.254Z",
     "resolved_at": null
   }
 ]

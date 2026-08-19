@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 current_phase: 01
 status: executing
-stopped_at: Completed 01-04-PLAN.md
-last_updated: "2026-08-19T17:06:15.004Z"
-state_head: 1215e3e34a0a3a2f91162663baabaa4f8e9fae71
+stopped_at: Completed 01-05-PLAN.md
+last_updated: "2026-08-19T17:13:14.536Z"
+state_head: b098f881414ae199e2f87b9f9fc244062834e674
 progress:
   total_phases: 2
   completed_phases: 0
   total_plans: 6
-  completed_plans: 4
+  completed_plans: 5
 milestone_name: milestone
 current_phase_name: Hidden mutes support with unlock UX and decryption cache
 ---
@@ -39,6 +39,7 @@ See: .planning/PROJECT.md
 | Phase 01 P02 | 20 min | 3 tasks | 3 files |
 | Phase 01 P03 | 18min | 3 tasks | 4 files |
 | Phase 01 P04 | ~15min | 3 tasks | 5 files |
+| Phase 01 P05 | ~12min | 2 tasks | 1 files |
 
 ## Decisions
 
@@ -49,9 +50,10 @@ See: .planning/PROJECT.md
 - [Phase 01]: The decryption-cache category's unlock() is a narrow guard (resolves if already unlocked, otherwise throws); unlockComponent excludes it from the batch/auto-unlock drivers, so the password form is the only real unlock entry point (D-09).
 - [Phase 01]: The unlockComponent row's onUnlocked callback closes the whole pending-unlock modal, not just that row, per the plan's explicit instruction for the single-category case today (D-09).
 - [Phase 01]: nav-drawer.tsx wraps PendingUnlockButton in a stopPropagation Box placed above the ButtonGroup, because both DrawerBody's handleClickItem and the ButtonGroup's own onClick={onClose} close the drawer on any button click, which would unmount the button's modal mid-interaction.
+- [Phase 01]: Per-category auto-unlock rows render conditionally on !autoUnlockAll immediately below the unlock-all switch; the .map() over pendingUnlockCategories$ naturally produces zero elements when the registry is empty, satisfying D-05's no-placeholder-rows requirement without a separate empty-check branch. — Phase 01 Plan 05
 
 ## Session
 
-**Last session:** 2026-08-19T17:06:14.981Z
-**Stopped at:** Completed 01-04-PLAN.md
+**Last session:** 2026-08-19T17:13:14.512Z
+**Stopped at:** Completed 01-05-PLAN.md
 **Resume file:** None
