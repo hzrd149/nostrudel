@@ -5,9 +5,7 @@ import {
   AccordionItem,
   AccordionPanel,
   Badge,
-  Box,
   Button,
-  Code,
   Divider,
   Drawer,
   DrawerBody,
@@ -51,19 +49,6 @@ type NappletInfoDrawerProps = Omit<DrawerProps, "children"> & {
   active: NostrEvent;
   onSelect: (release: NostrEvent) => void;
 };
-
-function DetailRow({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <Flex gap="2" fontSize="sm" minW="0">
-      <Text color="GrayText" flexShrink={0}>
-        {label}
-      </Text>
-      <Box minW="0" ms="auto" textAlign="right">
-        {children}
-      </Box>
-    </Flex>
-  );
-}
 
 /** One selectable release — a historical version or a snapshot. */
 function ReleaseRow({
@@ -226,19 +211,6 @@ export default function NappletInfoDrawer({
                 {description}
               </Text>
             )}
-
-            <Divider />
-
-            <Flex direction="column" gap="1">
-              <DetailRow label="Kind">
-                <Text>{active.kind}</Text>
-              </DetailRow>
-              <DetailRow label="Manifest">
-                <Code userSelect="all" whiteSpace="normal" wordBreak="break-all" fontSize="xs">
-                  {address ?? active.id}
-                </Code>
-              </DetailRow>
-            </Flex>
 
             {capabilities.length > 0 && (
               <Flex direction="column" gap="1">
