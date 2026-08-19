@@ -33,12 +33,9 @@ import UserAvatar from "../user/user-avatar";
 import UserName from "../user/user-name";
 import {
   NAPPLET_KIND_SNAPSHOT,
-  getNappletArchetypes,
   getNappletDescription,
   getNappletNaddr,
-  getNappletRequiredCapabilities,
   getNappletTitle,
-  getUnsupportedNappletRequirements,
 } from "../../helpers/nostr/napplets";
 import useNappletVersions from "../../hooks/use-napplet-versions";
 
@@ -171,9 +168,6 @@ export default function NappletInfoDrawer({
   // The drawer describes what is actually running, so metadata comes from the active release.
   const title = getNappletTitle(active);
   const description = getNappletDescription(active);
-  const archetypes = getNappletArchetypes(active);
-  const capabilities = getNappletRequiredCapabilities(active);
-  const unsupported = getUnsupportedNappletRequirements(active);
   const address = getNappletNaddr(event);
 
   // A single version is just "the napplet" — there is nothing to rewind between.
@@ -197,7 +191,9 @@ export default function NappletInfoDrawer({
               <UserAvatar pubkey={active.pubkey} size="sm" />
               <Flex direction="column" minW="0">
                 <UserName pubkey={active.pubkey} fontWeight="bold" />
-                <Timestamp timestamp={active.created_at} fontSize="sm" color="GrayText" />
+                <Text fontSize="sm" color="GrayText">
+                  Updated <Timestamp timestamp={active.created_at} display="inline" />
+                </Text>
               </Flex>
               {active.kind === NAPPLET_KIND_SNAPSHOT && (
                 <Badge colorScheme="purple" ms="auto" flexShrink={0}>
@@ -210,41 +206,6 @@ export default function NappletInfoDrawer({
               <Text whiteSpace="pre-line" fontSize="sm">
                 {description}
               </Text>
-            )}
-
-            {capabilities.length > 0 && (
-              <Flex direction="column" gap="1">
-                <Heading size="xs">Capabilities</Heading>
-                <Flex gap="1" wrap="wrap">
-                  {capabilities.map((capability) => (
-                    <Badge key={capability} colorScheme="primary">
-                      {capability}
-                    </Badge>
-                  ))}
-                </Flex>
-              </Flex>
-            )}
-
-            {unsupported.length > 0 && (
-              <Text fontSize="sm" color="orange.500">
-                Unsupported requirements: {unsupported.join(", ")}
-              </Text>
-            )}
-
-            {archetypes.length > 0 && (
-              <Flex direction="column" gap="1">
-                <Heading size="xs">Supported intents</Heading>
-                {archetypes.map((archetype) => (
-                  <Flex key={archetype.name} gap="1" wrap="wrap" alignItems="center">
-                    <Text fontSize="sm" fontWeight="bold">
-                      {archetype.name}
-                    </Text>
-                    {archetype.actions.map((action) => (
-                      <Badge key={action}>{action}</Badge>
-                    ))}
-                  </Flex>
-                ))}
-              </Flex>
             )}
 
             {address && (

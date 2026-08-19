@@ -11,13 +11,14 @@ import {
   Tooltip,
   useDisclosure,
 } from "@chakra-ui/react";
-import { CloseIcon, InfoIcon, RepeatIcon } from "@chakra-ui/icons";
+import { CloseIcon, RepeatIcon } from "@chakra-ui/icons";
 import { NostrEvent } from "nostr-tools";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { openNappletArtifactCache, resolveNapplet, type ResolvedNapplet } from "@kehto/nip";
 import { injectNappletNamespacePrelude } from "@kehto/shell";
 import { resolveBlob } from "blossom-client-sdk/actions/resolve";
 
+import Menu01 from "../icons/menu-01";
 import SimpleView from "../layout/presets/simple-view";
 import Timestamp from "../timestamp";
 import NappletInfoDrawer from "./napplet-info-drawer";
@@ -231,9 +232,6 @@ export default function NappletFrame({ event, intent, onClose, onResolved, onErr
       gap={0}
       actions={
         <ButtonGroup size="sm" variant="ghost" ms="auto">
-          <Tooltip label="Napplet info" openDelay={500}>
-            <IconButton icon={<InfoIcon />} aria-label="Napplet info" onClick={info.onOpen} />
-          </Tooltip>
           {address && !installed && (
             <Button
               colorScheme="primary"
@@ -247,6 +245,9 @@ export default function NappletFrame({ event, intent, onClose, onResolved, onErr
           )}
           <Tooltip label="Reload" openDelay={500}>
             <IconButton icon={<RepeatIcon />} aria-label="Reload napplet" onClick={reload} />
+          </Tooltip>
+          <Tooltip label="Napplet info" openDelay={500}>
+            <IconButton icon={<Menu01 />} aria-label="Napplet info" onClick={info.onOpen} />
           </Tooltip>
           {onClose && (
             <Tooltip label="Close" openDelay={500}>
