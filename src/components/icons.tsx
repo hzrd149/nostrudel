@@ -22,6 +22,7 @@ import LogOut01 from "./icons/log-out-01";
 import Tool02 from "./icons/tool-02";
 import ImagePlus from "./icons/image-plus";
 import LockUnlocked01 from "./icons/lock-unlocked-01";
+import Lock01 from "./icons/lock-01";
 import PencilLine from "./icons/pencil-line";
 import Share07 from "./icons/share-07";
 import Copy01 from "./icons/copy-01";
@@ -144,6 +145,7 @@ export const QrCodeIcon = QrCode02;
 export const DirectMessagesIcon = Mail01;
 
 export const UnlockIcon = LockUnlocked01;
+export const LockIcon = Lock01;
 export const UploadImageIcon = ImagePlus;
 
 export const PlusCircleIcon = PlusCircle;
