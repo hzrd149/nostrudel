@@ -1,6 +1,7 @@
 import { MouseEventHandler } from "react";
 import {
   Avatar,
+  Box,
   ButtonGroup,
   Drawer,
   DrawerBody,
@@ -18,6 +19,7 @@ import NavItems from "../components";
 import { CollapsedContext } from "../context";
 import RelayConnectionButton from "../components/connections-button";
 import PublishLogButton from "../components/publish-log-button";
+import PendingUnlockButton from "../components/pending-unlock-button";
 
 export default function NavDrawer({ onClose, ...props }: Omit<DrawerProps, "children">) {
   const account = useActiveAccount();
@@ -55,6 +57,9 @@ export default function NavDrawer({ onClose, ...props }: Omit<DrawerProps, "chil
             )}
             <AccountSwitcher />
             <NavItems />
+            <Box onClick={(e) => e.stopPropagation()}>
+              <PendingUnlockButton w="full" />
+            </Box>
             <ButtonGroup variant="ghost" onClick={onClose} aria-label="Relay connections">
               <RelayConnectionButton w="full" />
               <PublishLogButton flexShrink={0} />

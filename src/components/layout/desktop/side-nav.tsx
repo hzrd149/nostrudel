@@ -8,6 +8,7 @@ import AccountSwitcher from "../components/account-switcher";
 import { CollapsedContext } from "../context";
 import RelayConnectionButton from "../components/connections-button";
 import PublishLogButton from "../components/publish-log-button";
+import PendingUnlockButton from "../components/pending-unlock-button";
 
 export default function DesktopSideNav({ ...props }: Omit<FlexProps, "children">) {
   const [collapsed, setCollapsed] = useState(false);
@@ -51,6 +52,7 @@ export default function DesktopSideNav({ ...props }: Omit<FlexProps, "children">
             onClick={() => setCollapsed(!collapsed)}
             icon={collapsed ? <ChevronRightIcon boxSize={6} /> : <ChevronLeftIcon boxSize={6} />}
           />
+          <PendingUnlockButton />
           {!collapsed && (
             <>
               <RelayConnectionButton w="full" aria-label="Manage relay connections" />
