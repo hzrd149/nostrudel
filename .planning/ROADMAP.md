@@ -12,7 +12,7 @@ and correctly removable from whichever half they live in.
 **Requirements:** D-01, D-02, D-03, D-04, D-05, D-06, D-07, D-08, D-09, D-10, D-11, D-12, D-13, D-14, D-15
 (no REQUIREMENTS.md exists; the requirement set is the locked decisions in `01-CONTEXT.md`)
 **Depends on:** Nothing
-**Plans:** 3/6 plans executed
+**Plans:** 4/6 plans executed
 
 Support hidden (encrypted) mutes in the user's mute lists. applesauce provides APIs for
 reading, subscribing to, and unlocking hidden mute entries — the open question is UX:
@@ -32,7 +32,7 @@ Plans:
 
 **Wave 3** *(blocked on Wave 2 completion)*
 
-- [ ] 01-04-PLAN.md — Side-nav pending-unlock affordance and unlock modal (wave 3)
+- [x] 01-04-PLAN.md — Side-nav pending-unlock affordance and unlock modal (wave 3)
 - [ ] 01-05-PLAN.md — Privacy settings auto-unlock preferences, registry-driven (wave 3)
 - [ ] 01-06-PLAN.md — Muted view Private section: locked placeholder and private pubkey list (wave 3)
 

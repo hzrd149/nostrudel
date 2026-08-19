@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 current_phase: 01
 status: executing
-stopped_at: Completed 01-03-PLAN.md
-last_updated: "2026-08-19T16:56:57.576Z"
-state_head: 1a4f0549342814caef5a42c601f0318179131483
+stopped_at: Completed 01-04-PLAN.md
+last_updated: "2026-08-19T17:06:15.004Z"
+state_head: 1215e3e34a0a3a2f91162663baabaa4f8e9fae71
 progress:
   total_phases: 2
   completed_phases: 0
   total_plans: 6
-  completed_plans: 3
+  completed_plans: 4
 milestone_name: milestone
 current_phase_name: Hidden mutes support with unlock UX and decryption cache
 ---
@@ -38,6 +38,7 @@ See: .planning/PROJECT.md
 | Phase 01 P01 | 15 min | 3 tasks | 2 files |
 | Phase 01 P02 | 20 min | 3 tasks | 3 files |
 | Phase 01 P03 | 18min | 3 tasks | 4 files |
+| Phase 01 P04 | ~15min | 3 tasks | 5 files |
 
 ## Decisions
 
@@ -46,9 +47,11 @@ See: .planning/PROJECT.md
 - [Phase 01]: getMuteHalf resolves public first, then hidden only when isHiddenMutesUnlocked; unmute throws a descriptive Error on unknown half instead of publishing an unchanged list (D-13/D-14).
 - [Phase 01]: canUnlock$ for the mutes category reports false only for a ReadonlyAccount, never hides the pending count — a signer-less account still sees it has locked content (D-01 discretion resolution).
 - [Phase 01]: The decryption-cache category's unlock() is a narrow guard (resolves if already unlocked, otherwise throws); unlockComponent excludes it from the batch/auto-unlock drivers, so the password form is the only real unlock entry point (D-09).
+- [Phase 01]: The unlockComponent row's onUnlocked callback closes the whole pending-unlock modal, not just that row, per the plan's explicit instruction for the single-category case today (D-09).
+- [Phase 01]: nav-drawer.tsx wraps PendingUnlockButton in a stopPropagation Box placed above the ButtonGroup, because both DrawerBody's handleClickItem and the ButtonGroup's own onClick={onClose} close the drawer on any button click, which would unmount the button's modal mid-interaction.
 
 ## Session
 
-**Last session:** 2026-08-19T16:56:57.314Z
-**Stopped at:** Completed 01-03-PLAN.md
+**Last session:** 2026-08-19T17:06:14.981Z
+**Stopped at:** Completed 01-04-PLAN.md
 **Resume file:** None

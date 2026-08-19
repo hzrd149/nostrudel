@@ -1,10 +1,10 @@
 ---
 schema_version: 1
-open_count: 5
+open_count: 8
 waived_count: 0
 fixed_count: 0
-total_count: 5
-last_updated: 2026-08-19T16:55:29.468Z
+total_count: 8
+last_updated: 2026-08-19T17:04:03.936Z
 ---
 
 # Broken Windows Ledger
@@ -20,6 +20,9 @@ last_updated: 2026-08-19T16:55:29.468Z
 | 3 | 01 | unrun-verify | src/services/pending-unlock-mutes.ts |  | M-4 (D-07): timelines silently under-filter while hidden mutes are locked, no banner appears anywhere - needs a live signer/relay session, not run in this environment | open |  | 2026-08-19T16:55:29.272Z |  |
 | 4 | 01 | unrun-verify | src/index.tsx |  | M-3 (D-06): a cross-device mute-list replacement returns the mutes pending count to 1 with no automatic re-unlock - needs a live signer/relay session, not run in this environment | open |  | 2026-08-19T16:55:29.373Z |  |
 | 5 | 01 | unrun-verify | src/services/pending-unlock-cache.ts |  | M-6 mechanism half (D-09): pending decryption-cache item visible via debug console at default encryptDecryptionCache=true, count drops to zero after correct password - needs a live browser session with enableDebugApi on, not run in this environment | open |  | 2026-08-19T16:55:29.468Z |  |
+| 6 | 01 | unrun-verify | src/components/layout/components/pending-unlock-button.tsx |  | M-2 (D-02/D-03/D-09): side-nav pending count 2, collapse-to-icon-badge, unlock-one-drops-to-1, cache-unlock-hides-affordance, plus mobile drawer parity - needs a live signer/relay session, not run in this environment | open |  | 2026-08-19T17:04:03.716Z |  |
+| 7 | 01 | unrun-verify | src/components/pending-unlock/pending-unlock-modal.tsx |  | M-5 (D-08): rejecting the signer prompt in the nav modal toasts once, leaves count unchanged, and Unlock is immediately retryable with no reload - needs a live signer/relay session, not run in this environment | open |  | 2026-08-19T17:04:03.829Z |  |
+| 8 | 01 | unrun-verify | src/components/pending-unlock/pending-unlock-modal.tsx |  | M-6 (D-09): decryption-cache password row reachable and functional from the side-nav affordance without visiting /messages - needs a live browser session with a real signer, not run in this environment | open |  | 2026-08-19T17:04:03.936Z |  |
 
 ````json
 [
@@ -81,6 +84,42 @@ last_updated: 2026-08-19T16:55:29.468Z
     "status": "open",
     "reason": "",
     "recorded_at": "2026-08-19T16:55:29.468Z",
+    "resolved_at": null
+  },
+  {
+    "id": 6,
+    "kind": "unrun-verify",
+    "phase": "01",
+    "file": "src/components/layout/components/pending-unlock-button.tsx",
+    "line": null,
+    "description": "M-2 (D-02/D-03/D-09): side-nav pending count 2, collapse-to-icon-badge, unlock-one-drops-to-1, cache-unlock-hides-affordance, plus mobile drawer parity - needs a live signer/relay session, not run in this environment",
+    "status": "open",
+    "reason": "",
+    "recorded_at": "2026-08-19T17:04:03.716Z",
+    "resolved_at": null
+  },
+  {
+    "id": 7,
+    "kind": "unrun-verify",
+    "phase": "01",
+    "file": "src/components/pending-unlock/pending-unlock-modal.tsx",
+    "line": null,
+    "description": "M-5 (D-08): rejecting the signer prompt in the nav modal toasts once, leaves count unchanged, and Unlock is immediately retryable with no reload - needs a live signer/relay session, not run in this environment",
+    "status": "open",
+    "reason": "",
+    "recorded_at": "2026-08-19T17:04:03.829Z",
+    "resolved_at": null
+  },
+  {
+    "id": 8,
+    "kind": "unrun-verify",
+    "phase": "01",
+    "file": "src/components/pending-unlock/pending-unlock-modal.tsx",
+    "line": null,
+    "description": "M-6 (D-09): decryption-cache password row reachable and functional from the side-nav affordance without visiting /messages - needs a live browser session with a real signer, not run in this environment",
+    "status": "open",
+    "reason": "",
+    "recorded_at": "2026-08-19T17:04:03.936Z",
     "resolved_at": null
   }
 ]
