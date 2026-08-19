@@ -1,50 +1,16 @@
-import { Box, Card, CardBody, CardProps, Flex, IconButton } from "@chakra-ui/react";
-import { UnmuteUser } from "applesauce-actions/actions";
-import { useActionRunner, useActiveAccount } from "applesauce-react/hooks";
+import { Box, Flex } from "@chakra-ui/react";
+import { useActiveAccount, useEventModel } from "applesauce-react/hooks";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { FixedSizeList as List, ListChildComponentProps } from "react-window";
 
 import { ErrorBoundary } from "../../../components/error-boundary";
-import { TrashIcon } from "../../../components/icons";
 import SimpleView from "../../../components/layout/presets/simple-view";
-import UserAvatar from "../../../components/user/user-avatar";
-import UserDnsIdentity from "../../../components/user/user-dns-identity";
-import UserLink from "../../../components/user/user-link";
-import useAsyncAction from "../../../hooks/use-async-action";
 import { useVirtualListScrollRestore } from "../../../hooks/use-scroll-restore";
-import useUserMutes from "../../../hooks/use-user-mutes";
 import useUserMuteList from "../../../hooks/use-user-mute-list";
-import { usePublishEvent } from "../../../providers/global/publish-provider";
+import { PublicMutesQuery } from "../../../models/mutes";
 import ListMenu from "../components/list-menu";
-
-function UserCard({ pubkey, ...props }: { pubkey: string } & Omit<CardProps, "children">) {
-  const hub = useActionRunner();
-  const publish = usePublishEvent();
-
-  const remove = useAsyncAction(async () => {
-    await hub.exec(UnmuteUser, pubkey).forEach((e) => publish("Unmute user", e));
-  }, [hub, pubkey]);
-
-  return (
-    <Card {...props}>
-      <CardBody p="2" display="flex" alignItems="center" overflow="hidden" gap="2">
-        <UserAvatar pubkey={pubkey} />
-        <Flex direction="column" flex={1} overflow="hidden">
-          <UserLink pubkey={pubkey} fontWeight="bold" />
-          <UserDnsIdentity pubkey={pubkey} />
-        </Flex>
-        <IconButton
-          icon={<TrashIcon boxSize={5} />}
-          onClick={remove.run}
-          isLoading={remove.loading}
-          aria-label="Remove from muted list"
-          variant="ghost"
-          colorScheme="red"
-        />
-      </CardBody>
-    </Card>
-  );
-}
+import MutedUserCard from "./components/muted-user-card";
+import PrivateMutesSection from "./components/private-mutes-section";
 
 function MutedRow({ index, style, data }: ListChildComponentProps<Array<string>>) {
   const pubkey = data[index];
@@ -52,7 +18,7 @@ function MutedRow({ index, style, data }: ListChildComponentProps<Array<string>>
   return (
     <Box style={style} pb="2" px="2">
       <ErrorBoundary>
-        <UserCard pubkey={pubkey} mx="auto" maxW="6xl" w="full" />
+        <MutedUserCard pubkey={pubkey} hidden={false} mx="auto" maxW="6xl" w="full" />
       </ErrorBoundary>
     </Box>
   );
@@ -61,7 +27,11 @@ function MutedRow({ index, style, data }: ListChildComponentProps<Array<string>>
 function MutedPage() {
   const account = useActiveAccount()!;
   const scroll = useVirtualListScrollRestore("muted");
-  const muted = useUserMutes(account.pubkey);
+  // Public-only source (not the merged MutesQuery): the merged model returns public and hidden
+  // pubkeys together once unlocked, which would put private entries in this list where Remove
+  // would call UnmuteUser without the hidden flag and silently publish an unchanged list (D-13).
+  // Sourcing from PublicMutesQuery also makes every row's half known by construction.
+  const muted = useEventModel(PublicMutesQuery, [account.pubkey]);
   const muteListEvent = useUserMuteList(account.pubkey);
 
   return (
@@ -71,7 +41,7 @@ function MutedPage() {
       flush
       actions={muteListEvent && <ListMenu ms="auto" list={muteListEvent} aria-label="List options" variant="ghost" />}
     >
-      <Flex direction="column" flex={1}>
+      <Flex direction="column" flex={1} minH={0}>
         <AutoSizer>
           {({ height, width }) => (
             <List
@@ -87,6 +57,8 @@ function MutedPage() {
           )}
         </AutoSizer>
       </Flex>
+
+      <PrivateMutesSection pubkey={account.pubkey} />
     </SimpleView>
   );
 }
