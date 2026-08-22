@@ -1,10 +1,11 @@
 import { AvatarGroup, Flex, LinkBox, Text } from "@chakra-ui/react";
-import { neventEncode, naddrEncode, getTagValue, isAddressPointer } from "applesauce-core/helpers";
+import { neventEncode, naddrEncode, isAddressPointer } from "applesauce-core/helpers";
 import { memo, useMemo } from "react";
 
 import HoverLinkOverlay from "../../../../components/hover-link-overlay";
 import RouterLink from "../../../../components/router-link";
 import Timestamp from "../../../../components/timestamp";
+import EventPreviewText from "../../components/event-preview-text";
 import UserAvatarLink from "../../../../components/user/user-avatar-link";
 import UserName from "../../../../components/user/user-name";
 import useSingleEvent from "../../../../hooks/use-single-event";
@@ -63,9 +64,7 @@ function ThreadGroup({ group }: { group: ThreadGroupData }) {
       {rootEvent ? (
         <HoverLinkOverlay as={RouterLink} to={link} display="flex" alignItems="center" gap="2">
           <UserName pubkey={rootEvent.pubkey} />
-          <Text fontSize="sm" color="gray.500" isTruncated flex={1}>
-            {getTagValue(rootEvent, "title") || rootEvent.content}
-          </Text>
+          <EventPreviewText event={rootEvent} fontSize="sm" color="gray.500" flex={1} />
           <Timestamp timestamp={group.latest} />
         </HoverLinkOverlay>
       ) : (

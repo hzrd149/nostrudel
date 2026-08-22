@@ -9,6 +9,7 @@ import { CompactNoteContent } from "../../../../components/compact-note-content"
 import HoverLinkOverlay from "../../../../components/hover-link-overlay";
 import RouterLink from "../../../../components/router-link";
 import Timestamp from "../../../../components/timestamp";
+import EventPreviewText from "../../components/event-preview-text";
 import UserAvatar from "../../../../components/user/user-avatar";
 import UserName from "../../../../components/user/user-name";
 import useEvent from "../../../../hooks/use-event";
@@ -25,7 +26,7 @@ function ParentPreview({ event, ...props }: { event: NostrEvent } & Omit<FlexPro
 
   return (
     <Flex gap="2" fontSize="sm" color="GrayText" fontStyle="italic" overflow="hidden" {...props}>
-      <Text isTruncated>{parent.content}</Text>
+      <EventPreviewText event={parent} />
     </Flex>
   );
 }

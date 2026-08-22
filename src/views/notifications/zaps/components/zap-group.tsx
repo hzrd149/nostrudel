@@ -1,12 +1,13 @@
 import { Box, Flex, LinkBox, Text } from "@chakra-ui/react";
 import { ZapEvent } from "applesauce-common/helpers";
-import { getTagValue, naddrEncode, neventEncode } from "applesauce-core/helpers";
+import { naddrEncode, neventEncode } from "applesauce-core/helpers";
 import { getZapAmount, getZapPayment, getZapSender } from "applesauce-common/helpers";
 import { memo, useMemo } from "react";
 
 import HoverLinkOverlay from "../../../../components/hover-link-overlay";
 import RouterLink from "../../../../components/router-link";
 import Timestamp from "../../../../components/timestamp";
+import EventPreviewText from "../../components/event-preview-text";
 import UserAvatar from "../../../../components/user/user-avatar";
 import UserName from "../../../../components/user/user-name";
 import ValueDisplay from "../../../../components/value-display";
@@ -50,9 +51,7 @@ function ZapGroup({ group }: { group: TZapGroup }) {
       {event ? (
         <Flex overflow="hidden" alignItems="center" gap="2">
           <UserName pubkey={event.pubkey} fontWeight="bold" />
-          <Text fontSize="sm" color="gray.500" isTruncated flex={1}>
-            {getTagValue(event, "title") || event.content}
-          </Text>
+          <EventPreviewText event={event} fontSize="sm" color="gray.500" flex={1} />
           <Timestamp timestamp={group.latest} />
         </Flex>
       ) : (

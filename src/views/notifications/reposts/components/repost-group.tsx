@@ -1,5 +1,5 @@
 import { AvatarGroup, Flex, LinkBox, Text } from "@chakra-ui/react";
-import { getTagValue, naddrEncode, neventEncode } from "applesauce-core/helpers";
+import { naddrEncode, neventEncode } from "applesauce-core/helpers";
 import { getSharedEventPointer } from "applesauce-common/helpers";
 import { getEmbededSharedEvent } from "applesauce-common/helpers/share";
 import { memo, useEffect, useMemo } from "react";
@@ -7,6 +7,7 @@ import { memo, useEffect, useMemo } from "react";
 import HoverLinkOverlay from "../../../../components/hover-link-overlay";
 import RouterLink from "../../../../components/router-link";
 import Timestamp from "../../../../components/timestamp";
+import EventPreviewText from "../../components/event-preview-text";
 import UserAvatarLink from "../../../../components/user/user-avatar-link";
 import UserName from "../../../../components/user/user-name";
 import useEventIntersectionRef from "../../../../hooks/use-event-intersection-ref";
@@ -56,9 +57,7 @@ function RepostGroup({ group }: { group: TRepostGroup }) {
       {sharedEvent ? (
         <Flex overflow="hidden" alignItems="center" gap="2">
           <UserName pubkey={sharedEvent.pubkey} fontWeight="bold" />
-          <Text fontSize="sm" color="TextGray" isTruncated flex={1}>
-            {getTagValue(sharedEvent, "title") || sharedEvent.content}
-          </Text>
+          <EventPreviewText event={sharedEvent} fontSize="sm" color="TextGray" flex={1} />
           <Timestamp timestamp={group.latest} />
         </Flex>
       ) : (
