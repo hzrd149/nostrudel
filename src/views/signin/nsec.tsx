@@ -63,7 +63,9 @@ export default function SigninPrivateKeyView() {
       if (decode?.type !== "nsec") throw new Error();
 
       const key = decode.data;
-      const password = window.prompt("Local encryption password. This password is used to keep your secret key safe");
+      const password = window.prompt(
+        "Create a new password to encrypt your secret key in this browser. You will need it to unlock your account later. Leave empty to store the key unencrypted.",
+      );
       if (password) {
         const signer = new PasswordSigner();
         signer.key = key;
