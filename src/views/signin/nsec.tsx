@@ -51,7 +51,7 @@ export default function SigninPrivateKeyView() {
     if (isHexKey(value)) {
       account = SimpleAccount.fromKey(hexToBytes(value));
     } else if (value.startsWith("ncryptsec")) {
-      const password = window.prompt("Decryption password");
+      const password = window.prompt("Enter the existing password for this encrypted key (ncryptsec)");
       if (password === null) throw new Error("Password required");
 
       const key = decrypt(value, password);
