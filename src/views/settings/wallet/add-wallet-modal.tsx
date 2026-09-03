@@ -55,7 +55,7 @@ function NwcQrConnect({ onConnect }: { onConnect: (uri: string) => void }) {
   }, [client]);
 
   const uri = useMemo(
-    () => client.getAuthURI({ methods: ["get_balance", "get_info", "make_invoice", "pay_invoice"], name: "noStrudel" }),
+    () => client.getAuthURI({ methods: ["get_balance", "get_info", "list_transactions", "make_invoice", "pay_invoice"], name: "noStrudel" }),
     [client],
   );
 
