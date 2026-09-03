@@ -59,9 +59,11 @@ See: .planning/PROJECT.md
 | # | Description | Date | Commit | Directory |
 |---|-------------|------|--------|-----------|
 | 260829-n9x | Clarify local encryption password label in signin flow (issue #356) | 2026-08-29 | a8cce223b | [260829-n9x-clarify-local-encryption-password-label-](./quick/260829-n9x-clarify-local-encryption-password-label-/) |
+| 260903-dwf | Add list_transactions permission to NWC auth URI so wallet history loads | 2026-09-03 | 774a08dfc | [260903-dwf-the-nostr-wallet-connect-wallet-is-missi](./quick/260903-dwf-the-nostr-wallet-connect-wallet-is-missi/) |
 
 ## Session
 
+**Last activity:** 2026-09-03 - Completed quick task 260903-dwf: Add list_transactions permission to NWC auth URI so wallet history loads
 **Last session:** 2026-08-19T17:25:47.450Z
 **Stopped at:** Completed 01-06-PLAN.md (last plan in Phase 01)
 **Resume file:** None
