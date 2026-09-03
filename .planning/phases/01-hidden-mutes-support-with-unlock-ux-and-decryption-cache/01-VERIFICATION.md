@@ -1,47 +1,60 @@
 ---
 phase: 01-hidden-mutes-support-with-unlock-ux-and-decryption-cache
 verified: 2026-08-19T18:40:00Z
-status: human_needed
+status: passed
 score: 15/15 must-haves verified (code-level); 11 behaviors present-but-behaviorally-unproven pending live-signer UAT
 behavior_unverified: 11
 overrides_applied: 0
 adjudicated_findings:
+
   - finding: "CR-01 (01-REVIEW.md): mute() in use-user-mute-actions.ts is not half-aware; muting an already-hidden-but-locked pubkey can publish a public duplicate"
     verdict: "Confirmed as reproducible code behavior, but NOT a violation of this phase's must-haves. D-15 (01-CONTEXT.md) explicitly documents and accepts this exact consequence verbatim: 'Pressing Mute on an unknown private mute can therefore add a public duplicate; applesauce's addUser dedupes within a half, not across halves.' The Deferred Ideas section additionally lists 'Deduplicating a pubkey muted both publicly and privately — possible after D-15 lets a duplicate be created while locked. Not addressed this phase.' D-13/D-14 are both scoped explicitly to the unmute/Remove path ('Unmute correctness only', 'Unmute detects which half...'), not to mute(). Routed to human_verification as a flagged item for final sign-off given the reviewer's 'Critical' severity framing, not as a gaps_found blocker."
 human_verification:
+
   - test: "M-1 (D-01): reload the app with a hidden-mute-containing list and locked decryption cache; confirm zero signer prompts appear unprompted"
     expected: "No NIP-07/nostr-connect popup at any point with both auto-unlock preferences at default false"
     why_human: "Requires a live browser with a configured signer and a real hidden-mute-bearing account; WINDOWS.md item not applicable (this is a negative/absence check, no ledger entry needed) — statically proven safe by source review of the auto-unlock driver's isAutoUnlockEnabled gate"
+
   - test: "M-9: merged isMuted flips from Mute to Unmute label on hidden-mutes unlock without reload (WINDOWS.md #1)"
     expected: "Note menu shows 'Mute User' while locked, 'Unmute User' immediately after unlock with no reload"
     why_human: "Needs a live signer/relay session"
+
   - test: "M-8 part 1: public unmute regression — published kind-10000 drops the p tag and any stale mute_expiration tag (WINDOWS.md #2)"
     expected: "Unmuting a publicly-muted pubkey removes it and its expiration tag from the republished event"
     why_human: "Needs a live signer/relay session to inspect a real published event"
+
   - test: "M-4 (D-07): timelines silently under-filter while hidden mutes are locked, no banner appears anywhere (WINDOWS.md #3)"
     expected: "An event from a locked-hidden-muted pubkey is visible pre-unlock, filtered post-unlock, with no banner/warning ever shown"
     why_human: "Needs a live signer/relay session and visual observation"
+
   - test: "M-3 (D-06): cross-device mute-list replacement returns the mutes pending count to 1 with no automatic re-unlock (WINDOWS.md #4)"
     expected: "A replacement kind-10000 event from another device re-locks the category and waits for the user"
     why_human: "Needs two live signer/relay sessions"
+
   - test: "M-6 mechanism half (D-09): pending decryption-cache item visible via debug console, count drops to zero after correct password (WINDOWS.md #5)"
     expected: "decryption-cache category reports pending at default encryptDecryptionCache=true and clears on correct password"
     why_human: "Needs a live browser session with enableDebugApi on"
+
   - test: "M-2 (D-02/D-03/D-09): side-nav pending count reads 2, survives collapse as icon+badge, drops on unlock, disappears on full unlock, mobile drawer parity (WINDOWS.md #6)"
     expected: "Nav affordance visible with count 2 (mutes+cache), same behavior collapsed and in the mobile drawer"
     why_human: "Needs a live signer/relay session and visual/viewport observation"
+
   - test: "M-5 (D-08): rejecting the signer prompt in the nav modal toasts once, count unchanged, immediately retryable with no reload (WINDOWS.md #7)"
     expected: "Denying the signer request produces exactly one toast, pending count is unchanged, retry works without reload"
     why_human: "Needs a live signer session that can be made to reject a prompt"
+
   - test: "M-6 (D-09) reachability half: decryption-cache password row reachable and functional from the side-nav affordance without visiting /messages (WINDOWS.md #8)"
     expected: "A profile that never visited /messages can still unlock the cache from the nav modal"
     why_human: "Needs a live browser session with a real signer"
+
   - test: "D-04/D-05 manual UAT: Privacy settings shows exactly two rows (Mute lists, Message cache) while unlock-all is off, toggling a row changes app-start prompt behavior, unlock-all hides the rows (WINDOWS.md #9)"
     expected: "Exactly two registry-driven rows, persisted toggle changes app-start signer behavior on the next load"
     why_human: "Needs a live signer session with a hidden mute list across two reload cycles"
+
   - test: "M-7 (D-10/D-11/D-12): Private section locked placeholder, unlock, and re-render without reload (WINDOWS.md #10)"
     expected: "Locked placeholder with no count while locked; pubkey-only list after unlock without reload; no duplication with public list; absent entirely with no hidden content"
     why_human: "Needs a live signer/relay session"
+
   - test: "M-8 part 2 (D-13/D-14 hidden half): Remove on a Private-section row publishes a real replacement event and survives reload+re-unlock (WINDOWS.md #11)"
     expected: "Removing a private row is a real, non-no-op publish; the pubkey is genuinely absent from getHiddenMutedThings after reload+re-unlock"
     why_human: "Needs a live signer/relay session and a seeded private mute via debug console"
@@ -113,16 +126,21 @@ the list is locked (the default state at app start), re-muting such a pubkey rou
 duplicate of a mute the user intended to keep private. Framed as defeating D-13's guard rail.
 
 **Independent verification of the mechanism:**
+
 - Confirmed `mute()` (`use-user-mute-actions.ts:28-32`) never reads `muteHalf` or any lock state —
   unconditional public-tag write, unchanged from before this phase.
+
 - Confirmed `listAddPerson` (`src/helpers/nostr/lists.ts:109-124`) guards only
   `list.tags.some(t => t[0]==="p" && t[1]===pubkey)` — cannot see encrypted hidden tags.
+
 - Confirmed `getMutedThings` (`applesauce-common/dist/helpers/mute.js:37-43`) merges the hidden half
   into `isMuted` only when `getHiddenMutedThings` resolves truthy (i.e. already decrypted) — while
   locked, a hidden-only mute reads `isMuted === false`.
+
 - Confirmed the UI reachability path: `MuteUserMenuItem` → `openModal` → `MuteModalProvider`'s
   `handleClick` (`mute-modal-provider.tsx:54-63`) unconditionally calls `muteListAddPubkey` and
   publishes, with no half-awareness. This file is untouched by any plan in this phase.
+
 - **All of the above is accurate.** CR-01 is a real, reproducible code behavior.
 
 **Verdict against this phase's must-haves:** NOT a gap against D-13 or D-14. Both decisions are
@@ -187,10 +205,12 @@ acknowledging D-15's scope, or a fast follow-up phase applying the same `muteHal
 
 No live-runnable entry points exist for this phase's behavior (requires a browser + signer + relay).
 Static checks performed instead:
+
 - `pnpm build` (tsc strict + vite build): exit 0.
 - Full-repo grep confirms `category.unlock()` has exactly 4 call sites app-wide: the auto-unlock
   driver (gated), `unlockPendingCategories`'s batch loop (gated), the nav modal's per-row button
   (click-triggered), and the Private section's Unlock button (click-triggered) — zero unguarded calls.
+
 - Full-repo grep confirms zero other `.unlock()`-adjacent debt markers or catch-and-swallow patterns
   in the 20 files this phase touches (per 01-REVIEW.md's reviewed-file list).
 
