@@ -38,10 +38,15 @@ Plans:
 
 ### Phase 2: Adopt a lint config and CI quality gate
 
-**Goal:** [Captured for future planning]
-**Requirements:** TBD
+**Goal:** noStrudel has a lint standard it chose and a gate that stops it regressing: a committed
+aislop config with per-rule policy and vendored-code exclusions, exact-pinned `pnpm lint` /
+`pnpm lint:ci` scripts, a blocking GitHub Actions gate on changed files with an evidence-calibrated
+threshold, a feedback-only Claude Code hook, and a recorded post-config baseline score that backlog
+items 999.2 – 999.10 are measured against.
+**Requirements:** D-01, D-02, D-03, D-04, D-05, D-06, D-07, D-08, D-09, D-10, D-11, D-12, D-13, D-14, D-15, D-16
+(no REQUIREMENTS.md exists; the requirement set is the locked decisions in `02-CONTEXT.md`)
 **Depends on:** Nothing
-**Plans:** 0 plans
+**Plans:** 5 plans
 
 Prerequisite for treating any of the backlog code-quality items (999.2 – 999.10) as a
 measurable baseline. **The repo currently has no lint configuration at all** — only
@@ -68,8 +73,19 @@ Doing this before the remaining backlog items means they are measured against a 
 the project chose.
 
 Plans:
+**Wave 1**
 
-- [ ] TBD (run /gsd-plan-phase to break down)
+- [ ] 02-01-PLAN.md — Install exact-pinned aislop@0.16.1 behind a legitimacy checkpoint; add `lint` / `lint:ci` scripts (wave 1)
+- [ ] 02-02-PLAN.md — `.github/workflows/lint.yml` changed-files gate; AGENTS.md Linting section and inline-ignore convention (wave 1)
+
+**Wave 2** *(blocked on Wave 1 completion)*
+
+- [ ] 02-03-PLAN.md — `.aislop/config.yml` rule policy and vendored exclusions; error-logger rule-scoped ignore (wave 2)
+- [ ] 02-04-PLAN.md — Project-scope Claude Code aislop hook, feedback only, pinned binary; decision on generated instruction files (wave 2)
+
+**Wave 3** *(blocked on Wave 2 completion)*
+
+- [ ] 02-05-PLAN.md — Calibrate `ci.failBelow` from nine real commits; commit the whole-repo baseline report (wave 3)
 
 ---
 
