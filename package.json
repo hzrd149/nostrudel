@@ -17,7 +17,7 @@
     "analyze": "pnpm dlx vite-bundle-visualizer -o ./stats.html",
     "format": "prettier --ignore-path .prettierignore -w .",
     "lint": "aislop scan .",
-    "lint:ci": "aislop ci --changes --base origin/master",
+    "lint:ci": "aislop ci --changes --base \"$(git merge-base origin/next HEAD)\"",
     "cap-sync-version": "pnpx capacitor-set-version@2 set . -v=$(jq -r .version package.json) -b=1"
   },
   "dependencies": {

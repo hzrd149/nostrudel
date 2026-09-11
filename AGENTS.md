@@ -154,15 +154,16 @@ The adopted lint standard is `aislop`, pinned exactly as the `aislop` 0.16.1 dev
 
 ```bash
 pnpm lint      # aislop scan . — whole-repo human-readable report (informational)
-pnpm lint:ci   # aislop ci --changes --base origin/master — the exact gate CI runs
+pnpm lint:ci   # aislop ci --changes --base "$(git merge-base origin/next HEAD)" — the exact gate CI runs
 ```
 
 - `pnpm lint` exits non-zero whenever any finding exists anywhere in the repo, which is always true today. Never chain it with `&&` or treat its exit code as pass/fail.
-- `pnpm lint:ci` is the gate `.github/workflows/lint.yml` runs on pull requests and on pushes to every branch except master, and a failure blocks the job.
+- `pnpm lint:ci` is the gate `.github/workflows/lint.yml` runs on pull requests and on pushes to every branch except `master`, `next` and `changeset-release/**`, and a failure blocks the job. Pushes to `master` and `next` are not gated because their content arrives through gated branches and PRs.
+- Everything is built on `next` until a release, so changed files are measured from the merge-base of `HEAD` with `origin/next`, not from the tip of `next`. Commits that land on `next` after a branch was cut are not counted against that branch.
 - The gate scores whole touched files, including findings that already existed in them. It fails on any error-severity finding in a touched file regardless of score, and also when the score is below `ci.failBelow` in `.aislop/config.yml`. Touching a legacy file means inheriting its errors: fix them or, in a source file, add a rule-scoped ignore with a reason.
 - Changing `package.json` or `pnpm-lock.yaml` makes aislop audit the whole dependency tree. Advisories surface as `security/vulnerable-dependency` warnings (downgraded in `.aislop/config.yml`) and do not fail the gate. They are reported on `package.json`, which cannot hold an `aislop-ignore-*` comment, so the remedy is to upgrade or override the affected dependency.
-- Remote caveat: locally `origin` is the ngit/nostr remote and GitHub is `gh`, while in GitHub Actions `origin` is GitHub. Run `git fetch origin master` before trusting a local `pnpm lint:ci`. To reproduce the CI base exactly, run `git fetch gh master` and then `pnpm exec aislop ci --changes --base gh/master`.
-- Run `pnpm lint:ci` from a feature branch cut from master. From a long-lived branch such as `next` it diffs every unmerged commit.
+- Remote caveat: locally `origin` is the ngit/nostr remote and GitHub is `gh`, while in GitHub Actions `origin` is GitHub. Both remotes carry `next`, but they can point at different commits. Run `git fetch origin next` before trusting a local `pnpm lint:ci`. To reproduce the CI base exactly, run `git fetch gh next` and then `pnpm exec aislop ci --changes --base "$(git merge-base gh/next HEAD)"`.
+- Run `pnpm lint:ci` from a feature branch cut from `next`. On `next` itself the merge-base is the tip of `origin/next`, so it only scores local commits that have not been pushed yet.
 - Vendored third-party code under `src/lib/` (qrcodegen.ts, open-graph-scraper, bencode, fix-image-orientation) is excluded in `.aislop/config.yml`. Rule policy changes also go in that file, each with a comment giving the reason.
 - `.aislop/history.jsonl` is a local scan log and is gitignored.
 - Claude Code sessions get per-edit aislop feedback from the project hook in `.claude/settings.json`. It is feedback only; CI is the single enforcement point.

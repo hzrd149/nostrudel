@@ -3,8 +3,11 @@ name: Lint
 on:
   pull_request:
   push:
+    # master and next receive content through gated branches and PRs; release PRs are bot-owned
     branches-ignore:
       - master
+      - next
+      - "changeset-release/**"
 
 permissions:
   contents: read
@@ -24,7 +27,7 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@v4
         with:
-          # Full history is needed so `--base origin/master` can resolve
+          # Full history fetches every branch, so `git merge-base origin/next HEAD` in `pnpm lint:ci` resolves
           fetch-depth: 0
           persist-credentials: false
 
