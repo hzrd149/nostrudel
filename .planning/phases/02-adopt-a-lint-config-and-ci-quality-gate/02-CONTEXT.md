@@ -117,6 +117,32 @@ rule adoption decisions not listed in D-05–D-08 (they stay at aislop defaults)
 
 None — the user selected a concrete option for every question. No "you decide" answers.
 
+### Amendments (2026-09-11, post code review)
+
+The decisions above stay as originally written. After code review (`02-REVIEW.md`) the maintainer
+changed them as follows. Where an amendment and the original text differ, the amendment wins.
+
+- **D-01 / D-15 (gate base):** the gate measures changed files from the merge-base with
+  `origin/next`, not from `origin/master`. `lint:ci` is now
+  `aislop ci --changes --base "$(git merge-base origin/next HEAD)"`, and the workflow still calls
+  `pnpm lint:ci`. Maintainer's rationale: everything is built on `next` until a release. Using the
+  merge-base instead of the branch tip means a branch is not scored on commits it never made.
+  Source: 02-REVIEW.md WR-02, WR-03.
+- **D-13 (push trigger):** `push` now ignores `master`, `next` and `changeset-release/**`. Content
+  reaches those branches through gated branches and PRs. `pull_request` and `fetch-depth: 0` are
+  unchanged. Source: WR-03.
+- **D-02 (threshold):** `ci.failBelow` stays at 95 but is documented as a backstop only. aislop
+  0.16.1 scores `--changes` against the whole-project file count, so the effective gate is "no
+  error-severity findings in touched files". Source: WR-04.
+- **D-05 / D-09 (rules and engine settings):** `security/vulnerable-dependency` is downgraded to
+  `warning` and the dependency audit stays on (`security.audit: true`). Pre-existing tree-wide
+  advisories are still reported but no longer block unrelated changes. Telemetry is explicitly
+  disabled: `telemetry.enabled: false` in the config, plus `AISLOP_NO_TELEMETRY` and `DO_NOT_TRACK`
+  in the lint workflow. Source: CR-01, WR-01.
+- **D-16 (agent hook):** `.claude/CLAUDE.md` gains a "noStrudel overrides for aislop hook feedback"
+  section after `@AISLOP.md`. The generated guidance calls findings blocking, forbids inline
+  ignores and names `.yaml` config files that aislop never reads. Source: WR-05.
+
 </decisions>
 
 <canonical_refs>
