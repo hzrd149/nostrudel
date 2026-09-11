@@ -16,6 +16,8 @@
     "build-native-icons": "pnpm dlx @capacitor/assets generate --android --ios --iconBackgroundColor '#171819' --iconBackgroundColorDark '#171819' --splashBackgroundColor '#ffffff' --splashBackgroundColorDark '#171819'",
     "analyze": "pnpm dlx vite-bundle-visualizer -o ./stats.html",
     "format": "prettier --ignore-path .prettierignore -w .",
+    "lint": "aislop scan .",
+    "lint:ci": "aislop ci --changes --base origin/master",
     "cap-sync-version": "pnpx capacitor-set-version@2 set . -v=$(jq -r .version package.json) -b=1"
   },
   "dependencies": {
@@ -160,6 +162,7 @@
     "@types/react-window": "^1.8.8",
     "@types/webscopeio__react-textarea-autocomplete": "^4.7.5",
     "@vitejs/plugin-react": "^6.0.4",
+    "aislop": "0.16.1",
     "camelcase": "^8.0.0",
     "cheerio": "^1.2.0",
     "prettier": "^3.9.6",
