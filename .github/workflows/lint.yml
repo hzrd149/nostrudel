@@ -16,6 +16,10 @@ concurrency:
 jobs:
   quality-gate:
     runs-on: ubuntu-latest
+    env:
+      # Defence in depth next to `telemetry.enabled: false`; aislop 0.16.1 reads both variables
+      AISLOP_NO_TELEMETRY: "1"
+      DO_NOT_TRACK: "1"
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4

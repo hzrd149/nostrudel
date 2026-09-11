@@ -34,7 +34,7 @@ ci:
   failBelow: 95 # calibrated 2026-09-11 from sampled commits (aislop 0.16.1), evidence in .planning/research/aislop-scan-2026-09-11.md
   format: json
 telemetry:
-  enabled: true
+  enabled: false # no third-party usage reporting from CI, contributor machines or the agent hook
 
 # Rules deliberately left at aislop defaults:
 # - ai-slop/trivial-comment, ai-slop/narrative-comment and ai-slop/meta-comment stay on because
