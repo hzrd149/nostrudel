@@ -1,0 +1,54 @@
+version: 1
+engines:
+  format: true
+  lint: true
+  code-quality: true
+  ai-slop: true
+  architecture: false
+  security: true
+quality:
+  maxFunctionLoc: 80
+  maxFileLoc: 400
+  maxNesting: 5
+  maxParams: 6
+lint:
+  typecheck: false
+  expoDoctor: false
+security:
+  audit: true
+  auditTimeout: 25000
+scoring:
+  weights:
+    format: 0.3
+    lint: 0.6
+    code-quality: 0.8
+    ai-slop: 1
+    architecture: 1
+    security: 1.5
+  thresholds:
+    good: 75
+    ok: 50
+  smoothing: 5
+  maxPerRule: 40
+ci:
+  failBelow: 70
+  format: json
+telemetry:
+  enabled: true
+
+# Rules deliberately left at aislop defaults:
+# - ai-slop/trivial-comment, ai-slop/narrative-comment and ai-slop/meta-comment stay on because
+#   comments should not restate code.
+# - react-hooks/exhaustive-deps stays a warning; deliberate omissions use an inline ignore
+#   naming the rule with a reason.
+# - ai-slop/hardcoded-url and ai-slop/todo-stub stay on; consolidation and triage are tracked
+#   as backlog work.
+rules:
+  jsx-a11y/no-autofocus: "off" # autofocus in modals and forms is deliberate noStrudel UX
+
+# Vendored third-party ports excluded from scoring rather than fixed.
+exclude:
+  - src/lib/qrcodegen.ts # QR Code generator library, Project Nayuki (MIT), nayuki.io/page/qr-code-generator-library
+  - src/lib/open-graph-scraper/** # copied from github.com/jshemas/openGraphScraper, modified to use DOMParser in the browser
+  - src/lib/bencode/** # copied from git.v0l.io/Kieran/dtan (src/bencode)
+  - src/lib/fix-image-orientation/** # copied from github.com/prmichaelsen/fix-image-orientation, modified to return Blobs

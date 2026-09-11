@@ -5,3 +5,4 @@ exe/bin
 .env
 keystore.jks
 graphify-out
+.aislop/history.jsonl
