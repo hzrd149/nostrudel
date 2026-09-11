@@ -46,7 +46,7 @@ items 999.2 – 999.10 are measured against.
 **Requirements:** D-01, D-02, D-03, D-04, D-05, D-06, D-07, D-08, D-09, D-10, D-11, D-12, D-13, D-14, D-15, D-16
 (no REQUIREMENTS.md exists; the requirement set is the locked decisions in `02-CONTEXT.md`)
 **Depends on:** Nothing
-**Plans:** 3/5 plans executed
+**Plans:** 4/5 plans executed
 
 Prerequisite for treating any of the backlog code-quality items (999.2 – 999.10) as a
 measurable baseline. **The repo currently has no lint configuration at all** — only
@@ -81,7 +81,7 @@ Plans:
 **Wave 2** *(blocked on Wave 1 completion)*
 
 - [x] 02-03-PLAN.md — `.aislop/config.yml` rule policy and vendored exclusions; error-logger rule-scoped ignore (wave 2)
-- [ ] 02-04-PLAN.md — Project-scope Claude Code aislop hook, feedback only, pinned binary; decision on generated instruction files (wave 2)
+- [x] 02-04-PLAN.md — Project-scope Claude Code aislop hook, feedback only, pinned binary; decision on generated instruction files (wave 2)
 
 **Wave 3** *(blocked on Wave 2 completion)*
 
