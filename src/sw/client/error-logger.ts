@@ -1,3 +1,4 @@
+// aislop-ignore-file ai-slop/console-leftover -- this module's purpose is console output
 // Utility functions to interact with service worker error logs using RPC
 import type { ServiceWorkerErrorLog } from "../worker/error-handler";
 import { serviceWorkerRPC as client } from "./rpc";
