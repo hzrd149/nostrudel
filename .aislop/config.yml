@@ -31,7 +31,10 @@ scoring:
   smoothing: 5
   maxPerRule: 40
 ci:
-  failBelow: 95 # calibrated 2026-09-11 from sampled commits (aislop 0.16.1), evidence in .planning/research/aislop-scan-2026-09-11.md
+  # Backstop only: aislop 0.16.1 scores --changes against the whole-project file count (~2.1k
+  # files), so diffs score ~97-100 and the effective gate is "no error-severity findings in
+  # touched files". Calibration evidence: .planning/research/aislop-scan-2026-09-11.md
+  failBelow: 95
   format: json
 telemetry:
   enabled: false # no third-party usage reporting from CI, contributor machines or the agent hook

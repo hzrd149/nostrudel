@@ -344,6 +344,19 @@ Selection rule (D-02 — "just under what typical changes already score"):
 **Chosen `ci.failBelow`: 95**, recorded in `.aislop/config.yml` with a trailing
 `# calibrated 2026-09-11 …` comment naming this file.
 
+### Note (2026-09-11, post code review): the score is diluted
+
+Code review (`02-REVIEW.md` WR-04) found that `failBelow` barely constrains a diff. In `--changes`
+mode aislop 0.16.1 still counts every project source and test file when scoring
+(`collectScanFileScope`), which is why "Files scored" above shows 2153–2164 for single-commit
+diffs. Deductions are divided by that count, so every sample scored 98–100 and the 80-file `next`
+diff with 9 errors and 37 warnings still scored 97. These scores measure dilution, not typical
+change quality, and the threshold weakens as the repo grows.
+
+`failBelow: 95` is kept as a backstop only, and the trailing `# calibrated …` comment was replaced
+with one saying so. The effective gate is "no error-severity findings in touched files". Making
+warnings ratchet would need a different mechanism and a new decision.
+
 ### Inherited-error failures (score-independent, per RESEARCH Pitfall 1)
 
 Two of the nine samples exit non-zero under `failBelow: 95` despite scoring at or above it,
