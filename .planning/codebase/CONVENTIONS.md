@@ -51,9 +51,9 @@ if (selected === "self") {
 
 **Linting:**
 
-- ESLint/Biome configuration is not detected: no `.eslintrc*`, `eslint.config.*`, or `biome.json` files are present at the repo root.
+- Lint is `aislop` 0.16.1 (exact-pinned devDependency), configured by `.aislop/config.yml`, run via `pnpm lint` (whole-repo report) and `pnpm lint:ci` (the changed-files gate run by `.github/workflows/lint.yml`). There are still no standalone ESLint or Biome config files because aislop bundles its engines.
 - TypeScript strict mode is enforced by `tsconfig.json` with `strict: true`, `isolatedModules: true`, `forceConsistentCasingInFileNames: true`, and `noEmit: true`.
-- `pnpm build` in `package.json` runs `tsc --project tsconfig.json && vite build`; use it as the primary static quality gate.
+- `pnpm build` in `package.json` runs `tsc --project tsconfig.json && vite build`; use it as the type-checking gate, alongside `pnpm lint:ci` as the lint gate.
 - Prefer type-safe `satisfies` where constraining literals. Example: `src/views/torrents/routes.tsx` uses `satisfies RouteObject[]`.
 
 ## Import Organization
