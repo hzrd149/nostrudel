@@ -46,7 +46,7 @@ items 999.2 – 999.10 are measured against.
 **Requirements:** D-01, D-02, D-03, D-04, D-05, D-06, D-07, D-08, D-09, D-10, D-11, D-12, D-13, D-14, D-15, D-16
 (no REQUIREMENTS.md exists; the requirement set is the locked decisions in `02-CONTEXT.md`)
 **Depends on:** Nothing
-**Plans:** 4/5 plans executed
+**Plans:** 5/5 plans complete
 
 Prerequisite for treating any of the backlog code-quality items (999.2 – 999.10) as a
 measurable baseline. **The repo currently has no lint configuration at all** — only
@@ -85,7 +85,7 @@ Plans:
 
 **Wave 3** *(blocked on Wave 2 completion)*
 
-- [ ] 02-05-PLAN.md — Calibrate `ci.failBelow` from nine real commits; commit the whole-repo baseline report (wave 3)
+- [x] 02-05-PLAN.md — Calibrate `ci.failBelow` from nine real commits; commit the whole-repo baseline report (wave 3)
 
 ---
 

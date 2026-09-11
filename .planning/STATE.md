@@ -4,15 +4,15 @@ milestone: v1.0
 milestone_name: milestone
 current_phase: 02
 status: executing
-stopped_at: Completed 02-04-PLAN.md
-last_updated: "2026-09-11T18:21:58.834Z"
+stopped_at: Completed 02-05-PLAN.md (phase 02 complete)
+last_updated: "2026-09-11T18:37:17.181Z"
 last_activity: 2026-09-11
 progress:
   total_phases: 2
-  completed_phases: 1
+  completed_phases: 2
   total_plans: 11
-  completed_plans: 10
-  percent: 91
+  completed_plans: 11
+  percent: 100
 current_phase_name: Adopt a lint config and CI quality gate
 ---
 
@@ -34,6 +34,7 @@ See: .planning/PROJECT.md
 - 2026-09-11: Completed 02-01-PLAN.md (continuation from blocking checkpoint; maintainer approved aislop package legitimacy, then aislop 0.16.1 installed exact-pinned with lint/lint:ci scripts). Note: `gsd-tools state.advance-plan` failed with "Cannot parse Current Plan or Total Plans in Phase from STATE.md" — this STATE.md lacks those fields (pre-existing schema gap, also hit by 02-02's executor). Used `state.record-metric`, `state.add-decision`, `state.record-session`, and `state.update-progress` instead; `stopped_at` and this log entry were updated by hand.
 - 2026-09-11: Completed 02-03-PLAN.md (`.aislop/config.yml` written with D-05–D-10 rule policy and vendored excludes; D-11/D-12 rule-scoped ignore added to `src/sw/client/error-logger.ts`; `.gitignore` ignores `.aislop/history.jsonl`). Same pre-existing `state.advance-plan` parse gap hit again (STATE.md still lacks `Current Plan`/`Total Plans in Phase` fields); used `state.record-metric`, `state.add-decision`, `state.record-session`, and `state.update-progress` instead. `state.update-progress` and `state.record-session` both reset `progress.percent` to the phase ratio (50, i.e. completed_phases/total_phases) rather than completed_plans/total_plans — corrected by hand to 82 (9/11) both times, per orchestrator instruction not to restructure STATE.md.
 - 2026-09-11: Completed 02-04-PLAN.md (continuation from Task 1's decision checkpoint; maintainer selected `keep-generated`, then `pnpm exec aislop hook install --claude --project` ran and both generated hook commands were re-pinned from bare `aislop` to `pnpm exec aislop`; `.claude/settings.local.json` sha256 confirmed unchanged). Same pre-existing `state.advance-plan` parse gap (STATE.md still lacks `Current Plan`/`Total Plans in Phase` fields) — used `state.record-metric`, `state.add-decision`, `state.record-session`, and `state.update-progress` instead. Both `state.update-progress` and `state.record-session` again reset `progress.percent` to the phase ratio (50) rather than completed_plans/total_plans — corrected by hand to 91 (10/11) both times, per orchestrator instruction not to restructure STATE.md.
+- 2026-09-11: Completed 02-05-PLAN.md (final plan of Phase 02 — `ci.failBelow` calibrated to 95 from nine sampled real commits measured in disposable detached worktrees, no worktrees/branches left behind; whole-repo baseline recorded at `.planning/research/aislop-scan-2026-09-11.md`/`.json`, score 78/100, mapped to backlog 999.2–999.10). Same pre-existing `state.advance-plan` parse gap hit again (`gsd-tools state.advance-plan` still fails with "Cannot parse Current Plan or Total Plans in Phase from STATE.md") — used `state.record-metric`, `state.add-decision`, `state.record-session`, and `state.update-progress` instead. This time `state.update-progress` correctly computed 100% (11/11 plans, 2/2 phases) since this genuinely was the last plan in the last phase, so no manual percent correction was needed.
 
 ## Performance Metrics
 
@@ -49,6 +50,7 @@ See: .planning/PROJECT.md
 | Phase 02 P01 | ~10min | 2 tasks | 2 files |
 | Phase 02 P03 | 12min | 2 tasks | 3 files |
 | Phase 02 P04 | ~15min | 2 tasks | 3 files |
+| Phase 02 P05 | ~14min | 2 tasks | 3 files |
 
 ## Decisions
 
@@ -66,6 +68,9 @@ See: .planning/PROJECT.md
 - [Phase ?]: [Phase 02 Plan 03]: .aislop/config.yml hand-written from the verified plain aislop init schema (no aislop init run) with jsx-a11y/no-autofocus off, four vendored-path excludes each with an upstream-source comment, and no explicit severity overrides for the D-07/D-08/D-09 rules kept at defaults.
 - [Phase ?]: [Phase 02 Plan 03]: src/sw/client/error-logger.ts gets a rule-scoped aislop-ignore-file directive for ai-slop/console-leftover only (D-11); confirmed by a scoped scan that other rules still fire on that file, establishing the D-12 rule+reason directive convention's first instance.
 - [Phase 02]: aislop's Claude Code hook (.claude/settings.json PostToolUse+FileChanged) is committed pinned to pnpm exec aislop, feedback-only with no Stop hook; maintainer selected keep-generated so .claude/AISLOP.md and .claude/CLAUDE.md are also committed (D-14/D-16).
+- [Phase 02]: [Phase 02 Plan 05]: ci.failBelow calibrated to 95 from nine sampled real commits (scores 100x8, 98x1); no outlier set aside (98 is only 2 points below the second-lowest, under the 15-point threshold), floor=98, largest multiple of 5 strictly below is 95 (D-02).
+- [Phase 02]: [Phase 02 Plan 05]: 1a4f05493 fails lint:ci solely on an inherited ai-slop/swallowed-exception in src/index.tsx; 844122a7e fails on a mix of an inherited swallowed-exception pair in blob-details-modal.tsx plus security/vulnerable-dependency errors surfaced by touching package.json/pnpm-lock.yaml — both left as expected ratchet friction, not tuned away.
+- [Phase 02]: [Phase 02 Plan 05]: Whole-repo baseline (aislop 0.16.1, adopted config) recorded once at score 78/100, 1,196 findings, in .planning/research/aislop-scan-2026-09-11.md/.json, explicitly marked not directly comparable to the 2026-08-02 (0.14.0, bundled defaults) scan, mapped to backlog 999.2-999.10 (D-04).
 
 ## Quick Tasks Completed
 
@@ -77,6 +82,6 @@ See: .planning/PROJECT.md
 ## Session
 
 **Last activity:** 2026-09-11
-**Last session:** 2026-09-11T18:21:58.828Z
-**Stopped at:** Completed 02-04-PLAN.md
+**Last session:** 2026-09-11T18:37:17.174Z
+**Stopped at:** Completed 02-05-PLAN.md (phase 02 complete)
 **Resume file:** None
