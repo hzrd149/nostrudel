@@ -2,18 +2,17 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_phase: 02 — Adopt a lint config and CI quality gate
+current_phase: 02
 status: executing
-stopped_at: Phase 2 context gathered
-last_updated: "2026-09-11T17:12:14.749Z"
-last_activity: 2026-09-03
-last_activity_desc: "Completed quick task 260903-dwf: Add list_transactions permission to NWC auth URI so wallet history loads"
+stopped_at: Completed 02-02-PLAN.md
+last_updated: "2026-09-11T17:22:07.916Z"
+last_activity: 2026-09-11
 progress:
   total_phases: 2
   completed_phases: 1
-  total_plans: 6
-  completed_plans: 6
-  percent: 50
+  total_plans: 11
+  completed_plans: 7
+  percent: 64
 current_phase_name: Adopt a lint config and CI quality gate
 ---
 
@@ -26,8 +25,8 @@ See: .planning/PROJECT.md
 ## Position
 
 **Milestone:** v1.0 milestone
-**Current phase:** 02 — Adopt a lint config and CI quality gate
-**Status:** Ready to execute
+**Current phase:** 02
+**Status:** Executing Phase 02
 
 ## Session Log
 
@@ -43,6 +42,7 @@ See: .planning/PROJECT.md
 | Phase 01 P04 | ~15min | 3 tasks | 5 files |
 | Phase 01 P05 | ~12min | 2 tasks | 1 files |
 | Phase 01 P06 | ~15min | 3 tasks | 5 files |
+| Phase 02 P02 | ~20min | 2 tasks | 3 files |
 
 ## Decisions
 
@@ -55,6 +55,7 @@ See: .planning/PROJECT.md
 - [Phase 01]: nav-drawer.tsx wraps PendingUnlockButton in a stopPropagation Box placed above the ButtonGroup, because both DrawerBody's handleClickItem and the ButtonGroup's own onClick={onClose} close the drawer on any button click, which would unmount the button's modal mid-interaction.
 - [Phase 01]: Per-category auto-unlock rows render conditionally on !autoUnlockAll immediately below the unlock-all switch; the .map() over pendingUnlockCategories$ naturally produces zero elements when the registry is empty, satisfying D-05's no-placeholder-rows requirement without a separate empty-check branch. — Phase 01 Plan 05
 - [Phase 01]: PrivateMutesSection derives locked=row.count>0 from the pending-unlock registry row (never isHiddenMutesUnlocked directly), and is deliberately unvirtualized (maxH+overflow, no AutoSizer/react-window) per RESEARCH.md Assumption A3 — Phase 01 Plan 06
+- [Phase 02 Plan 02]: lint.yml gates pull_request (unfiltered) plus push branches-ignore master, permissions contents:read, persist-credentials false, blocking pnpm lint:ci with no continue-on-error (D-01/D-03/D-13); AGENTS.md documents the D-12 inline-ignore convention (rule name + -- reason required, enforced by review).
 
 ## Quick Tasks Completed
 
@@ -65,7 +66,7 @@ See: .planning/PROJECT.md
 
 ## Session
 
-**Last activity:** 2026-09-03 - Completed quick task 260903-dwf: Add list_transactions permission to NWC auth URI so wallet history loads
-**Last session:** 2026-09-11T16:17:00.072Z
-**Stopped at:** Phase 2 context gathered
-**Resume file:** .planning/phases/02-adopt-a-lint-config-and-ci-quality-gate/02-CONTEXT.md
+**Last activity:** 2026-09-11
+**Last session:** 2026-09-11T17:22:07.910Z
+**Stopped at:** Completed 02-02-PLAN.md
+**Resume file:** None
