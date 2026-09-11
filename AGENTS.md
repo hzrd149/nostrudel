@@ -167,6 +167,8 @@ pnpm lint:ci   # aislop ci --changes --base "$(git merge-base origin/next HEAD)"
 - Vendored third-party code under `src/lib/` (qrcodegen.ts, open-graph-scraper, bencode, fix-image-orientation) is excluded in `.aislop/config.yml`. Rule policy changes also go in that file, each with a comment giving the reason.
 - `.aislop/history.jsonl` is a local scan log and is gitignored.
 - Claude Code sessions get per-edit aislop feedback from the project hook in `.claude/settings.json`. It is feedback only; CI is the single enforcement point.
+- The hook runs `pnpm exec aislop`, so it only works after `pnpm install` in a fresh clone.
+- After re-running `aislop hook install --claude --project` (e.g. on upgrade), restore both hook commands in `.claude/settings.json` to `pnpm exec aislop hook claude` and `pnpm exec aislop hook claude --on-file-changed`. The installer rewrites them to a bare `aislop`, which is not on PATH because aislop is a devDependency.
 
 #### Inline ignores
 
