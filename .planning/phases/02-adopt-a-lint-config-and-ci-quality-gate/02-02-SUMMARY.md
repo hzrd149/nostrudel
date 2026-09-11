@@ -129,6 +129,14 @@ This check depends on plan 02-01's `pnpm lint:ci` script landing first (currentl
 - `AGENTS.md` and `CONVENTIONS.md` now give contributors and agents a place to learn the gate's behavior before plan 02-03 (rule/config authoring) and plan 02-05 (baseline calibration) proceed.
 - Blocker: the Task 1 human-check (real GitHub Actions run) is still outstanding and should be exercised once plan 02-01 lands and this phase's commits reach the GitHub remote.
 
+## Self-Check: PASSED
+
+- `.github/workflows/lint.yml` exists.
+- `AGENTS.md` contains `### Linting`.
+- `.planning/codebase/CONVENTIONS.md` contains `.aislop/config.yml` and `pnpm lint:ci`.
+- `.planning/phases/02-adopt-a-lint-config-and-ci-quality-gate/02-02-SUMMARY.md` exists.
+- Commits `c4f191bbc`, `40806db10`, and `6c4f735c6` are present in `git log --oneline --all`.
+
 ---
 *Phase: 02-adopt-a-lint-config-and-ci-quality-gate*
 *Completed: 2026-09-11*
