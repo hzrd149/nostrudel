@@ -627,7 +627,7 @@ phase's own completion notes) so a later docs-refresh phase catches it.
 | A1 | `aislop`'s "any error-severity finding fails CI" behavior (Pitfall 1) is a stable, intentional design choice and not a version-specific bug that a patch release might change | Common Pitfalls #1 | If aislop changes this in a future patch, D-02's calibration approach (built around this behavior) would need re-verification before any version bump beyond `0.16.1` — mitigated by D-14's exact pin, which prevents silent drift |
 | A2 | Accepting all three files from `aislop hook install --claude --project` (including the new `.claude/CLAUDE.md`) is the lower-risk default vs. hand-editing AGENTS.md instead | Common Pitfalls #3 | If the team considers a second agent-instructions entry point (`.claude/CLAUDE.md` alongside `AGENTS.md`) confusing or redundant, this should be flagged back to the user before the plan commits it — this wasn't explicitly among the D-01…D-16 decisions |
 
-## Open Questions
+## Open Questions (RESOLVED — see 02-04 Task 1)
 
 1. **Does `.claude/CLAUDE.md` (nested inside `.claude/`, not repo root) actually get loaded as
    project memory by Claude Code, or does aislop's hook installer assume a convention this repo
