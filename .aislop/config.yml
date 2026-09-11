@@ -45,6 +45,9 @@ telemetry:
 #   as backlog work.
 rules:
   jsx-a11y/no-autofocus: "off" # autofocus in modals and forms is deliberate noStrudel UX
+  # Dependency advisories are pre-existing tree-wide state, not a property of the diff: they are
+  # still reported (security.audit stays on) but must not block unrelated changes.
+  security/vulnerable-dependency: "warning"
 
 # Vendored third-party ports excluded from scoring rather than fixed.
 exclude:
