@@ -1,17 +1,19 @@
 ---
 gsd_state_version: 1.0
 milestone: v1.0
+milestone_name: milestone
 current_phase: 02 — Adopt a lint config and CI quality gate
 status: planning
-stopped_at: Phase 01 complete, ready to plan Phase 02
-last_updated: "2026-09-03T15:26:40.085Z"
-state_head: 3a8254917421b0c647f8ff298d8eef1c12d871ef
+stopped_at: Phase 2 context gathered
+last_updated: "2026-09-11T16:17:00.079Z"
+last_activity: 2026-09-03
+last_activity_desc: "Completed quick task 260903-dwf: Add list_transactions permission to NWC auth URI so wallet history loads"
 progress:
   total_phases: 2
   completed_phases: 1
   total_plans: 6
   completed_plans: 6
-milestone_name: milestone
+  percent: 50
 current_phase_name: Adopt a lint config and CI quality gate
 ---
 
@@ -64,6 +66,6 @@ See: .planning/PROJECT.md
 ## Session
 
 **Last activity:** 2026-09-03 - Completed quick task 260903-dwf: Add list_transactions permission to NWC auth URI so wallet history loads
-**Last session:** 2026-08-29T16:09:24.327Z
-**Stopped at:** Phase 01 complete, ready to plan Phase 02
-**Resume file:** None
+**Last session:** 2026-09-11T16:17:00.072Z
+**Stopped at:** Phase 2 context gathered
+**Resume file:** .planning/phases/02-adopt-a-lint-config-and-ci-quality-gate/02-CONTEXT.md
