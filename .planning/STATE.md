@@ -2,18 +2,18 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_phase: 999.2 — Fix React hook-order violations and missing keys (BACKLOG)
+current_phase: 3 — Audit swallowed exceptions and silent failure paths
 status: planning
-stopped_at: Phase 02 complete (verification passed after maintainer CI validation), ready to plan backlog 999.2
-last_updated: "2026-09-11T21:40:00.000Z"
-last_activity: 2026-09-11
+stopped_at: Backlog reviewed — six items promoted to Phases 3-8; Phase 3 ready to plan
+last_updated: "2026-09-12T00:00:00.000Z"
+last_activity: 2026-09-12
 progress:
-  total_phases: 2
+  total_phases: 8
   completed_phases: 2
   total_plans: 11
   completed_plans: 11
-  percent: 100
-current_phase_name: Fix React hook-order violations and missing keys (BACKLOG)
+  percent: 25
+current_phase_name: Audit swallowed exceptions and silent failure paths
 ---
 
 # Session State
@@ -22,12 +22,12 @@ current_phase_name: Fix React hook-order violations and missing keys (BACKLOG)
 
 See: .planning/PROJECT.md (not present in this project; ROADMAP.md and the phase CONTEXT files are the reference)
 
-**Current focus:** Backlog 999.2–999.10 can now be promoted — Phase 2's adopted lint standard and baseline (`.planning/research/aislop-scan-2026-09-11.md`) have landed
+**Current focus:** Phases 3–8 (promoted from the backlog on 2026-09-12) work through the 2026-09-11 baseline; Phase 3 (swallowed exceptions) is first and clears the inherited error-severity findings that currently fail `pnpm lint:ci` on touched files
 
 ## Position
 
 **Milestone:** v1.0 milestone
-**Current phase:** 999.2 — Fix React hook-order violations and missing keys (BACKLOG)
+**Current phase:** 3 — Audit swallowed exceptions and silent failure paths
 **Status:** Ready to plan
 
 ## Session Log
@@ -38,6 +38,7 @@ See: .planning/PROJECT.md (not present in this project; ROADMAP.md and the phase
 - 2026-09-11: Completed 02-04-PLAN.md (continuation from Task 1's decision checkpoint; maintainer selected `keep-generated`, then `pnpm exec aislop hook install --claude --project` ran and both generated hook commands were re-pinned from bare `aislop` to `pnpm exec aislop`; `.claude/settings.local.json` sha256 confirmed unchanged). Same pre-existing `state.advance-plan` parse gap (STATE.md still lacks `Current Plan`/`Total Plans in Phase` fields) — used `state.record-metric`, `state.add-decision`, `state.record-session`, and `state.update-progress` instead. Both `state.update-progress` and `state.record-session` again reset `progress.percent` to the phase ratio (50) rather than completed_plans/total_plans — corrected by hand to 91 (10/11) both times, per orchestrator instruction not to restructure STATE.md.
 - 2026-09-11: Completed 02-05-PLAN.md (final plan of Phase 02 — `ci.failBelow` calibrated to 95 from nine sampled real commits measured in disposable detached worktrees, no worktrees/branches left behind; whole-repo baseline recorded at `.planning/research/aislop-scan-2026-09-11.md`/`.json`, score 78/100, mapped to backlog 999.2–999.10). Same pre-existing `state.advance-plan` parse gap hit again (`gsd-tools state.advance-plan` still fails with "Cannot parse Current Plan or Total Plans in Phase from STATE.md") — used `state.record-metric`, `state.add-decision`, `state.record-session`, and `state.update-progress` instead. This time `state.update-progress` correctly computed 100% (11/11 plans, 2/2 phases) since this genuinely was the last plan in the last phase, so no manual percent correction was needed.
 - 2026-09-11: Phase 02 closed out. Orchestrator gitignored the hook's `.aislop/baseline.json` / `.aislop/session.jsonl` (76e0c53af). Code review (02-REVIEW.md) found 1 blocker + 7 warnings; maintainer chose resolutions applied in e6a3b9585…659176664 and recorded as dated amendments in 02-CONTEXT.md: dependency advisories downgraded to warning (audit stays on), telemetry disabled in config and CI, gate measured from `git merge-base origin/next HEAD` with pushes to master/next/changeset-release not gated, `failBelow` documented as a backstop, `.claude/CLAUDE.md` override section, hook reinstall note; WR-07 declined, IN-01…IN-06 deferred. Verification 16/16; the one human item (real GitHub Actions Lint runs on a feature-branch push and a PR into next) was confirmed by the maintainer, so 02-VERIFICATION.md is `passed` and 02-UAT.md is complete.
+- 2026-09-12: Backlog reviewed (/gsd-review-backlog). Six items promoted to active phases, numbered in the roadmap's suggested order where it applies: 999.3 → Phase 3 (swallowed exceptions), 999.4 → Phase 4 (dead code), 999.9 → Phase 5 (oversized files/duplication, sequenced after Phase 4 so it doesn't refactor code about to be deleted), 999.6 → Phase 6 (type-safety), 999.7 → Phase 7 (accessibility), 999.10 → Phase 8 (TODOs/hardcoded URLs). Each promoted entry's finding counts were refreshed from the 2026-09-11 baseline (the 0.14.0 numbers they carried are not comparable to the adopted config) and given a real goal line, `**Depends on:**`, and TBD plans. Kept in backlog: 999.2 (React hook-order — note this is the roadmap's own suggested-first item and the only bucket of confirmed error-severity defects), 999.5 (exhaustive-deps), 999.8 (comment/console noise). Nothing removed; no phase directories existed to move, since no backlog item had accumulated artifacts.
 
 ## Performance Metrics
 
@@ -84,7 +85,7 @@ See: .planning/PROJECT.md (not present in this project; ROADMAP.md and the phase
 
 ## Session
 
-**Last activity:** 2026-09-11 - Phase 02 complete: lint config and CI quality gate adopted, code review fixes applied, verification passed
-**Last session:** 2026-09-11T21:40:00.000Z
-**Stopped at:** Phase 02 complete, ready to plan backlog 999.2 (or promote another backlog item)
+**Last activity:** 2026-09-12 - Backlog review: six items promoted to Phases 3–8; 999.2, 999.5, 999.8 kept in backlog
+**Last session:** 2026-09-12T00:00:00.000Z
+**Stopped at:** Backlog reviewed — Phase 3 (swallowed exceptions) ready to plan
 **Resume file:** None

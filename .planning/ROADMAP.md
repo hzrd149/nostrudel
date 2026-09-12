@@ -87,24 +87,197 @@ Plans:
 
 - [x] 02-05-PLAN.md — Calibrate `ci.failBelow` from nine real commits; commit the whole-repo baseline report (wave 3)
 
+### Phase 3: Audit swallowed exceptions and silent failure paths
+
+**Goal:** No error is discarded without a reason: every empty catch in the codebase is either
+narrowed and commented as a deliberate parse guard, or surfaced to the user / logged with its
+cause — with the decryption and signer paths, where a swallowed error hides a user-facing
+failure, resolved first.
+**Requirements:** TBD
+**Depends on:** Phase 2
+**Plans:** 0 plans
+
+59 findings in the [2026-09-11 baseline](./research/aislop-scan-2026-09-11.md) (bucket B):
+31 × `ai-slop/swallowed-exception` (empty catch, error severity), 23 × `eslint/no-empty`
+(largely the same sites), 2 × `redundant-try-catch`, 1 × `no-async-promise-executor`,
+1 × `hidden-fallback`, 1 × `silent-recovery` (`index.tsx` — logs without the caught error,
+losing the cause).
+
+These are the findings that already cost the team time: the CI gate fails any diff with an
+error-severity finding in a touched file, and Phase 2's calibration showed two of nine sampled
+commits failing purely on inherited `swallowed-exception` errors in `src/index.tsx` and
+`components/blob-details-modal.tsx`.
+
+Not a blanket fix: many empty catches are legitimate parse guards
+(`content/transform/bip-notation.ts`, `nip-notation.ts`, `helpers/nip19.ts`) and just need an
+explanatory comment plus a narrowed catch. The ones worth real attention are the
+decryption/signer paths where a swallowed error hides user-facing failure —
+`classes/encrypted-storage.tsx`, `helpers/nostr/dms.ts`, `components/blob-details-modal.tsx` (4).
+
+Plans:
+
+- [ ] TBD (plan with /gsd-plan-phase 3)
+
+### Phase 4: Dead code and import hygiene sweep
+
+**Goal:** Unused variables, unused and duplicated imports, and unreachable code are gone from
+`src/`, with the mechanically auto-fixable share applied in its own reviewable commit and each
+deliberate exception (notably the guarded dead code in `services/sqlite/index.ts`) either
+documented or removed as an explicit decision.
+**Requirements:** TBD
+**Depends on:** Phase 2
+**Plans:** 0 plans
+
+445 findings in the [2026-09-11 baseline](./research/aislop-scan-2026-09-11.md) (bucket C) —
+the largest bucket, and 132 of them auto-fixable via `aislop fix`. 239 × `eslint/no-unused-vars`,
+85 × `ai-slop/unused-import` (auto-fixable), 51 × `import/no-duplicates`, 47 ×
+`ai-slop/duplicate-import` (auto-fixable), 6 × `no-unused-expressions`, 6 × `no-unreachable`,
+plus ~12 single-instance cleanup rules.
+
+Concentrations: `views/lists/list/follow-set.tsx` (17),
+`components/outbox-relay-selection-modal.tsx` (13),
+`views/messages/inbox/components/locked-messages.tsx` (11),
+`views/lists/components/fallback-list-card.tsx` (11), `components/markdown/markdown.tsx` (10),
+`views/settings/profile/components/profile-edit-form.tsx` (9).
+
+Known intentional: all 6 `no-unreachable` are in `services/sqlite/index.ts`, below a
+deliberate `throw` that guards the web build — the code beneath is kept on purpose
+and should be commented or removed as an explicit decision, not silently deleted.
+
+Plans:
+
+- [ ] TBD (plan with /gsd-plan-phase 4)
+
+### Phase 5: Refactor oversized files, long functions, and duplicated blocks
+
+**Goal:** The handful of files and functions that have outgrown themselves are split along real
+seams and their duplicated blocks are factored out — with each thin wrapper either inlined or
+justified — so the remaining complexity findings reflect deliberate structure.
+**Requirements:** TBD
+**Depends on:** Phase 4
+**Plans:** 0 plans
+
+32 findings in the [2026-09-11 baseline](./research/aislop-scan-2026-09-11.md) (bucket H):
+21 × `code-quality/duplicate-block`, 7 × `complexity/function-too-long`, 2 ×
+`complexity/file-too-large`, 2 × `ai-slop/thin-wrapper`.
+
+Real targets: `helpers/nostr/torrents.ts` (5 duplicate blocks),
+`providers/global/napplet-shell-provider.tsx` (>600 lines + a >160-line function),
+`services/notifications/common.ts`, `views/articles/components/article-reader.tsx`,
+`views/notifications/index.tsx`, `views/settings/background-worker/cached-files-card.tsx`,
+`services/wallets.ts`.
+
+Thin wrappers to inline or justify: `helpers/nostr/relay-stats.ts` (`getRelayURL`),
+`services/verify-event.ts` (`verifyEvent`).
+
+Sequenced after Phase 4 so the sweep does not refactor code that is about to be deleted.
+
+Plans:
+
+- [ ] TBD (plan with /gsd-plan-phase 5)
+
+### Phase 6: Close type-safety escape hatches
+
+**Goal:** The two clusters that account for most of the `any` / `as unknown as` / `@ts-ignore`
+usage — the IndexedDB wrapper and the copy-pasted notification casts — are replaced by properly
+typed helpers, and each remaining directive states why the type system cannot express it.
+**Requirements:** TBD
+**Depends on:** Phase 2
+**Plans:** 0 plans
+
+68 findings in the [2026-09-11 baseline](./research/aislop-scan-2026-09-11.md) (bucket E):
+35 × `ts-directive` (`@ts-ignore` / `@ts-expect-error`, info severity), 20 ×
+`double-type-assertion` (`as unknown as X`), 13 × `unsafe-type-assertion` (`as any`).
+
+Two clusters make up most of the value: `services/database/index.ts` holds 18 (IndexedDB
+wrapper casts — one properly-typed wrapper clears the file), and the identical `as any` casts
+copy-pasted across `views/notifications/{mentions,quotes,replies,reposts,threads,zaps}/index.tsx`
+want one shared typed helper. Also `services/loaders.ts` (5),
+`providers/global/napplet-shell-provider.tsx` (4), `components/magic-textarea.tsx` (3),
+`hooks/use-webxdc.ts` (3), `services/wallets.ts` (3).
+
+The vendored `lib/open-graph-scraper/*` hits from the 2026-08-02 scan no longer appear — Phase 2
+excludes those paths from scoring.
+
+Plans:
+
+- [ ] TBD (plan with /gsd-plan-phase 6)
+
+### Phase 7: Accessibility pass on interactive components
+
+**Goal:** The interactive components that screen readers currently misreport — custom roles that
+should be plain tags, roles missing their required ARIA props, and unlabelled controls — are
+corrected, starting with the shared components that every view inherits.
+**Requirements:** TBD
+**Depends on:** Phase 2
+**Plans:** 0 plans
+
+47 `jsx-a11y` findings in the [2026-09-11 baseline](./research/aislop-scan-2026-09-11.md)
+(bucket F): 28 × `prefer-tag-over-role`, 8 × `role-has-required-aria-props`, 5 ×
+`control-has-associated-label`, 2 × `no-redundant-roles`, 2 × `iframe-has-title`, 1 ×
+`alt-text`, 1 × `role-supports-aria-props`.
+
+The policy question this item was blocked on is settled: Phase 2 (D-06) turned
+`jsx-a11y/no-autofocus` off, so the 25 deliberate-UX autofocus hits from the 2026-08-02 scan no
+longer fire and nothing here is a rule-adoption debate — every remaining finding is a real fix.
+
+Concentrations: `components/magic-textarea.tsx` (10), `components/relay-url-input.tsx` (5),
+`views/settings/privacy/index.tsx` (5), `views/articles/article.tsx` (5),
+`components/loading-nostr-link.tsx` (4).
+
+Plans:
+
+- [ ] TBD (plan with /gsd-plan-phase 7)
+
+### Phase 8: Triage TODO stubs and hardcoded URLs
+
+**Goal:** Every TODO left in `src/` is resolved, promoted to its own tracked item, or rewritten
+to say what is actually missing; the hardcoded service URLs worth centralising live in
+`src/const.ts` or are configurable, and the rest are confirmed as legitimate protocol defaults.
+**Requirements:** TBD
+**Depends on:** Phase 2
+**Plans:** 0 plans
+
+33 findings in the [2026-09-11 baseline](./research/aislop-scan-2026-09-11.md) (bucket I):
+17 × `ai-slop/hardcoded-url`, 16 × `ai-slop/todo-stub` (info severity).
+
+The TODOs are the useful half — each is a marker of known-incomplete work that should be
+either resolved or promoted to its own backlog item rather than left in code:
+`const.ts`, `services/accounts.ts`, `services/authentication-signer.ts`,
+`services/notifications/zaps.ts`, `hooks/use-cache-form.ts`,
+`helpers/nostr/list-history.ts`, `components/event-zap-modal/index.tsx` (2),
+`components/post-modal/index.tsx`, `views/new/note/short-text-form.tsx`, and others.
+
+Most hardcoded URLs are legitimate protocol/service defaults (nostr.build, YouTube embed,
+default media servers in `views/settings/media-servers/index.tsx`). The action is
+consolidating them into `src/const.ts` or making them configurable where it matters — not
+removing them.
+
+Plans:
+
+- [ ] TBD (plan with /gsd-plan-phase 8)
+
 ---
 
 ## Backlog
 
 ### Code quality: aislop scan findings (2026-08-02)
 
-The items below (999.2 – 999.10) were catalogued from a single `aislop@0.14.0` scan of
-`master` @ `d00cfd683`. Full evidence, per-rule counts, file lists, and caveats:
-[`.planning/research/aislop-scan-2026-08-02.md`](./research/aislop-scan-2026-08-02.md)
-(raw JSON alongside it). **Score: 5/100 "Critical" — 1,257 findings (81 errors, 1,118
-warnings, 402 auto-fixable) across 2,169 files.**
+These items were catalogued from a single `aislop@0.14.0` scan of `master` @ `d00cfd683`
+([`.planning/research/aislop-scan-2026-08-02.md`](./research/aislop-scan-2026-08-02.md)).
+Those counts are superseded: Phase 2 landed the adopted config and recorded a fresh whole-repo
+baseline at [`.planning/research/aislop-scan-2026-09-11.md`](./research/aislop-scan-2026-09-11.md)
+(**score 78/100, 1,196 findings**), which is what any promoted item measures against. The two
+scans are not directly comparable — different aislop version, rule set, and scored file set.
 
-The config/gate item that was 999.11 has been promoted to **Phase 2**. Do not promote any
-item below until Phase 2 lands — otherwise they are fixing findings against aislop's bundled
-defaults, including in vendored code that Phase 2 excludes from scoring.
+Promoted so far: the config/gate item that was 999.11 became **Phase 2**; 999.3, 999.4, 999.9,
+999.6, 999.7 and 999.10 became **Phases 3 – 8** (backlog review, 2026-09-12).
 
-Suggested ordering if promoted afterwards: 999.2 (real bugs) → 999.3 → 999.4 → 999.9 →
-the rest.
+Still here: **999.2** (React hook-order violations — the highest-risk bucket in the scan and the
+only one aislop classes as confirmed defects at error severity; the roadmap's suggested first
+promotion, deliberately left in the backlog at review time), **999.5** (hook dependency arrays)
+and **999.8** (comment and console noise). Refresh their counts from the 2026-09-11 baseline when
+promoting.
 
 ### Phase 999.2: Fix React hook-order violations and missing keys (BACKLOG)
 
@@ -132,52 +305,6 @@ Plans:
 
 - [ ] TBD (promote with /gsd-review-backlog when ready)
 
-### Phase 999.3: Audit swallowed exceptions and silent failure paths (BACKLOG)
-
-**Goal:** [Captured for future planning]
-**Requirements:** TBD
-**Plans:** 0 plans
-
-61 findings: 32 × `ai-slop/swallowed-exception` (empty catch, error severity), 24 ×
-`eslint/no-empty` (largely the same sites), 2 × `redundant-try-catch`, 1 ×
-`no-async-promise-executor` (`components/qr-code/native-scanner.ts:15`), 1 ×
-`hidden-fallback` (`hooks/timeline/use-timeline-cache-key.ts:14`), 1 × `silent-recovery`
-(`index.tsx:47` — logs without the caught error, losing the cause).
-
-Not a blanket fix: many empty catches are legitimate parse guards (`bip-notation.ts`,
-`nip-notation.ts`, `helpers/nip19.ts`) and just need an explanatory comment plus a narrowed
-catch. The ones worth real attention are the decryption/signer paths where a swallowed error
-hides user-facing failure — `classes/encrypted-storage.tsx:171`, `helpers/nostr/dms.ts:31`,
-`components/blob-details-modal.tsx` (4).
-
-Plans:
-
-- [ ] TBD (promote with /gsd-review-backlog when ready)
-
-### Phase 999.4: Dead code and import hygiene sweep (BACKLOG)
-
-**Goal:** [Captured for future planning]
-**Requirements:** TBD
-**Plans:** 0 plans
-
-449 findings — the largest bucket, and 132 of them are mechanically auto-fixable via
-`aislop fix`. 240 × `eslint/no-unused-vars`, 85 × `ai-slop/unused-import` (auto-fixable),
-51 × `import/no-duplicates`, 47 × `ai-slop/duplicate-import` (auto-fixable), 7 ×
-`no-unused-expressions`, 6 × `no-unreachable`, plus ~12 single-instance cleanup rules.
-
-Concentrations: `views/lists/list/follow-set.tsx` (17),
-`components/outbox-relay-selection-modal.tsx` (13),
-`views/messages/inbox/components/locked-messages.tsx` (11),
-`views/lists/components/fallback-list-card.tsx` (11), `components/markdown/markdown.tsx` (10).
-
-Known intentional: all 6 `no-unreachable` are in `services/sqlite/index.ts`, below a
-deliberate `throw` at line 8 that guards the web build — the code beneath is kept on purpose
-and should be commented or removed as an explicit decision, not silently deleted.
-
-Plans:
-
-- [ ] TBD (promote with /gsd-review-backlog when ready)
-
 ### Phase 999.5: Resolve React hook dependency arrays (BACKLOG)
 
 **Goal:** [Captured for future planning]
@@ -194,49 +321,6 @@ Concentrations: `views/torrents/index.tsx` (7), `views/notifications/components/
 
 Worth scoping down to the shared hooks and providers first (`hooks/`, `providers/`) — a stale
 closure there propagates to every consumer.
-
-Plans:
-
-- [ ] TBD (promote with /gsd-review-backlog when ready)
-
-### Phase 999.6: Close type-safety escape hatches (BACKLOG)
-
-**Goal:** [Captured for future planning]
-**Requirements:** TBD
-**Plans:** 0 plans
-
-74 findings: 41 × `ts-directive` (`@ts-ignore` / `@ts-expect-error`), 20 ×
-`double-type-assertion` (`as unknown as X`), 13 × `unsafe-type-assertion` (`as any`).
-
-Two clusters make up most of the value: `services/database/index.ts` holds 18 (IndexedDB
-wrapper casts — one properly-typed wrapper clears the file), and 6 identical `as any` casts
-are copy-pasted across `views/notifications/{mentions,quotes,replies,reposts,threads,zaps}/index.tsx`
-and want one shared typed helper. Also `services/loaders.ts` (5),
-`providers/global/napplet-shell-provider.tsx` (4), `hooks/use-webxdc.ts` (3).
-
-Excludes `lib/open-graph-scraper/*` (5) — vendored, see Phase 2.
-
-Plans:
-
-- [ ] TBD (promote with /gsd-review-backlog when ready)
-
-### Phase 999.7: Accessibility pass on interactive components (BACKLOG)
-
-**Goal:** [Captured for future planning]
-**Requirements:** TBD
-**Plans:** 0 plans
-
-72 `jsx-a11y` findings: 28 × `prefer-tag-over-role`, 25 × `no-autofocus`, 8 ×
-`role-has-required-aria-props`, 5 × `control-has-associated-label`, 2 × `no-redundant-roles`,
-2 × `iframe-has-title`, 1 × `alt-text`, 1 × `role-supports-aria-props`.
-
-Concentrations: `components/magic-textarea.tsx` (10), `components/relay-url-input.tsx` (5),
-`components/loading-nostr-link.tsx` (5), `views/settings/privacy/index.tsx` (5),
-`views/articles/article.tsx` (5).
-
-Requires a policy decision first: the 25 `no-autofocus` hits are mostly deliberate UX in
-modals and forms. Decide once whether noStrudel adopts that rule, then either fix the sites
-or turn the rule off in config — don't churn through them case by case.
 
 Plans:
 
@@ -264,48 +348,3 @@ Plans:
 
 - [ ] TBD (promote with /gsd-review-backlog when ready)
 
-### Phase 999.9: Refactor oversized files, long functions, and duplicated blocks (BACKLOG)
-
-**Goal:** [Captured for future planning]
-**Requirements:** TBD
-**Plans:** 0 plans
-
-37 findings: 21 × `duplicate-block`, 9 × `function-too-long`, 4 × `file-too-large`, 2 ×
-`thin-wrapper`, 1 × `deep-nesting`.
-
-Real targets (after excluding the two vendored files that trip `file-too-large`):
-`providers/global/napplet-shell-provider.tsx` (>600 lines + a >160-line function),
-`services/wallets.ts` (>400 lines), `helpers/nostr/torrents.ts` (5 duplicate blocks),
-`components/post-modal/index.tsx`, `views/new/poll/poll-form.tsx`,
-`views/relays/relay/tabs/about.tsx`, `views/tools/event-publisher/index.tsx`.
-
-Thin wrappers to inline or justify: `helpers/nostr/relay-stats.ts:7` (`getRelayURL`),
-`services/verify-event.ts:32` (`verifyEvent`).
-
-Plans:
-
-- [ ] TBD (promote with /gsd-review-backlog when ready)
-
-### Phase 999.10: Triage TODO stubs and hardcoded URLs (BACKLOG)
-
-**Goal:** [Captured for future planning]
-**Requirements:** TBD
-**Plans:** 0 plans
-
-33 findings: 17 × `hardcoded-url`, 16 × `todo-stub`.
-
-The TODOs are the useful half — each is a marker of known-incomplete work that should be
-either resolved or promoted to its own backlog item rather than left in code:
-`const.ts:11`, `services/accounts.ts:33`, `services/authentication-signer.ts:51`,
-`services/notifications/zaps.ts:78`, `hooks/use-cache-form.ts:7`,
-`helpers/nostr/list-history.ts:92`, `components/event-zap-modal/index.tsx` (2),
-`components/post-modal/index.tsx:180`, `views/new/note/short-text-form.tsx:193`, and others.
-
-Most hardcoded URLs are legitimate protocol/service defaults (nostr.build, YouTube embed,
-default media servers in `views/settings/media-servers/index.tsx`). The action is
-consolidating them into `src/const.ts` or making them configurable where it matters — not
-removing them.
-
-Plans:
-
-- [ ] TBD (promote with /gsd-review-backlog when ready)
