@@ -153,3 +153,7 @@ Plan 03-04 remains paused at a human-verification checkpoint (unrelated files: `
 ---
 *Phase: 03-audit-swallowed-exceptions-and-silent-failure-paths*
 *Completed: 2026-09-15*
+
+## Self-Check: PASSED
+
+All 4 modified source files and this SUMMARY.md confirmed present on disk. All 4 task/summary commit hashes (`2a8d3781f`, `bdd45c0db`, `32e212955`, `d01e4a865`) confirmed present in `git log --oneline --all`.
