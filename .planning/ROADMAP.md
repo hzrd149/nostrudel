@@ -93,9 +93,10 @@ Plans:
 narrowed and commented as a deliberate parse guard, or surfaced to the user / logged with its
 cause — with the decryption and signer paths, where a swallowed error hides a user-facing
 failure, resolved first.
-**Requirements:** TBD
+**Requirements:** D-01, D-02, D-03, D-04, D-05, D-06, D-07, D-08, D-09, D-10, D-11, D-12, D-13, D-14, D-15
+(no REQUIREMENTS.md exists; the requirement set is the locked decisions in `03-CONTEXT.md`)
 **Depends on:** Phase 2
-**Plans:** 0 plans
+**Plans:** 6 plans
 
 59 findings in the [2026-09-11 baseline](./research/aislop-scan-2026-09-11.md) (bucket B):
 31 × `ai-slop/swallowed-exception` (empty catch, error severity), 23 × `eslint/no-empty`
@@ -115,8 +116,20 @@ decryption/signer paths where a swallowed error hides user-facing failure —
 `classes/encrypted-storage.tsx`, `helpers/nostr/dms.ts`, `components/blob-details-modal.tsx` (4).
 
 Plans:
+**Wave 1** *(risk first, per D-02)*
 
-- [ ] TBD (plan with /gsd-plan-phase 3)
+- [ ] 03-01-PLAN.md — The five decryption/signer sites: reason comments, namespaced logs, explicit returns (wave 1)
+
+**Wave 2** *(blocked on Wave 1 completion)*
+
+- [ ] 03-02-PLAN.md — D-05 explicit-return sweep across 13 parse/filter guards (wave 2)
+- [ ] 03-03-PLAN.md — D-10/D-12 log-the-cause remedy at 8 best-effort fallback sites (wave 2)
+- [ ] 03-04-PLAN.md — D-09 `useAsyncAction` conversion for 3 user-triggered actions (wave 2)
+- [ ] 03-05-PLAN.md — D-13/D-14/D-15 strays: sqlite ceremony, async promise executor, cache-key ignore, index.tsx logger (wave 2)
+
+**Wave 3** *(blocked on Wave 2 completion)*
+
+- [ ] 03-06-PLAN.md — AGENTS.md error-handling convention (D-03) and the 31 → 0 rescan report (D-04) (wave 3)
 
 ### Phase 4: Dead code and import hygiene sweep
 
