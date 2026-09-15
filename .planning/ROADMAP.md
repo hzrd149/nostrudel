@@ -348,3 +348,32 @@ Plans:
 
 - [ ] TBD (promote with /gsd-review-backlog when ready)
 
+### Phase 999.12: Add an event menu to highlight timeline items (BACKLOG)
+
+**Goal:** [Captured for future planning]
+**Requirements:** TBD
+**Plans:** 0 plans
+
+Not part of the aislop scan catalogue above — a UI gap reported directly.
+
+Highlight events in the timeline have no event menu, so the user has no way to delete or share
+them and no "view raw" option. `src/components/timeline/highlight.tsx` renders only a footer
+`ButtonGroup` (reply / share / quote / zap) and no menu at all, unlike every other kind:
+`src/components/timeline/note/index.tsx:130` and `src/components/timeline/share.tsx:45` both
+render `NoteMenu`.
+
+What the missing menu contains (`src/components/note/note-menu.tsx`): Open in app, Share link,
+Copy embed code, Mute user, **Delete event**, Broadcast, Pin event, and `DebugEventMenuItem` —
+the raw-event view.
+
+Action: render `NoteMenu` on the highlight card (header or footer, matching the other kinds) so
+highlights get the same delete / share / raw options as the rest of the timeline.
+
+Numbering note: 999.1 – 999.11 have all been issued at least once (999.1 → Phase 1,
+999.11 → Phase 2, 999.3/4/6/7/9/10 → Phases 3 – 8), so this item takes the first never-used
+number rather than reusing a vacated slot.
+
+Plans:
+
+- [ ] TBD (promote with /gsd-review-backlog when ready)
+
