@@ -8,10 +8,10 @@ import {
   MenuItem,
   MenuList,
 } from "@chakra-ui/react";
-import { useCallback } from "react";
 
 import { ChevronDownIcon } from "../../../../components/icons";
 import Trash01 from "../../../../components/icons/trash-01";
+import useAsyncAction from "../../../../hooks/use-async-action";
 
 export default function EnableWithDelete({
   enable,
@@ -25,12 +25,10 @@ export default function EnableWithDelete({
   wipe: () => Promise<void>;
   isLoading?: boolean;
 }) {
-  const wipeDatabase = useCallback(async () => {
-    try {
-      await wipe();
-      location.reload();
-    } catch (error) {}
-  }, []);
+  const wipeDatabase = useAsyncAction(async () => {
+    await wipe();
+    location.reload();
+  }, [wipe]);
 
   return (
     <ButtonGroup isAttached {...props}>
@@ -40,7 +38,7 @@ export default function EnableWithDelete({
       <Menu>
         <MenuButton as={IconButton} icon={<ChevronDownIcon />} aria-label="More options" isLoading={isLoading} />
         <MenuList>
-          <MenuItem icon={<Trash01 />} color="red.500" onClick={wipeDatabase}>
+          <MenuItem icon={<Trash01 />} color="red.500" onClick={wipeDatabase.run}>
             Clear Database
           </MenuItem>
         </MenuList>
