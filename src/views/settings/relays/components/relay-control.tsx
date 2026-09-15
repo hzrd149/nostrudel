@@ -1,9 +1,10 @@
 import { CloseIcon } from "@chakra-ui/icons";
 import { Box, ButtonGroup, Flex, IconButton, Link, Text } from "@chakra-ui/react";
-import { PropsWithChildren, ReactNode, useState } from "react";
+import { PropsWithChildren, ReactNode } from "react";
 import { Link as RouterLink } from "react-router-dom";
 
 import RelayFavicon from "../../../../components/relay/relay-favicon";
+import useAsyncAction from "../../../../hooks/use-async-action";
 import { useRelayInfo } from "../../../../hooks/use-relay-info";
 import RelayLink from "../../../../components/relay/relay-link";
 
@@ -18,15 +19,10 @@ export default function RelayControl({
   details?: ReactNode;
 }>) {
   const { info } = useRelayInfo(url);
-  const [loading, setLoading] = useState(false);
 
-  const remove = async () => {
-    setLoading(true);
-    try {
-      await onRemove();
-    } catch (error) {}
-    setLoading(false);
-  };
+  const remove = useAsyncAction(async () => {
+    await onRemove();
+  }, [onRemove]);
 
   return (
     <Flex gap="2" pl="2">
@@ -46,8 +42,8 @@ export default function RelayControl({
           size="sm"
           colorScheme="red"
           variant="ghost"
-          onClick={remove}
-          isLoading={loading}
+          onClick={remove.run}
+          isLoading={remove.loading}
         />
       </ButtonGroup>
     </Flex>
