@@ -59,8 +59,9 @@ export const RelayUrlInput = forwardRef(({ nips, ...props }: { nips?: number[] }
         event.currentTarget.value = normalized;
         onChange?.(event as ChangeEvent<HTMLInputElement>);
       }
-    } catch (err) {
+    } catch {
       // Ignore invalid URLs, let form validation handle them
+      return;
     }
   };
 

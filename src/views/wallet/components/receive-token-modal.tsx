@@ -33,7 +33,10 @@ function normalizeToken(value: string): string {
   try {
     const token = decodeTokenFromEmojiString(trimmed);
     if (token) return getEncodedToken(token);
-  } catch (error) {}
+  } catch {
+    // Not an emoji-encoded token; pass the pasted value through unchanged
+    return trimmed;
+  }
   return trimmed;
 }
 

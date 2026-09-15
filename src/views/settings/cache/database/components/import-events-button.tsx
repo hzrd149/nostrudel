@@ -19,7 +19,10 @@ export default function ImportEventsButton({ onLoad }: { onLoad: (events: NostrE
         try {
           const event = JSON.parse(line) as NostrEvent;
           events.push(event);
-        } catch (e) {}
+        } catch {
+          // Line was not parseable JSON; skip it
+          continue;
+        }
       }
       await onLoad(events);
       alert(`Imported ${events.length} events`);

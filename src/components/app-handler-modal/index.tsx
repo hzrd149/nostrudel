@@ -135,7 +135,10 @@ export default function AppHandlerModal({
           if (getDisplayName(parsed, app.pubkey).toLowerCase().includes(search.toLowerCase())) {
             return true;
           }
-        } catch (error) {}
+        } catch {
+          // App's profile content could not be parsed; exclude it from search results
+          return false;
+        }
         return false;
       } else return true;
     })

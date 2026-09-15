@@ -316,8 +316,9 @@ function HiddenVersions({
       try {
         await unlockHiddenTags(event, account);
         refresh();
-      } catch (error) {
-        // ignore — the signer was denied or the content could not be decrypted
+      } catch {
+        // ignore — the signer was denied or the content could not be decrypted; the row simply stays locked
+        return;
       } finally {
         setUnlockingIds((prev) => {
           const next = new Set(prev);

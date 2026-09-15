@@ -71,7 +71,10 @@ function EventPublisherPage({ initDraft }: { initDraft?: LooseEventTemplate }) {
     try {
       if (!draft) return;
       setProcessed(processEvent(draft, variables, account));
-    } catch (error) {}
+    } catch {
+      // Draft could not be processed into an unsigned event; processed is left unset
+      return;
+    }
   }, [draft, account, variables]);
 
   const submitEvent = () => {
