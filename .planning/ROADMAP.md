@@ -137,9 +137,11 @@ Plans:
 `src/`, with the mechanically auto-fixable share applied in its own reviewable commit and each
 deliberate exception (notably the guarded dead code in `services/sqlite/index.ts`) either
 documented or removed as an explicit decision.
-**Requirements:** TBD
+**Requirements:** D-01, D-02, D-02a, D-03, D-04, D-04a, D-05, D-06, D-07, D-08, D-09, D-10, D-11,
+D-12, D-12a, D-13, D-14, D-15
+(no REQUIREMENTS.md exists; the requirement set is the locked decisions in `04-CONTEXT.md`)
 **Depends on:** Phase 2
-**Plans:** 0 plans
+**Plans:** 11 plans
 
 445 findings in the [2026-09-11 baseline](./research/aislop-scan-2026-09-11.md) (bucket C) —
 the largest bucket, and 132 of them auto-fixable via `aislop fix`. 239 × `eslint/no-unused-vars`,
@@ -159,7 +161,31 @@ and should be commented or removed as an explicit decision, not silently deleted
 
 Plans:
 
-- [ ] TBD (plan with /gsd-plan-phase 4)
+**Wave 1** *(the mechanical commit, alone, per D-04)*
+
+- [ ] 04-01-PLAN.md — `aislop fix --safe` auto-fix; revert comment and vendored hunks (wave 1)
+
+**Wave 2** *(blocked on Wave 1 completion)*
+
+- [ ] 04-02-PLAN.md — D-05 bare-catch sweep across the 24 unused catch bindings (wave 2)
+- [ ] 04-03-PLAN.md — D-07 dead functions, unwired constants, and the 4 risky bindings (wave 2)
+- [ ] 04-04-PLAN.md — D-07 the 13 plain dead local variables (wave 2)
+- [ ] 04-07-PLAN.md — D-08…D-11 the four ledger ignores; sqlite `dbName` deletion (wave 2)
+- [ ] 04-08-PLAN.md — D-12/D-12a/D-13 miner cleanup, short-circuits, stranded returns (wave 2)
+- [ ] 04-09-PLAN.md — the 9 single-instance cleanup rules (wave 2)
+
+**Wave 3** *(blocked on Wave 2 completion)*
+
+- [ ] 04-05-PLAN.md — D-06 the 39 unused parameters outside `views/` (wave 3)
+- [ ] 04-06-PLAN.md — D-06 the 14 unused parameters under `views/`, preserving `replyKind` (wave 3)
+
+**Wave 4** *(blocked on Wave 3 completion)*
+
+- [ ] 04-10-PLAN.md — residual unused imports and the 4 cross-group duplicate merges (wave 4)
+
+**Wave 5** *(blocked on Wave 4 completion)*
+
+- [ ] 04-11-PLAN.md — D-14 rescan report, ledger audit, and D-15 disposition (wave 5)
 
 ### Phase 5: Refactor oversized files, long functions, and duplicated blocks
 
