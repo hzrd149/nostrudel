@@ -1,30 +1,38 @@
 ---
 phase: 03-audit-swallowed-exceptions-and-silent-failure-paths
 verified: 2026-09-15T00:00:00Z
-status: human_needed
+status: passed
 score: 15/15 must-haves verified
-behavior_unverified: 3
+behavior_unverified: 1
+behavior_unverified_resolved_at_uat: 2026-09-15
+uat_disposition: "items 1 and 2 confirmed by human at UAT; item 3 closed as accepted residual risk (skipped, not exercised)"
 overrides_applied: 0
 behavior_unverified_items:
+
   - truth: "D-09: A failed Remove Mint, Remove Relay or Clear Database raises a toast and the buttons still show their pre-existing loading/spinner state after the useAsyncAction conversion"
     test: "Run `pnpm dev`; click Remove Mint (wallet mint list), Remove Relay (Settings > Relays), and Clear Database (Settings > Cache > More options). Force at least one to fail if possible."
     expected: "Each button shows the same spinner/disabled behavior as before the conversion; a failure now raises a toast (previously nothing happened)."
     why_human: "This is a runtime state-transition (loading flag flip, toast dispatch) that static analysis and `pnpm build` cannot observe. 03-04's own checkpoint task to perform this was never run — the dev server was OOM-killed and the maintainer explicitly closed the plan with the item recorded unverified (03-04-SUMMARY.md, 03-VALIDATION.md Manual-Only Verifications row 1)."
+
   - truth: "D-11: decrypt-placeholder.tsx renders the hook's existing `error` Alert on a real legacy-DM decryption failure, now that the dead try/catch around `unlock()` has been deleted"
     test: "Trigger a legacy-DM decryption failure in a running app (e.g. an undecryptable legacy DM) and observe the component."
     expected: "The `if (error)` branch renders the Chakra Alert with `error.message`, a DebugEventButton, and a working 'Try again' button — unchanged from before, now driven solely by `useLegacyMessagePlaintext`'s own error state."
     why_human: "Requires provoking a real decryption failure in a running app. Static review confirms `unlock()` cannot reject (it catches internally and sets `error` state, never rethrows — verified by reading `use-legacy-message-plaintext.ts`), so the deleted catch was unreachable, but the live render was never exercised (03-VALIDATION.md Manual-Only Verifications row 2)."
+
   - truth: "D-13: native-scanner.ts's barcode-install Promise still resolves, rejects, and removes its listener correctly after hoisting the listener registration out of the async Promise executor"
     test: "Run a Capacitor native build and trigger the Google Barcode Scanner module install flow (COMPLETED / FAILED / CANCELED paths)."
     expected: "All three terminal states still settle the promise and remove the listener exactly as before the refactor."
     why_human: "Native-only Capacitor plugin code; cannot be exercised in the web dev server or by `pnpm build`. Explicitly accepted as residual risk in 03-05-PLAN.md's threat model (T-03-15) and 03-VALIDATION.md. Additionally, `BarcodeScanner.addListener(...).then((handle) => { sub = handle; })` has no `.catch`, so an `addListener` rejection would leave `installNativeScanner` hanging — not a regression (the prior async-executor form swallowed this the same way), and explicitly accepted by the maintainer."
 human_verification:
+
   - test: "Click Remove Mint, Remove Relay, and Clear Database in a running `pnpm dev` instance"
     expected: "Spinner/disabled behavior matches pre-change; a forced failure now shows a toast"
     why_human: "Runtime UI state transition; 03-04's own checkpoint for this was never executed (dev server OOM-killed)"
+
   - test: "Trigger a legacy-DM decryption failure and observe decrypt-placeholder.tsx"
     expected: "The component's existing error Alert renders with error.message, DebugEventButton, and Try again button"
     why_human: "Requires a live decryption failure; never exercised, only proven unreachable by contract"
+
   - test: "Run a Capacitor native build and exercise the Google Barcode Scanner module install COMPLETED/FAILED/CANCELED paths"
     expected: "Promise settles and listener is removed correctly in all three terminal cases"
     why_human: "Native-only code, not exercisable in this environment; explicitly accepted residual risk"
@@ -38,7 +46,7 @@ with the decryption and signer paths, where a swallowed error hides a user-facin
 first.
 
 **Verified:** 2026-09-15
-**Status:** human_needed
+**Status:** passed — human items closed at UAT on 2026-09-15 (see Human Verification Required)
 **Re-verification:** No — initial verification
 
 **Requirement source note:** No `.planning/REQUIREMENTS.md` or `.planning/PROJECT.md` exists in this
@@ -147,7 +155,21 @@ itself, not stubs — each reproduces a pre-existing fall-through value, confirm
 
 3 items — all previously identified by the phase's own `03-VALIDATION.md` "Manual-Only Verifications"
 table and explicitly carried forward as outstanding in `03-04-SUMMARY.md` and `03-06-SUMMARY.md`. None
-are new findings from this verification pass; they are confirmed still open.
+are new findings from this verification pass.
+
+**Disposition at UAT (2026-09-15) — `03-UAT.md`:**
+
+| Item | UAT test | Outcome |
+|------|----------|---------|
+| 1. D-09 loading-state / toast spot-check | 1 | **pass** — exercised by the maintainer in a running app |
+| 2. D-11 legacy-DM decrypt error Alert | 2 | **pass** — exercised by the maintainer in a running app |
+| 3. `native-scanner.ts` install-flow settlement | 3 | **skipped — accepted residual risk. Never exercised.** |
+
+Item 3 was not tested. It is closed by maintainer decision, not by evidence: the native Capacitor
+build required to exercise COMPLETED/FAILED/CANCELED is unavailable in this environment. The standing
+evidence for it remains static only (executor de-asynced, `sub?.remove()` present in all three terminal
+cases — truth #13), and the accepted unhandled-rejection path on `addListener(...).then(...)` is
+unfixed. Anyone relying on this report should treat D-13's runtime behavior as unverified.
 
 #### 1. D-09 loading-state / toast spot-check
 
@@ -191,14 +213,21 @@ the only lint-gate failure (`pnpm lint:ci`, 3 `react-hooks/rules-of-hooks` error
 confirmed to be a pre-existing, out-of-scope defect (backlog 999.2) inherited by touching a shared file,
 not a regression this phase introduced.
 
-The phase is held at `human_needed` rather than `passed` solely because three behavior-dependent truths
-(D-09's loading/toast UI behavior, D-11's live error-Alert render, and D-13's native-only
-install-settlement path) have their code present and correctly wired but their runtime behavior was
-never exercised by a test or a live session — consistent with D-04's explicit rejection of a manual UAT
-wave for this phase and the project's established precedent (Phase 1 closed `passed` with
-`behavior_unverified: 11`). These are not blockers to phase closure by the project's own validation
-contract, but per the verification decision tree they must route to human sign-off rather than being
-silently marked passed.
+This report was initially held at `human_needed` because three behavior-dependent truths (D-09's
+loading/toast UI behavior, D-11's live error-Alert render, and D-13's native-only install-settlement
+path) had their code present and correctly wired but their runtime behavior never exercised.
+
+**Closed to `passed` on 2026-09-15** after UAT: D-09 and D-11 were exercised by the maintainer and
+passed. D-13 was not exercised and was closed as accepted residual risk — the disposition
+`03-VALIDATION.md`'s Manual-Only Verifications row 3 sanctions and `03-05-PLAN.md`'s threat model
+records as T-03-15. This mirrors the precedent of Phase 1, which closed `passed` with
+`behavior_unverified: 11`.
+
+**Known divergence:** `gsd-tools phase uat-passed 03 --require-verification` still returns
+`passed: false`, because its predicate counts only `pass` as passing and `03-UAT.md` test 3 is
+`skipped` (`uat-predicate.cjs` `PASSING_RESULTS`). The phase is closed on maintainer judgment, not on
+that predicate. Re-running the predicate will continue to report the skipped test; that is expected and
+is not a regression to re-investigate.
 
 ---
 

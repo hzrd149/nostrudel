@@ -1,14 +1,14 @@
 ---
-status: partial
+status: complete
 phase: 03-audit-swallowed-exceptions-and-silent-failure-paths
 source: [03-VERIFICATION.md]
 started: 2026-09-15T15:42:57Z
-updated: "2026-09-15T16:10:27Z"
+updated: "2026-09-15T16:41:00Z"
 ---
 
 ## Current Test
 
-[testing paused — 1 item outstanding]
+[testing complete]
 
 ## Tests
 
@@ -25,9 +25,9 @@ result: pass
 ### 3. native-scanner.ts barcode-install promise still settles after the async-executor refactor (D-13)
 
 expected: In a Capacitor native build, trigger the Google Barcode Scanner module install flow and exercise the COMPLETED, FAILED and CANCELED paths. All three terminal states settle the promise and remove the listener exactly as before the refactor.
-result: blocked
+result: skipped
 blocked_by: release-build
-reason: Native-only Capacitor plugin code; cannot be exercised in the web dev server or by `pnpm build`. Explicitly accepted as residual risk by the maintainer on 2026-09-15, a disposition 03-VALIDATION.md's Manual-Only Verifications row 3 already sanctions ("or accept as residual risk and rely on `pnpm build` typecheck"). Carries a known, accepted, non-regressive unhandled-rejection path: `BarcodeScanner.addListener(...).then((handle) => { sub = handle; })` has no `.catch`, so an addListener rejection would leave `installNativeScanner` hanging — the prior async-executor form swallowed this identically, which is why `eslint/no-async-promise-executor` fired on it.
+reason: Not exercisable in this environment and closed as accepted residual risk rather than left outstanding — maintainer confirmed the disposition again on 2026-09-15 during UAT. Native-only Capacitor plugin code; cannot be exercised in the web dev server or by `pnpm build`. 03-VALIDATION.md's Manual-Only Verifications row 3 sanctions exactly this disposition ("or accept as residual risk and rely on `pnpm build` typecheck"), and 03-05-PLAN.md's threat model records it as T-03-15. Static evidence standing in for the runtime check: the executor is no longer `async` and all three terminal cases (COMPLETED/FAILED/CANCELED) call `sub?.remove()`, confirmed by source read in 03-VERIFICATION.md truth #13. Carries a known, accepted, non-regressive unhandled-rejection path: `BarcodeScanner.addListener(...).then((handle) => { sub = handle; })` has no `.catch`, so an addListener rejection would leave `installNativeScanner` hanging — the prior async-executor form swallowed this identically, which is why `eslint/no-async-promise-executor` fired on it.
 
 ## Summary
 
@@ -35,7 +35,7 @@ total: 3
 passed: 2
 issues: 0
 pending: 0
-skipped: 0
-blocked: 1
+skipped: 1
+blocked: 0
 
 ## Gaps
