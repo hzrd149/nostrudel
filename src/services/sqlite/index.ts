@@ -23,35 +23,27 @@ export async function openConnection(
   isDelete: boolean,
 ): Promise<SQLiteDBConnection> {
   let db: SQLiteDBConnection;
-  try {
-    const retCC = (await sqlite.checkConnectionsConsistency()).result;
-    let isConn = (await sqlite.isConnection(dbName, false)).result;
-    if (retCC && isConn) {
-      db = await sqlite.retrieveConnection(dbName, false);
-    } else {
-      db = await sqlite.createConnection(dbName, encrypted, mode, version, false);
-    }
-    if (isDelete) {
-      await deleteDatabase(db);
-    }
-    await db.open();
-    return db;
-  } catch (err) {
-    return Promise.reject(err);
+  const retCC = (await sqlite.checkConnectionsConsistency()).result;
+  let isConn = (await sqlite.isConnection(dbName, false)).result;
+  if (retCC && isConn) {
+    db = await sqlite.retrieveConnection(dbName, false);
+  } else {
+    db = await sqlite.createConnection(dbName, encrypted, mode, version, false);
   }
+  if (isDelete) {
+    await deleteDatabase(db);
+  }
+  await db.open();
+  return db;
 }
 
 export async function deleteDatabase(db: SQLiteDBConnection): Promise<void> {
-  try {
-    const ret = (await db.isExists()).result;
-    if (ret) {
-      const dbName = db.getConnectionDBName();
-      await db.delete();
-      return Promise.resolve();
-    } else {
-      return Promise.resolve();
-    }
-  } catch (err) {
-    return Promise.reject(err);
+  const ret = (await db.isExists()).result;
+  if (ret) {
+    const dbName = db.getConnectionDBName();
+    await db.delete();
+    return Promise.resolve();
+  } else {
+    return Promise.resolve();
   }
 }
