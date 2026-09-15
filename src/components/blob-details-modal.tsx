@@ -29,9 +29,12 @@ import { useAsync } from "react-use";
 import { useActiveAccount } from "applesauce-react/hooks";
 import { multiServerUpload } from "blossom-client-sdk/actions/multi-server";
 import { mergeBlossomServers } from "../helpers/blossom";
+import { logger } from "../helpers/debug";
 import useAsyncAction from "../hooks/use-async-action";
 import useUsersMediaServers from "../hooks/use-user-blossom-servers";
 import BlossomServerFavicon from "./blossom/blossom-server-favicon";
+
+const log = logger.extend("BlobRepair");
 
 function ServerBlobStatus({ server, blob }: { server: string | URL; blob: string }) {
   const check = useAsync(() => hasBlob(server, blob), [server, blob]);
@@ -143,14 +146,20 @@ function RepairBlobButton({
     // attmept to download blob from url
     try {
       blob = await fetch(url).then((res) => res.blob());
-    } catch (error) {}
+    } catch (error) {
+      // Direct fetch failed, fall through to trying each server below.
+      log("Failed to fetch blob directly", url, error);
+    }
 
     // Attempt to download blob from any server
     for (const server of mergeBlossomServers(userServers, ownerServers)) {
       try {
         blob = await downloadBlob(server, hash).then((res) => res.blob());
         if (blob) break;
-      } catch (error) {}
+      } catch (error) {
+        // This server could not supply the blob, try the next one.
+        log("Failed to download from server", server, error);
+      }
     }
 
     if (!blob) throw new Error("Failed to download blob from any server");
