@@ -5,9 +5,12 @@ import { MouseEventHandler, useCallback } from "react";
 import { Link as RouterLink } from "react-router-dom";
 
 import { EmbedEventPointerCard } from "../embed-event/card";
+import { logger } from "../../helpers/debug";
 import UserAvatarLink from "../user/user-avatar-link";
 import UserDnsIdentity from "../user/user-dns-identity";
 import UserLink from "../user/user-link";
+
+const log = logger.extend("EventTags");
 
 function EventTag({ tag }: { tag: string[] }) {
   const expand = useDisclosure();
@@ -71,7 +74,10 @@ function EventTag({ tag }: { tag: string[] }) {
         </>
       );
     }
-  } catch (error) {}
+  } catch (error) {
+    // The tag could not be decoded, the raw content is rendered instead
+    log("Failed to render decoded tag", error);
+  }
 
   return (
     <Text title={content} {...props}>

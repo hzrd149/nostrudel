@@ -1,5 +1,8 @@
 import { parseLNURLOrAddress } from "applesauce-common/helpers";
+import { logger } from "../helpers/debug";
 import { fetchWithProxy } from "../helpers/request";
+
+const log = logger.extend("LNURLMetadata");
 
 type LNURLPMetadata = {
   callback: string;
@@ -28,7 +31,10 @@ class LNURLMetadataService {
       if ((metadata as LNURLPMetadata).tag === "payRequest") {
         return metadata as LNURLPMetadata;
       }
-    } catch (e) {}
+    } catch (e) {
+      // The lookup failed, the caller receives no metadata
+      log("Failed to fetch LNURL metadata", addressOrLNURL, e);
+    }
     this.pending.delete(addressOrLNURL);
   }
 

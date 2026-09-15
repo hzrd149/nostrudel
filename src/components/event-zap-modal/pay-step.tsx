@@ -17,12 +17,15 @@ import {
 import { PropsWithChildren, useEffect, useRef, useState } from "react";
 
 import { PayRequest } from ".";
+import { logger } from "../../helpers/debug";
 import { useActiveWallet, useWallets } from "../../hooks/use-wallets";
 import { type WalletBackend } from "../../services/wallets";
 import { CheckIcon, ChevronDownIcon, ErrorIcon, LightningIcon } from "../icons";
 import { InvoiceModalContent } from "../invoice-modal";
 import UserAvatar from "../user/user-avatar";
 import UserLink from "../user/user-link";
+
+const log = logger.extend("ZapPayStep");
 
 function UserCard({ children, pubkey }: PropsWithChildren & { pubkey: string }) {
   return (
@@ -170,6 +173,7 @@ export default function PayStep({
           markPaid(pubkey);
         } catch (e) {
           // Leave it for the user to pay manually or with another wallet
+          log("Failed to pay invoice", pubkey, e);
         }
       }
       setPayingAll(false);

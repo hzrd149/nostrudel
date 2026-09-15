@@ -5,10 +5,13 @@ import { requestProvider } from "webln";
 import { Box, BoxProps, Button, ButtonGroup, Flex, IconButton, Text, useDisclosure } from "@chakra-ui/react";
 import { parseBolt11 } from "applesauce-common/helpers";
 
+import { logger } from "../../helpers/debug";
 import { CopyIconButton } from "../copy-icon-button";
 import QrCode02 from "../icons/qr-code-02";
 import QrCodeModal from "../qr-code/qr-code-modal";
 import ValueDisplay from "../value-display";
+
+const log = logger.extend("InlineInvoiceCard");
 
 export type InvoiceButtonProps = {
   paymentRequest: string;
@@ -31,6 +34,7 @@ export default function InlineInvoiceCard({
       await provider.sendPayment(paymentRequest);
     } catch (e) {
       // Ignore failed payments, the user can retry or pay with another wallet via the lightning: link
+      log("Failed to pay invoice with WebLN", e);
     }
     setLoading(false);
   };
