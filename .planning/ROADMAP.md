@@ -420,3 +420,50 @@ Plans:
 
 - [ ] TBD (promote with /gsd-review-backlog when ready)
 
+### Phase 999.14: Pin the app store to the nav in place of "All Apps" (BACKLOG)
+
+**Goal:** [Captured for future planning]
+**Requirements:** TBD
+**Plans:** 0 plans
+
+Not part of the aislop scan catalogue above — a navigation/direction change reported directly.
+
+The app store button should be pinned to the side nav in the slot the "All Apps" link currently
+occupies. Rationale from the capture: the forward direction is to migrate the tools and the
+smaller internal views into napplets, so the store — not a static index of built-in views —
+becomes the way users find functionality.
+
+Current state found while capturing:
+
+- The nav item to replace is `src/components/layout/components/index.tsx:51`:
+  `<NavItem to="/other-stuff" icon={Package} label="All Apps" />`.
+- **This is one edit that changes two surfaces.** `NavItems` is rendered by both
+  `src/components/layout/desktop/side-nav.tsx:46` and
+  `src/components/layout/mobile/nav-drawer.tsx:59`. `mobile/bottom-nav.tsx` has no nav items and
+  is unaffected. Whether the mobile drawer should match the desktop pin is worth an explicit
+  decision rather than an accident of the shared component.
+- **The store already exists as a nav destination, just not a pinned one.** `internalApps` in
+  `src/components/navigation/apps.ts` contains
+  `{ title: "Store", description: "Discover and manage NIP-5D apps", id: "napplets", to: "/app/store" }`,
+  so it can already appear via the favourites list (`useFavoriteInternalIds("apps", "app")`) or
+  recents. "Pinning" means promoting it to a fixed `NavItem` alongside Create new / Support /
+  Settings, so it no longer competes for a favourites slot. The route is registered at
+  `src/app.tsx:107` (`app/store` → `views/app/store.tsx`).
+
+Open question this raises:
+
+- **Removing "All Apps" removes the only fixed route to the full index.** `/other-stuff`
+  (`src/views/other-stuff`) is what lists every internal app and tool, and `/tools` is already
+  just a redirect into it (`src/views/tools/index.tsx` → `/other-stuff?tab=tools`). If the link
+  goes, the index is reachable only by URL or by whatever the store surfaces. Decide whether
+  "All Apps" moves into the store view, stays as a secondary entry, or is dropped deliberately as
+  the migration progresses.
+
+Related: the migration target set is `internalTools` in `src/components/navigation/apps.ts`
+(Event Console, Event Publisher, and the other small views) — the things intended to become
+napplets.
+
+Plans:
+
+- [ ] TBD (promote with /gsd-review-backlog when ready)
+
