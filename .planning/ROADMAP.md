@@ -377,3 +377,46 @@ Plans:
 
 - [ ] TBD (promote with /gsd-review-backlog when ready)
 
+### Phase 999.13: Support NIP-22 comments in kind 1 threads (BACKLOG)
+
+**Goal:** [Captured for future planning]
+**Requirements:** TBD
+**Plans:** 0 plans
+
+Not part of the aislop scan catalogue above — a protocol/UX capability reported directly.
+
+NIP-22 comments (kind 1111) need to be shown and supported under standard kind 1 threads. Other
+clients are starting to let users reply to a thread with either kind, so a thread whose replies
+are split across both currently renders incomplete here.
+
+Reply-kind rules the capture specifies:
+
+- Replying to a **NIP-22 comment MUST produce a NIP-22 reply** — not negotiable, not a preference.
+- Replying to a **kind 1 NIP-10 note** is the user's choice: a new setting selects whether the
+  client publishes a NIP-10 kind 1 reply or a NIP-22 comment.
+
+Current state found while capturing:
+
+- **NIP-22 is already implemented in the app, just not in threads.** `CommentFactory.create`
+  (`applesauce-common/factories`), `CommentsModel` and `COMMENT_KIND` are used by
+  `src/views/pictures/picture/media-post-comment-form.tsx` and `picture-comments.tsx`, and comment
+  UI exists for articles, files, links, badges, webxdc and the app store. This is an integration
+  job, not a from-scratch implementation.
+- **Thread reading is NIP-10 only.** `src/helpers/nostr/event.ts` resolves replies through
+  `getNip10References` and `isReply()` only inspects the NIP-10 reply marker, so kind 1111 events
+  never enter the thread tree (`src/views/thread/`).
+- **The write seam already exists but is dead.** `src/views/thread/components/reply-form.tsx`
+  declares `replyKind?: number` defaulting to `kinds.ShortTextNote`, and then ignores it — `submit`
+  unconditionally calls `NoteFactory.reply(event, …)` and publishes as `"Reply"`. Wiring this prop
+  up is likely the smallest part of the work. (Note for the dead-code sweep: this unused parameter
+  should be wired up here rather than deleted there.)
+- **Settings home:** `src/views/settings/post/index.tsx`, which already mixes `useSettingsForm`
+  (synced app settings) with `localSettings` via `use$`; a new preference would follow
+  `PreferenceSubject` in `src/services/preferences.ts`.
+- `src/services/notifications/threads.ts` already branches on kind 1111 for notification grouping,
+  so notifications may partly work once threads do.
+
+Plans:
+
+- [ ] TBD (promote with /gsd-review-backlog when ready)
+
