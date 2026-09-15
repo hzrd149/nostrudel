@@ -96,7 +96,7 @@ failure, resolved first.
 **Requirements:** D-01, D-02, D-03, D-04, D-05, D-06, D-07, D-08, D-09, D-10, D-11, D-12, D-13, D-14, D-15
 (no REQUIREMENTS.md exists; the requirement set is the locked decisions in `03-CONTEXT.md`)
 **Depends on:** Phase 2
-**Plans:** 6 plans
+**Plans:** 1/6 plans executed
 
 59 findings in the [2026-09-11 baseline](./research/aislop-scan-2026-09-11.md) (bucket B):
 31 × `ai-slop/swallowed-exception` (empty catch, error severity), 23 × `eslint/no-empty`
@@ -118,7 +118,7 @@ decryption/signer paths where a swallowed error hides user-facing failure —
 Plans:
 **Wave 1** *(risk first, per D-02)*
 
-- [ ] 03-01-PLAN.md — The five decryption/signer sites: reason comments, namespaced logs, explicit returns (wave 1)
+- [x] 03-01-PLAN.md — The five decryption/signer sites: reason comments, namespaced logs, explicit returns (wave 1)
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
@@ -415,17 +415,21 @@ Current state found while capturing:
   `src/views/pictures/picture/media-post-comment-form.tsx` and `picture-comments.tsx`, and comment
   UI exists for articles, files, links, badges, webxdc and the app store. This is an integration
   job, not a from-scratch implementation.
+
 - **Thread reading is NIP-10 only.** `src/helpers/nostr/event.ts` resolves replies through
   `getNip10References` and `isReply()` only inspects the NIP-10 reply marker, so kind 1111 events
   never enter the thread tree (`src/views/thread/`).
+
 - **The write seam already exists but is dead.** `src/views/thread/components/reply-form.tsx`
   declares `replyKind?: number` defaulting to `kinds.ShortTextNote`, and then ignores it — `submit`
   unconditionally calls `NoteFactory.reply(event, …)` and publishes as `"Reply"`. Wiring this prop
   up is likely the smallest part of the work. (Note for the dead-code sweep: this unused parameter
   should be wired up here rather than deleted there.)
+
 - **Settings home:** `src/views/settings/post/index.tsx`, which already mixes `useSettingsForm`
   (synced app settings) with `localSettings` via `use$`; a new preference would follow
   `PreferenceSubject` in `src/services/preferences.ts`.
+
 - `src/services/notifications/threads.ts` already branches on kind 1111 for notification grouping,
   so notifications may partly work once threads do.
 
@@ -450,11 +454,13 @@ Current state found while capturing:
 
 - The nav item to replace is `src/components/layout/components/index.tsx:51`:
   `<NavItem to="/other-stuff" icon={Package} label="All Apps" />`.
+
 - **This is one edit that changes two surfaces.** `NavItems` is rendered by both
   `src/components/layout/desktop/side-nav.tsx:46` and
   `src/components/layout/mobile/nav-drawer.tsx:59`. `mobile/bottom-nav.tsx` has no nav items and
   is unaffected. Whether the mobile drawer should match the desktop pin is worth an explicit
   decision rather than an accident of the shared component.
+
 - **The store already exists as a nav destination, just not a pinned one.** `internalApps` in
   `src/components/navigation/apps.ts` contains
   `{ title: "Store", description: "Discover and manage NIP-5D apps", id: "napplets", to: "/app/store" }`,
@@ -479,4 +485,3 @@ napplets.
 Plans:
 
 - [ ] TBD (promote with /gsd-review-backlog when ready)
-

@@ -2,18 +2,17 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_phase: 3 — Audit swallowed exceptions and silent failure paths
+current_phase: 03
 status: executing
-stopped_at: Phase 3 context gathered
-last_updated: "2026-09-15T01:47:10.864Z"
-last_activity: 2026-09-12
-last_activity_desc: "Backlog review: six items promoted to Phases 3–8; 999.2, 999.5, 999.8 kept in backlog"
+stopped_at: Completed 03-01-PLAN.md
+last_updated: "2026-09-15T14:15:52.377Z"
+last_activity: 2026-09-15
 progress:
   total_phases: 8
   completed_phases: 2
-  total_plans: 11
-  completed_plans: 11
-  percent: 25
+  total_plans: 17
+  completed_plans: 12
+  percent: 71
 current_phase_name: Audit swallowed exceptions and silent failure paths
 ---
 
@@ -23,13 +22,13 @@ current_phase_name: Audit swallowed exceptions and silent failure paths
 
 See: .planning/PROJECT.md (not present in this project; ROADMAP.md and the phase CONTEXT files are the reference)
 
-**Current focus:** Phases 3–8 (promoted from the backlog on 2026-09-12) work through the 2026-09-11 baseline; Phase 3 (swallowed exceptions) is first and clears the inherited error-severity findings that currently fail `pnpm lint:ci` on touched files
+**Current focus:** Phase 03 — audit-swallowed-exceptions-and-silent-failure-paths
 
 ## Position
 
 **Milestone:** v1.0 milestone
-**Current phase:** 3 — Audit swallowed exceptions and silent failure paths
-**Status:** Ready to execute
+**Current phase:** 03
+**Status:** Executing Phase 03
 
 ## Session Log
 
@@ -40,6 +39,7 @@ See: .planning/PROJECT.md (not present in this project; ROADMAP.md and the phase
 - 2026-09-11: Completed 02-05-PLAN.md (final plan of Phase 02 — `ci.failBelow` calibrated to 95 from nine sampled real commits measured in disposable detached worktrees, no worktrees/branches left behind; whole-repo baseline recorded at `.planning/research/aislop-scan-2026-09-11.md`/`.json`, score 78/100, mapped to backlog 999.2–999.10). Same pre-existing `state.advance-plan` parse gap hit again (`gsd-tools state.advance-plan` still fails with "Cannot parse Current Plan or Total Plans in Phase from STATE.md") — used `state.record-metric`, `state.add-decision`, `state.record-session`, and `state.update-progress` instead. This time `state.update-progress` correctly computed 100% (11/11 plans, 2/2 phases) since this genuinely was the last plan in the last phase, so no manual percent correction was needed.
 - 2026-09-11: Phase 02 closed out. Orchestrator gitignored the hook's `.aislop/baseline.json` / `.aislop/session.jsonl` (76e0c53af). Code review (02-REVIEW.md) found 1 blocker + 7 warnings; maintainer chose resolutions applied in e6a3b9585…659176664 and recorded as dated amendments in 02-CONTEXT.md: dependency advisories downgraded to warning (audit stays on), telemetry disabled in config and CI, gate measured from `git merge-base origin/next HEAD` with pushes to master/next/changeset-release not gated, `failBelow` documented as a backstop, `.claude/CLAUDE.md` override section, hook reinstall note; WR-07 declined, IN-01…IN-06 deferred. Verification 16/16; the one human item (real GitHub Actions Lint runs on a feature-branch push and a PR into next) was confirmed by the maintainer, so 02-VERIFICATION.md is `passed` and 02-UAT.md is complete.
 - 2026-09-12: Backlog reviewed (/gsd-review-backlog). Six items promoted to active phases, numbered in the roadmap's suggested order where it applies: 999.3 → Phase 3 (swallowed exceptions), 999.4 → Phase 4 (dead code), 999.9 → Phase 5 (oversized files/duplication, sequenced after Phase 4 so it doesn't refactor code about to be deleted), 999.6 → Phase 6 (type-safety), 999.7 → Phase 7 (accessibility), 999.10 → Phase 8 (TODOs/hardcoded URLs). Each promoted entry's finding counts were refreshed from the 2026-09-11 baseline (the 0.14.0 numbers they carried are not comparable to the adopted config) and given a real goal line, `**Depends on:**`, and TBD plans. Kept in backlog: 999.2 (React hook-order — note this is the roadmap's own suggested-first item and the only bucket of confirmed error-severity defects), 999.5 (exhaustive-deps), 999.8 (comment/console noise). Nothing removed; no phase directories existed to move, since no backlog item had accumulated artifacts.
+- 2026-09-15: Completed 03-01-PLAN.md (Wave 1 of D-02's risk-first ordering — the five decryption/signer sites: `EncryptedStorage.unlock()` now logs and returns `false` explicitly; `decryptionCacheStats$`'s sampling loop logs unreadable entries and keeps sampling; `groupIntoConversations` skips unparseable DMs via explicit `continue`; the unreachable `try/catch` in `decrypt-placeholder.tsx` around `unlock()` was deleted per D-11 since the hook never rethrows; both per-attempt catches in the blob repair loop now log their cause. Whole-repo bucket-B error count dropped from 31 to 25, confirmed via the plan's jq assertions; `pnpm build` passed after every task). Same pre-existing `state.advance-plan` parse gap hit again ("Cannot parse Current Plan or Total Plans in Phase from STATE.md") — used `state.record-metric`, `state.add-decision`, `state.record-session`, and `state.update-progress` instead. `state.update-progress`/`state.record-session` again reset `progress.percent` to the phase ratio (25, completed_phases/total_phases) rather than completed_plans/total_plans — corrected by hand to 71 (12/17), per orchestrator instruction not to restructure STATE.md. `state.add-decision` also prefixed each summary with a literal `[Phase ?]:` since no `--phase` flag was passed (the summaries already embedded their own `[Phase 03 Plan 01]:` tag) — corrected by hand to `[Phase 03]:` to match the established per-phase-tag convention.
 
 ## Performance Metrics
 
@@ -56,6 +56,7 @@ See: .planning/PROJECT.md (not present in this project; ROADMAP.md and the phase
 | Phase 02 P03 | 12min | 2 tasks | 3 files |
 | Phase 02 P04 | ~15min | 2 tasks | 3 files |
 | Phase 02 P05 | ~14min | 2 tasks | 3 files |
+| Phase 03 P01 | 15min | 3 tasks | 5 files |
 
 ## Decisions
 
@@ -76,6 +77,9 @@ See: .planning/PROJECT.md (not present in this project; ROADMAP.md and the phase
 - [Phase 02]: [Phase 02 Plan 05]: ci.failBelow calibrated to 95 from nine sampled real commits (scores 100x8, 98x1); no outlier set aside (98 is only 2 points below the second-lowest, under the 15-point threshold), floor=98, largest multiple of 5 strictly below is 95 (D-02).
 - [Phase 02]: [Phase 02 Plan 05]: 1a4f05493 fails lint:ci solely on an inherited ai-slop/swallowed-exception in src/index.tsx; 844122a7e fails on a mix of an inherited swallowed-exception pair in blob-details-modal.tsx plus security/vulnerable-dependency errors surfaced by touching package.json/pnpm-lock.yaml — both left as expected ratchet friction, not tuned away.
 - [Phase 02]: [Phase 02 Plan 05]: Whole-repo baseline (aislop 0.16.1, adopted config) recorded once at score 78/100, 1,196 findings, in .planning/research/aislop-scan-2026-09-11.md/.json, explicitly marked not directly comparable to the 2026-08-02 (0.14.0, bundled defaults) scan, mapped to backlog 999.2-999.10 (D-04).
+- [Phase 03]: [Phase 03 Plan 01]: encrypted-storage.tsx unlock() catch logs then returns false explicitly, without distinguishing wrong-PIN from corrupt-storage (T-03-02, deferred security item)
+- [Phase 03]: [Phase 03 Plan 01]: decrypt-placeholder.tsx's try/catch around unlock() was deleted (D-11, unreachable catch) rather than logged, since useLegacyMessagePlaintext never rethrows
+- [Phase 03]: [Phase 03 Plan 01]: dms.ts groupIntoConversations left in place despite having zero callers today (groupMessages is what's actually used) - dead-code disposition deferred to Phase 4
 
 ## Quick Tasks Completed
 
@@ -86,7 +90,7 @@ See: .planning/PROJECT.md (not present in this project; ROADMAP.md and the phase
 
 ## Session
 
-**Last activity:** 2026-09-12 - Backlog review: six items promoted to Phases 3–8; 999.2, 999.5, 999.8 kept in backlog
-**Last session:** 2026-09-14T18:28:20.561Z
-**Stopped at:** Phase 3 context gathered
-**Resume file:** .planning/phases/03-audit-swallowed-exceptions-and-silent-failure-paths/03-CONTEXT.md
+**Last activity:** 2026-09-15
+**Last session:** 2026-09-15T14:15:52.369Z
+**Stopped at:** Completed 03-01-PLAN.md
+**Resume file:** None
