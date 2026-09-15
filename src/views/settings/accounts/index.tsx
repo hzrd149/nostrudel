@@ -1,10 +1,9 @@
 import { Box, Button, ButtonGroup, Divider, Flex, Heading, Text } from "@chakra-ui/react";
 import { IAccount } from "applesauce-accounts";
-import { useAccountManager, useAccounts } from "applesauce-react/hooks";
+import { useAccountManager, useAccounts, useActiveAccount } from "applesauce-react/hooks";
 import { PasswordSigner, SerialPortSigner, SimpleSigner } from "applesauce-signers";
 import { useNavigate } from "react-router-dom";
 
-import { useActiveAccount } from "applesauce-react/hooks";
 import AccountTypeBadge from "../../../components/accounts/account-info-badge";
 import SimpleView from "../../../components/layout/presets/simple-view";
 import RouterLink from "../../../components/router-link";

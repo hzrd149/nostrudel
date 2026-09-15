@@ -2,7 +2,7 @@ import { LockIcon } from "@chakra-ui/icons";
 import { Alert, AlertProps, Box, Button, ButtonGroup, Flex, Text, useToast } from "@chakra-ui/react";
 import { useActiveAccount, use$ } from "applesauce-react/hooks";
 import { useMemo } from "react";
-import { combineLatest, lastValueFrom } from "rxjs";
+import { combineLatest } from "rxjs";
 
 import { setRelayAuthMode } from "../../../components/relays/relay-auth-mode-select";
 import useAsyncAction from "../../../hooks/use-async-action";

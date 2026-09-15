@@ -1,6 +1,5 @@
 import { useToast } from "@chakra-ui/react";
-import { addSeenRelay } from "applesauce-core/helpers";
-import { mergeRelaySets } from "applesauce-core/helpers";
+import { addSeenRelay, mergeRelaySets } from "applesauce-core/helpers";
 import { setClient } from "applesauce-core/operations";
 import { useActiveAccount, use$ } from "applesauce-react/hooks";
 import { PublishResponse } from "applesauce-relay";

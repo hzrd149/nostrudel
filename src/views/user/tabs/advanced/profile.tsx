@@ -1,4 +1,4 @@
-import { Flex, HStack, Text, VStack } from "@chakra-ui/react";
+import { Flex, Text, VStack } from "@chakra-ui/react";
 import { nip19 } from "nostr-tools";
 
 import { ProfilePointer } from "nostr-tools/nip19";

@@ -1,7 +1,6 @@
 import { CloseIcon } from "@chakra-ui/icons";
 import { Box, ButtonGroup, Flex, IconButton, Link, Text } from "@chakra-ui/react";
 import { PropsWithChildren, ReactNode } from "react";
-import { Link as RouterLink } from "react-router-dom";
 
 import RelayFavicon from "../../../../components/relay/relay-favicon";
 import useAsyncAction from "../../../../hooks/use-async-action";

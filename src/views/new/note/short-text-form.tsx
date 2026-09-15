@@ -24,13 +24,12 @@ import {
 import { getEventPointerFromQTag, processTags } from "applesauce-core/helpers";
 import { Emoji } from "applesauce-common/helpers";
 import { NoteFactory } from "applesauce-common/factories";
-import { use$ } from "applesauce-react/hooks";
+import { use$, useActiveAccount } from "applesauce-react/hooks";
 import { UnsignedEvent } from "nostr-tools";
 import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useThrottle } from "react-use";
 
-import { useActiveAccount } from "applesauce-react/hooks";
 import { ErrorBoundary } from "../../../components/error-boundary";
 import InsertGifButton from "../../../components/gif/insert-gif-button";
 import { ChevronDownIcon, ChevronUpIcon } from "../../../components/icons";

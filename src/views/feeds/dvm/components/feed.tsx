@@ -1,4 +1,4 @@
-import { Flex, List, ListItem, Spinner, Text } from "@chakra-ui/react";
+import { Flex, List, ListItem, Spinner } from "@chakra-ui/react";
 import { AddressPointer } from "nostr-tools/nip19";
 import FeedStatus from "./feed-status";
 

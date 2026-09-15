@@ -12,7 +12,6 @@ import {
   NotificationsIcon,
   SearchIcon,
   TorrentIcon,
-  VideoIcon,
 } from "../icons";
 import BarChart09 from "../icons/bar-chart-09";
 import FileAttachment01 from "../icons/file-attachment-01";

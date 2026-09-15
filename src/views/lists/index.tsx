@@ -1,12 +1,10 @@
 import { AvatarGroup, Box, Button, Flex, Heading, Image, SimpleGrid, Text, useDisclosure } from "@chakra-ui/react";
-import { getEventPointersFromList } from "applesauce-common/helpers";
+import { getEventPointersFromList, getAddressPointersFromList, getProfilePointersFromList } from "applesauce-common/helpers";
 import { getEventUID, getTagValue } from "applesauce-core/helpers";
-import { getAddressPointersFromList, getProfilePointersFromList } from "applesauce-common/helpers";
-import { kinds } from "nostr-tools";
+import { kinds, NostrEvent } from "nostr-tools";
 import { useNavigate } from "react-router-dom";
 
 import { useActiveAccount } from "applesauce-react/hooks";
-import { NostrEvent } from "nostr-tools";
 import { MuteIcon } from "../../components/icons";
 import Users01 from "../../components/icons/users-01";
 import SimpleNavBox from "../../components/layout/box-layout/simple-nav-box";

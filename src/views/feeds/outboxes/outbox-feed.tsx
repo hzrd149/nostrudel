@@ -8,17 +8,14 @@ import {
   ModalContent,
   ModalHeader,
   ModalOverlay,
-  Text,
   useDisclosure,
 } from "@chakra-ui/react";
-import { useActiveAccount } from "applesauce-react/hooks";
+import { use$, useActiveAccount } from "applesauce-react/hooks";
 import { kinds, NostrEvent } from "nostr-tools";
 import { Navigate, useParams } from "react-router-dom";
 
 import { includeMailboxes, withImmediateValueOrDefault } from "applesauce-core";
-import { normalizeURL } from "applesauce-core/helpers";
-import { getSeenRelays } from "applesauce-core/helpers";
-import { use$ } from "applesauce-react/hooks";
+import { normalizeURL, getSeenRelays } from "applesauce-core/helpers";
 import { useCallback, useMemo } from "react";
 import { map } from "rxjs";
 import SimpleView from "../../../components/layout/presets/simple-view";

@@ -1,7 +1,6 @@
 import { bech32 } from "@scure/base";
 import { NostrEvent, utils } from "nostr-tools";
-import { AddressPointer, EventPointer, isETag, isPTag } from "applesauce-core/helpers";
-import { ProfileContent } from "applesauce-core/helpers";
+import { AddressPointer, EventPointer, isETag, isPTag, ProfileContent } from "applesauce-core/helpers";
 import { getZapPayment, ZapEvent } from "applesauce-common/helpers";
 
 // based on https://github.com/nbd-wtf/nostr-tools/blob/master/nip57.ts

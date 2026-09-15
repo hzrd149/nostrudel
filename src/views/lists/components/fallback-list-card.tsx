@@ -1,4 +1,3 @@
-import { memo } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import {
   ButtonGroup,
@@ -13,10 +12,9 @@ import {
   SimpleGrid,
   Text,
 } from "@chakra-ui/react";
-import { kinds } from "nostr-tools";
-import { getEventPointersFromList } from "applesauce-common/helpers";
+import { kinds, NostrEvent } from "nostr-tools";
+import { getEventPointersFromList, getAddressPointersFromList, getProfilePointersFromList } from "applesauce-common/helpers";
 import { getReplaceableUID } from "applesauce-core/helpers";
-import { getAddressPointersFromList, getProfilePointersFromList } from "applesauce-common/helpers";
 
 import UserAvatarLink from "../../../components/user/user-avatar-link";
 import UserLink from "../../../components/user/user-link";
@@ -26,17 +24,14 @@ import {
   getReferencesFromList,
   isSpecialListKind,
 } from "../../../helpers/nostr/lists";
-import { NostrEvent } from "nostr-tools";
 import useReplaceableEvent from "../../../hooks/use-replaceable-event";
 import ListFavoriteButton from "./list-favorite-button";
 import ListMenu from "./list-menu";
 import { NotesIcon } from "../../../components/icons";
 import User01 from "../../../components/icons/user-01";
 import HoverLinkOverlay from "../../../components/hover-link-overlay";
-import EventZapButton from "../../../components/zap/event-zap-button";
 import Link01 from "../../../components/icons/link-01";
 import File02 from "../../../components/icons/file-02";
-import SimpleLikeButton from "../../../components/event-reactions/simple-like-button";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
 import { getSharableEventAddress } from "../../../services/relay-hints";
 import Timestamp from "../../../components/timestamp";

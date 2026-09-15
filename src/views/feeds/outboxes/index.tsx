@@ -1,4 +1,4 @@
-import { Box, CardProps, Flex, Heading, SimpleGrid, Text } from "@chakra-ui/react";
+import { Box, Heading, SimpleGrid, Text } from "@chakra-ui/react";
 import { includeMailboxes, withImmediateValueOrDefault } from "applesauce-core";
 import { groupPubkeysByRelay, selectOptimalRelays } from "applesauce-core/helpers";
 import { useActiveAccount, use$ } from "applesauce-react/hooks";

@@ -1,6 +1,5 @@
 import { AvatarGroup, ButtonGroup, Flex, IconButton, Text } from "@chakra-ui/react";
 import {
-  getConversationIdentifierFromMessage as createConversationIdentifier,
   getRumorGiftWraps,
   getConversationParticipants,
   Rumor,

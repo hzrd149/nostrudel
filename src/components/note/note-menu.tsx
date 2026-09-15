@@ -1,7 +1,6 @@
-import { MenuItem, useDisclosure } from "@chakra-ui/react";
+import { MenuItem } from "@chakra-ui/react";
 import { NostrEvent } from "nostr-tools";
 import { useCallback, useMemo } from "react";
-import { Link as RouterLink } from "react-router-dom";
 
 import { usePublishEvent } from "../../providers/global/publish-provider";
 import { getSharableEventAddress } from "../../services/relay-hints";

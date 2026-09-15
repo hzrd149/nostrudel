@@ -1,4 +1,3 @@
-import { NostrEvent } from "./nostr-event";
 import { WebLNProvider } from "webln";
 
 declare global {

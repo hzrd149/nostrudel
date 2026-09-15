@@ -1,5 +1,4 @@
 import { Button, Card, CardBody, CardFooter, CardHeader, Heading, Link, Text } from "@chakra-ui/react";
-import { useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
 
 import { use$ } from "applesauce-react/hooks";

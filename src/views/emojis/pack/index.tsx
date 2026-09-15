@@ -14,8 +14,6 @@ import {
   Input,
   SimpleGrid,
   Tag,
-  TagCloseButton,
-  TagLabel,
   Text,
 } from "@chakra-ui/react";
 import { getEmojiPackEmojis, getEmojiPackName } from "applesauce-common/helpers";

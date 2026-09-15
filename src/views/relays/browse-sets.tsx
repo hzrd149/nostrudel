@@ -1,5 +1,5 @@
 import { Card, CardBody, CardHeader, Flex, Text } from "@chakra-ui/react";
-import { kinds } from "nostr-tools";
+import { kinds, NostrEvent } from "nostr-tools";
 import { getEventUID } from "nostr-idb";
 
 import VerticalPageLayout from "../../components/vertical-page-layout";
@@ -8,7 +8,6 @@ import PeopleListSelection from "../../components/people-list-selection/people-l
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
-import { NostrEvent } from "nostr-tools";
 import { getListTitle, getRelaysFromList } from "../../helpers/nostr/lists";
 import RelayFavicon from "../../components/relay/relay-favicon";
 import LoadMoreButton from "../../components/timeline/load-more-button";

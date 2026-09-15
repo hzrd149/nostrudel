@@ -3,7 +3,6 @@ import { useActiveAccount, useEventModel, use$ } from "applesauce-react/hooks";
 import { Filter, NostrEvent } from "nostr-tools";
 import { useCallback, useMemo } from "react";
 import { map, NEVER, of, throttleTime } from "rxjs";
-import hash_sum from "hash-sum";
 
 import NoteFilterTypeButtons from "../../components/note-filter-type-buttons";
 import OutboxRelaySelectionModal from "../../components/outbox-relay-selection-modal";

@@ -1,7 +1,6 @@
 import { getSharedAddressPointer, getSharedEventPointer } from "applesauce-common/helpers";
-import { insertEventIntoDescendingList } from "applesauce-core/helpers";
+import { insertEventIntoDescendingList, type AddressPointer, type EventPointer } from "applesauce-core/helpers";
 import { withImmediateValueOrDefault } from "applesauce-core";
-import type { AddressPointer, EventPointer } from "applesauce-core/helpers";
 import { kinds, NostrEvent } from "nostr-tools";
 import { map, Observable, of, scan, switchMap, throttleTime } from "rxjs";
 

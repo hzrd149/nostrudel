@@ -12,8 +12,7 @@ import {
   ChartData,
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
-import { isFromCache } from "applesauce-core/helpers";
-import { getSeenRelays } from "applesauce-core/helpers";
+import { isFromCache, getSeenRelays } from "applesauce-core/helpers";
 import { NostrEvent } from "nostr-tools";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, Colors);

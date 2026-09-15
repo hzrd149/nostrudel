@@ -25,10 +25,9 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
-import { ZapSplit } from "applesauce-common/helpers";
+import { ZapSplit, Emoji } from "applesauce-common/helpers";
 import { NoteFactory } from "applesauce-common/factories";
 import { getEventPointerFromQTag, processTags, EventPointer } from "applesauce-core/helpers";
-import { Emoji } from "applesauce-common/helpers";
 import { useActiveAccount, useEventStore, use$ } from "applesauce-react/hooks";
 import { UnsignedEvent } from "nostr-tools";
 import { useRef, useState } from "react";

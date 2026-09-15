@@ -1,7 +1,6 @@
 import { mapEventsToStore } from "applesauce-core";
-import { GROUP_MESSAGE_KIND } from "applesauce-common/helpers";
+import { GROUP_MESSAGE_KIND, encodeGroupPointer, GroupPointer } from "applesauce-common/helpers";
 import { getSeenRelays } from "applesauce-core/helpers";
-import { encodeGroupPointer, GroupPointer } from "applesauce-common/helpers";
 import { TimelineModel } from "applesauce-core/models";
 import { useEventModel, useEventStore } from "applesauce-react/hooks";
 import { onlyEvents } from "applesauce-relay";

@@ -1,4 +1,4 @@
-import { CardProps, Link, LinkProps } from "@chakra-ui/react";
+import { Link, LinkProps } from "@chakra-ui/react";
 import { DecodeResult } from "applesauce-core/helpers";
 import { kinds, NostrEvent } from "nostr-tools";
 

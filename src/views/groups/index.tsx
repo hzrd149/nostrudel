@@ -15,8 +15,7 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
-import { GROUPS_LIST_KIND } from "applesauce-common/helpers";
-import { encodeGroupPointer, getPublicGroups, GroupPointer } from "applesauce-common/helpers";
+import { GROUPS_LIST_KIND, encodeGroupPointer, getPublicGroups, GroupPointer } from "applesauce-common/helpers";
 import { useActiveAccount } from "applesauce-react/hooks";
 import { useMemo, useState } from "react";
 import { Navigate } from "react-router-dom";

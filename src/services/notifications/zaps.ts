@@ -1,8 +1,6 @@
-import { getZapAddressPointer, ZapEvent } from "applesauce-common/helpers";
-import { insertEventIntoDescendingList } from "applesauce-core/helpers";
-import { getZapEventPointer, isValidZap } from "applesauce-common/helpers";
+import { getZapAddressPointer, ZapEvent, getZapEventPointer, isValidZap } from "applesauce-common/helpers";
+import { insertEventIntoDescendingList, type AddressPointer, type EventPointer } from "applesauce-core/helpers";
 import { withImmediateValueOrDefault } from "applesauce-core";
-import type { AddressPointer, EventPointer } from "applesauce-core/helpers";
 import { kinds } from "nostr-tools";
 import { filter, map, Observable, of, scan, switchMap, throttleTime } from "rxjs";
 

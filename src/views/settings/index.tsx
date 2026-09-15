@@ -3,7 +3,6 @@ import { Divider, Flex, Link, Spacer, Text } from "@chakra-ui/react";
 import { useActiveAccount } from "applesauce-react/hooks";
 import {
   AppearanceIcon,
-  DatabaseIcon,
   GithubIcon,
   MuteIcon,
   NotesIcon,
@@ -24,7 +23,6 @@ import SimpleNavItem from "../../components/layout/components/simple-nav-item";
 import SimpleParentView from "../../components/layout/presets/simple-parent-view";
 import UserAvatar from "../../components/user/user-avatar";
 import VersionButton from "../../components/version-button";
-import { IS_SERVICE_WORKER_SUPPORTED } from "../../env";
 
 function DividerHeader({ title }: { title: string }) {
   return (

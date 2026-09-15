@@ -1,7 +1,6 @@
 import { Box, Flex, Spacer, Text } from "@chakra-ui/react";
 import { Zap } from "applesauce-common/casts";
 import { KnownEvent } from "applesauce-core/helpers";
-import { getZapPayment } from "applesauce-common/helpers";
 import { kinds, NostrEvent } from "nostr-tools";
 
 import { LightningIcon } from "../../../components/icons";

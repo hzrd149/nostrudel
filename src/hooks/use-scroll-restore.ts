@@ -1,5 +1,5 @@
 import { logger } from "applesauce-core";
-import { RefCallback, useCallback, useEffect, useLayoutEffect, useRef } from "react";
+import { RefCallback, useCallback, useLayoutEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import { FixedSizeList } from "react-window";
 
