@@ -129,6 +129,42 @@ import { ErrorBoundary } from "react-error-boundary";
 - Use Chakra UI `useToast` for user-facing errors
 - Type-check errors: `if (e instanceof Error)`
 
+#### Swallowed Exceptions
+
+The adopted lint standard (see [Linting](#linting)) treats `ai-slop/swallowed-exception` as
+error-severity, gating `pnpm lint:ci` on any touched file. Its detector looks for control flow or a
+logging call inside the catch body — **a reason comment alone does not clear it.** A well-commented
+`catch (err) {}` still fires the rule; this is the single most surprising fact in the convention below.
+
+- **Deliberate parse/filter guard** — a reason comment plus an explicit exit that reproduces the value
+  the code already fell through to: `return` in a function body, `continue` in a loop, or the
+  accumulator itself in a `reduce` callback. Drop an unused caught binding to bare `catch {`.
+
+  ```typescript
+  try {
+    return new URL(url).toString();
+  } catch {
+    // invalid URL string; callers already treat undefined as "no URL"
+    return undefined;
+  }
+  ```
+
+- **Code after the catch must still run** — log the cause instead of returning. A `log(...)` call
+  inside the catch also satisfies the rule, and it is the correct form for a best-effort fallback where
+  the fallback itself is the handling: a pending-map cleanup, an effect-cleanup registration, a
+  fallback render, or the next iteration of a retry loop. See `src/services/event-cache/index.ts` for
+  the in-repo shape.
+- **User-triggered action** — delete the local try/catch and let the error throw; this is the
+  `useAsyncAction` pattern above (see "useAsyncAction Hook (REQUIRED)"). The hook toasts `e.message`
+  and logs it, and its `loading` replaces any hand-rolled loading state.
+- **Logging channel** — the namespaced debug logger, `logger.extend("<Module>")` from
+  `src/helpers/debug.ts`, silent in production unless the namespace is enabled. Not the direct
+  browser console: `ai-slop/console-leftover` is on.
+- **Last resort** — a rule-scoped `aislop-ignore-*` directive (see "Inline ignores" below), allowed
+  only where the catch genuinely cannot return a value or log. Its `-- reason` must justify why the
+  code could not be fixed instead, not merely that the behavior is deliberate. A `-line`/`-next-line`
+  directive must sit textually adjacent to the flagged line.
+
 ### State Management
 
 #### Layers of State
