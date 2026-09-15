@@ -45,7 +45,10 @@ export default function useCacheForm<TFieldValues extends FieldValues = FieldVal
         log("Clearing form");
         reset();
       }
-    } catch (e) {}
+    } catch (e) {
+      // The cached form could not be parsed, the form is left at its default values
+      log("Failed to restore cached form", e);
+    }
 
     // save previous key on change or unmount
     return () => {

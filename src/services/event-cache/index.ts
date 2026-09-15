@@ -37,7 +37,9 @@ async function createEventCache(type: string | null): Promise<EventCache | null>
     for (const fallback of FALLBACKS) {
       try {
         return await loadEventCacheModule(fallback);
-      } catch (error) {}
+      } catch (error) {
+        log("Failed to load fallback", fallback, error);
+      }
     }
 
     return null;
