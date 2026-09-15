@@ -18,9 +18,7 @@ export default function DecryptPlaceholder({
 
   const decrypt = async () => {
     setLoading(true);
-    try {
-      await unlock();
-    } catch (e) {}
+    await unlock();
     setLoading(false);
   };
 
