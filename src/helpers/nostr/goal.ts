@@ -102,7 +102,10 @@ export function validateGoal(goal: NostrEvent) {
 export function safeValidateGoal(goal: NostrEvent) {
   try {
     return validateGoal(goal);
-  } catch (e) {}
+  } catch {
+    // Goal event failed validation; callers filter it out
+    return false;
+  }
   return false;
 }
 

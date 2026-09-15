@@ -8,7 +8,10 @@ export function safeDecode(str: string) {
     if ((result.type === "nevent" || result.type === "nprofile" || result.type === "naddr") && result.data.relays)
       result.data.relays = result.data.relays.filter(isSafeRelayURL);
     return result;
-  } catch (e) {}
+  } catch {
+    // Not a decodable nip19 string; normalizeToHexPubkey treats a falsy result as "not decodable"
+    return undefined;
+  }
 }
 
 export function normalizeToHexPubkey(hex: string) {
