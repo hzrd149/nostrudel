@@ -1,5 +1,4 @@
-import { parseBolt11, parseLNURLOrAddress } from "applesauce-common/helpers";
-import type { EncryptedContentCache } from "applesauce-common/helpers";
+import { parseBolt11, parseLNURLOrAddress, type EncryptedContentCache } from "applesauce-common/helpers";
 import type { ISigner } from "applesauce-signers";
 import { WalletConnect } from "applesauce-wallet-connect";
 import type { Transaction } from "applesauce-wallet-connect/helpers";
