@@ -11,5 +11,6 @@ export default function useTimelineLocationCacheKey() {
     if (!cacheKey) setCacheKey(fallback);
   }, [cacheKey, fallback]);
 
+  // aislop-ignore-next-line ai-slop/hidden-fallback -- fallback is a stable nanoid from useMemo serving the first render until the effect above writes it into route state; this is initialization, not error recovery, so there is no failure path to make explicit
   return cacheKey || fallback;
 }

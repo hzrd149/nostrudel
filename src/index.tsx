@@ -42,12 +42,14 @@ dayjs.extend(localizedFormat);
 import { createRoot } from "react-dom/client";
 import { App, router } from "./app";
 
+const log = logger.extend("Index");
+
 // register nostr: protocol handler
 if (import.meta.env.PROD && CAP_IS_WEB) {
   try {
     navigator.registerProtocolHandler("web+nostr", new URL("/l/%s", location.origin).toString());
-  } catch (e) {
-    console.log("Failed to register handler");
+  } catch (error) {
+    log("Failed to register web+nostr protocol handler", error);
   }
 }
 
