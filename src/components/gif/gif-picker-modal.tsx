@@ -74,7 +74,7 @@ export default function GifPickerModal({ onClose, isOpen, onSelect, ...props }: 
   const readRelays = useReadRelays();
   const { loader, timeline } = useTimelineLoader(
     [listId, "gifs", searchRelay ?? "all", debounceSearch ?? "all"].join("-"),
-    !!searchRelay ? [searchRelay] : readRelays,
+    searchRelay ? [searchRelay] : readRelays,
     debounceSearch !== undefined ? { ...baseFilter, search: debounceSearch } : baseFilter,
   );
 
