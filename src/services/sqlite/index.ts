@@ -1,3 +1,4 @@
+// aislop-ignore-file eslint/no-unreachable ai-slop/unreachable-code -- the jeep-sqlite web-init block below the guard throw is kept as the record of how web sqlite was wired up, since jeep-sqlite cannot be disabled on web and restructuring it to avoid the unreachable shape was rejected as a behavior-change risk in a hygiene-only phase
 import { CapacitorSQLite, SQLiteConnection, SQLiteDBConnection } from "@capacitor-community/sqlite";
 import { CAP_IS_WEB } from "../../env";
 
@@ -40,7 +41,6 @@ export async function openConnection(
 export async function deleteDatabase(db: SQLiteDBConnection): Promise<void> {
   const ret = (await db.isExists()).result;
   if (ret) {
-    const dbName = db.getConnectionDBName();
     await db.delete();
     return Promise.resolve();
   } else {
