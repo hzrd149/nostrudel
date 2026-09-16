@@ -25,7 +25,7 @@ export async function getZapEndpoint(metadata: ProfileContent): Promise<null | s
     if (body.allowsNostr && body.nostrPubkey) {
       return body.callback;
     }
-  } catch (err) {
+  } catch {
     /*-*/
   }
 

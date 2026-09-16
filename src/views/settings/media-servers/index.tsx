@@ -122,7 +122,7 @@ function AddServerForm() {
 
       await addServer.run(url);
       reset();
-    } catch (error) {
+    } catch {
       toast({ status: "error", description: "Cant reach server" });
     }
   });

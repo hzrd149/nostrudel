@@ -16,7 +16,7 @@ async function getInfo(relay: string, alwaysFetch = false): Promise<RelayInforma
     try {
       info = await nip11.fetchRelayInformation(relay);
       db.put("relayInfo", info, relay);
-    } catch (error) {
+    } catch {
       return null;
     }
   }

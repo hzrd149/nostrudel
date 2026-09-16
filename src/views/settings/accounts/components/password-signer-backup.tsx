@@ -37,7 +37,7 @@ export default function PasswordSignerBackup() {
       try {
         if (!signer.unlocked) await signer.unlock(values.current);
         else await signer.testPassword(values.current);
-      } catch (error) {
+      } catch {
         throw new Error("Bad password");
       }
 

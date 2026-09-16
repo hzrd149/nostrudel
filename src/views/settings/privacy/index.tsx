@@ -26,7 +26,7 @@ async function validateInvidiousUrl(url?: string) {
   try {
     const res = await fetch(new URL("/api/v1/stats", url));
     return res.ok || "Cant reach instance";
-  } catch (e) {
+  } catch {
     return "Cant reach instance";
   }
 }
@@ -39,7 +39,7 @@ async function validateRequestProxy(url?: string) {
     const res = await fetch(createRequestProxyUrl("https://example.com", url), { signal: controller.signal });
     clearTimeout(timeoutId);
     return res.ok || "Cant reach instance";
-  } catch (e) {
+  } catch {
     return "Cant reach instance";
   }
 }

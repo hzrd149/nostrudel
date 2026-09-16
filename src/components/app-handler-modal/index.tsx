@@ -146,7 +146,7 @@ export default function AppHandlerModal({
       try {
         getProfileContent(app);
         return true;
-      } catch (error) {
+      } catch {
         return false;
       }
     });
