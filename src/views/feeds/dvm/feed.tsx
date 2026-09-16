@@ -75,7 +75,7 @@ function DVMFeedPage({ pointer, dvm }: { pointer: AddressPointer; dvm?: NostrEve
   const pages = chainJobs(Array.from(Object.values(jobs)));
   const jobChains = flattenJobChain(pages);
 
-  const [params, setParams] = useState<Record<string, string>>({});
+  const [params] = useState<Record<string, string>>({});
   const [requesting, setRequesting] = useState(false);
   const requestNewFeed = async () => {
     setRequesting(true);
