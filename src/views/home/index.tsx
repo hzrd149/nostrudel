@@ -1,6 +1,6 @@
 import { Box, Button, Divider, Flex, Heading, Link, Spacer, Text } from "@chakra-ui/react";
 import { useActiveAccount, useEventModel, use$ } from "applesauce-react/hooks";
-import { Filter, NostrEvent } from "nostr-tools";
+import { NostrEvent } from "nostr-tools";
 import { useCallback, useMemo } from "react";
 import { map, NEVER, of, throttleTime } from "rxjs";
 

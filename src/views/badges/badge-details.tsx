@@ -11,10 +11,10 @@ import {
   TabPanels,
   Tabs,
   Text,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { kinds, NostrEvent } from "nostr-tools";
 
-import { useDisclosure } from "@chakra-ui/react";
 import { getReplaceableAddress } from "applesauce-core/helpers";
 import GenericCommentForm from "../../components/comment/generic-comment-form";
 import { GenericComments } from "../../components/comment/generic-comments";

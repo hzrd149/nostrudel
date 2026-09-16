@@ -22,7 +22,7 @@ import {
 } from "@chakra-ui/react";
 import { getGiftWrapRumor, isGiftWrapUnlocked, Rumor, unlockGiftWrap, getConversationParticipants } from "applesauce-common/helpers";
 import { GiftWrapsModel } from "applesauce-common/models";
-import { useActiveAccount, useEventModel, use$ } from "applesauce-react/hooks";
+import { useActiveAccount, useEventModel } from "applesauce-react/hooks";
 import { kinds } from "nostr-tools";
 import { useEffect, useMemo, useRef } from "react";
 import { Link as RouterLink } from "react-router-dom";

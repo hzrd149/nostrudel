@@ -1,7 +1,6 @@
 import { AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, Box, Flex, Text } from "@chakra-ui/react";
 import { ProfilePointer } from "nostr-tools/nip19";
 
-import UserAvatar from "../../../../components/user/user-avatar";
 import UserAvatarLink from "../../../../components/user/user-avatar-link";
 
 interface RelayCountRowProps {

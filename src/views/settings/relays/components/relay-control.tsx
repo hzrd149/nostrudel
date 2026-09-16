@@ -1,5 +1,5 @@
 import { CloseIcon } from "@chakra-ui/icons";
-import { Box, ButtonGroup, Flex, IconButton, Link, Text } from "@chakra-ui/react";
+import { Box, ButtonGroup, Flex, IconButton, Text } from "@chakra-ui/react";
 import { PropsWithChildren, ReactNode } from "react";
 
 import RelayFavicon from "../../../../components/relay/relay-favicon";

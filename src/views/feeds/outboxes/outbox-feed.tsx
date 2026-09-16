@@ -11,7 +11,7 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { use$, useActiveAccount } from "applesauce-react/hooks";
-import { kinds, NostrEvent } from "nostr-tools";
+import { NostrEvent } from "nostr-tools";
 import { Navigate, useParams } from "react-router-dom";
 
 import { includeMailboxes, withImmediateValueOrDefault } from "applesauce-core";

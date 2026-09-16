@@ -1,6 +1,5 @@
 import { Card, CardProps, Heading, LinkBox, LinkOverlayProps, Text } from "@chakra-ui/react";
 import { getAddressPointerForEvent, getReplaceableAddress, NostrEvent } from "applesauce-core/helpers";
-import { AddressPointer } from "nostr-tools/nip19";
 import { useMemo } from "react";
 import { Link as RouterLink, To } from "react-router-dom";
 import DVMAvatar from "../../../views/feeds/dvm/components/dvm-avatar";

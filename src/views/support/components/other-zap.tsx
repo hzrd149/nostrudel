@@ -1,4 +1,4 @@
-import { Card, CardBody, CardHeader, Flex, Text } from "@chakra-ui/react";
+import { Card, CardBody, CardHeader, Flex } from "@chakra-ui/react";
 import { KnownEvent } from "applesauce-core/helpers";
 import { getZapPayment, getZapRequest, getZapSender } from "applesauce-common/helpers";
 import { kinds } from "nostr-tools";
