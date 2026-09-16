@@ -141,7 +141,7 @@ documented or removed as an explicit decision.
 D-12, D-12a, D-13, D-14, D-15
 (no REQUIREMENTS.md exists; the requirement set is the locked decisions in `04-CONTEXT.md`)
 **Depends on:** Phase 2
-**Plans:** 11/11 plans complete
+**Plans:** 11/12 plans complete
 
 445 findings in the [2026-09-11 baseline](./research/aislop-scan-2026-09-11.md) (bucket C) —
 the largest bucket, and 132 of them auto-fixable via `aislop fix`. 239 × `eslint/no-unused-vars`,
@@ -186,6 +186,10 @@ Plans:
 **Wave 5** *(blocked on Wave 4 completion)*
 
 - [x] 04-11-PLAN.md — D-14 rescan report, ledger audit, and D-15 disposition (wave 5)
+
+**Wave 6** *(gap closure — the 04-UAT PoW mining failure)*
+
+- [ ] 04-12-PLAN.md — create the draft on the PoW path in both composers; match the success check to the worker's break condition (wave 6)
 
 ### Phase 5: Refactor oversized files, long functions, and duplicated blocks
 
