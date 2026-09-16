@@ -90,7 +90,7 @@ function FavoriteRelays() {
   );
 }
 
-function DiscoverRelays({ pubkey, showUsers }: { pubkey: string; showUsers?: boolean }) {
+function DiscoverRelays({ pubkey, showUsers: _showUsers }: { pubkey: string; showUsers?: boolean }) {
   const userFavorites = useFavoriteRelays(pubkey);
 
   // Create list pointer and filter for loader

@@ -82,7 +82,7 @@ export default function SearchSettings() {
     if (!searchRelayList) throw new Error("Missing search relay list");
 
     const draft = await EventFactory.fromEvent(searchRelayList).modifyPublicTags((tags) =>
-      Array.from(tags).sort((a, b) => (a[1] === url ? -1 : 1)),
+      Array.from(tags).sort((a, _b) => (a[1] === url ? -1 : 1)),
     );
     await publish("Set default search relay", draft);
   });

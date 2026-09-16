@@ -8,7 +8,7 @@ import UserAvatarLink from "../../../components/user/user-avatar-link";
 
 export type UserCardProps = { pubkey: string; relay?: string } & Omit<FlexProps, "children">;
 
-export const UserCard = memo(({ pubkey, relay, ...props }: UserCardProps) => {
+export const UserCard = memo(({ pubkey, relay: _relay, ...props }: UserCardProps) => {
   return (
     <Flex p="1" overflow="hidden" gap="4" alignItems="center" {...props}>
       <UserAvatarLink pubkey={pubkey} />
