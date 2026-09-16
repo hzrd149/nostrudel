@@ -84,7 +84,7 @@ export default function DeleteEventProvider({ children }: PropsWithChildren) {
       const pub = await publish("Delete", draft, undefined, false);
       eventStore.add(pub.event);
       defer?.resolve();
-    } catch (e) {
+    } catch {
       defer?.reject();
     } finally {
       setLoading(false);

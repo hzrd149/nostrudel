@@ -15,7 +15,7 @@ export function renderNostrAppWebLink(url: URL) {
         <EmbedEventPointerCard pointer={match[1]} />
       </ExpandableEmbed>
     );
-  } catch (error) {
+  } catch {
     return null;
   }
 }
