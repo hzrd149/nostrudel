@@ -1,15 +1,10 @@
 import { ButtonGroup, Flex, Heading, Spinner, Text } from "@chakra-ui/react";
 import { NostrEvent } from "nostr-tools";
 
-import DebugEventButton from "~/components/debug-modal/debug-event-button";
 import EventQuoteButton from "~/components/note/event-quote-button";
 import EventShareButton from "~/components/timeline/note/components/event-share-button";
 import PicturePostContents from "~/components/picture-post/picture-post-content";
 import PicturePostSlides from "~/components/picture-post/picture-slides";
-import BackButton from "~/components/router/back-button";
-import UserAvatarLink from "~/components/user/user-avatar-link";
-import UserDnsIdentity from "~/components/user/user-dns-identity";
-import UserLink from "~/components/user/user-link";
 import useParamsEventPointer from "~/hooks/use-params-event-pointer";
 import useSingleEvent from "~/hooks/use-single-event";
 import { useBreakpointValue } from "~/providers/global/breakpoint-provider";
@@ -21,25 +16,6 @@ import UserName from "../../../components/user/user-name";
 import EventZapButton from "../../../components/zap/event-zap-button";
 import PicturePostCommentForm from "./media-post-comment-form";
 import { PicturePostComments } from "./picture-comments";
-
-function Header({ post }: { post: NostrEvent }) {
-  return (
-    <Flex gap="2">
-      <BackButton />
-      <UserAvatarLink pubkey={post.pubkey} />
-      <Flex direction="column">
-        <UserLink pubkey={post.pubkey} fontWeight="bold" />
-        <UserDnsIdentity pubkey={post.pubkey} />
-      </Flex>
-
-      <ButtonGroup ml="auto">
-        <EventShareButton event={post} />
-        <EventQuoteButton event={post} />
-        <DebugEventButton event={post} />
-      </ButtonGroup>
-    </Flex>
-  );
-}
 
 function Actions({ post }: { post: NostrEvent }) {
   return (

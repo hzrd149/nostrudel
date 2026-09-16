@@ -3,8 +3,6 @@ import {
   AddressPointer,
   EventPointer,
   insertEventIntoDescendingList,
-  isAddressPointer,
-  isEventPointer,
   NostrEvent,
 } from "applesauce-core/helpers";
 import {
@@ -78,23 +76,6 @@ export function getThreadRootKey(pointer: EventPointer | AddressPointer | undefi
   }
 
   return undefined;
-}
-
-/**
- * Check if a reply pointer is a direct reply to one of the user's events
- */
-function isDirectReply(replyPointer: EventPointer | AddressPointer, userEventIds: Set<string>): boolean {
-  let replyKey: string;
-
-  if (isEventPointer(replyPointer)) {
-    replyKey = replyPointer.id;
-  } else if (isAddressPointer(replyPointer)) {
-    replyKey = getCoordinateFromAddressPointer(replyPointer);
-  } else {
-    return false;
-  }
-
-  return userEventIds.has(replyKey);
 }
 
 // Types for the notification state

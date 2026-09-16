@@ -2,7 +2,6 @@ import {
   Box,
   Button,
   ButtonGroup,
-  ButtonProps,
   Card,
   Flex,
   IconButton,
@@ -32,21 +31,6 @@ import GenericCommentSection from "../../../components/comment/generic-comment-s
 import RouterLink from "../../../components/router-link";
 import { ListPageHeader } from ".";
 import ListEditModal from "../components/list-edit-modal";
-
-function ListFeedButton({ list, ...props }: { list: NostrEvent } & Omit<ButtonProps, "children">) {
-  const address = getReplaceableAddress(list);
-  if (!address) return null; // v5: can return null
-
-  return (
-    <Button
-      as={RouterLink}
-      to={{ pathname: "/", search: new URLSearchParams({ people: address }).toString() }}
-      {...props}
-    >
-      View Feed
-    </Button>
-  );
-}
 
 function UserCard({ pubkey, list }: { pubkey: string; list: NostrEvent }) {
   const hub = useActionRunner();
