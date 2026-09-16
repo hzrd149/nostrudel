@@ -21,10 +21,6 @@ import UserAvatar from "./user/user-avatar";
 import UserDnsIdentity from "./user/user-dns-identity";
 import UserName from "./user/user-name";
 
-// Referencing Textarea and Input so they are not removed from the imports
-// aislop-ignore-next-line eslint/no-unused-expressions -- this expression exists solely to keep both component imports referenced; removing it would orphan them and 04-01's import-hygiene auto-fixer would strip them on its next pass
-[Textarea, Input];
-
 export type PeopleToken = SearchResult;
 export type EmojiToken = { id: string; name: string; keywords: string[]; char: string; url?: string };
 type Token = EmojiToken | PeopleToken;

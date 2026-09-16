@@ -148,7 +148,7 @@ decisions that stand in for a missing `REQUIREMENTS.md`) to its verification mec
 | D-07 | 24 declarations deleted, nothing orphaned | — | grep + typecheck | `grep -rn "<name>" src/` empty + `pnpm build` passes | N/A | ✅ green |
 | D-08 | Every ignore rule-scoped with a why-not-fixed reason | — | manual review | Not mechanically checkable — see Manual-Only | N/A | ✅ green (re-read at 04-11, all 4 pass) |
 | D-09 | sqlite guarded region kept + ignored; `dbName` deleted | — | scoped-rescan + source assertion | `grep -n "aislop-ignore"` at the site; `dbName` gone | N/A | ✅ green |
-| D-10 | `[Textarea, Input]` kept + ignored, imports survive | — | scoped-rescan + source assertion | Both imports still present after auto-fix | N/A | ✅ green |
+| D-10 | `[Textarea, Input]` removed as redundant; imports survive | — | scoped-rescan + source assertion + typecheck | Both imports still referenced (`textAreaComponent={Input}` L181, `={Textarea}` L205); `pnpm build` passes | N/A | ✅ green (amended post-review — see Amendment below) |
 | D-11 | Both `formState.isDirty;` kept + ignored | — | source assertion | Statement present at both sites | N/A | ✅ green |
 | D-12 | `cleanup;` → `cleanup()`, comment corrected | — | source assertion + typecheck | `pnpm build` + mining still completes | N/A — see Manual-Only | ⚠️ flaky — typecheck/build pass; interactive mining spot-check unverified (see Manual-Only) |
 | D-12a | 2 short-circuits → `if (...)` form | — | scoped-rescan | `no-unused-expressions` absent at both sites | N/A | ✅ green |
@@ -166,40 +166,65 @@ The phase gate (D-01) is satisfied only when this table accounts for **every** b
 still reported by the full-form command. Filled in at phase close (04-11) with the actual per-site
 counts, directive text, and reason, measured against the tree at plan 04-11's execution.
 
-No row beyond these four was needed: 04-08 resolved its one candidate exception
+No row beyond these was needed: 04-08 resolved its one candidate exception
 (`mine-pow.tsx`'s no-op cleanup stub) by adding an in-body explanatory comment instead of an
 ignore, and 04-09 resolved all nine of its long-tail findings by genuine fix. Both plans confirmed
 in their own summaries that they contribute zero new ledger rows.
 
+> **Amendment (2026-09-16, post code review — maintainer-approved).** This ledger originally
+> carried **four** rows. Code review (`04-REVIEW.md`, WR-02) found D-10's stated reason was
+> factually false: `Textarea` and `Input` are referenced as values at `magic-textarea.tsx:181`
+> (`textAreaComponent={Input}`) and `:205` (`textAreaComponent={Textarea}`) inside the exported
+> `MagicInput` / `MagicTextArea` components, so deleting `[Textarea, Input];` could never have
+> orphaned them. The premise originated in this phase's CONTEXT.md D-10 (which in turn inherited a
+> pre-existing author NOTE at `magic-textarea.tsx:2`), not in any executor's work. The maintainer
+> elected to **delete the statement and its directive** rather than keep a suppression resting on a
+> false justification — which is what D-01's own bar prefers (fix over suppress). Verified after the
+> change: `pnpm build` exits 0, both imports remain referenced, bucket C remains `0`, and
+> `eslint/no-unused-expressions` is absent repo-wide. The ledger is now **three** rows / **9**
+> suppressed findings.
+>
+> The D-09 row's reason was reworded in the same pass (WR-01): the original cited a
+> "behavior-change risk" that does not exist, since the block sits after an unconditional `throw`
+> and deleting it would be a runtime no-op. The **decision** to keep the block is unchanged and
+> ROADMAP-sanctioned; only the justification was corrected to state the real rationale. Re-verified
+> after rewording: `eslint/no-unreachable` and `ai-slop/unreachable-code` both still read `0`
+> repo-wide, so the directive still parses and suppresses correctly.
+
 | Site | Rule(s) ignored | Findings suppressed | Decision | Directive (as committed) | Reason (verbatim) |
 |------|-----------------|---------------------|----------|---------------------------|--------------------|
-| `src/services/sqlite/index.ts:1` (file-level, covering lines 9-15) | `eslint/no-unreachable`, `ai-slop/unreachable-code` | 7 (6 `no-unreachable` + 1 `unreachable-code`) | D-09 | `// aislop-ignore-file eslint/no-unreachable ai-slop/unreachable-code -- reason` | "the jeep-sqlite web-init block below the guard throw is kept as the record of how web sqlite was wired up, since jeep-sqlite cannot be disabled on web and restructuring it to avoid the unreachable shape was rejected as a behavior-change risk in a hygiene-only phase" |
-| `src/components/magic-textarea.tsx:25` (next-line, above `[Textarea, Input];`) | `eslint/no-unused-expressions` | 1 | D-10 | `// aislop-ignore-next-line eslint/no-unused-expressions -- reason` | "this expression exists solely to keep both component imports referenced; removing it would orphan them and 04-01's import-hygiene auto-fixer would strip them on its next pass" |
+| `src/services/sqlite/index.ts:1` (file-level, covering lines 9-15) | `eslint/no-unreachable`, `ai-slop/unreachable-code` | 7 (6 `no-unreachable` + 1 `unreachable-code`) | D-09 | `// aislop-ignore-file eslint/no-unreachable ai-slop/unreachable-code -- reason` | "the jeep-sqlite web-init block below the CAP_IS_WEB guard throw is unreachable by design; deleting it would be a runtime no-op, but it is deliberately kept as the in-file record of how web sqlite was wired up, since jeep-sqlite cannot be disabled on web. Scoped to the file because the block spans six lines and aislop has no block-level directive form to narrow it further" |
 | `src/components/post-modal/index.tsx:101` (next-line, above `formState.isDirty;`) | `eslint/no-unused-expressions` | 1 | D-11 | `// aislop-ignore-next-line eslint/no-unused-expressions -- reason` | "react-hook-form registers this dirty-state subscription through the property read itself; deleting the statement would silently stop the form re-rendering on dirty-state changes, with no type error to catch it" |
 | `src/views/new/note/short-text-form.tsx:97` (next-line, above `formState.isDirty;`) | `eslint/no-unused-expressions` | 1 | D-11 | `// aislop-ignore-next-line eslint/no-unused-expressions -- reason` | "the bare property read is what triggers react-hook-form's getter-based subscription; deleting it stops dirty-state re-renders with no compiler error to flag the loss" |
-| **Total suppressed** | — | **10** | — | — | — |
+| **Total suppressed** | — | **9** | — | — | — |
 
-**D-08 bar re-read for all four rows (manual check, a rescan cannot perform this):** each reason
-states *why the code could not be fixed instead* (orphaned imports re-stripped by the auto-fixer;
-behavior-change risk in restructuring a web-only guard; silent loss of a react-hook-form
-subscription with no compiler signal) rather than merely asserting the code is deliberate. All four
-pass the bar. The two `post-modal`/`short-text-form` reasons are worded distinctly per the plan's
-own instruction (not copy-pasted), even though they describe the same underlying idiom.
+*(A fourth row for `src/components/magic-textarea.tsx` was removed post-review — see Amendment above.)*
 
-**Load-bearing / rule-scoped proof (not a blanket suppression), re-verified live at 04-11:**
+**D-08 bar re-read for all three rows (manual check, a rescan cannot perform this):** each reason
+states *why the code could not be fixed instead* — an unreachable-by-design block kept as the
+in-file record of the web-sqlite wiring, and the silent loss of a react-hook-form subscription with
+no compiler signal — rather than merely asserting the code is deliberate. All three pass the bar.
+The two `post-modal`/`short-text-form` reasons are worded distinctly per the plan's own instruction
+(not copy-pasted), even though they describe the same underlying idiom.
+
+**A fourth row failed this bar on independent review and was removed rather than reworded.** That
+is the bar working as intended: 04-11's own re-read passed all four, but it was the phase auditing
+itself. An independent reviewer checked the claim against the source and found it false. Worth
+recording as a lesson — a justification that *sounds* reasonable is not the same as one that is
+true, and only a reader outside the phase reliably catches the difference.
+
+**Load-bearing / rule-scoped proof (not a blanket suppression):**
 - `src/services/sqlite/index.ts` still reports its pre-existing `ai-slop/trivial-comment` finding
-  (line 7) after the file-level directive — first demonstrated by 04-07, reproduced here.
-- `src/components/magic-textarea.tsx` still reports 15 other findings (React refs, jsx-a11y,
-  `react-hooks/exhaustive-deps`, a duplicate-block finding, `ai-slop/ts-directive`) — the directive
-  silences only `eslint/no-unused-expressions` at its one named line.
+  (line 7) after the file-level directive — first demonstrated by 04-07, reproduced at 04-11, and
+  re-confirmed after the post-review rewording.
 - `src/components/post-modal/index.tsx` still reports `react/incompatible-library`,
   `complexity/function-too-long`, and `ai-slop/todo-stub`.
 - `src/views/new/note/short-text-form.tsx` still reports `react/incompatible-library` and
   `ai-slop/todo-stub`.
 
-Any row added beyond these four is a **new** deliberate exception and needs the same D-08
+Any row added beyond these three is a **new** deliberate exception and needs the same D-08
 justification bar. Any bucket-C finding with no row here is a failure of D-01. None was found:
-the quick-run command below reads `0`, and every one of the 10 findings that `0` implicitly
+the quick-run command below reads `0`, and every one of the 9 findings that `0` implicitly
 suppresses is accounted for in the table above.
 
 ---

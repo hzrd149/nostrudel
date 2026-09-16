@@ -1,4 +1,4 @@
-// aislop-ignore-file eslint/no-unreachable ai-slop/unreachable-code -- the jeep-sqlite web-init block below the guard throw is kept as the record of how web sqlite was wired up, since jeep-sqlite cannot be disabled on web and restructuring it to avoid the unreachable shape was rejected as a behavior-change risk in a hygiene-only phase
+// aislop-ignore-file eslint/no-unreachable ai-slop/unreachable-code -- the jeep-sqlite web-init block below the CAP_IS_WEB guard throw is unreachable by design; deleting it would be a runtime no-op, but it is deliberately kept as the in-file record of how web sqlite was wired up, since jeep-sqlite cannot be disabled on web. Scoped to the file because the block spans six lines and aislop has no block-level directive form to narrow it further
 import { CapacitorSQLite, SQLiteConnection, SQLiteDBConnection } from "@capacitor-community/sqlite";
 import { CAP_IS_WEB } from "../../env";
 
