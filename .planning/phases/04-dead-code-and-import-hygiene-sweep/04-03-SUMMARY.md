@@ -173,6 +173,11 @@ None - no external service configuration required.
 - 04-04 (the plain-dead-locals half of D-07) and 04-10 (import hygiene) can proceed independently — this plan touched a disjoint set of files/lines from both
 - `src/services/wallets.ts` is now clean of both 04-01's import-merge concerns and this plan's constant deletions; no further D-03/D-07 work remains in that file
 
+## Self-Check: PASSED
+
+All 9 modified source files and this SUMMARY.md confirmed present on disk. All 3 commits
+(`d1ebe4fa2`, `55919c897`, `3a9a2471f`) confirmed present in `git log`.
+
 ---
 *Phase: 04-dead-code-and-import-hygiene-sweep*
 *Completed: 2026-09-16*
