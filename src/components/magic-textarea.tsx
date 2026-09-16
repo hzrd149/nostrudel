@@ -22,6 +22,7 @@ import UserDnsIdentity from "./user/user-dns-identity";
 import UserName from "./user/user-name";
 
 // Referencing Textarea and Input so they are not removed from the imports
+// aislop-ignore-next-line eslint/no-unused-expressions -- this expression exists solely to keep both component imports referenced; removing it would orphan them and 04-01's import-hygiene auto-fixer would strip them on its next pass
 [Textarea, Input];
 
 export type PeopleToken = SearchResult;
@@ -75,7 +76,7 @@ function output(token: Token) {
 const Loading: ReactTextareaAutocompleteProps<
   Token,
   React.TextareaHTMLAttributes<HTMLTextAreaElement>
->["loadingComponent"] = ({ data }) => (
+>["loadingComponent"] = ({ data: _data }) => (
   <div style={{ padding: "8px", background: "var(--chakra-colors-chakra-body-bg)", textAlign: "center" }}>
     <Spinner size="sm" />
   </div>

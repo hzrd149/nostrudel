@@ -98,6 +98,7 @@ function PostModalInner({
   });
 
   // watch form state
+  // aislop-ignore-next-line eslint/no-unused-expressions -- react-hook-form registers this dirty-state subscription through the property read itself; deleting the statement would silently stop the form re-rendering on dirty-state changes, with no type error to catch it
   formState.isDirty;
   watch("content");
   watch("nsfw");

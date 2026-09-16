@@ -94,6 +94,7 @@ function ShortTextNoteFormInner({
   });
 
   // watch form state
+  // aislop-ignore-next-line eslint/no-unused-expressions -- the bare property read is what triggers react-hook-form's getter-based subscription; deleting it stops dirty-state re-renders with no compiler error to flag the loss
   formState.isDirty;
   watch("content");
   watch("nsfw");
