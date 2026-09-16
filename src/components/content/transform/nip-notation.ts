@@ -43,8 +43,6 @@ export function nipDefinitions(): Transformer<Root> {
             // Not a valid NIP reference; leave the text alone
             return false;
           }
-
-          return false;
         },
       ],
     ]);

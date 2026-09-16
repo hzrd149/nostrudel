@@ -44,7 +44,7 @@ function miner(
         miningComplete = true; // Set the flag to indicate mining completion
         onComplete(msg.draft);
         stopMiner(); // Call stopMiner when mining is complete
-        cleanup; // Call stopMiner when mining is complete
+        cleanup(); // Terminate this run's workers now that mining is done
       }
     };
 
@@ -67,7 +67,10 @@ function miner(
     return cleanup;
   } else {
     console.error("Web Workers are not supported in this environment.");
-    return () => {};
+    // No-op cleanup: no workers were started, so there is nothing to tear down
+    return () => {
+      // Intentionally empty: satisfies the MinerCleanup contract with nothing to clean up
+    };
   }
 }
 

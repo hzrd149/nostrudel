@@ -43,8 +43,6 @@ export function bipDefinitions(): Transformer<Root> {
             // Not a valid BIP reference; leave the text alone
             return false;
           }
-
-          return false;
         },
       ],
     ]);
