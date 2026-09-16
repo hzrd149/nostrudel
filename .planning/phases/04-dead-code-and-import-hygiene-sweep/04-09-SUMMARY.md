@@ -143,3 +143,10 @@ None - no external service configuration required.
 ---
 *Phase: 04-dead-code-and-import-hygiene-sweep*
 *Completed: 2026-09-16*
+
+## Self-Check: PASSED
+
+- FOUND: `.planning/phases/04-dead-code-and-import-hygiene-sweep/04-09-SUMMARY.md`
+- FOUND: `3fd1aacc8` (Task 1 commit)
+- FOUND: `dce715e32` (Task 2 commit)
+- FOUND: `124de47e6` (SUMMARY.md commit)
