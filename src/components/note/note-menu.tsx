@@ -1,9 +1,8 @@
 import { MenuItem } from "@chakra-ui/react";
 import { NostrEvent } from "nostr-tools";
-import { useCallback, useMemo } from "react";
+import { useCallback } from "react";
 
 import { usePublishEvent } from "../../providers/global/publish-provider";
-import { getSharableEventAddress } from "../../services/relay-hints";
 import CopyEmbedCodeMenuItem from "../menu/copy-embed-code";
 import DeleteEventMenuItem from "../menu/delete-event";
 import MuteUserMenuItem from "../menu/mute-user";
@@ -16,8 +15,6 @@ import { BroadcastEventIcon } from "../icons";
 
 export default function NoteMenu({ event, ...props }: { event: NostrEvent } & Omit<MenuIconButtonProps, "children">) {
   const publish = usePublishEvent();
-
-  const address = useMemo(() => getSharableEventAddress(event), [event]);
 
   const broadcast = useCallback(async () => {
     await publish("Broadcast", event);

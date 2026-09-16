@@ -45,7 +45,7 @@ function RelayDetailCard({ title, children }: { title: string; children: React.R
 }
 
 function RelayPage({ relay }: { relay: string }) {
-  const { info, loading } = useRelayInfo(relay, true);
+  const { info } = useRelayInfo(relay, true);
   const stats = useRelayStats(relay);
 
   const uiURL = useMemo(() => {

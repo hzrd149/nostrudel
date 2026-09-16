@@ -7,7 +7,6 @@ self.onmessage = (event) => {
   let running = true;
   let nonce = 0;
   let bestDifficulty = nip13.getPow(getEventHash(draft));
-  let bestHash = getEventHash(draft);
 
   const nonceTag = ["nonce", "0", String(target)];
   const newDraft = { ...draft, tags: [...draft.tags, nonceTag] };
@@ -20,7 +19,6 @@ self.onmessage = (event) => {
 
       if (difficulty > bestDifficulty) {
         bestDifficulty = difficulty;
-        bestHash = newDraft.id;
         postMessage({ type: "progress", hash: newDraft.id, difficulty });
       }
 

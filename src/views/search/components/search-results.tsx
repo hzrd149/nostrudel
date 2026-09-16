@@ -24,7 +24,7 @@ export default function SearchResults({ query, relay }: { query: string; relay: 
   const search = useMemo(() => createSearchAction(relay ? [relay] : []), [relay]);
 
   // Search for profiles using username-search service
-  const { loading: loadingProfiles, run: searchProfiles } = useAsyncAction(async (searchQuery: string) => {
+  const { run: searchProfiles } = useAsyncAction(async (searchQuery: string) => {
     const results = await lookupUsers(searchQuery, 20);
     return results;
   }, []);

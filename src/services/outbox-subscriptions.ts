@@ -34,7 +34,7 @@ class OutboxSubscriptionsService {
 
         // Use pool.outboxSubscription which automatically handles authors from the outbox map
         // The filter should not include authors as they're added automatically
-        const { authors, ...filterWithoutAuthors } = filter;
+        const { authors: _authors, ...filterWithoutAuthors } = filter;
 
         return pool.outboxSubscription(outboxMap, filterWithoutAuthors).pipe(
           onlyEvents(),

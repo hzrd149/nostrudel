@@ -4,7 +4,6 @@ import { lookupUsers, SearchResult } from "../../../services/user-lookup";
 
 let cachedUsers: SearchResult[] = [];
 let lastQuery = "";
-let lookupPromise: Promise<void> | null = null;
 
 export function codeMirrorUserAutocomplete(context: CompletionContext): CompletionResult | null {
   const nodeBefore = syntaxTree(context.state).resolveInner(context.pos, -1);
@@ -19,7 +18,7 @@ export function codeMirrorUserAutocomplete(context: CompletionContext): Completi
   // Trigger async lookup if query changed
   if (query !== lastQuery && query.length >= 2) {
     lastQuery = query;
-    lookupPromise = lookupUsers(query, 20).then((results) => {
+    lookupUsers(query, 20).then((results) => {
       cachedUsers = results;
     });
   }

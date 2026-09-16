@@ -109,9 +109,6 @@ export function TimelineHighlight({
   const zaps = useEventZaps(event);
   const ref = useEventIntersectionRef(event);
 
-  // Extract highlight data using applesauce helpers
-  const highlightText = getHighlightText(event);
-  const context = getHighlightContext(event);
   const hasSource = hasHighlightSource(event);
 
   return (
