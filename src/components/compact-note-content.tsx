@@ -20,7 +20,7 @@ export type NoteContentsProps = {
 };
 
 export const CompactNoteContent = React.memo(
-  ({ event, maxLength, textOnly = false, ...props }: NoteContentsProps & Omit<BoxProps, "children">) => {
+  ({ event, maxLength, textOnly: _textOnly = false, ...props }: NoteContentsProps & Omit<BoxProps, "children">) => {
     const truncated = useRef(false);
     const transformers = useMemo(
       () => [

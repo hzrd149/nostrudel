@@ -141,7 +141,7 @@ export function BlobDetailsModal({
               <Text color="gray.500">No media servers found for this user</Text>
             ) : (
               <VStack align="stretch" spacing={2} mt={2}>
-                {servers.map((server, i) => (
+                {servers.map((server, _i) => (
                   <ServerBlobStatus key={String(server)} server={server} blob={hash} />
                 ))}
               </VStack>

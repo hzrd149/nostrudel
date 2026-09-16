@@ -59,9 +59,9 @@ function comparePaths(a: HTMLElement[] | null, b: HTMLElement[] | null) {
 
 const LightboxContext = createContext({
   isOpen: false,
-  removeSlide(ref: RefType) {},
-  showSlide(ref: RefType) {},
-  addSlide(ref: RefType, slide: Slide) {},
+  removeSlide(_ref: RefType) {},
+  showSlide(_ref: RefType) {},
+  addSlide(_ref: RefType, _slide: Slide) {},
 });
 export function useLightbox() {
   return useContext(LightboxContext);

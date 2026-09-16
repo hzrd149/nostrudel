@@ -48,7 +48,6 @@ export type TimelineHighlightProps = Omit<CardProps, "children"> & {
   variant?: CardProps["variant"];
   showReplyButton?: boolean;
   showReplyLine?: boolean;
-  hideDrawerButton?: boolean;
   registerIntersectionEntity?: boolean;
   clickable?: boolean;
 };
@@ -101,7 +100,6 @@ export function TimelineHighlight({
   event,
   variant = "unstyled",
   showReplyButton,
-  hideDrawerButton,
   registerIntersectionEntity = true,
   clickable = true,
   ...props

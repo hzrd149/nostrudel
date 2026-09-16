@@ -92,7 +92,7 @@ export default function ShareModal({
                   size: media.size ?? 0,
                 },
                 { auth },
-              ).catch((err) => {
+              ).catch(() => {
                 // ignore errors from individual servers
               }),
             ),
