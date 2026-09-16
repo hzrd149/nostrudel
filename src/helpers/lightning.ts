@@ -30,7 +30,7 @@ export function formatSatsAsCurrency(sats: number, currency: string, btcRate: nu
 
   try {
     return new Intl.NumberFormat(undefined, { style: "currency", currency }).format(value);
-  } catch (error) {
+  } catch {
     return `${value.toLocaleString(undefined, { maximumFractionDigits: 2 })} ${currency}`;
   }
 }

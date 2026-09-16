@@ -194,7 +194,7 @@ async function clearCache(): Promise<void> {
     try {
       await database.executeSet([{ statement: "DELETE FROM events" }]);
       log("Cache cleared (partial)");
-    } catch (err) {
+    } catch {
       log("Failed to clear cache:", error);
       throw error;
     }

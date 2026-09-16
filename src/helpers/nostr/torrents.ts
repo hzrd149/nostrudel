@@ -63,7 +63,7 @@ export function validateTorrent(torrent: NostrEvent) {
     getTorrentTitle(torrent);
     getTorrentBtih(torrent);
     return true;
-  } catch (e) {
+  } catch {
     return false;
   }
 }

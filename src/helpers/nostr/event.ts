@@ -32,7 +32,7 @@ export function isReply(event: NostrEvent | EventTemplate) {
     try {
       if (event.kind === kinds.Repost || event.kind === kinds.GenericRepost) return false;
       return !!getNip10References(event).reply;
-    } catch (error) {
+    } catch {
       return false;
     }
   });

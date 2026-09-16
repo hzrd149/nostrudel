@@ -76,7 +76,7 @@ export const zapNotifications$: Observable<TZapGroup[]> = accounts.active$.pipe(
           // TODO: remove when isValidZap does not throw
           try {
             return isValidZap(event);
-          } catch (error) {
+          } catch {
             return false;
           }
         }),

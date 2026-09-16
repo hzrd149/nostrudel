@@ -123,7 +123,7 @@ export default class EncryptedKeyValueStore {
     let decryptedBytes: Uint8Array;
     try {
       decryptedBytes = decipher.decrypt(encryptedPackage.data);
-    } catch (e) {
+    } catch {
       throw new Error("Decryption failed, incorrect PIN");
     }
 
@@ -131,7 +131,7 @@ export default class EncryptedKeyValueStore {
     let unpaddedBytes: Uint8Array;
     try {
       unpaddedBytes = unpad(decryptedBytes);
-    } catch (e) {
+    } catch {
       throw new Error("Decryption failed, invalid padding");
     }
 
