@@ -170,3 +170,16 @@ None - no external service configuration required.
 ---
 *Phase: 04-dead-code-and-import-hygiene-sweep*
 *Completed: 2026-09-16*
+
+## Self-Check: PASSED
+
+- FOUND: `src/components/pow/mine-pow.tsx` (modified, committed in `34e085a60`)
+- FOUND: `src/components/content/components/gallery.tsx` (modified, committed in `38e5fe1b2`)
+- FOUND: `src/components/content/links/image.tsx` (modified, committed in `38e5fe1b2`)
+- FOUND: `src/components/content/transform/nip-notation.ts` (modified, committed in `dfb917453`)
+- FOUND: `src/components/content/transform/bip-notation.ts` (modified, committed in `dfb917453`)
+- FOUND: `src/helpers/nostr/goal.ts` (modified, committed in `dfb917453`)
+- FOUND: commit `34e085a60`
+- FOUND: commit `38e5fe1b2`
+- FOUND: commit `dfb917453`
+- FOUND: commit `7117e324d` (this SUMMARY.md)
