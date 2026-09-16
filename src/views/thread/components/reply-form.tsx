@@ -27,7 +27,7 @@ export type ReplyFormProps = {
   onSubmitted?: (event: NostrEvent) => void;
 };
 
-function ReplyFormInner({ event, onCancel, onSubmitted, replyKind = kinds.ShortTextNote }: ReplyFormProps) {
+function ReplyFormInner({ event, onCancel, onSubmitted, replyKind: _replyKind = kinds.ShortTextNote }: ReplyFormProps) {
   const publish = usePublishEvent();
   const emojis = useContextEmojis();
   const advanced = useDisclosure();

@@ -273,7 +273,7 @@ export type MessageType = "nip04" | "nip17";
 
 export default function SendMessageForm({
   pubkey,
-  rootId,
+  rootId: _rootId,
   initialType = "nip04",
   initialExpiration,
   ...props

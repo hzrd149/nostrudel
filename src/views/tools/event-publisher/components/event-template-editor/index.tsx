@@ -18,7 +18,7 @@ import Plus from "../../../../../components/icons/plus";
 import Minus from "../../../../../components/icons/minus";
 
 const KindOptions = (
-  Object.entries(kinds).filter(([name, value]) => typeof value === "number") as [string, number][]
+  Object.entries(kinds).filter(([_name, value]) => typeof value === "number") as [string, number][]
 ).sort((a, b) => a[1] - b[1]);
 
 export default function EventTemplateEditor({
