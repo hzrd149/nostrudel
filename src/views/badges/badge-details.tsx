@@ -13,7 +13,6 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { kinds, NostrEvent } from "nostr-tools";
-import { useNavigate } from "react-router-dom";
 
 import { useDisclosure } from "@chakra-ui/react";
 import { getReplaceableAddress } from "applesauce-core/helpers";
@@ -94,8 +93,6 @@ function BadgeCommentsTab({ badge }: { badge: NostrEvent }) {
 }
 
 function BadgeDetailsPage({ badge }: { badge: NostrEvent }) {
-  const navigate = useNavigate();
-
   const image = getBadgeImage(badge);
   const description = getBadgeDescription(badge);
 

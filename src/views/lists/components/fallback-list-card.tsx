@@ -79,8 +79,6 @@ function ListCardRender({
   hideCreator = false,
   ...props
 }: Omit<CardProps, "children"> & { list: NostrEvent; hideCreator?: boolean }) {
-  const isSpecialList = isSpecialListKind(list.kind);
-
   // if there is a parent intersection observer, register this card
   const ref = useEventIntersectionRef(list);
 
