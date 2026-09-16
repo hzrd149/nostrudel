@@ -1,5 +1,7 @@
 {
   "workflow": {
-    "_auto_chain_active": false
+    "_auto_chain_active": false,
+    "test_command": "pnpm build",
+    "build_command": "pnpm build"
   }
 }
