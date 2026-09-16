@@ -1,4 +1,4 @@
-import { Box, Flex } from "@chakra-ui/react";
+import { Flex } from "@chakra-ui/react";
 import { NostrEvent } from "nostr-tools";
 
 import Message, { MessageProps } from "./message";

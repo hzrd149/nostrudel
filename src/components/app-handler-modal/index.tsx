@@ -29,7 +29,6 @@ import {
 import { getHandlerLinkTemplate } from "applesauce-common/helpers";
 import { useNavigate } from "react-router-dom";
 
-import { ExternalLinkIcon } from "../icons";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import useSingleEvent from "../../hooks/use-single-event";
 import useReplaceableEvent from "../../hooks/use-replaceable-event";

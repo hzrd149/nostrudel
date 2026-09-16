@@ -10,7 +10,6 @@ import {
   DrawerProps,
   Flex,
   Text,
-  DrawerHeader,
 } from "@chakra-ui/react";
 import { useActiveAccount } from "applesauce-react/hooks";
 

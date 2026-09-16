@@ -1,7 +1,7 @@
 import { Card, CardBody, CardHeader, Flex, Text } from "@chakra-ui/react";
 import { KnownEvent } from "applesauce-core/helpers";
 import { getZapPayment, getZapRequest, getZapSender } from "applesauce-common/helpers";
-import { kinds, NostrEvent } from "nostr-tools";
+import { kinds } from "nostr-tools";
 
 import UserAvatar from "../../../components/user/user-avatar";
 import UserLink from "../../../components/user/user-link";

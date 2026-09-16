@@ -1,4 +1,4 @@
-import { Flex, Heading, SimpleGrid, Text } from "@chakra-ui/react";
+import { Heading, SimpleGrid } from "@chakra-ui/react";
 import { AddressPointer, getAddressPointerForEvent, getEventUID, getReplaceableAddress } from "applesauce-core/helpers";
 import { NostrEvent } from "nostr-social-graph";
 import { kinds } from "nostr-tools";

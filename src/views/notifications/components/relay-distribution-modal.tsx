@@ -16,8 +16,7 @@ import {
   Thead,
   Tr,
 } from "@chakra-ui/react";
-import { isFromCache } from "applesauce-core/helpers";
-import { getSeenRelays } from "applesauce-core/helpers";
+import { isFromCache, getSeenRelays } from "applesauce-core/helpers";
 import { TimelineModel } from "applesauce-core/models";
 import { useEventModel } from "applesauce-react/hooks";
 import { Filter as NostrFilter } from "nostr-tools";

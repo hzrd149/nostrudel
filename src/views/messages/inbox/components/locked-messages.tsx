@@ -20,8 +20,7 @@ import {
   Tr,
   VStack,
 } from "@chakra-ui/react";
-import { getGiftWrapRumor, isGiftWrapUnlocked, Rumor, unlockGiftWrap } from "applesauce-common/helpers";
-import { getConversationParticipants } from "applesauce-common/helpers";
+import { getGiftWrapRumor, isGiftWrapUnlocked, Rumor, unlockGiftWrap, getConversationParticipants } from "applesauce-common/helpers";
 import { GiftWrapsModel } from "applesauce-common/models";
 import { useActiveAccount, useEventModel, use$ } from "applesauce-react/hooks";
 import { kinds } from "nostr-tools";
@@ -29,13 +28,10 @@ import { useEffect, useMemo, useRef } from "react";
 import { Link as RouterLink } from "react-router-dom";
 
 import { UnlockIcon } from "../../../../components/icons";
-import SimpleView from "../../../../components/layout/presets/simple-view";
 import Timestamp from "../../../../components/timestamp";
 import UserAvatar from "../../../../components/user/user-avatar";
 import UserName from "../../../../components/user/user-name";
-import { useAppTitle } from "../../../../hooks/use-app-title";
 import useAsyncAction from "../../../../hooks/use-async-action";
-import { legacyMessageSubscription, wrappedMessageSubscription } from "../../../../services/lifecycle";
 import { DirectMessageRelaysModel } from "../../../../models/messages";
 import ReadAuthRequiredAlert from "../../components/read-auth-required-alert";
 

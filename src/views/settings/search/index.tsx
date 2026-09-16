@@ -10,7 +10,6 @@ import {
   FormLabel,
   Heading,
   Select,
-  Spacer,
   Text,
 } from "@chakra-ui/react";
 import { EventFactory } from "applesauce-core/factories";

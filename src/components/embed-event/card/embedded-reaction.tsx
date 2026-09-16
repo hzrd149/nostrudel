@@ -1,7 +1,6 @@
 import { Card, CardProps, Flex, LinkBox, Spacer, Text } from "@chakra-ui/react";
-import { NostrEvent } from "nostr-tools";
+import { NostrEvent, nip25 } from "nostr-tools";
 
-import { nip25 } from "nostr-tools";
 import { ContentSettingsProvider } from "../../../providers/local/content-settings";
 import DebugEventButton from "../../debug-modal/debug-event-button";
 import ReactionIcon from "../../event-reactions/reaction-icon";

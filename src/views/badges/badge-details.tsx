@@ -12,12 +12,11 @@ import {
   Tabs,
   Text,
 } from "@chakra-ui/react";
-import { kinds } from "nostr-tools";
+import { kinds, NostrEvent } from "nostr-tools";
 import { useNavigate } from "react-router-dom";
 
 import { useDisclosure } from "@chakra-ui/react";
 import { getReplaceableAddress } from "applesauce-core/helpers";
-import { NostrEvent } from "nostr-tools";
 import GenericCommentForm from "../../components/comment/generic-comment-form";
 import { GenericComments } from "../../components/comment/generic-comments";
 import { ErrorBoundary } from "../../components/error-boundary";

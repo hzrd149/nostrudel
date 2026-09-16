@@ -9,7 +9,6 @@ import {
   Tag,
   Text,
   VStack,
-  Divider,
   SimpleGrid,
   Badge,
 } from "@chakra-ui/react";

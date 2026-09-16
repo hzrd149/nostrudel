@@ -1,6 +1,4 @@
-import dayjs from "dayjs";
 import { NostrEvent } from "nostr-tools";
-import { sortByDate } from "./event";
 
 export function getDMSender(event: NostrEvent) {
   return event.pubkey;

@@ -1,5 +1,4 @@
 import {
-  AddressPointerLoader,
   createAddressLoader,
   createEventLoader,
   createReactionsLoader,

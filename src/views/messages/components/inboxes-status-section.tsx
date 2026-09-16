@@ -3,7 +3,6 @@ import { Box, Flex, Link, Text, VStack } from "@chakra-ui/react";
 import RelayFavicon from "../../../components/relay/relay-favicon";
 import { RelayAuthIconButton } from "../../../components/relays/relay-auth-icon-button";
 import RelayStatusBadge from "../../../components/relays/relay-status";
-import RouterLink from "../../../components/router-link";
 import { use$ } from "applesauce-react/hooks";
 import pool from "../../../services/pool";
 import RelayLink from "../../../components/relay/relay-link";

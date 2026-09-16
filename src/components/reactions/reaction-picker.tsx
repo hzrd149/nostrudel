@@ -1,7 +1,6 @@
 import { useMemo } from "react";
-import { getEmojiPackName } from "applesauce-common/helpers";
+import { getEmojiPackName, Emoji, getEmojiPackEmojis } from "applesauce-common/helpers";
 import { getEventUID } from "applesauce-core/helpers";
-import { Emoji, getEmojiPackEmojis } from "applesauce-common/helpers";
 import { getAddressPointersFromList } from "applesauce-common/helpers/lists";
 import { useActiveAccount } from "applesauce-react/hooks";
 

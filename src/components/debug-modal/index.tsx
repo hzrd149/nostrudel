@@ -5,7 +5,6 @@ import {
   IconProps,
   Modal,
   ModalBody,
-  ModalCloseButton,
   ModalContent,
   ModalOverlay,
   ModalProps,

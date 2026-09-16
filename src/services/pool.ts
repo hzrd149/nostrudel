@@ -2,7 +2,7 @@ import { RelayLiveness, RelayPool } from "applesauce-relay";
 import localforage from "localforage";
 import { nanoid } from "nanoid";
 import { Filter, NostrEvent } from "nostr-tools";
-import { BehaviorSubject, combineLatest, interval, map, merge, Observable, shareReplay, switchMap } from "rxjs";
+import { BehaviorSubject, combineLatest, map, merge, Observable, shareReplay, switchMap } from "rxjs";
 
 export type ConnectionState = "connecting" | "connected" | "retrying" | "dormant" | "error";
 

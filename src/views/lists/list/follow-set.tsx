@@ -5,32 +5,26 @@ import {
   ButtonProps,
   Card,
   Flex,
-  Heading,
   IconButton,
   SimpleGrid,
   useDisclosure,
 } from "@chakra-ui/react";
 import { RemoveUserFromFollowSet } from "applesauce-actions/actions";
-import { getReplaceableAddress, getTagValue } from "applesauce-core/helpers";
+import { getReplaceableAddress } from "applesauce-core/helpers";
 import { getProfilePointersFromList } from "applesauce-common/helpers";
 import { useActionRunner, useActiveAccount } from "applesauce-react/hooks";
 import { NostrEvent } from "nostr-tools";
 import { useMemo } from "react";
 
-import GenericCommentForm from "../../../components/comment/generic-comment-form";
-import { GenericComments } from "../../../components/comment/generic-comments";
 import { ErrorBoundary } from "../../../components/error-boundary";
 import { TrashIcon } from "../../../components/icons";
 import SimpleView from "../../../components/layout/presets/simple-view";
-import EventQuoteButton from "../../../components/note/event-quote-button";
-import NoteReactions from "../../../components/timeline/note/components/note-reactions";
 import UserAboutContent from "../../../components/user/user-about-content";
 import UserAvatar from "../../../components/user/user-avatar";
 import UserDnsIdentity from "../../../components/user/user-dns-identity";
 import { SimpleUserFollowButton } from "../../../components/user/user-follow-button";
 import UserLink from "../../../components/user/user-link";
-import EventZapButton from "../../../components/zap/event-zap-button";
-import { getListDescription, getListTitle } from "../../../helpers/nostr/lists";
+import { getListTitle } from "../../../helpers/nostr/lists";
 import useAsyncAction from "../../../hooks/use-async-action";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
 import ListMenu from "../components/list-menu";

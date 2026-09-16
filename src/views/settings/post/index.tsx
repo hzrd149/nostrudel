@@ -13,10 +13,9 @@ import {
   Select,
   Switch,
 } from "@chakra-ui/react";
-import { use$ } from "applesauce-react/hooks";
+import { use$, useActiveAccount } from "applesauce-react/hooks";
 import { Link as RouterLink } from "react-router-dom";
 
-import { useActiveAccount } from "applesauce-react/hooks";
 import SimpleView from "../../../components/layout/presets/simple-view";
 import useUsersMediaServers from "../../../hooks/use-user-blossom-servers";
 import localSettings from "../../../services/preferences";

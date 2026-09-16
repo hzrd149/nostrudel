@@ -1,9 +1,4 @@
 import {
-  Accordion,
-  AccordionButton,
-  AccordionIcon,
-  AccordionItem,
-  AccordionPanel,
   Badge,
   Box,
   Button,
@@ -51,7 +46,7 @@ interface RelayDetail {
   userCount: number;
 }
 
-import { connections$, ConnectionState } from "../services/pool";
+import { connections$ } from "../services/pool";
 import RelayFavicon from "./relay/relay-favicon";
 import RelayName from "./relay/relay-name";
 import RelayStatusBadge from "./relays/relay-status";

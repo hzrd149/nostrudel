@@ -16,11 +16,10 @@ import {
   useDisclosure,
   VStack,
 } from "@chakra-ui/react";
-import { ProfileContent } from "applesauce-core/helpers";
 import { parseNIP05Address } from "applesauce-core/helpers/dns-identity";
 import { IdentityStatus } from "applesauce-loaders/helpers/dns-identity";
 import { useActiveAccount } from "applesauce-react/hooks";
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import { useForm, useFormContext } from "react-hook-form";
 
 import { ChevronDownIcon, ChevronUpIcon, OutboxIcon } from "../../../../components/icons";
