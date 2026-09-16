@@ -1,21 +1,14 @@
 ---
-status: testing
+status: complete
 phase: 04-dead-code-and-import-hygiene-sweep
 source: [04-VERIFICATION.md]
 started: 2026-09-16T01:45:00Z
-updated: 2026-09-16T01:45:00Z
+updated: 2026-09-16T02:30:00Z
 ---
 
 ## Current Test
 
-number: 1
-name: PoW mining completes and tears down its worker pool (D-12)
-expected: |
-  Mining completes, `onComplete` fires with the drafted event, `stopMiner()` runs for the previous
-  run, and `cleanup()` actually terminates this run's worker pool — visible as no lingering Worker
-  threads and no console errors. This confirms `cleanup;` → `cleanup()` (D-12) is correct in a live
-  browser, not just under `tsc`.
-awaiting: user response
+[testing complete]
 
 ## Tests
 
@@ -26,7 +19,9 @@ let it complete. Mining completes, `onComplete` fires with the drafted event, `s
 the previous run, and `cleanup()` terminates this run's worker pool (no lingering Worker threads, no
 console errors).
 
-result: [pending]
+result: issue
+reported: "anything above 0 PoW never even posts the note from the src/views/new/note/ view and never even shows the mining progress"
+severity: major
 
 **Why this needs a human:** This is the one edit in Phase 4 that changes runtime behavior — a bare
 identifier reference (`cleanup;`, an inert statement) became a real call (`cleanup()`). `pnpm build`
@@ -59,9 +54,17 @@ not a double-teardown. Independent code review (`04-REVIEW.md`) went further and
 
 total: 1
 passed: 0
-issues: 0
-pending: 1
+issues: 1
+pending: 0
 skipped: 0
 blocked: 0
 
 ## Gaps
+
+- truth: "PoW mining runs to completion: progress is visible while mining, onComplete fires with the drafted event, and the note posts"
+  status: failed
+  reason: "User reported: anything above 0 PoW never even posts the note from the src/views/new/note/ view and never even shows the mining progress"
+  severity: major
+  test: 1
+  artifacts: []
+  missing: []
