@@ -130,3 +130,7 @@ All four Documented Ignores Ledger rows in `04-VALIDATION.md` now exist in code 
 ---
 *Phase: 04-dead-code-and-import-hygiene-sweep*
 *Completed: 2026-09-16*
+
+## Self-Check: PASSED
+
+All 4 modified source files and this SUMMARY.md confirmed present on disk; all 3 task/summary commits (`bec32eca1`, `cfa629341`, `b596d2838`) confirmed present in `git log`.
