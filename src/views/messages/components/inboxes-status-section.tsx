@@ -1,4 +1,4 @@
-import { Box, Flex, Link, Text, VStack } from "@chakra-ui/react";
+import { Box, Flex, Text, VStack } from "@chakra-ui/react";
 
 import RelayFavicon from "../../../components/relay/relay-favicon";
 import { RelayAuthIconButton } from "../../../components/relays/relay-auth-icon-button";

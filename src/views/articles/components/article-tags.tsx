@@ -1,4 +1,4 @@
-import { Box, BoxProps, Link, Tag } from "@chakra-ui/react";
+import { Box, BoxProps, Link } from "@chakra-ui/react";
 import { NostrEvent } from "nostr-tools";
 
 export default function ArticleTags({ article, ...props }: { article: NostrEvent } & Omit<BoxProps, "children">) {

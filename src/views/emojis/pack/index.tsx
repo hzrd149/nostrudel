@@ -13,7 +13,6 @@ import {
   Image,
   Input,
   SimpleGrid,
-  Tag,
   Text,
 } from "@chakra-ui/react";
 import { getEmojiPackEmojis, getEmojiPackName } from "applesauce-common/helpers";

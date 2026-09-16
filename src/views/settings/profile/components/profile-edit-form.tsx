@@ -20,7 +20,7 @@ import { parseNIP05Address } from "applesauce-core/helpers/dns-identity";
 import { IdentityStatus } from "applesauce-loaders/helpers/dns-identity";
 import { useActiveAccount } from "applesauce-react/hooks";
 import { useRef } from "react";
-import { useForm, useFormContext } from "react-hook-form";
+import { useFormContext } from "react-hook-form";
 
 import { ChevronDownIcon, ChevronUpIcon, OutboxIcon } from "../../../../components/icons";
 import { isLNURL } from "../../../../helpers/lnurl";

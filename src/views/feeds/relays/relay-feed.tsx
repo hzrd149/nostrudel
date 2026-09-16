@@ -1,6 +1,6 @@
 import { Alert, AlertDescription, AlertIcon, AlertTitle, Button, Flex } from "@chakra-ui/react";
 import { useActiveAccount, use$ } from "applesauce-react/hooks";
-import { kinds, NostrEvent } from "nostr-tools";
+import { NostrEvent } from "nostr-tools";
 import { Navigate, useParams } from "react-router-dom";
 
 import { normalizeURL, getSeenRelays } from "applesauce-core/helpers";
