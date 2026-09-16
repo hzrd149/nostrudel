@@ -14,7 +14,7 @@ type ThreadsContextType = {
 };
 const ThreadsContext = createContext<ThreadsContextType>({
   threads: {},
-  getRoot: (id: string) => {
+  getRoot: (_id: string) => {
     return undefined;
   },
 });

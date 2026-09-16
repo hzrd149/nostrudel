@@ -53,7 +53,7 @@ export function useCachedIntersectionMapCallback(
   const cache = useMemo(() => new Map<string, IntersectionObserverEntry>(), []);
 
   return useCallback<IntersectionObserverCallback>(
-    (entries, observer) => {
+    (entries, _observer) => {
       for (const entry of entries) {
         const details = getEntryDetails(entry);
         if (details?.id) cache.set(details.id, entry);

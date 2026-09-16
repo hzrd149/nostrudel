@@ -39,42 +39,42 @@ const StyledMarkdown = styled(Markdown)`
   }
 `;
 
-function H1({ children, node, ...props }: HeadingProps & ExtraProps) {
+function H1({ children, node: _node, ...props }: HeadingProps & ExtraProps) {
   return (
     <Heading as="h1" size="2xl" mt="6" mb="2" {...props}>
       {children}
     </Heading>
   );
 }
-function H2({ children, node, ...props }: HeadingProps & ExtraProps) {
+function H2({ children, node: _node, ...props }: HeadingProps & ExtraProps) {
   return (
     <Heading as="h2" size="xl" mt="6" mb="2" {...props}>
       {children}
     </Heading>
   );
 }
-function H3({ children, node, ...props }: HeadingProps & ExtraProps) {
+function H3({ children, node: _node, ...props }: HeadingProps & ExtraProps) {
   return (
     <Heading as="h3" size="lg" mt="4" mb="2" {...props}>
       {children}
     </Heading>
   );
 }
-function H4({ children, node, ...props }: HeadingProps & ExtraProps) {
+function H4({ children, node: _node, ...props }: HeadingProps & ExtraProps) {
   return (
     <Heading as="h4" size="md" my="2" {...props}>
       {children}
     </Heading>
   );
 }
-function H5({ children, node, ...props }: HeadingProps & ExtraProps) {
+function H5({ children, node: _node, ...props }: HeadingProps & ExtraProps) {
   return (
     <Heading as="h5" size="sm" my="2" {...props}>
       {children}
     </Heading>
   );
 }
-function H6({ children, node, ...props }: HeadingProps & ExtraProps) {
+function H6({ children, node: _node, ...props }: HeadingProps & ExtraProps) {
   return (
     <Heading as="h6" size="xs" my="2" {...props}>
       {children}
@@ -82,7 +82,7 @@ function H6({ children, node, ...props }: HeadingProps & ExtraProps) {
   );
 }
 
-function A({ children, node, href, ...props }: LinkProps & ExtraProps) {
+function A({ children, node: _node, href, ...props }: LinkProps & ExtraProps) {
   // render nostr: mentions
   if (href?.startsWith("nostr:")) {
     try {
@@ -110,14 +110,14 @@ function A({ children, node, href, ...props }: LinkProps & ExtraProps) {
     </Link>
   );
 }
-function P({ children, node, ...props }: TextProps & ExtraProps) {
+function P({ children, node: _node, ...props }: TextProps & ExtraProps) {
   return (
     <Text my="2" {...props}>
       {children}
     </Text>
   );
 }
-function TableWithContainer({ children, node, ...props }: TableProps & ExtraProps) {
+function TableWithContainer({ children, node: _node, ...props }: TableProps & ExtraProps) {
   return (
     <TableContainer>
       <Table size="sm" mb="4" {...props}>
@@ -127,7 +127,7 @@ function TableWithContainer({ children, node, ...props }: TableProps & ExtraProp
   );
 }
 
-function CustomCode({ children, node, ...props }: CodeProps & ExtraProps) {
+function CustomCode({ children, node: _node, ...props }: CodeProps & ExtraProps) {
   return (
     <Code fontSize="inherit" display="inline" overflowX="auto" {...props}>
       {children}

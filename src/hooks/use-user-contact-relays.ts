@@ -15,11 +15,11 @@ export default function useUserContactRelays(user?: string | ProfilePointer) {
     if (!relays) return undefined;
 
     const inbox = Array.from(relays?.entries())
-      .filter(([relay, mode]) => mode === "inbox" || mode === "all")
+      .filter(([_relay, mode]) => mode === "inbox" || mode === "all")
       .map(([relay]) => relay);
 
     const outbox = Array.from(relays?.entries())
-      .filter(([relay, mode]) => mode === "outbox" || mode === "all")
+      .filter(([_relay, mode]) => mode === "outbox" || mode === "all")
       .map(([relay]) => relay);
 
     return { inbox, outbox };

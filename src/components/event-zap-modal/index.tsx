@@ -150,7 +150,7 @@ export type ZapModalProps = Omit<ModalProps, "children"> & {
 export default function ZapModal({
   event,
   pubkey,
-  relays,
+  relays: _relays,
   onClose,
   initialComment,
   initialAmount,

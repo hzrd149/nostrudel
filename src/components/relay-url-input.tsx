@@ -18,7 +18,7 @@ export const RelayUrlInput = forwardRef(({ nips, ...props }: { nips?: number[] }
     setError(null);
 
     const subscription = nip66Discovery.fetchRelays().subscribe({
-      next: (relayMap) => {
+      next: (_relayMap) => {
         try {
           let relays: string[];
 

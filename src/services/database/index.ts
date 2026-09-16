@@ -21,7 +21,7 @@ const log = logger.extend("Database");
 const dbName = "storage";
 const version = 13;
 const db = await openDB<SchemaV13>(dbName, version, {
-  upgrade(db, oldVersion, newVersion, transaction, event) {
+  upgrade(db, oldVersion, newVersion, transaction, _event) {
     if (oldVersion < 1) {
       const v0 = db as unknown as IDBPDatabase<SchemaV1>;
 
