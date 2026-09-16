@@ -50,7 +50,7 @@ export default function ReceiveTokenModal({ onClose, ...props }: Omit<ModalProps
   const metadata = useMemo(() => {
     try {
       return getTokenMetadata(input.trim());
-    } catch (error) {
+    } catch {
       return undefined;
     }
   }, [input]);

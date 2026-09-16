@@ -53,7 +53,7 @@ const validateLightningAddress = async (value?: string) => {
     }
 
     return true;
-  } catch (error) {
+  } catch {
     return "Error validating lightning address";
   }
 };
@@ -78,7 +78,7 @@ const validateNip05 = async (address?: string, userPubkey?: string) => {
         }
         return true;
     }
-  } catch (error) {
+  } catch {
     return "Error validating identity";
   }
 

@@ -52,7 +52,7 @@ export default function StreamSatsPerMinute({ pubkey, ...props }: { pubkey: stri
         } else throw new Error("Failed to get invoice");
 
         await window.webln.sendPayment(payRequest);
-      } catch (e) {
+      } catch {
         setEnabled(false);
       }
     }

@@ -42,7 +42,7 @@ function DirectMessageActions({
           status: "success",
           duration: 2000,
         });
-      } catch (error) {
+      } catch {
         toast({
           title: "Failed to copy text",
           status: "error",
