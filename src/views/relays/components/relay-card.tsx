@@ -105,9 +105,8 @@ export function RelayPaidTag({ url }: { url: string }) {
 
 export default function RelayCard({
   relay,
-  to,
   ...props
-}: { relay: string; to?: string } & Omit<CardProps, "children">) {
+}: { relay: string } & Omit<CardProps, "children">) {
   return (
     <>
       <Card variant="outline" {...props}>

@@ -10,10 +10,9 @@ import useDVMMetadata from "../../../../hooks/use-dvm-metadata";
 
 type DVMAvatarProps = {
   pointer: AddressPointer;
-  noProxy?: boolean;
 } & Omit<BoxProps, "children">;
 
-export const DVMAvatar = forwardRef<HTMLDivElement, DVMAvatarProps>(({ pointer, noProxy, ...props }, ref) => {
+export const DVMAvatar = forwardRef<HTMLDivElement, DVMAvatarProps>(({ pointer, ...props }, ref) => {
   const dvmMetadata = useDVMMetadata(pointer);
   const userMetadata = useUserProfile(pointer.pubkey);
   const image = dvmMetadata?.image || userMetadata?.picture || "";
