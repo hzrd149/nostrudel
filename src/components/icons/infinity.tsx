@@ -1,6 +1,6 @@
 import { createIcon } from "@chakra-ui/icons";
 
-const Infinity = createIcon({
+const InfinityIcon = createIcon({
   displayName: "Infinity",
   viewBox: "0 0 24 24",
   path: [
@@ -17,4 +17,4 @@ const Infinity = createIcon({
   defaultProps: { boxSize: 4 },
 });
 
-export default Infinity;
+export default InfinityIcon;

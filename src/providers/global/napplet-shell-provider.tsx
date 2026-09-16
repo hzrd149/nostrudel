@@ -612,7 +612,7 @@ function getContentLength(headers: Headers) {
 }
 
 async function mapWithConcurrency<T, R>(items: T[], limit: number, mapper: (item: T) => Promise<R>): Promise<R[]> {
-  const results = new Array<R>(items.length);
+  const results = Array.from<R>({ length: items.length });
   let index = 0;
 
   await Promise.all(
