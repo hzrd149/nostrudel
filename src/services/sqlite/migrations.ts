@@ -93,6 +93,6 @@ export async function setupMigrations(sqlite: SQLiteConnection, databaseName: st
 }
 
 // Legacy function for backwards compatibility - now just logs a warning
-export async function runMigrations(sqlite: any): Promise<void> {
+export async function runMigrations(_sqlite: any): Promise<void> {
   log("WARNING: runMigrations is deprecated. Use setupMigrations instead.");
 }

@@ -44,11 +44,11 @@ self.addEventListener("message", (event) => {
 });
 
 // Service worker lifecycle events
-self.addEventListener("install", (event) => {
+self.addEventListener("install", (_event) => {
   console.log("Service worker installed");
 });
 
-self.addEventListener("activate", (event) => {
+self.addEventListener("activate", (_event) => {
   console.log("Service worker activated");
 });
 

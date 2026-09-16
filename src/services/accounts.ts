@@ -21,7 +21,7 @@ registerCommonAccountTypes(accounts);
 accounts.registerType(AmberClipboardAccount);
 
 // Setup password unlock prompt
-PasswordAccount.requestUnlockPassword = async (account: PasswordAccount<any>) => {
+PasswordAccount.requestUnlockPassword = async (_account: PasswordAccount<any>) => {
   const password = window.prompt("Account unlock password");
   if (!password) throw new Error("Password required");
   return password;

@@ -20,7 +20,7 @@ type RTTValues = {
   average?: number;
   median?: number;
 };
-function getRTTTag(stats: NostrEvent, name: string): RTTValues | undefined {
+function getRTTTag(stats: NostrEvent, _name: string): RTTValues | undefined {
   const values = stats.tags
     .find((t) => t[0] === "rtt" && t[1] === "open")
     ?.slice(2)
