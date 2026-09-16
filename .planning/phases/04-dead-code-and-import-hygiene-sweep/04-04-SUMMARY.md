@@ -232,3 +232,8 @@ None beyond the deviations above.
 ---
 *Phase: 04-dead-code-and-import-hygiene-sweep*
 *Completed: 2026-09-15*
+
+## Self-Check: PASSED
+
+All 12 modified source files confirmed present on disk; all three commits
+(`b24e97beb`, `7e7c7c771`, `ba39d3f86`) confirmed in `git log`.
