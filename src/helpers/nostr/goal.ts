@@ -106,7 +106,6 @@ export function safeValidateGoal(goal: NostrEvent) {
     // Goal event failed validation; callers filter it out
     return false;
   }
-  return false;
 }
 
 export function getGoalTag(goal: NostrEvent, relay?: string) {
