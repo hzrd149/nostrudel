@@ -141,7 +141,7 @@ documented or removed as an explicit decision.
 D-12, D-12a, D-13, D-14, D-15
 (no REQUIREMENTS.md exists; the requirement set is the locked decisions in `04-CONTEXT.md`)
 **Depends on:** Phase 2
-**Plans:** 1/11 plans executed
+**Plans:** 7/11 plans executed
 
 445 findings in the [2026-09-11 baseline](./research/aislop-scan-2026-09-11.md) (bucket C) —
 the largest bucket, and 132 of them auto-fixable via `aislop fix`. 239 × `eslint/no-unused-vars`,
@@ -167,12 +167,12 @@ Plans:
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
-- [ ] 04-02-PLAN.md — D-05 bare-catch sweep across the 24 unused catch bindings (wave 2)
-- [ ] 04-03-PLAN.md — D-07 dead functions, unwired constants, and the 4 risky bindings (wave 2)
-- [ ] 04-04-PLAN.md — D-07 the 13 plain dead local variables (wave 2)
-- [ ] 04-07-PLAN.md — D-08…D-11 the four ledger ignores; sqlite `dbName` deletion (wave 2)
-- [ ] 04-08-PLAN.md — D-12/D-12a/D-13 miner cleanup, short-circuits, stranded returns (wave 2)
-- [ ] 04-09-PLAN.md — the 9 single-instance cleanup rules (wave 2)
+- [x] 04-02-PLAN.md — D-05 bare-catch sweep across the 24 unused catch bindings (wave 2)
+- [x] 04-03-PLAN.md — D-07 dead functions, unwired constants, and the 4 risky bindings (wave 2)
+- [x] 04-04-PLAN.md — D-07 the 13 plain dead local variables (wave 2)
+- [x] 04-07-PLAN.md — D-08…D-11 the four ledger ignores; sqlite `dbName` deletion (wave 2)
+- [x] 04-08-PLAN.md — D-12/D-12a/D-13 miner cleanup, short-circuits, stranded returns (wave 2)
+- [x] 04-09-PLAN.md — the 9 single-instance cleanup rules (wave 2)
 
 **Wave 3** *(blocked on Wave 2 completion)*
 
