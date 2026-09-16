@@ -8,7 +8,6 @@ import useParamsProfilePointer from "../../../hooks/use-params-pubkey-pointer";
 import useUserContacts from "../../../hooks/use-user-contacts";
 import useUserSets from "../../../hooks/use-user-sets";
 import { useUserOutbox } from "../../../hooks/use-user-mailboxes";
-import useUserMutes from "../../../hooks/use-user-mutes";
 import FallbackListCard from "../../lists/components/fallback-list-card";
 import ListTypeCard from "../../lists/components/list-type-card";
 import PeopleListCard from "../../lists/components/people-list-card";
@@ -20,7 +19,6 @@ export default function UserListsTab() {
   const pubkey = user.pubkey;
 
   const contacts = useUserContacts(user.pubkey);
-  const muted = useUserMutes(pubkey);
   const followSets = sets.filter((event) => event.pubkey === pubkey && event.kind === kinds.Followsets);
   const genericSets = sets.filter((event) => event.pubkey === pubkey && event.kind === kinds.Genericlists);
   const bookmarkSets = sets.filter((event) => event.pubkey === pubkey && event.kind === kinds.Bookmarksets);

@@ -2,8 +2,6 @@ import { CheckCircleIcon, WarningIcon } from "@chakra-ui/icons";
 import {
   Badge,
   Box,
-  Button,
-  ButtonProps,
   Flex,
   HStack,
   Modal,
@@ -15,26 +13,16 @@ import {
   ModalProps,
   Spinner,
   Text,
-  useToast,
   VStack,
 } from "@chakra-ui/react";
 import { sha256 } from "@noble/hashes/sha2.js";
 import { bytesToHex } from "@noble/hashes/utils.js";
-import { createUploadAuth } from "blossom-client-sdk";
-import { downloadBlob } from "blossom-client-sdk/actions/download";
 import { hasBlob } from "blossom-client-sdk/actions/has";
 import { useState } from "react";
 import { useAsync } from "react-use";
 
-import { useActiveAccount } from "applesauce-react/hooks";
-import { multiServerUpload } from "blossom-client-sdk/actions/multi-server";
-import { mergeBlossomServers } from "../helpers/blossom";
-import { logger } from "../helpers/debug";
-import useAsyncAction from "../hooks/use-async-action";
 import useUsersMediaServers from "../hooks/use-user-blossom-servers";
 import BlossomServerFavicon from "./blossom/blossom-server-favicon";
-
-const log = logger.extend("BlobRepair");
 
 function ServerBlobStatus({ server, blob }: { server: string | URL; blob: string }) {
   const check = useAsync(() => hasBlob(server, blob), [server, blob]);
@@ -123,65 +111,6 @@ function BlobVerificationCard({ url, hash }: { url: string; hash: string }) {
         )}
       </Box>
     </Flex>
-  );
-}
-
-function RepairBlobButton({
-  url,
-  hash,
-  pubkey,
-  ...props
-}: { url: string; hash: string; pubkey: string } & Omit<ButtonProps, "children" | "onClick" | "isLoading">) {
-  const toast = useToast();
-  const account = useActiveAccount();
-  const userServers = useUsersMediaServers(account?.pubkey);
-  const ownerServers = useUsersMediaServers(pubkey);
-
-  const repair = useAsyncAction(async () => {
-    if (!account) throw new Error("Missing account");
-    if (!userServers) throw new Error("Missing servers");
-
-    let blob: Blob | undefined = undefined;
-
-    // attmept to download blob from url
-    try {
-      blob = await fetch(url).then((res) => res.blob());
-    } catch (error) {
-      // Direct fetch failed, fall through to trying each server below.
-      log("Failed to fetch blob directly", url, error);
-    }
-
-    // Attempt to download blob from any server
-    for (const server of mergeBlossomServers(userServers, ownerServers)) {
-      try {
-        blob = await downloadBlob(server, hash).then((res) => res.blob());
-        if (blob) break;
-      } catch (error) {
-        // This server could not supply the blob, try the next one.
-        log("Failed to download from server", server, error);
-      }
-    }
-
-    if (!blob) throw new Error("Failed to download blob from any server");
-
-    // Attempt to upload to all servers
-    const result = await multiServerUpload(userServers, blob, {
-      onAuth: (_server, sha256, authType) =>
-        createUploadAuth(async (e) => account.signEvent(e), sha256, { type: authType }),
-    });
-
-    toast({
-      title: "Uploaded to servers",
-      description: Array.from(result.keys())
-        .map((s) => s.toString())
-        .join(", "),
-    });
-  }, [userServers, ownerServers, hash, url, account]);
-
-  return (
-    <Button isDisabled={!account || !userServers} onClick={repair.run} isLoading={repair.loading} {...props}>
-      Repair
-    </Button>
   );
 }
 

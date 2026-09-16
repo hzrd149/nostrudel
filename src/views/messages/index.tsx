@@ -35,7 +35,6 @@ import { useUserInbox } from "../../hooks/use-user-mailboxes";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import RequireDecryptionCache from "../../providers/route/require-decryption-cache";
 import { legacyMessageSubscription, wrappedMessageSubscription } from "../../services/lifecycle";
-import localSettings from "../../services/preferences";
 import { DirectMessageRelaysModel } from "../../models/messages";
 import ReadAuthRequiredAlert from "./components/read-auth-required-alert";
 
@@ -166,8 +165,6 @@ function Groups() {
 function MessagesHomePage() {
   const account = useActiveAccount()!;
 
-  // Automatically decrypt new wrapped messages
-  const autoDecryptMessages = use$(localSettings.autoDecryptMessages);
   const locked = useEventModel(GiftWrapsModel, [account.pubkey, true]);
 
   return (
