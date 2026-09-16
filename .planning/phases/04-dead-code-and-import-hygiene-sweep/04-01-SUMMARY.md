@@ -217,3 +217,11 @@ None - no external service configuration required.
 ---
 *Phase: 04-dead-code-and-import-hygiene-sweep*
 *Completed: 2026-09-16*
+
+## Self-Check: PASSED
+
+- FOUND: `.planning/phases/04-dead-code-and-import-hygiene-sweep/04-01-SUMMARY.md`
+- FOUND: `src/services/wallets.ts`
+- FOUND commit: `138c3f45e`
+- FOUND commit: `63b756dc4`
+- FOUND commit: `51c631a75`
