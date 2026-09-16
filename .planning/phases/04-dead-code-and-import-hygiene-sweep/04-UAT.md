@@ -66,5 +66,35 @@ blocked: 0
   reason: "User reported: anything above 0 PoW never even posts the note from the src/views/new/note/ view and never even shows the mining progress"
   severity: major
   test: 1
-  artifacts: []
-  missing: []
+  root_cause: |
+    src/views/new/note/short-text-form.tsx:146 — the PoW branch of `submit` sets the mining target
+    but never creates the draft. `draft` has exactly one writer (setDraft, inside createDraft) and
+    createDraft has exactly one caller (line 149, in the `difficulty === 0` branch). On the PoW path
+    `draft` stays undefined, so the render gate at line 176 (`if (miningTarget && draft)`) never
+    opens and <MinePOW> never mounts. MinePOW is both the sole renderer of progress UI and the sole
+    caller of publishPost on the PoW path, so one cause produces both halves of the symptom.
+    The identical bug exists at src/components/post-modal/index.tsx:146.
+  origin: |
+    PRE-EXISTING, not a Phase 4 regression. Introduced 2025-06-02 in 124345b25 ("Fix new note view
+    spamming getPublicKey"), which deleted the throttled `useAsync(() => getDraft())` that was the
+    only thing populating `draft` on the PoW path, and simultaneously narrowed publishPost's
+    `unsigned || draft || await getDraft()` fallback into a mandatory-arg signature. Evidence:
+    (1) the pre-Phase-4 snapshot of short-text-form.tsx is byte-identical at the same line numbers;
+    (2) Phase 4 touched the file twice, both cosmetic (138c3f45e import merge, cfa629341 ignore
+    comment); (3) an inert `cleanup;` would have leaked workers after a successful mine, never
+    blocked one. Routed to Phase 4 gap closure by user decision despite pre-existing origin.
+  d12_status: |
+    D-12 (mine-pow.tsx:47 `cleanup;` → `cleanup()`) is EXONERATED and must NOT be reverted. Line 47
+    sits lexically inside handleMessage, in the `msg.type === "complete"` branch, running only after
+    onComplete(msg.draft) has captured the mined draft. The spawn loop (51-59) never reaches it.
+    It remains live-unverified only because MinePOW never mounts; verifying it is downstream of
+    this fix.
+  artifacts:
+    - src/views/new/note/short-text-form.tsx:144-155
+    - src/components/post-modal/index.tsx:146-148
+    - src/components/pow/mine-pow.tsx:120
+    - .planning/debug/pow-mining-never-starts.md
+  missing:
+    - "createDraft() called on the PoW path in short-text-form.tsx so the MinePOW gate can open"
+    - "createDraft() called on the PoW path in post-modal/index.tsx (same bug, same fix)"
+    - "mine-pow.tsx:120 success check uses >= not >, matching the worker's break condition in miner.ts:25"
