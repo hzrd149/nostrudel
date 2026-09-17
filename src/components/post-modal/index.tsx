@@ -143,8 +143,9 @@ function PostModalInner({
     if (pub) setPublishEntry(pub);
   };
   const submit = handleSubmit(async (values) => {
+    const unsigned = await createDraft(values);
     if (values.difficulty > 0) setMiningTarget(values.difficulty);
-    else publishPost(await createDraft(values));
+    else await publishPost(unsigned);
   });
 
   const preview = useThrottle(getValues().content, 500);
