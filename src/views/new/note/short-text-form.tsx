@@ -138,7 +138,13 @@ function ShortTextNoteFormInner({
 
     setLoading("Signing and publishing note...");
     const pub = await publish("Post", unsigned);
+    setLoading("");
     if (pub) setPublished(pub);
+    // On the PoW path this runs from MinePOW's onComplete/onSkip, after submit's own finally has
+    // already cleared loading, so this is the only thing that can release the spinner and the
+    // mining gate on failure. An absent pub means the publish failed and publishEvent already
+    // toasted it (quite defaults to true) - do not "fix" this by throwing instead.
+    else setMiningTarget(0);
   };
 
   const submit = handleSubmit(async (values) => {
