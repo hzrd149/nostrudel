@@ -92,7 +92,11 @@ export default function MinePOW({
   successDelay = 800,
 }: MinePOWProps): JSX.Element {
   const [bestProgress, setBestProgress] = useState<{ difficulty: number; hash: string }>(() => ({
-    difficulty: nip13.getPow(getEventHash(draft)),
+    // Seeded at 0, not the pre-mining hash's own difficulty: the worker mines a *different* event
+    // (miner.ts appends a nonce tag before hashing), so the pre-mining hash is not progress toward
+    // the target. Seeding it as difficulty would let the success branch render before mining starts
+    // whenever that unrelated hash happens to already clear the target, hiding Cancel and Skip.
+    difficulty: 0,
     hash: getEventHash(draft),
   }));
   const stopMiner = useRef<MinerCleanup>(() => {});
