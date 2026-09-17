@@ -171,3 +171,14 @@ Recorded per this plan's explicit instruction — deliberately out of scope by u
 ---
 *Phase: 04-dead-code-and-import-hygiene-sweep*
 *Completed: 2026-09-17*
+
+## Self-Check: PASSED
+
+- FOUND: `.planning/phases/04-dead-code-and-import-hygiene-sweep/04-12-SUMMARY.md`
+- FOUND: `src/views/new/note/short-text-form.tsx`
+- FOUND: `src/components/post-modal/index.tsx`
+- FOUND: `src/components/pow/mine-pow.tsx`
+- FOUND commit: `bbfaab649`
+- FOUND commit: `fb55b8cbe`
+- FOUND commit: `8a4d2af4c`
+- FOUND commit: `0c1516d34`
