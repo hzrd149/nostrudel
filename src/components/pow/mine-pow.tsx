@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { useMount } from "react-use";
+import { useMount, useUnmount } from "react-use";
 import { Button, ButtonGroup, Flex, Heading, Progress, Text } from "@chakra-ui/react";
 import { getEventHash, nip13, UnsignedEvent } from "nostr-tools";
 import CheckCircle from "../icons/check-circle";
@@ -92,10 +92,15 @@ export default function MinePOW({
   successDelay = 800,
 }: MinePOWProps): JSX.Element {
   const [bestProgress, setBestProgress] = useState<{ difficulty: number; hash: string }>(() => ({
-    difficulty: nip13.getPow(getEventHash(draft)),
+    // Seeded at 0, not the pre-mining hash's own difficulty: the worker mines a *different* event
+    // (miner.ts appends a nonce tag before hashing), so the pre-mining hash is not progress toward
+    // the target. Seeding it as difficulty would let the success branch render before mining starts
+    // whenever that unrelated hash happens to already clear the target, hiding Cancel and Skip.
+    difficulty: 0,
     hash: getEventHash(draft),
   }));
   const stopMiner = useRef<MinerCleanup>(() => {});
+  const pendingPublish = useRef<ReturnType<typeof setTimeout>>();
 
   useMount(() => {
     const stopMinerFunc = miner(
@@ -108,11 +113,18 @@ export default function MinePOW({
         }
       },
       (draft) => {
-        setTimeout(() => onComplete(draft), successDelay);
+        pendingPublish.current = setTimeout(() => onComplete(draft), successDelay);
       },
       stopMiner.current, // Pass the current stopMiner function to the miner
     );
     stopMiner.current = stopMinerFunc;
+  });
+
+  useUnmount(() => {
+    // Cancel a pending publish scheduled during the success delay and stop the worker pool.
+    // Both calls are safe to run redundantly against a completed mine's own teardown (line 46-47).
+    if (pendingPublish.current) clearTimeout(pendingPublish.current);
+    stopMiner.current();
   });
 
   return (

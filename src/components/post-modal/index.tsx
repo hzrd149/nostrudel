@@ -35,6 +35,7 @@ import { useForm } from "react-hook-form";
 import { useThrottle } from "react-use";
 
 import UploadStatus from "../upload-status";
+import useAsyncAction from "../../hooks/use-async-action";
 import useCacheForm from "../../hooks/use-cache-form";
 import useLocalStorageDisclosure from "../../hooks/use-localstorage-disclosure";
 import useTextAreaUploadFile, { useTextAreaInsertTextWithForm } from "../../hooks/use-textarea-upload-file";
@@ -142,11 +143,15 @@ function PostModalInner({
     const pub = await publish("Post", unsigned);
     if (pub) setPublishEntry(pub);
   };
-  const submit = handleSubmit(async (values) => {
-    const unsigned = await createDraft(values);
-    if (values.difficulty > 0) setMiningTarget(values.difficulty);
-    else await publishPost(unsigned);
-  });
+  // Toasts a rejected createDraft/publishPost instead of letting handleSubmit's rethrow drop as an
+  // unhandled promise, which otherwise left the Post button doing nothing (WR-01)
+  const { run: submit } = useAsyncAction(
+    handleSubmit(async (values) => {
+      const unsigned = await createDraft(values);
+      if (values.difficulty > 0) setMiningTarget(values.difficulty);
+      else await publishPost(unsigned);
+    }),
+  );
 
   const preview = useThrottle(getValues().content, 500);
 
