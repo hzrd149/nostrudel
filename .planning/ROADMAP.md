@@ -141,7 +141,7 @@ documented or removed as an explicit decision.
 D-12, D-12a, D-13, D-14, D-15
 (no REQUIREMENTS.md exists; the requirement set is the locked decisions in `04-CONTEXT.md`)
 **Depends on:** Phase 2
-**Plans:** 12/12 plans complete
+**Plans:** 13/13 plans complete
 
 445 findings in the [2026-09-11 baseline](./research/aislop-scan-2026-09-11.md) (bucket C) —
 the largest bucket, and 132 of them auto-fixable via `aislop fix`. 239 × `eslint/no-unused-vars`,
@@ -160,6 +160,8 @@ deliberate `throw` that guards the web build — the code beneath is kept on pur
 and should be commented or removed as an explicit decision, not silently deleted.
 
 Plans:
+
+- [x] 04-13-PLAN.md
 
 **Wave 1** *(the mechanical commit, alone, per D-04)*
 

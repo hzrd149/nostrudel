@@ -5,13 +5,13 @@ milestone_name: milestone
 current_phase: 04
 status: executing
 stopped_at: Phase 03 complete (verified and closed via /gsd-verify-work — UAT 2 passed, 1 skipped as accepted residual risk); ready to plan Phase 04
-last_updated: "2026-09-17T15:52:20.795Z"
+last_updated: "2026-09-17T16:50:02.361Z"
 last_activity: 2026-09-17
 progress:
   total_phases: 8
   completed_phases: 4
-  total_plans: 29
-  completed_plans: 29
+  total_plans: 30
+  completed_plans: 30
   percent: 50
 current_phase_name: Dead code and import hygiene sweep
 ---
@@ -97,6 +97,7 @@ See: .planning/PROJECT.md (not present in this project; ROADMAP.md and the phase
 - [Phase 03]: [Phase 03 Plan 04]: Task 3's dev-server spot-check was NOT performed (pnpm dev killed by OOM, swap exhausted, could not restart reliably); maintainer's explicit decision was to close 03-04 with Task 3 recorded as unverified rather than continue waiting or silently drop it. D-09's loading-state manual verification remains OUTSTANDING for phase-level verification. wipeDatabase's useCallback(async..., []) closing over wipe (stale-closure hazard) was incidentally corrected to useAsyncAction(async..., [wipe]).
 - [Phase 03]: [Phase 03 Plan 06]: AGENTS.md documents the five swallowed-exception remedy shapes (D-03); D-04 before/after report confirms bucket-B error count 31 -> 0 across 33 files/5 plans, reconciling a missing pay-step.tsx row in 03-RESEARCH.md's table; pnpm lint:ci's 3 remaining errors are confirmed pre-existing react-hooks/rules-of-hooks findings in app-handler-modal/index.tsx (backlog 999.2), not a Phase 3 regression
 - [Phase 04]: Phase 04 wave 6's blocking ui.safety-gate (no UI-SPEC.md for the phase) was overridden by explicit maintainer decision, not resolved. Rationale: 04-12's diff introduces no new UI surface (one hoisted createDraft call, one > to >= operator), no phase in this project has ever carried a UI-SPEC, and the gate defaults active with no workflow.ui_safety_gate key in .planning/config.json - so it would have blocked every prior wave too. Config left unchanged, so the gate will fire again on the next wave.
+- [Phase 04]: 04-12's render-gate fix revived a 15-month-dormant PoW path and exposed 3 blockers (scoped review 04-REVIEW-12.md): a note signed and broadcast after the user dismissed the composer, a leaked worker pool on ESC/overlay dismiss, and a permanent spinner that also destroyed the cached draft. Fixed additively in 04-13 without reverting D-12's cleanup() or 04-12's >= operator. The review's own proposed CR-01 remedy was incomplete and was corrected at plan time - clearing loading alone leaves both render-gate operands truthy, causing an endless re-mine/re-publish loop, so the fix also resets miningTarget.
 
 ## Quick Tasks Completed
 
