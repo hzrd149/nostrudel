@@ -143,12 +143,10 @@ function ShortTextNoteFormInner({
 
   const submit = handleSubmit(async (values) => {
     try {
+      setLoading("Creating note...");
+      const unsigned = await createDraft(values);
       if (values.difficulty > 0) setMiningTarget(values.difficulty);
-      else {
-        setLoading("Creating note...");
-        const unsigned = await createDraft(values);
-        await publishPost(unsigned);
-      }
+      else await publishPost(unsigned);
     } finally {
       setLoading("");
     }
