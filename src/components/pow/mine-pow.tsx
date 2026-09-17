@@ -117,7 +117,7 @@ export default function MinePOW({
 
   return (
     <Flex gap="2" direction="column">
-      {bestProgress.difficulty > targetPOW ? (
+      {bestProgress.difficulty >= targetPOW ? (
         <>
           <CheckCircle boxSize={12} color="green.500" mx="auto" />
           <Heading size="md" mx="auto" mt="2">
