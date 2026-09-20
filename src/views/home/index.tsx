@@ -1,11 +1,10 @@
 import { Box, Button, Divider, Flex, Heading, Link, Spacer, Text } from "@chakra-ui/react";
-import { useActiveAccount, useEventModel, use$ } from "applesauce-react/hooks";
+import { useActiveAccount, use$ } from "applesauce-react/hooks";
 import { NostrEvent } from "nostr-tools";
 import { useCallback, useMemo } from "react";
 import { map, NEVER, of, throttleTime } from "rxjs";
 
 import NoteFilterTypeButtons from "../../components/note-filter-type-buttons";
-import OutboxRelaySelectionModal from "../../components/outbox-relay-selection-modal";
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
 import RouterLink from "../../components/router-link";
 import TimelinePage, { useTimelinePageEventFilter } from "../../components/timeline-page";
@@ -16,7 +15,6 @@ import { isReply, isRepost } from "../../helpers/nostr/event";
 import useClientSideMuteFilter from "../../hooks/use-client-side-mute-filter";
 import useLocalStorageDisclosure from "../../hooks/use-localstorage-disclosure";
 import { useOutboxTimelineLoader } from "../../hooks/use-outbox-timeline-loader";
-import { OutboxSelectionModel } from "../../models/outbox-selection";
 import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
 import { eventStore } from "../../services/event-store";
 import outboxSubscriptionsService from "../../services/outbox-subscriptions";
@@ -40,7 +38,6 @@ function HomePage() {
   );
 
   const { filter, pointer } = usePeopleListContext();
-  const { selection, outboxes } = useEventModel(OutboxSelectionModel, pointer ? [pointer] : undefined) ?? {};
 
   // Get or create the outbox timeline loader
   const loader = useOutboxTimelineLoader(pointer, filter && { ...filter, kinds: GENERIC_TIMELINE_KINDS });
@@ -73,7 +70,6 @@ function HomePage() {
       <PeopleListSelection />
       <NoteFilterTypeButtons showReplies={showReplies} showReposts={showReposts} />
       <Spacer />
-      {outboxes && selection && <OutboxRelaySelectionModal outboxMap={outboxes} selection={selection} />}
       <TimelineViewTypeButtons />
     </Flex>
   );

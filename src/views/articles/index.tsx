@@ -1,6 +1,6 @@
 import { Box, Divider, Flex } from "@chakra-ui/react";
 import { getEventUID } from "applesauce-core/helpers";
-import { useEventModel, use$ } from "applesauce-react/hooks";
+import { use$ } from "applesauce-react/hooks";
 import { kinds, NostrEvent } from "nostr-tools";
 import { useCallback } from "react";
 import AutoSizer from "react-virtualized-auto-sizer";
@@ -9,14 +9,12 @@ import { map, of } from "rxjs";
 
 import { ErrorBoundary } from "../../components/error-boundary";
 import SimpleView from "../../components/layout/presets/simple-view";
-import OutboxRelaySelectionModal from "../../components/outbox-relay-selection-modal";
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
 import { getArticleTitle } from "../../helpers/nostr/long-form";
 import useClientSideMuteFilter from "../../hooks/use-client-side-mute-filter";
 import { useOutboxTimelineLoader } from "../../hooks/use-outbox-timeline-loader";
 import { useVirtualListScrollRestore } from "../../hooks/use-scroll-restore";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
-import { OutboxSelectionModel } from "../../models/outbox-selection";
 import { useBreakpointValue } from "../../providers/global/breakpoint-provider";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
@@ -49,7 +47,6 @@ function ArticlesHomePage() {
   );
 
   const { filter, pointer } = usePeopleListContext();
-  const { outboxes, selection } = useEventModel(OutboxSelectionModel, pointer ? [pointer] : undefined) ?? {};
 
   // Get or create the outbox timeline loader
   const loader = useOutboxTimelineLoader(pointer, { kinds: [kinds.LongFormArticle] });
@@ -72,20 +69,7 @@ function ArticlesHomePage() {
 
   return (
     <IntersectionObserverProvider callback={callback}>
-      <SimpleView
-        title="Articles"
-        scroll={false}
-        actions={
-          <>
-            <PeopleListSelection />
-            {outboxes && selection && (
-              <OutboxRelaySelectionModal outboxMap={outboxes} selection={selection} ms="auto" />
-            )}
-          </>
-        }
-        flush
-        gap={0}
-      >
+      <SimpleView title="Articles" scroll={false} actions={<PeopleListSelection />} flush gap={0}>
         {/* Container */}
         <Flex direction="column" flex={1}>
           <AutoSizer>
