@@ -1,15 +1,20 @@
 ---
-status: complete
+status: testing
 round: 2
 phase: 04-dead-code-and-import-hygiene-sweep
 source: [04-VERIFICATION.md]
 started: 2026-09-16T01:45:00Z
-updated: 2026-09-20T00:00:00Z
+updated: 2026-09-17T00:00:00Z
 ---
 
 ## Current Test
 
-[testing complete]
+number: 1
+name: PoW mining completes and tears down its worker pool (D-12)
+expected: |
+  Mining runs to completion, onComplete fires with the drafted event, and cleanup() terminates
+  this run's worker pool — no lingering Worker threads, no console errors.
+awaiting: user response
 
 **Round 2 opened 2026-09-17.** Round 1's single test was blocked by a defect that is now fixed in
 code (04-12, then 04-13). Test 1 is unchanged and is retestable for the first time; tests 2-6 are
@@ -19,11 +24,7 @@ All six need a browser. This project has no test runner (0 test files; no vitest
 `package.json`), so every automated gate available to 04-12, 04-13 and the re-verification was
 either `pnpm build` — a typecheck, and all the edits are type-identical — or a static grep. A grep
 proves a line exists and is wired; it cannot prove a state transition, a cancellation, or a cleanup
-invariant.
-
-**Round 2 closed 2026-09-20: all 6 tests passed in a browser.** Every item above has now been
-observed running, including the three BLOCKER defects from 04-REVIEW-12.md (tests 3, 4, 5) and the
-original reported gap (test 2). D-12's `cleanup()` is confirmed live for the first time (test 1).
+invariant. Nothing below has been observed running.
 
 Note on `pnpm dev`: a prior session on this machine was OOM-killed starting it (recorded in
 STATE.md against 03-04). If it will not start reliably, record the affected tests as `skipped` /
@@ -38,7 +39,9 @@ let it complete. Mining completes, `onComplete` fires with the drafted event, `s
 the previous run, and `cleanup()` terminates this run's worker pool (no lingering Worker threads, no
 console errors).
 
-result: pass
+result: issue
+reported: "anything above 0 PoW never even posts the note from the src/views/new/note/ view and never even shows the mining progress"
+severity: major
 
 **Why this needs a human:** This is the one edit in Phase 4 that changes runtime behavior — a bare
 identifier reference (`cleanup;`, an inert statement) became a real call (`cleanup()`). `pnpm build`
@@ -78,7 +81,7 @@ during round 1, so run both and compare.
 expected: With difficulty above 0, MinePOW mounts and shows progress; on completion the note is
 signed and published; the composer returns to a normal (non-stuck) state either way.
 
-result: pass
+result: pending
 
 **Why this needs a human:** the fix — hoisting `createDraft` above the difficulty branch so the
 `miningTarget && draft` render gate can open — is confirmed present and wired by direct file read
@@ -96,7 +99,7 @@ and the post modal — they are separate code paths that received the same fix.
 expected: No lingering Worker threads, CPU returns to idle, and no note is published after the
 composer was dismissed.
 
-result: pass
+result: pending
 
 **Why this needs a human:** this is the most severe defect found in the whole phase. Before the
 fix, dismissing the composer inside the 800ms success delay still fired the publish — signing and
@@ -116,7 +119,7 @@ DevTools → Sources → Threads for surviving Workers, and confirm no note appe
 expected: The spinner clears, the compose form reappears with the note text intact, an error toast
 is visible, and mining does not restart on its own.
 
-result: pass
+result: pending
 
 **Why this needs a human:** before the fix this stranded a permanent spinner with no Cancel and no
 retry — and worse, the cached draft was already deleted, so leaving the page destroyed the note.
@@ -134,7 +137,7 @@ relays, or go offline at the moment mining finishes — and watch the composer.
 expected: The progress screen and its abort controls render on every mount; "Found POW" only
 appears after the worker actually reports difficulty >= target.
 
-result: pass
+result: pending
 
 **Why this needs a human:** previously the initial state was seeded from the *unmined* hash, which
 at difficulty 1 had roughly a 50% chance of already clearing the target — rendering the button-less
@@ -151,7 +154,7 @@ Cancel/Skip renders first every single time.
 expected: An error toast appears with the rejection's message; the modal does not sit there with no
 feedback.
 
-result: pass
+result: pending
 
 **Why this needs a human:** the Post button previously did nothing at all on a rejected
 `createDraft` — the rejection dropped as an unhandled promise with no user-visible signal.
@@ -164,9 +167,9 @@ prompt — and watch for a toast.
 ## Summary
 
 total: 6
-passed: 6
+passed: 0
 issues: 0
-pending: 0
+pending: 6
 skipped: 0
 blocked: 0
 
@@ -177,8 +180,7 @@ retained with its original `status: failed` for the same reason._
 ## Gaps
 
 - truth: "PoW mining runs to completion: progress is visible while mining, onComplete fires with the drafted event, and the note posts"
-  status: resolved
-  resolved: "2026-09-20 — round-2 tests 1 and 2 both passed. A human observed MinePOW mounting, progress rendering, the note publishing, and the worker pool tearing down. This is the runtime confirmation the gap was held open for."
+  status: failed
   reason: "User reported: anything above 0 PoW never even posts the note from the src/views/new/note/ view and never even shows the mining progress"
   severity: major
   test: 1
@@ -215,9 +217,9 @@ retained with its original `status: failed` for the same reason._
     - "createDraft() called on the PoW path in post-modal/index.tsx (same bug, same fix)"
     - "mine-pow.tsx:120 success check uses >= not >, matching the worker's break condition in miner.ts:25"
   fix_applied: |
-    2026-09-17 — all three `missing` items implemented and confirmed present at the source level.
-    2026-09-20 — runtime confirmation obtained: round-2 tests 1 and 2 both passed, so the gap moved
-    from `failed` to `resolved`. The hold for a human observation is satisfied.
+    2026-09-17 — all three `missing` items are now implemented and confirmed present at the source
+    level, but this gap is deliberately NOT marked `resolved`: its runtime confirmation is round-2
+    test 2, which has not been run. Status stays `failed` until a human observes the fix working.
 
     04-12 (bbfaab649, fb55b8cbe, 8a4d2af4c): hoisted the existing `createDraft(values)` call above
     the difficulty branch in both composers, and changed mine-pow.tsx's success check to `>=`.

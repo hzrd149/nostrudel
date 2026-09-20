@@ -1,7 +1,7 @@
 ---
 phase: 04-dead-code-and-import-hygiene-sweep
 verified: 2026-09-17T00:00:00Z
-status: passed
+status: human_needed
 score: 17/23 must-haves verified
 behavior_unverified: 6
 overrides_applied: 0
@@ -9,7 +9,6 @@ re_verification:
   previous_status: human_needed
   previous_score: 17/18
   gaps_closed:
-
     - "Root cause of the UAT gap (draft never created on the PoW path, so the miningTarget && draft render gate never opened) is fixed in code in both composers (04-12)"
     - "MinePOW's success check now matches the worker's difficulty >= target break condition (04-12)"
     - "Three BLOCKER runtime defects that the render-gate fix exposed — signed-and-broadcast-after-dismiss, leaked worker pool on any non-Cancel/Skip unmount, unrecoverable spinner that destroys the cached draft — are fixed additively without touching D-12's cleanup() or 04-12's >= operator (04-13)"
@@ -17,32 +16,26 @@ re_verification:
   gaps_remaining: []
   regressions: []
 behavior_unverified_items:
-
   - truth: "With PoW difficulty above 0, mining progress appears and the note publishes, in both the new-note view and the post modal (the original UAT gap)"
     test: "pnpm dev, sign in, compose a note, set difficulty > 0, submit, and let mining run to completion in both the new-note view and the post modal"
     expected: "MinePOW mounts and shows progress; on completion the note is signed and published; the composer returns to a normal (non-stuck) state either way"
     why_human: "The fix (hoisting createDraft above the difficulty branch) is confirmed present and wired by direct file read and line-order grep, and pnpm build passes, but this project has no test runner and pnpm dev was never run this session (or in 04-12/04-13's). No test exercises the render gate opening at runtime."
-
   - truth: "MinePOW cancels the pending success-delay publish and terminates its worker pool on any unmount route (ESC, overlay click, route change, ErrorBoundary trip) — not just Cancel/Skip"
     test: "Start a mine, then dismiss via ESC/overlay (post modal) or navigate away (new-note view) mid-mine and again inside the 800ms post-'Found POW' window; check DevTools -> Sources -> Threads for surviving Workers and confirm no note appears on any relay"
     expected: "No lingering Worker threads, CPU returns to idle, and no note is published after the user dismissed the composer"
     why_human: "useUnmount + a pendingPublish ref + clearTimeout are confirmed present in mine-pow.tsx by direct read and grep; pnpm build passes since the change is type-identical. No test can prove the timer is actually cancelled before it fires, or that DevTools shows zero surviving threads."
-
   - truth: "A publish failure after mining returns the user to the compose form with their text intact, instead of a permanent spinner or an endless re-mine loop"
     test: "Force a publish failure after mining completes (e.g. no write relays reachable) and observe the composer"
     expected: "The spinner clears, the compose form reappears with the note text intact, an error toast is visible, and mining does not restart on its own"
     why_human: "publishPost's unconditional setLoading(\"\") and setMiningTarget(0) on failure are confirmed present by direct read and grep count; pnpm build passes (type-identical edit). No test can trigger publishEvent's swallowed failure path or observe the toast/spinner at runtime."
-
   - truth: "MinePOW's progress screen (with Cancel/Skip) renders from the moment it mounts, regardless of the pre-mining hash's difficulty — the 'Found POW' screen never appears before mining starts"
     test: "Mine at difficulty 1 several times and confirm the progress screen with Cancel/Skip always renders first"
     expected: "Progress screen with abort controls renders on every mount; 'Found POW' only appears after the worker actually reports difficulty >= target"
     why_human: "bestProgress seeded at the literal 0 (not the pre-mining hash's own difficulty) is confirmed present by direct read; pnpm build passes. No test can exercise the React render path to confirm the probabilistic premature-success case (up to 50% at difficulty 1 under the prior code) no longer occurs."
-
   - truth: "A rejected createDraft in the post modal raises a toast instead of the Post button silently doing nothing"
     test: "Trigger a createDraft rejection in the post modal (e.g. sign out mid-compose) and observe the Post button"
     expected: "An error toast appears with the rejection's message; the modal does not just sit there with no feedback"
     why_human: "submit is confirmed wrapped in useAsyncAction (imported from src/hooks/use-async-action.ts) by direct read and grep count; pnpm build passes. No test can trigger the rejection path or observe the toast at runtime."
-
   - truth: "D-12's cleanup() call in mine-pow.tsx terminates the just-completed run's worker pool on completion, with no lingering threads and no double-teardown against stopMiner()'s handling of the previous run, or against 04-13's new unmount teardown"
     test: "Let a mine run to completion normally (not via dismissal) and confirm in DevTools -> Sources -> Threads that no Worker threads survive"
     expected: "cleanup() (line 47) terminates the run's own workers on the normal completion path; useUnmount's teardown (line 123-128) does not double-fire in a way that errors, since Worker.terminate() and clearTimeout are no-ops when already fired"
@@ -165,11 +158,9 @@ material), not gaps:
 
 - `helpers/nostr/relay-stats.ts`'s `getRTTTag(stats, _name)` still ignores its parameter (IN-01) —
   confirmed live, unfixed, correctly deferred.
-
 - `views/relays/components/relay-card.tsx`'s `RelayCard` export still has zero importers (IN-02) —
   confirmed live via repo-wide grep (only sibling `relay-card.tsx` modules with similar names are
   imported elsewhere; the default export itself is unused).
-
 - `event-zap-modal/index.tsx`'s `relays` prop is still destructured as `_relays` and never wired
   into the zap request (IN-03) — confirmed live.
 
@@ -222,19 +213,16 @@ consistent with `.claude/CLAUDE.md` D-16's no-sweep rule).
 
 - IN-01/IN-02/IN-03 from `04-REVIEW.md` (see correction above) — pre-existing, correctly
   out-of-scope, Phase 5 material.
-
 - **WR-03** (`04-REVIEW-12.md`'s numbering): `useCacheForm`'s teardown condition treats
   `isSubmitted` as "safely persisted," which for a long PoW mine means the cached draft is
   discarded the moment mining starts, not when the note actually publishes. Deferred with
   recorded rationale — fixing it touches all 8 consumer forms and the regression would be silent
   and unvalidatable without a dev server. CR-01's fix (04-13) shrinks but does not close this
   window.
-
 - **IN-01** (`04-REVIEW-12.md`'s own numbering, distinct from `04-REVIEW.md`'s IN-01): the post
   modal's difficulty slider omits `shouldDirty`, so a difficulty-only change is not cached.
   Confirmed still present live (`post-modal/index.tsx:256`: `onChange={(v) =>
   setValue("difficulty", v)}`, no options object). Deferred, one-line fix, named follow-up.
-
 - `mine-pow.tsx`'s `onProgress` stale-closure guard and `miner.ts`'s ignored `startNonce`/
   `endNonce` range (every worker mines an identical sequence) — both inherited from 04-12,
   unchanged by 04-13, recorded as candidates for a later phase.
