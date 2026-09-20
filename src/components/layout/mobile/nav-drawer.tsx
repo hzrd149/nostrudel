@@ -56,11 +56,16 @@ export default function NavDrawer({ onClose, ...props }: Omit<DrawerProps, "chil
             )}
             <AccountSwitcher />
             <NavItems />
-            <Box onClick={(e) => e.stopPropagation()}>
-              <PendingUnlockButton w="full" />
-            </Box>
-            <ButtonGroup variant="ghost" onClick={onClose} aria-label="Relay connections">
-              <RelayConnectionButton w="full" />
+            <ButtonGroup
+              variant="ghost"
+              justifyContent="space-evenly"
+              onClick={onClose}
+              aria-label="Navigation controls"
+            >
+              <Box onClick={(e) => e.stopPropagation()}>
+                <PendingUnlockButton />
+              </Box>
+              <RelayConnectionButton />
               <PublishLogButton flexShrink={0} />
             </ButtonGroup>
           </DrawerBody>

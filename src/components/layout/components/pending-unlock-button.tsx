@@ -53,13 +53,15 @@ export default function PendingUnlockButton({ ...props }: Omit<ButtonProps, "chi
         </Box>
       ) : (
         <Button
+          aria-label={label}
+          title={label}
           leftIcon={<LockIcon boxSize={5} />}
           colorScheme="orange"
           onClick={modal.onOpen}
           flexShrink={0}
           {...props}
         >
-          {label}
+          {total}
         </Button>
       )}
 

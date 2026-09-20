@@ -44,7 +44,13 @@ export default function DesktopSideNav({ ...props }: Omit<FlexProps, "children">
       >
         <AccountSwitcher />
         <NavItems />
-        <ButtonGroup variant="ghost" role="group" aria-label="Navigation controls">
+        <ButtonGroup
+          variant="ghost"
+          role="group"
+          aria-label="Navigation controls"
+          justifyContent="space-between"
+          flexWrap="wrap"
+        >
           <IconButton
             aria-label={collapsed ? "Expand navigation menu" : "Collapse navigation menu"}
             aria-expanded={!collapsed}
@@ -55,7 +61,7 @@ export default function DesktopSideNav({ ...props }: Omit<FlexProps, "children">
           <PendingUnlockButton />
           {!collapsed && (
             <>
-              <RelayConnectionButton w="full" aria-label="Manage relay connections" />
+              <RelayConnectionButton />
               <PublishLogButton flexShrink={0} aria-label="Publish log" />
             </>
           )}
