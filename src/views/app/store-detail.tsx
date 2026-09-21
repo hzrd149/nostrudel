@@ -6,18 +6,16 @@ import {
   Box,
   Button,
   ButtonGroup,
-  Code,
   Divider,
   Flex,
   Heading,
-  Link,
   SimpleGrid,
   Spinner,
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
 import { NostrEvent } from "nostr-tools";
-import { ReactNode, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link as RouterLink, useParams } from "react-router-dom";
 
 import GenericCommentForm from "../../components/comment/generic-comment-form";
@@ -53,17 +51,6 @@ import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { getInstalledNapplet, installNapplet, uninstallNapplet } from "../../services/installed-napplets";
 
 const RELATED_NAPPLETS_LIMIT = 6;
-
-function DetailRow({ label, children }: { label: string; children: ReactNode }) {
-  return (
-    <Box>
-      <Text color="GrayText" fontSize="sm">
-        {label}
-      </Text>
-      {children}
-    </Box>
-  );
-}
 
 function RelatedNappletCard({ event }: { event: NostrEvent }) {
   const address = getNappletNaddr(event);
@@ -207,46 +194,27 @@ function NappletStoreDetailPage({ event, address }: { event: NostrEvent; address
 
         <Divider />
 
-        <SimpleGrid columns={{ base: 1, lg: 2 }} spacing="8">
-          <Flex direction="column" gap="3">
-            <Heading size="sm">Supported intents</Heading>
-            {archetypes.length === 0 ? (
-              <Text color="GrayText">No archetypes declared.</Text>
-            ) : (
-              <Flex direction="column" gap="3">
-                {archetypes.map((archetype) => (
-                  <Box key={archetype.name}>
-                    <Heading size="xs" mb="1">
-                      {archetype.name}
-                    </Heading>
-                    <Flex gap="1" wrap="wrap">
-                      {archetype.actions.map((action) => (
-                        <Badge key={action}>{action}</Badge>
-                      ))}
-                    </Flex>
-                  </Box>
-                ))}
-              </Flex>
-            )}
-          </Flex>
-
-          <Flex direction="column" gap="3">
-            <Heading size="sm">Details</Heading>
-            <DetailRow label="Kind">
-              <Text>{event.kind}</Text>
-            </DetailRow>
-            <DetailRow label="Manifest pointer">
-              <Code userSelect="all" whiteSpace="normal">
-                {naddr || address}
-              </Code>
-            </DetailRow>
-            <DetailRow label="Author">
-              <Link as={RouterLink} to={`/u/${event.pubkey}`}>
-                <UserName pubkey={event.pubkey} />
-              </Link>
-            </DetailRow>
-          </Flex>
-        </SimpleGrid>
+        <Flex direction="column" gap="3">
+          <Heading size="sm">Supported intents</Heading>
+          {archetypes.length === 0 ? (
+            <Text color="GrayText">No archetypes declared.</Text>
+          ) : (
+            <Flex direction="column" gap="3">
+              {archetypes.map((archetype) => (
+                <Box key={archetype.name}>
+                  <Heading size="xs" mb="1">
+                    {archetype.name}
+                  </Heading>
+                  <Flex gap="1" wrap="wrap">
+                    {archetype.actions.map((action) => (
+                      <Badge key={action}>{action}</Badge>
+                    ))}
+                  </Flex>
+                </Box>
+              ))}
+            </Flex>
+          )}
+        </Flex>
 
         <Divider />
 
