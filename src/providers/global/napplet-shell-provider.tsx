@@ -922,7 +922,7 @@ function createAdapter(
       },
     }),
     notify: createNotifyService({
-      onSend: (_windowId, message) => {
+      present: ({ message }) => {
         toast({ title: message.title, description: message.body, status: "info" });
       },
     }),
