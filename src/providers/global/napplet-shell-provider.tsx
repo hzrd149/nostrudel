@@ -87,19 +87,11 @@ type NappletIdentity = {
   title?: string;
 };
 
-type ResourceIdentity = Pick<NappletIdentity, "pubkey" | "dTag" | "aggregateHash" | "title">;
-
 type ConsentRequest = {
   event: NostrEvent;
   identity: NappletIdentity;
   capabilities: Capability[];
   resolve: (value: boolean) => void;
-};
-
-type ResourceConsentRequest = {
-  identity: ResourceIdentity;
-  origin: string;
-  resolve: (value: "deny" | "once" | "always") => void;
 };
 
 type IntentChoiceRequest = {
@@ -127,7 +119,6 @@ type NappletShellContextValue = {
 const NappletShellContext = createContext<NappletShellContextValue | null>(null);
 
 const ALWAYS_ALLOW_STORAGE_KEY = "nostrudel:napplet:always-allow";
-const RESOURCE_ALWAYS_ALLOW_STORAGE_KEY = "nostrudel:napplet:resource:always-allow";
 const MAX_RESOURCE_BYTES = 25 * 1024 * 1024;
 const MAX_RESOURCE_URLS = 16;
 const MAX_CONCURRENT_RESOURCE_FETCHES = 4;
@@ -144,14 +135,20 @@ const MAX_CONCURRENT_RESOURCE_FETCHES = 4;
  */
 const DISABLED_NAP_DOMAINS = ["keys", "media", "config", "cvm"] as const;
 
-const windowIdentities = new Map<string, ResourceIdentity>();
+const windowIdentities = new Map<string, NappletIdentity>();
+
+// The kehto runtime's ACL defaults to a permissive policy, so an identity with no entry
+// passes every capability check, and the first grant seeds every capability at once. That
+// makes the runtime unable to report which capabilities the user actually approved, so the
+// shell keeps its own record here of the capability set granted per napplet identity.
+const approvedCapabilities = new Map<string, Set<Capability>>();
 
 function identityKey(identity: NappletIdentity) {
   return `${identity.pubkey}:${identity.dTag}:${identity.aggregateHash}`;
 }
 
-function resourceGrantKey(identity: ResourceIdentity, origin: string) {
-  return `${identity.pubkey}:${identity.dTag}:${identity.aggregateHash}:${origin}`;
+function hasApprovedCapability(identity: NappletIdentity, capability: Capability) {
+  return approvedCapabilities.get(identityKey(identity))?.has(capability) ?? false;
 }
 
 function getAlwaysAllowed() {
@@ -172,28 +169,11 @@ function isAlwaysAllowed(identity: NappletIdentity) {
   return getAlwaysAllowed().includes(identityKey(identity));
 }
 
-function getAlwaysAllowedResourceOrigins() {
-  try {
-    return JSON.parse(localStorage.getItem(RESOURCE_ALWAYS_ALLOW_STORAGE_KEY) ?? "[]") as string[];
-  } catch {
-    return [];
-  }
-}
-
-function addAlwaysAllowedResourceOrigin(identity: ResourceIdentity, origin: string) {
-  const allowed = new Set(getAlwaysAllowedResourceOrigins());
-  allowed.add(resourceGrantKey(identity, origin));
-  localStorage.setItem(RESOURCE_ALWAYS_ALLOW_STORAGE_KEY, JSON.stringify(Array.from(allowed)));
-}
-
-function isAlwaysAllowedResourceOrigin(identity: ResourceIdentity, origin: string) {
-  return getAlwaysAllowedResourceOrigins().includes(resourceGrantKey(identity, origin));
-}
-
 function grantCapabilities(bridge: ShellBridge, identity: NappletIdentity, capabilities: Capability[]) {
   for (const capability of capabilities) {
     bridge.runtime.aclState.grant(identity.pubkey, identity.dTag, identity.aggregateHash, capability);
   }
+  approvedCapabilities.set(identityKey(identity), new Set(capabilities));
 }
 
 function getSigner() {
@@ -627,18 +607,12 @@ async function mapWithConcurrency<T, R>(items: T[], limit: number, mapper: (item
   return results;
 }
 
-function createResourceService(options: {
-  getBlossomOrigins: () => string[];
-  requestGrant: (identity: ResourceIdentity, origin: string) => Promise<boolean>;
-}) {
+function createResourceService(options: { getBlossomOrigins: () => string[] }) {
   const inFlight = new Map<string, AbortController>();
   const perWindow = new Map<string, Set<string>>();
 
-  const isGranted = async (identity: ResourceIdentity, origin: string) => {
-    if (options.getBlossomOrigins().includes(origin)) return true;
-    if (isAlwaysAllowedResourceOrigin(identity, origin)) return true;
-    return options.requestGrant(identity, origin);
-  };
+  const isAllowed = (identity: NappletIdentity, origin: string) =>
+    hasApprovedCapability(identity, "resource:fetch") || options.getBlossomOrigins().includes(origin);
 
   const track = (windowId: string, requestId: string, controller: AbortController) => {
     const key = resourceRequestKey(windowId, requestId);
@@ -673,8 +647,17 @@ function createResourceService(options: {
       sendResourceError(send, requestId, "denied", "napplet identity not resolvable");
       return;
     }
-    if (!(await isGranted(identity, parsed.origin))) {
-      sendResourceError(send, requestId, "denied", `origin ${parsed.origin} not granted`);
+    if (parsed.protocol !== "https:" && parsed.protocol !== "http:") {
+      sendResourceError(send, requestId, "denied", `scheme ${parsed.protocol} is not allowed`);
+      return;
+    }
+    if (!isAllowed(identity, parsed.origin)) {
+      sendResourceError(
+        send,
+        requestId,
+        "denied",
+        `origin ${parsed.origin} is not allowed: resource:fetch was not approved for this napplet`,
+      );
       return;
     }
 
@@ -726,7 +709,7 @@ function createResourceService(options: {
     descriptor: {
       name: "resource",
       version: "1.0.0",
-      description: "NAP-RESOURCE shell fetch with noStrudel origin policy",
+      description: "NAP-RESOURCE fetch gated on approved resource:fetch or a user Blossom origin",
     },
     handleMessage(windowId: string, message: any, send: (message: any) => void) {
       switch (message.type) {
@@ -799,10 +782,7 @@ function createAdapter(
   toast: ReturnType<typeof useToast>,
   getIntentNavigator: () => ((intent: NappletIntent, handler: InstalledNapplet) => void) | null,
   chooseIntentHandler: (intent: NappletIntent) => Promise<InstalledNapplet | undefined>,
-  resource: {
-    getBlossomOrigins: () => string[];
-    requestGrant: (identity: ResourceIdentity, origin: string) => Promise<boolean>;
-  },
+  resource: { getBlossomOrigins: () => string[] },
   getUpload: () => UploadConfig,
   uploadEnabled: boolean,
 ): ShellAdapter {
@@ -1001,36 +981,10 @@ export function NappletShellProvider({ children }: PropsWithChildren) {
   blossomOriginsRef.current = blossomOrigins;
   uploadRef.current = upload;
   const [consent, setConsent] = useState<ConsentRequest>();
-  const [resourceConsent, setResourceConsent] = useState<ResourceConsentRequest>();
   const [intentChoice, setIntentChoice] = useState<IntentChoiceRequest>();
-  const sessionResourceGrantsRef = useRef(new Set<string>());
-  const resourceGrantQueueRef = useRef(Promise.resolve());
   const intentNavigatorRef = useRef<((intent: NappletIntent, handler: InstalledNapplet) => void) | null>(null);
   const getIntentNavigator = useCallback(() => intentNavigatorRef.current, []);
   const installedNapplets = useMemo(() => getInstalledNapplets(), [intentChoice]);
-
-  const requestResourceGrant = useCallback((identity: ResourceIdentity, origin: string) => {
-    const ask = async () => {
-      const key = resourceGrantKey(identity, origin);
-      if (sessionResourceGrantsRef.current.has(key) || isAlwaysAllowedResourceOrigin(identity, origin)) return true;
-
-      const response = await new Promise<"deny" | "once" | "always">((resolve) =>
-        setResourceConsent({ identity, origin, resolve }),
-      );
-
-      if (response === "deny") return false;
-      if (response === "always") addAlwaysAllowedResourceOrigin(identity, origin);
-      else sessionResourceGrantsRef.current.add(key);
-      return true;
-    };
-
-    const next = resourceGrantQueueRef.current.then(ask, ask);
-    resourceGrantQueueRef.current = next.then(
-      () => undefined,
-      () => undefined,
-    );
-    return next;
-  }, []);
 
   const chooseIntentHandler = useCallback((intent: NappletIntent) => {
     if (getInstalledNapplets().length === 0) return Promise.resolve(undefined);
@@ -1043,11 +997,11 @@ export function NappletShellProvider({ children }: PropsWithChildren) {
         toast,
         getIntentNavigator,
         chooseIntentHandler,
-        { getBlossomOrigins: () => blossomOriginsRef.current, requestGrant: requestResourceGrant },
+        { getBlossomOrigins: () => blossomOriginsRef.current },
         () => uploadRef.current,
         upload.enabled,
       ),
-    [toast, getIntentNavigator, chooseIntentHandler, requestResourceGrant, upload.enabled],
+    [toast, getIntentNavigator, chooseIntentHandler, upload.enabled],
   );
   const bridge = useMemo(() => createShellBridge(adapter), [adapter]);
   // Single source of truth for advertised NAP domains: derived from the same
@@ -1107,20 +1061,13 @@ export function NappletShellProvider({ children }: PropsWithChildren) {
       if (allow) {
         grantCapabilities(bridge, consent.identity, consent.capabilities);
         if (always) addAlwaysAllowed(consent.identity);
+      } else {
+        approvedCapabilities.delete(identityKey(consent.identity));
       }
       consent.resolve(allow);
       setConsent(undefined);
     },
     [bridge, consent],
-  );
-
-  const respondResource = useCallback(
-    (response: "deny" | "once" | "always") => {
-      if (!resourceConsent) return;
-      resourceConsent.resolve(response);
-      setResourceConsent(undefined);
-    },
-    [resourceConsent],
   );
 
   const respondIntentChoice = useCallback(
@@ -1162,31 +1109,6 @@ export function NappletShellProvider({ children }: PropsWithChildren) {
               </Button>
               <Button onClick={() => respond(true)}>Allow once</Button>
               <Button colorScheme="primary" onClick={() => respond(true, true)}>
-                Always allow
-              </Button>
-            </ButtonGroup>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
-      <Modal isOpen={!!resourceConsent} onClose={() => respondResource("deny")} isCentered>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Allow network access?</ModalHeader>
-          <ModalBody>
-            {resourceConsent && (
-              <Text>
-                <Code>{resourceConsent.identity.title || resourceConsent.identity.dTag}</Code> wants to connect to{" "}
-                <Code>{resourceConsent.origin}</Code>.
-              </Text>
-            )}
-          </ModalBody>
-          <ModalFooter>
-            <ButtonGroup>
-              <Button variant="ghost" onClick={() => respondResource("deny")}>
-                Deny
-              </Button>
-              <Button onClick={() => respondResource("once")}>Allow once</Button>
-              <Button colorScheme="primary" onClick={() => respondResource("always")}>
                 Always allow
               </Button>
             </ButtonGroup>
