@@ -22,10 +22,10 @@ import { Link as RouterLink, useParams } from "react-router-dom";
 
 import GenericCommentForm from "../../components/comment/generic-comment-form";
 import { GenericComments } from "../../components/comment/generic-comments";
-import DebugEventButton from "../../components/debug-modal/debug-event-button";
 import { ErrorBoundary } from "../../components/error-boundary";
 import { ThreadIcon } from "../../components/icons";
 import SimpleView from "../../components/layout/presets/simple-view";
+import NappletMenu from "../../components/napplets/napplet-menu";
 import EventQuoteButton from "../../components/note/event-quote-button";
 import Timestamp from "../../components/timestamp";
 import EventShareButton from "../../components/timeline/note/components/event-share-button";
@@ -159,13 +159,7 @@ function NappletStoreDetailPage({ event, address }: { event: NostrEvent; address
           {title} by <UserName pubkey={event.pubkey} />
         </Text>
       }
-      actions={
-        <ButtonGroup variant="ghost" size="sm" ms="auto">
-          <DebugEventButton event={event} />
-          <EventShareButton event={event} />
-          <EventQuoteButton event={event} />
-        </ButtonGroup>
-      }
+      actions={<NappletMenu event={event} variant="ghost" size="sm" ms="auto" />}
     >
       <Flex direction="column" gap="4" maxW="6xl" mx="auto" w="full">
         <Flex gap="4" alignItems="flex-start" wrap={{ base: "wrap", md: "nowrap" }}>
