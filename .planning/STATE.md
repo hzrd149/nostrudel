@@ -108,10 +108,11 @@ See: .planning/PROJECT.md (not present in this project; ROADMAP.md and the phase
 | 260903-dwf | Add list_transactions permission to NWC auth URI so wallet history loads | 2026-09-03 | 774a08dfc | [260903-dwf-the-nostr-wallet-connect-wallet-is-missi](./quick/260903-dwf-the-nostr-wallet-connect-wallet-is-missi/) |
 | 260920-q7c | Replace per-Blossom-server napplet permissions with single nap-resource permission gating Blossom downloads | 2026-09-20 | daabddaf0 | [260920-q7c-replace-per-blossom-server-napplet-permi](./quick/260920-q7c-replace-per-blossom-server-napplet-permi/) |
 | 260920-qwp | Update all napplet and kehto dependencies to the latest versions | 2026-09-20 | ea0fbba09 | [260920-qwp-update-all-napplet-and-kehto-dependencie](./quick/260920-qwp-update-all-napplet-and-kehto-dependencie/) |
+| 260920-r34 | Consolidate napplet details page actions into a shared NappletMenu and remove the Details section | 2026-09-20 | b402b4c06 | [260920-r34-consolidate-napplet-details-page-actions](./quick/260920-r34-consolidate-napplet-details-page-actions/) |
 
 ## Session
 
-**Last activity:** 2026-09-20 - Completed quick task 260920-qwp: Update all napplet and kehto dependencies to the latest versions
+**Last activity:** 2026-09-20 - Completed quick task 260920-r34: Consolidate napplet details page actions into a shared NappletMenu and remove the Details section
 **Last session:** 2026-09-15T18:50:00.000Z
 **Stopped at:** Phase 03 complete, ready to plan Phase 04
 **Resume file:** None
