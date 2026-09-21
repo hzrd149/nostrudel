@@ -29,6 +29,7 @@ import Timestamp from "../../components/timestamp";
 import EventShareButton from "../../components/timeline/note/components/event-share-button";
 import NoteReactions from "../../components/timeline/note/components/note-reactions";
 import UserAvatar from "../../components/user/user-avatar";
+import UserLink from "../../components/user/user-link";
 import UserName from "../../components/user/user-name";
 import EventZapButton from "../../components/zap/event-zap-button";
 import {
@@ -155,7 +156,7 @@ function NappletStoreDetailPage({ event, address }: { event: NostrEvent; address
             <Heading size="lg">{title}</Heading>
             <Flex gap="2" color="GrayText" fontSize="sm" alignItems="center" wrap="wrap">
               <Text>
-                By <UserName pubkey={event.pubkey} />
+                By <UserLink pubkey={event.pubkey} color="inherit" />
               </Text>
               <Text>·</Text>
               <Timestamp timestamp={event.created_at} />
