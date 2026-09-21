@@ -107,10 +107,11 @@ See: .planning/PROJECT.md (not present in this project; ROADMAP.md and the phase
 | 260829-n9x | Clarify local encryption password label in signin flow (issue #356) | 2026-08-29 | a8cce223b | [260829-n9x-clarify-local-encryption-password-label-](./quick/260829-n9x-clarify-local-encryption-password-label-/) |
 | 260903-dwf | Add list_transactions permission to NWC auth URI so wallet history loads | 2026-09-03 | 774a08dfc | [260903-dwf-the-nostr-wallet-connect-wallet-is-missi](./quick/260903-dwf-the-nostr-wallet-connect-wallet-is-missi/) |
 | 260920-q7c | Replace per-Blossom-server napplet permissions with single nap-resource permission gating Blossom downloads | 2026-09-20 | daabddaf0 | [260920-q7c-replace-per-blossom-server-napplet-permi](./quick/260920-q7c-replace-per-blossom-server-napplet-permi/) |
+| 260920-qwp | Update all napplet and kehto dependencies to the latest versions | 2026-09-20 | ea0fbba09 | [260920-qwp-update-all-napplet-and-kehto-dependencie](./quick/260920-qwp-update-all-napplet-and-kehto-dependencie/) |
 
 ## Session
 
-**Last activity:** 2026-09-20 - Completed quick task 260920-q7c: Replace per-Blossom-server napplet permissions with single nap-resource permission gating Blossom downloads
+**Last activity:** 2026-09-20 - Completed quick task 260920-qwp: Update all napplet and kehto dependencies to the latest versions
 **Last session:** 2026-09-15T18:50:00.000Z
 **Stopped at:** Phase 03 complete, ready to plan Phase 04
 **Resume file:** None
