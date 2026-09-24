@@ -28,9 +28,9 @@ it.
 |---|---|---|---|
 | `code-quality/duplicate-block` | 21 | 0 (05-02, 05-03, 05-04, 05-05, 05-06) | -21 |
 | `complexity/function-too-long` | 8 | 2 (05-03, 05-07, 05-08) | -6 |
-| `complexity/file-too-large` | 2 | TBD | TBD |
+| `complexity/file-too-large` | 2 | 1 (05-09) | -1 |
 | `ai-slop/thin-wrapper` | 2 | 0 (05-02) | -2 |
-| **Total** | **33** | **4 so far (05-02, 05-03, 05-04, 05-05, 05-06, 05-07, 05-08)** | **-29 so far** |
+| **Total** | **33** | **3 so far (05-02, 05-03, 05-04, 05-05, 05-06, 05-07, 05-08, 05-09)** | **-30 so far** |
 
 ## Per-finding table (D-01 / D-02)
 
@@ -67,7 +67,7 @@ with a range.
 | `code-quality/duplicate-block` | `src/views/settings/background-worker/cached-files-card.tsx:122` | 14 lines duplicate block at L71 | convert | D-07 | 05-04 |
 | `code-quality/duplicate-block` | `src/views/settings/background-worker/service-worker-status-card.tsx:97` | 10 lines duplicate block at L69 | convert | D-07 | 05-04 |
 | `complexity/file-too-large` | `src/providers/global/napplet-shell-provider.tsx:0` | 1163 lines (threshold 400; 2× not applicable to file size) | extract | D-08 — full split into `services/napplet-shell/*` adapters + thinned provider + modals moved out (D-09) | 05-10–05-12 |
-| `complexity/file-too-large` | `src/services/wallets.ts:0` | 592 lines (threshold 400) | extract | D-10 — directory split by backend (`services/wallets/{types,webln,nwc,nutwallet,index}.ts`), zero-churn for ~13 import sites | 05-09 |
+| `complexity/file-too-large` | `src/services/wallets.ts:0` | 592 lines (threshold 400) | extract | D-10 — directory split by backend (`services/wallets/{types,webln,nwc,nutwallet,index}.ts`), zero-churn for ~13 import sites — **resolved 05-09** | 05-09 |
 | `complexity/function-too-long` | `src/components/post-modal/index.tsx:160` | `renderBody` · 123 lines (over 80 by 66 measured in `05-CONTEXT.md`; live scan reports 123, same finding) | extract | D-12 — non-component extraction | 05-08 |
 | `complexity/function-too-long` | `src/components/webxdc/webxdc.tsx:138` | `handleRequest` · 102 lines | extract | D-12 — non-component extraction | 05-08 |
 | `complexity/function-too-long` | `src/hooks/use-webxdc.ts:22` | `useWebxdc` · 234 lines | extract | D-12 — divides into sub-hooks along its natural seams | 05-07 |
@@ -365,6 +365,98 @@ Publishing a note (plain and PoW-mined), dismissing the composer mid-mine, and d
 webxdc request from a running mini-app frame were NOT exercised in a live browser session — all
 three are recorded as explicit OUTSTANDING manual-verification items in `05-08-SUMMARY.md`, not
 assumed verified from the passing build.
+
+## 05-09 D-10 wallets directory-split resolution (measured, not assumed)
+
+Live rescan after 05-09 confirms the plan's predicted 1-row reduction exactly:
+`complexity/file-too-large` 2 → 1 (-1), bucket-H total 4 → 3. The scoped rescan filtered to
+`src/services/wallets` returns 0 findings across all four bucket-H rules
+(`jq '[.diagnostics[]|select((.filePath|test("services/wallets")) and (.rule==...))]|length'` → 0);
+the remaining `complexity/file-too-large` finding belongs entirely to
+`src/providers/global/napplet-shell-provider.tsx` (owned by 05-10–05-12), confirmed via the
+full-repo `--json` rescan's `filePath` field, not assumed.
+
+- `src/services/wallets.ts` (591 lines) is now five modules behind an index barrel:
+  `types.ts` (53 lines — the backend type union, `ReceiveResult`, `WalletTransaction`,
+  `WalletBackend`, `WALLET_TYPE_LABELS`), `webln.ts` (110 lines — the WebLN backend plus the
+  shared `abortError` builder and the WebLN-only `awaitBalanceIncrease` balance-poll waiter),
+  `nwc.ts` (99 lines — the Nostr Wallet Connect backend, the paid-invoice waiter, and the
+  transaction mapper), `nutwallet.ts` (55 lines — the NIP-60/Cashu backend factory), and
+  `index.ts` (289 lines — the scoped logger, `WalletConnect.pool = pool` routing, all reactive
+  state, the NIP-60 lifecycle/reconciliation, the NWC registry reconciliation, and the
+  twenty-one-member public API barrel). Git recorded the move as a rename
+  (`src/services/wallets.ts` → `src/services/wallets/index.ts`, 50% similarity) in the same
+  commit that created the four sibling files and deleted the original file, so no intermediate
+  commit ever had both `wallets.ts` and `wallets/index.ts` resolvable at once (the module-shadowing
+  hazard the plan's execution context called out was avoided by construction, not by luck).
+- All twenty-one exported members are re-exported from `index.ts` with unchanged names and types:
+  five re-exported from `types.ts` (`WalletBackendType`, `ReceiveResult`, `WalletTransaction`,
+  `WalletBackend`, `WALLET_TYPE_LABELS`), one re-exported from `webln.ts` (`hasWebln`), and fifteen
+  declared directly in `index.ts` (`NutWalletState`, `nutWalletState$`, `nutWallet$`,
+  `nutWalletUnlocked$`, `nutWalletStaleTokenCount$`, `setNutWalletEnabled`, `unlockNutWallet`,
+  `setNutWalletAutoUnlock`, `cleanupNutWalletDeletedTokens`, `wallets$`, `activeWallet$`,
+  `addNwcWallet`, `removeNwcWallet`, `setActiveWallet`, `resolveInvoice`) — counted directly
+  against the pre-split file's 21 `^export` line matches, not assumed. All twelve external
+  bare-specifier importers (`grep -rn 'from ".*services/wallets"' src` → 12, unchanged) and the
+  thirteenth sibling import (`src/services/wallet-migration.ts`'s `from "./wallets"`, one directory
+  level up from the new `wallets/` folder) resolve unchanged; `git diff --name-only` for this
+  plan's commit lists only files under `src/services/wallets/`.
+- **One documented non-move adjustment (D-16):** `createWeblnBackend` and `createNwcBackend` now
+  take the scoped logger as an explicit parameter instead of closing over a module-level `const
+  log`. This was required, not optional: the plan's own constraint ("exactly one scoped logger
+  declared… in the index module only") combined with the "no circular imports between backend
+  modules" warning meant `webln.ts`/`nwc.ts` could not import `log` back from `index.ts` (that
+  edge would run opposite the composition direction — `index.ts` already imports both backend
+  modules to build them — and `log` would also become index.ts's 22nd export, breaking the
+  21-member surface count). Passing `log` as an argument keeps the single declaration in
+  `index.ts`, avoids the cycle entirely, and changes no log message, namespace string, or
+  call site's arguments — confirmed via `grep -n 'log(' src/services/wallets/webln.ts
+  src/services/wallets/nwc.ts` matching the pre-split call sites verbatim. Recorded here per the
+  plan's own instruction to say so explicitly when a move cannot be pure.
+- **Shared-helper placement (Claude's discretion, per 05-BASELINE.md's scope note):** `abortError`
+  is used by both `webln.ts`'s `awaitBalanceIncrease` and `nwc.ts`'s `waitForNwcPaid`, so it is
+  declared once in `webln.ts` (exported) and imported by `nwc.ts` — a single one-directional
+  sibling edge (`nwc.ts → webln.ts`), never the reverse, so no cycle is introduced between the two
+  backend leaf modules. `WEBLN_ID` and `nutWalletId` are each used by exactly one backend at their
+  real call sites (grep-confirmed, not the plan's prose which described a hypothetical
+  index-module use that doesn't exist in the current file), so each stays module-private in its
+  own backend file. `WalletConnect.pool = pool` stayed in `index.ts` (not moved into `nwc.ts`)
+  since the plan's action text lists it under "everything else stays in the index module" by
+  omission from the three named extraction targets, and its timing is unaffected either way (it
+  executes during module evaluation, before any `WalletConnect` instance is constructed by
+  `reconcileNwc`, which itself only fires once `index.ts`'s trailing `localSettings.wallets.subscribe`
+  call runs). `fromNwcTransaction` gained an `export` keyword (was module-private in the source
+  file) so the pure NIP-47-to-`WalletTransaction` mapper is importable by 05-13's planned
+  `nwc.test.ts`; this is an additive surface change to `nwc.ts`, not to the `index.ts` barrel (it
+  is not re-exported from `index.ts`, so the 21-member public-surface count is unaffected).
+- Exactly one scoped logger declaration exists across the five modules
+  (`grep -rn 'logger.extend(' src/services/wallets/*.ts` → one hit, in `index.ts`). No helper is
+  duplicated (`abortError`, `awaitBalanceIncrease`, `WEBLN_ID`, `nutWalletId` each defined exactly
+  once, confirmed by grep). No `aislop-ignore` directive exists anywhere under
+  `src/services/wallets` (`grep -rc 'aislop-ignore'` → 0 for every module). No path alias was
+  introduced (`grep -rn 'from "~/' src/services/wallets` → 0 matches). No module landed a new
+  `complexity/function-too-long` finding; the largest module (`index.ts`, 289 lines) and the
+  largest single function are both well under budget, confirmed by the scoped rescan returning 0.
+  Six pre-existing findings surfaced post-split under `src/services/wallets` (one
+  `ai-slop/ts-directive` info on a `@ts-expect-error` in `index.ts`, two
+  `ai-slop/double-type-assertion` warnings on the `window as unknown as {...}` casts in `webln.ts`,
+  and four `ai-slop/narrative-comment` decorative-separator warnings) — confirmed via line-number
+  tracking against the pre-split file (the two double-type-assertion casts and the
+  `// ---- WebLN (window.webln) ----` separator existed verbatim at the same relative positions
+  before this plan; the other three separators and the `@ts-expect-error` on the dev-only
+  `window.wallets` debug hook also predate this plan) that all six are moves, not new code; none
+  swept, per the out-of-scope rule and this plan's own prohibition against sweeping backlog
+  999.2/999.5/999.8 findings in these files.
+- `pnpm build` (typecheck + bundle) passed after both tasks.
+
+No behavioural test coverage exists for any of the three wallet backends (no test runner until
+05-13; both `build_command`/`test_command` in `.planning/config.json` are `pnpm build`, a
+typecheck+bundle only). Connecting a WebLN extension wallet, connecting/loading an NWC wallet
+(balance, transaction history, invoice creation, invoice payment, the paid-invoice notification
+wait), and the NIP-60/Cashu wallet lifecycle (load, unlock, mint-quote invoice creation, melt/pay,
+stale-token cleanup) were NOT exercised against live wallet backends in this session — this is
+recorded as an explicit OUTSTANDING manual-verification item in `05-09-SUMMARY.md`, not assumed
+verified from the passing build.
 
 ## Scope note (D-02)
 
