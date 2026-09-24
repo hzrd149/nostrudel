@@ -26,11 +26,11 @@ it.
 
 | Rule | Before | After | Delta |
 |---|---|---|---|
-| `code-quality/duplicate-block` | 21 | TBD | TBD |
+| `code-quality/duplicate-block` | 21 | 16 (05-02) | -5 |
 | `complexity/function-too-long` | 8 | TBD | TBD |
 | `complexity/file-too-large` | 2 | TBD | TBD |
-| `ai-slop/thin-wrapper` | 2 | TBD | TBD |
-| **Total** | **33** | **TBD** | **TBD** |
+| `ai-slop/thin-wrapper` | 2 | 0 (05-02) | -2 |
+| **Total** | **33** | **26 so far (05-02)** | **-7 so far** |
 
 ## Per-finding table (D-01 / D-02)
 
