@@ -24,7 +24,7 @@ import { SendLegacyMessage, SendWrappedMessage } from "applesauce-actions/action
 import { getDisplayName, getTagValue, unixNow, mergeRelaySets } from "applesauce-core/helpers";
 import { useActionRunner, useActiveAccount, useEventModel, use$ } from "applesauce-react/hooks";
 import { kinds } from "nostr-tools";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { useForm } from "react-hook-form";
 import { lastValueFrom, toArray } from "rxjs";
 
@@ -53,6 +53,33 @@ function RelayItem({ relay }: { relay: string }) {
       <RelayFavicon relay={relay} size="xs" />
       <RelayLink relay={relay} isTruncated />
     </Flex>
+  );
+}
+
+function RelayListSection({
+  label,
+  relays,
+  emptyState,
+}: {
+  label: ReactNode;
+  relays: string[];
+  emptyState: ReactNode;
+}) {
+  return (
+    <Box>
+      <Text fontSize="sm" fontWeight="semibold" mb={1}>
+        {label}
+      </Text>
+      {relays.length > 0 ? (
+        <VStack spacing={1} align="stretch" pl={2}>
+          {relays.map((relay) => (
+            <RelayItem key={relay} relay={relay} />
+          ))}
+        </VStack>
+      ) : (
+        emptyState
+      )}
+    </Box>
   );
 }
 
@@ -91,6 +118,12 @@ function MessageTypeToggleButton({
     onChange(newType);
     setIsOpen(false);
   };
+
+  const nip65EmptyState = (
+    <Text fontSize="sm" color="GrayText" pl={2}>
+      No NIP-65 inboxes configured.
+    </Text>
+  );
 
   return (
     <>
@@ -137,17 +170,10 @@ function MessageTypeToggleButton({
                     </Text>
 
                     <VStack spacing={3} align="stretch">
-                      <Box>
-                        <Text fontSize="sm" fontWeight="semibold" mb={1}>
-                          Your inboxes:
-                        </Text>
-                        {nip17RelaysToShow.self.length > 0 ? (
-                          <VStack spacing={1} align="stretch" pl={2}>
-                            {nip17RelaysToShow.self.map((relay) => (
-                              <RelayItem key={relay} relay={relay} />
-                            ))}
-                          </VStack>
-                        ) : (
+                      <RelayListSection
+                        label="Your inboxes:"
+                        relays={nip17RelaysToShow.self}
+                        emptyState={
                           <Alert status="warning" size="sm">
                             <AlertIcon />
                             <Box>
@@ -157,26 +183,23 @@ function MessageTypeToggleButton({
                               </Link>
                             </Box>
                           </Alert>
-                        )}
-                      </Box>
+                        }
+                      />
 
-                      <Box>
-                        <Text fontSize="sm" fontWeight="semibold" mb={1}>
-                          <UserName pubkey={pubkey} />
-                          's inboxes:
-                        </Text>
-                        {nip17RelaysToShow.other.length > 0 ? (
-                          <VStack spacing={1} align="stretch" pl={2}>
-                            {nip17RelaysToShow.other.map((relay) => (
-                              <RelayItem key={relay} relay={relay} />
-                            ))}
-                          </VStack>
-                        ) : (
+                      <RelayListSection
+                        label={
+                          <>
+                            <UserName pubkey={pubkey} />
+                            's inboxes:
+                          </>
+                        }
+                        relays={nip17RelaysToShow.other}
+                        emptyState={
                           <Text fontSize="sm" color="GrayText" pl={2}>
                             No NIP-17 inboxes configured.
                           </Text>
-                        )}
-                      </Box>
+                        }
+                      />
                     </VStack>
                   </Box>
                 </VStack>
@@ -212,40 +235,18 @@ function MessageTypeToggleButton({
                     </Text>
 
                     <VStack spacing={3} align="stretch">
-                      <Box>
-                        <Text fontSize="sm" fontWeight="semibold" mb={1}>
-                          Your inboxes:
-                        </Text>
-                        {nip04RelaysToShow.self.length > 0 ? (
-                          <VStack spacing={1} align="stretch" pl={2}>
-                            {nip04RelaysToShow.self.map((relay) => (
-                              <RelayItem key={relay} relay={relay} />
-                            ))}
-                          </VStack>
-                        ) : (
-                          <Text fontSize="sm" color="GrayText" pl={2}>
-                            No NIP-65 inboxes configured.
-                          </Text>
-                        )}
-                      </Box>
+                      <RelayListSection label="Your inboxes:" relays={nip04RelaysToShow.self} emptyState={nip65EmptyState} />
 
-                      <Box>
-                        <Text fontSize="sm" fontWeight="semibold" mb={1}>
-                          <UserName pubkey={pubkey} />
-                          's inboxes:
-                        </Text>
-                        {nip04RelaysToShow.other.length > 0 ? (
-                          <VStack spacing={1} align="stretch" pl={2}>
-                            {nip04RelaysToShow.other.map((relay) => (
-                              <RelayItem key={relay} relay={relay} />
-                            ))}
-                          </VStack>
-                        ) : (
-                          <Text fontSize="sm" color="GrayText" pl={2}>
-                            No NIP-65 inboxes configured.
-                          </Text>
-                        )}
-                      </Box>
+                      <RelayListSection
+                        label={
+                          <>
+                            <UserName pubkey={pubkey} />
+                            's inboxes:
+                          </>
+                        }
+                        relays={nip04RelaysToShow.other}
+                        emptyState={nip65EmptyState}
+                      />
                     </VStack>
                   </Box>
                 </VStack>
