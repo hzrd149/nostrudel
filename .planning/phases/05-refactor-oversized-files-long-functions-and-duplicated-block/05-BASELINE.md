@@ -26,11 +26,11 @@ it.
 
 | Rule | Before | After | Delta |
 |---|---|---|---|
-| `code-quality/duplicate-block` | 21 | 4 (05-02, 05-03, 05-04, 05-05) | -17 |
+| `code-quality/duplicate-block` | 21 | 0 (05-02, 05-03, 05-04, 05-05, 05-06) | -21 |
 | `complexity/function-too-long` | 8 | 5 (05-03) | -3 |
 | `complexity/file-too-large` | 2 | TBD | TBD |
 | `ai-slop/thin-wrapper` | 2 | 0 (05-02) | -2 |
-| **Total** | **33** | **11 so far (05-02, 05-03, 05-04, 05-05)** | **-22 so far** |
+| **Total** | **33** | **7 so far (05-02, 05-03, 05-04, 05-05, 05-06)** | **-26 so far** |
 
 ## Per-finding table (D-01 / D-02)
 
@@ -160,6 +160,87 @@ the full-repo `--json` rescan's per-finding `filePath` field, not assumed.
 
 No consumer of any of the three files' default/named exports required editing; `pnpm build`
 (typecheck + bundle) passed after every task.
+
+## 05-06 D-05 clear-win extraction resolution (measured, not assumed)
+
+Live rescan after 05-06 confirms the plan's predicted 4-row reduction exactly: `code-quality/duplicate-block`
+4 → 0 (-4), bucket-H total 11 → 7. All four findings targeted by this plan (both in
+`services/notifications/common.ts`, one in `sw/client/error-logger.ts`, one in
+`views/messages/chat/components/direct-message-form.tsx`) cleared, confirmed via the full-repo
+`--json` rescan's per-finding `filePath` field after each task, not assumed. `code-quality/duplicate-block`
+now stands at 0 whole-repo — every finding in this rule that existed at the 33-row baseline has
+been either extracted or ignored-with-reason.
+
+- `src/sw/client/error-logger.ts` — the two error-log printers now share one internal
+  `renderErrorLogGroup(logs, groupLabel, entryLabel)` helper that performs the `console.group`
+  rendering loop; each printer keeps its own distinct empty-list message and calls the helper
+  with its own group label and per-entry label builder (the first printer's label embeds the
+  log's context, the second's does not, since it already scopes the whole group to one context).
+  The file-level `aislop-ignore-file ai-slop/console-leftover` directive on line 1 is confirmed
+  byte-identical via `git diff` (0 hunks touch line 1). Export count unchanged (6 exported
+  members, not 5 as the plan's read_first note stated — a plan-documentation discrepancy, not a
+  code issue; the acceptance criterion "export count unchanged from before the edit" is satisfied
+  regardless since 6→6). File grew from 74 to 81 lines (+7) rather than shrinking, because the
+  extracted helper's own signature and its `.map`/`.forEach` structure cost more lines than the
+  ~12 duplicated lines it replaced in each of the two call sites combined; recorded as a measured
+  discrepancy against the plan's "file is shorter" prediction, same shape as 05-05's
+  `magic-textarea.tsx` growth. The finding itself is confirmed cleared by the scoped rescan
+  regardless.
+- `src/services/notifications/common.ts` — the three notification loaders (`shareNotificationsLoader$`,
+  `socialNotificationsLoader$`, `zapNotificationsLoader$`) now share one internal
+  `createNotificationsLoader(getFilters)` factory that composes the
+  `combineLatest([accounts.active$, inboxes$]).pipe(map(...), shareReplay(1))` pipeline; each
+  loader calls the factory with its own pubkey-to-filter-array builder. Exported names, types
+  (`Observable<TimelineLoader | null>`) and replay semantics preserved — each of the three
+  exported consts is still an independent call to the factory, so each still gets its own
+  `shareReplay(1)`-backed single timeline; no state is shared across the three loaders. All
+  filter kinds/tag selectors carried over verbatim, including the social loader's second filter
+  over the user's own authored notes and its explanatory comment (confirmed via grep). Export
+  count unchanged (8 → 8, factory not exported). File shrank from 148 to 105 lines (-43, the
+  largest reduction of the three files). **Discrepancy from the plan's literal acceptance
+  criterion:** the plan's wording asked for "the number of `shareReplay(1)` occurrences in the
+  file" to be unchanged; consolidating the three identical `shareReplay(1)` call sites into the
+  shared factory necessarily reduces the *textual* occurrence count from 4 to 2 (3 loaders + the
+  unrelated `userEvents$` observable, now 1 factory-owned occurrence + `userEvents$`). This is the
+  correct outcome of following the plan's own action text ("Extract one internal factory ... and
+  returns the composed observable. Define the three exported loaders by calling it"), which
+  necessarily consolidates the operator textually while preserving it functionally per loader —
+  recorded here as a measured discrepancy (D-03) rather than silently claimed as passing; the
+  actual T-05-19 concern (no shared/duplicated subscription across loaders) is unaffected since
+  each factory call produces an independent pipeline.
+- `src/views/messages/chat/components/direct-message-form.tsx` — all four relay-list blocks in
+  `MessageTypeToggleButton`'s message-type modal (NIP-17 self/other inboxes, NIP-04 self/other
+  inboxes) now share one internal `RelayListSection({ label, relays, emptyState })` component,
+  referenced 4 times. `label` and `emptyState` are accepted as `ReactNode` rather than strings,
+  since two of the four labels embed `<UserName pubkey={pubkey} />` and the NIP-17-self block's
+  empty state is a distinct warning `Alert` with a link to `/settings/messages` (not a plain
+  muted sentence like the other three) — extracting it as a node rather than forcing a
+  string+boolean-flag shape kept the abstraction free of the config-flag smell D-05 warns
+  against. Both messaging branches (private NIP-17 / legacy NIP-04) are untouched: the legacy
+  privacy warning `Alert`, both branches' explanatory copy, and all three NIP spec links
+  (`17.md`, `04.md`, `65.md`) confirmed present via grep. No new file created under
+  `src/views/messages/chat/components/`. The encrypted-message send path (`SendMessageForm`,
+  `sendMessage`, the `SendLegacyMessage`/`SendWrappedMessage` action calls, relay/inbox
+  resolution) was not touched — only the relay-list *rendering* leaf inside the settings modal
+  was factored, per the plan's explicit conservative-treatment instruction for this file. One
+  new duplicate-block finding was transiently introduced mid-task (the two NIP-04 blocks'
+  identical `"No NIP-65 inboxes configured."` empty-state text, now both passed as props to
+  otherwise-differing `RelayListSection` calls) and fixed in the same task by hoisting the
+  shared empty-state node into one local `nip65EmptyState` constant reused by both NIP-04 call
+  sites (Rule 1 — bug/regression introduced by this task's own edit, fixed before commit). File
+  grew from 430 to 431 lines (+1) rather than shrinking — the new component's own prop-type
+  block and the hoisted `nip65EmptyState` constant cost slightly more lines than the four
+  verbose blocks' combined savings; recorded as a measured discrepancy against the plan's "file
+  is shorter" prediction, same shape as 05-05's `magic-textarea.tsx` and this plan's own
+  `error-logger.ts` growth. The finding itself is confirmed cleared by the scoped rescan
+  regardless.
+
+No consumer of any of the three files' exports required editing; `pnpm build` (typecheck +
+bundle) passed after every task. None of the three UI/behavioural surfaces touched here (error
+log console rendering, the three notification timeline loaders, the messaging settings modal's
+relay lists and message-type switch) were manually exercised in a running browser or dev server —
+no test runner exists until 05-13 and `pnpm build` only typechecks/bundles; each is recorded as
+an explicit OUTSTANDING manual-verification item in `05-06-SUMMARY.md`, not assumed verified.
 
 ## Scope note (D-02)
 
