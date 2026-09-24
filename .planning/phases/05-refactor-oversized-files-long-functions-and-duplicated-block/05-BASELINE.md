@@ -26,11 +26,11 @@ it.
 
 | Rule | Before | After | Delta |
 |---|---|---|---|
-| `code-quality/duplicate-block` | 21 | 12 (05-02, 05-03) | -9 |
+| `code-quality/duplicate-block` | 21 | 9 (05-02, 05-03, 05-04) | -12 |
 | `complexity/function-too-long` | 8 | 5 (05-03) | -3 |
 | `complexity/file-too-large` | 2 | TBD | TBD |
 | `ai-slop/thin-wrapper` | 2 | 0 (05-02) | -2 |
-| **Total** | **33** | **19 so far (05-02, 05-03)** | **-14 so far** |
+| **Total** | **33** | **16 so far (05-02, 05-03, 05-04)** | **-17 so far** |
 
 ## Per-finding table (D-01 / D-02)
 
@@ -98,6 +98,30 @@ rule-scoped `aislop-ignore-*` directive naming its rule and ending with `-- reas
 | `complexity/function-too-long` | `src/views/new/poll/poll-form.tsx:72` | next-line | PollFormInner is a single flat poll-creation form tree with no repeated sub-structure worth extracting, and this view has no test coverage, so splitting it risks a silent regression nothing in the project would catch (D-12) |
 | `complexity/function-too-long` | `src/views/relays/relay/tabs/about.tsx:47` | next-line | RelayPage is a single flat relay-detail page tree with no repeated sub-structure worth extracting, and this view has no test coverage, so splitting it risks a silent regression nothing in the project would catch (D-12) |
 | `complexity/function-too-long` | `src/views/tools/event-publisher/index.tsx:40` | next-line | EventPublisherPage is a single flat event-publishing page tree with no repeated sub-structure worth extracting, and this view has no test coverage, so splitting it risks a silent regression nothing in the project would catch (D-12) |
+
+## 05-04 D-07 resolution (measured, not assumed)
+
+Live rescan after 05-04 confirms the plan's predicted outcome exactly: `code-quality/duplicate-block`
+12 → 9 (-3), bucket-H total 19 → 16. This is the plan's "expected outcome" branch — the third
+`code-quality/duplicate-block` finding also cleared, without needing a follow-up conversion of
+`applyUpdate` or a shared-toast extraction:
+
+- `src/views/settings/background-worker/cached-files-card.tsx` — all three flagged handlers
+  (single-cache clear, clear-all, refresh) converted to `useAsyncAction`. Rescan immediately after
+  Task 1 confirmed both duplicate-block findings in this file (lines 95 and 122 in the pre-05-04
+  baseline) cleared to 0. Per-row loading feedback preserved via a name-valued `isClearingCache`
+  state set/cleared around the single-cache handler's callback; the load handler (lines 44-61) was
+  confirmed untouched by `git diff`.
+- `src/views/settings/background-worker/service-worker-status-card.tsx` — only the update-check
+  handler (`checkForUpdate`) was converted. Rescan immediately after Task 2 confirmed the file's
+  one duplicate-block finding (line 97 in the pre-05-04 baseline) cleared to 0 without touching
+  `applyUpdate`, resolving RESEARCH.md's Pitfall 1 ambiguity in favor of the update-check handler
+  being the actual anchor. `applyUpdate` remains unconverted; it was not flagged and converting it
+  would have been scope creep.
+
+No ignore directive was added in either file (`grep -ric 'out of scope'` returns 0 across both);
+the conversion alone resolved all three findings, so neither the shared-toast-helper extraction nor
+a rule-scoped ignore fallback described in the plan was needed.
 
 ## Scope note (D-02)
 
