@@ -160,3 +160,13 @@ None - no external service configuration required.
 ---
 *Phase: 05-refactor-oversized-files-long-functions-and-duplicated-block*
 *Completed: 2026-09-24*
+
+## Self-Check: PASSED
+
+- FOUND: `src/components/post-modal/index.tsx`
+- FOUND: `src/components/webxdc/webxdc.tsx`
+- FOUND: `.planning/phases/05-refactor-oversized-files-long-functions-and-duplicated-block/05-08-SUMMARY.md`
+- FOUND: `6c5e34eeb` (Task 1 commit)
+- FOUND: `729845311` (Task 2 commit)
+- FOUND: `dd370655b` (05-BASELINE.md update commit)
+- FOUND: `47bc96c03` (this SUMMARY's own commit)
