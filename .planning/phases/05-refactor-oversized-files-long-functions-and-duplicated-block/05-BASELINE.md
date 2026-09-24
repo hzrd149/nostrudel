@@ -27,10 +27,10 @@ it.
 | Rule | Before | After | Delta |
 |---|---|---|---|
 | `code-quality/duplicate-block` | 21 | 0 (05-02, 05-03, 05-04, 05-05, 05-06) | -21 |
-| `complexity/function-too-long` | 8 | 4 (05-03, 05-07) | -4 |
+| `complexity/function-too-long` | 8 | 2 (05-03, 05-07, 05-08) | -6 |
 | `complexity/file-too-large` | 2 | TBD | TBD |
 | `ai-slop/thin-wrapper` | 2 | 0 (05-02) | -2 |
-| **Total** | **33** | **6 so far (05-02, 05-03, 05-04, 05-05, 05-06, 05-07)** | **-27 so far** |
+| **Total** | **33** | **4 so far (05-02, 05-03, 05-04, 05-05, 05-06, 05-07, 05-08)** | **-29 so far** |
 
 ## Per-finding table (D-01 / D-02)
 
@@ -307,6 +307,63 @@ No behavioural test coverage exists for this hook (no test runner until 05-13, a
 only). The webxdc realtime channel, persistent-update delivery, and listener registration
 surfaces were NOT exercised against a live relay or a running hosted mini-app in this session —
 this is recorded as an explicit OUTSTANDING manual-verification item in `05-07-SUMMARY.md`, not
+assumed verified from the passing build.
+
+## 05-08 D-12 post-modal/webxdc extraction resolution (measured, not assumed)
+
+Live rescan after 05-08 confirms the plan's predicted 2-row reduction exactly:
+`complexity/function-too-long` 4 → 2 (-2), bucket-H total 6 → 4. This closes all three of D-12's
+named non-component extraction targets (`use-webxdc.ts` in 05-07, these two files here); the two
+remaining `function-too-long` findings are both in `src/providers/global/napplet-shell-provider.tsx`
+(owned by 05-11/05-12), confirmed via the full-repo `--json` rescan's `filePath` field, not assumed.
+
+- `src/components/post-modal/index.tsx` — the 123-line `renderBody`'s three-way branch is now
+  three module-scope components: `PublishedEntryBody` (entry + close handler),
+  `MiningBody` (draft, target difficulty, cancel/skip/complete callbacks), and `ComposerBody`
+  (the large arm, receiving a `Pick<UseFormReturn<FormValues>, "getValues" | "setValue" |
+  "register" | "formState">` plus explicit callback/ref props rather than the whole
+  react-hook-form return or a module-scope-hoisted whole-account object). All three are declared
+  at module scope (column zero), never inside `PostModalInner`'s body, so none remounts on
+  keystroke. The dispatcher collapses to a ternary computed once per render and rendered at the
+  modal's single call site, replacing the named `renderBody()` function. The mining branch
+  condition (`miningTarget && draft`) is confirmed unchanged via `git diff` — both operands are
+  still tested, preserving the 04-13 lifecycle fix. Export count unchanged (2 → 2, `PostModal`
+  remains the sole default export). No `aislop-ignore` directive was added by this edit; the
+  file's one pre-existing directive (`eslint/no-unused-expressions` on the `formState.isDirty`
+  read, predating this plan) is confirmed byte-identical via `git diff` (0 hunks touch it).
+- `src/components/webxdc/webxdc.tsx` — the 102-line `handleRequest` switch is now
+  `handleUpdateRequest` (sendUpdate, setUpdateListener, getAllUpdates, sendToChat, importFiles)
+  and `handleRealtimeRequest` (joinRealtimeChannel, realtimeChannel.send,
+  realtimeChannel.leave), each returning a claimed boolean; `handleRequest` tries the update
+  handler, then the realtime handler, and falls through to the `-32601` method-not-found error
+  when neither claims the method — all three still inside the single `try/catch` that converts a
+  thrown error into the `-1` error response, confirmed covering all eight methods. Both handlers
+  stay declared inside the message-listener effect (indented inside the component body, not
+  module scope), since `handleRealtimeRequest` closes over `realtimeChannels`, the channel-map
+  ref declared textually after this effect but already assigned by the time the effect body
+  executes (post-render) — the same closure relationship the original unsplit code already
+  relied on. The outer listener's origin check, source-window check, and protocol-version check
+  are confirmed present and unmoved via direct grep. The single loosely-typed JSON-RPC params
+  parameter is now a `RequestParams = any` type alias carrying the file's second
+  `eslint-disable-next-line @typescript-eslint/no-explicit-any` comment once, reused by all three
+  signatures, rather than three separate `any` literals each needing their own suppression —
+  the file's total count of that exact comment stays at 2 (matching the pre-edit count), and
+  ai-slop/unsafe-type-assertion's other pre-existing hit (`event.data as any` at the outer
+  listener) is confirmed untouched. Export count unchanged (4 → 4: the `Webxdc` named export,
+  both `WebxdcProps`/`WebxdcHandle` interfaces, and the default export). No `aislop-ignore`
+  directive was added or existed before (`grep -c 'aislop-ignore'` returns 0 both before and
+  after). Six pre-existing findings surfaced post-edit in this file (five
+  `ai-slop/narrative-comment` decorative-separator warnings, one `ai-slop/hardcoded-url` on the
+  `https://${id}.webxdc.app` origin construction, one `ai-slop/unsafe-type-assertion` on the
+  outer listener's `as any`) — confirmed via line-number tracking against the pre-edit file that
+  all six predate this plan's edit; none swept, per the out-of-scope rule and this plan's own
+  prohibition against sweeping backlog 999.2/999.5/999.8 findings in these two files.
+
+`pnpm build` (typecheck + bundle) passed after every task in both files. No behavioural test
+coverage exists for either surface (no runner until 05-13; `pnpm build` only typechecks/bundles).
+Publishing a note (plain and PoW-mined), dismissing the composer mid-mine, and dispatching a
+webxdc request from a running mini-app frame were NOT exercised in a live browser session — all
+three are recorded as explicit OUTSTANDING manual-verification items in `05-08-SUMMARY.md`, not
 assumed verified from the passing build.
 
 ## Scope note (D-02)
