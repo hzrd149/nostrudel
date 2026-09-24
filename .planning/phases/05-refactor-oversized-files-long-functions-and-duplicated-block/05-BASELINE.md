@@ -26,11 +26,11 @@ it.
 
 | Rule | Before | After | Delta |
 |---|---|---|---|
-| `code-quality/duplicate-block` | 21 | 16 (05-02) | -5 |
-| `complexity/function-too-long` | 8 | TBD | TBD |
+| `code-quality/duplicate-block` | 21 | 12 (05-02, 05-03) | -9 |
+| `complexity/function-too-long` | 8 | 5 (05-03) | -3 |
 | `complexity/file-too-large` | 2 | TBD | TBD |
 | `ai-slop/thin-wrapper` | 2 | 0 (05-02) | -2 |
-| **Total** | **33** | **26 so far (05-02)** | **-7 so far** |
+| **Total** | **33** | **19 so far (05-02, 05-03)** | **-14 so far** |
 
 ## Per-finding table (D-01 / D-02)
 
@@ -80,6 +80,24 @@ with a range.
 Row count check: `ai-slop/thin-wrapper` 2, `code-quality/duplicate-block` 21,
 `complexity/file-too-large` 2, `complexity/function-too-long` 8 — sums to 33, matching the
 per-rule before-table exactly.
+
+## 05-03 surviving-ignore rows
+
+Live rescan after 05-03 confirms the measured after-counts match the plan's prediction exactly:
+`code-quality/duplicate-block` 16 → 12 (-4), `complexity/function-too-long` 8 → 5 (-3), bucket-H
+total 26 → 19. The seven findings below are the plan's deliberate survivors — each carries a
+rule-scoped `aislop-ignore-*` directive naming its rule and ending with `-- reason`, per
+`AGENTS.md` "Inline ignores". No executable code changed in any of the seven files.
+
+| Rule | File:Line | Directive scope | Reason (as written in the file) |
+|---|---|---|---|
+| `code-quality/duplicate-block` | `src/components/content/links/code.tsx:40` | file-level | renderCodePenURL and renderArchiveOrgURL both wrap ExpandableEmbed, but with different hosts, iframe sizing, and path matching; a shared abstraction would need more configuration parameters than the duplicated lines it would remove (D-05, revisit only if a third embed type appears) |
+| `code-quality/duplicate-block` | `src/components/content/links/youtube.tsx:58` | file-level | YoutubePlaylistEmbed and YoutubeVideoEmbed both wrap ExpandableEmbed, but differ in aspect ratio, embed URL construction, and permitted iframe features; a shared abstraction would need more configuration parameters than the duplicated lines it would remove (D-05, revisit only if a third embed type appears) |
+| `code-quality/duplicate-block` | `src/views/groups/index.tsx:184` | file-level | the SimpleGrid in FriendsGroups and the SimpleGrid in YourGroups are separate arms of an unrelated ternary chain rendering the same grid container over different data sources, each with its own loading and empty state; merging them would tie two independently-evolving branches behind a flag (D-05) |
+| `code-quality/duplicate-block` | `src/views/lists/components/list-history-modal.tsx:279` | file-level | the trailing badge/ButtonGroup in HiddenVersionRow matches the same tail in VersionRow because the two are sibling row variants, not because they share behaviour; HiddenVersionRow additionally renders an Unlock control that VersionRow has no equivalent for (D-05) |
+| `complexity/function-too-long` | `src/views/new/poll/poll-form.tsx:72` | next-line | PollFormInner is a single flat poll-creation form tree with no repeated sub-structure worth extracting, and this view has no test coverage, so splitting it risks a silent regression nothing in the project would catch (D-12) |
+| `complexity/function-too-long` | `src/views/relays/relay/tabs/about.tsx:47` | next-line | RelayPage is a single flat relay-detail page tree with no repeated sub-structure worth extracting, and this view has no test coverage, so splitting it risks a silent regression nothing in the project would catch (D-12) |
+| `complexity/function-too-long` | `src/views/tools/event-publisher/index.tsx:40` | next-line | EventPublisherPage is a single flat event-publishing page tree with no repeated sub-structure worth extracting, and this view has no test coverage, so splitting it risks a silent regression nothing in the project would catch (D-12) |
 
 ## Scope note (D-02)
 
