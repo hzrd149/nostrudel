@@ -1,9 +1,10 @@
 import { Badge, Button, Card, HStack, Text, useToast, VStack } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 
+import useAsyncAction from "../../../hooks/use-async-action";
+
 export default function ServiceWorkerStatusCard() {
   const [serviceWorkerState, setServiceWorkerState] = useState<string>("unknown");
-  const [isCheckingForUpdate, setIsCheckingForUpdate] = useState(false);
   const [updateAvailable, setUpdateAvailable] = useState(false);
   const toast = useToast();
 
@@ -34,52 +35,40 @@ export default function ServiceWorkerStatusCard() {
   }, []);
 
   // Check for service worker updates
-  const checkForUpdate = async () => {
-    setIsCheckingForUpdate(true);
+  const { run: checkForUpdate, loading: isCheckingForUpdate } = useAsyncAction(async () => {
+    const registration = await navigator.serviceWorker.getRegistration();
 
-    try {
-      const registration = await navigator.serviceWorker.getRegistration();
-
-      if (!registration)
-        return toast({
-          title: "No service worker found",
-          description: "No service worker registration found",
-          status: "warning",
-          duration: 3000,
-        });
-
-      // Check for update
-      await registration.update();
-
-      // Check if there's a waiting service worker (new version available)
-      if (registration.waiting) {
-        setUpdateAvailable(true);
-        toast({
-          title: "Update available",
-          description: "A new version is available. Click 'Apply Update' to refresh.",
-          status: "info",
-          duration: 5000,
-        });
-      } else {
-        toast({
-          title: "No updates available",
-          description: "You're running the latest version",
-          status: "success",
-          duration: 3000,
-        });
-      }
-    } catch (error) {
-      console.error("Failed to check for updates:", error);
+    if (!registration) {
       toast({
-        title: "Update check failed",
-        description: "Could not check for service worker updates",
-        status: "error",
+        title: "No service worker found",
+        description: "No service worker registration found",
+        status: "warning",
         duration: 3000,
       });
-    } finally {
-      setIsCheckingForUpdate(false);
+      return;
     }
-  };
+
+    // Check for update
+    await registration.update();
+
+    // Check if there's a waiting service worker (new version available)
+    if (registration.waiting) {
+      setUpdateAvailable(true);
+      toast({
+        title: "Update available",
+        description: "A new version is available. Click 'Apply Update' to refresh.",
+        status: "info",
+        duration: 5000,
+      });
+    } else {
+      toast({
+        title: "No updates available",
+        description: "You're running the latest version",
+        status: "success",
+        duration: 3000,
+      });
+    }
+  }, [toast]);
 
   // Apply the waiting service worker and refresh
   const applyUpdate = async () => {
