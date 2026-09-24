@@ -26,11 +26,11 @@ it.
 
 | Rule | Before | After | Delta |
 |---|---|---|---|
-| `code-quality/duplicate-block` | 21 | 9 (05-02, 05-03, 05-04) | -12 |
+| `code-quality/duplicate-block` | 21 | 4 (05-02, 05-03, 05-04, 05-05) | -17 |
 | `complexity/function-too-long` | 8 | 5 (05-03) | -3 |
 | `complexity/file-too-large` | 2 | TBD | TBD |
 | `ai-slop/thin-wrapper` | 2 | 0 (05-02) | -2 |
-| **Total** | **33** | **16 so far (05-02, 05-03, 05-04)** | **-17 so far** |
+| **Total** | **33** | **11 so far (05-02, 05-03, 05-04, 05-05)** | **-22 so far** |
 
 ## Per-finding table (D-01 / D-02)
 
@@ -122,6 +122,44 @@ Live rescan after 05-04 confirms the plan's predicted outcome exactly: `code-qua
 No ignore directive was added in either file (`grep -ric 'out of scope'` returns 0 across both);
 the conversion alone resolved all three findings, so neither the shared-toast-helper extraction nor
 a rule-scoped ignore fallback described in the plan was needed.
+
+## 05-05 D-05 clear-win extraction resolution (measured, not assumed)
+
+Live rescan after 05-05 confirms the plan's predicted outcome exactly: `code-quality/duplicate-block`
+9 → 4 (-5), bucket-H total 16 → 11. All five findings targeted by this plan cleared; the 4 findings
+remaining after this plan are all in files owned by plan 05-06 (`services/notifications/common.ts` x2,
+`sw/client/error-logger.ts`, `views/messages/chat/components/direct-message-form.tsx`), confirmed via
+the full-repo `--json` rescan's per-finding `filePath` field, not assumed.
+
+- `src/components/magic-textarea.tsx` — the `MagicInput`/`MagicTextArea` twin `forwardRef`
+  components now share one internal `createAutocompleteProps()` factory taking the rendered
+  element, the default aria-label, the triggers, the ref, and the aria-label override; each
+  component keeps its own `forwardRef` wrapper, generic type parameters and ref-bridging
+  expression. The default/named export statement, the textarea-only `displayName` assignment,
+  and both `@ts-expect-error`/`@ts-ignore` suppression comments are byte-identical to before
+  (confirmed via `git diff` — no hunk touches the final export line, suppression count stays at
+  3). File grew from 217 to 222 lines (+5) rather than shrinking, because the factory's own
+  TypeScript generic signature and 8-property return object cost more lines than the 16 lines of
+  duplicated JSX props they replace — a measured discrepancy against the plan's "file is shorter"
+  prediction, recorded here rather than silently assumed; the finding itself is confirmed cleared
+  by the scoped rescan regardless.
+- `src/views/articles/components/article-reader.tsx` — a new internal `VoiceSlider` component
+  (with a co-located `VoiceSliderProps` type alias, unexported) backs all three sliders (speed,
+  pitch, volume); each call site still formats its own label (`x{n.toFixed(1)}` for speed/pitch,
+  `{Math.round(n * 100)}%` for volume) and passes it as a rendered node. File shrank from 331 to
+  329 lines, confirming the duplication was actually removed. No new file created under
+  `src/views/articles/components/`.
+- `src/views/notifications/index.tsx` — a new internal `NotificationCountBadge` component backs
+  the `metadata` prop on all six `SimpleNavBox` boxes (replies, mentions, threads, quotes,
+  reposts, zaps), not just the two flagged by the scan — the rule reports one finding per matched
+  pair, so all six call sites needed conversion for the finding to clear, per the plan's explicit
+  warning. The zero-count `return null` and the all-time label omission are preserved exactly as
+  written, including the pre-existing `count > 0 ? "primary" : "gray"` ternary (always `"primary"`
+  post-guard, left unsimplified per the plan's instruction). File shrank from 171 to 131 lines
+  (-40, the largest reduction of the three). No new file created under `src/views/notifications/`.
+
+No consumer of any of the three files' default/named exports required editing; `pnpm build`
+(typecheck + bundle) passed after every task.
 
 ## Scope note (D-02)
 
