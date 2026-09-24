@@ -200,7 +200,7 @@ seams and their duplicated blocks are factored out — with each thin wrapper ei
 justified — so the remaining complexity findings reflect deliberate structure.
 **Requirements:** TBD
 **Depends on:** Phase 4
-**Plans:** 7/14 plans executed
+**Plans:** 8/14 plans executed
 
 33 findings measured on `next` at commit `ac904e754` on 2026-09-24 (bucket H): 21 ×
 `code-quality/duplicate-block`, 8 × `complexity/function-too-long`, 2 ×
@@ -237,7 +237,7 @@ Plans:
 - [x] 05-05-PLAN.md — factor the autocomplete twins, the voice sliders and the notification badge (wave 2)
 - [x] 05-06-PLAN.md — factor the error-log loop, the notification loaders and the relay lists (wave 2)
 - [x] 05-07-PLAN.md — divide useWebxdc into state-update and realtime sub-hooks (wave 2)
-- [ ] 05-08-PLAN.md — extract the post-modal body branches and split the webxdc request dispatch (wave 2)
+- [x] 05-08-PLAN.md — extract the post-modal body branches and split the webxdc request dispatch (wave 2)
 
 **Wave 3** *(blocked on Wave 2 completion)*
 
