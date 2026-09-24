@@ -11,30 +11,16 @@ import { usePublishEvent } from "../providers/global/publish-provider";
 import { WEBXDC_UPDATE_KIND, WEBXDC_REALTIME_KIND } from "../helpers/nostr/webxdc";
 
 /**
- * Creates a `Webxdc` API instance backed by Nostr kind 4932 state update events.
+ * Subscribes to the persistent kind 4932 state-update events for this session and converts the
+ * collected, deduplicated, `created_at`-ordered events into serial-numbered updates.
  *
- * - `sendUpdate()` publishes a kind 4932 event with an `i` tag referencing the UUID.
- * - `setUpdateListener()` / `getAllUpdates()` subscribe to kind 4932 events with `#i` = UUID,
- *   ordered by `created_at`, and assign serial numbers.
- *
- * @param uuid - The webxdc session UUID from the `webxdc` tag on the event.
+ * Split out of `useWebxdcStateUpdates` (below) along its own internal seam — the subscription
+ * effect and its memo own only `stateEvents` and never touch `listenerRef`/`lastSerialRef` — so
+ * neither half of the state-updates sub-hook is left over the plain-function budget.
  */
-export function useWebxdc(uuid: string): WebxdcAPI<unknown> {
-  const account = useActiveAccount();
-  const profile = useUserProfile(account?.pubkey);
-  const publish = usePublishEvent();
-  const relays = useReadRelays();
-
+function useWebxdcCollectedUpdates(uuid: string, relays: string[]): ReceivedStatusUpdate<unknown>[] {
   // Track all received state update events (for serial assignment + getAllUpdates)
   const [stateEvents, setStateEvents] = useState<Array<{ content: string; created_at: number; tags: string[][] }>>([]);
-
-  // Track the update listener callback
-  const listenerRef = useRef<((update: ReceivedStatusUpdate<unknown>) => void) | null>(null);
-  const lastSerialRef = useRef(0);
-
-  // Track whether a realtime channel is currently active
-  const realtimeActiveRef = useRef(false);
-  const realtimeAbortRef = useRef<AbortController | null>(null);
 
   // Subscribe to kind 4932 persistent state updates
   useEffect(() => {
@@ -57,7 +43,7 @@ export function useWebxdc(uuid: string): WebxdcAPI<unknown> {
   }, [uuid, relays]);
 
   // Convert events to ReceivedStatusUpdates with serial numbers
-  const updates = useMemo((): ReceivedStatusUpdate<unknown>[] => {
+  return useMemo((): ReceivedStatusUpdate<unknown>[] => {
     return stateEvents.map((event, index) => {
       const serial = index + 1;
       let payload: unknown;
@@ -82,6 +68,22 @@ export function useWebxdc(uuid: string): WebxdcAPI<unknown> {
       return update;
     });
   }, [stateEvents]);
+}
+
+/**
+ * Owns delivery of collected state updates to a caller-registered listener, and the setter /
+ * getter surface consumers use to register that listener or read every update.
+ *
+ * The update-listener setter and the delivery effect are kept together here (along with
+ * `getAllUpdates`) because both read and write `listenerRef`/`lastSerialRef`; splitting them
+ * across hooks would leave a ref written in one place and read in another.
+ */
+function useWebxdcStateUpdates(uuid: string, relays: string[]) {
+  const updates = useWebxdcCollectedUpdates(uuid, relays);
+
+  // Track the update listener callback
+  const listenerRef = useRef<((update: ReceivedStatusUpdate<unknown>) => void) | null>(null);
+  const lastSerialRef = useRef(0);
 
   // Deliver new updates to listener when data changes
   useEffect(() => {
@@ -96,49 +98,6 @@ export function useWebxdc(uuid: string): WebxdcAPI<unknown> {
       }
     }
   }, [updates]);
-
-  // Clean up realtime subscription on unmount
-  useEffect(() => {
-    return () => {
-      if (realtimeAbortRef.current) {
-        realtimeAbortRef.current.abort();
-        realtimeActiveRef.current = false;
-      }
-    };
-  }, []);
-
-  const activePubkey = account?.pubkey ?? "";
-
-  const selfAddr = activePubkey ? nip19.npubEncode(activePubkey) : "anonymous";
-  const selfName =
-    profile?.display_name ||
-    profile?.name ||
-    (activePubkey ? nip19.npubEncode(activePubkey).slice(0, 12) : "Anonymous");
-
-  const sendUpdate = useCallback(
-    (update: SendingStatusUpdate<unknown>, _description: "") => {
-      if (!uuid) return;
-      const tags: string[][] = [
-        ["i", uuid],
-        ["alt", "Webxdc update"],
-      ];
-      if (update.info) tags.push(["info", update.info]);
-      if (update.document) tags.push(["document", update.document]);
-      if (update.summary) tags.push(["summary", update.summary]);
-
-      const draft: EventTemplate = {
-        kind: WEBXDC_UPDATE_KIND,
-        content: JSON.stringify(update.payload),
-        tags,
-        created_at: Math.floor(Date.now() / 1000),
-      };
-
-      publish("Webxdc update", draft, undefined, true).catch((err) => {
-        console.error("Failed to publish webxdc update:", err);
-      });
-    },
-    [uuid, publish],
-  );
 
   const setUpdateListener = useCallback(
     async (cb: (update: ReceivedStatusUpdate<unknown>) => void, serial?: number): Promise<void> => {
@@ -160,12 +119,36 @@ export function useWebxdc(uuid: string): WebxdcAPI<unknown> {
     return updates;
   }, [updates]);
 
-  const sendToChat = useCallback(async (): Promise<void> => {
-    throw new Error("sendToChat is not supported in Nostr");
-  }, []);
+  return { updates, setUpdateListener, getAllUpdates };
+}
 
-  const importFiles = useCallback(async (): Promise<File[]> => {
-    return [];
+/**
+ * Owns the ephemeral kind 20932 realtime channel: joining it, relaying inbound frames to the
+ * caller-registered listener, and cleaning up on unmount.
+ *
+ * The joiner and the unmount cleanup effect are kept together here because both read and write
+ * `realtimeActiveRef`/`realtimeAbortRef` — this is the sixth callback in the hook (alongside the
+ * five shorter ones), the largest at 68 lines, and grouping it with the cleanup effect keeps the
+ * active/abort refs single-owned.
+ */
+function useWebxdcRealtimeChannel(
+  uuid: string,
+  relays: string[],
+  activePubkey: string,
+  publish: ReturnType<typeof usePublishEvent>,
+) {
+  // Track whether a realtime channel is currently active
+  const realtimeActiveRef = useRef(false);
+  const realtimeAbortRef = useRef<AbortController | null>(null);
+
+  // Clean up realtime subscription on unmount
+  useEffect(() => {
+    return () => {
+      if (realtimeAbortRef.current) {
+        realtimeAbortRef.current.abort();
+        realtimeActiveRef.current = false;
+      }
+    };
   }, []);
 
   const joinRealtimeChannel = useCallback((): RealtimeListener => {
@@ -236,6 +219,68 @@ export function useWebxdc(uuid: string): WebxdcAPI<unknown> {
       },
     };
   }, [uuid, relays, activePubkey, publish]);
+
+  return joinRealtimeChannel;
+}
+
+/**
+ * Creates a `Webxdc` API instance backed by Nostr kind 4932 state update events.
+ *
+ * - `sendUpdate()` publishes a kind 4932 event with an `i` tag referencing the UUID.
+ * - `setUpdateListener()` / `getAllUpdates()` subscribe to kind 4932 events with `#i` = UUID,
+ *   ordered by `created_at`, and assign serial numbers.
+ *
+ * @param uuid - The webxdc session UUID from the `webxdc` tag on the event.
+ */
+export function useWebxdc(uuid: string): WebxdcAPI<unknown> {
+  const account = useActiveAccount();
+  const profile = useUserProfile(account?.pubkey);
+  const publish = usePublishEvent();
+  const relays = useReadRelays();
+
+  const activePubkey = account?.pubkey ?? "";
+
+  const { setUpdateListener, getAllUpdates } = useWebxdcStateUpdates(uuid, relays);
+  const joinRealtimeChannel = useWebxdcRealtimeChannel(uuid, relays, activePubkey, publish);
+
+  const selfAddr = activePubkey ? nip19.npubEncode(activePubkey) : "anonymous";
+  const selfName =
+    profile?.display_name ||
+    profile?.name ||
+    (activePubkey ? nip19.npubEncode(activePubkey).slice(0, 12) : "Anonymous");
+
+  const sendUpdate = useCallback(
+    (update: SendingStatusUpdate<unknown>, _description: "") => {
+      if (!uuid) return;
+      const tags: string[][] = [
+        ["i", uuid],
+        ["alt", "Webxdc update"],
+      ];
+      if (update.info) tags.push(["info", update.info]);
+      if (update.document) tags.push(["document", update.document]);
+      if (update.summary) tags.push(["summary", update.summary]);
+
+      const draft: EventTemplate = {
+        kind: WEBXDC_UPDATE_KIND,
+        content: JSON.stringify(update.payload),
+        tags,
+        created_at: Math.floor(Date.now() / 1000),
+      };
+
+      publish("Webxdc update", draft, undefined, true).catch((err) => {
+        console.error("Failed to publish webxdc update:", err);
+      });
+    },
+    [uuid, publish],
+  );
+
+  const sendToChat = useCallback(async (): Promise<void> => {
+    throw new Error("sendToChat is not supported in Nostr");
+  }, []);
+
+  const importFiles = useCallback(async (): Promise<File[]> => {
+    return [];
+  }, []);
 
   return useMemo(
     (): WebxdcAPI<unknown> => ({
