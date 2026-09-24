@@ -27,10 +27,10 @@ it.
 | Rule | Before | After | Delta |
 |---|---|---|---|
 | `code-quality/duplicate-block` | 21 | 0 (05-02, 05-03, 05-04, 05-05, 05-06) | -21 |
-| `complexity/function-too-long` | 8 | 5 (05-03) | -3 |
+| `complexity/function-too-long` | 8 | 4 (05-03, 05-07) | -4 |
 | `complexity/file-too-large` | 2 | TBD | TBD |
 | `ai-slop/thin-wrapper` | 2 | 0 (05-02) | -2 |
-| **Total** | **33** | **7 so far (05-02, 05-03, 05-04, 05-05, 05-06)** | **-26 so far** |
+| **Total** | **33** | **6 so far (05-02, 05-03, 05-04, 05-05, 05-06, 05-07)** | **-27 so far** |
 
 ## Per-finding table (D-01 / D-02)
 
@@ -241,6 +241,73 @@ log console rendering, the three notification timeline loaders, the messaging se
 relay lists and message-type switch) were manually exercised in a running browser or dev server —
 no test runner exists until 05-13 and `pnpm build` only typechecks/bundles; each is recorded as
 an explicit OUTSTANDING manual-verification item in `05-06-SUMMARY.md`, not assumed verified.
+
+## 05-07 D-12 useWebxdc extraction resolution (measured, not assumed)
+
+Live rescan after 05-07 confirms the plan's predicted 1-row reduction exactly:
+`complexity/function-too-long` 5 → 4 (-1), bucket-H total 7 → 6. `src/hooks/use-webxdc.ts`
+confirmed via the full-repo `--json` rescan's per-finding `filePath` field to carry 0 findings
+across all four bucket-H rules after the edit, down from the single 234-line `useWebxdc`
+finding recorded in the per-finding table above.
+
+- `useWebxdc` is now composed from two focused sub-hooks. `useWebxdcStateUpdates` owns the
+  persistent kind 4932 subscription's downstream delivery: it wraps a further-split
+  `useWebxdcCollectedUpdates` (subscription effect + serial-numbering memo, touching only
+  `stateEvents`) and itself owns `listenerRef`/`lastSerialRef`, the delivery effect, the
+  `setUpdateListener` setter and the `getAllUpdates` getter — the setter and the delivery
+  effect stay together as required, since both read and write the two refs.
+  `useWebxdcRealtimeChannel` owns the realtime channel joiner and the unmount cleanup effect
+  together, since both read and write `realtimeActiveRef`/`realtimeAbortRef`.
+- **The sixth callback:** CONTEXT.md's D-12 breakdown of this hook names five callbacks, but
+  the file has six — the realtime channel joiner (`joinRealtimeChannel`) is a 68-line callback,
+  the largest of the six, and was missing from that list. It is grouped with the unmount
+  cleanup effect in `useWebxdcRealtimeChannel` because the two share
+  `realtimeActiveRef`/`realtimeAbortRef`; splitting them would leave a ref written in one
+  sub-hook and read in another. This is recorded here as a documentation correction to
+  CONTEXT.md's breakdown, not promoted to the backlog under D-18, since it is not a latent bug.
+- **A further split beyond the plan's named two sub-hooks:** after the two-sub-hook division,
+  `useWebxdcStateUpdates` (subscription effect + memo + delivery effect + setter + getter, all
+  in one function) still measured 91 lines, 11 over the 80-line plain-function budget — a
+  division that merely relocated the finding rather than clearing it. Per Task 2's explicit
+  instruction to split the offending sub-hook further along its own internal seam rather than
+  reach for an ignore (D-12 does not permit an ignore-with-reason disposition for a hook), it
+  was split again into `useWebxdcCollectedUpdates` (the subscription effect and its
+  serial-numbering memo, owning only `stateEvents`) and `useWebxdcStateUpdates` (now just the
+  refs, delivery effect, setter and getter, calling the collected-updates hook for its `updates`
+  array). Neither resulting function exceeds the budget, and ref ownership is unaffected by this
+  further split — `listenerRef`/`lastSerialRef` are still confined to `useWebxdcStateUpdates`
+  alone. `useWebxdcRealtimeChannel` measured under budget on the first division and needed no
+  further split.
+- Ref ownership confirmed by direct grep, not assumed: `realtimeActiveRef`/`realtimeAbortRef`
+  appear only within `useWebxdcRealtimeChannel`'s body; `listenerRef`/`lastSerialRef` appear only
+  within `useWebxdcStateUpdates`'s body.
+- Public surface unchanged: the returned object still carries all ten members (`selfAddr`,
+  `selfName`, `sendUpdateInterval`, `sendUpdateMaxSize`, `sendUpdate`, `setUpdateListener`,
+  `getAllUpdates`, `sendToChat`, `importFiles`, `joinRealtimeChannel`); both the named export
+  `useWebxdc` and the default export survive; export count from the file is unchanged (2); no
+  new file was created under `src/hooks/`; both `WEBXDC_UPDATE_KIND` and `WEBXDC_REALTIME_KIND`
+  are still used. No `aislop-ignore` directive was added to the file
+  (`grep -c 'aislop-ignore'` returns 0).
+- A transient `eslint/no-unused-vars` finding on a destructured but now-unused `updates` binding
+  in the main hook (introduced mid-edit when the delivery/setter/getter logic moved into the
+  sub-hook but the main hook still destructured `updates` from it) was caught by the per-edit
+  hook and fixed in the same task by removing the unused destructure, before committing (Rule 1).
+- `pnpm build` (typecheck + bundle) passed after both tasks. `pnpm lint:ci`'s `--changes` diff
+  against `origin/next`'s merge-base reported zero `react-hooks/*` findings of any kind in
+  `src/hooks/use-webxdc.ts`, both confirming no new rules-of-hooks/exhaustive-deps finding was
+  introduced here and that this file carried none before the edit either — the five
+  `react-hooks/exhaustive-deps` findings in that run all belong to other files already flagged
+  in prior plans' summaries (`magic-textarea.tsx`, `direct-message-form.tsx`,
+  `notifications/index.tsx`, `list-history-modal.tsx`), unrelated to this plan's scope.
+  `src/components/webxdc/webxdc.tsx` was not touched, per its exclusion from this plan's
+  `files_modified` (owned by 05-08).
+
+No behavioural test coverage exists for this hook (no test runner until 05-13, and both
+`build_command`/`test_command` in `.planning/config.json` are `pnpm build`, a typecheck+bundle
+only). The webxdc realtime channel, persistent-update delivery, and listener registration
+surfaces were NOT exercised against a live relay or a running hosted mini-app in this session —
+this is recorded as an explicit OUTSTANDING manual-verification item in `05-07-SUMMARY.md`, not
+assumed verified from the passing build.
 
 ## Scope note (D-02)
 
