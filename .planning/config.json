@@ -2,6 +2,7 @@
   "workflow": {
     "_auto_chain_active": false,
     "test_command": "pnpm build",
-    "build_command": "pnpm build"
+    "build_command": "pnpm build",
+    "ui_safety_gate": false
   }
 }
