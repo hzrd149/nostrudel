@@ -202,18 +202,25 @@ justified — so the remaining complexity findings reflect deliberate structure.
 **Depends on:** Phase 4
 **Plans:** 14 plans
 
-32 findings in the [2026-09-11 baseline](./research/aislop-scan-2026-09-11.md) (bucket H):
-21 × `code-quality/duplicate-block`, 7 × `complexity/function-too-long`, 2 ×
-`complexity/file-too-large`, 2 × `ai-slop/thin-wrapper`.
+33 findings measured on `next` at commit `ac904e754` on 2026-09-24 (bucket H): 21 ×
+`code-quality/duplicate-block`, 8 × `complexity/function-too-long`, 2 ×
+`complexity/file-too-large`, 2 × `ai-slop/thin-wrapper`. Supersedes the earlier
+[2026-09-11 baseline](./research/aislop-scan-2026-09-11.md) (32 findings, 78/100), which is kept
+for historical reference only.
 
-Real targets: `helpers/nostr/torrents.ts` (5 duplicate blocks),
-`providers/global/napplet-shell-provider.tsx` (>600 lines + a >160-line function),
-`services/notifications/common.ts`, `views/articles/components/article-reader.tsx`,
+Real targets: `providers/global/napplet-shell-provider.tsx` (1162 lines + a >160-line function,
+split into `src/services/napplet-shell/*` adapter modules with the modals moved to
+`components/napplets/`), `services/notifications/common.ts`,
+`views/articles/components/article-reader.tsx`,
 `views/notifications/index.tsx`, `views/settings/background-worker/cached-files-card.tsx`,
-`services/wallets.ts`.
+`services/wallets.ts`. `helpers/nostr/torrents.ts`'s five duplicate-block findings are entries in
+a static taxonomy data table, cleared by a single file-level ignore, not by refactoring.
 
-Thin wrappers to inline or justify: `helpers/nostr/relay-stats.ts` (`getRelayURL`),
-`services/verify-event.ts` (`verifyEvent`).
+`helpers/nostr/relay-stats.ts` is half-dead; its dead symbols (`getRelayURL`, `getRTT`,
+`getRTTTag`, `MONITOR_METADATA_KIND`) are deleted, which also disposes of the parameter-ignoring
+RTT-tag bug Phase 4 deferred to this phase. `services/verify-event.ts`'s `verifyEvent` is
+load-bearing and kept behind an ignore-with-reason because it indirects over a module-level
+method swapped at runtime.
 
 Sequenced after Phase 4 so the sweep does not refactor code that is about to be deleted.
 
