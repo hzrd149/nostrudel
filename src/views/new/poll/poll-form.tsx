@@ -69,6 +69,7 @@ const END_PRESET_OPTIONS: { id: Exclude<EndPresetId, "custom">; label: string; s
   { id: "1w", label: "1 week", seconds: 86400 * 7 },
 ];
 
+// aislop-ignore-next-line complexity/function-too-long -- PollFormInner is a single flat poll-creation form tree with no repeated sub-structure worth extracting, and this view has no test coverage, so splitting it risks a silent regression nothing in the project would catch (D-12)
 function PollFormInner() {
   const publish = usePublishEvent();
   const finalizeDraft = useFinalizeDraft();

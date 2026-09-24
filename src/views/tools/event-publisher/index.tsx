@@ -37,6 +37,7 @@ import VariableEditor from "./components/variable-editor";
 import { getVariables, LooseEventTemplate, processEvent, Variable } from "./process";
 import { TEMPLATES } from "./templates";
 
+// aislop-ignore-next-line complexity/function-too-long -- EventPublisherPage is a single flat event-publishing page tree with no repeated sub-structure worth extracting, and this view has no test coverage, so splitting it risks a silent regression nothing in the project would catch (D-12)
 function EventPublisherPage({ initDraft }: { initDraft?: LooseEventTemplate }) {
   const toast = useToast();
   const [loading, setLoading] = useState(false);
