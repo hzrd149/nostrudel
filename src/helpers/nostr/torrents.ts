@@ -1,3 +1,4 @@
+// aislop-ignore-file code-quality/duplicate-block -- torrentCatagories is a static taxonomy; repeated {name,tag} entries are independent data, not extractable code
 import { NostrEvent } from "nostr-tools";
 
 export const TORRENT_KIND = 2003;
