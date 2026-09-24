@@ -2,17 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_phase: 04
+current_phase: 05
 status: executing
 stopped_at: Phase 5 context gathered
-last_updated: "2026-09-24T19:39:51.781Z"
-last_activity: 2026-09-20
-last_activity_desc: "Completed quick task 260920-r34: Consolidate napplet details page actions into a shared NappletMenu and remove the Details section"
+last_updated: "2026-09-24T20:05:39.309Z"
+last_activity: 2026-09-24
 progress:
   total_phases: 8
   completed_phases: 4
-  total_plans: 30
-  completed_plans: 30
+  total_plans: 44
+  completed_plans: 31
   percent: 50
 current_phase_name: Dead code and import hygiene sweep
 ---
@@ -23,13 +22,13 @@ current_phase_name: Dead code and import hygiene sweep
 
 See: .planning/PROJECT.md (not present in this project; ROADMAP.md and the phase CONTEXT files are the reference)
 
-**Current focus:** Phase 04 — Dead code and import hygiene sweep
+**Current focus:** Phase 05 — refactor-oversized-files-long-functions-and-duplicated-block
 
 ## Position
 
 **Milestone:** v1.0 milestone
-**Current phase:** 04
-**Status:** Ready to execute
+**Current phase:** 05
+**Status:** Executing Phase 05
 
 ## Session Log
 
@@ -69,6 +68,7 @@ See: .planning/PROJECT.md (not present in this project; ROADMAP.md and the phase
 | Phase 03 P05 | ~20min | 3 tasks | 4 files |
 | Phase 03 P04 | ~15min+continuation | 3 tasks | 3 files |
 | Phase 03 P06 | ~15min | 2 tasks | 2 files |
+| Phase 05 P01 | 5min | 2 tasks | 2 files |
 
 ## Decisions
 
@@ -100,6 +100,8 @@ See: .planning/PROJECT.md (not present in this project; ROADMAP.md and the phase
 - [Phase 04]: Phase 04 wave 6's blocking ui.safety-gate (no UI-SPEC.md for the phase) was overridden by explicit maintainer decision, not resolved. Rationale: 04-12's diff introduces no new UI surface (one hoisted createDraft call, one > to >= operator), no phase in this project has ever carried a UI-SPEC, and the gate defaults active with no workflow.ui_safety_gate key in .planning/config.json - so it would have blocked every prior wave too. Config left unchanged, so the gate will fire again on the next wave.
 - [Phase 04]: 04-12's render-gate fix revived a 15-month-dormant PoW path and exposed 3 blockers (scoped review 04-REVIEW-12.md): a note signed and broadcast after the user dismissed the composer, a leaked worker pool on ESC/overlay dismiss, and a permanent spinner that also destroyed the cached draft. Fixed additively in 04-13 without reverting D-12's cleanup() or 04-12's >= operator. The review's own proposed CR-01 remedy was incomplete and was corrected at plan time - clearing loading alone leaves both render-gate operands truthy, causing an endless re-mine/re-publish loop, so the fix also resets miningTarget.
 - [Phase 04]: Wave 7's blocking ui.safety-gate was overridden by explicit maintainer decision for the second time, same rationale as wave 6 (04-13 is four additive lifecycle fixes with no new UI surface; the gate defaults active with no workflow.ui_safety_gate key in .planning/config.json and has never matched this project, which has no UI-SPEC in any phase). Config deliberately left unchanged, so the gate will fire again on any future wave - the permanent fix, if wanted later, is workflow.ui_safety_gate=false.
+- [Phase 05]: Live aislop scan at commit ac904e754 reproduced 05-CONTEXT.md's D-03 figures exactly (score 85/100, 694 total diagnostics, 33 bucket-H findings 21/8/2/2) -- no live-scan-vs-written-count discrepancy to record; 05-BASELINE.md's per-finding table dispositions every one of the 33 findings (extract/convert/delete/ignore-with-reason) per the D-05/D-06/D-07/D-08/D-12/D-13/D-14 verdicts
+- [Phase 05]: ROADMAP.md Phase 5 entry corrected via scoped Edit-only calls (never Write) per T-05-01: count now reads 33 findings at ac904e754, torrents.ts reframed as a static-table ignore, napplet-shell-provider.tsx corrected to its measured 1162 lines with a split note, relay-stats.ts reframed as deleted dead code; roadmap validate returned zero warnings before and after, and all diff hunks stayed inside the Phase 5 entry
 
 ## Quick Tasks Completed
 
@@ -113,7 +115,7 @@ See: .planning/PROJECT.md (not present in this project; ROADMAP.md and the phase
 
 ## Session
 
-**Last activity:** 2026-09-20 - Completed quick task 260920-r34: Consolidate napplet details page actions into a shared NappletMenu and remove the Details section
-**Last session:** 2026-09-24T17:36:22.324Z
+**Last activity:** 2026-09-24
+**Last session:** 2026-09-24T20:05:39.300Z
 **Stopped at:** Phase 5 context gathered
 **Resume file:** .planning/phases/05-refactor-oversized-files-long-functions-and-duplicated-block/05-CONTEXT.md
