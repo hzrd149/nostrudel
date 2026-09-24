@@ -1,3 +1,4 @@
+// aislop-ignore-file code-quality/duplicate-block -- YoutubePlaylistEmbed and YoutubeVideoEmbed both wrap ExpandableEmbed, but differ in aspect ratio, embed URL construction, and permitted iframe features; a shared abstraction would need more configuration parameters than the duplicated lines it would remove (D-05, revisit only if a third embed type appears)
 import { AspectRatio } from "@chakra-ui/react";
 import ExpandableEmbed from "../components/content-embed";
 import useAppSettings from "../../../hooks/use-user-app-settings";

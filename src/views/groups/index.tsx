@@ -1,3 +1,4 @@
+// aislop-ignore-file code-quality/duplicate-block -- the SimpleGrid in FriendsGroups and the SimpleGrid in YourGroups are separate arms of an unrelated ternary chain rendering the same grid container over different data sources, each with its own loading and empty state; merging them would tie two independently-evolving branches behind a flag (D-05)
 import {
   Alert,
   AlertDescription,

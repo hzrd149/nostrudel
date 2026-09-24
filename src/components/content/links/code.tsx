@@ -1,3 +1,4 @@
+// aislop-ignore-file code-quality/duplicate-block -- renderCodePenURL and renderArchiveOrgURL both wrap ExpandableEmbed, but with different hosts, iframe sizing, and path matching; a shared abstraction would need more configuration parameters than the duplicated lines it would remove (D-05, revisit only if a third embed type appears)
 import { Box } from "@chakra-ui/react";
 import ExpandableEmbed from "../components/content-embed";
 
