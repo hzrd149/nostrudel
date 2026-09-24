@@ -24,14 +24,15 @@ import {
   Switch,
   Text,
   useDisclosure,
+  UseDisclosureReturn,
 } from "@chakra-ui/react";
 import { ZapSplit, Emoji } from "applesauce-common/helpers";
 import { NoteFactory } from "applesauce-common/factories";
 import { getEventPointerFromQTag, processTags, EventPointer } from "applesauce-core/helpers";
 import { useActiveAccount, useEventStore, use$ } from "applesauce-react/hooks";
 import { UnsignedEvent } from "nostr-tools";
-import { useRef, useState } from "react";
-import { useForm } from "react-hook-form";
+import { ClipboardEventHandler, MutableRefObject, useRef, useState } from "react";
+import { useForm, UseFormReturn } from "react-hook-form";
 import { useThrottle } from "react-use";
 
 import UploadStatus from "../upload-status";
@@ -67,6 +68,191 @@ export type PostModalProps = {
   cacheFormKey?: string | null;
   initContent?: string;
 };
+
+type ComposerFormProps = Pick<UseFormReturn<FormValues>, "getValues" | "setValue" | "register" | "formState">;
+
+type ComposerBodyProps = {
+  form: ComposerFormProps;
+  onClose: () => void;
+  submit: () => void;
+  preview: string;
+  textAreaRef: MutableRefObject<RefType | null>;
+  insertText: (url: string) => void;
+  onPaste: ClipboardEventHandler<HTMLTextAreaElement>;
+  isUploading: boolean;
+  moreOptions: UseDisclosureReturn;
+  authorPubkey: string | undefined;
+  addClientTag: boolean | undefined;
+  promptAddClientTag: UseDisclosureReturn;
+};
+
+function PublishedEntryBody({ entry, onClose }: { entry: PublishLogEntry; onClose: () => void }) {
+  return (
+    <ModalBody display="flex" flexDirection="column" padding={["2", "2", "4"]} gap="2">
+      <PublishLogEntryDetails entry={entry} />
+      <Button onClick={onClose} mt="2" ml="auto">
+        Close
+      </Button>
+    </ModalBody>
+  );
+}
+
+function MiningBody({
+  draft,
+  targetPOW,
+  onCancel,
+  onSkip,
+  onComplete,
+}: {
+  draft: UnsignedEvent;
+  targetPOW: number;
+  onCancel: () => void;
+  onSkip: () => void;
+  onComplete: (unsigned: UnsignedEvent) => Promise<void>;
+}) {
+  return (
+    <ModalBody display="flex" flexDirection="column" padding={["2", "2", "4"]} gap="2">
+      <MinePOW draft={draft} targetPOW={targetPOW} onCancel={onCancel} onSkip={onSkip} onComplete={onComplete} />
+    </ModalBody>
+  );
+}
+
+function ComposerBody({
+  form: { getValues, setValue, register, formState },
+  onClose,
+  submit,
+  preview,
+  textAreaRef,
+  insertText,
+  onPaste,
+  isUploading,
+  moreOptions,
+  authorPubkey,
+  addClientTag,
+  promptAddClientTag,
+}: ComposerBodyProps) {
+  const canSubmit = getValues().content.length > 0;
+
+  // TODO: wrap this in a form
+  return (
+    <>
+      <ModalBody display="flex" flexDirection="column" padding={["2", "2", "4"]} gap="2">
+        <MagicTextArea
+          autoFocus
+          mb="2"
+          value={getValues().content}
+          onChange={(e) => setValue("content", e.target.value, { shouldDirty: true, shouldTouch: true })}
+          rows={5}
+          isRequired
+          instanceRef={(inst) => (textAreaRef.current = inst)}
+          onPaste={onPaste}
+          onKeyDown={(e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === "Enter") submit();
+          }}
+        />
+        <UploadStatus />
+        {preview && preview.length > 0 && (
+          <Box>
+            <Heading size="sm">Preview:</Heading>
+            <Box borderWidth={1} borderRadius="md" p="2">
+              <ErrorBoundary>
+                <ContentSettingsProvider blurMedia={false}>
+                  <TextNoteContents event={preview} />
+                </ContentSettingsProvider>
+              </ErrorBoundary>
+            </Box>
+          </Box>
+        )}
+        <Flex gap="2" alignItems="center" justifyContent="flex-end">
+          <Flex mr="auto" gap="2">
+            <InsertImageButton onUploaded={insertText} aria-label="Upload image" />
+            <InsertGifButton onSelectURL={insertText} aria-label="Add gif" />
+            <Button
+              variant="link"
+              rightIcon={moreOptions.isOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}
+              onClick={moreOptions.onToggle}
+            >
+              More Options
+            </Button>
+          </Flex>
+          <Button onClick={onClose} variant="ghost">
+            Cancel
+          </Button>
+          <Button
+            colorScheme="primary"
+            type="submit"
+            isLoading={formState.isSubmitting}
+            onClick={submit}
+            isDisabled={!canSubmit || isUploading}
+            title={isUploading ? "Upload in progress" : undefined}
+          >
+            Post
+          </Button>
+        </Flex>
+        {moreOptions.isOpen && (
+          <Flex direction={{ base: "column", lg: "row" }} gap="4">
+            <Flex direction="column" gap="2" flex={1}>
+              <Flex gap="2" direction="column">
+                <Switch {...register("nsfw")}>NSFW</Switch>
+                {getValues().nsfw && (
+                  <Input {...register("nsfwReason", { required: true })} placeholder="Reason" isRequired />
+                )}
+              </Flex>
+              <FormControl>
+                <FormLabel>POW Difficulty ({getValues().difficulty})</FormLabel>
+                <Slider
+                  aria-label="difficulty"
+                  value={getValues("difficulty")}
+                  onChange={(v) => setValue("difficulty", v)}
+                  min={0}
+                  max={40}
+                  step={1}
+                >
+                  <SliderTrack>
+                    <SliderFilledTrack />
+                  </SliderTrack>
+                  <SliderThumb />
+                </Slider>
+                <FormHelperText>
+                  The number of leading 0's in the event id. see{" "}
+                  <Link href="https://github.com/nostr-protocol/nips/blob/master/13.md" isExternal>
+                    NIP-13
+                  </Link>
+                </FormHelperText>
+              </FormControl>
+            </Flex>
+            <Flex direction="column" gap="2" flex={1}>
+              <ZapSplitCreator
+                splits={getValues().split}
+                onChange={(splits) => setValue("split", splits, { shouldDirty: true })}
+                authorPubkey={authorPubkey}
+              />
+            </Flex>
+          </Flex>
+        )}
+      </ModalBody>
+
+      {!addClientTag && promptAddClientTag.isOpen && (
+        <Alert status="info" whiteSpace="pre-wrap" flexDirection={{ base: "column", lg: "row" }}>
+          <AlertIcon hideBelow="lg" />
+          <Text>
+            Enable{" "}
+            <Link isExternal href="https://github.com/nostr-protocol/nips/blob/master/89.md#client-tag">
+              NIP-89
+            </Link>{" "}
+            client tags and let other users know what app you're using to write notes
+          </Text>
+          <ButtonGroup ml="auto" size="sm" variant="ghost">
+            <Button onClick={promptAddClientTag.onClose}>Close</Button>
+            <Button colorScheme="primary" onClick={() => localSettings.addClientTag.next(true)}>
+              Enable
+            </Button>
+          </ButtonGroup>
+        </Alert>
+      )}
+    </>
+  );
+}
 
 function PostModalInner({
   isOpen,
@@ -155,161 +341,39 @@ function PostModalInner({
 
   const preview = useThrottle(getValues().content, 500);
 
-  const canSubmit = getValues().content.length > 0;
-
-  const renderBody = () => {
-    if (publishEntry) {
-      return (
-        <ModalBody display="flex" flexDirection="column" padding={["2", "2", "4"]} gap="2">
-          <PublishLogEntryDetails entry={publishEntry} />
-          <Button onClick={onClose} mt="2" ml="auto">
-            Close
-          </Button>
-        </ModalBody>
-      );
-    }
-
-    if (miningTarget && draft) {
-      return (
-        <ModalBody display="flex" flexDirection="column" padding={["2", "2", "4"]} gap="2">
-          <MinePOW
-            draft={draft}
-            targetPOW={miningTarget}
-            onCancel={() => setMiningTarget(0)}
-            onSkip={() => publishPost(draft)}
-            onComplete={publishPost}
-          />
-        </ModalBody>
-      );
-    }
-
-    // TODO: wrap this in a form
-    return (
-      <>
-        <ModalBody display="flex" flexDirection="column" padding={["2", "2", "4"]} gap="2">
-          <MagicTextArea
-            autoFocus
-            mb="2"
-            value={getValues().content}
-            onChange={(e) => setValue("content", e.target.value, { shouldDirty: true, shouldTouch: true })}
-            rows={5}
-            isRequired
-            instanceRef={(inst) => (textAreaRef.current = inst)}
-            onPaste={onPaste}
-            onKeyDown={(e) => {
-              if ((e.ctrlKey || e.metaKey) && e.key === "Enter") submit();
-            }}
-          />
-          <UploadStatus />
-          {preview && preview.length > 0 && (
-            <Box>
-              <Heading size="sm">Preview:</Heading>
-              <Box borderWidth={1} borderRadius="md" p="2">
-                <ErrorBoundary>
-                  <ContentSettingsProvider blurMedia={false}>
-                    <TextNoteContents event={preview} />
-                  </ContentSettingsProvider>
-                </ErrorBoundary>
-              </Box>
-            </Box>
-          )}
-          <Flex gap="2" alignItems="center" justifyContent="flex-end">
-            <Flex mr="auto" gap="2">
-              <InsertImageButton onUploaded={insertText} aria-label="Upload image" />
-              <InsertGifButton onSelectURL={insertText} aria-label="Add gif" />
-              <Button
-                variant="link"
-                rightIcon={moreOptions.isOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}
-                onClick={moreOptions.onToggle}
-              >
-                More Options
-              </Button>
-            </Flex>
-            <Button onClick={onClose} variant="ghost">
-              Cancel
-            </Button>
-            <Button
-              colorScheme="primary"
-              type="submit"
-              isLoading={formState.isSubmitting}
-              onClick={submit}
-              isDisabled={!canSubmit || !!uploadCtx?.isUploading}
-              title={uploadCtx?.isUploading ? "Upload in progress" : undefined}
-            >
-              Post
-            </Button>
-          </Flex>
-          {moreOptions.isOpen && (
-            <Flex direction={{ base: "column", lg: "row" }} gap="4">
-              <Flex direction="column" gap="2" flex={1}>
-                <Flex gap="2" direction="column">
-                  <Switch {...register("nsfw")}>NSFW</Switch>
-                  {getValues().nsfw && (
-                    <Input {...register("nsfwReason", { required: true })} placeholder="Reason" isRequired />
-                  )}
-                </Flex>
-                <FormControl>
-                  <FormLabel>POW Difficulty ({getValues().difficulty})</FormLabel>
-                  <Slider
-                    aria-label="difficulty"
-                    value={getValues("difficulty")}
-                    onChange={(v) => setValue("difficulty", v)}
-                    min={0}
-                    max={40}
-                    step={1}
-                  >
-                    <SliderTrack>
-                      <SliderFilledTrack />
-                    </SliderTrack>
-                    <SliderThumb />
-                  </Slider>
-                  <FormHelperText>
-                    The number of leading 0's in the event id. see{" "}
-                    <Link href="https://github.com/nostr-protocol/nips/blob/master/13.md" isExternal>
-                      NIP-13
-                    </Link>
-                  </FormHelperText>
-                </FormControl>
-              </Flex>
-              <Flex direction="column" gap="2" flex={1}>
-                <ZapSplitCreator
-                  splits={getValues().split}
-                  onChange={(splits) => setValue("split", splits, { shouldDirty: true })}
-                  authorPubkey={account?.pubkey}
-                />
-              </Flex>
-            </Flex>
-          )}
-        </ModalBody>
-
-        {!addClientTag && promptAddClientTag.isOpen && (
-          <Alert status="info" whiteSpace="pre-wrap" flexDirection={{ base: "column", lg: "row" }}>
-            <AlertIcon hideBelow="lg" />
-            <Text>
-              Enable{" "}
-              <Link isExternal href="https://github.com/nostr-protocol/nips/blob/master/89.md#client-tag">
-                NIP-89
-              </Link>{" "}
-              client tags and let other users know what app you're using to write notes
-            </Text>
-            <ButtonGroup ml="auto" size="sm" variant="ghost">
-              <Button onClick={promptAddClientTag.onClose}>Close</Button>
-              <Button colorScheme="primary" onClick={() => localSettings.addClientTag.next(true)}>
-                Enable
-              </Button>
-            </ButtonGroup>
-          </Alert>
-        )}
-      </>
-    );
-  };
+  const body = publishEntry ? (
+    <PublishedEntryBody entry={publishEntry} onClose={onClose} />
+  ) : miningTarget && draft ? (
+    <MiningBody
+      draft={draft}
+      targetPOW={miningTarget}
+      onCancel={() => setMiningTarget(0)}
+      onSkip={() => publishPost(draft)}
+      onComplete={publishPost}
+    />
+  ) : (
+    <ComposerBody
+      form={{ getValues, setValue, register, formState }}
+      onClose={onClose}
+      submit={submit}
+      preview={preview}
+      textAreaRef={textAreaRef}
+      insertText={insertText}
+      onPaste={onPaste}
+      isUploading={!!uploadCtx?.isUploading}
+      moreOptions={moreOptions}
+      authorPubkey={account?.pubkey}
+      addClientTag={addClientTag}
+      promptAddClientTag={promptAddClientTag}
+    />
+  );
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="4xl">
       <ModalOverlay />
       <ModalContent>
         {publishEntry && <ModalCloseButton />}
-        {renderBody()}
+        {body}
       </ModalContent>
     </Modal>
   );
