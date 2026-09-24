@@ -166,6 +166,27 @@ function useAutocompleteTriggers() {
 // @ts-ignore
 export type RefType = ReactTextareaAutocomplete<Token, TextareaProps>;
 
+// Shared props factory for MagicInput/MagicTextArea; only the element and default label differ.
+function createAutocompleteProps<E, R>(
+  textAreaComponent: E,
+  defaultAriaLabel: string,
+  triggers: TriggerType<Token>,
+  ref: React.Ref<R> | undefined,
+  ariaLabel: string | undefined,
+) {
+  return {
+    textAreaComponent,
+    loadingComponent: Loading,
+    minChar: 0,
+    trigger: triggers,
+    innerRef: ref && (typeof ref === "function" ? ref : (el: R) => ((ref as React.MutableRefObject<R>).current = el)),
+    "aria-label": ariaLabel || defaultAriaLabel,
+    role: "combobox" as const,
+    "aria-autocomplete": "list" as const,
+    "aria-expanded": "false" as const,
+  };
+}
+
 const MagicInput = forwardRef<HTMLInputElement, InputProps & { instanceRef?: LegacyRef<RefType> }>(
   ({ instanceRef, ...props }, ref) => {
     const triggers = useAutocompleteTriggers();
@@ -174,16 +195,8 @@ const MagicInput = forwardRef<HTMLInputElement, InputProps & { instanceRef?: Leg
       // @ts-expect-error
       <ReactTextareaAutocomplete<Token, InputProps>
         {...props}
-        textAreaComponent={Input}
         ref={instanceRef}
-        loadingComponent={Loading}
-        minChar={0}
-        trigger={triggers}
-        innerRef={ref && (typeof ref === "function" ? ref : (el) => (ref.current = el))}
-        aria-label={props["aria-label"] || "Input with autocomplete"}
-        role="combobox"
-        aria-autocomplete="list"
-        aria-expanded="false"
+        {...createAutocompleteProps(Input, "Input with autocomplete", triggers, ref, props["aria-label"])}
       />
     );
   },
@@ -198,15 +211,7 @@ const MagicTextArea = forwardRef<HTMLTextAreaElement, TextareaProps & { instance
       <ReactTextareaAutocomplete<Token, TextareaProps>
         {...props}
         ref={instanceRef}
-        textAreaComponent={Textarea}
-        loadingComponent={Loading}
-        minChar={0}
-        trigger={triggers}
-        innerRef={ref && (typeof ref === "function" ? ref : (el) => (ref.current = el))}
-        aria-label={props["aria-label"] || "Textarea with autocomplete"}
-        role="combobox"
-        aria-autocomplete="list"
-        aria-expanded="false"
+        {...createAutocompleteProps(Textarea, "Textarea with autocomplete", triggers, ref, props["aria-label"])}
       />
     );
   },
