@@ -22,6 +22,25 @@ export const getServiceWorkerErrorLogsByContext = async (context: string): Promi
   return await firstValueFrom(client.call("errors.getByContext", { context }));
 };
 
+// Render a grouped console listing of error logs under a shared label
+function renderErrorLogGroup(
+  logs: ServiceWorkerErrorLog[],
+  groupLabel: string,
+  entryLabel: (log: ServiceWorkerErrorLog, index: number) => string,
+): void {
+  console.group(groupLabel);
+  logs.forEach((log, index) => {
+    console.group(entryLabel(log, index));
+    console.log("Message:", log.message);
+    if (log.stack) {
+      console.log("Stack:", log.stack);
+    }
+    console.log("URL:", log.url);
+    console.groupEnd();
+  });
+  console.groupEnd();
+}
+
 // Log error logs to console (for debugging)
 export const logServiceWorkerErrors = async (): Promise<void> => {
   const logs = await getServiceWorkerErrorLogs();
@@ -31,17 +50,11 @@ export const logServiceWorkerErrors = async (): Promise<void> => {
     return;
   }
 
-  console.group("Service Worker Error Logs:");
-  logs.forEach((log, index) => {
-    console.group(`Error ${index + 1} - ${log.context} (${log.timestamp})`);
-    console.log("Message:", log.message);
-    if (log.stack) {
-      console.log("Stack:", log.stack);
-    }
-    console.log("URL:", log.url);
-    console.groupEnd();
-  });
-  console.groupEnd();
+  renderErrorLogGroup(
+    logs,
+    "Service Worker Error Logs:",
+    (log, index) => `Error ${index + 1} - ${log.context} (${log.timestamp})`,
+  );
 };
 
 // Log error logs by context to console (for debugging)
@@ -53,17 +66,11 @@ export const logServiceWorkerErrorsByContext = async (context: string): Promise<
     return;
   }
 
-  console.group(`Service Worker Error Logs (${context}):`);
-  logs.forEach((log, index) => {
-    console.group(`Error ${index + 1} - ${log.timestamp}`);
-    console.log("Message:", log.message);
-    if (log.stack) {
-      console.log("Stack:", log.stack);
-    }
-    console.log("URL:", log.url);
-    console.groupEnd();
-  });
-  console.groupEnd();
+  renderErrorLogGroup(
+    logs,
+    `Service Worker Error Logs (${context}):`,
+    (log, index) => `Error ${index + 1} - ${log.timestamp}`,
+  );
 };
 
 // Development helper: Log and clear errors
