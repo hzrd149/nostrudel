@@ -200,7 +200,7 @@ seams and their duplicated blocks are factored out — with each thin wrapper ei
 justified — so the remaining complexity findings reflect deliberate structure.
 **Requirements:** TBD
 **Depends on:** Phase 4
-**Plans:** 2/14 plans executed
+**Plans:** 3/14 plans executed
 
 33 findings measured on `next` at commit `ac904e754` on 2026-09-24 (bucket H): 21 ×
 `code-quality/duplicate-block`, 8 × `complexity/function-too-long`, 2 ×
@@ -229,7 +229,7 @@ Plans:
 
 - [x] 05-01-PLAN.md — re-measure the bucket-H baseline and correct the stale Phase 5 entry (wave 1)
 - [x] 05-02-PLAN.md — torrent taxonomy ignore, relay-stats dead-code deletion, verify-event justification (wave 1)
-- [ ] 05-03-PLAN.md — justify the four borderline duplicate blocks and the three oversized page components (wave 1)
+- [x] 05-03-PLAN.md — justify the four borderline duplicate blocks and the three oversized page components (wave 1)
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
