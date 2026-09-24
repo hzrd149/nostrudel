@@ -200,7 +200,7 @@ seams and their duplicated blocks are factored out — with each thin wrapper ei
 justified — so the remaining complexity findings reflect deliberate structure.
 **Requirements:** TBD
 **Depends on:** Phase 4
-**Plans:** 8/14 plans executed
+**Plans:** 9/14 plans executed
 
 33 findings measured on `next` at commit `ac904e754` on 2026-09-24 (bucket H): 21 ×
 `code-quality/duplicate-block`, 8 × `complexity/function-too-long`, 2 ×
@@ -241,7 +241,7 @@ Plans:
 
 **Wave 3** *(blocked on Wave 2 completion)*
 
-- [ ] 05-09-PLAN.md — split `services/wallets.ts` into a directory module by backend (wave 3)
+- [x] 05-09-PLAN.md — split `services/wallets.ts` into a directory module by backend (wave 3)
 - [ ] 05-10-PLAN.md — promote napplet permission state and relay tiers into `services/napplet-shell/` (wave 3)
 
 **Wave 4** *(blocked on Wave 3 completion)*
