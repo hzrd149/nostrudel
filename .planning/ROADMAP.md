@@ -218,21 +218,44 @@ Thin wrappers to inline or justify: `helpers/nostr/relay-stats.ts` (`getRelayURL
 Sequenced after Phase 4 so the sweep does not refactor code that is about to be deleted.
 
 Plans:
+**Wave 1**
 
 - [ ] 05-01-PLAN.md — re-measure the bucket-H baseline and correct the stale Phase 5 entry (wave 1)
 - [ ] 05-02-PLAN.md — torrent taxonomy ignore, relay-stats dead-code deletion, verify-event justification (wave 1)
 - [ ] 05-03-PLAN.md — justify the four borderline duplicate blocks and the three oversized page components (wave 1)
+
+**Wave 2** *(blocked on Wave 1 completion)*
+
 - [ ] 05-04-PLAN.md — convert the background-worker handlers to useAsyncAction, verified by rescan (wave 2)
 - [ ] 05-05-PLAN.md — factor the autocomplete twins, the voice sliders and the notification badge (wave 2)
 - [ ] 05-06-PLAN.md — factor the error-log loop, the notification loaders and the relay lists (wave 2)
 - [ ] 05-07-PLAN.md — divide useWebxdc into state-update and realtime sub-hooks (wave 2)
 - [ ] 05-08-PLAN.md — extract the post-modal body branches and split the webxdc request dispatch (wave 2)
+
+**Wave 3** *(blocked on Wave 2 completion)*
+
 - [ ] 05-09-PLAN.md — split `services/wallets.ts` into a directory module by backend (wave 3)
 - [ ] 05-10-PLAN.md — promote napplet permission state and relay tiers into `services/napplet-shell/` (wave 3)
+
+**Wave 4** *(blocked on Wave 3 completion)*
+
 - [ ] 05-11-PLAN.md — promote the intent, common-action, upload, resource and adapter regions (wave 4)
+
+**Wave 5** *(blocked on Wave 4 completion)*
+
 - [ ] 05-12-PLAN.md — move the consent and intent-choice modals out and thin the provider (wave 5)
+
+**Wave 6** *(blocked on Wave 5 completion)*
+
 - [ ] 05-13-PLAN.md — add vitest exact-pinned behind a legitimacy checkpoint, with permission tests (wave 6)
+
+**Wave 7** *(blocked on Wave 6 completion)*
+
 - [ ] 05-14-PLAN.md — close the 33 → N table, inventory surviving ignores, dispose of latent bugs (wave 7)
+
+**Cross-cutting constraints:**
+
+- D-11: the three sibling napplet services stay exactly where they are
 
 ### Phase 6: Close type-safety escape hatches
 
