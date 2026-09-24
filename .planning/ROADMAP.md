@@ -200,7 +200,7 @@ seams and their duplicated blocks are factored out — with each thin wrapper ei
 justified — so the remaining complexity findings reflect deliberate structure.
 **Requirements:** TBD
 **Depends on:** Phase 4
-**Plans:** 0 plans
+**Plans:** 14 plans
 
 32 findings in the [2026-09-11 baseline](./research/aislop-scan-2026-09-11.md) (bucket H):
 21 × `code-quality/duplicate-block`, 7 × `complexity/function-too-long`, 2 ×
@@ -219,7 +219,20 @@ Sequenced after Phase 4 so the sweep does not refactor code that is about to be 
 
 Plans:
 
-- [ ] TBD (plan with /gsd-plan-phase 5)
+- [ ] 05-01-PLAN.md — re-measure the bucket-H baseline and correct the stale Phase 5 entry (wave 1)
+- [ ] 05-02-PLAN.md — torrent taxonomy ignore, relay-stats dead-code deletion, verify-event justification (wave 1)
+- [ ] 05-03-PLAN.md — justify the four borderline duplicate blocks and the three oversized page components (wave 1)
+- [ ] 05-04-PLAN.md — convert the background-worker handlers to useAsyncAction, verified by rescan (wave 2)
+- [ ] 05-05-PLAN.md — factor the autocomplete twins, the voice sliders and the notification badge (wave 2)
+- [ ] 05-06-PLAN.md — factor the error-log loop, the notification loaders and the relay lists (wave 2)
+- [ ] 05-07-PLAN.md — divide useWebxdc into state-update and realtime sub-hooks (wave 2)
+- [ ] 05-08-PLAN.md — extract the post-modal body branches and split the webxdc request dispatch (wave 2)
+- [ ] 05-09-PLAN.md — split `services/wallets.ts` into a directory module by backend (wave 3)
+- [ ] 05-10-PLAN.md — promote napplet permission state and relay tiers into `services/napplet-shell/` (wave 3)
+- [ ] 05-11-PLAN.md — promote the intent, common-action, upload, resource and adapter regions (wave 4)
+- [ ] 05-12-PLAN.md — move the consent and intent-choice modals out and thin the provider (wave 5)
+- [ ] 05-13-PLAN.md — add vitest exact-pinned behind a legitimacy checkpoint, with permission tests (wave 6)
+- [ ] 05-14-PLAN.md — close the 33 → N table, inventory surviving ignores, dispose of latent bugs (wave 7)
 
 ### Phase 6: Close type-safety escape hatches
 
