@@ -55,12 +55,15 @@ export function grantCapabilities(bridge: ShellBridge, identity: NappletIdentity
   log("granted capabilities", identityKey(identity), capabilities);
 }
 
-// Transitional accessor for the provider's deny path: clears an identity's approved-capability
-// entry without exposing the map itself. Plan 05-10 Task 2 promotes this into the named
-// `revokeCapabilities` API positioned beside `grantCapabilities`.
-export function clearApprovedCapabilities(identity: NappletIdentity) {
+// Clears an identity's whole recorded capability set. This is the only way outside this module
+// to remove a grant — the map itself is never exported, so every mutation goes through a named
+// function. Deliberately narrow: it removes exactly the recorded set and nothing else. It does
+// not remove individual capabilities, does not touch the always-allow storage entry, and does
+// not call into the runtime's own access-control state — matching the deny path's previous
+// direct `approvedCapabilities.delete(...)` behaviour exactly.
+export function revokeCapabilities(identity: NappletIdentity) {
   approvedCapabilities.delete(identityKey(identity));
-  log("cleared capabilities", identityKey(identity));
+  log("revoked capabilities", identityKey(identity));
 }
 
 export function registerWindowIdentity(windowId: string, identity: NappletIdentity) {

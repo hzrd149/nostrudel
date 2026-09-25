@@ -80,12 +80,12 @@ import actions from "../../services/actions";
 import verifyEvent from "../../services/verify-event";
 import {
   addAlwaysAllowed,
-  clearApprovedCapabilities,
   getWindowIdentity,
   grantCapabilities,
   hasApprovedCapability,
   isAlwaysAllowed,
   registerWindowIdentity,
+  revokeCapabilities,
   unregisterWindowIdentity,
   type NappletIdentity,
 } from "../../services/napplet-shell/permissions";
@@ -1016,7 +1016,7 @@ export function NappletShellProvider({ children }: PropsWithChildren) {
         grantCapabilities(bridge, consent.identity, consent.capabilities);
         if (always) addAlwaysAllowed(consent.identity);
       } else {
-        clearApprovedCapabilities(consent.identity);
+        revokeCapabilities(consent.identity);
       }
       consent.resolve(allow);
       setConsent(undefined);
