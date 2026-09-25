@@ -70,7 +70,6 @@ import accounts from "../../services/accounts";
 import { cacheRequest, eventCache$, writeEvent } from "../../services/event-cache";
 import { eventStore } from "../../services/event-store";
 import pool from "../../services/pool";
-import localSettings from "../../services/preferences";
 import {
   getDefaultIntentHandler,
   getInstalledNapplets,
@@ -79,13 +78,18 @@ import {
 } from "../../services/installed-napplets";
 import actions from "../../services/actions";
 import verifyEvent from "../../services/verify-event";
-
-type NappletIdentity = {
-  pubkey: string;
-  dTag: string;
-  aggregateHash: string;
-  title?: string;
-};
+import {
+  addAlwaysAllowed,
+  clearApprovedCapabilities,
+  getWindowIdentity,
+  grantCapabilities,
+  hasApprovedCapability,
+  isAlwaysAllowed,
+  registerWindowIdentity,
+  unregisterWindowIdentity,
+  type NappletIdentity,
+} from "../../services/napplet-shell/permissions";
+import { getReadRelays, getWriteRelays } from "../../services/napplet-shell/relay-tiers";
 
 type ConsentRequest = {
   event: NostrEvent;
@@ -118,7 +122,6 @@ type NappletShellContextValue = {
 
 const NappletShellContext = createContext<NappletShellContextValue | null>(null);
 
-const ALWAYS_ALLOW_STORAGE_KEY = "nostrudel:napplet:always-allow";
 const MAX_RESOURCE_BYTES = 25 * 1024 * 1024;
 const MAX_RESOURCE_URLS = 16;
 const MAX_CONCURRENT_RESOURCE_FETCHES = 4;
@@ -134,47 +137,6 @@ const MAX_CONCURRENT_RESOURCE_FETCHES = 4;
  * directly (state-handler + default localStorage persistence; inc fanout router).
  */
 const DISABLED_NAP_DOMAINS = ["keys", "media", "config", "cvm"] as const;
-
-const windowIdentities = new Map<string, NappletIdentity>();
-
-// The kehto runtime's ACL defaults to a permissive policy, so an identity with no entry
-// passes every capability check, and the first grant seeds every capability at once. That
-// makes the runtime unable to report which capabilities the user actually approved, so the
-// shell keeps its own record here of the capability set granted per napplet identity.
-const approvedCapabilities = new Map<string, Set<Capability>>();
-
-function identityKey(identity: NappletIdentity) {
-  return `${identity.pubkey}:${identity.dTag}:${identity.aggregateHash}`;
-}
-
-function hasApprovedCapability(identity: NappletIdentity, capability: Capability) {
-  return approvedCapabilities.get(identityKey(identity))?.has(capability) ?? false;
-}
-
-function getAlwaysAllowed() {
-  try {
-    return JSON.parse(localStorage.getItem(ALWAYS_ALLOW_STORAGE_KEY) ?? "[]") as string[];
-  } catch {
-    return [];
-  }
-}
-
-function addAlwaysAllowed(identity: NappletIdentity) {
-  const allowed = new Set(getAlwaysAllowed());
-  allowed.add(identityKey(identity));
-  localStorage.setItem(ALWAYS_ALLOW_STORAGE_KEY, JSON.stringify(Array.from(allowed)));
-}
-
-function isAlwaysAllowed(identity: NappletIdentity) {
-  return getAlwaysAllowed().includes(identityKey(identity));
-}
-
-function grantCapabilities(bridge: ShellBridge, identity: NappletIdentity, capabilities: Capability[]) {
-  for (const capability of capabilities) {
-    bridge.runtime.aclState.grant(identity.pubkey, identity.dTag, identity.aggregateHash, capability);
-  }
-  approvedCapabilities.set(identityKey(identity), new Set(capabilities));
-}
 
 function getSigner() {
   const account = accounts.active;
@@ -642,7 +604,7 @@ function createResourceService(options: { getBlossomOrigins: () => string[] }) {
       return;
     }
 
-    const identity = windowIdentities.get(windowId);
+    const identity = getWindowIdentity(windowId);
     if (!identity) {
       sendResourceError(send, requestId, "denied", "napplet identity not resolvable");
       return;
@@ -768,14 +730,6 @@ function createResourceService(options: { getBlossomOrigins: () => string[] }) {
       perWindow.delete(windowId);
     },
   };
-}
-
-function getReadRelays() {
-  return localSettings.fallbackRelays.value;
-}
-
-function getWriteRelays() {
-  return unique([...localSettings.extraPublishRelays.value, ...localSettings.fallbackRelays.value]);
 }
 
 function createAdapter(
@@ -1033,14 +987,14 @@ export function NappletShellProvider({ children }: PropsWithChildren) {
 
   const registerFrame = useCallback<NappletShellContextValue["registerFrame"]>((windowId, win, identity) => {
     originRegistry.register(win, windowId, identity);
-    windowIdentities.set(windowId, identity);
+    registerWindowIdentity(windowId, identity);
   }, []);
 
   const unregisterFrame = useCallback<NappletShellContextValue["unregisterFrame"]>(
     (windowId) => {
       originRegistry.unregister(windowId);
       sessionRegistry.unregister(windowId);
-      windowIdentities.delete(windowId);
+      unregisterWindowIdentity(windowId);
       bridge.runtime.destroyWindow(windowId);
     },
     [bridge],
@@ -1062,7 +1016,7 @@ export function NappletShellProvider({ children }: PropsWithChildren) {
         grantCapabilities(bridge, consent.identity, consent.capabilities);
         if (always) addAlwaysAllowed(consent.identity);
       } else {
-        approvedCapabilities.delete(identityKey(consent.identity));
+        clearApprovedCapabilities(consent.identity);
       }
       consent.resolve(allow);
       setConsent(undefined);
