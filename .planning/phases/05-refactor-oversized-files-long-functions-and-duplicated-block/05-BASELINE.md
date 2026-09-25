@@ -27,10 +27,10 @@ it.
 | Rule | Before | After | Delta |
 |---|---|---|---|
 | `code-quality/duplicate-block` | 21 | 0 (05-02, 05-03, 05-04, 05-05, 05-06) | -21 |
-| `complexity/function-too-long` | 8 | 2 (05-03, 05-07, 05-08) | -6 |
-| `complexity/file-too-large` | 2 | 1 (05-09) | -1 |
+| `complexity/function-too-long` | 8 | 1 (05-03, 05-07, 05-08, 05-11) | -7 |
+| `complexity/file-too-large` | 2 | 0 (05-09, 05-11) | -2 |
 | `ai-slop/thin-wrapper` | 2 | 0 (05-02) | -2 |
-| **Total** | **33** | **3 so far (05-02, 05-03, 05-04, 05-05, 05-06, 05-07, 05-08, 05-09, 05-10)** | **-30 so far** |
+| **Total** | **33** | **1 so far (05-02, 05-03, 05-04, 05-05, 05-06, 05-07, 05-08, 05-09, 05-10, 05-11)** | **-32 so far** |
 
 ## Per-finding table (D-01 / D-02)
 
@@ -529,6 +529,105 @@ skipping the prompt, and the relay-tier helpers actually selecting the expected 
 sets in a running napplet frame were NOT exercised in a live browser session — each is recorded as
 an explicit OUTSTANDING manual-verification item in `05-10-SUMMARY.md`, not assumed verified from
 the passing build.
+
+## 05-11 D-08 intent/common-action/upload/resource/adapter promotion (measured, not assumed)
+
+Live rescan after 05-11 confirms bucket-H fell 3 -> 1: `complexity/file-too-large` 1 -> 0 (the
+provider dropped from 1117 to 274 lines, below the 400/600-line thresholds), `complexity/function-
+too-long` 2 -> 1 (`createResourceService`'s 162-line finding cleared; `NappletShellProvider`'s
+195-line finding survives, owned by plan 05-12), confirmed via the full-repo `--json` rescan's
+per-finding `filePath`/`rule` fields, not assumed. This is part 2 of the three-plan D-08 teardown
+(05-10 done, 05-11 here, 05-12 next).
+
+- Five new modules created under `src/services/napplet-shell/`: `intent-service.ts` (146 lines —
+  the intent payload coercion, installed-handler lookup, candidate/availability/failure builders,
+  preference matcher, and `createNappletIntentService` factory), `common-actions.ts` (204 lines —
+  the first-value helper, identity profile/follows readers, pubkey/event-id normalisers, profile
+  pointer builder, common publish, common profile/follows readers, follow change, reaction, and
+  report draft/action), `upload-service.ts` (62 lines — the blob-to-file helper, the `UploadConfig`
+  type, and `createBlossomUploadService`), `resource-service.ts` (264 lines — the three resource
+  limit constants, five helpers, and `createResourceService`, divided internally per D-12 — see
+  below), and `adapter.ts` (243 lines — the disabled-domain list with its explanatory comment, the
+  signer helper, and `createAdapter` as the composition root). `installed-napplets.ts`,
+  `napplet-intent-delivery.ts`, and `recent-napplets.ts` are confirmed untouched via
+  `git status --short` across all six commits (D-11).
+- **The signer helper's single owner (Task 1's discretion clause):** `getSigner` is defined once,
+  in `adapter.ts`. Its only two real call sites — `auth.getSigner` and the identity service's
+  `getSigner` option — both live inside `createAdapter`, confirmed by grep before any file was
+  created (`grep -n "getSigner" napplet-shell-provider.tsx` returned exactly the definition plus
+  those two call sites, both inside the pre-move `createAdapter` body). The plan's own prose
+  claimed the intent service also used it; that claim did not match the measured code (the intent
+  service factory never referenced `getSigner`), so `getSigner` was left in the provider through
+  Tasks 1-2 and moved only in Task 3 alongside its actual sole owner, `createAdapter` — a documented
+  discrepancy between the plan's prose and the measured pre-move source (D-03), not a functional
+  gap.
+- **Resource service internal division (D-12), separate commit from the verbatim move:**
+  `createResourceService`'s 162-line factory was split into `isResourceRequestAllowed` (the
+  permission gate — unchanged, same two operands, neither inverted, neither reordered),
+  `fetchResource` (single-resource fetch with abort tracking), and `handleResourceMessage` (the
+  incoming-message parser/dispatcher, including the bounded-concurrency `resource.bytesMany`
+  path), with the factory itself reduced to ~20 lines of wiring. A scoped rescan filtered to
+  `resource-service.ts` returned 0 findings across all four bucket-H rules after the division
+  (down from the 1 function-too-long finding the verbatim-move commit carried) — the division
+  genuinely cleared the finding rather than relocating it, confirmed live rather than assumed. No
+  `aislop-ignore` directive was added (`grep -c 'aislop-ignore' resource-service.ts` returns 0).
+- **Permission-check enumeration (T-05-39, T-05-41, T-05-43):** every permission check that
+  existed before this plan's moves still guards the same operation on the same path afterward,
+  confirmed by direct grep, not assumed:
+  - Resource fetch: `hasApprovedCapability(identity, "resource:fetch") || options.getBlossomOrigins().includes(origin)`
+    survives verbatim in `resource-service.ts`'s `isResourceRequestAllowed`, still called from
+    `fetchResource` before any `fetch()` call — both operands present, neither inverted.
+  - Window identity resolution: `fetchResource` still calls `getWindowIdentity(windowId)` through
+    `permissions.ts`'s accessor (never a raw map) and still denies when the identity is
+    unresolvable, exactly as before the move.
+  - Upload/intent domain advertisement: `createAdapter`'s `capabilities.disabledDomains` still
+    conditionally includes `"upload"` based on the same `uploadEnabled` boolean the provider
+    computes from `settings.mediaUploadService`/`blossomServerUrls.length`; this is the same
+    domain-level gating mechanism as before the move (`createBlossomUploadService` and
+    `createNappletIntentService` never called `hasApprovedCapability` directly, before or after —
+    per-capability upload/intent authorization happens in the kehto runtime's own ACL, exercised
+    through `grantCapabilities`'s `bridge.runtime.aclState.grant` call, unchanged in the provider).
+  - Consent/grant/revoke lifecycle: `isAlwaysAllowed`, `grantCapabilities`, `addAlwaysAllowed`, and
+    `revokeCapabilities` are all still called from the same three provider call sites
+    (`requestConsent`, `respond`'s allow branch, `respond`'s deny branch) with the same arguments,
+    confirmed unmoved by this plan (05-10 already promoted their definitions; this plan did not
+    touch that region).
+  - No permission's scope was widened and no previously-gated operation became ungated: the only
+    two conditionals that changed location (`isResourceRequestAllowed`'s OR and
+    `disabledDomains`'s ternary) are byte-identical to their pre-move form, confirmed via `git diff`
+    on both move commits showing only import-path/parameter-passing changes around them, never a
+    change to the boolean expressions themselves.
+- No circular imports were introduced: `adapter.ts` imports `intent-service.ts`,
+  `common-actions.ts`, `upload-service.ts`, `resource-service.ts`, `relay-tiers.ts`, and
+  `permissions.ts`; none of those five imports `adapter.ts` back (confirmed by grep — `adapter`
+  does not appear in any of their import lists). `common-actions.ts` imports `relay-tiers.ts`
+  (one-directional sibling edge, same shape 05-09 used for `wallets/nwc.ts` -> `webln.ts`).
+- No path alias was introduced (`grep -rn 'from "~/' src/services/napplet-shell` -> 0 matches
+  across all five new modules). No new `aislop-ignore` directive was added anywhere in
+  `src/services/napplet-shell/` by this plan.
+- **Deviation from Task 1's literal instruction to give each new module "its own scoped logger
+  following the in-repo shape":** none of `intent-service.ts`, `common-actions.ts`, or
+  `upload-service.ts` declares a `logger.extend(...)` constant, because none of the functions
+  moved into them ever called `log(...)` in the pre-move source (confirmed by grep against the
+  original provider region before each move) — declaring an unused logger constant would be dead
+  code, both violating D-16's move-only constraint (an addition, not a move) and very likely
+  triggering an unused-variable lint finding. This follows 05-09's own precedent (wallets split
+  added no logger to modules that didn't already log) over the more generic per-module-logger
+  instruction; `resource-service.ts` and `adapter.ts` likewise carry no new logger, matching their
+  pre-move source exactly.
+- `pnpm build` (typecheck + bundle) passed after every one of the six commits in this plan.
+
+No behavioural test coverage exists for any of the five promoted regions (no test runner until
+05-13; both `build_command`/`test_command` in `.planning/config.json` are `pnpm build`, a
+typecheck+bundle only). Dispatching an intent to an installed napplet (including the
+choose-a-handler fallback), publishing/following/reacting/reporting through the common actions,
+uploading a file via the Blossom rail, fetching a resource both through an approved
+`resource:fetch` grant and through the Blossom-origin allowlist, a resource fetch being denied for
+an unapproved non-Blossom origin, the `resource.bytesMany` bounded-concurrency batch path, and the
+event-verification late-binding surface (`crypto.verifyEvent`, the worker-relay cache-write gate,
+and the outbox router's `verifyEvent`) were NOT exercised in a live browser session or against a
+running napplet frame in this turn — each is recorded as an explicit OUTSTANDING
+manual-verification item in `05-11-SUMMARY.md`, not assumed verified from the passing build.
 
 ## Scope note (D-02)
 
