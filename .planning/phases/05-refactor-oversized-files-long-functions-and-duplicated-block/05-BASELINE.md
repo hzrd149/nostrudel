@@ -30,7 +30,7 @@ it.
 | `complexity/function-too-long` | 8 | 2 (05-03, 05-07, 05-08) | -6 |
 | `complexity/file-too-large` | 2 | 1 (05-09) | -1 |
 | `ai-slop/thin-wrapper` | 2 | 0 (05-02) | -2 |
-| **Total** | **33** | **3 so far (05-02, 05-03, 05-04, 05-05, 05-06, 05-07, 05-08, 05-09)** | **-30 so far** |
+| **Total** | **33** | **3 so far (05-02, 05-03, 05-04, 05-05, 05-06, 05-07, 05-08, 05-09, 05-10)** | **-30 so far** |
 
 ## Per-finding table (D-01 / D-02)
 
@@ -457,6 +457,78 @@ wait), and the NIP-60/Cashu wallet lifecycle (load, unlock, mint-quote invoice c
 stale-token cleanup) were NOT exercised against live wallet backends in this session — this is
 recorded as an explicit OUTSTANDING manual-verification item in `05-09-SUMMARY.md`, not assumed
 verified from the passing build.
+
+## 05-10 D-08 permission/relay-tier promotion (measured, not assumed)
+
+Live rescan after 05-10 confirms bucket-H is unchanged, as the plan itself predicted:
+`complexity/file-too-large` stays 1, `complexity/function-too-long` stays 2, bucket-H total stays
+3 — all three still anchored in `src/providers/global/napplet-shell-provider.tsx` (1163 → 1117
+lines; still over the 400-line/600-line-warning threshold), confirmed via the full-repo `--json`
+rescan's per-finding `filePath` field, not assumed. This plan is part 1 of the three-plan D-08
+teardown (05-10, then 05-11, then 05-12); the two `function-too-long` findings
+(`createResourceService` at line 572, `NappletShellProvider` at line 916 in the post-05-10 file)
+are unchanged in substance — the D-08 split resolves them as a byproduct of 05-11/05-12, not
+separately, exactly as `05-CONTEXT.md`'s per-finding table already recorded. The scoped rescan of
+the two new modules under `src/services/napplet-shell/` (`permissions.ts`, `relay-tiers.ts`)
+returns 0 findings across all four bucket-H rules.
+
+- `src/services/napplet-shell/permissions.ts` now owns the napplet identity type, the
+  always-allow storage key constant, the window identity registry (`registerWindowIdentity`,
+  `getWindowIdentity`, `unregisterWindowIdentity` — accessors only, the map itself is
+  module-private), the approved-capability map together with its explanatory comment (also
+  module-private), the identity key builder (module-private, not exported), the
+  approved-capability check (`hasApprovedCapability`), the always-allow trio
+  (`isAlwaysAllowed`/`addAlwaysAllowed`, with the internal reader kept module-private), the
+  capability grant (`grantCapabilities`), and the capability revocation (`revokeCapabilities`).
+  Both mutable maps are confirmed never exported: `grep -v '^\s*//' permissions.ts | grep 'export.*new Map'`
+  returns 0 matches, and every export in the module is a function or the `NappletIdentity` type.
+  The always-allow storage key string (`nostrudel:napplet:always-allow`) is confirmed unchanged
+  and unique repo-wide (`grep -rn` matches exactly once, in `permissions.ts`).
+- `src/services/napplet-shell/relay-tiers.ts` now owns `getReadRelays`/`getWriteRelays`, moved
+  verbatim (same `localSettings.fallbackRelays`/`extraPublishRelays` reads, same `unique(...)`
+  composition for the write tier).
+- **Two-commit split, per D-16 (`respond`'s deny-branch revocation is not a pure move):** the
+  plan's Task 1 instruction to "leave the consent response callback still calling the map's
+  delete method directly for now" is impossible to satisfy literally in the same breath as the
+  plan's own harder requirement that neither map is ever exported — a raw `Map.prototype.delete`
+  call from the provider file requires the map itself to be reachable from outside the module,
+  which the plan's acceptance criteria (and T-05-34's mitigation) forbid unconditionally. This
+  was resolved by treating the security requirement (map never exported, every mutation through
+  a named function) as authoritative over the literal wording: Task 1's commit introduced a
+  minimal, necessary accessor (`clearApprovedCapabilities`) so the move could complete without
+  ever exporting the map, and Task 2's commit — touching only `permissions.ts` and the provider's
+  deny branch, confirmed via `git diff --name-only` for that commit — promoted it into the
+  officially named, positioned-beside-`grantCapabilities`, and documented `revokeCapabilities`
+  API, with no behavioural change between the two commits (confirmed identical map operation:
+  `approvedCapabilities.delete(identityKey(identity))` in both). This discrepancy between the
+  plan's literal Task 1 prose and its own harder Task 1 acceptance criteria is recorded here per
+  D-03 rather than silently resolved. The revocation clears exactly the identity's recorded
+  capability set and nothing else — it does not remove individual capabilities, does not touch
+  the always-allow storage entry, and does not call into the runtime's own access-control state,
+  confirmed by reading the final `revokeCapabilities` body and by `git diff` showing no other
+  state touched by either commit.
+- Window identity registry keying confirmed unchanged: keyed by `windowId` (a per-frame
+  identifier), exactly as before the move — `registerFrame`/`unregisterFrame` still call the
+  registry with the same `windowId` argument they always did, and `createResourceService`'s
+  `fetchOne` still resolves the identity via the same `windowId` it receives. No cross-napplet or
+  cross-account leakage was introduced: the map is keyed per window/frame instance, not per
+  account or per pubkey, matching the pre-move keying exactly (confirmed by reading both call
+  sites' argument lists unchanged).
+- The three sibling napplet services are untouched: `git status --short` for
+  `src/services/installed-napplets.ts`, `src/services/napplet-intent-delivery.ts`, and
+  `src/services/recent-napplets.ts` reports no changes across both commits.
+- No path alias was introduced (`grep -rn 'from "~/' src/services/napplet-shell` → 0 matches).
+  `pnpm build` (typecheck + bundle) passed after every task in both commits.
+
+No behavioural test coverage exists for the napplet permission system (no test runner until
+05-13; both `build_command`/`test_command` in `.planning/config.json` are `pnpm build`, a
+typecheck+bundle only). The consent-request prompt actually appearing when capabilities are
+requested, a denied capability actually being refused on the next request, the "allow once" grant
+not surviving a frame reload, the "always allow" grant persisting across a reload and correctly
+skipping the prompt, and the relay-tier helpers actually selecting the expected read/write relay
+sets in a running napplet frame were NOT exercised in a live browser session — each is recorded as
+an explicit OUTSTANDING manual-verification item in `05-10-SUMMARY.md`, not assumed verified from
+the passing build.
 
 ## Scope note (D-02)
 
