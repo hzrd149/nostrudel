@@ -1,19 +1,4 @@
-import {
-  Button,
-  ButtonGroup,
-  Code,
-  ListItem,
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
-  Stack,
-  Text,
-  UnorderedList,
-  useToast,
-} from "@chakra-ui/react";
+import { useToast } from "@chakra-ui/react";
 import {
   buildShellCapabilities,
   createShellBridge,
@@ -27,9 +12,11 @@ import { use$, useEventModel } from "applesauce-react/hooks";
 import { NostrEvent } from "nostr-tools";
 import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 
+import NappletConsentModal from "../../components/napplets/consent-modal";
+import NappletIntentChoiceModal from "../../components/napplets/intent-choice-modal";
 import { unique } from "../../helpers/array";
 import { DEFAULT_APP_SETTINGS } from "../../helpers/app-settings";
-import { getNappletTitle, type NappletIntent } from "../../helpers/nostr/napplets";
+import { type NappletIntent } from "../../helpers/nostr/napplets";
 import { AppSettingsQuery, BlossomServersQuery } from "../../models";
 import accounts from "../../services/accounts";
 import { getInstalledNapplets, type InstalledNapplet } from "../../services/installed-napplets";
@@ -194,75 +181,12 @@ export function NappletShellProvider({ children }: PropsWithChildren) {
   return (
     <NappletShellContext.Provider value={context}>
       {children}
-      <Modal isOpen={!!consent} onClose={() => respond(false)} isCentered>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Grant napplet access?</ModalHeader>
-          <ModalBody>
-            {consent && (
-              <>
-                <Text mb="2">
-                  <Code>{getNappletTitle(consent.event)}</Code> is requesting access until this frame is closed.
-                </Text>
-                <UnorderedList spacing="1">
-                  {consent.capabilities.map((capability) => (
-                    <ListItem key={capability}>
-                      <Code>{capability}</Code>
-                    </ListItem>
-                  ))}
-                </UnorderedList>
-              </>
-            )}
-          </ModalBody>
-          <ModalFooter>
-            <ButtonGroup>
-              <Button variant="ghost" onClick={() => respond(false)}>
-                Deny
-              </Button>
-              <Button onClick={() => respond(true)}>Allow once</Button>
-              <Button colorScheme="primary" onClick={() => respond(true, true)}>
-                Always allow
-              </Button>
-            </ButtonGroup>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
-      <Modal isOpen={!!intentChoice} onClose={() => respondIntentChoice()} isCentered>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Choose a napplet</ModalHeader>
-          <ModalBody>
-            {intentChoice && (
-              <Stack spacing="3">
-                <Text>
-                  No installed napplet declares support for <Code>{intentChoice.archetype}</Code>/
-                  <Code>{intentChoice.action}</Code>. Choose a napplet to handle this intent.
-                </Text>
-                <Stack spacing="2">
-                  {installedNapplets.map((napplet) => (
-                    <Button
-                      key={napplet.address}
-                      variant="outline"
-                      justifyContent="flex-start"
-                      whiteSpace="normal"
-                      h="auto"
-                      py="3"
-                      onClick={() => respondIntentChoice(napplet)}
-                    >
-                      {napplet.title}
-                    </Button>
-                  ))}
-                </Stack>
-              </Stack>
-            )}
-          </ModalBody>
-          <ModalFooter>
-            <Button variant="ghost" onClick={() => respondIntentChoice()}>
-              Cancel
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+      <NappletConsentModal consent={consent} onRespond={respond} />
+      <NappletIntentChoiceModal
+        intentChoice={intentChoice}
+        installedNapplets={installedNapplets}
+        onRespond={respondIntentChoice}
+      />
     </NappletShellContext.Provider>
   );
 }
