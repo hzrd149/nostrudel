@@ -200,7 +200,7 @@ seams and their duplicated blocks are factored out — with each thin wrapper ei
 justified — so the remaining complexity findings reflect deliberate structure.
 **Requirements:** TBD
 **Depends on:** Phase 4
-**Plans:** 11/14 plans executed
+**Plans:** 12/14 plans executed
 
 33 findings measured on `next` at commit `ac904e754` on 2026-09-24 (bucket H): 21 ×
 `code-quality/duplicate-block`, 8 × `complexity/function-too-long`, 2 ×
@@ -250,7 +250,7 @@ Plans:
 
 **Wave 5** *(blocked on Wave 4 completion)*
 
-- [ ] 05-12-PLAN.md — move the consent and intent-choice modals out and thin the provider (wave 5)
+- [x] 05-12-PLAN.md — move the consent and intent-choice modals out and thin the provider (wave 5)
 
 **Wave 6** *(blocked on Wave 5 completion)*
 
