@@ -27,10 +27,10 @@ it.
 | Rule | Before | After | Delta |
 |---|---|---|---|
 | `code-quality/duplicate-block` | 21 | 0 (05-02, 05-03, 05-04, 05-05, 05-06) | -21 |
-| `complexity/function-too-long` | 8 | 1 (05-03, 05-07, 05-08, 05-11) | -7 |
+| `complexity/function-too-long` | 8 | 0 (05-03, 05-07, 05-08, 05-11, 05-12) | -8 |
 | `complexity/file-too-large` | 2 | 0 (05-09, 05-11) | -2 |
 | `ai-slop/thin-wrapper` | 2 | 0 (05-02) | -2 |
-| **Total** | **33** | **1 so far (05-02, 05-03, 05-04, 05-05, 05-06, 05-07, 05-08, 05-09, 05-10, 05-11)** | **-32 so far** |
+| **Total** | **33** | **0 (05-02 through 05-12)** | **-33** |
 
 ## Per-finding table (D-01 / D-02)
 
@@ -628,6 +628,65 @@ event-verification late-binding surface (`crypto.verifyEvent`, the worker-relay 
 and the outbox router's `verifyEvent`) were NOT exercised in a live browser session or against a
 running napplet frame in this turn — each is recorded as an explicit OUTSTANDING
 manual-verification item in `05-11-SUMMARY.md`, not assumed verified from the passing build.
+
+## 05-12 D-08 consent/intent-choice modal extraction (measured, not assumed)
+
+Live rescan after 05-12 confirms bucket-H fell 1 -> 0: `complexity/function-too-long` 1 -> 0
+(`NappletShellProvider`'s 195-line finding cleared), confirmed via the full-repo `--json` rescan's
+per-finding `filePath`/`rule` fields and by the scoped-rescan jq filter from this plan's own
+`<verification>` section returning 0. This is part 3 of the three-plan D-08 teardown (05-10, 05-11,
+05-12 — all three now complete) and closes the last bucket-H finding in the whole 33-row baseline:
+repo-wide bucket-H total is now 0, repo score unchanged at 85/100.
+
+- Two new components created under `src/components/napplets/`: `consent-modal.tsx` (the
+  grant-access dialogue — app title in a `Code` span, capability list, deny/allow-once/always-allow
+  buttons) and `intent-choice-modal.tsx` (the choose-a-napplet dialogue — archetype/action sentence,
+  installed-napplet button list, cancel button). Both are default exports with an explicit local
+  prop type (`NappletConsentModalProps`, `NappletIntentChoiceModalProps`); neither imports
+  `useNappletShell` or the provider (`grep -c 'useNappletShell'` returns 0 for both files,
+  confirmed above the fix-attempt limit was never needed since the build passed on the first
+  attempt).
+- Landed as a single move commit per this plan's own `<action>` text ("land this as a move-only
+  commit... say so in the commit message, since that makes it not strictly byte-identical") rather
+  than the two-commit move-then-divide shape 05-11 used for `createResourceService` — this plan's
+  Task 1 explicitly names the props-threading as part of the move itself, not a follow-on
+  adjustment, so the commit message documents the one non-literal-byte-identical change (closure
+  reads become explicit props) inline instead of splitting it into a second commit.
+- `napplet-shell-provider.tsx` shrank from 274 to 198 lines (well under the 400/600-line
+  thresholds). Its export surface is unchanged: exactly `NappletShellProvider` and
+  `useNappletShell` (`grep -n '^export'` shows only those two). The three consumer sites
+  (`src/providers/global/index.tsx`, `src/views/napplets/napplet.tsx`,
+  `src/components/napplets/napplet-frame.tsx`) are confirmed unedited by this plan's commit via
+  `git diff --name-only`.
+- **Consent semantics enumeration (T-05-45, T-05-46), confirmed unchanged by direct read of the
+  moved `respond` callback, still declared in the provider and passed down as a prop:** deny
+  (`onRespond(false)`) still calls `revokeCapabilities(consent.identity)` and resolves `false`;
+  allow once (`onRespond(true)`) still calls `grantCapabilities(bridge, consent.identity,
+  consent.capabilities)` alone; always allow (`onRespond(true, true)`) still calls
+  `grantCapabilities(...)` and then `addAlwaysAllowed(consent.identity)`. All three remain distinct
+  buttons in `consent-modal.tsx`; only the always-allow button passes the second `true` argument.
+  Dismissal (the `Modal`'s `onClose`) still calls `onRespond(false)` in the consent modal and
+  `onRespond()` (no handler) in the intent-choice modal — fail-closed, matching T-05-45's mitigation
+  exactly. `permissions.ts`'s two maps (`approvedCapabilities`, `windowIdentities`) remain
+  module-private; no new map export was added (`grep -v '^\s*//' permissions.ts | grep 'export.*new
+  Map'` returns 0 matches, unchanged from 05-10).
+- No import cycle introduced (T-05-48): `grep -rn 'napplet-shell-provider' src/components/napplets/`
+  matches only the pre-existing `napplet-frame.tsx` import (a legitimate, unmoved consumer), not
+  either of the two new modal files.
+- No `aislop-ignore` directive was added anywhere in this plan's three touched files (`grep -c
+  'aislop-ignore'` returns 0 for the provider and both new modals) — the finding was genuinely
+  cleared by the split, not suppressed, matching D-08/D-12's disposition.
+- `pnpm build` (typecheck + bundle) passed after the task's commit.
+
+No behavioural test coverage exists for the consent/intent-choice UI (no test runner until 05-13;
+both `build_command`/`test_command` in `.planning/config.json` are `pnpm build`, a
+typecheck+bundle only). The consent prompt actually appearing when capabilities are requested, the
+deny button actually revoking a capability grant, the allow-once grant not surviving a frame
+reload, the always-allow grant persisting across a reload and suppressing future prompts, a
+dismissal (ESC/overlay/close) actually behaving as a deny rather than a silent approval, and the
+intent-choice modal actually routing the chosen napplet to the pending intent were NOT exercised in
+a live browser session in this turn — each is recorded as an explicit OUTSTANDING
+manual-verification item in `05-12-SUMMARY.md`, not assumed verified from the passing build.
 
 ## Scope note (D-02)
 
