@@ -200,7 +200,7 @@ seams and their duplicated blocks are factored out — with each thin wrapper ei
 justified — so the remaining complexity findings reflect deliberate structure.
 **Requirements:** TBD
 **Depends on:** Phase 4
-**Plans:** 10/14 plans executed
+**Plans:** 11/14 plans executed
 
 33 findings measured on `next` at commit `ac904e754` on 2026-09-24 (bucket H): 21 ×
 `code-quality/duplicate-block`, 8 × `complexity/function-too-long`, 2 ×
@@ -246,7 +246,7 @@ Plans:
 
 **Wave 4** *(blocked on Wave 3 completion)*
 
-- [ ] 05-11-PLAN.md — promote the intent, common-action, upload, resource and adapter regions (wave 4)
+- [x] 05-11-PLAN.md — promote the intent, common-action, upload, resource and adapter regions (wave 4)
 
 **Wave 5** *(blocked on Wave 4 completion)*
 
