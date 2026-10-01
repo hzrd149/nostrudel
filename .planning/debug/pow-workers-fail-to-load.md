@@ -1,5 +1,5 @@
 ---
-status: awaiting_human_verify
+status: resolved
 trigger: "PoW workers fail to load: worker pool mines zero hashes; console shows 8x `ReferenceError: window is not defined` at vite/dist/client/env.mjs:8 and 4x `Dropped napplet message ... reason: unregistered-window` (adapter.ts:138). User suspects nostr-wasm fails to load in the workers."
 created: 2026-10-01T00:00:00Z
 updated: 2026-10-01T17:31:00Z

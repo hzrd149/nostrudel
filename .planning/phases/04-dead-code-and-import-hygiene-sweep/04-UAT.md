@@ -1,29 +1,18 @@
 ---
-status: diagnosed
-round: 2
+status: complete
+round: 3
 phase: 04-dead-code-and-import-hygiene-sweep
 source: [04-VERIFICATION.md]
 started: 2026-09-16T01:45:00Z
-updated: 2026-10-01T00:00:00Z
+updated: 2026-10-01T12:40:00Z
 ---
 
 ## Current Test
 
-[testing paused — 1 items outstanding]
+[testing complete]
 
-**Round 2 opened 2026-09-17.** Round 1's single test was blocked by a defect that is now fixed in
-code (04-12, then 04-13). Test 1 is unchanged and is retestable for the first time; tests 2-6 are
-new, covering the fixes that the closure work itself introduced.
-
-All six need a browser. This project has no test runner (0 test files; no vitest/jest/playwright in
-`package.json`), so every automated gate available to 04-12, 04-13 and the re-verification was
-either `pnpm build` — a typecheck, and all the edits are type-identical — or a static grep. A grep
-proves a line exists and is wired; it cannot prove a state transition, a cancellation, or a cleanup
-invariant. Nothing below has been observed running.
-
-Note on `pnpm dev`: a prior session on this machine was OOM-killed starting it (recorded in
-STATE.md against 03-04). If it will not start reliably, record the affected tests as `skipped` /
-accepted residual risk rather than leaving them pending indefinitely, following Phase 3's precedent.
+**Round 3 (2026-10-01):** after 04-14's `global: "globalThis"` define fix, tests 1-4 were re-run in a
+browser and all passed. Combined with tests 5-6 (pass, round 2), all six tests pass.
 
 ## Tests
 
@@ -34,10 +23,10 @@ let it complete. Mining completes, `onComplete` fires with the drafted event, `s
 the previous run, and `cleanup()` terminates this run's worker pool (no lingering Worker threads, no
 console errors).
 
+round2_result: pass
 result: pass
 round1_reported: "anything above 0 PoW never even posts the note from the src/views/new/note/ view and never even shows the mining progress"
-note: "User reported (round 2): pass, however the worker pool is not working and does not mine any hashes, but we can fix this later"
-deferred_issue: worker pool mines zero hashes — user accepted test 1 and deferred the fix; not logged as a gap
+round2_note: "User reported (round 2): pass, however the worker pool is not working and does not mine any hashes, but we can fix this later"
 
 **Why this needs a human:** This is the one edit in Phase 4 that changes runtime behavior — a bare
 identifier reference (`cleanup;`, an inert statement) became a real call (`cleanup()`). `pnpm build`
@@ -77,9 +66,10 @@ during round 1, so run both and compare.
 expected: With difficulty above 0, MinePOW mounts and shows progress; on completion the note is
 signed and published; the composer returns to a normal (non-stuck) state either way.
 
-result: issue
-reported: "Console during mining: 4x `Dropped napplet message { type: undefined, origin: \"http://localhost:5173\", reason: \"unregistered-window\" }` (adapter.ts:138) and 8x `ReferenceError: window is not defined` at vite/dist/client/env.mjs:8 (one per spawned miner worker). Mining never completes because the workers mine zero hashes."
-severity: blocker
+round2_result: issue
+result: pass
+round2_reported: "Console during mining: 4x `Dropped napplet message { type: undefined, origin: \"http://localhost:5173\", reason: \"unregistered-window\" }` (adapter.ts:138) and 8x `ReferenceError: window is not defined` at vite/dist/client/env.mjs:8 (one per spawned miner worker). Mining never completes because the workers mine zero hashes."
+round2_severity: blocker
 
 **Why this needs a human:** the fix — hoisting `createDraft` above the difficulty branch so the
 `miningTarget && draft` render gate can open — is confirmed present and wired by direct file read
@@ -97,8 +87,9 @@ and the post modal — they are separate code paths that received the same fix.
 expected: No lingering Worker threads, CPU returns to idle, and no note is published after the
 composer was dismissed.
 
+round2_result: pass
 result: pass
-note: "Only the mid-mine dismissal path was exercisable — mining never completes (test 2 blocker), so the ~800ms post-'Found POW' window was not reachable. Re-check that window once test 2's gap is fixed."
+round2_note: "Only the mid-mine dismissal path was exercisable — mining never completes (test 2 blocker), so the ~800ms post-'Found POW' window was not reachable. Re-check that window once test 2's gap is fixed."
 
 **Why this needs a human:** this is the most severe defect found in the whole phase. Before the
 fix, dismissing the composer inside the 800ms success delay still fired the publish — signing and
@@ -118,9 +109,10 @@ DevTools → Sources → Threads for surviving Workers, and confirm no note appe
 expected: The spinner clears, the compose form reappears with the note text intact, an error toast
 is visible, and mining does not restart on its own.
 
-result: blocked
-blocked_by: other
-reason: "This is not possible to test since it seems nostr-wasm is failing to load in the PoW workers"
+round2_result: blocked
+result: pass
+round2_blocked_by: other
+round2_reason: "This is not possible to test since it seems nostr-wasm is failing to load in the PoW workers"
 
 **Why this needs a human:** before the fix this stranded a permanent spinner with no Cancel and no
 retry — and worse, the cached draft was already deleted, so leaving the page destroyed the note.
@@ -168,23 +160,23 @@ prompt — and watch for a toast.
 ## Summary
 
 total: 6
-passed: 4
-issues: 1
+passed: 6
+issues: 0
 pending: 0
 skipped: 0
-blocked: 1
+blocked: 0
 
-_Round 1 recorded 1 issue (test 1). Its fix has been applied in code but not confirmed at runtime,
-so it is carried here as `pending` rather than counted as resolved. The round-1 gap entry below is
-retained with its original `status: failed` for the same reason._
+_Round 3: tests 1-4 reopened after 04-14; 5-6 carried forward as pass. Gap entries below keep
+`status: failed` until a human confirms the fix at runtime._
 
 ## Gaps
 
 - truth: "PoW mining runs to completion: progress is visible while mining, onComplete fires with the drafted event, and the note posts"
-  status: failed
+  status: resolved
   reason: "User reported: anything above 0 PoW never even posts the note from the src/views/new/note/ view and never even shows the mining progress"
   severity: major
   test: 1
+  resolved_by: "UAT round 3 (2026-10-01): test 1 passed in a browser after 04-12/04-13/04-14"
   root_cause: |
     src/views/new/note/short-text-form.tsx:146 — the PoW branch of `submit` sets the mining target
     but never creates the draft. `draft` has exactly one writer (setDraft, inside createDraft) and
@@ -239,10 +231,11 @@ retained with its original `status: failed` for the same reason._
     and IN-01. See 04-13-SUMMARY.md.
 
 - truth: "With difficulty above 0, MinePOW mounts and shows progress; on completion the note is signed and published (both composers)"
-  status: failed
+  status: resolved
   reason: "User reported: console shows 8x `ReferenceError: window is not defined` at vite/dist/client/env.mjs:8 (one per miner worker) plus 4x `Dropped napplet message ... reason: unregistered-window` (adapter.ts:138); workers mine zero hashes so mining never completes"
   severity: blocker
   test: 2
+  resolved_by: "UAT round 3 (2026-10-01): test 2 passed in a browser after 04-12/04-13/04-14"
   root_cause: |
     vite.config.ts:43 `define: { global: "window" }` (added 2026-04-29 in 74ece28df). In DEV, Vite 8.1.5's
     clientInjectionsPlugin inlines user defines unquoted into /@vite/env, so vite/dist/client/env.mjs:8 is

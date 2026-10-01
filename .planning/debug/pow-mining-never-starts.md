@@ -1,5 +1,5 @@
 ---
-status: diagnosed
+status: resolved
 trigger: "anything above 0 PoW never even posts the note from the src/views/new/note/ view and never even shows the mining progress"
 created: 2026-09-16
 updated: 2026-09-16
