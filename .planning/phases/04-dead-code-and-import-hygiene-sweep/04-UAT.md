@@ -1,20 +1,15 @@
 ---
-status: testing
+status: partial
 round: 2
 phase: 04-dead-code-and-import-hygiene-sweep
 source: [04-VERIFICATION.md]
 started: 2026-09-16T01:45:00Z
-updated: 2026-09-17T00:00:00Z
+updated: 2026-10-01T00:00:00Z
 ---
 
 ## Current Test
 
-number: 1
-name: PoW mining completes and tears down its worker pool (D-12)
-expected: |
-  Mining runs to completion, onComplete fires with the drafted event, and cleanup() terminates
-  this run's worker pool — no lingering Worker threads, no console errors.
-awaiting: user response
+[testing paused — 1 items outstanding]
 
 **Round 2 opened 2026-09-17.** Round 1's single test was blocked by a defect that is now fixed in
 code (04-12, then 04-13). Test 1 is unchanged and is retestable for the first time; tests 2-6 are
@@ -39,9 +34,10 @@ let it complete. Mining completes, `onComplete` fires with the drafted event, `s
 the previous run, and `cleanup()` terminates this run's worker pool (no lingering Worker threads, no
 console errors).
 
-result: issue
-reported: "anything above 0 PoW never even posts the note from the src/views/new/note/ view and never even shows the mining progress"
-severity: major
+result: pass
+round1_reported: "anything above 0 PoW never even posts the note from the src/views/new/note/ view and never even shows the mining progress"
+note: "User reported (round 2): pass, however the worker pool is not working and does not mine any hashes, but we can fix this later"
+deferred_issue: worker pool mines zero hashes — user accepted test 1 and deferred the fix; not logged as a gap
 
 **Why this needs a human:** This is the one edit in Phase 4 that changes runtime behavior — a bare
 identifier reference (`cleanup;`, an inert statement) became a real call (`cleanup()`). `pnpm build`
@@ -81,7 +77,9 @@ during round 1, so run both and compare.
 expected: With difficulty above 0, MinePOW mounts and shows progress; on completion the note is
 signed and published; the composer returns to a normal (non-stuck) state either way.
 
-result: pending
+result: issue
+reported: "Console during mining: 4x `Dropped napplet message { type: undefined, origin: \"http://localhost:5173\", reason: \"unregistered-window\" }` (adapter.ts:138) and 8x `ReferenceError: window is not defined` at vite/dist/client/env.mjs:8 (one per spawned miner worker). Mining never completes because the workers mine zero hashes."
+severity: blocker
 
 **Why this needs a human:** the fix — hoisting `createDraft` above the difficulty branch so the
 `miningTarget && draft` render gate can open — is confirmed present and wired by direct file read
@@ -99,7 +97,8 @@ and the post modal — they are separate code paths that received the same fix.
 expected: No lingering Worker threads, CPU returns to idle, and no note is published after the
 composer was dismissed.
 
-result: pending
+result: pass
+note: "Only the mid-mine dismissal path was exercisable — mining never completes (test 2 blocker), so the ~800ms post-'Found POW' window was not reachable. Re-check that window once test 2's gap is fixed."
 
 **Why this needs a human:** this is the most severe defect found in the whole phase. Before the
 fix, dismissing the composer inside the 800ms success delay still fired the publish — signing and
@@ -119,7 +118,9 @@ DevTools → Sources → Threads for surviving Workers, and confirm no note appe
 expected: The spinner clears, the compose form reappears with the note text intact, an error toast
 is visible, and mining does not restart on its own.
 
-result: pending
+result: blocked
+blocked_by: other
+reason: "This is not possible to test since it seems nostr-wasm is failing to load in the PoW workers"
 
 **Why this needs a human:** before the fix this stranded a permanent spinner with no Cancel and no
 retry — and worse, the cached draft was already deleted, so leaving the page destroyed the note.
@@ -137,7 +138,7 @@ relays, or go offline at the moment mining finishes — and watch the composer.
 expected: The progress screen and its abort controls render on every mount; "Found POW" only
 appears after the worker actually reports difficulty >= target.
 
-result: pending
+result: pass
 
 **Why this needs a human:** previously the initial state was seeded from the *unmined* hash, which
 at difficulty 1 had roughly a 50% chance of already clearing the target — rendering the button-less
@@ -154,7 +155,7 @@ Cancel/Skip renders first every single time.
 expected: An error toast appears with the rejection's message; the modal does not sit there with no
 feedback.
 
-result: pending
+result: pass
 
 **Why this needs a human:** the Post button previously did nothing at all on a rejected
 `createDraft` — the rejection dropped as an unhandled promise with no user-visible signal.
@@ -167,11 +168,11 @@ prompt — and watch for a toast.
 ## Summary
 
 total: 6
-passed: 0
-issues: 0
-pending: 6
+passed: 4
+issues: 1
+pending: 0
 skipped: 0
-blocked: 0
+blocked: 1
 
 _Round 1 recorded 1 issue (test 1). Its fix has been applied in code but not confirmed at runtime,
 so it is carried here as `pending` rather than counted as resolved. The round-1 gap entry below is
@@ -236,3 +237,14 @@ retained with its original `status: failed` for the same reason._
     Deferred with recorded rationale, not fixed: WR-03 (changing `useCacheForm`'s teardown condition
     affects 8 consumer forms; the regression would be silent and unvalidatable without a dev server)
     and IN-01. See 04-13-SUMMARY.md.
+
+- truth: "With difficulty above 0, MinePOW mounts and shows progress; on completion the note is signed and published (both composers)"
+  status: failed
+  reason: "User reported: console shows 8x `ReferenceError: window is not defined` at vite/dist/client/env.mjs:8 (one per miner worker) plus 4x `Dropped napplet message ... reason: unregistered-window` (adapter.ts:138); workers mine zero hashes so mining never completes"
+  severity: blocker
+  test: 2
+  root_cause: ""
+  artifacts: []
+  missing: []
+  debug_session: ""
+  notes: "Same defect as the deferred_issue recorded on test 1 (worker pool mines zero hashes). Suspected: vite dev client env.mjs being injected into the module worker spawned at src/components/pow/mine-pow.tsx:55 (miner.ts itself never references window). User observation during test 4: nostr-wasm appears to be failing to load in the PoW workers. Not yet diagnosed. Blocks test 4 and the post-'Found POW' half of test 3."
