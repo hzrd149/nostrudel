@@ -1,5 +1,5 @@
 ---
-status: partial
+status: diagnosed
 round: 2
 phase: 04-dead-code-and-import-hygiene-sweep
 source: [04-VERIFICATION.md]
@@ -243,8 +243,26 @@ retained with its original `status: failed` for the same reason._
   reason: "User reported: console shows 8x `ReferenceError: window is not defined` at vite/dist/client/env.mjs:8 (one per miner worker) plus 4x `Dropped napplet message ... reason: unregistered-window` (adapter.ts:138); workers mine zero hashes so mining never completes"
   severity: blocker
   test: 2
-  root_cause: ""
-  artifacts: []
-  missing: []
-  debug_session: ""
+  root_cause: |
+    vite.config.ts:43 `define: { global: "window" }` (added 2026-04-29 in 74ece28df). In DEV, Vite 8.1.5's
+    clientInjectionsPlugin inlines user defines unquoted into /@vite/env, so vite/dist/client/env.mjs:8 is
+    served as `const defines = {"global": window};`. Vite's webWorkerPlugin prepends `import "/@vite/env"`
+    to every module worker, so each miner worker (mine-pow.tsx:55) throws `ReferenceError: window is not
+    defined` before miner.ts runs; `self.onmessage` is never installed and zero hashes are mined.
+    Dev-only: the production miner bundle is a self-contained IIFE with no env prelude and mines correctly
+    (difficulty 10 in 61ms, verified offline). The nostr-wasm hypothesis was ruled out (nostr-tools' main
+    entry never imports nostr-wasm; it is main-thread only, in src/services/verify-event.ts). The
+    "Dropped napplet message ... unregistered-window" logs are unrelated dev-only noise from
+    napplet-shell-provider.tsx:111 receiving untyped same-origin window messages (likely a NIP-07 extension).
+    Latent since 74ece28df but unobservable until 04-12 made MinePOW mount again.
+  artifacts:
+    - path: "vite.config.ts"
+      issue: "define global: \"window\" is inlined into the dev env prelude injected into module workers, where window does not exist"
+    - path: "src/components/pow/mine-pow.tsx"
+      issue: "module worker that receives the prelude (code itself correct)"
+  missing:
+    - "Change vite.config.ts define to `global: \"globalThis\"` (equals window on the main thread, so 74ece28df's fix is preserved; exists in workers; supported by chrome89+/safari15 targets)"
+    - "Optionally align src/polyfill.ts to `globalThis.global ||= globalThis`"
+    - "Re-run UAT test 2 (both composers), test 4, and the post-'Found POW' half of test 3 under pnpm dev"
+  debug_session: .planning/debug/pow-workers-fail-to-load.md
   notes: "Same defect as the deferred_issue recorded on test 1 (worker pool mines zero hashes). Suspected: vite dev client env.mjs being injected into the module worker spawned at src/components/pow/mine-pow.tsx:55 (miner.ts itself never references window). User observation during test 4: nostr-wasm appears to be failing to load in the PoW workers. Not yet diagnosed. Blocks test 4 and the post-'Found POW' half of test 3."
