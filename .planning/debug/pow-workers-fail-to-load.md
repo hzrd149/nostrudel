@@ -1,8 +1,8 @@
 ---
-status: diagnosed
+status: awaiting_human_verify
 trigger: "PoW workers fail to load: worker pool mines zero hashes; console shows 8x `ReferenceError: window is not defined` at vite/dist/client/env.mjs:8 and 4x `Dropped napplet message ... reason: unregistered-window` (adapter.ts:138). User suspects nostr-wasm fails to load in the workers."
 created: 2026-10-01T00:00:00Z
-updated: 2026-10-01T00:00:00Z
+updated: 2026-10-01T17:31:00Z
 goal: find_root_cause_only
 symptoms_prefilled: true
 ---
@@ -12,7 +12,7 @@ symptoms_prefilled: true
 hypothesis: CONFIRMED — vite.config.ts:41-44 (line 43) `define: { global: "window" }` is serialized raw into Vite's dev `/@vite/env` module as `const defines = {"global": window};`; Vite prepends `import "/@vite/env"` to every `?worker_file&type=module` worker in dev; evaluating `window` in a DedicatedWorkerGlobalScope throws ReferenceError at env.mjs:8, aborting module evaluation, so miner.ts never installs `self.onmessage` and every worker silently drops the {draft,target} message.
 test: done (Experiment A reproduces exact error from real config; Experiment B proves prod worker mines without window)
 expecting: n/a
-next_action: none — diagnose-only mode; hand off to /gsd-plan-phase --gaps
+next_action: UAT re-run (/gsd-verify-work 04) — restart `pnpm dev`, hard-reload the tab so /@vite/env is refetched, then run test 2 in both composers (no `window is not defined`, progress advances, "Found POW", note publishes), test 4, the ~800ms post-"Found POW" window of test 3, and the zero-hashes note on test 1. The falsification test below is decided by that re-run.
 reasoning_checkpoint:
   hypothesis: "Dev miner workers crash at load because the `global: \"window\"` define is emitted verbatim into the /@vite/env prelude Vite injects into module workers, and `window` does not exist in worker scope."
   confirming_evidence:
@@ -133,6 +133,18 @@ root_cause: |
   Unrelated: the 4x "Dropped napplet message ... unregistered-window" lines are DEV-only console.debug output from the app-global
   @kehto/shell window "message" listener reacting to non-napplet same-origin window messages (likely a NIP-07 extension bridge);
   worker messages never reach window. nostr-wasm is not in the worker graph.
-fix: (not applied — find_root_cause_only)
-verification: (not applied — find_root_cause_only)
-files_changed: []
+fix: |
+  Plan 04-14. Two one-line source edits. (1) vite.config.ts: the `global` define value changed from the identifier `window` to
+  `globalThis` (7ab167469), with a short comment explaining why. globalThis is the window on the main thread and also exists in
+  workers and the service worker, so 74ece28df's build-time rewrite is kept and dev env.mjs line 8 no longer references `window`.
+  (2) src/polyfill.ts: line 4 changed to `globalThis.global ||= globalThis;` (73668e40e) so both `global` shims name the same
+  realm-agnostic object. No PoW source file was modified.
+verification: |
+  Static evidence only. Runtime confirmation is pending the UAT re-run; nothing has been observed mining in a browser.
+  - Prelude check (Vite's real vite:client-inject transform on the real config, evaluated in a window-less vm context): before the
+    edit `WORKER_PRELUDE_FAIL window is not defined`, after the edit `WORKER_PRELUDE_OK`.
+  - `pnpm build` exits 0 after each edit.
+  - dist/sw.js: Capacitor's fallback chain now ends `typeof globalThis !== "undefined" ? globalThis : {}` (count 1); bare
+    `typeof global !== "undefined"` count 0, so the define is still applied at build time.
+  - Prod miner bundle: exactly one, dist/assets/miner-CpFg6wop.js (same hash as before), 0 references to `@vite/env`.
+files_changed: [vite.config.ts, src/polyfill.ts]
