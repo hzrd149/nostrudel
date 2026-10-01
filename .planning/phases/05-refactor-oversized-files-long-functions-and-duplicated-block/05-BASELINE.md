@@ -21,16 +21,26 @@ including the `function-too-long` 7→8 drift already called out there relative 
 
 ## Per-rule before/after table (D-19)
 
-This is the table every later plan (05-02 through 05-13) appends its after-count to; 05-14 closes
-it.
+Closed by 05-14 against a live scan (`pnpm exec aislop scan --json .`, HEAD `1240b47e8` plus the
+05-14 badge fix). "After" is the live count the scanner still reports; the right-hand columns split
+the reduction into code that was fixed and findings left standing behind a rule-scoped ignore (the
+scanner honours the directive and no longer reports them; their count was measured by scanning
+the nine directive-bearing files with the directives stripped, which reproduced all 13).
 
-| Rule | Before | After | Delta |
-|---|---|---|---|
-| `code-quality/duplicate-block` | 21 | 0 (05-02, 05-03, 05-04, 05-05, 05-06) | -21 |
-| `complexity/function-too-long` | 8 | 0 (05-03, 05-07, 05-08, 05-11, 05-12) | -8 |
-| `complexity/file-too-large` | 2 | 0 (05-09, 05-11) | -2 |
-| `ai-slop/thin-wrapper` | 2 | 0 (05-02) | -2 |
-| **Total** | **33** | **0 (05-02 through 05-12)** | **-33** |
+| Rule | Before | After (live) | Delta | Fixed in code | Behind an ignore | Plans |
+|---|---|---|---|---|---|---|
+| `code-quality/duplicate-block` | 21 | 0 | -21 | 12 (9 extract, 3 `useAsyncAction` convert) | 9 (5 torrents, 4 borderline) | 05-02, 05-03, 05-04, 05-05, 05-06 |
+| `complexity/function-too-long` | 8 | 0 | -8 | 5 | 3 (page components) | 05-03, 05-07, 05-08, 05-11, 05-12 |
+| `complexity/file-too-large` | 2 | 0 | -2 | 2 | 0 | 05-09, 05-11 |
+| `ai-slop/thin-wrapper` | 2 | 0 | -2 | 1 (deleted) | 1 (`verifyEvent`) | 05-02 |
+| **Total** | **33** | **0** | **-33** | **20** | **13** | **05-02 through 05-12** |
+
+Live check: `pnpm exec aislop scan --json . | jq '[.diagnostics[]|select(.rule=="code-quality/duplicate-block" or .rule=="complexity/function-too-long" or .rule=="complexity/file-too-large" or .rule=="ai-slop/thin-wrapper")]|length'` returns **0**, equal to the table's final total. 20 fixed + 13 ignored = 33.
+
+Repo-wide movement (measured): score 85/100 -> 85/100, total diagnostics 694 -> 664 (-30). Only 20
+of the 30 are bucket-H code fixes; the other 10 came with the touched code (extractions and
+`useAsyncAction` conversions also removed findings of other rules) and are not a goal of the phase
+and not attributed further here.
 
 ## Per-finding table (D-01 / D-02)
 
@@ -687,6 +697,76 @@ dismissal (ESC/overlay/close) actually behaving as a deny rather than a silent a
 intent-choice modal actually routing the chosen napplet to the pending intent were NOT exercised in
 a live browser session in this turn — each is recorded as an explicit OUTSTANDING
 manual-verification item in `05-12-SUMMARY.md`, not assumed verified from the passing build.
+
+## 05-14 closeout (D-19, D-01, D-18, D-17)
+
+### Surviving-ignore inventory
+
+Thirteen findings end the phase behind nine rule-scoped directives. The plan's expectation of
+"eleven findings behind nine directives" was a miscount: the torrents file-level directive alone
+covers five findings, so the correct figure is 5 (torrents) + 4 (borderline duplicate blocks) + 3
+(page components) + 1 (`verifyEvent`) = 13. The set was confirmed by stripping every `aislop-ignore`
+line from the nine files and rescanning, which reported exactly these 13 and no others.
+
+| # | File | Rule suppressed | Scope | Findings covered |
+|---|---|---|---|---|
+| 1 | `src/helpers/nostr/torrents.ts` | `code-quality/duplicate-block` | file | 5 (lines 119, 121, 131, 150, 152) |
+| 2 | `src/components/content/links/code.tsx` | `code-quality/duplicate-block` | file | 1 (line 40) |
+| 3 | `src/components/content/links/youtube.tsx` | `code-quality/duplicate-block` | file | 1 (line 58) |
+| 4 | `src/views/groups/index.tsx` | `code-quality/duplicate-block` | file | 1 (line 184) |
+| 5 | `src/views/lists/components/list-history-modal.tsx` | `code-quality/duplicate-block` | file | 1 (line 279) |
+| 6 | `src/views/new/poll/poll-form.tsx:72` | `complexity/function-too-long` | next-line | 1 (`PollFormInner`) |
+| 7 | `src/views/relays/relay/tabs/about.tsx:47` | `complexity/function-too-long` | next-line | 1 (`RelayPage`) |
+| 8 | `src/views/tools/event-publisher/index.tsx:40` | `complexity/function-too-long` | next-line | 1 (`EventPublisherPage`) |
+| 9 | `src/services/verify-event.ts:32` | `ai-slop/thin-wrapper` | next-line | 1 (`verifyEvent`) |
+
+Reasons, as written in the files:
+
+- **torrents.ts** — `torrentCatagories` is a static taxonomy; repeated `{name,tag}` entries are independent data, not extractable code. Why it cannot be fixed instead: the repetition is the data itself; extracting a helper would replace readable literal entries with indirection.
+- **code.tsx** and **youtube.tsx** — see the 05-03 table above; each states that a shared abstraction would need more configuration parameters than the duplicated lines it would remove, and names the revisit trigger (a third embed type).
+- **groups/index.tsx** — separate arms of an unrelated ternary chain over different data sources, each with its own loading and empty state; merging would tie two independently evolving branches behind a flag.
+- **list-history-modal.tsx** — sibling row variants whose tails match by coincidence of layout, not shared behaviour; `HiddenVersionRow` adds an Unlock control `VersionRow` lacks.
+- **poll-form.tsx, about.tsx, event-publisher/index.tsx** — each a single flat page-level form/detail tree with no repeated sub-structure to extract; the view has no test coverage, so splitting risks a silent regression nothing in the project would catch. (These are the weakest of the nine: the stated reason is a risk argument, not an impossibility. They remain because D-12 sets a 160-line budget for page components and these were judged deliberate structure, with the missing coverage as the concrete blocker. They are the first candidates to revisit once view-level tests exist.)
+- **verify-event.ts** — indirects over the module-level `verifyEventMethod`, which `updateVerifyMethod` reassigns at runtime between the WebAssembly, internal and fake strategies; inlining would bind callers to whichever implementation loaded at import time and break the strategy swap.
+
+D-08 audit: every reason above explains why the code was left rather than only that the behaviour is
+deliberate. Grepping the `aislop-ignore` lines of every file this phase touched for `out of scope`
+and `less bad` returns 0 matches for each. Every directive added by this phase names its rule and
+ends with a `-- reason` separator (checked file by file against the nine above). Two further
+`aislop-ignore` directives exist in files this phase edited (`src/sw/client/error-logger.ts`
+`ai-slop/console-leftover`, `src/components/post-modal/index.tsx`
+`eslint/no-unused-expressions`); both predate the phase, are rule-scoped with reasons, and were
+confirmed byte-identical, so they are not part of this inventory.
+
+### Reconciliation of the 33 findings (D-01)
+
+Every row of the per-finding table above closes to exactly one status:
+
+| Status | Count | Rows |
+|---|---|---|
+| Fixed in code, rescan-confirmed | 20 | thin-wrapper `getRelayURL` (deleted); duplicate-block: `magic-textarea`, `notifications/common` x2, `error-logger`, `article-reader` x2, `direct-message-form`, `notifications/index` x2 (extracted), `cached-files-card` x2, `service-worker-status-card` (converted); function-too-long: `post-modal`, `webxdc.tsx`, `use-webxdc`, `createResourceService`, `NappletShellProvider`; file-too-large: `napplet-shell-provider`, `wallets` |
+| Ignored with reason | 13 | inventory rows 1-9 above |
+| Untriaged | 0 | none |
+
+No bucket-H finding exists in any file this phase created under `src/services/napplet-shell`,
+`src/services/wallets` or `src/components/napplets`: the live scan reports 0 findings for all four
+rules repo-wide, and those three directories carry no `aislop-ignore` directive.
+
+### Gates
+
+`pnpm build` exits 0 and `pnpm test` exits 0 (2 files, 17 tests) at the close of the phase. `pnpm lint`
+was not used as a gate (it always exits non-zero in this project).
+
+### D-17 wave-order record
+
+Executed order matched the plan: wave 1 (05-01 to 05-03, baseline plus the mechanical ignores and
+dead-code deletion), wave 2 (05-04 to 05-08, the small extractions and conversions), wave 3 (05-09
+wallets split and 05-10 napplet permission/relay-tier promotion), waves 4-5 (05-11, 05-12, the rest
+of the napplet-shell split), wave 6 (05-13, the vitest harness), wave 7 (this closeout). One
+refinement worth recording, not a departure: the wave note above said "wave 3 onward — the harness
+and the two big splits"; the harness landed after both splits rather than alongside them, which is
+the ordering its own rationale called for (the testable pure functions only exist after the split).
+No plan ran out of order and no wave was reordered.
 
 ## Scope note (D-02)
 
