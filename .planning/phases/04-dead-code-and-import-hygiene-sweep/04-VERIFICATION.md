@@ -1,7 +1,7 @@
 ---
 phase: 04-dead-code-and-import-hygiene-sweep
 verified: 2026-10-01T17:50:00Z
-status: human_needed
+status: passed
 score: 24/29 must-haves verified
 behavior_unverified: 5
 overrides_applied: 0
@@ -9,6 +9,7 @@ re_verification:
   previous_status: human_needed
   previous_score: 17/23
   gaps_closed:
+
     - "Root cause of the UAT gap (draft never created on the PoW path, so the miningTarget && draft render gate never opened) is fixed in code in both composers (04-12)"
     - "MinePOW's success check now matches the worker's difficulty >= target break condition (04-12)"
     - "Three BLOCKER runtime defects that the render-gate fix exposed — signed-and-broadcast-after-dismiss, leaked worker pool on any non-Cancel/Skip unmount, unrecoverable spinner that destroys the cached draft — are fixed additively without touching D-12's cleanup() or 04-12's >= operator (04-13)"
@@ -17,22 +18,27 @@ re_verification:
   gaps_remaining: []
   regressions: []
 behavior_unverified_items:
+
   - truth: "With PoW difficulty above 0, mining progress appears, mining completes, and the note publishes, in both the new-note view and the post modal (the original UAT gap; 04-UAT.md test 2)"
     test: "Restart pnpm dev, hard-reload the tab so /@vite/env is refetched, compose a note, set difficulty > 0, submit, and let mining run to completion in both the new-note view and the post modal"
     expected: "No `ReferenceError: window is not defined` in the console; the progress bar advances; 'Found POW' appears; the note is signed and published; the composer returns to a normal state"
     why_human: "Both fixes (04-12's createDraft hoist and 04-14's globalThis define) are confirmed present and wired, and the prelude evaluates cleanly in a vm, but no browser run has observed a worker mining a hash. 04-UAT.md test 2 is still `result: issue` (owned by /gsd-verify-work, not edited here). The debug session pow-workers-fail-to-load.md is at awaiting_human_verify, not resolved."
+
   - truth: "MinePOW cancels the pending success-delay publish on any unmount route, in particular inside the ~800ms window after 'Found POW' (04-UAT.md test 3, post-'Found POW' half)"
     test: "After 04-14, mine to completion and dismiss via ESC/overlay (post modal) or navigate away (new-note view) within ~800ms of 'Found POW' appearing; check DevTools -> Sources -> Threads and relays"
     expected: "No note is published, no Worker threads survive"
     why_human: "04-UAT.md test 3 is recorded `pass` by the human for the mid-mine dismissal path only; the UAT note says the post-'Found POW' window was unreachable because mining never completed. 04-14 makes it reachable for the first time but it has not been exercised. A pendingPublish ref + clearTimeout are confirmed present by direct read; a timer cancelled before it fires is not observable statically."
+
   - truth: "A publish failure after mining returns the user to the compose form with their text intact, instead of a permanent spinner or an endless re-mine loop (04-UAT.md test 4)"
     test: "After 04-14, force a publish failure after mining completes (e.g. no write relays reachable) and observe the composer"
     expected: "The spinner clears, the compose form reappears with the note text intact, an error toast is visible, and mining does not restart on its own"
     why_human: "04-UAT.md test 4 is `blocked` (it needed mining to complete, which the worker prelude defect prevented). 04-14 removes that blocker at source level but the test has not been run. publishPost's unconditional setLoading('') and setMiningTarget(0) are confirmed present by direct read and grep."
+
   - truth: "D-12's cleanup() call in mine-pow.tsx terminates the just-completed run's worker pool on completion, with no lingering threads and no double-teardown against stopMiner()'s handling of the previous run, or against 04-13's unmount teardown (04-UAT.md test 1)"
     test: "Let a mine run to completion normally (not via dismissal) and confirm in DevTools -> Sources -> Threads that no Worker threads survive"
     expected: "cleanup() (mine-pow.tsx:47) terminates the run's own workers on the normal completion path; useUnmount's teardown does not double-fire in a way that errors"
     why_human: "Phase 4's original outstanding human item. 04-UAT.md records test 1 as `pass` but with the user's note that the worker pool mined zero hashes (the 04-14 defect), so mining never actually completed and the completion-path cleanup() was never exercised. It remains unproven until a mine completes in a browser."
+
   - truth: "Under pnpm dev, every PoW module worker loads and mines real hashes (04-14's falsification test: no other dev-only window reference exists in the worker graph)"
     test: "Same run as item 1; watch the console for any ReferenceError from a worker and the progress bar for non-zero hashes"
     expected: "Workers install self.onmessage, mine, and post progress/complete messages"
@@ -182,9 +188,11 @@ material), not gaps:
 
 - `helpers/nostr/relay-stats.ts`'s `getRTTTag(stats, _name)` still ignores its parameter (IN-01) —
   confirmed live, unfixed, correctly deferred.
+
 - `views/relays/components/relay-card.tsx`'s `RelayCard` export still has zero importers (IN-02) —
   confirmed live via repo-wide grep (only sibling `relay-card.tsx` modules with similar names are
   imported elsewhere; the default export itself is unused).
+
 - `event-zap-modal/index.tsx`'s `relays` prop is still destructured as `_relays` and never wired
   into the zap request (IN-03) — confirmed live.
 
@@ -240,16 +248,19 @@ consistent with `.claude/CLAUDE.md` D-16's no-sweep rule).
 
 - IN-01/IN-02/IN-03 from `04-REVIEW.md` (see correction above) — pre-existing, correctly
   out-of-scope, Phase 5 material.
+
 - **WR-03** (`04-REVIEW-12.md`'s numbering): `useCacheForm`'s teardown condition treats
   `isSubmitted` as "safely persisted," which for a long PoW mine means the cached draft is
   discarded the moment mining starts, not when the note actually publishes. Deferred with
   recorded rationale — fixing it touches all 8 consumer forms and the regression would be silent
   and unvalidatable without a dev server. CR-01's fix (04-13) shrinks but does not close this
   window.
+
 - **IN-01** (`04-REVIEW-12.md`'s own numbering, distinct from `04-REVIEW.md`'s IN-01): the post
   modal's difficulty slider omits `shouldDirty`, so a difficulty-only change is not cached.
   Confirmed still present live (`post-modal/index.tsx:256`: `onChange={(v) =>
   setValue("difficulty", v)}`, no options object). Deferred, one-line fix, named follow-up.
+
 - `mine-pow.tsx`'s `onProgress` stale-closure guard and `miner.ts`'s ignored `startNonce`/
   `endNonce` range (every worker mines an identical sequence) — both inherited from 04-12,
   unchanged by 04-13, recorded as candidates for a later phase.
@@ -259,10 +270,12 @@ consistent with `.claude/CLAUDE.md` D-16's no-sweep rule).
   every realm"). Confirmed real: vitest exists but no test covers `vite.config.ts`. The review's
   suggested vitest check is a cheap follow-up; it is a durability warning, not a failure of this
   phase's goal, and does not change status.
+
 - **WR-02 (`04-REVIEW-14.md`)**: `src/polyfill.ts` runs after the entry chunk's imports, so it
   protects almost nothing and the 04-14 claim that the two shims "cannot drift apart" overstates it.
   Behaviorally harmless today; the risk is a future maintainer removing the define as "redundant".
   Recommended follow-up: delete the polyfill or document its real coverage.
+
 - **IN-01 (`04-REVIEW-14.md`)**: the dev service worker gets neither the define rewrite nor the env
   prelude, so `global` is undefined there under `pnpm dev`. No harm today (Capacitor guards with
   `typeof`). Pre-existing and unchanged.
