@@ -200,7 +200,7 @@ seams and their duplicated blocks are factored out — with each thin wrapper ei
 justified — so the remaining complexity findings reflect deliberate structure.
 **Requirements:** TBD
 **Depends on:** Phase 4
-**Plans:** 13/14 plans executed
+**Plans:** 14/14 plans complete
 
 33 findings measured on `next` at commit `ac904e754` on 2026-09-24 (bucket H): 21 ×
 `code-quality/duplicate-block`, 8 × `complexity/function-too-long`, 2 ×
@@ -258,7 +258,7 @@ Plans:
 
 **Wave 7** *(blocked on Wave 6 completion)*
 
-- [ ] 05-14-PLAN.md — close the 33 → N table, inventory surviving ignores, dispose of latent bugs (wave 7)
+- [x] 05-14-PLAN.md — close the 33 → N table, inventory surviving ignores, dispose of latent bugs (wave 7)
 
 **Cross-cutting constraints:**
 

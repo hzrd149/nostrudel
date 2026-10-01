@@ -4,15 +4,15 @@ milestone: v1.0
 milestone_name: milestone
 current_phase: 05
 status: executing
-stopped_at: Completed 05-13-PLAN.md
-last_updated: "2026-10-01T15:02:04.012Z"
+stopped_at: Completed 05-14-PLAN.md
+last_updated: "2026-10-01T15:33:57.720Z"
 last_activity: 2026-10-01
 progress:
   total_phases: 8
   completed_phases: 4
   total_plans: 44
-  completed_plans: 43
-  percent: 98
+  completed_plans: 44
+  percent: 100
 current_phase_name: Refactor oversized files, long functions, and duplicated blocks
 ---
 
@@ -92,6 +92,7 @@ See: .planning/PROJECT.md (not present in this project; ROADMAP.md and the phase
 | Phase 05 P10 | ~25min | 2 tasks | 3 files |
 | Phase 05 P11 | ~35min | 3 tasks | 6 files |
 | Phase 05 P12 | 20min | 2 tasks | 3 files |
+| Phase 05 P14 | 20min | 2 tasks | 3 files |
 
 ## Decisions
 
@@ -137,6 +138,7 @@ See: .planning/PROJECT.md (not present in this project; ROADMAP.md and the phase
 - [Phase 05]: [Phase 05 Plan 11]: Promoted intent/common-actions/upload/resource/adapter regions into src/services/napplet-shell/*; resource service divided into isResourceRequestAllowed/fetchResource/handleResourceMessage in its own commit (D-12) clearing the finding rather than relocating it; signer helper left in provider until Task 3 and moved with its real sole owner (createAdapter), contradicting the plan's prose claim it was also used by the intent service; no unused logger added to the three Task-1 modules since none of their moved functions logged. Bucket-H fell 3->1 (file-too-large 1->0, function-too-long 2->1); provider 1117->274 lines.
 - [Phase 05]: 05-12: Landed the modal extraction as a single move commit (not move-then-adjust) since the plan's own Task 1 action text folds the props-threading into the move itself
 - [Phase 05]: 05-12: Each modal defines its own minimal local prop type instead of importing the provider's internal ConsentRequest/IntentChoiceRequest types, keeping the provider's export surface at exactly two functions
+- [Phase 05]: 05-14: bucket-H closed 33->0; 13 findings behind 9 rule-scoped directives; no backlog promotion
 
 ## Quick Tasks Completed
 
@@ -151,6 +153,6 @@ See: .planning/PROJECT.md (not present in this project; ROADMAP.md and the phase
 ## Session
 
 **Last activity:** 2026-10-01
-**Last session:** 2026-09-25T00:48:09.241Z
-**Stopped at:** Completed 05-13-PLAN.md
+**Last session:** 2026-10-01T15:33:57.709Z
+**Stopped at:** Completed 05-14-PLAN.md
 **Resume file:** None
