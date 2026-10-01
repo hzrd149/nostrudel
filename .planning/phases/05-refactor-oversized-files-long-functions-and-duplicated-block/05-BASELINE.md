@@ -757,6 +757,25 @@ rules repo-wide, and those three directories carry no `aislop-ignore` directive.
 `pnpm build` exits 0 and `pnpm test` exits 0 (2 files, 17 tests) at the close of the phase. `pnpm lint`
 was not used as a gate (it always exits non-zero in this project).
 
+### Latent-bug disposition ledger (D-18)
+
+Every latent item or deferred observation recorded across plans 05-01 to 05-13, with its one of
+three allowed dispositions. Nothing was promoted to the backlog: nothing remained that was both a
+real defect and unfixable in a small provable commit.
+
+| Item | Source | Disposition |
+|---|---|---|
+| `getRTTTag` ignored its `name` parameter, so `getRTT`'s read/write silently duplicated `open` (Phase 4-deferred) | 05-02 | Fixed by deletion, commit `5ac9e7443` (dead half of `relay-stats.ts` removed, no consumer outside the file) |
+| Notification badge `colorScheme={count > 0 ? "primary" : "gray"}` redundant after the `count === 0` guard | 05-05 | Fixed in its own commit `bf9bf5c63` (`colorScheme="primary"`); provable because `count` is always a filtered array `.length`, so the gray branch was unreachable. `pnpm build` green |
+| Sixth callback (`joinRealtimeChannel`) missing from CONTEXT.md's D-12 breakdown of `useWebxdc` | 05-07 | Judged not a defect: a documentation gap in a planning document, already corrected in the 05-07 section above |
+| 05-10 Task 1 prose ("leave the callback calling the map's delete") contradicted its own never-export-the-map criterion | 05-10 | Judged not a defect: a plan-text conflict resolved in-phase in favour of the security requirement; behaviour identical across both commits |
+| `createWeblnBackend`/`createNwcBackend` take `log` as a parameter instead of a module-level logger | 05-09 | Judged not a defect: a deliberate non-move adjustment (avoids an import cycle and a 22nd barrel export), no log message changed |
+| `shareReplay(1)` textual count 4 -> 2 in `notifications/common.ts` | 05-06 | Judged not a defect: the consolidation the plan itself called for; each loader still gets its own independent replay pipeline |
+| `applyUpdate` in `service-worker-status-card.tsx` still uses `try/catch` rather than `useAsyncAction` | 05-04 | Judged not a defect: it already logs and toasts the failure (not swallowed), was not a flagged finding, and converting it would be scope creep; a convention nit under the swallowed-exception/`useAsyncAction` guidance, not a bug |
+| `nwc.ts` import needs a `../preferences` mock under node (Capacitor reads `window` at module load) | 05-13 | Judged not a defect of this phase: a pre-existing import-time side effect in `preferences`, handled test-side without touching source |
+| Pre-existing findings surfaced in moved/touched files (`narrative-comment`, `hardcoded-url`, `unsafe-type-assertion`/`double-type-assertion`, `ts-directive`, `react-hooks/exhaustive-deps`) | 05-03, 05-08, 05-09 | Already tracked: owned by Phase 6 (type-safety), Phase 8 (hardcoded URLs) and backlog 999.5 / 999.8; not swept here per D-16 |
+| Runtime behaviour of every extraction not exercised in a browser (OUTSTANDING items in 05-04 to 05-12 summaries) | 05-04..05-12 | Judged not a defect: unverified claims, not found bugs. Carried to the phase verifier's human-UAT list; `pnpm test` now covers the two pure-function surfaces (permissions, NWC mapper) |
+
 ### D-17 wave-order record
 
 Executed order matched the plan: wave 1 (05-01 to 05-03, baseline plus the mechanical ignores and
