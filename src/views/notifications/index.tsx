@@ -29,7 +29,7 @@ function NotificationCountBadge({
 
   return (
     <Flex alignItems="center" gap="2">
-      <Badge colorScheme={count > 0 ? "primary" : "gray"} fontSize="sm">
+      <Badge colorScheme="primary" fontSize="sm">
         {count}
       </Badge>
       {timeRange !== "all" && (
