@@ -141,7 +141,7 @@ documented or removed as an explicit decision.
 D-12, D-12a, D-13, D-14, D-15
 (no REQUIREMENTS.md exists; the requirement set is the locked decisions in `04-CONTEXT.md`)
 **Depends on:** Phase 2
-**Plans:** 13/14 plans complete
+**Plans:** 14/14 plans complete
 
 445 findings in the [2026-09-11 baseline](./research/aislop-scan-2026-09-11.md) (bucket C) —
 the largest bucket, and 132 of them auto-fixable via `aislop fix`. 239 × `eslint/no-unused-vars`,
@@ -195,7 +195,7 @@ Plans:
 
 **Wave 8** *(gap closure — 04-UAT round 2, PoW miner workers fail to load under `pnpm dev`)*
 
-- [ ] 04-14-PLAN.md — alias `global` to `globalThis` in the Vite define so dev module workers load; align the polyfill; record the fix in the debug session (wave 8)
+- [x] 04-14-PLAN.md — alias `global` to `globalThis` in the Vite define so dev module workers load; align the polyfill; record the fix in the debug session (wave 8)
 
 ### Phase 5: Refactor oversized files, long functions, and duplicated blocks
 
