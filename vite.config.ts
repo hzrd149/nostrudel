@@ -39,8 +39,10 @@ export default defineConfig({
     },
   },
   define: {
-    // Fix libraries trying to reference 'global' instead of 'window' or 'globalThis'
-    global: "window",
+    // Dependencies reference Node's 'global'. Vite inlines this value verbatim into the /@vite/env
+    // prelude of every dev module worker (the PoW miners), and workers have no 'window'.
+    // globalThis is the window on the main thread, so main-thread behavior is unchanged.
+    global: "globalThis",
   },
   plugins: [
     react(),
