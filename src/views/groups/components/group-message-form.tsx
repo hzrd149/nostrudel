@@ -23,13 +23,7 @@ export default function GroupMessageForm({ group, ...props }: { group: GroupPoin
   });
   watch("content");
 
-  useCacheForm(
-    `${encodeGroupPointer(group)}-send-message`,
-    // @ts-expect-error
-    getValues,
-    reset,
-    formState,
-  );
+  useCacheForm<{ content: string }>(`${encodeGroupPointer(group)}-send-message`, getValues, reset, formState);
 
   const componentRef = useRef<RefType | null>(null);
   const textAreaRef = useRef<HTMLTextAreaElement | null>(null);
