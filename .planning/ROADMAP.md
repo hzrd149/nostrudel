@@ -275,7 +275,7 @@ usage — the IndexedDB wrapper and the copy-pasted notification casts — are r
 typed helpers, and each remaining directive states why the type system cannot express it.
 **Requirements:** TBD
 **Depends on:** Phase 2
-**Plans:** 8/10 plans executed
+**Plans:** 9/10 plans executed
 
 68 findings measured on `next` at commit `5884dac0a` on 2026-10-05 (score 85/100, bucket E):
 35 × `ts-directive` (`@ts-ignore` / `@ts-expect-error`, info severity), 20 ×
@@ -316,7 +316,7 @@ Plans:
 
 **Wave 3** *(blocked on Wave 2 completion)*
 
-- [ ] 06-09-PLAN.md — DBSchema-assignable schema aliases and one atSchema helper for the migration chain (wave 3)
+- [x] 06-09-PLAN.md — DBSchema-assignable schema aliases and one atSchema helper for the migration chain (wave 3)
 
 **Wave 4** *(blocked on Wave 3 completion)*
 
