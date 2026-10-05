@@ -161,6 +161,20 @@ All plans ran on 2026-10-05 in the planned order, with no deviation from the wav
 
 Noted deviation: the vertex ignore commit `83a2b9d65` is typed `chore(06-08)` rather than `refactor`, which does not affect behavior.
 
+## Manual verification outstanding
+
+Browser-only behaviors the phase could not verify automatically (no `fake-indexeddb`, no browser test runner). None is marked verified: a passing build and 28/28 tests do not cover them. They feed `/gsd-verify-work`. Rows 1 and 2 are also in `06-VALIDATION.md`'s Manual-Only table.
+
+| # | Behavior | Plan / decision | Steps | Status |
+|---|---|---|---|---|
+| 1 | "Clear cache data" completes | 06-04 (D-07); VALIDATION Manual-Only row 1 | Settings > Cache > Database > Clear cache data: the button stops spinning, the page reloads, no `NotFoundError` in the console | outstanding |
+| 2 | IndexedDB migrations still run | 06-04 (D-08) and 06-09 (D-05/D-06); VALIDATION Manual-Only row 2 | Clear site data, load the app: it boots with no console errors (v0 -> v13 migration chain). Then load an existing profile: it boots and its accounts are intact | outstanding |
+| 3 | Napplet subscribe and publish | 06-05 (D-11) | In a napplet, subscribe through the shell and confirm events return; publish an event and confirm success is reported | outstanding |
+| 4 | WebLN wallet balance | 06-05 (D-11) | With a WebLN provider connected, open the wallet view and confirm the balance still shows | outstanding |
+| 5 | webxdc app lifecycle | 06-06 (D-11, D-14, D-15) | Load a webxdc app: it receives `webxdc.init`, and sends and receives a state update | outstanding |
+| 6 | @-mention autocomplete | 06-07 (D-11, D-12) | Type `@` in a note composer (MagicTextArea) and in stream chat (MagicInput): the autocomplete opens | outstanding |
+| 7 | Paste-to-upload in stream chat | 06-07 (D-11) | Paste an image into the stream chat input: it uploads | outstanding |
+
 ## Rescan and inventory commands
 
 Bucket-E rescan (the scan exits non-zero by design; read the JSON, not the exit code):
