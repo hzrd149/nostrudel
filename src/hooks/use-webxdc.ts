@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useMemo, useState } from "react";
 import { useActiveAccount } from "applesauce-react/hooks";
-import { nip19, EventTemplate } from "nostr-tools";
+import { nip19, EventTemplate, NostrEvent } from "nostr-tools";
 import type { Webxdc as WebxdcAPI, SendingStatusUpdate, ReceivedStatusUpdate, RealtimeListener } from "@webxdc/types";
 import { onlyEvents } from "applesauce-relay";
 
@@ -20,7 +20,7 @@ import { WEBXDC_UPDATE_KIND, WEBXDC_REALTIME_KIND } from "../helpers/nostr/webxd
  */
 function useWebxdcCollectedUpdates(uuid: string, relays: string[]): ReceivedStatusUpdate<unknown>[] {
   // Track all received state update events (for serial assignment + getAllUpdates)
-  const [stateEvents, setStateEvents] = useState<Array<{ content: string; created_at: number; tags: string[][] }>>([]);
+  const [stateEvents, setStateEvents] = useState<NostrEvent[]>([]);
 
   // Subscribe to kind 4932 persistent state updates
   useEffect(() => {
@@ -32,9 +32,9 @@ function useWebxdcCollectedUpdates(uuid: string, relays: string[]): ReceivedStat
       .subscribe((event) => {
         setStateEvents((prev) => {
           // Deduplicate by event id
-          const alreadyHave = prev.some((e) => (e as any).id === (event as any).id);
+          const alreadyHave = prev.some((e) => e.id === event.id);
           if (alreadyHave) return prev;
-          const next = [...prev, event as any].sort((a, b) => a.created_at - b.created_at);
+          const next = [...prev, event].sort((a, b) => a.created_at - b.created_at);
           return next;
         });
       });
@@ -169,7 +169,7 @@ function useWebxdcRealtimeChannel(
       .subscribe((event) => {
         if (abortController.signal.aborted) return;
         // Don't echo back our own events
-        if ((event as any).pubkey === activePubkey) return;
+        if (event.pubkey === activePubkey) return;
         if (!realtimeListener) return;
 
         try {
