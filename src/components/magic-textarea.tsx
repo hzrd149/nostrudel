@@ -163,8 +163,10 @@ function useAutocompleteTriggers() {
   return triggers;
 }
 
-// @ts-ignore
-export type RefType = ReactTextareaAutocomplete<Token, TextareaProps>;
+/** Chakra's responsive `color` prop clashes with the HTML attribute the autocomplete library's props generic is constrained to */
+type AutocompleteTextareaProps = Omit<TextareaProps, "color">;
+
+export type RefType = ReactTextareaAutocomplete<Token, AutocompleteTextareaProps>;
 
 // Shared props factory for MagicInput/MagicTextArea; only the element and default label differ.
 function createAutocompleteProps<E, R>(
@@ -179,7 +181,11 @@ function createAutocompleteProps<E, R>(
     loadingComponent: Loading,
     minChar: 0,
     trigger: triggers,
-    innerRef: ref && (typeof ref === "function" ? ref : (el: R) => ((ref as React.MutableRefObject<R>).current = el)),
+    innerRef: ref
+      ? typeof ref === "function"
+        ? ref
+        : (el: R) => ((ref as React.MutableRefObject<R>).current = el)
+      : undefined,
     "aria-label": ariaLabel || defaultAriaLabel,
     role: "combobox" as const,
     "aria-autocomplete": "list" as const,
@@ -192,7 +198,8 @@ const MagicInput = forwardRef<HTMLInputElement, InputProps & { instanceRef?: Leg
     const triggers = useAutocompleteTriggers();
 
     return (
-      // @ts-expect-error
+      // aislop-ignore-next-line ai-slop/ts-directive -- the autocomplete library constrains its props generic to textarea attributes while MagicInput deliberately renders a Chakra Input whose props and handlers are typed for HTMLInputElement, so no props type satisfies the library's own typings
+      // @ts-expect-error -- TS2344: InputProps does not satisfy TextareaHTMLAttributes<HTMLTextAreaElement> because onChange is ChangeEventHandler<HTMLInputElement>
       <ReactTextareaAutocomplete<Token, InputProps>
         {...props}
         ref={instanceRef}
@@ -207,8 +214,7 @@ const MagicTextArea = forwardRef<HTMLTextAreaElement, TextareaProps & { instance
     const triggers = useAutocompleteTriggers();
 
     return (
-      // @ts-expect-error
-      <ReactTextareaAutocomplete<Token, TextareaProps>
+      <ReactTextareaAutocomplete<Token, AutocompleteTextareaProps>
         {...props}
         ref={instanceRef}
         {...createAutocompleteProps(Textarea, "Textarea with autocomplete", triggers, ref, props["aria-label"])}
