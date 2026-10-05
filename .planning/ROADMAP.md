@@ -277,16 +277,24 @@ typed helpers, and each remaining directive states why the type system cannot ex
 **Depends on:** Phase 2
 **Plans:** 10 plans
 
-68 findings in the [2026-09-11 baseline](./research/aislop-scan-2026-09-11.md) (bucket E):
+68 findings measured on `next` at commit `5884dac0a` on 2026-10-05 (score 85/100, bucket E):
 35 × `ts-directive` (`@ts-ignore` / `@ts-expect-error`, info severity), 20 ×
-`double-type-assertion` (`as unknown as X`), 13 × `unsafe-type-assertion` (`as any`).
+`double-type-assertion` (`as unknown as X`), 13 × `unsafe-type-assertion` (`as any`). The
+[2026-09-11 baseline](./research/aislop-scan-2026-09-11.md) is the earlier measurement: its
+total matches, but its per-file distribution drifted with Phase 5's file splits.
 
-Two clusters make up most of the value: `services/database/index.ts` holds 18 (IndexedDB
-wrapper casts — one properly-typed wrapper clears the file), and the identical `as any` casts
-copy-pasted across `views/notifications/{mentions,quotes,replies,reposts,threads,zaps}/index.tsx`
-want one shared typed helper. Also `services/loaders.ts` (5),
-`providers/global/napplet-shell-provider.tsx` (4), `components/magic-textarea.tsx` (3),
-`hooks/use-webxdc.ts` (3), `services/wallets.ts` (3).
+Three clusters make up most of the value. The largest is 19 DEV-only `window.X = X` debug
+globals across 15 service files (`services/loaders.ts` holds 5 of them), each replaced by
+`Reflect.set` inside its existing DEV block (the `services/debug-api.ts` precedent).
+`services/database/index.ts` holds 18 (IndexedDB wrapper casts — one properly-typed wrapper
+clears the file). The six `as any` casts across
+`views/notifications/{mentions,quotes,replies,reposts,threads,zaps}/index.tsx` share one cause:
+`useVirtualListScrollRestore` in `hooks/use-scroll-restore.ts` types its list-ref callback for
+react-window's fixed-size list while the six notification views render the variable-size list,
+so typing the callback against the shared `scrollTo` surface removes all six casts. Also
+`services/napplet-shell/adapter.ts` (3) and `services/napplet-shell/common-actions.ts` (1),
+`components/magic-textarea.tsx` (3), `hooks/use-webxdc.ts` (3), `services/wallets/webln.ts` (2)
+plus the debug global in `services/wallets/index.ts`.
 
 The vendored `lib/open-graph-scraper/*` hits from the 2026-08-02 scan no longer appear — Phase 2
 excludes those paths from scoring.
