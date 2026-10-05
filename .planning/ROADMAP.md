@@ -275,7 +275,7 @@ usage — the IndexedDB wrapper and the copy-pasted notification casts — are r
 typed helpers, and each remaining directive states why the type system cannot express it.
 **Requirements:** TBD
 **Depends on:** Phase 2
-**Plans:** 0 plans
+**Plans:** 10 plans
 
 68 findings in the [2026-09-11 baseline](./research/aislop-scan-2026-09-11.md) (bucket E):
 35 × `ts-directive` (`@ts-ignore` / `@ts-expect-error`, info severity), 20 ×
@@ -292,8 +292,31 @@ The vendored `lib/open-graph-scraper/*` hits from the 2026-08-02 scan no longer 
 excludes those paths from scoring.
 
 Plans:
+**Wave 1**
 
-- [ ] TBD (plan with /gsd-plan-phase 6)
+- [ ] 06-01-PLAN.md — record the measured 68-finding baseline and correct the stale Phase 6 entry (wave 1)
+- [ ] 06-02-PLAN.md — replace the 19 DEV-only debug-global directives with Reflect.set (wave 1)
+- [ ] 06-03-PLAN.md — type the scroll-restore ref callback, delete dead directives, Reflect.deleteProperty the debug API (wave 1)
+
+**Wave 2** *(blocked on Wave 1 completion)*
+
+- [ ] 06-04-PLAN.md — fix clearCacheData's deleted-store clear in its own commit and destructure the v5 migration (wave 2)
+- [ ] 06-05-PLAN.md — explicit napplet pool adapter and filter conversion, cast-free reactions, global window.webln type (wave 2)
+- [ ] 06-06-PLAN.md — tested webxdc JSON-RPC guard and NostrEvent-typed useWebxdc state (wave 2)
+- [ ] 06-07-PLAN.md — form, paste-handler and magic-textarea typing with one reasoned surviving directive (wave 2)
+- [ ] 06-08-PLAN.md — case-insensitive event-console units with tests, event-publisher typing, Vertex ignore (wave 2)
+
+**Wave 3** *(blocked on Wave 2 completion)*
+
+- [ ] 06-09-PLAN.md — DBSchema-assignable schema aliases and one atSchema helper for the migration chain (wave 3)
+
+**Wave 4** *(blocked on Wave 3 completion)*
+
+- [ ] 06-10-PLAN.md — close the 68 -> N table, inventory surviving ignores, refresh plan progress (wave 4)
+
+**Cross-cutting constraints:**
+
+- D-07 and D-18 each land in their own commit; the schema conversion and all 16 migration-cast removals land as one commit
 
 ### Phase 7: Accessibility pass on interactive components
 
