@@ -98,7 +98,7 @@ export default function ZapsTab() {
                   width={width}
                   height={height}
                   outerRef={scroll.outerRef}
-                  ref={scroll.ref as any}
+                  ref={scroll.ref}
                 >
                   {ListItemRow}
                 </List>

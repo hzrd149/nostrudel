@@ -95,7 +95,7 @@ export default function SharesTab() {
                   width={width}
                   height={height}
                   outerRef={scroll.outerRef}
-                  ref={scroll.ref as any}
+                  ref={scroll.ref}
                 >
                   {ListItemRow}
                 </List>
