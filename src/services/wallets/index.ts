@@ -270,8 +270,7 @@ accounts.active$.subscribe(() => syncNutWallet());
 localSettings.enableNutWallet.subscribe(() => syncNutWallet());
 
 if (import.meta.env.DEV) {
-  // @ts-expect-error debug
-  window.wallets = {
+  Reflect.set(window, "wallets", {
     wallets$,
     activeWallet$,
     nutWallet$,
@@ -285,5 +284,5 @@ if (import.meta.env.DEV) {
     setNutWalletEnabled,
     setNutWalletAutoUnlock,
     cleanupNutWalletDeletedTokens,
-  };
+  });
 }

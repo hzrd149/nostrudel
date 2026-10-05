@@ -24,6 +24,5 @@ class XmlFeedsService {
 export const xmlFeedsService = new XmlFeedsService();
 
 if (import.meta.env.DEV) {
-  // @ts-expect-error
-  window.xmlFeedsService = xmlFeedsService;
+  Reflect.set(window, "xmlFeedsService", xmlFeedsService);
 }

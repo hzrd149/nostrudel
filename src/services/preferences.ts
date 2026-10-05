@@ -223,8 +223,7 @@ if (cleanup.length) {
 }
 
 if (import.meta.env.DEV) {
-  // @ts-expect-error debug
-  window.localSettings = localSettings;
+  Reflect.set(window, "localSettings", localSettings);
 }
 
 export default localSettings;
