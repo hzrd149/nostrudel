@@ -224,8 +224,8 @@ export async function clearCacheData() {
   log("Clearing relayInfo");
   await db.clear("relayInfo");
 
-  log("Clearing dnsIdentifiers");
-  await db.clear("dnsIdentifiers");
+  log("Clearing identities");
+  await db.clear("identities");
 
   log("Clearing relayScoreboardStats");
   await db.clear("relayScoreboardStats");
