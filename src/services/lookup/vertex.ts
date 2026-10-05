@@ -33,6 +33,7 @@ export async function vertexLookup(search: string, limit?: number): Promise<Prof
   const vertex = await firstValueFrom(vertex$);
   if (!vertex) throw new Error("Vertex requires active account");
 
+  // aislop-ignore-next-line ai-slop/unsafe-type-assertion -- the stored vertex sort method is a free string that can hold values outside applesauce-extra's SortMethod union (the settings menu offers userPagerank and followDistance); the Vertex custom API integration is slated for replacement by the Open-Ranking protocol API, so the value is passed through unchanged rather than validated
   const method = localSettings.vertexSortMethod.value as any;
   return vertex.userSearch(search, method || "globalPagerank", limit);
 }

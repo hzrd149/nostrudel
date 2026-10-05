@@ -1,5 +1,19 @@
-import dayjs from "dayjs";
+import dayjs, { type ManipulateType } from "dayjs";
 import { Filter, nip19 } from "nostr-tools";
+
+const TIME_UNITS: Record<string, ManipulateType> = {
+  h: "hour",
+  w: "week",
+  m: "minute",
+  s: "second",
+  d: "day",
+};
+
+/** Maps a relative-date unit letter (any case) to a dayjs unit, defaulting to hours when absent. */
+export function parseTimeUnit(letter: string | undefined): ManipulateType {
+  if (!letter) return "hour";
+  return TIME_UNITS[letter.toLowerCase()] ?? "hour";
+}
 
 export function processDateString(date: string) {
   if (date.toLowerCase() === "now" || date.toLowerCase() === "n") {
@@ -9,19 +23,9 @@ export function processDateString(date: string) {
     if (match === null) throw new Error(`Cant parse relative date string ${date}`);
 
     if (match[1] === "-") {
-      return (
-        dayjs()
-          // @ts-expect-error
-          .subtract(parseInt(match[2]), match[3] || "h")
-          .unix()
-      );
+      return dayjs().subtract(parseInt(match[2]), parseTimeUnit(match[3])).unix();
     } else if (match[1] === "+") {
-      return (
-        dayjs()
-          // @ts-expect-error
-          .add(parseInt(match[2]), match[3] || "h")
-          .unix()
-      );
+      return dayjs().add(parseInt(match[2]), parseTimeUnit(match[3])).unix();
     } else throw Error(`Unknown operation ${match[1]}`);
   }
 
