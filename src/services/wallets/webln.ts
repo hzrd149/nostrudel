@@ -46,20 +46,13 @@ function awaitBalanceIncrease(
 }
 
 // ---- WebLN (window.webln) ----
-interface WebLNProvider {
-  enable(): Promise<void>;
-  getBalance?(): Promise<{ balance: number }>;
-  makeInvoice(args: { amount: number | string; defaultMemo?: string }): Promise<{ paymentRequest: string }>;
-  sendPayment(invoice: string): Promise<{ preimage: string }>;
-}
-
 /** Whether a WebLN provider is currently available on the window */
 export function hasWebln(): boolean {
-  return !!(window as unknown as { webln?: unknown }).webln;
+  return !!window.webln;
 }
 
-function getWebln(): WebLNProvider {
-  const webln = (window as unknown as { webln?: WebLNProvider }).webln;
+function getWebln(): NonNullable<Window["webln"]> {
+  const webln = window.webln;
   if (!webln) throw new Error("No WebLN provider found — install Alby or a compatible extension");
   return webln;
 }
