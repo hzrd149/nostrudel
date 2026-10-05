@@ -1,6 +1,8 @@
 import { useRef, useEffect, useCallback, useImperativeHandle, forwardRef, type IframeHTMLAttributes } from "react";
 import type { Webxdc as WebxdcAPI, ReceivedStatusUpdate } from "@webxdc/types";
 
+import { isWebxdcMessage } from "./jsonrpc";
+
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
@@ -108,9 +110,8 @@ export const Webxdc = forwardRef<WebxdcHandle, WebxdcProps>(function Webxdc({ id
       if (event.origin !== origin) return;
       if (event.source !== iframeRef.current?.contentWindow) return;
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const msg = event.data as any;
-      if (!msg || msg.jsonrpc !== "2.0") return;
+      const msg: unknown = event.data;
+      if (!isWebxdcMessage(msg)) return;
 
       const api = webxdcRef.current;
 
@@ -143,7 +144,7 @@ export const Webxdc = forwardRef<WebxdcHandle, WebxdcProps>(function Webxdc({ id
     // claimed the method (and already called respond/respondError), false otherwise.
     async function handleUpdateRequest(
       api: WebxdcAPI<unknown>,
-      method: string,
+      method: unknown,
       params: RequestParams,
       respond: (result: unknown) => void,
     ): Promise<boolean> {
@@ -205,7 +206,7 @@ export const Webxdc = forwardRef<WebxdcHandle, WebxdcProps>(function Webxdc({ id
     // Returns true when it claimed the method, false otherwise.
     function handleRealtimeRequest(
       api: WebxdcAPI<unknown>,
-      method: string,
+      method: unknown,
       params: RequestParams,
       respond: (result: unknown) => void,
       respondError: (code: number, message: string) => void,
@@ -257,7 +258,7 @@ export const Webxdc = forwardRef<WebxdcHandle, WebxdcProps>(function Webxdc({ id
       }
     }
 
-    async function handleRequest(id: string | number, method: string, params: RequestParams) {
+    async function handleRequest(id: unknown, method: unknown, params: RequestParams) {
       const api = webxdcRef.current;
 
       const respond = (result: unknown) => post({ jsonrpc: "2.0", id, result });
