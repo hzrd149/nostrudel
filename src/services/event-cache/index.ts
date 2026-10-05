@@ -89,8 +89,7 @@ localSettings.eventCache.pipe(filter((type) => type !== null && type !== eventCa
 
 if (import.meta.env.DEV) {
   eventCache$.subscribe((cache) => {
-    // @ts-expect-error debug
-    window.eventCache = cache;
+    Reflect.set(window, "eventCache", cache);
   });
 }
 

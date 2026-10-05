@@ -219,8 +219,7 @@ setInterval(() => {
 }, 1000 * 30);
 
 if (import.meta.env.DEV) {
-  // @ts-expect-error debug
-  window.relayScoreboardService = relayScoreboardService;
+  Reflect.set(window, "relayScoreboardService", relayScoreboardService);
 }
 
 export default relayScoreboardService;

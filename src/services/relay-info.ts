@@ -28,8 +28,7 @@ export const relayInfoService = { getInfo };
 Relay.fetchInformationDocument = (url) => from(getInfo(url, true));
 
 if (import.meta.env.DEV) {
-  // @ts-ignore
-  window.relayInfoService = relayInfoService;
+  Reflect.set(window, "relayInfoService", relayInfoService);
 }
 
 export default relayInfoService;

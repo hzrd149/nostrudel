@@ -10,6 +10,5 @@ eventStore.verifyEvent = (event) => {
 };
 
 if (import.meta.env.DEV) {
-  // @ts-expect-error debug
-  window.eventStore = eventStore;
+  Reflect.set(window, "eventStore", eventStore);
 }

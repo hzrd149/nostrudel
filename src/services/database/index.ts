@@ -243,8 +243,7 @@ export async function deleteDatabase() {
 }
 
 if (import.meta.env.DEV) {
-  // @ts-ignore
-  window.db = db;
+  Reflect.set(window, "db", db);
 }
 
 export default db;

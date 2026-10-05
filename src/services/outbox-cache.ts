@@ -50,8 +50,7 @@ class OutboxCacheService {
 const outboxCacheService = new OutboxCacheService();
 
 if (import.meta.env.DEV) {
-  //@ts-ignore
-  window.outboxCacheService = outboxCacheService;
+  Reflect.set(window, "outboxCacheService", outboxCacheService);
 }
 
 export default outboxCacheService;
