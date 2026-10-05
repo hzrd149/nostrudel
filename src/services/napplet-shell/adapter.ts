@@ -12,6 +12,7 @@ import {
   type RelayListEntry,
 } from "@kehto/services";
 import type { RelayPoolLike, ShellAdapter } from "@kehto/shell";
+import type { NostrFilter } from "@napplet/core";
 import { getInboxes, getOutboxes } from "applesauce-core/helpers";
 import { EventTemplate, Filter, kinds, NostrEvent } from "nostr-tools";
 import { catchError, filter, firstValueFrom, of, take, timeout, toArray } from "rxjs";
@@ -49,6 +50,11 @@ import { createBlossomUploadService, type UploadConfig } from "./upload-service"
  */
 const DISABLED_NAP_DOMAINS = ["keys", "media", "config", "cvm"] as const;
 
+/** Copies napplet filters into nostr-tools filters (which also allow `&` tag keys and `search`). */
+function toRelayFilters(filters: NostrFilter[]): Filter[] {
+  return filters.map((f) => ({ ...f }));
+}
+
 function getSigner() {
   const account = accounts.active;
   if (!account) return null;
@@ -70,7 +76,14 @@ export function createAdapter(
   uploadEnabled: boolean,
 ): ShellAdapter {
   const subscriptions = new Map<string, () => void>();
-  const poolLike = pool as unknown as RelayPoolLike;
+  // Expose only what kehto calls; applesauce's `count` returns an Observable, not kehto's number.
+  const poolLike: RelayPoolLike = {
+    subscription: (relayUrls, filters) => pool.subscription(relayUrls, filters),
+    request: (relayUrls, filters) => pool.request(relayUrls, filters),
+    publish: async (relayUrls, event) => {
+      await pool.publish(relayUrls, event);
+    },
+  };
 
   const selectRelayTier = (filters: unknown[]) => (filters.length === 0 ? getWriteRelays() : getReadRelays());
 
@@ -148,7 +161,7 @@ export function createAdapter(
   // relay discovery, signing, and fanout so napplets never touch keys or pick relays.
   const outboxRelayPool: OutboxRelayPool = {
     subscribe: (filters, relayUrls, callback) => {
-      const sub = pool.subscription(relayUrls, filters as any).subscribe((item) => {
+      const sub = pool.subscription(relayUrls, toRelayFilters(filters)).subscribe((item) => {
         callback((item as unknown) === "EOSE" ? "EOSE" : (item as NostrEvent));
       });
       return { unsubscribe: () => sub.unsubscribe() };
@@ -222,9 +235,11 @@ export function createAdapter(
     intent: createNappletIntentService({ navigate: getIntentNavigator, chooseHandler: chooseIntentHandler }),
     relay: createRelayPoolService({
       subscribe: (filters, callback, relayUrls) => {
-        const sub = pool.subscription(relayUrls ?? selectRelayTier(filters), filters as any).subscribe((item) => {
-          callback(item as NostrEvent);
-        });
+        const sub = pool
+          .subscription(relayUrls ?? selectRelayTier(filters), toRelayFilters(filters))
+          .subscribe((item) => {
+            callback(item as NostrEvent);
+          });
         return { unsubscribe: () => sub.unsubscribe() };
       },
       publish: (event) => {
