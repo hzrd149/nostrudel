@@ -275,7 +275,7 @@ usage — the IndexedDB wrapper and the copy-pasted notification casts — are r
 typed helpers, and each remaining directive states why the type system cannot express it.
 **Requirements:** TBD
 **Depends on:** Phase 2
-**Plans:** 9/10 plans executed
+**Plans:** 10/10 plans complete
 
 68 findings measured on `next` at commit `5884dac0a` on 2026-10-05 (score 85/100, bucket E):
 35 × `ts-directive` (`@ts-ignore` / `@ts-expect-error`, info severity), 20 ×
@@ -320,7 +320,7 @@ Plans:
 
 **Wave 4** *(blocked on Wave 3 completion)*
 
-- [ ] 06-10-PLAN.md — close the 68 -> N table, inventory surviving ignores, refresh plan progress (wave 4)
+- [x] 06-10-PLAN.md — close the 68 -> N table, inventory surviving ignores, refresh plan progress (wave 4)
 
 **Cross-cutting constraints:**
 
