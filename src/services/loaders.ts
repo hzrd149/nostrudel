@@ -106,14 +106,9 @@ export const socialGraphLoader = createSocialGraphLoader(pool, {
 });
 
 if (import.meta.env.DEV) {
-  // @ts-expect-error
-  window.profileLoader = profileLoader;
-  // @ts-expect-error
-  window.addressLoader = replaceableLoader;
-  // @ts-expect-error
-  window.eventLoader = eventLoader;
-  // @ts-expect-error
-  window.zapsLoader = zapsLoader;
-  // @ts-expect-error
-  window.reactionsLoader = reactionsLoader;
+  Reflect.set(window, "profileLoader", profileLoader);
+  Reflect.set(window, "addressLoader", replaceableLoader);
+  Reflect.set(window, "eventLoader", eventLoader);
+  Reflect.set(window, "zapsLoader", zapsLoader);
+  Reflect.set(window, "reactionsLoader", reactionsLoader);
 }

@@ -76,8 +76,7 @@ export function nostrRequest(relays: string[], filters: Filter[], id?: string): 
 }
 
 if (import.meta.env.DEV) {
-  // @ts-expect-error
-  window.pool = pool;
+  Reflect.set(window, "pool", pool);
 }
 
 export default pool;
