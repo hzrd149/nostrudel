@@ -110,12 +110,11 @@ const db = await openDB<SchemaV13>(dbName, version, {
 
       objectStore.getAll().then((accounts: SchemaV4["accounts"]["value"][]) => {
         for (const account of accounts) {
+          const { useExtension, ...rest } = account;
           const newAccount: SchemaV5["accounts"]["value"] = {
-            ...account,
-            connectionType: account.useExtension ? "extension" : undefined,
+            ...rest,
+            connectionType: useExtension ? "extension" : undefined,
           };
-          // @ts-ignore
-          delete newAccount.useExtension;
 
           objectStore.put(newAccount);
         }
