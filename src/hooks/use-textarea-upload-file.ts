@@ -80,7 +80,7 @@ export default function useTextAreaUploadFile(insertText: (url: string) => void)
     [runUpload],
   );
 
-  const onPaste = useCallback<ClipboardEventHandler<HTMLTextAreaElement>>(
+  const onPaste = useCallback<ClipboardEventHandler<HTMLTextAreaElement | HTMLInputElement>>(
     async (e) => {
       const imageFile = Array.from(e.clipboardData.files).find((f) => f.type.includes("image"));
       if (imageFile) await runUpload(imageFile);
