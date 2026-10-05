@@ -1,4 +1,4 @@
-import { openDB, deleteDB, IDBPDatabase, IDBPTransaction } from "idb";
+import { openDB, deleteDB, DBSchema, IDBPDatabase, IDBPTransaction, StoreNames } from "idb";
 import { deleteDB as nostrIDBDelete } from "nostr-idb";
 
 import {
@@ -18,12 +18,25 @@ import { logger } from "../../helpers/debug";
 
 const log = logger.extend("Database");
 
+type UpgradeTransaction<Schema extends DBSchema> = IDBPTransaction<Schema, StoreNames<Schema>[], "versionchange">;
+
+/** Views the upgrade database and transaction at the schema version a migration step targets. */
+function atSchema<Schema extends DBSchema>(
+  db: IDBPDatabase<SchemaV13>,
+  transaction: UpgradeTransaction<SchemaV13>,
+): { db: IDBPDatabase<Schema>; transaction: UpgradeTransaction<Schema> } {
+  // aislop-ignore-next-line ai-slop/double-type-assertion -- an upgrade transaction runs against the database at whichever past schema version a migration step targets, which the type system cannot track across the version chain
+  return { db, transaction } as unknown as { db: IDBPDatabase<Schema>; transaction: UpgradeTransaction<Schema> };
+}
+
 const dbName = "storage";
 const version = 13;
 const db = await openDB<SchemaV13>(dbName, version, {
   upgrade(db, oldVersion, newVersion, transaction, _event) {
+    const at = <Schema extends DBSchema>() => atSchema<Schema>(db, transaction);
+
     if (oldVersion < 1) {
-      const v0 = db as unknown as IDBPDatabase<SchemaV1>;
+      const v0 = at<SchemaV1>().db;
 
       const userMetadata = v0.createObjectStore("userMetadata", {
         keyPath: "pubkey",
@@ -58,8 +71,8 @@ const db = await openDB<SchemaV13>(dbName, version, {
     }
 
     if (oldVersion < 2) {
-      const trans = transaction as unknown as IDBPTransaction<SchemaV1, string[], "versionchange">;
-      const v2 = db as unknown as IDBPDatabase<SchemaV2>;
+      const trans = at<SchemaV1>().transaction;
+      const v2 = at<SchemaV2>().db;
 
       // rename the old settings object store to misc
       const oldSettings = trans.objectStore("settings");
@@ -73,8 +86,8 @@ const db = await openDB<SchemaV13>(dbName, version, {
     }
 
     if (oldVersion < 3) {
-      const v2 = db as unknown as IDBPDatabase<SchemaV2>;
-      const v3 = db as unknown as IDBPDatabase<SchemaV3>;
+      const v2 = at<SchemaV2>().db;
+      const v3 = at<SchemaV3>().db;
 
       // rename the old event caches
       v2.deleteObjectStore("userMetadata");
@@ -90,8 +103,8 @@ const db = await openDB<SchemaV13>(dbName, version, {
     }
 
     if (oldVersion < 4) {
-      const v3 = db as unknown as IDBPDatabase<SchemaV3>;
-      const v4 = db as unknown as IDBPDatabase<SchemaV4>;
+      const v3 = at<SchemaV3>().db;
+      const v4 = at<SchemaV4>().db;
 
       // rename the tables
       v3.deleteObjectStore("userFollows");
@@ -103,7 +116,7 @@ const db = await openDB<SchemaV13>(dbName, version, {
     }
 
     if (oldVersion < 5) {
-      const trans = transaction as unknown as IDBPTransaction<SchemaV5, string[], "versionchange">;
+      const trans = at<SchemaV5>().transaction;
 
       // migrate accounts table
       const objectStore = trans.objectStore("accounts");
@@ -122,7 +135,7 @@ const db = await openDB<SchemaV13>(dbName, version, {
     }
 
     if (oldVersion < 6) {
-      const v6 = db as unknown as IDBPDatabase<SchemaV6>;
+      const v6 = at<SchemaV6>().db;
 
       // create new search table
       const channelMetadata = v6.createObjectStore("channelMetadata", {
@@ -132,8 +145,8 @@ const db = await openDB<SchemaV13>(dbName, version, {
     }
 
     if (oldVersion < 7) {
-      const transV6 = transaction as unknown as IDBPTransaction<SchemaV6, string[], "versionchange">;
-      const transV7 = transaction as unknown as IDBPTransaction<SchemaV7, string[], "versionchange">;
+      const transV6 = at<SchemaV6>().transaction;
+      const transV7 = at<SchemaV7>().transaction;
 
       const accounts = transV7.objectStore("accounts");
 
@@ -178,24 +191,24 @@ const db = await openDB<SchemaV13>(dbName, version, {
     }
 
     if (oldVersion < 8) {
-      const v7 = db as unknown as IDBPDatabase<SchemaV7>;
+      const v7 = at<SchemaV7>().db;
       v7.deleteObjectStore("replaceableEvents");
     }
 
     if (oldVersion < 9) {
-      const v9 = db as unknown as IDBPDatabase<SchemaV9>;
+      const v9 = at<SchemaV9>().db;
 
       const readStore = v9.createObjectStore("read", { keyPath: "key" });
       readStore.createIndex("ttl", "ttl");
     }
 
     if (oldVersion < 10) {
-      const v9 = db as unknown as IDBPDatabase<SchemaV9>;
+      const v9 = at<SchemaV9>().db;
       v9.deleteObjectStore("channelMetadata");
     }
 
     if (oldVersion < 11) {
-      const v10 = db as unknown as IDBPDatabase<SchemaV10>;
+      const v10 = at<SchemaV10>().db;
 
       // recreate accounts table
       v10.deleteObjectStore("accounts");
@@ -203,7 +216,7 @@ const db = await openDB<SchemaV13>(dbName, version, {
     }
 
     if (oldVersion < 12) {
-      const v11 = db as unknown as IDBPDatabase<SchemaV11>;
+      const v11 = at<SchemaV11>().db;
       v11.deleteObjectStore("dnsIdentifiers");
       db.createObjectStore("identities");
     }
