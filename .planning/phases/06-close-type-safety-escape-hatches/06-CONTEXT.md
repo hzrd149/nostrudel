@@ -163,6 +163,28 @@ rewritten), vendored `src/lib/*`, and any rule outside bucket E.
   exposes consumer type errors and runs on the startup path (top-level-await `openDB`). D-07's
   bug fix lands in its own commit. Mechanical churn stays in its own commits (P4 D-04 / P5 D-16).
 
+### Rulings after research (2026-10-05)
+
+Research found two places where removing a cast would collide with D-15. The user ruled:
+
+- **D-17:** **Vertex (`services/lookup/vertex.ts:36`) keeps its current runtime behavior** — no
+  guard, no fallback. The settings menu offers `userPagerank` / `followDistance`, which are not in
+  `SortMethod`, but the Vertex custom API is going to be **replaced by the Open-Ranking protocol API**
+  (https://github.com/Open-Ranking/protocol), so it is not worth correcting. The `as any` stays
+  behind a rule-scoped `aislop-ignore-next-line ai-slop/unsafe-type-assertion` whose reason says the
+  stored preference can hold values outside `SortMethod` and the Vertex integration is slated for
+  replacement by the Open-Ranking API. Explicitly rejected: a validated guard with a
+  `globalPagerank` fallback, and fixing the stale `<option>` values now.
+
+- **D-18:** **The event-console relative-time unit quirk is fixed now** — a named, deliberate
+  exception to D-15, in its own commit. Today the regex `/n([+-])(\d+)([hwmsd])?/i` is
+  case-insensitive but the matched letter is passed straight to dayjs, so `n-5H`, `W`, `S`, `D`
+  mean milliseconds and `M` means months (measured against dayjs 1.11.21 in research). The typed
+  parser maps the unit **case-insensitively** to the meanings the help modal documents
+  (`help-modal.tsx:43`: `h` hour, `w` week, `m` minute, `s` second, `d` day; no unit → hour), so
+  uppercase letters mean the same as lowercase. A vitest test pins every letter in both cases.
+  Explicitly rejected: an exact-preservation table with the quirk backlogged.
+
 ### Claude's Discretion
 
 - The exact shape and name of the D-06 historical-schema helper.
@@ -204,6 +226,7 @@ rewritten), vendored `src/lib/*`, and any rule outside bucket E.
 ## Deferred Ideas
 
 - Converting `views/settings/cache/database/internal.tsx`'s hand-rolled `clearing` / `deleting` state to `useAsyncAction` (AGENTS.md convention) so a failed clear surfaces as a toast — outside bucket E; candidate for a backlog item.
+- Replacing the Vertex custom API (`services/lookup/vertex.ts`, `views/settings/search/components/vertex-config.tsx`) with the Open-Ranking protocol API (https://github.com/Open-Ranking/protocol) — removes D-17's ignore and the stale sort-method options.
 - Tightening the schema's `value: any` annotations (`relayInfo`, `misc`, `kv`, `settings`) — `: any` annotations are out of scope (D-04).
 
 </deferred>
