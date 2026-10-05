@@ -49,6 +49,5 @@ const noStrudel = {
 
 localSettings.enableDebugApi.subscribe((enabled) => {
   if (enabled) Reflect.set(window, "noStrudel", noStrudel);
-  // @ts-expect-error debug
-  else delete window.noStrudel;
+  else Reflect.deleteProperty(window, "noStrudel");
 });
