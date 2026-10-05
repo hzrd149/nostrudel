@@ -41,7 +41,6 @@ export async function nostrBuildUploadImage(file: File, sign?: (draft: EventTemp
 
   const headers: HeadersInit = {};
   if (sign) {
-    // @ts-ignore
     const token = await nip98.getToken(url, "POST", sign, true);
     headers.Authorization = token;
   }

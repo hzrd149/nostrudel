@@ -1,9 +1,11 @@
 import { logger } from "applesauce-core";
 import { RefCallback, useCallback, useLayoutEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
-import { FixedSizeList } from "react-window";
 
 const log = logger.extend("useScrollRestoreRef");
+
+/** The scroll surface shared by react-window's fixed-size and variable-size lists */
+type ScrollableList = { scrollTo(scrollOffset: number): void };
 
 function useScrollKey(name = "default") {
   const location = useLocation();
@@ -75,7 +77,7 @@ export function useVirtualListScrollRestore(name = "default") {
 
   // Restore scroll position on mount
   const listRef = useCallback(
-    (list: FixedSizeList | null) => {
+    (list: ScrollableList | null) => {
       if (list) {
         const savedScroll = sessionStorage.getItem(key);
         if (savedScroll) {
