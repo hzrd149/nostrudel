@@ -38,13 +38,7 @@ export default function PicturePostForm({ onSubmit }: { onSubmit: (values: FormV
   watch("split");
 
   // TODO: cache form needs to save File and Blobs
-  const clearFormCache = useCacheForm(
-    "new-media-post",
-    // @ts-expect-error
-    getValues,
-    reset,
-    formState,
-  );
+  const clearFormCache = useCacheForm<FormValues>("new-media-post", getValues, reset, formState);
 
   const submit = handleSubmit(async (values) => {
     try {

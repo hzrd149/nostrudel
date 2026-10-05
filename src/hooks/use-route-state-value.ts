@@ -6,6 +6,11 @@ type Actions<T> = {
   clearValue: () => void;
 };
 
+/** A plain typeof check cannot tell a setter from a T that is itself a function, so the narrowing is stated explicitly */
+function isSetter<T>(valueOrSetter: T | ((v: T) => T)): valueOrSetter is (v: T) => T {
+  return typeof valueOrSetter === "function";
+}
+
 export default function useRouteStateValue<T extends unknown>(key: string, fallback: T): { value: T } & Actions<T>;
 export default function useRouteStateValue<T extends unknown>(
   key: string,
@@ -25,8 +30,7 @@ export default function useRouteStateValue<T extends unknown>(key: string, fallb
   const setValue = useCallback(
     (valueOrSetter: T | ((v: T) => T), replace = true) => {
       const newState = { ...stateRef.current };
-      if (typeof valueOrSetter === "function") {
-        // @ts-ignore
+      if (isSetter(valueOrSetter)) {
         newState[key] = valueOrSetter(valueRef.current);
       } else newState[key] = valueOrSetter;
 
