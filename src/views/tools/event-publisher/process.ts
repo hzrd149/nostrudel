@@ -66,7 +66,11 @@ export function getVariables(draft?: LooseEventTemplate) {
   return variables;
 }
 
-export function processEvent(draft: LooseEventTemplate, variables: Variable[], account: IAccount): UnsignedEvent {
+export function processEvent(
+  draft: LooseEventTemplate,
+  variables: Variable[],
+  account: IAccount,
+): UnsignedEvent & { id: string } {
   const event = { ...draft } as UnsignedEvent;
 
   const vars: Record<string, string> = variables.reduce((dir, v) => ({ ...dir, [v.name]: v.value }), {});
@@ -80,8 +84,5 @@ export function processEvent(draft: LooseEventTemplate, variables: Variable[], a
 
   event.pubkey = account.pubkey;
 
-  // @ts-expect-error
-  event.id = getEventHash(event);
-
-  return event as UnsignedEvent;
+  return { ...event, id: getEventHash(event) };
 }

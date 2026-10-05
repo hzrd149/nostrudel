@@ -256,12 +256,12 @@ function EventPublisherPage({ initDraft }: { initDraft?: LooseEventTemplate }) {
 }
 
 export default function EventPublisherView() {
-  let { value: draft } = useRouteStateValue<NostrEvent>("draft");
+  const { value } = useRouteStateValue<NostrEvent>("draft");
 
-  if (draft && draft.sig) {
-    draft = { ...draft };
-    // @ts-ignore
-    delete draft.sig;
+  let draft: LooseEventTemplate | undefined = value;
+  if (value?.sig) {
+    const { sig: _sig, ...unsigned } = value;
+    draft = unsigned;
   }
 
   return (
