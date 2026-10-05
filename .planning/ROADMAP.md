@@ -275,7 +275,7 @@ usage — the IndexedDB wrapper and the copy-pasted notification casts — are r
 typed helpers, and each remaining directive states why the type system cannot express it.
 **Requirements:** TBD
 **Depends on:** Phase 2
-**Plans:** 3/10 plans executed
+**Plans:** 8/10 plans executed
 
 68 findings measured on `next` at commit `5884dac0a` on 2026-10-05 (score 85/100, bucket E):
 35 × `ts-directive` (`@ts-ignore` / `@ts-expect-error`, info severity), 20 ×
@@ -308,11 +308,11 @@ Plans:
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
-- [ ] 06-04-PLAN.md — fix clearCacheData's deleted-store clear in its own commit and destructure the v5 migration (wave 2)
-- [ ] 06-05-PLAN.md — explicit napplet pool adapter and filter conversion, cast-free reactions, global window.webln type (wave 2)
-- [ ] 06-06-PLAN.md — tested webxdc JSON-RPC guard and NostrEvent-typed useWebxdc state (wave 2)
-- [ ] 06-07-PLAN.md — form, paste-handler and magic-textarea typing with one reasoned surviving directive (wave 2)
-- [ ] 06-08-PLAN.md — case-insensitive event-console units with tests, event-publisher typing, Vertex ignore (wave 2)
+- [x] 06-04-PLAN.md — fix clearCacheData's deleted-store clear in its own commit and destructure the v5 migration (wave 2)
+- [x] 06-05-PLAN.md — explicit napplet pool adapter and filter conversion, cast-free reactions, global window.webln type (wave 2)
+- [x] 06-06-PLAN.md — tested webxdc JSON-RPC guard and NostrEvent-typed useWebxdc state (wave 2)
+- [x] 06-07-PLAN.md — form, paste-handler and magic-textarea typing with one reasoned surviving directive (wave 2)
+- [x] 06-08-PLAN.md — case-insensitive event-console units with tests, event-publisher typing, Vertex ignore (wave 2)
 
 **Wave 3** *(blocked on Wave 2 completion)*
 
