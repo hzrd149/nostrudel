@@ -275,7 +275,7 @@ usage — the IndexedDB wrapper and the copy-pasted notification casts — are r
 typed helpers, and each remaining directive states why the type system cannot express it.
 **Requirements:** TBD
 **Depends on:** Phase 2
-**Plans:** 10 plans
+**Plans:** 3/10 plans executed
 
 68 findings measured on `next` at commit `5884dac0a` on 2026-10-05 (score 85/100, bucket E):
 35 × `ts-directive` (`@ts-ignore` / `@ts-expect-error`, info severity), 20 ×
@@ -302,9 +302,9 @@ excludes those paths from scoring.
 Plans:
 **Wave 1**
 
-- [ ] 06-01-PLAN.md — record the measured 68-finding baseline and correct the stale Phase 6 entry (wave 1)
-- [ ] 06-02-PLAN.md — replace the 19 DEV-only debug-global directives with Reflect.set (wave 1)
-- [ ] 06-03-PLAN.md — type the scroll-restore ref callback, delete dead directives, Reflect.deleteProperty the debug API (wave 1)
+- [x] 06-01-PLAN.md — record the measured 68-finding baseline and correct the stale Phase 6 entry (wave 1)
+- [x] 06-02-PLAN.md — replace the 19 DEV-only debug-global directives with Reflect.set (wave 1)
+- [x] 06-03-PLAN.md — type the scroll-restore ref callback, delete dead directives, Reflect.deleteProperty the debug API (wave 1)
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
