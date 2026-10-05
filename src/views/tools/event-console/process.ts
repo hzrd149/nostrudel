@@ -1,18 +1,29 @@
 import dayjs, { type ManipulateType } from "dayjs";
 import { Filter, nip19 } from "nostr-tools";
 
-const TIME_UNITS: Record<string, ManipulateType> = {
+const TIME_UNITS = {
   h: "hour",
   w: "week",
   m: "minute",
   s: "second",
   d: "day",
-};
+} as const satisfies Record<string, ManipulateType>;
 
-/** Maps a relative-date unit letter (any case) to a dayjs unit, defaulting to hours when absent. */
+type TimeUnitLetter = keyof typeof TIME_UNITS;
+
+function isTimeUnitLetter(letter: string): letter is TimeUnitLetter {
+  return Object.hasOwn(TIME_UNITS, letter);
+}
+
+/**
+ * Maps a relative-date unit letter (any case) to a dayjs unit, defaulting to hours when absent.
+ * Throws for a letter missing from TIME_UNITS, so the table and the regex in processDateString cannot drift apart silently.
+ */
 export function parseTimeUnit(letter: string | undefined): ManipulateType {
   if (!letter) return "hour";
-  return TIME_UNITS[letter.toLowerCase()] ?? "hour";
+  const lower = letter.toLowerCase();
+  if (!isTimeUnitLetter(lower)) throw new Error(`Unknown time unit ${letter}`);
+  return TIME_UNITS[lower];
 }
 
 export function processDateString(date: string) {

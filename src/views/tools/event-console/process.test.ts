@@ -23,6 +23,12 @@ describe("parseTimeUnit", () => {
   it("defaults to hour when no unit is given", () => {
     expect(parseTimeUnit(undefined)).toBe("hour");
   });
+
+  it("throws for letters it does not know instead of falling back to hour", () => {
+    expect(() => parseTimeUnit("y")).toThrow("Unknown time unit y");
+    expect(() => parseTimeUnit("X")).toThrow("Unknown time unit X");
+    expect(() => parseTimeUnit("toString")).toThrow();
+  });
 });
 
 describe("processDateString", () => {
