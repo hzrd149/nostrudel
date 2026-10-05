@@ -168,8 +168,8 @@ export async function reactCommon(
   if (!event) return { ok: false, error: "event-not-found" };
 
   const emoji = customEmojiHref ? { shortcode: reaction, url: customEmojiHref } : reaction;
-  const draft = await ReactionFactory.create(event, emoji as string);
-  return publishCommonEvent("Reaction", draft as unknown as EventTemplate);
+  const draft = await ReactionFactory.create(event, emoji);
+  return publishCommonEvent("Reaction", draft);
 }
 
 function createReportDraft(
