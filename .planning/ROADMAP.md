@@ -335,16 +335,22 @@ corrected, starting with the shared components that every view inherits.
 **Depends on:** Phase 2
 **Plans:** 8 plans
 
-47 `jsx-a11y` findings in the [2026-09-11 baseline](./research/aislop-scan-2026-09-11.md)
-(bucket F): 28 × `prefer-tag-over-role`, 8 × `role-has-required-aria-props`, 5 ×
-`control-has-associated-label`, 2 × `no-redundant-roles`, 2 × `iframe-has-title`, 1 ×
-`alt-text`, 1 × `role-supports-aria-props`.
+43 `jsx-a11y` findings measured on `next` with src/ at `1479dc08a` on 2026-10-06 (score 86/100,
+bucket F):
+26 × `prefer-tag-over-role`,
+6 × `role-has-required-aria-props`,
+5 × `control-has-associated-label`,
+2 × `no-redundant-roles`,
+2 × `iframe-has-title`,
+1 × `alt-text`,
+1 × `role-supports-aria-props`.
+The [2026-09-11 baseline](./research/aislop-scan-2026-09-11.md) was the earlier measurement (47).
 
 The policy question this item was blocked on is settled: Phase 2 (D-06) turned
 `jsx-a11y/no-autofocus` off, so the 25 deliberate-UX autofocus hits from the 2026-08-02 scan no
 longer fire and nothing here is a rule-adoption debate — every remaining finding is a real fix.
 
-Concentrations: `components/magic-textarea.tsx` (10), `components/relay-url-input.tsx` (5),
+Concentrations: `components/magic-textarea.tsx` (6), `components/relay-url-input.tsx` (5),
 `views/settings/privacy/index.tsx` (5), `views/articles/article.tsx` (5),
 `components/loading-nostr-link.tsx` (4).
 
