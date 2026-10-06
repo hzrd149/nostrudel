@@ -2,18 +2,18 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_phase: 6
-status: executing
-stopped_at: Completed 05-14-PLAN.md
-last_updated: "2026-10-05T15:25:57.391Z"
-last_activity: 2026-10-05
+current_phase: 7 — Accessibility pass on interactive components
+status: planning
+stopped_at: Phase 6 complete, ready to plan Phase 7
+last_updated: "2026-10-06T12:33:58.050Z"
+last_activity: 2026-10-06
 progress:
   total_phases: 8
-  completed_phases: 5
+  completed_phases: 6
   total_plans: 55
-  completed_plans: 45
-  percent: 63
-current_phase_name: Refactor oversized files, long functions, and duplicated blocks
+  completed_plans: 55
+  percent: 75
+current_phase_name: Accessibility pass on interactive components
 ---
 
 # Session State
@@ -22,13 +22,13 @@ current_phase_name: Refactor oversized files, long functions, and duplicated blo
 
 See: .planning/PROJECT.md (not present in this project; ROADMAP.md and the phase CONTEXT files are the reference)
 
-**Current focus:** Phase 6 — Close type-safety escape hatches
+**Current focus:** Phase 7 — Accessibility pass on interactive components
 
 ## Position
 
 **Milestone:** v1.0 milestone
-**Current phase:** 6
-**Status:** Executing Phase 6
+**Current phase:** 7 — Accessibility pass on interactive components
+**Status:** Ready to plan
 
 ## Session Log
 
@@ -140,6 +140,9 @@ See: .planning/PROJECT.md (not present in this project; ROADMAP.md and the phase
 - [Phase 05]: 05-12: Landed the modal extraction as a single move commit (not move-then-adjust) since the plan's own Task 1 action text folds the props-threading into the move itself
 - [Phase 05]: 05-12: Each modal defines its own minimal local prop type instead of importing the provider's internal ConsentRequest/IntentChoiceRequest types, keeping the provider's export surface at exactly two functions
 - [Phase 05]: 05-14: bucket-H closed 33->0; 13 findings behind 9 rule-scoped directives; no backlog promotion
+- [Phase 06]: 06: bucket E closed 68 -> 0 reported; 3 rule-scoped ignores survive (atSchema cast, MagicInput directive, vertex cast)
+- [Phase 06]: 06: IndexedDB schemas are now type aliases idb actually checks; unknown/deleted stores are compile errors
+- [Phase 06]: 06: fixed clearCacheData clearing the deleted dnsIdentifiers store (now identities); event-console units case-insensitive (D-18)
 
 ## Quick Tasks Completed
 
@@ -153,7 +156,7 @@ See: .planning/PROJECT.md (not present in this project; ROADMAP.md and the phase
 
 ## Session
 
-**Last activity:** 2026-10-05
-**Last session:** 2026-10-01T15:33:57.709Z
-**Stopped at:** Completed 05-14-PLAN.md
+**Last activity:** 2026-10-06
+**Last session:** 2026-10-06
+**Stopped at:** Phase 6 complete, ready to plan Phase 7
 **Resume file:** None
