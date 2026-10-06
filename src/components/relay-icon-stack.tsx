@@ -23,12 +23,15 @@ export function RelayIconStack({ title, relays, size = "xs", ...props }: RelayIc
       <Popover isLazy>
         <PopoverTrigger>
           <Flex
+            as="button"
+            type="button"
             alignItems="center"
             gap="-4"
             overflow="hidden"
             cursor="pointer"
-            role="button"
-            tabIndex={0}
+            bg="transparent"
+            p="0"
+            _focusVisible={{ outline: "2px solid", outlineColor: "primary.500", outlineOffset: "-2px" }}
             aria-label="View relay information"
             {...props}
           >

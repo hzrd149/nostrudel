@@ -82,22 +82,22 @@ function SearchOnRelaysModal({ isOpen, onClose, decode }: Omit<ModalProps, "chil
                 placeholder="Filter relays"
                 aria-label="Filter relays"
               />
-              <Flex direction="column" role="list" aria-label="Available relays">
+              <Flex as="ul" listStyleType="none" direction="column" aria-label="Available relays">
                 {filtered.map((relay) => (
-                  <Button
-                    key={relay}
-                    variant="outline"
-                    w="full"
-                    p="2"
-                    leftIcon={<RelayFavicon relay={relay} size="xs" />}
-                    justifyContent="flex-start"
-                    colorScheme={relays.has(relay) ? "primary" : undefined}
-                    onClick={() => (relays.has(relay) ? actions.remove(relay) : actions.add(relay))}
-                    role="listitem"
-                    aria-pressed={relays.has(relay)}
-                  >
-                    {relay}
-                  </Button>
+                  <Box as="li" key={relay} listStyleType="none">
+                    <Button
+                      variant="outline"
+                      w="full"
+                      p="2"
+                      leftIcon={<RelayFavicon relay={relay} size="xs" />}
+                      justifyContent="flex-start"
+                      colorScheme={relays.has(relay) ? "primary" : undefined}
+                      onClick={() => (relays.has(relay) ? actions.remove(relay) : actions.add(relay))}
+                      aria-pressed={relays.has(relay)}
+                    >
+                      {relay}
+                    </Button>
+                  </Box>
                 ))}
               </Flex>
             </>
@@ -186,13 +186,13 @@ export default function LoadingNostrLink({ link }: { link: DecodeResult }) {
       </Button>
       {details.isOpen && (
         <Box
+          as="section"
           id="nostr-link-details"
           px="2"
           fontFamily="monospace"
           color="GrayText"
           fontWeight="bold"
           fontSize="sm"
-          role="region"
           aria-label="Link details"
         >
           <Text>Type: {link.type}</Text>
