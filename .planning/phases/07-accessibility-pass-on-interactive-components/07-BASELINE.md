@@ -164,7 +164,7 @@ Advisory drift: `security/vulnerable-dependency` findings on `package.json` trac
 
 ## Manual verification (all 10 passed in 07-UAT.md on 2026-10-06) (D-15)
 
-None of these rows is verified. Each is browser-only or screen-reader-only behavior that a passing build cannot show. `/gsd-verify-work` turns this list into `07-UAT.md` (that file is created by the verify-work workflow, not by this plan). It also covers the rows in the `07-VALIDATION.md` "Manual-Only Verifications" table: keyboard-operable buttons (rows 1-3), landmarks and names (rows 4 and 9), no live region (row 5), composite widgets (rows 6-8), visual parity (row 10) and the creation forms keeping one `main` (row 4).
+All rows were confirmed by the maintainer in 07-UAT.md (10/10, 2026-10-06).
 
 | # | Behavior | Plan | Decision | Steps | Status |
 |---|---|---|---|---|---|
