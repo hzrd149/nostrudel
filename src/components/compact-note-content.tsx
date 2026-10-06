@@ -49,7 +49,7 @@ export const CompactNoteContent = React.memo(
           {truncated.current && (
             <>
               <span>...</span>
-              <Text as="span" fontWeight="bold" ml="4" role="button" tabIndex={0} aria-label="Show more content">
+              <Text as="span" fontWeight="bold" ml="4">
                 Show More
               </Text>
             </>
