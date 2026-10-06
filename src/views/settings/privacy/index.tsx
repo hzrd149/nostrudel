@@ -21,6 +21,8 @@ import SimpleView from "../../../components/layout/presets/simple-view";
 import { DEFAULT_SHARE_SERVICE } from "../../../const";
 import { pendingUnlockCategories$, setAutoUnlockCategory } from "../../../services/pending-unlock";
 
+const SHARE_SERVICES = ["https://njump.me/", "https://nostr.com/", "https://nostr.at/", "https://nostr.eu/"];
+
 async function validateInvidiousUrl(url?: string) {
   if (!url) return true;
   try {
@@ -208,10 +210,10 @@ export default function PrivacySettings() {
           list="share-services"
         />
         <datalist id="share-services">
-          <option value="https://njump.me/" />
-          <option value="https://nostr.com/" />
-          <option value="https://nostr.at/" />
-          <option value="https://nostr.eu/" />
+          {SHARE_SERVICES.map((url) => (
+            // aislop-ignore-next-line jsx-a11y/control-has-associated-label -- a datalist option's value is its accessible name; a visible label would change the suggestion dropdown
+            <option key={url} value={url} />
+          ))}
         </datalist>
         {formState.errors.shareService && <FormErrorMessage>{formState.errors.shareService.message}</FormErrorMessage>}
         <FormHelperText>
