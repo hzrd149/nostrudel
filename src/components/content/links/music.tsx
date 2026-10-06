@@ -113,6 +113,7 @@ export function renderSongDotLinkUrl(match: URL) {
     <ExpandableEmbed url={match} label="Song.link">
       <Box
         as="iframe"
+        title="Song.link player"
         w="full"
         h="full"
         maxW="xl"
