@@ -333,7 +333,7 @@ should be plain tags, roles missing their required ARIA props, and unlabelled co
 corrected, starting with the shared components that every view inherits.
 **Requirements:** TBD
 **Depends on:** Phase 2
-**Plans:** 5/8 plans executed
+**Plans:** 7/8 plans executed
 
 43 `jsx-a11y` findings measured on `next` with src/ at `1479dc08a` on 2026-10-06 (score 86/100,
 bucket F):
@@ -365,8 +365,8 @@ Plans:
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
-- [ ] 07-06-PLAN.md — article page footer/article/tags as native elements, header heading role removed, link cards as LinkBox articles (wave 2)
-- [ ] 07-07-PLAN.md — wallet card select area as a native button, share-service options from one array behind the single reasoned ignore (wave 2)
+- [x] 07-06-PLAN.md — article page footer/article/tags as native elements, header heading role removed, link cards as LinkBox articles (wave 2)
+- [x] 07-07-PLAN.md — wallet card select area as a native button, share-service options from one array behind the single reasoned ignore (wave 2)
 
 **Wave 3** *(blocked on Wave 2 completion)*
 
