@@ -109,7 +109,7 @@ export default function InvoiceModal({
     <Modal onClose={onClose} {...props}>
       <ModalOverlay />
       <ModalContent>
-        <ModalBody padding="4" role="region" aria-label="Payment options">
+        <ModalBody padding="4" as="section" aria-label="Payment options">
           <InvoiceModalContent
             invoice={invoice}
             onPaid={() => {
