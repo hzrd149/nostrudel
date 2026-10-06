@@ -44,7 +44,7 @@ export const CompactNoteContent = React.memo(
 
     return (
       <LightboxProvider>
-        <Box whiteSpace="pre-wrap" role="article" aria-label="Note content" {...props}>
+        <Box as="article" whiteSpace="pre-wrap" aria-label="Note content" {...props}>
           {content}
           {truncated.current && (
             <>

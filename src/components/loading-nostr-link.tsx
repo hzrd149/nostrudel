@@ -186,13 +186,13 @@ export default function LoadingNostrLink({ link }: { link: DecodeResult }) {
       </Button>
       {details.isOpen && (
         <Box
+          as="section"
           id="nostr-link-details"
           px="2"
           fontFamily="monospace"
           color="GrayText"
           fontWeight="bold"
           fontSize="sm"
-          role="region"
           aria-label="Link details"
         >
           <Text>Type: {link.type}</Text>
