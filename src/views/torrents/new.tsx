@@ -162,102 +162,106 @@ export default function NewTorrentView() {
   );
 
   return (
-    <VerticalPageLayout as="form" onSubmit={onSubmit}>
-      <Heading size="lg">New Torrent</Heading>
+    <VerticalPageLayout>
+      <Flex as="form" direction="column" gap="2" onSubmit={onSubmit}>
+        <Heading size="lg">New Torrent</Heading>
 
-      <ButtonGroup>
-        <VisuallyHiddenInput
-          type="file"
-          accept="application/x-bittorrent"
-          ref={torrentFileInput}
-          onChange={(e) => {
-            const file = e.target.files?.[0];
-            if (file) selectTorrentFile(file);
-          }}
-        />
-        <Button onClick={() => torrentFileInput.current?.click()}>Import Torrent file</Button>
-      </ButtonGroup>
+        <ButtonGroup>
+          <VisuallyHiddenInput
+            type="file"
+            accept="application/x-bittorrent"
+            ref={torrentFileInput}
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) selectTorrentFile(file);
+            }}
+          />
+          <Button onClick={() => torrentFileInput.current?.click()}>Import Torrent file</Button>
+        </ButtonGroup>
 
-      <Flex gap="4">
-        <Flex gap="2" direction="column" w="full">
-          <FormControl isRequired>
-            <FormLabel>Title</FormLabel>
-            <Input type="text" {...register("title", { required: true })} />
-          </FormControl>
-          <FormControl isRequired>
-            <FormLabel>Info Hash</FormLabel>
-            <Input type="text" {...register("btih", { required: true })} placeholder="hex" />
-          </FormControl>
-          {smallLayout && descriptionInput}
-          <Heading size="md">Category</Heading>
-          <Box {...getRootProps()}>{renderCategories()}</Box>
-        </Flex>
-        {!smallLayout && (
+        <Flex gap="4">
           <Flex gap="2" direction="column" w="full">
-            {descriptionInput}
+            <FormControl isRequired>
+              <FormLabel>Title</FormLabel>
+              <Input type="text" {...register("title", { required: true })} />
+            </FormControl>
+            <FormControl isRequired>
+              <FormLabel>Info Hash</FormLabel>
+              <Input type="text" {...register("btih", { required: true })} placeholder="hex" />
+            </FormControl>
+            {smallLayout && descriptionInput}
+            <Heading size="md">Category</Heading>
+            <Box {...getRootProps()}>{renderCategories()}</Box>
           </Flex>
-        )}
-      </Flex>
-      <Flex direction="column" gap="2">
-        {getValues().files.map((file, i) => (
-          <Flex gap="2" key={file.name + file.size}>
-            <Input
-              type="text"
-              value={file.name}
-              className="flex-1"
-              placeholder="collection1/IMG_00001.jpg"
-              onChange={(e) =>
-                setValue(
-                  "files",
-                  getValues().files.map((f, ii) => {
-                    if (ii === i) {
-                      return { ...f, name: e.target.value };
-                    }
-                    return f;
-                  }),
-                )
-              }
-            />
-            <NumberInput
-              value={file.size}
-              min={0}
-              onChange={(v) =>
-                setValue(
-                  "files",
-                  getValues().files.map((f, ii) => {
-                    if (ii === i) {
-                      return { ...f, size: parseInt(v) };
-                    }
-                    return f;
-                  }),
-                )
-              }
-            >
-              <NumberInputField />
-              <NumberInputStepper>
-                <NumberIncrementStepper />
-                <NumberDecrementStepper />
-              </NumberInputStepper>
-            </NumberInput>
-            <Button
-              flexShrink={0}
-              onClick={() =>
-                setValue(
-                  "files",
-                  getValues().files.filter((_, ii) => i !== ii),
-                )
-              }
-            >
-              Remove
-            </Button>
-          </Flex>
-        ))}
-      </Flex>
-      <Flex gap="2" justifyContent="flex-end">
-        <Button onClick={() => setValue("files", [...getValues().files, { name: "", size: 0 }])}>Add file info</Button>
-        <Button type="submit" isLoading={formState.isSubmitting} colorScheme="primary">
-          Publish
-        </Button>
+          {!smallLayout && (
+            <Flex gap="2" direction="column" w="full">
+              {descriptionInput}
+            </Flex>
+          )}
+        </Flex>
+        <Flex direction="column" gap="2">
+          {getValues().files.map((file, i) => (
+            <Flex gap="2" key={file.name + file.size}>
+              <Input
+                type="text"
+                value={file.name}
+                className="flex-1"
+                placeholder="collection1/IMG_00001.jpg"
+                onChange={(e) =>
+                  setValue(
+                    "files",
+                    getValues().files.map((f, ii) => {
+                      if (ii === i) {
+                        return { ...f, name: e.target.value };
+                      }
+                      return f;
+                    }),
+                  )
+                }
+              />
+              <NumberInput
+                value={file.size}
+                min={0}
+                onChange={(v) =>
+                  setValue(
+                    "files",
+                    getValues().files.map((f, ii) => {
+                      if (ii === i) {
+                        return { ...f, size: parseInt(v) };
+                      }
+                      return f;
+                    }),
+                  )
+                }
+              >
+                <NumberInputField />
+                <NumberInputStepper>
+                  <NumberIncrementStepper />
+                  <NumberDecrementStepper />
+                </NumberInputStepper>
+              </NumberInput>
+              <Button
+                flexShrink={0}
+                onClick={() =>
+                  setValue(
+                    "files",
+                    getValues().files.filter((_, ii) => i !== ii),
+                  )
+                }
+              >
+                Remove
+              </Button>
+            </Flex>
+          ))}
+        </Flex>
+        <Flex gap="2" justifyContent="flex-end">
+          <Button onClick={() => setValue("files", [...getValues().files, { name: "", size: 0 }])}>
+            Add file info
+          </Button>
+          <Button type="submit" isLoading={formState.isSubmitting} colorScheme="primary">
+            Publish
+          </Button>
+        </Flex>
       </Flex>
     </VerticalPageLayout>
   );
