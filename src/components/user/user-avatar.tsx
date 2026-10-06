@@ -22,6 +22,7 @@ export const UserIdenticon = memo(({ pubkey }: { pubkey: string }) => {
   return identicon ? (
     <img
       src={`data:image/svg+xml;base64,${identicon}`}
+      alt=""
       width="100%"
       style={{ borderRadius: "var(--chakra-radii-lg)" }}
     />
