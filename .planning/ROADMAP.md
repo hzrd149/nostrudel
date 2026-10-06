@@ -333,7 +333,7 @@ should be plain tags, roles missing their required ARIA props, and unlabelled co
 corrected, starting with the shared components that every view inherits.
 **Requirements:** TBD
 **Depends on:** Phase 2
-**Plans:** 0 plans
+**Plans:** 8 plans
 
 47 `jsx-a11y` findings in the [2026-09-11 baseline](./research/aislop-scan-2026-09-11.md)
 (bucket F): 28 × `prefer-tag-over-role`, 8 × `role-has-required-aria-props`, 5 ×
@@ -349,8 +349,27 @@ Concentrations: `components/magic-textarea.tsx` (10), `components/relay-url-inpu
 `components/loading-nostr-link.tsx` (4).
 
 Plans:
+**Wave 1**
 
-- [ ] TBD (plan with /gsd-plan-phase 7)
+- [ ] 07-01-PLAN.md — record the measured 43-finding baseline and src/ snapshot, correct the stale Phase 7 entry (wave 1)
+- [ ] 07-02-PLAN.md — VerticalPageLayout renders main, drop the page-wide live region, redundant nav/group roles, named mobile nav dialog (wave 1)
+- [ ] 07-03-PLAN.md — drop hand-added combobox ARIA from the relay URL input and option roles from composer autocomplete (wave 1)
+- [ ] 07-04-PLAN.md — native article/section/ul elements, fake Show More control removed, relay icon stack becomes a native button (wave 1)
+- [ ] 07-05-PLAN.md — empty alt on the identicon, titles on the SoundCloud and webxdc iframes (wave 1)
+
+**Wave 2** *(blocked on Wave 1 completion)*
+
+- [ ] 07-06-PLAN.md — article page footer/article/tags as native elements, header heading role removed, link cards as LinkBox articles (wave 2)
+- [ ] 07-07-PLAN.md — wallet card select area as a native button, share-service options from one array behind the single reasoned ignore (wave 2)
+
+**Wave 3** *(blocked on Wave 2 completion)*
+
+- [ ] 07-08-PLAN.md — close the 43 -> N table, diff the src/ snapshot, inventory the one ignore, record manual UAT (wave 3)
+
+**Cross-cutting constraints:**
+
+- Mechanical role-to-tag commits (`refactor`) never share a commit with user-noticeable changes (`fix`); the single ignore lands in its own `chore` commit (D-17)
+- `pnpm build` passes after every task (D-14); no new test infrastructure (D-15)
 
 ### Phase 8: Triage TODO stubs and hardcoded URLs
 
