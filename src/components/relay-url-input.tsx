@@ -86,9 +86,6 @@ export const RelayUrlInput = forwardRef(({ nips, ...props }: { nips?: number[] }
         aria-describedby="relay-suggestions-description"
         aria-invalid={error ? "true" : undefined}
         aria-busy={loading}
-        role="combobox"
-        aria-autocomplete="list"
-        aria-expanded={relaySuggestions.length > 0}
         {...props}
         onBlur={handleBlur}
         onKeyDown={handleKeyDown}
@@ -102,9 +99,9 @@ export const RelayUrlInput = forwardRef(({ nips, ...props }: { nips?: number[] }
               ? `Found ${relaySuggestions.length} relay suggestions`
               : "No relay suggestions available"}
       </Text>
-      <datalist id="relay-suggestions" role="listbox" aria-label="Available relay suggestions">
+      <datalist id="relay-suggestions">
         {relaySuggestions.map((url) => (
-          <option key={url} value={url} role="option" aria-label={`Relay: ${url}`}>
+          <option key={url} value={url}>
             {url}
           </option>
         ))}
