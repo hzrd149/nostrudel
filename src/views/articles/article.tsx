@@ -37,9 +37,9 @@ function ArticlePage({ article }: { article: NostrEvent }) {
   const comment = useDisclosure();
 
   return (
-    <VerticalPageLayout pt={{ base: "2", lg: "8" }} pb="32" role="main" aria-label="Article Content">
+    <VerticalPageLayout pt={{ base: "2", lg: "8" }} pb="32" aria-label="Article Content">
       <article>
-        <Box as="header" mx="auto" maxW="4xl" w="full" mb="2" role="heading">
+        <Box as="header" mx="auto" maxW="4xl" w="full" mb="2">
           <ArticleMenu article={article} aria-label="Article Options" float="right" variant="ghost" />
           <Heading as="h1" size="xl">
             {title}
@@ -49,7 +49,7 @@ function ArticlePage({ article }: { article: NostrEvent }) {
               {summary}
             </Text>
           )}
-          <Box py="2" as="div" role="contentinfo">
+          <Box py="2" as="footer">
             <UserAvatarLink pubkey={article.pubkey} float="left" mr="3" mb="2" aria-label="Author avatar" />
             <UserLink
               pubkey={article.pubkey}
@@ -83,7 +83,7 @@ function ArticlePage({ article }: { article: NostrEvent }) {
           />
         )}
 
-        <Box mx="auto" maxW="4xl" w="full" mb="8" as="section" role="article" mt="4">
+        <Box mx="auto" maxW="4xl" w="full" mb="8" as="article" mt="4">
           <ZapBubbles event={article} mb="2" aria-label="Zap reactions" />
           <Flex gap="2" role="toolbar" aria-label="Article actions">
             <EventZapButton event={article} size="sm" variant="ghost" showEventPreview={false} aria-label="Send zap" />
