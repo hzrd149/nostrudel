@@ -6,7 +6,7 @@ const VerticalPageLayout: ComponentWithAs<"div", FlexProps> = ({ children, ...pr
 
   return (
     <Box overflowX="hidden" overflowY="auto" h="full" w="full" ref={ref} tabIndex={0} aria-label="Main content">
-      <Flex direction="column" pt="2" pb="12" gap="2" px="2" w="full" as="main" aria-live="polite" {...props}>
+      <Flex direction="column" pt="2" pb="12" gap="2" px="2" w="full" as="main" {...props}>
         {children}
       </Flex>
     </Box>

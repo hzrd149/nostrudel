@@ -30,11 +30,13 @@ export default function NavDrawer({ onClose, ...props }: Omit<DrawerProps, "chil
   };
 
   return (
-    <Drawer placement="left" onClose={onClose} aria-label="Main navigation menu" returnFocusOnClose={true} {...props}>
+    <Drawer placement="left" onClose={onClose} returnFocusOnClose={true} {...props}>
       <DrawerOverlay />
-      <DrawerContent role="navigation">
+      <DrawerContent aria-label="Main navigation menu">
         <CollapsedContext.Provider value={false}>
           <DrawerBody
+            as="nav"
+            aria-label="Main navigation"
             display="flex"
             flexDirection="column"
             px="4"
