@@ -37,22 +37,15 @@ const Item = ({ entity }: ItemComponentProps<Token>) => {
     const { url, name, char } = entity;
     if (url)
       return (
-        <span role="option" aria-label={`Emoji: ${name}`} style={{ background: "transparent" }}>
+        <span aria-label={`Emoji: ${name}`} style={{ background: "transparent" }}>
           {name}:{" "}
           <Image src={url} h="1.2em" w="1.2em" display="inline-block" verticalAlign="middle" title={name} alt={name} />
         </span>
       );
-    else
-      return (
-        <span
-          role="option"
-          aria-label={`Emoji: ${name}`}
-          style={{ background: "transparent" }}
-        >{`${name}: ${char}`}</span>
-      );
+    else return <span aria-label={`Emoji: ${name}`} style={{ background: "transparent" }}>{`${name}: ${char}`}</span>;
   } else if (isPersonToken(entity)) {
     return (
-      <span role="option" aria-label={`User: ${entity.pubkey}`} style={{ background: "transparent" }}>
+      <span aria-label={`User: ${entity.pubkey}`} style={{ background: "transparent" }}>
         <UserAvatar pubkey={entity.pubkey} size="xs" /> <UserName pubkey={entity.pubkey} />{" "}
         <UserDnsIdentity pubkey={entity.pubkey} onlyIcon />
       </span>
