@@ -39,7 +39,7 @@ function ArticlePage({ article }: { article: NostrEvent }) {
   return (
     <VerticalPageLayout pt={{ base: "2", lg: "8" }} pb="32" aria-label="Article Content">
       <article>
-        <Box as="header" mx="auto" maxW="4xl" w="full" mb="2" role="heading">
+        <Box as="header" mx="auto" maxW="4xl" w="full" mb="2">
           <ArticleMenu article={article} aria-label="Article Options" float="right" variant="ghost" />
           <Heading as="h1" size="xl">
             {title}
