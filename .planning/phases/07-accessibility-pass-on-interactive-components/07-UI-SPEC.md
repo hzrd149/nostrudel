@@ -1,7 +1,8 @@
 ---
 phase: 7
 slug: accessibility-pass-on-interactive-components
-status: draft
+status: approved
+reviewed_at: 2026-10-06
 shadcn_initialized: false
 preset: none
 created: 2026-10-06
@@ -269,11 +270,19 @@ No new dependencies are added by this phase (D-15: no jsdom / Testing Library / 
 
 ## Checker Sign-Off
 
-- [ ] Dimension 1 Copywriting: PASS
-- [ ] Dimension 2 Visuals: PASS
-- [ ] Dimension 3 Color: PASS
-- [ ] Dimension 4 Typography: PASS
-- [ ] Dimension 5 Spacing: PASS
-- [ ] Dimension 6 Registry Safety: PASS
+- [x] Dimension 1 Copywriting: PASS
+- [x] Dimension 2 Visuals: PASS
+- [x] Dimension 3 Color: PASS
+- [x] Dimension 4 Typography: PASS
+- [x] Dimension 5 Spacing: FLAG (non-blocking — legacy off-scale values preserved per D-13)
+- [x] Dimension 6 Registry Safety: PASS
 
-**Approval:** pending
+**Approval:** approved 2026-10-06 (gsd-ui-checker)
+
+### Checker recommendations — resolved
+
+- **Legacy spacing:** the 12px (`3`) wallet-card padding and the `gap="0.5"` (2px) are legacy values preserved unchanged per D-13; no new off-scale values may be introduced.
+- **Wallet select button content:** inside the `Flex as="button"`, the name and balance render as `Text as="span"` (phrasing content only — no `<p>` inside a `<button>`); the column layout comes from the `Flex`.
+- **Wallet select button name:** keep `aria-label="Use {wallet.name}"` (balance not announced is acceptable).
+- **Article header:** `Box as="header"` stays inside the `<article>` element so it is scoped to the article, not a page-level banner landmark.
+- **App card:** use `LinkBox as="article"` (keeps `position: relative` for `HoverLinkOverlay`), not `Flex as="article"`.
