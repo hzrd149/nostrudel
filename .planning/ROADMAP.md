@@ -333,7 +333,7 @@ should be plain tags, roles missing their required ARIA props, and unlabelled co
 corrected, starting with the shared components that every view inherits.
 **Requirements:** TBD
 **Depends on:** Phase 2
-**Plans:** 7/8 plans executed
+**Plans:** 8/8 plans complete
 
 43 `jsx-a11y` findings measured on `next` with src/ at `1479dc08a` on 2026-10-06 (score 86/100,
 bucket F):
@@ -370,7 +370,7 @@ Plans:
 
 **Wave 3** *(blocked on Wave 2 completion)*
 
-- [ ] 07-08-PLAN.md — close the 43 -> N table, diff the src/ snapshot, inventory the one ignore, record manual UAT (wave 3)
+- [x] 07-08-PLAN.md — close the 43 -> N table, diff the src/ snapshot, inventory the one ignore, record manual UAT (wave 3)
 
 **Cross-cutting constraints:**
 
