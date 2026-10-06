@@ -49,7 +49,7 @@ function ArticlePage({ article }: { article: NostrEvent }) {
               {summary}
             </Text>
           )}
-          <Box py="2" as="footer">
+          <Box py="2">
             <UserAvatarLink pubkey={article.pubkey} float="left" mr="3" mb="2" aria-label="Author avatar" />
             <UserLink
               pubkey={article.pubkey}
