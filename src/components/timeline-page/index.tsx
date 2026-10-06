@@ -36,7 +36,7 @@ export default function TimelinePage({
   ...props
 }: { loader?: TimelineLoader; timeline: NostrEvent[]; header?: React.ReactNode } & Omit<
   FlexProps,
-  "children" | "direction" | "gap"
+  "children" | "direction" | "gap" | "as"
 >) {
   const callback = useTimelineCurserIntersectionCallback(loader);
 
