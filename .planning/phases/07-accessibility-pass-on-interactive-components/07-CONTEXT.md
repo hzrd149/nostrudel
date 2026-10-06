@@ -145,6 +145,21 @@ across views), new test infrastructure, and consolidating hardcoded URLs (Phase 
   user-noticeable changes (the `aria-live` removal, button conversions, combobox ARIA removal) —
   P4 D-04 / P5 D-16 precedent. Explicitly rejected: one commit per file.
 
+### Rulings after research (2026-10-06)
+
+- **D-18 (amends D-08):** **The explicit `role="group"` on `side-nav.tsx:49` and
+  `note-filter-type-buttons.tsx:12` is deleted, not ignored.** Research found both elements are
+  Chakra `ButtonGroup`s, which already render `role="group"` themselves
+  (`button-group.mjs:56`), so the attribute is redundant: deleting it yields an identical DOM and
+  accessibility tree (the `aria-label` stays) with zero ignores. The expected surviving-ignore
+  inventory is therefore **1** (the privacy datalist line, D-12). User ruling.
+- **D-19:** **The mobile drawer's dialog gets its name** — the `aria-label` that `<Drawer>` does not
+  forward moves to `DrawerContent`, alongside D-06's `DrawerBody as="nav"`. Claude's discretion,
+  applied because the line is already touched.
+- **D-20:** `views/articles/article.tsx`'s inner article container follows D-06 literally
+  (`as="article"`); its `Box as="header"` stays inside the `<article>` (UI-SPEC checker
+  resolution).
+
 ### Claude's Discretion
 
 - The exact Chakra element/`as` value per container where more than one is defensible.
