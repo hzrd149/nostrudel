@@ -20,7 +20,6 @@ export default function DesktopSideNav({ ...props }: Omit<FlexProps, "children">
       <Flex
         as="nav"
         aria-label="Main navigation"
-        role="navigation"
         direction="column"
         gap="2"
         px="2"
@@ -44,13 +43,7 @@ export default function DesktopSideNav({ ...props }: Omit<FlexProps, "children">
       >
         <AccountSwitcher />
         <NavItems />
-        <ButtonGroup
-          variant="ghost"
-          role="group"
-          aria-label="Navigation controls"
-          justifyContent="space-between"
-          flexWrap="wrap"
-        >
+        <ButtonGroup variant="ghost" aria-label="Navigation controls" justifyContent="space-between" flexWrap="wrap">
           <IconButton
             aria-label={collapsed ? "Expand navigation menu" : "Collapse navigation menu"}
             aria-expanded={!collapsed}
