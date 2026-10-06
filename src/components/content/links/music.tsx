@@ -130,6 +130,7 @@ function SoundCloudEmbed({ match }: { match: URL }) {
 
   return (
     <iframe
+      title="SoundCloud player"
       width="100%"
       height="166"
       scrolling="no"
