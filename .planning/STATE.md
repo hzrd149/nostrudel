@@ -2,18 +2,18 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_phase: 7
-status: executing
-stopped_at: Phase 6 complete, ready to plan Phase 7
-last_updated: "2026-10-06T21:17:38.817Z"
+current_phase: 8 — Triage TODO stubs and hardcoded URLs
+status: planning
+stopped_at: Phase 7 complete, ready to plan Phase 8
+last_updated: "2026-10-06T23:51:32.978Z"
 last_activity: 2026-10-06
 progress:
   total_phases: 8
-  completed_phases: 6
+  completed_phases: 7
   total_plans: 63
-  completed_plans: 55
-  percent: 75
-current_phase_name: Accessibility pass on interactive components
+  completed_plans: 63
+  percent: 88
+current_phase_name: Triage TODO stubs and hardcoded URLs
 ---
 
 # Session State
@@ -22,13 +22,13 @@ current_phase_name: Accessibility pass on interactive components
 
 See: .planning/PROJECT.md (not present in this project; ROADMAP.md and the phase CONTEXT files are the reference)
 
-**Current focus:** Phase 7 — Accessibility pass on interactive components
+**Current focus:** Phase 8 — Triage TODO stubs and hardcoded URLs
 
 ## Position
 
 **Milestone:** v1.0 milestone
-**Current phase:** 7
-**Status:** Executing Phase 7
+**Current phase:** 8 — Triage TODO stubs and hardcoded URLs
+**Status:** Ready to plan
 
 ## Session Log
 
@@ -143,6 +143,9 @@ See: .planning/PROJECT.md (not present in this project; ROADMAP.md and the phase
 - [Phase 06]: 06: bucket E closed 68 -> 0 reported; 3 rule-scoped ignores survive (atSchema cast, MagicInput directive, vertex cast)
 - [Phase 06]: 06: IndexedDB schemas are now type aliases idb actually checks; unknown/deleted stores are compile errors
 - [Phase 06]: 06: fixed clearCacheData clearing the deleted dnsIdentifiers store (now identities); event-console units case-insensitive (D-18)
+- [Phase 07]: 07: bucket F closed 43 -> 0 reported; 1 rule-scoped ignore survives (privacy datalist option, false positive)
+- [Phase 07]: 07: VerticalPageLayout renders the page main landmark (callers cannot override as); page-wide aria-live removed
+- [Phase 07]: 07: fake role=button controls became native buttons (wallet select, relay icon stack); hand-added combobox/option ARIA removed in favour of native input+datalist
 
 ## Quick Tasks Completed
 
@@ -158,5 +161,5 @@ See: .planning/PROJECT.md (not present in this project; ROADMAP.md and the phase
 
 **Last activity:** 2026-10-06
 **Last session:** 2026-10-06
-**Stopped at:** Phase 6 complete, ready to plan Phase 7
+**Stopped at:** Phase 7 complete, ready to plan Phase 8
 **Resume file:** None
