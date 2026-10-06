@@ -333,7 +333,7 @@ should be plain tags, roles missing their required ARIA props, and unlabelled co
 corrected, starting with the shared components that every view inherits.
 **Requirements:** TBD
 **Depends on:** Phase 2
-**Plans:** 8 plans
+**Plans:** 5/8 plans executed
 
 43 `jsx-a11y` findings measured on `next` with src/ at `1479dc08a` on 2026-10-06 (score 86/100,
 bucket F):
@@ -357,11 +357,11 @@ Concentrations: `components/magic-textarea.tsx` (6), `components/relay-url-input
 Plans:
 **Wave 1**
 
-- [ ] 07-01-PLAN.md — record the measured 43-finding baseline and src/ snapshot, correct the stale Phase 7 entry (wave 1)
-- [ ] 07-02-PLAN.md — VerticalPageLayout renders main, drop the page-wide live region, redundant nav/group roles, named mobile nav dialog (wave 1)
-- [ ] 07-03-PLAN.md — drop hand-added combobox ARIA from the relay URL input and option roles from composer autocomplete (wave 1)
-- [ ] 07-04-PLAN.md — native article/section/ul elements, fake Show More control removed, relay icon stack becomes a native button (wave 1)
-- [ ] 07-05-PLAN.md — empty alt on the identicon, titles on the SoundCloud and webxdc iframes (wave 1)
+- [x] 07-01-PLAN.md — record the measured 43-finding baseline and src/ snapshot, correct the stale Phase 7 entry (wave 1)
+- [x] 07-02-PLAN.md — VerticalPageLayout renders main, drop the page-wide live region, redundant nav/group roles, named mobile nav dialog (wave 1)
+- [x] 07-03-PLAN.md — drop hand-added combobox ARIA from the relay URL input and option roles from composer autocomplete (wave 1)
+- [x] 07-04-PLAN.md — native article/section/ul elements, fake Show More control removed, relay icon stack becomes a native button (wave 1)
+- [x] 07-05-PLAN.md — empty alt on the identicon, titles on the SoundCloud and webxdc iframes (wave 1)
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
