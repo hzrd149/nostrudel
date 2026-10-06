@@ -61,7 +61,10 @@ async function resolveXdc(xdc: Uint8Array | string): Promise<ArrayBuffer> {
  *  3. Proxies every JSON-RPC request to the provided `Webxdc` instance.
  *  4. Forwards `webxdc.update` notifications into the frame.
  */
-export const Webxdc = forwardRef<WebxdcHandle, WebxdcProps>(function Webxdc({ id, xdc, webxdc, ...iframeProps }, ref) {
+export const Webxdc = forwardRef<WebxdcHandle, WebxdcProps>(function Webxdc(
+  { id, xdc, webxdc, title = "Webxdc app", ...iframeProps },
+  ref,
+) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
   // Keep latest props in refs so the message handler always sees current values
@@ -289,7 +292,7 @@ export const Webxdc = forwardRef<WebxdcHandle, WebxdcProps>(function Webxdc({ id
     };
   }, []);
 
-  return <iframe ref={iframeRef} src={`${origin}/`} {...iframeProps} />;
+  return <iframe ref={iframeRef} src={`${origin}/`} title={title} {...iframeProps} />;
 });
 
 // ---------------------------------------------------------------------------
