@@ -59,6 +59,10 @@ const HIGHLIGHT_STYLES: HighlightProps["styles"] = {
   borderRadius: "md",
   color: "var(--chakra-colors-chakra-body-text)",
   fontStyle: "italic",
+  // Chakra's Mark does not wrap by default, so long highlights would overflow and be clipped by the card
+  whiteSpace: "normal",
+  boxDecorationBreak: "clone",
+  overflowWrap: "break-word",
 };
 
 export function HighlightContent({ highlight }: { highlight: NostrEvent }) {
