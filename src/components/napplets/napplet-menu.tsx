@@ -5,6 +5,7 @@ import DebugEventMenuItem from "../debug-modal/debug-event-menu-item";
 import useAsyncAction from "../../hooks/use-async-action";
 import useShareableEventAddress from "../../hooks/use-shareable-event-address";
 import { CopyToClipboardIcon } from "../icons";
+import DeleteEventMenuItem from "../menu/delete-event";
 import { DotsMenuButton, MenuIconButtonProps } from "../menu/dots-menu-button";
 import QuoteEventMenuItem from "../menu/quote-event";
 import ShareLinkMenuItem from "../menu/share-link";
@@ -35,6 +36,7 @@ export default function NappletMenu({
         </MenuItem>
       )}
       <QuoteEventMenuItem event={event} />
+      <DeleteEventMenuItem event={event} label="Delete Napplet" />
       <DebugEventMenuItem event={event} />
     </DotsMenuButton>
   );
