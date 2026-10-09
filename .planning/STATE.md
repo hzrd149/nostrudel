@@ -157,10 +157,11 @@ See: .planning/PROJECT.md (not present in this project; ROADMAP.md and the phase
 | 260920-qwp | Update all napplet and kehto dependencies to the latest versions | 2026-09-20 | ea0fbba09 | [260920-qwp-update-all-napplet-and-kehto-dependencie](./quick/260920-qwp-update-all-napplet-and-kehto-dependencie/) |
 | 260920-r34 | Consolidate napplet details page actions into a shared NappletMenu and remove the Details section | 2026-09-20 | b402b4c06 | [260920-r34-consolidate-napplet-details-page-actions](./quick/260920-r34-consolidate-napplet-details-page-actions/) |
 | 261007-gka | Fix #359: wrap long highlighted text instead of clipping it in highlight cards | 2026-10-07 | ed7f954ed | [261007-gka-fix-359-highlight-in-long-post-context-i](./quick/261007-gka-fix-359-highlight-in-long-post-context-i/) |
+| 261009-ie3 | Add Napplets tab to user profile views (count + cards with Open button) | 2026-10-09 | 8a8cd88aa | [261009-ie3-add-naplets-tab-to-user-profile-views](./quick/261009-ie3-add-naplets-tab-to-user-profile-views/) |
 
 ## Session
 
-**Last activity:** 2026-10-07 - Completed quick task 261007-gka: Fix #359 highlight truncation
+**Last activity:** 2026-10-09 - Completed quick task 261009-ie3: Add Napplets tab to user profile views
 **Last session:** 2026-10-06
 **Stopped at:** Phase 7 complete, ready to plan Phase 8
 **Resume file:** None
