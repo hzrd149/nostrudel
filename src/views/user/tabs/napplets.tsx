@@ -1,4 +1,4 @@
-import { Heading, SimpleGrid, Text } from "@chakra-ui/react";
+import { SimpleGrid, Text } from "@chakra-ui/react";
 import { useMemo } from "react";
 
 import { ErrorBoundary } from "../../../components/error-boundary";
@@ -34,13 +34,7 @@ export default function UserNappletsTab() {
   return (
     <ScrollLayout maxW="6xl" center>
       <IntersectionObserverProvider callback={callback}>
-        {napplets.length === 0 ? (
-          <Text color="GrayText">No napplets found for this user.</Text>
-        ) : (
-          <Heading size="md">
-            {napplets.length} {napplets.length === 1 ? "napplet" : "napplets"} published
-          </Heading>
-        )}
+        {napplets.length === 0 && <Text color="GrayText">No napplets found for this user.</Text>}
         <SimpleGrid columns={{ base: 1, md: 2, xl: 3 }} spacing="4">
           {napplets.map((event) => {
             const address = getNappletNaddr(event);
