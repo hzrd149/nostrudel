@@ -21,6 +21,7 @@ import {
 } from "../../components/icons";
 import BarChart09 from "../../components/icons/bar-chart-09";
 import PenTool01 from "../../components/icons/pen-tool-01";
+import PuzzlePiece01 from "../../components/icons/puzzle-piece-01";
 import UserPlus01 from "../../components/icons/user-plus-01";
 import SimpleHeader from "../../components/layout/components/simple-header";
 import AppTabsLayout, { AppTabs, AppTabsProvider } from "../../components/layout/presets/app-tabs-layout";
@@ -47,6 +48,7 @@ const UserMutedByTab = lazy(() => import("./tabs/muted-by"));
 const UserTorrentsTab = lazy(() => import("./tabs/torrents"));
 const UserAdvancedTab = lazy(() => import("./tabs/advanced"));
 const UserPollsTab = lazy(() => import("./tabs/polls"));
+const UserNappletsTab = lazy(() => import("./tabs/napplets"));
 
 export const userProfileTabs: AppTabs[] = [
   { label: "About", path: "", icon: ProfileIcon },
@@ -56,6 +58,7 @@ export const userProfileTabs: AppTabs[] = [
   { label: "Polls", path: "polls", icon: BarChart09, Component: UserPollsTab },
   { label: "Streams", path: "streams", icon: LiveStreamIcon, Component: UserStreamsTab },
   { label: "Media", path: "media", icon: MediaIcon, Component: UserPicturePostsTab },
+  { label: "Napplets", path: "napplets", icon: PuzzlePiece01, Component: UserNappletsTab },
   { label: "Zaps", path: "zaps", icon: LightningIcon, Component: UserZapsTab },
   { label: "Lists", path: "lists", icon: ListsIcon, Component: UserListsTab },
   { label: "Following", path: "following", icon: FollowIcon, Component: UserFollowingTab },
