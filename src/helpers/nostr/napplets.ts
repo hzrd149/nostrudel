@@ -98,6 +98,11 @@ export function getNappletNaddr(event: NostrEvent) {
   return nip19.naddrEncode({ kind: event.kind, pubkey: event.pubkey, identifier });
 }
 
+/** Whether a manifest can be listed and opened: it has a manifest kind, parses, and has an naddr. */
+export function isValidNappletStoreEvent(event: NostrEvent) {
+  return isNappletManifestKind(event.kind) && validateNappletManifest(event) && !!getNappletNaddr(event);
+}
+
 export function encodeNappletIntent(intent: NappletIntent) {
   return encodeURIComponent(JSON.stringify(intent));
 }
