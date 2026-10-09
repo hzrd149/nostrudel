@@ -254,8 +254,8 @@ export default function PrivacySettings() {
         </Flex>
         <FormHelperText>
           <Text>
-            When enabled, the app will ask your signer to decrypt all locked content (mute lists, message
-            cache, etc.) as soon as it starts, instead of waiting for you to unlock it deliberately.
+            When enabled, the app will ask your signer to decrypt all locked content (mute lists, message cache, etc.)
+            as soon as it starts, instead of waiting for you to unlock it deliberately.
           </Text>
         </FormHelperText>
       </FormControl>

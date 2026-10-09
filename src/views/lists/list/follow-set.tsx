@@ -1,13 +1,4 @@
-import {
-  Box,
-  Button,
-  ButtonGroup,
-  Card,
-  Flex,
-  IconButton,
-  SimpleGrid,
-  useDisclosure,
-} from "@chakra-ui/react";
+import { Box, Button, ButtonGroup, Card, Flex, IconButton, SimpleGrid, useDisclosure } from "@chakra-ui/react";
 import { RemoveUserFromFollowSet } from "applesauce-actions/actions";
 import { getReplaceableAddress } from "applesauce-core/helpers";
 import { getProfilePointersFromList } from "applesauce-common/helpers";

@@ -4,17 +4,7 @@ import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { useThrottle } from "react-use";
 
-import {
-  Button,
-  ButtonGroup,
-  CloseButton,
-  Flex,
-  Heading,
-  Image,
-  Input,
-  SimpleGrid,
-  Text,
-} from "@chakra-ui/react";
+import { Button, ButtonGroup, CloseButton, Flex, Heading, Image, Input, SimpleGrid, Text } from "@chakra-ui/react";
 import { getEmojiPackEmojis, getEmojiPackName } from "applesauce-common/helpers";
 import { useActiveAccount } from "applesauce-react/hooks";
 import { EventTemplate, kinds, NostrEvent } from "nostr-tools";

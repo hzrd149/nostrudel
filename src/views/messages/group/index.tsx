@@ -1,9 +1,5 @@
 import { AvatarGroup, ButtonGroup, Flex, IconButton, Text } from "@chakra-ui/react";
-import {
-  getRumorGiftWraps,
-  getConversationParticipants,
-  Rumor,
-} from "applesauce-common/helpers";
+import { getRumorGiftWraps, getConversationParticipants, Rumor } from "applesauce-common/helpers";
 import { getExpirationTimestamp } from "applesauce-core/helpers";
 import { useActiveAccount, useEventModel, use$ } from "applesauce-react/hooks";
 import { NostrEvent } from "nostr-tools";

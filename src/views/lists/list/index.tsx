@@ -1,6 +1,10 @@
 import { Box, Button, ButtonGroup, Flex, Heading, SimpleGrid, Spinner, useDisclosure } from "@chakra-ui/react";
 import { DecodeResult, encodeDecodeResult, getTagValue } from "applesauce-core/helpers";
-import { getEventPointersFromList, getAddressPointersFromList, getProfilePointersFromList } from "applesauce-common/helpers";
+import {
+  getEventPointersFromList,
+  getAddressPointersFromList,
+  getProfilePointersFromList,
+} from "applesauce-common/helpers";
 import { useActiveAccount } from "applesauce-react/hooks";
 import { kinds, NostrEvent } from "nostr-tools";
 import { EventPointer, naddrEncode } from "nostr-tools/nip19";

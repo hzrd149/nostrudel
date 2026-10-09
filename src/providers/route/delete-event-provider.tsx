@@ -1,14 +1,9 @@
 import {
-  Accordion,
-  AccordionButton,
-  AccordionIcon,
-  AccordionItem,
-  AccordionPanel,
-  Box,
   Button,
   Flex,
+  FormControl,
+  FormLabel,
   Input,
-  Link,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -16,18 +11,27 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  Switch,
+  Tag,
+  TagCloseButton,
+  TagLabel,
   Text,
 } from "@chakra-ui/react";
-import { getReplaceableAddress, isReplaceable, unixNow } from "applesauce-core/helpers";
+import {
+  getReplaceableAddress,
+  isReplaceable,
+  mergeRelaySets,
+  normalizeRelayUrl,
+  unixNow,
+} from "applesauce-core/helpers";
 import { createDefer, Deferred } from "applesauce-core/promise";
 import { useActiveAccount } from "applesauce-react/hooks";
 import { Event, kinds } from "nostr-tools";
 import { createContext, PropsWithChildren, useCallback, useContext, useMemo, useState } from "react";
 
 import { EmbedEventCard } from "../../components/embed-event/card";
-import { ExternalLinkIcon } from "../../components/icons";
-import RelayFavicon from "../../components/relay/relay-favicon";
-import { useWriteRelays } from "../../hooks/use-client-relays";
+import { RelayUrlInput } from "../../components/relay-url-input";
+import useAsyncAction from "../../hooks/use-async-action";
 import { useUserOutbox } from "../../hooks/use-user-mailboxes";
 import { eventStore } from "../../services/event-store";
 import { usePublishEvent } from "../global/publish-provider";
@@ -49,15 +53,28 @@ export function useDeleteEventContext() {
 export default function DeleteEventProvider({ children }: PropsWithChildren) {
   const account = useActiveAccount();
   const publish = usePublishEvent();
-  const [isLoading, setLoading] = useState(false);
   const [event, setEvent] = useState<Event>();
   const [defer, setDefer] = useState<Deferred<void>>();
   const [reason, setReason] = useState("");
+  const [deleteFromOutbox, setDeleteFromOutbox] = useState(true);
+  const [extraRelays, setExtraRelays] = useState<string[]>([]);
+  const [relayUrl, setRelayUrl] = useState("");
 
   const outbox = useUserOutbox(account?.pubkey);
-  const writeRelays = useWriteRelays(outbox);
+  const relays = mergeRelaySets(deleteFromOutbox ? outbox : [], extraRelays);
+
+  const { run: addRelay } = useAsyncAction(async () => {
+    const url = normalizeRelayUrl(relayUrl.trim());
+    if (!["ws:", "wss:"].includes(new URL(url).protocol)) throw new Error("Use a ws:// or wss:// relay URL");
+    setExtraRelays((current) => mergeRelaySets(current, [url]));
+    setRelayUrl("");
+  }, [relayUrl]);
 
   const deleteEvent = useCallback((event: Event) => {
+    setReason("");
+    setDeleteFromOutbox(true);
+    setExtraRelays([]);
+    setRelayUrl("");
     setEvent(event);
     const defer = createDefer<void>();
     setDefer(defer);
@@ -65,34 +82,37 @@ export default function DeleteEventProvider({ children }: PropsWithChildren) {
   }, []);
   const onClose = useCallback(() => setEvent(undefined), []);
 
-  const confirm = useCallback(async () => {
-    try {
-      if (!event) throw new Error("no event");
-      setLoading(true);
-      const tags: string[][] = [["e", event.id]];
-      if (isReplaceable(event.kind)) {
-        const address = getReplaceableAddress(event);
-        if (address) tags.push(["a", address]); // v5: can return null
-      }
+  const { run: confirm, loading: isLoading } = useAsyncAction(async () => {
+    await Promise.resolve()
+      .then(async () => {
+        if (!event) throw new Error("no event");
+        if (relays.length === 0) throw new Error("Select at least one relay");
+        const tags: string[][] = [["e", event.id]];
+        if (isReplaceable(event.kind)) {
+          const address = getReplaceableAddress(event);
+          if (address) tags.push(["a", address]); // v5: can return null
+        }
 
-      const draft = {
-        kind: kinds.EventDeletion,
-        tags,
-        content: reason,
-        created_at: unixNow(),
-      };
-      const pub = await publish("Delete", draft, undefined, false);
-      eventStore.add(pub.event);
-      defer?.resolve();
-    } catch {
-      defer?.reject();
-    } finally {
-      setLoading(false);
-      setReason("");
-      setEvent(undefined);
-      setDefer(undefined);
-    }
-  }, [defer, event, publish]);
+        const draft = {
+          kind: kinds.EventDeletion,
+          tags,
+          content: reason,
+          created_at: unixNow(),
+        };
+        const pub = await publish("Delete", draft, relays, false, true);
+        eventStore.add(pub.event);
+        defer?.resolve();
+      })
+      .catch((error) => {
+        defer?.reject(error);
+        throw error;
+      })
+      .finally(() => {
+        setReason("");
+        setEvent(undefined);
+        setDefer(undefined);
+      });
+  }, [defer, event, publish, reason, relays]);
 
   const context = useMemo(
     () => ({
@@ -123,42 +143,64 @@ export default function DeleteEventProvider({ children }: PropsWithChildren) {
                 mt="2"
               />
 
-              <Accordion allowToggle my="2">
-                <AccordionItem>
-                  <AccordionButton>
-                    Deleting from relays
-                    <AccordionIcon />
-                  </AccordionButton>
-                  <AccordionPanel>
-                    <Flex wrap="wrap" gap="2" py="2">
-                      {writeRelays.map((url) => (
-                        <Box alignItems="center" key={url} px="2" borderRadius="lg" display="flex" borderWidth="1px">
-                          <RelayFavicon relay={url} size="2xs" mr="2" />
-                          <Text isTruncated>{url}</Text>
-                        </Box>
-                      ))}
-                    </Flex>
-                  </AccordionPanel>
-                </AccordionItem>
-              </Accordion>
+              <FormControl display="flex" alignItems="center" my="3">
+                <Switch
+                  id="delete-from-outbox"
+                  colorScheme="primary"
+                  isChecked={deleteFromOutbox}
+                  onChange={(e) => setDeleteFromOutbox(e.target.checked)}
+                  isDisabled={isLoading}
+                />
+                <FormLabel htmlFor="delete-from-outbox" mb="0" ml="2">
+                  Delete from Outbox Relays
+                </FormLabel>
+              </FormControl>
+              <Flex gap="2" mb="2">
+                <RelayUrlInput
+                  placeholder="Add an extra relay (optional)"
+                  value={relayUrl}
+                  onChange={(e) => setRelayUrl(e.target.value)}
+                  isDisabled={isLoading}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      if (relayUrl.trim()) addRelay();
+                    }
+                  }}
+                />
+                <Button onClick={addRelay} isDisabled={isLoading || !relayUrl.trim()}>
+                  Add
+                </Button>
+              </Flex>
+              <Flex wrap="wrap" gap="2" mb="3">
+                {extraRelays.map((url) => (
+                  <Tag key={url} maxW="full">
+                    <TagLabel isTruncated>{url}</TagLabel>
+                    <TagCloseButton
+                      aria-label={`Remove ${url}`}
+                      isDisabled={isLoading}
+                      onClick={() => setExtraRelays((current) => current.filter((relay) => relay !== url))}
+                    />
+                  </Tag>
+                ))}
+              </Flex>
+              <Text fontSize="sm" color="GrayText" mb="4">
+                This sends a deletion request to your relays. Not all relays honor deletion requests, and copies may
+                remain elsewhere.
+              </Text>
             </ModalBody>
 
             <ModalFooter px="4" pb="4" pt="0">
-              <Button
-                as={Link}
-                leftIcon={<ExternalLinkIcon />}
-                isExternal
-                href="https://nostr-delete.vercel.app/"
-                variant="link"
-                mr="auto"
-                size="sm"
-              >
-                Nostr Event Deletion
-              </Button>
-              <Button variant="ghost" size="sm" mr={2} onClick={onClose}>
+              <Button variant="ghost" mr={2} onClick={onClose}>
                 Cancel
               </Button>
-              <Button colorScheme="red" variant="solid" onClick={confirm} size="sm" isLoading={isLoading}>
+              <Button
+                colorScheme="red"
+                variant="solid"
+                onClick={confirm}
+                isLoading={isLoading}
+                isDisabled={relays.length === 0}
+              >
                 Delete
               </Button>
             </ModalFooter>

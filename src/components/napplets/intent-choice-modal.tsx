@@ -1,4 +1,15 @@
-import { Button, Code, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Stack, Text } from "@chakra-ui/react";
+import {
+  Button,
+  Code,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  Stack,
+  Text,
+} from "@chakra-ui/react";
 
 import { type InstalledNapplet } from "../../services/installed-napplets";
 

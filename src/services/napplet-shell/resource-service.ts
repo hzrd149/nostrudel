@@ -222,8 +222,7 @@ function handleResourceMessage(
             inFlight,
             perWindow,
           );
-          if (result?.type === "resource.bytes.result")
-            return { url, ok: true, blob: result.blob, mime: result.mime };
+          if (result?.type === "resource.bytes.result") return { url, ok: true, blob: result.blob, mime: result.mime };
           return {
             url,
             ok: false,

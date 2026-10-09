@@ -235,7 +235,11 @@ function MessageTypeToggleButton({
                     </Text>
 
                     <VStack spacing={3} align="stretch">
-                      <RelayListSection label="Your inboxes:" relays={nip04RelaysToShow.self} emptyState={nip65EmptyState} />
+                      <RelayListSection
+                        label="Your inboxes:"
+                        relays={nip04RelaysToShow.self}
+                        emptyState={nip65EmptyState}
+                      />
 
                       <RelayListSection
                         label={

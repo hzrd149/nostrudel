@@ -16,7 +16,13 @@ import { createNwcBackend } from "./nwc";
 import { type WalletBackend } from "./types";
 import { createWeblnBackend, hasWebln } from "./webln";
 
-export { type ReceiveResult, WALLET_TYPE_LABELS, type WalletBackend, type WalletBackendType, type WalletTransaction } from "./types";
+export {
+  type ReceiveResult,
+  WALLET_TYPE_LABELS,
+  type WalletBackend,
+  type WalletBackendType,
+  type WalletTransaction,
+} from "./types";
 export { hasWebln } from "./webln";
 
 const log = logger.extend("Wallets");

@@ -1,10 +1,5 @@
 import { withImmediateValueOrDefault } from "applesauce-core";
-import {
-  AddressPointer,
-  EventPointer,
-  insertEventIntoDescendingList,
-  NostrEvent,
-} from "applesauce-core/helpers";
+import { AddressPointer, EventPointer, insertEventIntoDescendingList, NostrEvent } from "applesauce-core/helpers";
 import {
   COMMENT_KIND,
   getCommentReplyPointer,

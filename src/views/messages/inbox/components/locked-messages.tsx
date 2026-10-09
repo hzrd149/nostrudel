@@ -20,7 +20,13 @@ import {
   Tr,
   VStack,
 } from "@chakra-ui/react";
-import { getGiftWrapRumor, isGiftWrapUnlocked, Rumor, unlockGiftWrap, getConversationParticipants } from "applesauce-common/helpers";
+import {
+  getGiftWrapRumor,
+  isGiftWrapUnlocked,
+  Rumor,
+  unlockGiftWrap,
+  getConversationParticipants,
+} from "applesauce-common/helpers";
 import { GiftWrapsModel } from "applesauce-common/models";
 import { useActiveAccount, useEventModel } from "applesauce-react/hooks";
 import { kinds } from "nostr-tools";

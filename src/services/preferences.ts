@@ -114,14 +114,18 @@ const autoUnlockAll = await PreferenceSubject.boolean("auto-unlock-all", false);
  * is false. Keyed by category id (not a fixed enum) so the list grows as sources register (D-05) without
  * editing this file again.
  */
-const autoUnlockCategories = await PreferenceSubject.create<Record<string, boolean>>("auto-unlock-categories", {}, {
-  decode: (raw) => {
-    const value = safeParse<Record<string, boolean>>(raw);
-    if (value && typeof value === "object") return value;
-    else return {};
+const autoUnlockCategories = await PreferenceSubject.create<Record<string, boolean>>(
+  "auto-unlock-categories",
+  {},
+  {
+    decode: (raw) => {
+      const value = safeParse<Record<string, boolean>>(raw);
+      if (value && typeof value === "object") return value;
+      else return {};
+    },
+    encode: (value) => JSON.stringify(value),
   },
-  encode: (value) => JSON.stringify(value),
-});
+);
 
 // Direct messages
 const enableDecryptionCache = await PreferenceSubject.boolean("enable-decryption-cache", true);

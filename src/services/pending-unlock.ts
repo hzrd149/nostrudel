@@ -121,9 +121,7 @@ export async function setAutoUnlockCategory(id: string, enabled: boolean): Promi
  */
 export async function unlockPendingCategories(): Promise<void> {
   const rows = await firstValueFrom(pendingUnlockState$);
-  const eligible = rows.filter(
-    (row) => row.count > 0 && row.canUnlock && row.category.unlockComponent === undefined,
-  );
+  const eligible = rows.filter((row) => row.count > 0 && row.canUnlock && row.category.unlockComponent === undefined);
 
   let firstError: Error | undefined;
   for (const row of eligible) {

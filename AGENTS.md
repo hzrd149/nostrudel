@@ -218,6 +218,10 @@ The directives `aislop-ignore-line`, `aislop-ignore-next-line`, and `aislop-igno
 
 ### Chakra UI Integration
 
+Primary switches must use the brand/primary color scheme (`colorScheme="primary"`) rather than Chakra's default color scheme.
+
+Keep interactive UI elements a consistent default size. Do not use small or extra-small inputs, buttons, or other interactive elements unless explicitly requested; adjust spacing instead.
+
 ```typescript
 import { Button, Box, Flex } from "@chakra-ui/react";
 
