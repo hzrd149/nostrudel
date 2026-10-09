@@ -50,6 +50,7 @@ import { useReadRelays } from "../../hooks/use-client-relays";
 import useEvent from "../../hooks/use-event";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { getInstalledNapplet, installNapplet, uninstallNapplet } from "../../services/installed-napplets";
+import { eventDeleteManager } from "../../services/event-store";
 
 const RELATED_NAPPLETS_LIMIT = 6;
 
@@ -274,6 +275,11 @@ function NappletStoreDetailView() {
   const pointer = useMemo(() => (address ? parseNappletPointer(address) : undefined), [address]);
   const eventPointer = useMemo(() => (pointer ? getNappletEventPointer(pointer) : undefined), [pointer]);
   const event: NostrEvent | undefined = useEvent(eventPointer);
+  const [lastLoaded, setLastLoaded] = useState<{ address: string; event: NostrEvent }>();
+
+  useEffect(() => {
+    if (address && event) setLastLoaded({ address, event });
+  }, [address, event]);
 
   if (!address || !pointer || !eventPointer) {
     return (
@@ -286,7 +292,19 @@ function NappletStoreDetailView() {
     );
   }
 
-  if (!event) return <Spinner />;
+  if (!event) {
+    if (lastLoaded?.address === address && eventDeleteManager.check(lastLoaded.event)) {
+      return (
+        <SimpleView title={getNappletTitle(lastLoaded.event)}>
+          <Alert status="info">
+            <AlertIcon />
+            <AlertDescription>This napplet manifest has been deleted.</AlertDescription>
+          </Alert>
+        </SimpleView>
+      );
+    }
+    return <Spinner />;
+  }
 
   if (!isNappletManifestKind(event.kind) || !validateNappletManifest(event)) {
     return (

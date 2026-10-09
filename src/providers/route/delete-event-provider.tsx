@@ -27,7 +27,7 @@ import {
 import { createDefer, Deferred } from "applesauce-core/promise";
 import { useActiveAccount } from "applesauce-react/hooks";
 import { Event, kinds } from "nostr-tools";
-import { createContext, PropsWithChildren, useCallback, useContext, useMemo, useState } from "react";
+import { createContext, PropsWithChildren, useCallback, useContext, useMemo, useRef, useState } from "react";
 
 import { EmbedEventCard } from "../../components/embed-event/card";
 import { RelayUrlInput } from "../../components/relay-url-input";
@@ -53,6 +53,7 @@ export function useDeleteEventContext() {
 export default function DeleteEventProvider({ children }: PropsWithChildren) {
   const account = useActiveAccount();
   const publish = usePublishEvent();
+  const reasonInputRef = useRef<HTMLInputElement>(null);
   const [event, setEvent] = useState<Event>();
   const [defer, setDefer] = useState<Deferred<void>>();
   const [reason, setReason] = useState("");
@@ -126,9 +127,9 @@ export default function DeleteEventProvider({ children }: PropsWithChildren) {
     <DeleteEventContext.Provider value={context}>
       {children}
       {event && (
-        <Modal isOpen={true} onClose={onClose} size="xl">
+        <Modal isOpen={true} onClose={onClose} size="xl" initialFocusRef={reasonInputRef}>
           <ModalOverlay />
-          <ModalContent>
+          <ModalContent onClick={(e) => e.stopPropagation()} onSubmit={(e) => e.preventDefault()}>
             <ModalHeader px="4" py="2">
               Delete Event?
             </ModalHeader>
@@ -136,6 +137,7 @@ export default function DeleteEventProvider({ children }: PropsWithChildren) {
             <ModalBody px="4" py="0">
               <EmbedEventCard event={event} />
               <Input
+                ref={reasonInputRef}
                 name="reason"
                 value={reason}
                 onChange={(e) => setReason(e.target.value)}
@@ -168,7 +170,7 @@ export default function DeleteEventProvider({ children }: PropsWithChildren) {
                     }
                   }}
                 />
-                <Button onClick={addRelay} isDisabled={isLoading || !relayUrl.trim()}>
+                <Button type="button" onClick={addRelay} isDisabled={isLoading || !relayUrl.trim()}>
                   Add
                 </Button>
               </Flex>
@@ -191,13 +193,18 @@ export default function DeleteEventProvider({ children }: PropsWithChildren) {
             </ModalBody>
 
             <ModalFooter px="4" pb="4" pt="0">
-              <Button variant="ghost" mr={2} onClick={onClose}>
+              <Button type="button" variant="ghost" mr={2} onClick={onClose}>
                 Cancel
               </Button>
               <Button
+                type="button"
                 colorScheme="red"
                 variant="solid"
-                onClick={confirm}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  confirm();
+                }}
                 isLoading={isLoading}
                 isDisabled={relays.length === 0}
               >
