@@ -27,7 +27,6 @@ import {
   getNappletRequiredCapabilities,
   getNappletNaddr,
   getNappletTitle,
-  getUnsupportedNappletRequirements,
   type NappletIntent,
 } from "../../helpers/nostr/napplets";
 import { useNappletShell } from "../../providers/global/napplet-shell-provider";
@@ -95,7 +94,6 @@ export default function NappletFrame({ event, intent, onClose, onResolved, onErr
     let mounted = true;
     const controller = new AbortController();
     const capabilities = getNappletRequiredCapabilities(active);
-    const unsupported = getUnsupportedNappletRequirements(active);
 
     async function load() {
       setLoading(true);
@@ -103,8 +101,6 @@ export default function NappletFrame({ event, intent, onClose, onResolved, onErr
       setNapplet(undefined);
 
       try {
-        if (unsupported.length > 0) throw new Error(`Unsupported napplet requirements: ${unsupported.join(", ")}`);
-
         const cache = await getNappletArtifactCache();
         const resolved = await resolveNapplet({
           event: active,
