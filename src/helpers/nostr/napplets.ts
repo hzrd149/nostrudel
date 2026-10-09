@@ -103,6 +103,25 @@ export function isValidNappletStoreEvent(event: NostrEvent) {
   return isNappletManifestKind(event.kind) && validateNappletManifest(event) && !!getNappletNaddr(event);
 }
 
+export type NappletIcon = { sha256: string; type: string };
+
+const NAPPLET_ICON_TYPES = new Set(["image/png", "image/jpeg", "image/webp"]);
+
+/** The NIP-5D `["icon", <sha256>, <mime-type>]` tag, or undefined when absent, malformed, or an unsupported format. */
+export function getNappletIcon(event: NostrEvent): NappletIcon | undefined {
+  const tag = event.tags.find((t) => t[0] === "icon");
+  if (!tag) return undefined;
+
+  const [, sha256, type] = tag;
+  if (!sha256 || !/^[0-9a-f]{64}$/.test(sha256) || !NAPPLET_ICON_TYPES.has(type)) return undefined;
+
+  return { sha256, type };
+}
+
+export function getNappletServers(event: NostrEvent) {
+  return event.tags.filter((t) => t[0] === "server" && t[1]).map((t) => t[1]);
+}
+
 export function encodeNappletIntent(intent: NappletIntent) {
   return encodeURIComponent(JSON.stringify(intent));
 }

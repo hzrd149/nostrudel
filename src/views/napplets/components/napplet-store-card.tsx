@@ -1,8 +1,9 @@
-import { Badge, Box, Button, Card, CardBody, Flex, Heading, LinkBox, LinkOverlay, Text } from "@chakra-ui/react";
+import { Badge, Box, Card, CardBody, Flex, Heading, LinkBox, LinkOverlay, Text } from "@chakra-ui/react";
 import { NostrEvent } from "nostr-tools";
 import { memo } from "react";
 import { Link as RouterLink } from "react-router-dom";
 
+import NappletIconImage from "../../../components/napplets/napplet-icon";
 import UserAvatar from "../../../components/user/user-avatar";
 import UserName from "../../../components/user/user-name";
 import {
@@ -15,11 +16,9 @@ import {
 const NappletStoreCard = memo(function NappletStoreCard({
   event,
   installed,
-  showOpenButton = false,
 }: {
   event: NostrEvent;
   installed: boolean;
-  showOpenButton?: boolean;
 }) {
   const address = getNappletNaddr(event);
   const title = getNappletTitle(event);
@@ -34,12 +33,11 @@ const NappletStoreCard = memo(function NappletStoreCard({
       overflow="hidden"
       opacity={address ? 1 : 0.6}
       pointerEvents={address ? undefined : "none"}
-      _hover={{ borderColor: "primary.400", shadow: "md", transform: "translateY(-2px)" }}
-      transition="all 0.15s ease"
     >
       <CardBody display="flex" flexDirection="column" gap="4">
-        <Flex justifyContent="space-between" alignItems="flex-start" gap="3">
-          <Box minW="0">
+        <Flex alignItems="flex-start" gap="3">
+          <NappletIconImage event={event} boxSize="12" />
+          <Box minW="0" flex="1">
             <Heading size="md" noOfLines={1} mb="1">
               {address ? (
                 <LinkOverlay as={RouterLink} to={`/app/store/${address}`}>
@@ -62,27 +60,13 @@ const NappletStoreCard = memo(function NappletStoreCard({
           {description || "No description provided."}
         </Text>
 
-        <Flex mt="auto" alignItems="center" gap="2">
-          <Flex gap="1" wrap="wrap" flex="1" minW="0">
-            {archetypes.length === 0 ? (
-              <Badge>app</Badge>
-            ) : (
-              archetypes.slice(0, 4).map((archetype) => <Badge key={archetype.name}>{archetype.name}</Badge>)
-            )}
-            {archetypes.length > 4 && <Badge>+{archetypes.length - 4}</Badge>}
-          </Flex>
-          {showOpenButton && address && (
-            <Button
-              as={RouterLink}
-              to={`/app/${address}`}
-              size="sm"
-              colorScheme="primary"
-              flexShrink={0}
-              aria-label={`Open ${title}`}
-            >
-              Open
-            </Button>
+        <Flex mt="auto" gap="1" wrap="wrap" minW="0">
+          {archetypes.length === 0 ? (
+            <Badge>app</Badge>
+          ) : (
+            archetypes.slice(0, 4).map((archetype) => <Badge key={archetype.name}>{archetype.name}</Badge>)
           )}
+          {archetypes.length > 4 && <Badge>+{archetypes.length - 4}</Badge>}
         </Flex>
       </CardBody>
     </Card>
