@@ -1,8 +1,6 @@
-import { getZapAddressPointer, ZapEvent } from "applesauce-common/helpers";
+import { getZapAddressPointer, ZapEvent, getZapEventPointer, isValidZap } from "applesauce-common/helpers";
 import { insertEventIntoDescendingList } from "applesauce-core/helpers";
-import { getZapEventPointer, isValidZap } from "applesauce-common/helpers";
 import { withImmediateValueOrDefault } from "applesauce-core";
-import type { AddressPointer, EventPointer } from "applesauce-core/helpers";
 import { kinds } from "nostr-tools";
 import { filter, map, Observable, of, scan, switchMap, throttleTime } from "rxjs";
 
@@ -74,14 +72,7 @@ export const zapNotifications$: Observable<TZapGroup[]> = accounts.active$.pipe(
         "#p": [account.pubkey],
       })
       .pipe(
-        filter((event): event is ZapEvent => {
-          // TODO: remove when isValidZap does not throw
-          try {
-            return isValidZap(event);
-          } catch (error) {
-            return false;
-          }
-        }),
+        filter(isValidZap),
         // Use scan to incrementally build zap groups from each event
         scan((groups, event) => processZapNotification(groups, event), new Map<string, TZapGroup>()),
         // Convert Map to sorted array

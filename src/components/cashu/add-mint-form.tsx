@@ -32,6 +32,7 @@ export default function AddMintForm({
 
   return (
     <Flex as="form" display="flex" gap="2" onSubmit={submit} {...props}>
+      {/* aislop-ignore-next-line ai-slop/hardcoded-url -- placeholder text showing the shape of a mint URL, never requested; the rule exempts only the bare example.com host, and a mint subdomain tells users what to enter */}
       <Input {...register("url", { required: true })} placeholder="https://mint.example.com" />
       <Button type="submit" colorScheme="primary">
         Add

@@ -21,7 +21,7 @@ registerCommonAccountTypes(accounts);
 accounts.registerType(AmberClipboardAccount);
 
 // Setup password unlock prompt
-PasswordAccount.requestUnlockPassword = async (account: PasswordAccount<any>) => {
+PasswordAccount.requestUnlockPassword = async (_account: PasswordAccount<any>) => {
   const password = window.prompt("Account unlock password");
   if (!password) throw new Error("Password required");
   return password;
@@ -30,7 +30,9 @@ PasswordAccount.requestUnlockPassword = async (account: PasswordAccount<any>) =>
 // add android signer if native
 if (CAP_IS_NATIVE) accounts.registerType(AndroidSignerAccount);
 
-// TEMP: Migrate accounts from local storage to preferences
+// Versions before 1a83bd702 (2025-07-18) kept accounts in the IndexedDB "accounts" store. Any still there
+// replace the whole accounts preference (accounts already in preferences are dropped) and are then cleared
+// from the store, at the cost of one IndexedDB read on every startup.
 const legacyAccounts = (await db.getAll("accounts")) as SerializedAccount<any, any>[];
 if (legacyAccounts.length) {
   log("Migrating accounts...");

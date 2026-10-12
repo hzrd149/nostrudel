@@ -12,6 +12,7 @@ import { useVirtualListScrollRestore } from "../../../hooks/use-scroll-restore";
 import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
 import IntersectionObserverProvider from "../../../providers/local/intersection-observer";
 import { repostNotifications$, shareNotificationsLoader$, TRepostGroup } from "../../../services/notifications";
+import useObservableLoader from "../../../hooks/use-observable-loader";
 import RelayDistributionButton from "../components/relay-distribution-button";
 import MailboxSettingsButton from "../components/mailbox-settings-button";
 import TimePeriodHeader from "../components/time-period-header";
@@ -36,8 +37,8 @@ function ListItemRow({ index, style, data }: ListChildComponentProps<ListItem[]>
 }
 
 export default function SharesTab() {
-  const loader = use$(shareNotificationsLoader$);
-  const callback = useTimelineCurserIntersectionCallback(loader ?? undefined);
+  const loader = useObservableLoader(shareNotificationsLoader$);
+  const callback = useTimelineCurserIntersectionCallback(loader);
   const scroll = useVirtualListScrollRestore("manual");
 
   // Get account
@@ -95,7 +96,7 @@ export default function SharesTab() {
                   width={width}
                   height={height}
                   outerRef={scroll.outerRef}
-                  ref={scroll.ref as any}
+                  ref={scroll.ref}
                 >
                   {ListItemRow}
                 </List>

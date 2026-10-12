@@ -12,8 +12,7 @@ import {
   ChartData,
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
-import { isFromCache } from "applesauce-core/helpers";
-import { getSeenRelays } from "applesauce-core/helpers";
+import { isFromCache, getSeenRelays } from "applesauce-core/helpers";
 import { NostrEvent } from "nostr-tools";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, Colors);
@@ -53,8 +52,8 @@ export default function RelayDistributionChart({ events, title = "Events from re
       .slice(0, 10); // Limit to top 10 relays to keep chart readable
 
     // Create chart data
-    const labels = [...sortedRelays.map(([relay]) => relay)];
-    const data = [...sortedRelays.map(([, count]) => count)];
+    const labels = sortedRelays.map(([relay]) => relay);
+    const data = sortedRelays.map(([, count]) => count);
 
     // Add cache data if there are cached messages
     if (cacheCount > 0) {

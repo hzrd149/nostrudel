@@ -87,12 +87,13 @@ export default function ShareModal({
                 {
                   sha256: media.sha256!,
                   url: media.url!,
-                  // TODO: these are not needed and should be removed
+                  // BlobDescriptor requires uploaded and size. mirrorBlob never reads uploaded and sends size as the
+                  // X-Content-Length header, so size falls back to 0 when the attachment does not declare one.
                   uploaded: 0,
                   size: media.size ?? 0,
                 },
                 { auth },
-              ).catch((err) => {
+              ).catch(() => {
                 // ignore errors from individual servers
               }),
             ),

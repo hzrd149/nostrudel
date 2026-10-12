@@ -37,7 +37,6 @@ const transformers = [...textNoteTransformers, galleries, nipDefinitions, bipDef
 
 export type TextNoteContentsProps = {
   event: NostrEvent | EventTemplate | string;
-  noOpenGraphLinks?: boolean;
   maxLength?: number;
 };
 
@@ -65,7 +64,7 @@ const linkRenderers = [
 ];
 
 export const TextNoteContents = React.memo(
-  ({ event, noOpenGraphLinks, maxLength, ...props }: TextNoteContentsProps & Omit<BoxProps, "children">) => {
+  ({ event, maxLength, ...props }: TextNoteContentsProps & Omit<BoxProps, "children">) => {
     const content = useRenderedContent(event, components, {
       linkRenderers,
       transformers,

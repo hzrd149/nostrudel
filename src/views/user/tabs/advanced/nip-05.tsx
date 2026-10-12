@@ -21,6 +21,7 @@ import { ProfilePointer } from "nostr-tools/nip19";
 
 import { CopyIconButton } from "../../../../components/copy-icon-button";
 import { ErrorBoundary } from "../../../../components/error-boundary";
+import { getCorsTestUrl, getNip05WellKnownUrl } from "../../../../helpers/nip05";
 import useDnsIdentity from "../../../../hooks/use-dns-identity";
 import useUserProfile from "../../../../hooks/use-user-profile";
 
@@ -82,7 +83,7 @@ export default function NIP05DebugSection({ user }: { user: ProfilePointer }) {
       );
     }
 
-    const wellKnownUrl = `https://${identity.domain}/.well-known/nostr.json?name=${identity.name}`;
+    const wellKnownUrl = getNip05WellKnownUrl(identity.name, identity.domain);
 
     return (
       <VStack align="stretch" spacing={1}>
@@ -117,11 +118,7 @@ export default function NIP05DebugSection({ user }: { user: ProfilePointer }) {
               <AlertDescription>
                 Try testing the CORS settings of the well-known URL:
                 <br />
-                <Link
-                  href={`https://cors-test.codehappy.dev/?url=${encodeURIComponent(wellKnownUrl)}&method=get`}
-                  isExternal
-                  color="blue.500"
-                >
+                <Link href={getCorsTestUrl(wellKnownUrl)} isExternal color="blue.500">
                   {wellKnownUrl}
                 </Link>
               </AlertDescription>

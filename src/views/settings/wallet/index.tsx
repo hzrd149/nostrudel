@@ -40,21 +40,32 @@ function WalletCard({ wallet, active, onRemove }: { wallet: WalletBackend; activ
   const balance = use$(wallet.balance$);
 
   return (
-    <Card
-      variant="outline"
-      borderColor={active ? "primary.500" : undefined}
-      cursor="pointer"
-      onClick={() => setActiveWallet(wallet.id)}
-      role="button"
-      aria-pressed={active}
-      aria-label={`Use ${wallet.name}`}
-    >
-      <CardBody as={Flex} gap="3" alignItems="center" p="3">
-        <Flex direction="column" gap="0.5" overflow="hidden" flex={1}>
-          <Text fontWeight="bold" isTruncated>
+    <Card variant="outline" borderColor={active ? "primary.500" : undefined}>
+      <CardBody as={Flex} p="0" alignItems="stretch">
+        <Flex
+          as="button"
+          type="button"
+          direction="column"
+          gap="0.5"
+          overflow="hidden"
+          flex={1}
+          alignSelf="stretch"
+          p="3"
+          textAlign="start"
+          color="inherit"
+          lineHeight="inherit"
+          bg="transparent"
+          rounded="inherit"
+          cursor="pointer"
+          _focusVisible={{ outline: "none", boxShadow: "outline" }}
+          onClick={() => setActiveWallet(wallet.id)}
+          aria-pressed={active}
+          aria-label={`Use ${wallet.name}`}
+        >
+          <Text as="span" fontWeight="bold" isTruncated>
             {wallet.name}
           </Text>
-          <Text fontSize="sm" color="GrayText">
+          <Text as="span" fontSize="sm" color="GrayText">
             {balance === undefined ? "—" : balance.toLocaleString()} sats
           </Text>
         </Flex>
@@ -63,12 +74,11 @@ function WalletCard({ wallet, active, onRemove }: { wallet: WalletBackend; activ
             size="sm"
             variant="ghost"
             colorScheme="red"
+            alignSelf="center"
+            mr="3"
             aria-label={`Remove ${wallet.name}`}
             icon={<TrashIcon />}
-            onClick={(e) => {
-              e.stopPropagation();
-              onRemove();
-            }}
+            onClick={onRemove}
           />
         )}
       </CardBody>

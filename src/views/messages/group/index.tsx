@@ -1,17 +1,12 @@
 import { AvatarGroup, ButtonGroup, Flex, IconButton, Text } from "@chakra-ui/react";
-import {
-  getConversationIdentifierFromMessage as createConversationIdentifier,
-  getRumorGiftWraps,
-  getConversationParticipants,
-  Rumor,
-} from "applesauce-common/helpers";
+import { getRumorGiftWraps, getConversationParticipants, Rumor } from "applesauce-common/helpers";
 import { getExpirationTimestamp } from "applesauce-core/helpers";
 import { useActiveAccount, useEventModel, use$ } from "applesauce-react/hooks";
 import { NostrEvent } from "nostr-tools";
 import { memo, useCallback, useContext, useEffect, useMemo } from "react";
 import { Navigate, UNSAFE_DataRouterContext, useLocation, useNavigate, useParams } from "react-router-dom";
 
-import { GiftWrapsModel, WrappedMessagesGroup } from "applesauce-common/models";
+import { WrappedMessagesGroup } from "applesauce-common/models";
 import { SettingsIcon } from "../../../components/icons";
 import SimpleView from "../../../components/layout/presets/simple-view";
 import RequireActiveAccount from "../../../components/router/require-active-account";
@@ -83,7 +78,6 @@ function DirectMessageGroupPage({ group }: { group: string }) {
   const others = useMemo(() => pubkeys.filter((p) => p !== account.pubkey), [pubkeys, account.pubkey]);
 
   const messages = useEventModel(WrappedMessagesGroup, [account.pubkey, others]) ?? [];
-  const locked = useEventModel(GiftWrapsModel, [account.pubkey, true]);
 
   const lastExpiration = useMemo<number | undefined>(() => {
     for (const message of messages) {

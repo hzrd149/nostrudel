@@ -12,12 +12,14 @@ export async function installNativeScanner(): Promise<boolean> {
   if (!available) {
     // install barcode scanner
     await BarcodeScanner.installGoogleBarcodeScannerModule();
-    await new Promise<void>(async (res, rej) => {
-      const sub = await BarcodeScanner.addListener("googleBarcodeScannerModuleInstallProgress", (event) => {
+    await new Promise<void>((res, rej) => {
+      let sub: Awaited<ReturnType<typeof BarcodeScanner.addListener>> | undefined;
+
+      BarcodeScanner.addListener("googleBarcodeScannerModuleInstallProgress", (event) => {
         log("Installing google barcode scanner", event.progress);
         switch (event.state) {
           case GoogleBarcodeScannerModuleInstallState.COMPLETED:
-            sub.remove();
+            sub?.remove();
             res();
             break;
           case GoogleBarcodeScannerModuleInstallState.PENDING:
@@ -33,14 +35,16 @@ export async function installNativeScanner(): Promise<boolean> {
             log("Installing");
             break;
           case GoogleBarcodeScannerModuleInstallState.FAILED:
-            sub.remove();
+            sub?.remove();
             rej(new Error("Failed to install"));
             break;
           case GoogleBarcodeScannerModuleInstallState.CANCELED:
-            sub.remove();
+            sub?.remove();
             rej(new Error("Canceled install"));
             break;
         }
+      }).then((handle) => {
+        sub = handle;
       });
     });
   }

@@ -22,7 +22,7 @@ function ChannelMessageActions({ message }: { message: NostrEvent }) {
         title: "Text copied to clipboard",
         status: "success",
       });
-    } catch (error) {
+    } catch {
       toast({
         title: "Failed to copy text",
         status: "error",

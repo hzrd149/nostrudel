@@ -4,9 +4,9 @@ import { getTagValue } from "applesauce-core/helpers";
 import { NostrEvent } from "nostr-tools";
 import { useCallback } from "react";
 
-import { DEFAULT_SHARE_SERVICE } from "../../const";
 import { CAP_IS_NATIVE } from "../../env";
 import { getDisplayName } from "../../helpers/nostr/profile";
+import { buildShareUrl } from "../../helpers/share";
 import useShareableEventAddress from "../../hooks/use-shareable-event-address";
 import useAppSettings from "../../hooks/use-user-app-settings";
 import useUserProfile from "../../hooks/use-user-profile";
@@ -20,7 +20,7 @@ export default function ShareLinkMenuItem({ event }: { event: NostrEvent }) {
 
   const handleClick = useCallback(async () => {
     const data: ShareData = {
-      url: new URL(address || "", shareService || DEFAULT_SHARE_SERVICE).toString(),
+      url: buildShareUrl(address || "", shareService),
       title: getTagValue(event, "title") || "Nostr note by " + getDisplayName(metadata, event.pubkey),
     };
 

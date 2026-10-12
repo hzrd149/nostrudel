@@ -1,10 +1,9 @@
 import { Alert, AlertDescription, AlertIcon, AlertTitle, Button, Flex } from "@chakra-ui/react";
 import { useActiveAccount, use$ } from "applesauce-react/hooks";
-import { kinds, NostrEvent } from "nostr-tools";
+import { NostrEvent } from "nostr-tools";
 import { Navigate, useParams } from "react-router-dom";
 
-import { normalizeURL } from "applesauce-core/helpers";
-import { getSeenRelays } from "applesauce-core/helpers";
+import { normalizeURL, getSeenRelays } from "applesauce-core/helpers";
 import { useCallback } from "react";
 import SimpleView from "../../../components/layout/presets/simple-view";
 import RelayFavicon from "../../../components/relay/relay-favicon";
@@ -12,24 +11,24 @@ import RelayLink from "../../../components/relay/relay-link";
 import GenericNoteTimeline, { GENERIC_TIMELINE_KINDS } from "../../../components/timeline-page/generic-note-timeline";
 import LoadMoreButton from "../../../components/timeline/load-more-button";
 import { useAppTitle } from "../../../hooks/use-app-title";
+import useRelayAuthentication from "../../../hooks/use-relay-authentication";
 import useAsyncAction from "../../../hooks/use-async-action";
 import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
 import useTimelineLoader from "../../../hooks/use-timeline-loader";
 import IntersectionObserverProvider from "../../../providers/local/intersection-observer";
-import authenticationSigner from "../../../services/authentication-signer";
+import { authenticateRelay } from "../../../services/authentication-signer";
 import pool from "../../../services/pool";
 import { RelayFavoriteButton } from "./components/relay-favorite-button";
 import useClientSideMuteFilter from "../../../hooks/use-client-side-mute-filter";
 
 export function RelayAuthAlert({ relay }: { relay: string }) {
   const account = useActiveAccount();
-  const authenticated = use$(() => pool.relay(relay).authenticated$, [relay]);
+  const { response, authenticated } = useRelayAuthentication(relay);
   const required = use$(() => pool.relay(relay).authRequiredForRead$, [relay]);
-  const response = use$(() => pool.relay(relay).authenticationResponse$, [relay]);
 
   const authenticate = useAsyncAction(async () => {
     if (!account) throw new Error("No account");
-    await authenticationSigner.authenticate(relay);
+    await authenticateRelay(relay);
   });
 
   if (!required || authenticated) return null;

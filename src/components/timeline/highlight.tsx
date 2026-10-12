@@ -17,12 +17,13 @@ import { NostrEvent } from "nostr-tools";
 import { memo } from "react";
 import { Link as RouterLink } from "react-router-dom";
 
-import { getHighlightSourceUrl, hasHighlightSource } from "applesauce-common/helpers/highlight";
 import {
   getHighlightContext,
   getHighlightSourceAddressPointer,
   getHighlightSourceEventPointer,
+  getHighlightSourceUrl,
   getHighlightText,
+  hasHighlightSource,
 } from "applesauce-common/helpers/highlight";
 
 import useEventIntersectionRef from "../../hooks/use-event-intersection-ref";
@@ -48,7 +49,6 @@ export type TimelineHighlightProps = Omit<CardProps, "children"> & {
   variant?: CardProps["variant"];
   showReplyButton?: boolean;
   showReplyLine?: boolean;
-  hideDrawerButton?: boolean;
   registerIntersectionEntity?: boolean;
   clickable?: boolean;
 };
@@ -59,6 +59,10 @@ const HIGHLIGHT_STYLES: HighlightProps["styles"] = {
   borderRadius: "md",
   color: "var(--chakra-colors-chakra-body-text)",
   fontStyle: "italic",
+  // Chakra's Mark does not wrap by default, so long highlights would overflow and be clipped by the card
+  whiteSpace: "normal",
+  boxDecorationBreak: "clone",
+  overflowWrap: "break-word",
 };
 
 export function HighlightContent({ highlight }: { highlight: NostrEvent }) {
@@ -101,7 +105,6 @@ export function TimelineHighlight({
   event,
   variant = "unstyled",
   showReplyButton,
-  hideDrawerButton,
   registerIntersectionEntity = true,
   clickable = true,
   ...props
@@ -109,9 +112,6 @@ export function TimelineHighlight({
   const zaps = useEventZaps(event);
   const ref = useEventIntersectionRef(event);
 
-  // Extract highlight data using applesauce helpers
-  const highlightText = getHighlightText(event);
-  const context = getHighlightContext(event);
   const hasSource = hasHighlightSource(event);
 
   return (

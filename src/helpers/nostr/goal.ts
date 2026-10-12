@@ -102,8 +102,10 @@ export function validateGoal(goal: NostrEvent) {
 export function safeValidateGoal(goal: NostrEvent) {
   try {
     return validateGoal(goal);
-  } catch (e) {}
-  return false;
+  } catch {
+    // Goal event failed validation; callers filter it out
+    return false;
+  }
 }
 
 export function getGoalTag(goal: NostrEvent, relay?: string) {

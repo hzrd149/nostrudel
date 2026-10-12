@@ -13,6 +13,7 @@ import { useVirtualListScrollRestore } from "../../../hooks/use-scroll-restore";
 import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
 import IntersectionObserverProvider from "../../../providers/local/intersection-observer";
 import { socialNotificationsLoader$, threadNotifications$ } from "../../../services/notifications";
+import useObservableLoader from "../../../hooks/use-observable-loader";
 import RelayDistributionButton from "../components/relay-distribution-button";
 import MailboxSettingsButton from "../components/mailbox-settings-button";
 import TimePeriodHeader from "../components/time-period-header";
@@ -42,8 +43,8 @@ export default function ThreadsTab() {
   const account = useActiveAccount()!;
 
   // Start the event loader
-  const loader = use$(socialNotificationsLoader$);
-  const callback = useTimelineCurserIntersectionCallback(loader ?? undefined);
+  const loader = useObservableLoader(socialNotificationsLoader$);
+  const callback = useTimelineCurserIntersectionCallback(loader);
 
   // Subscribe to the processed thread notifications observable
   const notifications = use$(threadNotifications$) ?? [];
@@ -97,7 +98,7 @@ export default function ThreadsTab() {
                   width={width}
                   height={height}
                   outerRef={scroll.outerRef}
-                  ref={scroll.ref as any}
+                  ref={scroll.ref}
                 >
                   {ListItemRow}
                 </List>

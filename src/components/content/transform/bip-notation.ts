@@ -39,9 +39,10 @@ export function bipDefinitions(): Transformer<Root> {
               value: match,
               name,
             };
-          } catch (error) {}
-
-          return false;
+          } catch {
+            // Not a valid BIP reference; leave the text alone
+            return false;
+          }
         },
       ],
     ]);

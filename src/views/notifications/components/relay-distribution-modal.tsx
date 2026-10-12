@@ -1,3 +1,4 @@
+import { NostrEvent } from "nostr-tools";
 import { useMemo } from "react";
 import {
   Box,
@@ -16,8 +17,7 @@ import {
   Thead,
   Tr,
 } from "@chakra-ui/react";
-import { isFromCache } from "applesauce-core/helpers";
-import { getSeenRelays } from "applesauce-core/helpers";
+import { isFromCache, getSeenRelays } from "applesauce-core/helpers";
 import { TimelineModel } from "applesauce-core/models";
 import { useEventModel } from "applesauce-react/hooks";
 import { Filter as NostrFilter } from "nostr-tools";
@@ -46,7 +46,7 @@ export default function RelayDistributionModal({
   title = "Relay Distribution",
 }: RelayDistributionModalProps) {
   // Fetch events from the store using the provided filter
-  const events = useEventModel(TimelineModel, [filter]) ?? [];
+  const events = useEventModel(TimelineModel<NostrEvent>, [filter]) ?? [];
 
   // Calculate relay statistics
   const relayStats = useMemo<RelayStats[]>(() => {

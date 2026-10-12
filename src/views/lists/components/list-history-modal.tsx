@@ -1,3 +1,4 @@
+// aislop-ignore-file code-quality/duplicate-block -- the trailing badge/ButtonGroup in HiddenVersionRow matches the same tail in VersionRow because the two are sibling row variants, not because they share behaviour; HiddenVersionRow additionally renders an Unlock control that VersionRow has no equivalent for (D-05)
 import {
   Alert,
   AlertIcon,
@@ -316,8 +317,9 @@ function HiddenVersions({
       try {
         await unlockHiddenTags(event, account);
         refresh();
-      } catch (error) {
-        // ignore — the signer was denied or the content could not be decrypted
+      } catch {
+        // ignore — the signer was denied or the content could not be decrypted; the row simply stays locked
+        return;
       } finally {
         setUnlockingIds((prev) => {
           const next = new Set(prev);

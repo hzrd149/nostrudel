@@ -1,6 +1,5 @@
 import { useToast } from "@chakra-ui/react";
-import { addSeenRelay } from "applesauce-core/helpers";
-import { mergeRelaySets } from "applesauce-core/helpers";
+import { addSeenRelay, mergeRelaySets } from "applesauce-core/helpers";
 import { setClient } from "applesauce-core/operations";
 import { useActiveAccount, use$ } from "applesauce-react/hooks";
 import { PublishResponse } from "applesauce-relay";
@@ -9,6 +8,7 @@ import { EventTemplate, NostrEvent, UnsignedEvent } from "nostr-tools";
 import { createContext, PropsWithChildren, useCallback, useContext, useMemo, useState } from "react";
 import { BehaviorSubject, map, Observable, share } from "rxjs";
 
+import publishToRelays from "../../helpers/publish-to-relays";
 import { scanToArray } from "../../helpers/observable";
 import { useWriteRelays } from "../../hooks/use-client-relays";
 import useUserMailboxes from "../../hooks/use-user-mailboxes";
@@ -32,9 +32,10 @@ export class PublishLogEntry {
     public label: string,
     public event: NostrEvent,
     public relays: string[],
+    authenticateAs = event.pubkey,
   ) {
     // Build a custom publish observable so the responses can be streamed back to the UI
-    this.publish$ = pool.event(relays, event).pipe(share());
+    this.publish$ = publishToRelays(pool, relays, event, authenticateAs).pipe(share());
 
     // Save all results to an array
     this.publish$.pipe(scanToArray()).subscribe((r) => this.results$.next(r));
@@ -154,7 +155,7 @@ export default function PublishProvider({ children }: PropsWithChildren) {
         // sign event
         const signed = isSignedEvent(event) ? event : await account!.signEvent(event);
 
-        const entry = new PublishLogEntry(label, signed, [...relays]);
+        const entry = new PublishLogEntry(label, signed, [...relays], account?.pubkey ?? signed.pubkey);
 
         setLog((arr) => arr.concat(entry));
 

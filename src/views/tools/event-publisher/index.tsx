@@ -37,6 +37,7 @@ import VariableEditor from "./components/variable-editor";
 import { getVariables, LooseEventTemplate, processEvent, Variable } from "./process";
 import { TEMPLATES } from "./templates";
 
+// aislop-ignore-next-line complexity/function-too-long -- EventPublisherPage is a single flat event-publishing page tree with no repeated sub-structure worth extracting, and this view has no test coverage, so splitting it risks a silent regression nothing in the project would catch (D-12)
 function EventPublisherPage({ initDraft }: { initDraft?: LooseEventTemplate }) {
   const toast = useToast();
   const [loading, setLoading] = useState(false);
@@ -71,7 +72,10 @@ function EventPublisherPage({ initDraft }: { initDraft?: LooseEventTemplate }) {
     try {
       if (!draft) return;
       setProcessed(processEvent(draft, variables, account));
-    } catch (error) {}
+    } catch {
+      // Draft could not be processed into an unsigned event; processed is left unset
+      return;
+    }
   }, [draft, account, variables]);
 
   const submitEvent = () => {
@@ -252,12 +256,12 @@ function EventPublisherPage({ initDraft }: { initDraft?: LooseEventTemplate }) {
 }
 
 export default function EventPublisherView() {
-  let { value: draft } = useRouteStateValue<NostrEvent>("draft");
+  const { value } = useRouteStateValue<NostrEvent>("draft");
 
-  if (draft && draft.sig) {
-    draft = { ...draft };
-    // @ts-ignore
-    delete draft.sig;
+  let draft: LooseEventTemplate | undefined = value;
+  if (value?.sig) {
+    const { sig: _sig, ...unsigned } = value;
+    draft = unsigned;
   }
 
   return (

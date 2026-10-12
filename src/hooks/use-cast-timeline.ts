@@ -12,5 +12,12 @@ export default function useCastTimeline<T extends EventCast<NostrEvent>>(
   events: NostrEvent[] | undefined,
   Cast: CastConstructor<T>,
 ): T[] {
-  return useMemo(() => (events ?? []).map((event) => castEvent(event, Cast, eventStore)), [events, Cast]);
+  return useMemo(
+    () =>
+      (events ?? []).map((event) => {
+        // T is signed-event-only; TypeScript cannot reduce v7's conditional input type for generic T.
+        return castEvent(event as Parameters<typeof castEvent<T>>[0], Cast, eventStore);
+      }),
+    [events, Cast],
+  );
 }

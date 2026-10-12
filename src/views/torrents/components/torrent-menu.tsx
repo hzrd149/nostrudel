@@ -1,4 +1,3 @@
-import { MenuItem, useDisclosure } from "@chakra-ui/react";
 import { NostrEvent } from "nostr-tools";
 
 import CopyEmbedCodeMenuItem from "../../../components/menu/copy-embed-code";

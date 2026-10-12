@@ -11,7 +11,16 @@ export default function DeleteEventMenuItem({ event, label = "Delete Event" }: {
 
   return (
     account?.pubkey === event.pubkey && (
-      <MenuItem icon={<TrashIcon />} color="red.500" onClick={() => deleteEvent(event)}>
+      <MenuItem
+        type="button"
+        icon={<TrashIcon />}
+        color="red.500"
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          deleteEvent(event);
+        }}
+      >
         {label}
       </MenuItem>
     )

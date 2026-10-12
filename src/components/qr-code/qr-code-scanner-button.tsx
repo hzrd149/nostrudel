@@ -47,6 +47,7 @@ export default function QRCodeScannerButton({
           onResult(result.barcodes[0].rawValue);
         } catch (error) {
           // user cancel
+          log("Native QR scan cancelled or failed", error);
         }
       } catch (error) {
         log(error);

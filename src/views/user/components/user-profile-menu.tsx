@@ -18,6 +18,8 @@ import {
 } from "../../../components/icons";
 import Telescope from "../../../components/icons/telescope";
 import { DotsMenuButton, MenuIconButtonProps } from "../../../components/menu/dots-menu-button";
+import { buildShareUrl } from "../../../helpers/share";
+import useAppSettings from "../../../hooks/use-user-app-settings";
 import { useSharableProfileId } from "../../../hooks/use-shareable-profile-id";
 import useUserMuteActions from "../../../hooks/use-user-mute-actions";
 import { AppHandlerContext } from "../../../providers/route/app-handler-provider";
@@ -33,6 +35,7 @@ export const UserProfileMenu = ({
   const { isMuted, mute, unmute } = useUserMuteActions(pubkey);
   const { openAddress } = useContext(AppHandlerContext);
   const manager = useAccountManager();
+  const { shareService } = useAppSettings();
 
   const signinAsUser = () => {
     const existing = manager.getAccountForPubkey(pubkey);
@@ -74,7 +77,7 @@ export const UserProfileMenu = ({
       </MenuItem>
       <MenuItem
         onClick={() => {
-          const text = "https://njump.me/" + sharableId;
+          const text = buildShareUrl(sharableId, shareService);
           if (navigator.clipboard) navigator.clipboard?.writeText(text);
           else toast({ description: text, isClosable: true, duration: null });
         }}

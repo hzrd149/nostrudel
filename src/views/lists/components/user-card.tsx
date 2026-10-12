@@ -13,7 +13,7 @@ import { usePublishEvent } from "../../../providers/global/publish-provider";
 
 export type UserCardProps = { pubkey: string; relay?: string; list: NostrEvent } & Omit<CardProps, "children">;
 
-export default function UserCard({ pubkey, relay, list, ...props }: UserCardProps) {
+export default function UserCard({ pubkey, relay: _relay, list, ...props }: UserCardProps) {
   const account = useActiveAccount();
   const publish = usePublishEvent();
 

@@ -23,11 +23,11 @@ export default function AppCard({
   canFavorite?: boolean;
 }) {
   return (
-    <Flex
-      as={LinkBox}
+    <LinkBox
+      as="article"
+      display="flex"
       gap="4"
       alignItems="flex-start"
-      role="article"
       aria-labelledby={`app-title-${app.title.toLowerCase().replace(/\s+/g, "-")}`}
     >
       <Card p="3" borderRadius="lg">
@@ -43,6 +43,6 @@ export default function AppCard({
       </Flex>
 
       {canFavorite && <AppFavoriteButton app={app} variant="ghost" ms="auto" my="2" mr="2" zIndex={1} />}
-    </Flex>
+    </LinkBox>
   );
 }

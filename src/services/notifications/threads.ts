@@ -1,12 +1,5 @@
 import { withImmediateValueOrDefault } from "applesauce-core";
-import {
-  AddressPointer,
-  EventPointer,
-  insertEventIntoDescendingList,
-  isAddressPointer,
-  isEventPointer,
-  NostrEvent,
-} from "applesauce-core/helpers";
+import { AddressPointer, EventPointer, insertEventIntoDescendingList, NostrEvent } from "applesauce-core/helpers";
 import {
   COMMENT_KIND,
   getCommentReplyPointer,
@@ -16,9 +9,6 @@ import {
 } from "applesauce-common/helpers";
 import { kinds } from "nostr-tools";
 import { combineLatest, map, Observable, of, scan, switchMap, throttleTime } from "rxjs";
-
-// v5: getCoordinateFromAddressPointer was removed, create inline
-const getCoordinateFromAddressPointer = (pointer: any) => `${pointer.kind}:${pointer.pubkey}:${pointer.identifier}`;
 
 import { shareAndHold } from "../../helpers/observable";
 import { MutesQuery } from "../../models";
@@ -78,23 +68,6 @@ export function getThreadRootKey(pointer: EventPointer | AddressPointer | undefi
   }
 
   return undefined;
-}
-
-/**
- * Check if a reply pointer is a direct reply to one of the user's events
- */
-function isDirectReply(replyPointer: EventPointer | AddressPointer, userEventIds: Set<string>): boolean {
-  let replyKey: string;
-
-  if (isEventPointer(replyPointer)) {
-    replyKey = replyPointer.id;
-  } else if (isAddressPointer(replyPointer)) {
-    replyKey = getCoordinateFromAddressPointer(replyPointer);
-  } else {
-    return false;
-  }
-
-  return userEventIds.has(replyKey);
 }
 
 // Types for the notification state

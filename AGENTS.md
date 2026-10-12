@@ -129,6 +129,42 @@ import { ErrorBoundary } from "react-error-boundary";
 - Use Chakra UI `useToast` for user-facing errors
 - Type-check errors: `if (e instanceof Error)`
 
+#### Swallowed Exceptions
+
+The adopted lint standard (see [Linting](#linting)) treats `ai-slop/swallowed-exception` as
+error-severity, gating `pnpm lint:ci` on any touched file. Its detector looks for control flow or a
+logging call inside the catch body — **a reason comment alone does not clear it.** A well-commented
+`catch (err) {}` still fires the rule; this is the single most surprising fact in the convention below.
+
+- **Deliberate parse/filter guard** — a reason comment plus an explicit exit that reproduces the value
+  the code already fell through to: `return` in a function body, `continue` in a loop, or the
+  accumulator itself in a `reduce` callback. Drop an unused caught binding to bare `catch {`.
+
+  ```typescript
+  try {
+    return new URL(url).toString();
+  } catch {
+    // invalid URL string; callers already treat undefined as "no URL"
+    return undefined;
+  }
+  ```
+
+- **Code after the catch must still run** — log the cause instead of returning. A `log(...)` call
+  inside the catch also satisfies the rule, and it is the correct form for a best-effort fallback where
+  the fallback itself is the handling: a pending-map cleanup, an effect-cleanup registration, a
+  fallback render, or the next iteration of a retry loop. See `src/services/event-cache/index.ts` for
+  the in-repo shape.
+- **User-triggered action** — delete the local try/catch and let the error throw; this is the
+  `useAsyncAction` pattern above (see "useAsyncAction Hook (REQUIRED)"). The hook toasts `e.message`
+  and logs it, and its `loading` replaces any hand-rolled loading state.
+- **Logging channel** — the namespaced debug logger, `logger.extend("<Module>")` from
+  `src/helpers/debug.ts`, silent in production unless the namespace is enabled. Not the direct
+  browser console: `ai-slop/console-leftover` is on.
+- **Last resort** — a rule-scoped `aislop-ignore-*` directive (see "Inline ignores" below), allowed
+  only where the catch genuinely cannot return a value or log. Its `-- reason` must justify why the
+  code could not be fixed instead, not merely that the behavior is deliberate. A `-line`/`-next-line`
+  directive must sit textually adjacent to the flagged line.
+
 ### State Management
 
 #### Layers of State
@@ -148,9 +184,43 @@ const reactions = useEventModel(ReactionsQuery, [event, relays]);
 const timeline = useTimelineLoader(timelineName, relays, filters);
 ```
 
+### Linting
+
+The adopted lint standard is `aislop`, pinned exactly as the `aislop` 0.16.1 devDependency and configured by `.aislop/config.yml`; upgrades are deliberate changes because they can shift scores and the CI threshold.
+
+```bash
+pnpm lint      # aislop scan . — whole-repo human-readable report (informational)
+pnpm lint:ci   # aislop ci --changes --base "$(git merge-base origin/next HEAD)" — the exact gate CI runs
+```
+
+- `pnpm lint` exits non-zero whenever any finding exists anywhere in the repo, which is always true today. Never chain it with `&&` or treat its exit code as pass/fail.
+- `pnpm lint:ci` is the gate `.github/workflows/lint.yml` runs on pull requests and on pushes to every branch except `master`, `next` and `changeset-release/**`, and a failure blocks the job. Pushes to `master` and `next` are not gated because their content arrives through gated branches and PRs.
+- Everything is built on `next` until a release, so changed files are measured from the merge-base of `HEAD` with `origin/next`, not from the tip of `next`. Commits that land on `next` after a branch was cut are not counted against that branch.
+- The gate scores whole touched files, including findings that already existed in them. It fails on any error-severity finding in a touched file regardless of score. `ci.failBelow` in `.aislop/config.yml` is only a backstop: aislop 0.16.1 scores `--changes` against the whole-project file count (~2.1k files), so diffs score ~97-100 and the effective gate is "no error-severity findings in touched files". Warnings alone are very unlikely to fail it. Touching a legacy file means inheriting its errors: fix them or, in a source file, add a rule-scoped ignore with a reason.
+- Changing `package.json` or `pnpm-lock.yaml` makes aislop audit the whole dependency tree. Advisories surface as `security/vulnerable-dependency` warnings (downgraded in `.aislop/config.yml`) and do not fail the gate. They are reported on `package.json`, which cannot hold an `aislop-ignore-*` comment, so the remedy is to upgrade or override the affected dependency.
+- Remote caveat: locally `origin` is the ngit/nostr remote and GitHub is `gh`, while in GitHub Actions `origin` is GitHub. Both remotes carry `next`, but they can point at different commits. Run `git fetch origin next` before trusting a local `pnpm lint:ci`. To reproduce the CI base exactly, run `git fetch gh next` and then `pnpm exec aislop ci --changes --base "$(git merge-base gh/next HEAD)"`.
+- Run `pnpm lint:ci` from a feature branch cut from `next`. On `next` itself the merge-base is the tip of `origin/next`, so it only scores local commits that have not been pushed yet.
+- Vendored third-party code under `src/lib/` (qrcodegen.ts, open-graph-scraper, bencode, fix-image-orientation) is excluded in `.aislop/config.yml`. Rule policy changes also go in that file, each with a comment giving the reason.
+- `.aislop/history.jsonl` is a local scan log and is gitignored.
+- Claude Code sessions get per-edit aislop feedback from the project hook in `.claude/settings.json`. It is feedback only; CI is the single enforcement point.
+- The hook runs `pnpm exec aislop`, so it only works after `pnpm install` in a fresh clone.
+- After re-running `aislop hook install --claude --project` (e.g. on upgrade), restore both hook commands in `.claude/settings.json` to `pnpm exec aislop hook claude` and `pnpm exec aislop hook claude --on-file-changed`. The installer rewrites them to a bare `aislop`, which is not on PATH because aislop is a devDependency.
+
+#### Inline ignores
+
+The directives `aislop-ignore-line`, `aislop-ignore-next-line`, and `aislop-ignore-file` are allowed only when they name the rule(s) and end with `-- reason`. A directive without a rule or without a reason is not acceptable. This is enforced in review, not by tooling.
+
+```typescript
+// aislop-ignore-file ai-slop/console-leftover -- this module's purpose is console output
+```
+
 ## Common Patterns
 
 ### Chakra UI Integration
+
+Primary switches must use the brand/primary color scheme (`colorScheme="primary"`) rather than Chakra's default color scheme.
+
+Keep interactive UI elements a consistent default size. Do not use small or extra-small inputs, buttons, or other interactive elements unless explicitly requested; adjust spacing instead.
 
 ```typescript
 import { Button, Box, Flex } from "@chakra-ui/react";

@@ -16,7 +16,10 @@ export default function StreamTopZappers({ stream, ...props }: FlexProps & { str
     try {
       const sender = getZapSender(z);
       dir[sender] = (dir[sender] ?? 0) + (getZapPayment(z)?.amount ?? 0);
-    } catch (error) {}
+    } catch {
+      // Zap could not be read (getZapSender/getZapPayment threw); leave it out of the totals
+      return dir;
+    }
     return dir;
   }, {});
 

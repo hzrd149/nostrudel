@@ -18,8 +18,7 @@ import {
 } from "@chakra-ui/react";
 import { NostrEvent } from "nostr-tools";
 
-import { isLegacyMessageUnlocked } from "applesauce-common/helpers";
-import { unlockLegacyMessage } from "applesauce-common/helpers";
+import { isLegacyMessageUnlocked, unlockLegacyMessage } from "applesauce-common/helpers";
 import { useActiveAccount } from "applesauce-react/hooks";
 import ThreadButton from "../../../components/message/thread-button";
 import Timestamp from "../../../components/timestamp";

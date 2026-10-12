@@ -9,7 +9,6 @@ import {
   Tag,
   Text,
   VStack,
-  Divider,
   SimpleGrid,
   Badge,
 } from "@chakra-ui/react";
@@ -45,8 +44,9 @@ function RelayDetailCard({ title, children }: { title: string; children: React.R
   );
 }
 
+// aislop-ignore-next-line complexity/function-too-long -- RelayPage is a single flat relay-detail page tree with no repeated sub-structure worth extracting, and this view has no test coverage, so splitting it risks a silent regression nothing in the project would catch (D-12)
 function RelayPage({ relay }: { relay: string }) {
-  const { info, loading } = useRelayInfo(relay, true);
+  const { info } = useRelayInfo(relay, true);
   const stats = useRelayStats(relay);
 
   const uiURL = useMemo(() => {

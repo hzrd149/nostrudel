@@ -12,7 +12,6 @@ import {
   NAPPLET_INTENT_PARAM,
   encodeNappletIntent,
   isNappletManifestKind,
-  parseNappletIntent,
   parseNappletPointer,
   type NappletIntent,
 } from "../../helpers/nostr/napplets";
@@ -95,7 +94,6 @@ export default function NappletView() {
   const [searchParams] = useSearchParams();
   const { setIntentNavigator } = useNappletShell();
   const pointer = useMemo(() => (address ? parseNappletPointer(address) : undefined), [address]);
-  const intent = useMemo(() => parseNappletIntent(searchParams.get(NAPPLET_INTENT_PARAM)), [searchParams]);
 
   useEffect(() => {
     setIntentNavigator((nextIntent, handler) => {

@@ -1,4 +1,4 @@
-import { Badge, Card, Collapse, Flex, HStack, IconButton, Spinner, Text, useDisclosure } from "@chakra-ui/react";
+import { Card, Collapse, Flex, HStack, IconButton, Spinner, Text, useDisclosure } from "@chakra-ui/react";
 import { ReactNode } from "react";
 
 import { ChevronDownIcon, ChevronUpIcon } from "./icons";

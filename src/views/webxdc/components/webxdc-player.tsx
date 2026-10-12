@@ -19,29 +19,31 @@ import { NostrEvent } from "nostr-tools";
 import { Webxdc, type WebxdcHandle } from "../../../components/webxdc/webxdc";
 import { GameControls } from "../../../components/webxdc/game-controls";
 import useWebxdc from "../../../hooks/use-webxdc";
-import { getWebxdcId, getWebxdcUrl } from "../../../helpers/nostr/webxdc";
+import { getWebxdcId, getWebxdcName, getWebxdcUrl } from "../../../helpers/nostr/webxdc";
 import { ChevronDownIcon, ChevronUpIcon } from "../../../components/icons";
 
 // ---------------------------------------------------------------------------
 // Inner component — separated so useWebxdc only runs when app is launched
 // ---------------------------------------------------------------------------
 
-const WebxdcIframe = forwardRef<WebxdcHandle, { id: string; url: string; uuid: string; height: string | number }>(
-  function WebxdcIframe({ id, url, uuid, height }, ref) {
-    const webxdc = useWebxdc(uuid);
+const WebxdcIframe = forwardRef<
+  WebxdcHandle,
+  { id: string; url: string; uuid: string; height: string | number; title: string }
+>(function WebxdcIframe({ id, url, uuid, height, title }, ref) {
+  const webxdc = useWebxdc(uuid);
 
-    return (
-      <Webxdc
-        ref={ref}
-        id={id}
-        xdc={url}
-        webxdc={webxdc}
-        allow="autoplay; fullscreen; gamepad"
-        style={{ width: "100%", height, border: "none", display: "block" }}
-      />
-    );
-  },
-);
+  return (
+    <Webxdc
+      ref={ref}
+      id={id}
+      xdc={url}
+      webxdc={webxdc}
+      title={title}
+      allow="autoplay; fullscreen; gamepad"
+      style={{ width: "100%", height, border: "none", display: "block" }}
+    />
+  );
+});
 
 // ---------------------------------------------------------------------------
 // Public component
@@ -142,6 +144,7 @@ export default function WebxdcPlayer({
           url={appUrl}
           uuid={webxdcId ?? ""}
           height={isFullscreen ? "calc(100vh - 120px)" : height}
+          title={getWebxdcName(event)}
         />
       </CardBody>
 

@@ -28,13 +28,12 @@ const ArticleCard = memo(({ article, ...props }: { article: NostrEvent } & Omit<
   const naddr = useShareableEventAddress(article);
 
   return (
-    <Box
+    <LinkBox
       ref={ref}
-      as={LinkBox}
+      as="article"
       position="relative"
       variant="ghost"
       overflow="hidden"
-      role="article"
       aria-labelledby={getEventUID(article) + "-title"}
       {...props}
     >
@@ -71,7 +70,7 @@ const ArticleCard = memo(({ article, ...props }: { article: NostrEvent } & Omit<
         <ArticleTags article={article} />
         <ZapBubbles event={article} />
       </Flex>
-    </Box>
+    </LinkBox>
   );
 });
 

@@ -89,9 +89,7 @@ export function restoreWouldChangeList(current: NostrEvent, version: NostrEvent)
  * draft following NIP-51 rules. Only tags missing from the current list are added; the
  * current list's singleton tags and content are preserved.
  *
- * TODO: merge hidden/private tags too. Decrypt both events' content with the signer
- * (applesauce `unlockHiddenTags` / `getHiddenTags`), union the private tags with the same
- * dedup rules, then re-encrypt the merged set into the draft content.
+ * Hidden (encrypted) tags are not merged: the current list's content is kept as is (backlog 999.17).
  */
 export function mergeVersionIntoList(current: NostrEvent, version: NostrEvent): EventTemplate {
   return {

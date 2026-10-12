@@ -1,3 +1,4 @@
+// aislop-ignore-file eslint/no-unreachable ai-slop/unreachable-code -- the jeep-sqlite web-init block below the CAP_IS_WEB guard throw is unreachable by design; deleting it would be a runtime no-op, but it is deliberately kept as the in-file record of how web sqlite was wired up, since jeep-sqlite cannot be disabled on web. Scoped to the file because the block spans six lines and aislop has no block-level directive form to narrow it further
 import { CapacitorSQLite, SQLiteConnection, SQLiteDBConnection } from "@capacitor-community/sqlite";
 import { CAP_IS_WEB } from "../../env";
 
@@ -23,35 +24,26 @@ export async function openConnection(
   isDelete: boolean,
 ): Promise<SQLiteDBConnection> {
   let db: SQLiteDBConnection;
-  try {
-    const retCC = (await sqlite.checkConnectionsConsistency()).result;
-    let isConn = (await sqlite.isConnection(dbName, false)).result;
-    if (retCC && isConn) {
-      db = await sqlite.retrieveConnection(dbName, false);
-    } else {
-      db = await sqlite.createConnection(dbName, encrypted, mode, version, false);
-    }
-    if (isDelete) {
-      await deleteDatabase(db);
-    }
-    await db.open();
-    return db;
-  } catch (err) {
-    return Promise.reject(err);
+  const retCC = (await sqlite.checkConnectionsConsistency()).result;
+  let isConn = (await sqlite.isConnection(dbName, false)).result;
+  if (retCC && isConn) {
+    db = await sqlite.retrieveConnection(dbName, false);
+  } else {
+    db = await sqlite.createConnection(dbName, encrypted, mode, version, false);
   }
+  if (isDelete) {
+    await deleteDatabase(db);
+  }
+  await db.open();
+  return db;
 }
 
 export async function deleteDatabase(db: SQLiteDBConnection): Promise<void> {
-  try {
-    const ret = (await db.isExists()).result;
-    if (ret) {
-      const dbName = db.getConnectionDBName();
-      await db.delete();
-      return Promise.resolve();
-    } else {
-      return Promise.resolve();
-    }
-  } catch (err) {
-    return Promise.reject(err);
+  const ret = (await db.isExists()).result;
+  if (ret) {
+    await db.delete();
+    return Promise.resolve();
+  } else {
+    return Promise.resolve();
   }
 }

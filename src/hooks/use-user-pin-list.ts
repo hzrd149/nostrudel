@@ -4,7 +4,7 @@ import { kinds } from "nostr-tools";
 
 import useReplaceableEvent from "./use-replaceable-event";
 
-export default function useUserPinList(pubkey?: string, relays: string[] = [], force?: boolean) {
+export default function useUserPinList(pubkey?: string, relays: string[] = []) {
   const account = useActiveAccount();
   const key = pubkey ?? account?.pubkey;
 

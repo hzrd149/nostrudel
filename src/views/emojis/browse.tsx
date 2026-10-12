@@ -2,13 +2,12 @@ import { useCallback } from "react";
 import { Flex, SimpleGrid, Switch, useDisclosure } from "@chakra-ui/react";
 import { getEventUID } from "applesauce-core/helpers";
 import { getEmojiPackEmojis } from "applesauce-common/helpers";
-import { kinds } from "nostr-tools";
+import { kinds, NostrEvent } from "nostr-tools";
 
 import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { useReadRelays } from "../../hooks/use-client-relays";
-import { NostrEvent } from "nostr-tools";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import EmojiPackCard from "./components/emoji-pack-card";

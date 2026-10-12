@@ -1,8 +1,8 @@
 import { LockIcon } from "@chakra-ui/icons";
-import { Box, Button, ButtonGroup, Flex, Progress, Text, useToast, VStack } from "@chakra-ui/react";
+import { Box, Button, ButtonGroup, Flex, Progress, Text, VStack } from "@chakra-ui/react";
 import { useActiveAccount, use$ } from "applesauce-react/hooks";
 import { useMemo } from "react";
-import { combineLatest, lastValueFrom } from "rxjs";
+import { combineLatest, of } from "rxjs";
 
 import { mergeRelaySets } from "applesauce-core/helpers";
 import useAsyncAction from "../../../hooks/use-async-action";
@@ -11,7 +11,6 @@ import pool from "../../../services/pool";
 
 export default function SendingStatus({ entries, onSkip }: { entries: PublishLogEntry[]; onSkip: () => void }) {
   const account = useActiveAccount();
-  const toast = useToast();
 
   // Subscribe to all publishing results
   const allResults = use$(
@@ -33,7 +32,7 @@ export default function SendingStatus({ entries, onSkip }: { entries: PublishLog
                   url,
                   combineLatest({
                     required: pool.relay(url).authRequiredForPublish$,
-                    authenticated: pool.relay(url).authenticated$,
+                    authenticated: account ? pool.relay(url).authenticatedFor$(account.pubkey) : of(false),
                     connected: pool.relay(url).connected$,
                     challenge: pool.relay(url).challenge$,
                   }),
@@ -41,7 +40,7 @@ export default function SendingStatus({ entries, onSkip }: { entries: PublishLog
               ),
             )
           : undefined,
-      [allRelays],
+      [allRelays, account?.pubkey],
     ) ?? {};
 
   // Calculate progress metrics across all entries
@@ -91,20 +90,10 @@ export default function SendingStatus({ entries, onSkip }: { entries: PublishLog
 
     // Authenticate all relays in parallel
     await Promise.all(
-      authRequiredRelays.map((url) =>
-        pool
-          .relay(url)
-          .authenticate(account)
-          .catch((error) => {
-            if (error instanceof Error) {
-              toast({
-                title: "Authentication failed",
-                description: error.message,
-                status: "error",
-              });
-            }
-          }),
-      ),
+      authRequiredRelays.map(async (url) => {
+        const response = await pool.relay(url).authenticate(account);
+        if (!response.ok) throw new Error(`${url}: ${response.message || "Authentication rejected"}`);
+      }),
     );
   }, [authRequiredRelays, account]);
 

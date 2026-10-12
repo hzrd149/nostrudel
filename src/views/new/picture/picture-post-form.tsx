@@ -37,14 +37,9 @@ export default function PicturePostForm({ onSubmit }: { onSubmit: (values: FormV
   watch("nsfw");
   watch("split");
 
-  // TODO: cache form needs to save File and Blobs
-  const clearFormCache = useCacheForm(
-    "new-media-post",
-    // @ts-expect-error
-    getValues,
-    reset,
-    formState,
-  );
+  // File values serialise to `{}` in the JSON form cache. Restored media entries are hidden by the
+  // `instanceof File` filter below but stay in `media` and are still submitted (backlog 999.16).
+  const clearFormCache = useCacheForm<FormValues>("new-media-post", getValues, reset, formState);
 
   const submit = handleSubmit(async (values) => {
     try {

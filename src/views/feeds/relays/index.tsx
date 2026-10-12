@@ -4,6 +4,7 @@ import { FAVORITE_RELAYS_KIND, getRelaysFromList } from "applesauce-common/helpe
 import { TimelineModel } from "applesauce-core/models";
 import { LoadableAddressPointer } from "applesauce-loaders/loaders";
 import { useActiveAccount, useEventModel, use$ } from "applesauce-react/hooks";
+import { NostrEvent } from "nostr-tools";
 import { useMemo } from "react";
 import { useMount } from "react-use";
 
@@ -90,7 +91,7 @@ function FavoriteRelays() {
   );
 }
 
-function DiscoverRelays({ pubkey, showUsers }: { pubkey: string; showUsers?: boolean }) {
+function DiscoverRelays({ pubkey, showUsers: _showUsers }: { pubkey: string; showUsers?: boolean }) {
   const userFavorites = useFavoriteRelays(pubkey);
 
   // Create list pointer and filter for loader
@@ -106,7 +107,7 @@ function DiscoverRelays({ pubkey, showUsers }: { pubkey: string; showUsers?: boo
   // get contacts for timelien
   const contacts = useUserContacts(pubkey);
   const favorites = useEventModel(
-    TimelineModel,
+    TimelineModel<NostrEvent>,
     contacts && [{ authors: contacts.map((s) => s.pubkey), kinds: [FAVORITE_RELAYS_KIND] }],
   );
 

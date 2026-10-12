@@ -29,6 +29,7 @@ function loadWithTimeout() {
   });
 }
 
+// aislop-ignore-next-line ai-slop/thin-wrapper -- indirects over the module-level verifyEventMethod, which updateVerifyMethod reassigns at runtime between the WebAssembly, internal, and fake strategies as localSettings.verifyEventMethod changes; inlining would bind callers to whichever implementation was loaded at import time and break the strategy swap. Consumers: services/event-store.ts, providers/global/napplet-shell-provider.tsx
 export default function verifyEvent(event: NostrEvent) {
   return verifyEventMethod(event);
 }

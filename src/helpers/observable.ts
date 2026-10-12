@@ -1,4 +1,4 @@
-import { MonoTypeOperatorFunction, Observable, OperatorFunction, ReplaySubject, scan, share, timer } from "rxjs";
+import { MonoTypeOperatorFunction, OperatorFunction, ReplaySubject, scan, share, timer } from "rxjs";
 
 export function scanToArray<T extends unknown>(): OperatorFunction<T, T[]> {
   return (source) => source.pipe(scan((arr, value) => [...arr, value], [] as T[]));

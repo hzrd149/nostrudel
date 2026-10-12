@@ -17,9 +17,8 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { SendWrappedMessage } from "applesauce-actions/actions";
-import { getTagValue, unixNow } from "applesauce-core/helpers";
+import { getTagValue, unixNow, getDisplayName } from "applesauce-core/helpers";
 import { getConversationParticipants } from "applesauce-common/helpers";
-import { getDisplayName } from "applesauce-core/helpers";
 import { useActionRunner, useEventModel, use$ } from "applesauce-react/hooks";
 import { kinds } from "nostr-tools";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";

@@ -1,7 +1,6 @@
 import { forwardRef, MouseEventHandler, MutableRefObject, useCallback, useEffect, useMemo, useRef } from "react";
 import { Link } from "@chakra-ui/react";
 import { handleMediaFallbacks } from "blossom-client-sdk";
-import { NostrEvent } from "nostr-tools";
 
 import { EmbeddedImageProps, getPubkeyMediaServers, TrustImage, useImageThumbnail } from "../links";
 import { useRegisterSlide } from "../../lightbox-provider";
@@ -21,7 +20,7 @@ export const GalleryImage = forwardRef<HTMLImageElement | null, EmbeddedImagePro
     );
     const handleClick = useCallback<MouseEventHandler<HTMLElement>>(
       (e) => {
-        !e.isPropagationStopped() && show();
+        if (!e.isPropagationStopped()) show();
         e.preventDefault();
       },
       [show],
@@ -40,7 +39,7 @@ export const GalleryImage = forwardRef<HTMLImageElement | null, EmbeddedImagePro
   },
 );
 
-export function ImageGallery({ images, event }: { images: string[]; event?: NostrEvent }) {
+export function ImageGallery({ images }: { images: string[] }) {
   const photos = useMemo(() => {
     return images.map((img) => {
       const photo: PhotoWithoutSize = { src: img, key: img };
@@ -62,9 +61,7 @@ export function ImageGallery({ images, event }: { images: string[]; event?: Nost
       <PhotoGallery
         layout="rows"
         photos={photos}
-        renderPhoto={({ photo, imageProps, wrapperStyle }) => (
-          <GalleryImage src={imageProps.src} style={imageProps.style} />
-        )}
+        renderPhoto={({ imageProps }) => <GalleryImage src={imageProps.src} style={imageProps.style} />}
         targetRowHeight={(containerWidth) => containerWidth / rowMultiplier}
       />
     </ExpandableEmbed>

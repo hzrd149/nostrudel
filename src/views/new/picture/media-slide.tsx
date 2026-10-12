@@ -12,7 +12,7 @@ function ImagePreview({ file }: { file: File }) {
 function VideoPreview({ file }: { file: File }) {
   const url = useObjectURL(file);
 
-  // TODO: make better
+  // A bare <video> with no controls or poster, so the attached clip cannot be played before posting.
   return <Box as="video" src={url} w="auto" h="auto" maxW="full" maxH="full" />;
 }
 

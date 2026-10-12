@@ -72,7 +72,7 @@ function TorrentsPage() {
     (e: NostrEvent) => {
       if (muteFilter(e)) return false;
       if (!validateTorrent(e)) return false;
-      if (tags.length > 0 && tags.some((t) => !e.tags.some((e) => e[1] === t))) return false;
+      if (tags.some((t) => !e.tags.some((e) => e[1] === t))) return false;
       return true;
     },
     [muteFilter, tags.join(",")],

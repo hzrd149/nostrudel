@@ -44,7 +44,7 @@ function ParentCard({ event, level }: { event: NostrEvent; level: number }) {
       rounded="none"
       borderColor="var(--chakra-colors-chakra-border-color)"
       ref={ref}
-      role="article"
+      as="article"
     >
       <ExpandableToggleButton
         toggle={more}

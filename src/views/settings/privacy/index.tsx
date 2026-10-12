@@ -17,16 +17,16 @@ import { safeUrl } from "../../../helpers/parse";
 import { createRequestProxyUrl } from "../../../helpers/request";
 import useSettingsForm from "../use-settings-form";
 import localSettings from "../../../services/preferences";
-import DefaultAuthModeSelect from "../../../components/settings/default-auth-mode-select";
 import SimpleView from "../../../components/layout/presets/simple-view";
-import { DEFAULT_SHARE_SERVICE } from "../../../const";
+import { DEFAULT_SHARE_SERVICE, SHARE_SERVICES } from "../../../const";
+import { pendingUnlockCategories$, setAutoUnlockCategory } from "../../../services/pending-unlock";
 
 async function validateInvidiousUrl(url?: string) {
   if (!url) return true;
   try {
     const res = await fetch(new URL("/api/v1/stats", url));
     return res.ok || "Cant reach instance";
-  } catch (e) {
+  } catch {
     return "Cant reach instance";
   }
 }
@@ -39,7 +39,7 @@ async function validateRequestProxy(url?: string) {
     const res = await fetch(createRequestProxyUrl("https://example.com", url), { signal: controller.signal });
     clearTimeout(timeoutId);
     return res.ok || "Cant reach instance";
-  } catch (e) {
+  } catch {
     return "Cant reach instance";
   }
 }
@@ -48,6 +48,9 @@ export default function PrivacySettings() {
   const { register, submit, formState } = useSettingsForm();
 
   const debugApi = use$(localSettings.enableDebugApi);
+  const autoUnlockAll = use$(localSettings.autoUnlockAll);
+  const pendingUnlockCategories = use$(pendingUnlockCategories$) ?? [];
+  const autoUnlockCategories = use$(localSettings.autoUnlockCategories) ?? {};
 
   return (
     <SimpleView
@@ -205,10 +208,10 @@ export default function PrivacySettings() {
           list="share-services"
         />
         <datalist id="share-services">
-          <option value="https://njump.me/" />
-          <option value="https://nostr.com/" />
-          <option value="https://nostr.at/" />
-          <option value="https://nostr.eu/" />
+          {SHARE_SERVICES.map((url) => (
+            // aislop-ignore-next-line jsx-a11y/control-has-associated-label -- a datalist option's value is its accessible name; a visible label would change the suggestion dropdown
+            <option key={url} value={url} />
+          ))}
         </datalist>
         {formState.errors.shareService && <FormErrorMessage>{formState.errors.shareService.message}</FormErrorMessage>}
         <FormHelperText>
@@ -236,6 +239,40 @@ export default function PrivacySettings() {
           </span>
         </FormHelperText>
       </FormControl>
+      <FormControl>
+        <Flex alignItems="center">
+          <FormLabel htmlFor="autoUnlockAll" mb="0">
+            Automatically unlock all encrypted content
+          </FormLabel>
+          <Switch
+            id="autoUnlockAll"
+            isChecked={autoUnlockAll}
+            onChange={(e) => localSettings.autoUnlockAll.next(e.currentTarget.checked)}
+          />
+        </Flex>
+        <FormHelperText>
+          <Text>
+            When enabled, the app will ask your signer to decrypt all locked content (mute lists, message cache, etc.)
+            as soon as it starts, instead of waiting for you to unlock it deliberately.
+          </Text>
+        </FormHelperText>
+      </FormControl>
+      {!autoUnlockAll &&
+        pendingUnlockCategories.map((category) => (
+          <FormControl key={category.id} ps="6">
+            <Flex alignItems="center">
+              <FormLabel htmlFor={`autoUnlock-${category.id}`} mb="0">
+                {category.label}
+              </FormLabel>
+              <Switch
+                id={`autoUnlock-${category.id}`}
+                isChecked={autoUnlockCategories[category.id] === true}
+                onChange={(e) => setAutoUnlockCategory(category.id, e.currentTarget.checked)}
+              />
+            </Flex>
+            {category.description && <FormHelperText>{category.description}</FormHelperText>}
+          </FormControl>
+        ))}
       <FormControl>
         <Flex alignItems="center">
           <FormLabel htmlFor="debugApi" mb="0">

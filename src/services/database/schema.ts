@@ -4,7 +4,7 @@ import { NostrEvent } from "nostr-tools";
 
 import { AppSettings } from "../../helpers/app-settings";
 
-export interface SchemaV1 {
+export type SchemaV1 = {
   userMetadata: {
     key: string;
     value: NostrEvent;
@@ -57,9 +57,9 @@ export interface SchemaV1 {
       localSettings?: AppSettings;
     };
   };
-}
+};
 
-export interface SchemaV2 extends Omit<SchemaV1, "settings"> {
+export type SchemaV2 = Omit<SchemaV1, "settings"> & {
   settings: {
     key: string;
     value: NostrEvent;
@@ -69,9 +69,9 @@ export interface SchemaV2 extends Omit<SchemaV1, "settings"> {
     key: string;
     value: any;
   };
-}
+};
 
-export interface SchemaV3 extends Omit<SchemaV2, "settings" | "userMetadata" | "userContacts" | "userRelays"> {
+export type SchemaV3 = Omit<SchemaV2, "settings" | "userMetadata" | "userContacts" | "userRelays"> & {
   replaceableEvents: {
     key: string;
     value: {
@@ -81,9 +81,9 @@ export interface SchemaV3 extends Omit<SchemaV2, "settings" | "userMetadata" | "
     };
     indexes: { created: number };
   };
-}
+};
 
-export interface SchemaV4 extends Omit<SchemaV3, "userFollows"> {
+export type SchemaV4 = Omit<SchemaV3, "userFollows"> & {
   userSearch: {
     key: string;
     value: {
@@ -91,9 +91,9 @@ export interface SchemaV4 extends Omit<SchemaV3, "userFollows"> {
       names: string[];
     };
   };
-}
+};
 
-export interface SchemaV5 extends Omit<SchemaV4, "accounts"> {
+export type SchemaV5 = Omit<SchemaV4, "accounts"> & {
   accounts: {
     key: string;
     value: {
@@ -106,9 +106,9 @@ export interface SchemaV5 extends Omit<SchemaV4, "accounts"> {
       localSettings?: AppSettings;
     };
   };
-}
+};
 
-export interface SchemaV6 extends SchemaV5 {
+export type SchemaV6 = SchemaV5 & {
   channelMetadata: {
     key: string;
     value: {
@@ -116,8 +116,9 @@ export interface SchemaV6 extends SchemaV5 {
       created: number;
       event: NostrEvent;
     };
+    indexes: { created: number };
   };
-}
+};
 
 type AccountV7 = {
   type: string;
@@ -133,16 +134,16 @@ type AccountV7 = {
   signerRelays?: string[];
 };
 
-export interface SchemaV7 extends Omit<SchemaV6, "accounts"> {
+export type SchemaV7 = Omit<SchemaV6, "accounts"> & {
   accounts: {
     key: string;
     value: AccountV7;
   };
-}
+};
 
-export interface SchemaV8 extends Omit<SchemaV7, "replaceableEvents"> {}
+export type SchemaV8 = Omit<SchemaV7, "replaceableEvents">;
 
-export interface SchemaV9 extends SchemaV8 {
+export type SchemaV9 = SchemaV8 & {
   read: {
     key: string;
     value: {
@@ -152,26 +153,26 @@ export interface SchemaV9 extends SchemaV8 {
     };
     indexes: { ttl: number };
   };
-}
+};
 
-export interface SchemaV10 extends Omit<SchemaV9, "channelMetadata"> {}
+export type SchemaV10 = Omit<SchemaV9, "channelMetadata">;
 
-export interface SchemaV11 extends Omit<SchemaV10, "accounts"> {
+export type SchemaV11 = Omit<SchemaV10, "accounts"> & {
   accounts: {
     key: string;
     value: SerializedAccount<any, { settings?: AppSettings }>;
   };
-}
-export interface SchemaV12 extends Omit<SchemaV11, "dnsIdentifiers"> {
+};
+export type SchemaV12 = Omit<SchemaV11, "dnsIdentifiers"> & {
   identities: {
     key: string;
     value: Identity;
   };
-}
+};
 
-export interface SchemaV13 extends SchemaV12 {
+export type SchemaV13 = SchemaV12 & {
   kv: {
     key: string;
     value: any;
   };
-}
+};

@@ -1,6 +1,8 @@
 import { ColorModeWithSystem } from "@chakra-ui/react";
 import { kinds } from "nostr-tools";
 
+import { DEFAULT_SHARE_SERVICE } from "../const";
+
 export const APP_SETTINGS_KIND = kinds.Application;
 export const APP_SETTING_IDENTIFIER = "nostrudel-settings";
 
@@ -103,7 +105,7 @@ export const DEFAULT_APP_SETTINGS: AppSettings = {
   // privacy
   imageProxy: "",
   corsProxy: "",
-  shareService: "https://njump.me/",
+  shareService: DEFAULT_SHARE_SERVICE,
   twitterRedirect: undefined,
   redditRedirect: undefined,
   youtubeRedirect: undefined,

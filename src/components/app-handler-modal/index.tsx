@@ -6,7 +6,6 @@ import {
   FormControl,
   FormLabel,
   Input,
-  Link,
   LinkBox,
   Modal,
   ModalBody,
@@ -29,7 +28,6 @@ import {
 import { getHandlerLinkTemplate } from "applesauce-common/helpers";
 import { useNavigate } from "react-router-dom";
 
-import { ExternalLinkIcon } from "../icons";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import useSingleEvent from "../../hooks/use-single-event";
 import useReplaceableEvent from "../../hooks/use-replaceable-event";
@@ -45,8 +43,8 @@ import { CopyIconButton } from "../copy-icon-button";
 import useEventIntersectionRef from "../../hooks/use-event-intersection-ref";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import useAppSettings from "../../hooks/use-user-app-settings";
-import { DEFAULT_SHARE_SERVICE } from "../../const";
 import { getNappletNaddr, isNappletManifestKind } from "../../helpers/nostr/napplets";
+import { buildShareUrl } from "../../helpers/share";
 import { getInstalledNapplet, getInstalledNappletPath } from "../../services/installed-napplets";
 
 function useEventFromDecode(decoded: DecodeResult) {
@@ -110,10 +108,7 @@ export default function AppHandlerModal({
   const kind = event?.kind ?? getKindFromDecoded(decoded);
   const alt = event?.tags.find((t) => t[0] === "alt")?.[1];
   const address = encodeDecodeResult(decoded);
-  const shareUrl = useMemo(
-    () => new URL(address, shareService || DEFAULT_SHARE_SERVICE).toString(),
-    [address, shareService],
-  );
+  const shareUrl = useMemo(() => buildShareUrl(address, shareService), [address, shareService]);
   const eventFilter = useCallback((event: NostrEvent) => {
     return event.content.length > 0;
   }, []);
@@ -135,7 +130,10 @@ export default function AppHandlerModal({
           if (getDisplayName(parsed, app.pubkey).toLowerCase().includes(search.toLowerCase())) {
             return true;
           }
-        } catch (error) {}
+        } catch {
+          // App's profile content could not be parsed; exclude it from search results
+          return false;
+        }
         return false;
       } else return true;
     })
@@ -144,7 +142,7 @@ export default function AppHandlerModal({
       try {
         getProfileContent(app);
         return true;
-      } catch (error) {
+      } catch {
         return false;
       }
     });

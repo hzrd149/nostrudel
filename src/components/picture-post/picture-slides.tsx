@@ -1,7 +1,6 @@
 import { Box, Flex, FlexProps, IconButton, Spacer } from "@chakra-ui/react";
 import { NostrEvent } from "nostr-tools";
-import { MediaAttachment } from "applesauce-common/helpers/file-metadata";
-import { getMediaAttachments } from "applesauce-common/helpers/file-metadata";
+import { MediaAttachment, getMediaAttachments } from "applesauce-common/helpers/file-metadata";
 import { Carousel, useCarousel } from "nuka-carousel";
 import styled from "@emotion/styled";
 

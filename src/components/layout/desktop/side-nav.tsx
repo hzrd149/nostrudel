@@ -8,6 +8,7 @@ import AccountSwitcher from "../components/account-switcher";
 import { CollapsedContext } from "../context";
 import RelayConnectionButton from "../components/connections-button";
 import PublishLogButton from "../components/publish-log-button";
+import PendingUnlockButton from "../components/pending-unlock-button";
 
 export default function DesktopSideNav({ ...props }: Omit<FlexProps, "children">) {
   const [collapsed, setCollapsed] = useState(false);
@@ -19,7 +20,6 @@ export default function DesktopSideNav({ ...props }: Omit<FlexProps, "children">
       <Flex
         as="nav"
         aria-label="Main navigation"
-        role="navigation"
         direction="column"
         gap="2"
         px="2"
@@ -43,7 +43,7 @@ export default function DesktopSideNav({ ...props }: Omit<FlexProps, "children">
       >
         <AccountSwitcher />
         <NavItems />
-        <ButtonGroup variant="ghost" role="group" aria-label="Navigation controls">
+        <ButtonGroup variant="ghost" aria-label="Navigation controls" justifyContent="space-between" flexWrap="wrap">
           <IconButton
             aria-label={collapsed ? "Expand navigation menu" : "Collapse navigation menu"}
             aria-expanded={!collapsed}
@@ -51,9 +51,10 @@ export default function DesktopSideNav({ ...props }: Omit<FlexProps, "children">
             onClick={() => setCollapsed(!collapsed)}
             icon={collapsed ? <ChevronRightIcon boxSize={6} /> : <ChevronLeftIcon boxSize={6} />}
           />
+          <PendingUnlockButton />
           {!collapsed && (
             <>
-              <RelayConnectionButton w="full" aria-label="Manage relay connections" />
+              <RelayConnectionButton />
               <PublishLogButton flexShrink={0} aria-label="Publish log" />
             </>
           )}

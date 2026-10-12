@@ -14,7 +14,7 @@ export default function DVMParams({
   const metadata = useDVMMetadata(pointer);
 
   const paramsWithOptions = Object.entries(metadata?.nip90Params || {}).filter(
-    ([param, obj]) => obj.values && obj.values.length > 0,
+    ([_param, obj]) => obj.values && obj.values.length > 0,
   );
 
   return (

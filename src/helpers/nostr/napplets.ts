@@ -5,8 +5,11 @@ import {
   NAPPLET_KIND_NAMED,
   NAPPLET_KIND_ROOT,
   NAPPLET_KIND_SNAPSHOT,
+  NappletResolutionError,
+  computeAggregateHash,
   isNappletManifestKind,
-  parseNappletManifest,
+  pathEntriesFromTags,
+  type NappletManifest,
 } from "@kehto/nip";
 import { manifestToIntentCatalogEntry } from "@kehto/services";
 import { ALL_CAPABILITIES, type Capability } from "@kehto/shell";
@@ -50,6 +53,69 @@ const REQUIRED_CAPABILITY_MAP: Record<string, Capability[]> = {
   intent: ["intent:read", "intent:write"],
   link: [],
 };
+
+const SHA256_HEX = /^[0-9a-f]{64}$/i;
+const ARCHETYPE_SLUG = /^[a-z0-9][a-z0-9-]*$/;
+const ARCHETYPE_CONVENTION = /^napplet:([^/?#\s]+)\/[^/?#\s]+$/;
+
+function tagValues(event: NostrEvent, name: string) {
+  return event.tags.filter((t) => t[0] === name && t[1]).map((t) => t[1].trim());
+}
+
+/** Archetype contracts from `i` intent tags (NIP-5D) and legacy `archetype` tags; malformed entries are skipped. */
+function getManifestArchetypes(event: NostrEvent): NappletManifest["archetypes"] {
+  const archetypes = new Map<string, { slug: string; convention: string }>();
+  const add = (slug: string | undefined, convention: string | undefined) => {
+    if (!slug || !convention || !ARCHETYPE_SLUG.test(slug) || !ARCHETYPE_CONVENTION.test(convention)) return;
+    archetypes.set(`${slug} ${convention}`, { slug, convention });
+  };
+
+  for (const tag of event.tags) {
+    if (tag[0] === "i") add(ARCHETYPE_CONVENTION.exec(tag[1] ?? "")?.[1], tag[1]);
+    else if (tag[0] === "archetype") add(tag[1], tag[2]);
+  }
+
+  return Array.from(archetypes.values());
+}
+
+/**
+ * Permissive NIP-5D manifest parser. Accepts single-file manifests (one bare `x` tag holding the
+ * sha256 of `/index.html`) and legacy multi-file manifests (`path` tags with an optional
+ * `x … aggregate` tag). Only throws when the kind is wrong or there is nothing to load.
+ */
+export function parseNappletManifest(event: NostrEvent): NappletManifest {
+  if (!isNappletManifestKind(event.kind)) {
+    throw new NappletResolutionError("invalid-manifest", `not a NIP-5D napplet kind: ${event.kind}`);
+  }
+
+  let paths = pathEntriesFromTags(event.tags).filter((entry) => SHA256_HEX.test(entry.sha256));
+  let aggregateHash: string | undefined;
+
+  if (paths.length > 0) {
+    aggregateHash =
+      event.tags.find((t) => t[0] === "x" && t[2] === "aggregate" && t[1] && SHA256_HEX.test(t[1]))?.[1] ??
+      computeAggregateHash(paths);
+  } else {
+    const sha256 = event.tags.find((t) => t[0] === "x" && t[1] && SHA256_HEX.test(t[1]))?.[1]?.toLowerCase();
+    if (!sha256) throw new NappletResolutionError("invalid-manifest", "manifest has no x tag or path tags");
+    paths = [{ path: "/index.html", sha256 }];
+    aggregateHash = sha256;
+  }
+
+  return {
+    kind: event.kind,
+    pubkey: event.pubkey,
+    dTag: getTagValue(event, "d") ?? "",
+    paths,
+    aggregateHash,
+    servers: tagValues(event, "server"),
+    requires: Array.from(new Set([...tagValues(event, "requires"), ...tagValues(event, "R")])),
+    archetypes: getManifestArchetypes(event),
+    title: getTagValue(event, "title"),
+    description: getTagValue(event, "description") || event.content || undefined,
+    source: getTagValue(event, "source"),
+  };
+}
 
 export function validateNappletManifest(event: NostrEvent) {
   try {
@@ -96,6 +162,30 @@ export function getNappletNaddr(event: NostrEvent) {
   if (!identifier) return undefined;
 
   return nip19.naddrEncode({ kind: event.kind, pubkey: event.pubkey, identifier });
+}
+
+/** Whether a manifest can be listed and opened: it has a manifest kind, parses, and has an naddr. */
+export function isValidNappletStoreEvent(event: NostrEvent) {
+  return isNappletManifestKind(event.kind) && validateNappletManifest(event) && !!getNappletNaddr(event);
+}
+
+export type NappletIcon = { sha256: string; type: string };
+
+const NAPPLET_ICON_TYPES = new Set(["image/png", "image/jpeg", "image/webp"]);
+
+/** The NIP-5D `["icon", <sha256>, <mime-type>]` tag, or undefined when absent, malformed, or an unsupported format. */
+export function getNappletIcon(event: NostrEvent): NappletIcon | undefined {
+  const tag = event.tags.find((t) => t[0] === "icon");
+  if (!tag) return undefined;
+
+  const [, sha256, type] = tag;
+  if (!sha256 || !/^[0-9a-f]{64}$/.test(sha256) || !NAPPLET_ICON_TYPES.has(type)) return undefined;
+
+  return { sha256, type };
+}
+
+export function getNappletServers(event: NostrEvent) {
+  return event.tags.filter((t) => t[0] === "server" && t[1]).map((t) => t[1]);
 }
 
 export function encodeNappletIntent(intent: NappletIntent) {
@@ -231,10 +321,8 @@ export function getNappletArchetypes(event: NostrEvent): NappletArchetype[] {
 export function getNappletRequiredCapabilities(event: NostrEvent): Capability[] {
   const capabilities = new Set<Capability>();
 
-  for (const tag of event.tags) {
-    if (tag[0] !== "requires" || !tag[1]) continue;
-
-    const required = tag[1].trim();
+  // `requires` is the legacy tag; NIP-5D declares required (`R`) and optional (`O`) NAP domains.
+  for (const required of [...tagValues(event, "requires"), ...tagValues(event, "R"), ...tagValues(event, "O")]) {
     if (CAPABILITIES.has(required)) capabilities.add(required as Capability);
     else for (const capability of REQUIRED_CAPABILITY_MAP[required] ?? []) capabilities.add(capability);
   }
@@ -243,8 +331,8 @@ export function getNappletRequiredCapabilities(event: NostrEvent): Capability[] 
 }
 
 export function getUnsupportedNappletRequirements(event: NostrEvent) {
-  return event.tags
-    .filter((tag) => tag[0] === "requires" && tag[1])
-    .map((tag) => tag[1].trim())
-    .filter((required) => !CAPABILITIES.has(required) && !REQUIRED_CAPABILITY_MAP[required]);
+  // Missing optional (`O`) domains must never block loading, so only required ones are reported.
+  return [...tagValues(event, "requires"), ...tagValues(event, "R")].filter(
+    (required) => !CAPABILITIES.has(required) && !REQUIRED_CAPABILITY_MAP[required],
+  );
 }

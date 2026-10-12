@@ -1,5 +1,4 @@
 import { Button, ButtonProps, IconButton, useDisclosure } from "@chakra-ui/react";
-import { getEventUID } from "applesauce-core/helpers";
 import { getZapSender } from "applesauce-common/helpers";
 import { useActiveAccount } from "applesauce-react/hooks";
 

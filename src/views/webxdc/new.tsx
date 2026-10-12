@@ -174,86 +174,90 @@ export default function NewWebxdcView() {
   });
 
   return (
-    <VerticalPageLayout as="form" onSubmit={onSubmit}>
-      <Heading size="lg">Share Webxdc App</Heading>
+    <VerticalPageLayout>
+      <Flex as="form" direction="column" gap="2" onSubmit={onSubmit}>
+        <Heading size="lg">Share Webxdc App</Heading>
 
-      {!account && (
-        <Alert status="warning">
-          <AlertIcon />
-          <AlertDescription>You need to be signed in to share webxdc apps.</AlertDescription>
-        </Alert>
-      )}
+        {!account && (
+          <Alert status="warning">
+            <AlertIcon />
+            <AlertDescription>You need to be signed in to share webxdc apps.</AlertDescription>
+          </Alert>
+        )}
 
-      {uploadError && (
-        <Alert status="error">
-          <AlertIcon />
-          <AlertDescription>{uploadError}</AlertDescription>
-        </Alert>
-      )}
+        {uploadError && (
+          <Alert status="error">
+            <AlertIcon />
+            <AlertDescription>{uploadError}</AlertDescription>
+          </Alert>
+        )}
 
-      {/* File picker */}
-      <FormControl isRequired>
-        <FormLabel>Webxdc App File (.xdc)</FormLabel>
-        <VisuallyHiddenInput
-          type="file"
-          accept=".xdc,application/x-webxdc,application/zip"
-          ref={fileInputRef}
-          onChange={(e) => {
-            const file = e.target.files?.[0];
-            if (file) handleFileSelect(file);
-          }}
-        />
-        <Flex gap="2" alignItems="center">
-          <Button onClick={() => fileInputRef.current?.click()} variant="outline">
-            {selectedFile ? "Change File" : "Select .xdc File"}
+        {/* File picker */}
+        <FormControl isRequired>
+          <FormLabel>Webxdc App File (.xdc)</FormLabel>
+          <VisuallyHiddenInput
+            type="file"
+            accept=".xdc,application/x-webxdc,application/zip"
+            ref={fileInputRef}
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) handleFileSelect(file);
+            }}
+          />
+          <Flex gap="2" alignItems="center">
+            <Button onClick={() => fileInputRef.current?.click()} variant="outline">
+              {selectedFile ? "Change File" : "Select .xdc File"}
+            </Button>
+            {selectedFile && (
+              <span>
+                {selectedFile.name} ({(selectedFile.size / 1024).toFixed(1)} KB)
+              </span>
+            )}
+          </Flex>
+          <FormHelperText>Select a .xdc webxdc app file to share</FormHelperText>
+        </FormControl>
+
+        {/* App name */}
+        <FormControl isRequired>
+          <FormLabel>App Name</FormLabel>
+          <Input placeholder={extractedName || "Chess"} {...register("name", { required: true })} />
+          <FormHelperText>Display name for the app</FormHelperText>
+        </FormControl>
+
+        {/* Description */}
+        <FormControl>
+          <FormLabel>Description</FormLabel>
+          <Textarea
+            placeholder="A collaborative chess game. Play with friends over Nostr!"
+            rows={4}
+            {...register("summary")}
+          />
+        </FormControl>
+
+        {/* Icon / thumbnail */}
+        <FormControl>
+          <FormLabel>Icon URL</FormLabel>
+          <Input type="url" placeholder="https://example.com/icon.png" {...register("imageUrl")} />
+          <FormHelperText>
+            Optional URL to an icon image for the app.
+            {extractedImage ? " (Icon found inside .xdc — provide a hosted URL if you want one shown)" : ""}
+          </FormHelperText>
+        </FormControl>
+
+        {uploadProgress !== null && (
+          <Progress value={uploadProgress} size="sm" colorScheme="primary" borderRadius="md" />
+        )}
+
+        <Flex justifyContent="flex-end">
+          <Button
+            type="submit"
+            colorScheme="primary"
+            isLoading={formState.isSubmitting}
+            isDisabled={!selectedFile || !account}
+          >
+            Publish
           </Button>
-          {selectedFile && (
-            <span>
-              {selectedFile.name} ({(selectedFile.size / 1024).toFixed(1)} KB)
-            </span>
-          )}
         </Flex>
-        <FormHelperText>Select a .xdc webxdc app file to share</FormHelperText>
-      </FormControl>
-
-      {/* App name */}
-      <FormControl isRequired>
-        <FormLabel>App Name</FormLabel>
-        <Input placeholder={extractedName || "Chess"} {...register("name", { required: true })} />
-        <FormHelperText>Display name for the app</FormHelperText>
-      </FormControl>
-
-      {/* Description */}
-      <FormControl>
-        <FormLabel>Description</FormLabel>
-        <Textarea
-          placeholder="A collaborative chess game. Play with friends over Nostr!"
-          rows={4}
-          {...register("summary")}
-        />
-      </FormControl>
-
-      {/* Icon / thumbnail */}
-      <FormControl>
-        <FormLabel>Icon URL</FormLabel>
-        <Input type="url" placeholder="https://example.com/icon.png" {...register("imageUrl")} />
-        <FormHelperText>
-          Optional URL to an icon image for the app.
-          {extractedImage ? " (Icon found inside .xdc — provide a hosted URL if you want one shown)" : ""}
-        </FormHelperText>
-      </FormControl>
-
-      {uploadProgress !== null && <Progress value={uploadProgress} size="sm" colorScheme="primary" borderRadius="md" />}
-
-      <Flex justifyContent="flex-end">
-        <Button
-          type="submit"
-          colorScheme="primary"
-          isLoading={formState.isSubmitting}
-          isDisabled={!selectedFile || !account}
-        >
-          Publish
-        </Button>
       </Flex>
     </VerticalPageLayout>
   );

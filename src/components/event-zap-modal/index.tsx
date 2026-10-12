@@ -7,9 +7,15 @@ import {
   ModalOverlay,
   ModalProps,
 } from "@chakra-ui/react";
-import { getInboxes, getReplaceableAddress, isDTag, isReplaceable } from "applesauce-core/helpers";
+import {
+  getInboxes,
+  getReplaceableAddress,
+  isDTag,
+  isReplaceable,
+  getOutboxes,
+  mergeRelaySets,
+} from "applesauce-core/helpers";
 import { getInvoice } from "applesauce-common/helpers";
-import { getOutboxes, mergeRelaySets } from "applesauce-core/helpers";
 import { getZapSplits } from "applesauce-common/helpers/zap";
 import { firstValueFrom } from "applesauce-core/observable";
 import dayjs from "dayjs";
@@ -27,7 +33,8 @@ import PayStep from "./pay-step";
 
 export type PayRequest = { invoice?: string; pubkey: string; error?: any };
 
-// TODO: this is way to complicated, it needs to be broken into multiple parts / hooks
+// getPayRequestForPubkey does the LNURL lookup, relay selection, zap request signing and invoice fetch in one
+// function; splitting it into hooks is backlog 999.15.
 
 /**
  *
@@ -99,7 +106,7 @@ export async function getPayRequestForPubkey(
     } else zapRequest.tags.push(["e", event.id]);
   }
 
-  // TODO: move this out to a separate step so the user can choose when to sign
+  // The zap request is signed inline, so the user cannot choose when to sign (backlog 999.15).
   if (!account) throw new Error("No Account");
   const signed = await account.signEvent(zapRequest);
 
@@ -151,7 +158,7 @@ export type ZapModalProps = Omit<ModalProps, "children"> & {
 export default function ZapModal({
   event,
   pubkey,
-  relays,
+  relays: _relays,
   onClose,
   initialComment,
   initialAmount,

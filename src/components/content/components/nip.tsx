@@ -1,4 +1,4 @@
-import { Link, Tooltip } from "@chakra-ui/react";
+import { Tooltip } from "@chakra-ui/react";
 import { NIPToken } from "../transform/nip-notation";
 import NipLink from "../../nip-link";
 

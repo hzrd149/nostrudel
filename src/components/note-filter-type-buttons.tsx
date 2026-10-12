@@ -9,7 +9,7 @@ export default function NoteFilterTypeButtons({
   ...props
 }: Omit<ButtonGroupProps, "children"> & { showReplies: Disclosure; showReposts: Disclosure }) {
   return (
-    <ButtonGroup variant="outline" role="group" aria-label="Note filter controls" {...props}>
+    <ButtonGroup variant="outline" aria-label="Note filter controls" {...props}>
       <IconButton
         icon={<ReplyIcon boxSize={5} />}
         colorScheme={showReplies.isOpen ? "primary" : undefined}

@@ -1,8 +1,9 @@
 import { CloseIcon } from "@chakra-ui/icons";
 import { Box, ButtonGroup, Flex, IconButton, Text } from "@chakra-ui/react";
 import { use$ } from "applesauce-react/hooks";
-import { PropsWithChildren, ReactNode, useState } from "react";
+import { PropsWithChildren, ReactNode } from "react";
 
+import useAsyncAction from "../../hooks/use-async-action";
 import { cashuMintInfo } from "../../services/cashu-mints";
 import CashuMintFavicon from "./cashu-mint-favicon";
 import CashuMintName from "./cashu-mint-name";
@@ -19,15 +20,10 @@ export default function MintControl({
   details?: ReactNode;
 }>) {
   const info = use$(cashuMintInfo(url));
-  const [loading, setLoading] = useState(false);
 
-  const remove = async () => {
-    setLoading(true);
-    try {
-      await onRemove();
-    } catch (error) {}
-    setLoading(false);
-  };
+  const remove = useAsyncAction(async () => {
+    await onRemove();
+  }, [onRemove]);
 
   return (
     <Flex gap="2" pl="2">
@@ -47,8 +43,8 @@ export default function MintControl({
           size="sm"
           colorScheme="red"
           variant="ghost"
-          onClick={remove}
-          isLoading={loading}
+          onClick={remove.run}
+          isLoading={remove.loading}
         />
       </ButtonGroup>
     </Flex>

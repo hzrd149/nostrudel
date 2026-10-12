@@ -113,6 +113,7 @@ export function renderSongDotLinkUrl(match: URL) {
     <ExpandableEmbed url={match} label="Song.link">
       <Box
         as="iframe"
+        title="Song.link player"
         w="full"
         h="full"
         maxW="xl"
@@ -130,6 +131,7 @@ function SoundCloudEmbed({ match }: { match: URL }) {
 
   return (
     <iframe
+      title="SoundCloud player"
       width="100%"
       height="166"
       scrolling="no"

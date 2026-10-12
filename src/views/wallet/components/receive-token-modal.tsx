@@ -33,7 +33,10 @@ function normalizeToken(value: string): string {
   try {
     const token = decodeTokenFromEmojiString(trimmed);
     if (token) return getEncodedToken(token);
-  } catch (error) {}
+  } catch {
+    // Not an emoji-encoded token; pass the pasted value through unchanged
+    return trimmed;
+  }
   return trimmed;
 }
 
@@ -47,7 +50,7 @@ export default function ReceiveTokenModal({ onClose, ...props }: Omit<ModalProps
   const metadata = useMemo(() => {
     try {
       return getTokenMetadata(input.trim());
-    } catch (error) {
+    } catch {
       return undefined;
     }
   }, [input]);

@@ -1,9 +1,8 @@
 import { Flex, Spacer, useDisclosure } from "@chakra-ui/react";
 import { getSeenRelays } from "applesauce-core/helpers";
-import { kinds } from "nostr-tools";
+import { kinds, NostrEvent } from "nostr-tools";
 import { useCallback } from "react";
 
-import { NostrEvent } from "nostr-tools";
 import NoteFilterTypeButtons from "../../../../components/note-filter-type-buttons";
 import TimelinePage, { useTimelinePageEventFilter } from "../../../../components/timeline-page";
 import TimelineViewTypeButtons from "../../../../components/timeline-page/timeline-view-type";

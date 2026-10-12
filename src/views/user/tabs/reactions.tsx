@@ -15,7 +15,7 @@ import { useUserOutbox } from "../../../hooks/use-user-mailboxes";
 import { ContentSettingsProvider } from "../../../providers/local/content-settings";
 import IntersectionObserverProvider from "../../../providers/local/intersection-observer";
 
-const Reaction = ({ reaction: reaction }: { reaction: NostrEvent }) => {
+const Reaction = ({ reaction }: { reaction: NostrEvent }) => {
   const ref = useEventIntersectionRef(reaction);
 
   const pointer = nip25.getReactedEventPointer(reaction);

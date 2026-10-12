@@ -1,4 +1,4 @@
-import { Alert, AlertDescription, AlertIcon, AlertTitle, Flex, Select, SimpleGrid, Text } from "@chakra-ui/react";
+import { Alert, AlertDescription, AlertIcon, AlertTitle, Select, SimpleGrid, Text } from "@chakra-ui/react";
 import { useActiveAccount, use$ } from "applesauce-react/hooks";
 import { nip19 } from "nostr-tools";
 import { memo, useMemo, useState } from "react";

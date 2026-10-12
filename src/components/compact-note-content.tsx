@@ -20,7 +20,7 @@ export type NoteContentsProps = {
 };
 
 export const CompactNoteContent = React.memo(
-  ({ event, maxLength, textOnly = false, ...props }: NoteContentsProps & Omit<BoxProps, "children">) => {
+  ({ event, maxLength, textOnly: _textOnly = false, ...props }: NoteContentsProps & Omit<BoxProps, "children">) => {
     const truncated = useRef(false);
     const transformers = useMemo(
       () => [
@@ -44,12 +44,12 @@ export const CompactNoteContent = React.memo(
 
     return (
       <LightboxProvider>
-        <Box whiteSpace="pre-wrap" role="article" aria-label="Note content" {...props}>
+        <Box as="article" whiteSpace="pre-wrap" aria-label="Note content" {...props}>
           {content}
           {truncated.current && (
             <>
               <span>...</span>
-              <Text as="span" fontWeight="bold" ml="4" role="button" tabIndex={0} aria-label="Show more content">
+              <Text as="span" fontWeight="bold" ml="4">
                 Show More
               </Text>
             </>

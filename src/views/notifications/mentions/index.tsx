@@ -11,6 +11,7 @@ import SimpleView from "../../../components/layout/presets/simple-view";
 import { groupByTimePeriod, TimeGroupedListItem } from "../../../helpers/time-grouping";
 import { useVirtualListScrollRestore } from "../../../hooks/use-scroll-restore";
 import { mentionNotifications$, socialNotificationsLoader$ } from "../../../services/notifications";
+import useObservableLoader from "../../../hooks/use-observable-loader";
 import RelayDistributionButton from "../components/relay-distribution-button";
 import MailboxSettingsButton from "../components/mailbox-settings-button";
 import TimePeriodHeader from "../components/time-period-header";
@@ -44,8 +45,8 @@ export default function MentionsTab() {
   const mentions = use$(mentionNotifications$) ?? [];
 
   // Start the event loader
-  const loader = use$(socialNotificationsLoader$);
-  const callback = useTimelineCurserIntersectionCallback(loader ?? undefined);
+  const loader = useObservableLoader(socialNotificationsLoader$);
+  const callback = useTimelineCurserIntersectionCallback(loader);
 
   // Filter for fetching events in the modal
   const filter = useMemo<Filter>(
@@ -96,7 +97,7 @@ export default function MentionsTab() {
                   width={width}
                   height={height}
                   outerRef={scroll.outerRef}
-                  ref={scroll.ref as any}
+                  ref={scroll.ref}
                 >
                   {ListItemRow}
                 </List>

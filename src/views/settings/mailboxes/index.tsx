@@ -54,7 +54,8 @@ function InboxRelay({ url }: { url: string }) {
 function OutboxRelay({ url }: { url: string }) {
   const publish = usePublishEvent();
   const actions = useActionRunner();
-  const { info } = useRelayInfo(url);
+  // Fetch keeps the relayInfoService cache warm for this url; not rendered here.
+  const { info: _info } = useRelayInfo(url);
 
   const remove = useAsyncAction(async () => {
     await actions.exec(RemoveOutboxRelay, url).forEach((e) => publish("Remove outbox relay", e));

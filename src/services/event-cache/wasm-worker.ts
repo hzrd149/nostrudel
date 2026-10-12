@@ -52,8 +52,7 @@ const wasmWorkerCache: EventCache = {
 };
 
 if (import.meta.env.DEV) {
-  // @ts-expect-error
-  window.workerRelay = worker;
+  Reflect.set(window, "workerRelay", worker);
 }
 
 export default wasmWorkerCache;

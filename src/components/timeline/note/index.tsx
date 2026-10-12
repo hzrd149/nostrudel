@@ -49,7 +49,6 @@ export type TimelineNoteProps = Omit<CardProps, "children"> & {
   variant?: CardProps["variant"];
   showReplyButton?: boolean;
   showReplyLine?: boolean;
-  hideDrawerButton?: boolean;
   registerIntersectionEntity?: boolean;
   clickable?: boolean;
 };
@@ -58,7 +57,6 @@ export function TimelineNote({
   variant = "unstyled",
   showReplyButton,
   showReplyLine = true,
-  hideDrawerButton,
   registerIntersectionEntity = true,
   clickable = true,
   ...props

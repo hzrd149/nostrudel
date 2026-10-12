@@ -34,8 +34,6 @@ export default function RelayStatusDetails({ event, ...props }: Omit<FlexProps, 
   const software = getTagValue(event, "s");
   const version = event.tags.find((t) => t[0] === "l" && t[2] === "nip11.version")?.[1];
 
-  const url = identity;
-
   // gather labels
   const misc: Record<string, string[]> = {};
   for (const tag of event.tags) {

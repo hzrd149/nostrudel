@@ -6,6 +6,7 @@ import { useEventModel, use$ } from "applesauce-react/hooks";
 import confetti from "canvas-confetti";
 import dayjs from "dayjs";
 import { kinds } from "nostr-tools";
+import { NostrEvent } from "nostr-tools";
 import { useEffect, useState } from "react";
 import { filter, map } from "rxjs";
 
@@ -51,7 +52,9 @@ function fireworks(duration: number = 10_000) {
 const aMonthAgo = dayjs().subtract(1, "month").unix();
 
 export default function SupportView() {
-  const zaps = useEventModel(TimelineModel, [{ kinds: [kinds.Zap], "#p": [SUPPORT_PUBKEY], since: aMonthAgo }]);
+  const zaps = useEventModel(TimelineModel<NostrEvent>, [
+    { kinds: [kinds.Zap], "#p": [SUPPORT_PUBKEY], since: aMonthAgo },
+  ]);
   const form = useDisclosure();
   const [request, setRequest] = useState<PayRequest>();
 

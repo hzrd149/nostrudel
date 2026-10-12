@@ -1,6 +1,10 @@
 import { isPTag } from "applesauce-core/helpers";
-import { getLegacyMessageCorrespondent, persistEncryptedContent } from "applesauce-common/helpers";
-import { unlockGiftWrap, unlockLegacyMessage } from "applesauce-common/helpers";
+import {
+  getLegacyMessageCorrespondent,
+  persistEncryptedContent,
+  unlockGiftWrap,
+  unlockLegacyMessage,
+} from "applesauce-common/helpers";
 import { defined } from "applesauce-core/observable";
 import localforage from "localforage";
 import { NostrEvent } from "nostr-social-graph";
@@ -20,9 +24,12 @@ import {
 } from "rxjs";
 
 import EncryptedStorage from "../classes/encrypted-storage";
+import { logger } from "../helpers/debug";
 import accounts from "./accounts";
 import { eventStore } from "./event-store";
 import localSettings from "./preferences";
+
+const log = logger.extend("DecryptionCache");
 
 export const decryptionCache$ = localSettings.enableDecryptionCache.pipe(
   switchMap((enable) => {
@@ -93,7 +100,10 @@ export const decryptionCacheStats$ = localSettings.encryptDecryptionCache.pipe(
           estimatedSize += new Blob([serialized]).size;
         }
       } catch (e) {
-        // Skip encrypted entries we can't read
+        // The raw record at this key could not be read for sizing (kv is the raw localforage
+        // instance here, not the EncryptedStorage wrapper, so this never attempts decryption).
+        // Keep sampling the remaining keys.
+        log("Failed to read cache entry for size estimate", keys[i], e);
       }
     }
 

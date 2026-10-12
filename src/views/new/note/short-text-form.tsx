@@ -24,13 +24,12 @@ import {
 import { getEventPointerFromQTag, processTags } from "applesauce-core/helpers";
 import { Emoji } from "applesauce-common/helpers";
 import { NoteFactory } from "applesauce-common/factories";
-import { use$ } from "applesauce-react/hooks";
+import { use$, useActiveAccount } from "applesauce-react/hooks";
 import { UnsignedEvent } from "nostr-tools";
 import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useThrottle } from "react-use";
 
-import { useActiveAccount } from "applesauce-react/hooks";
 import { ErrorBoundary } from "../../../components/error-boundary";
 import InsertGifButton from "../../../components/gif/insert-gif-button";
 import { ChevronDownIcon, ChevronUpIcon } from "../../../components/icons";
@@ -95,6 +94,7 @@ function ShortTextNoteFormInner({
   });
 
   // watch form state
+  // aislop-ignore-next-line eslint/no-unused-expressions -- the bare property read is what triggers react-hook-form's getter-based subscription; deleting it stops dirty-state re-renders with no compiler error to flag the loss
   formState.isDirty;
   watch("content");
   watch("nsfw");
@@ -138,17 +138,21 @@ function ShortTextNoteFormInner({
 
     setLoading("Signing and publishing note...");
     const pub = await publish("Post", unsigned);
+    setLoading("");
     if (pub) setPublished(pub);
+    // On the PoW path this runs from MinePOW's onComplete/onSkip, after submit's own finally has
+    // already cleared loading, so this is the only thing that can release the spinner and the
+    // mining gate on failure. An absent pub means the publish failed and publishEvent already
+    // toasted it (quite defaults to true) - do not "fix" this by throwing instead.
+    else setMiningTarget(0);
   };
 
   const submit = handleSubmit(async (values) => {
     try {
+      setLoading("Creating note...");
+      const unsigned = await createDraft(values);
       if (values.difficulty > 0) setMiningTarget(values.difficulty);
-      else {
-        setLoading("Creating note...");
-        const unsigned = await createDraft(values);
-        await publishPost(unsigned);
-      }
+      else await publishPost(unsigned);
     } finally {
       setLoading("");
     }
@@ -190,7 +194,7 @@ function ShortTextNoteFormInner({
   const showAdvanced =
     advanced.isOpen || formState.dirtyFields.difficulty || formState.dirtyFields.nsfw || formState.dirtyFields.split;
 
-  // TODO: wrap this in a form
+  // Not a <form>: a real form would let Enter in the advanced-option inputs submit the post (backlog 999.18).
   return (
     <>
       <Flex direction="column" gap="2">

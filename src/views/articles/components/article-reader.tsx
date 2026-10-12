@@ -34,6 +34,28 @@ import PauseIcon from "../../../components/icons/pause-square";
 import PlayIcon from "../../../components/icons/play";
 import { CAP_IS_ANDROID, IS_WEB_ANDROID } from "../../../env";
 
+type VoiceSliderProps = {
+  label: React.ReactNode;
+  value: number;
+  onChange: (value: number) => void;
+  min: number;
+  max: number;
+  step: number;
+};
+function VoiceSlider({ label, value, onChange, min, max, step }: VoiceSliderProps) {
+  return (
+    <FormControl>
+      <FormLabel>{label}</FormLabel>
+      <Slider value={value} onChange={onChange} min={min} max={max} step={step} colorScheme="blue">
+        <SliderTrack>
+          <SliderFilledTrack />
+        </SliderTrack>
+        <SliderThumb />
+      </Slider>
+    </FormControl>
+  );
+}
+
 function ArticleReader({
   markdown,
   ...props
@@ -261,56 +283,32 @@ function ArticleReader({
           </FormControl>
 
           <Grid width="full" gap={2} templateColumns="repeat(auto-fit, minmax(var(--chakra-sizes-2xs), 1fr))">
-            <FormControl>
-              <FormLabel>Speed (x{voiceSettings.rate.toFixed(1)})</FormLabel>
-              <Slider
-                value={voiceSettings.rate}
-                onChange={handleRateChange}
-                min={0.5}
-                max={2}
-                step={0.1}
-                colorScheme="blue"
-              >
-                <SliderTrack>
-                  <SliderFilledTrack />
-                </SliderTrack>
-                <SliderThumb />
-              </Slider>
-            </FormControl>
+            <VoiceSlider
+              label={`Speed (x${voiceSettings.rate.toFixed(1)})`}
+              value={voiceSettings.rate}
+              onChange={handleRateChange}
+              min={0.5}
+              max={2}
+              step={0.1}
+            />
 
-            <FormControl>
-              <FormLabel>Pitch (x{voiceSettings.pitch.toFixed(1)})</FormLabel>
-              <Slider
-                value={voiceSettings.pitch}
-                onChange={handlePitchChange}
-                min={0.5}
-                max={2}
-                step={0.1}
-                colorScheme="blue"
-              >
-                <SliderTrack>
-                  <SliderFilledTrack />
-                </SliderTrack>
-                <SliderThumb />
-              </Slider>
-            </FormControl>
+            <VoiceSlider
+              label={`Pitch (x${voiceSettings.pitch.toFixed(1)})`}
+              value={voiceSettings.pitch}
+              onChange={handlePitchChange}
+              min={0.5}
+              max={2}
+              step={0.1}
+            />
 
-            <FormControl>
-              <FormLabel>Volume ({Math.round(voiceSettings.volume * 100)}%)</FormLabel>
-              <Slider
-                value={voiceSettings.volume}
-                onChange={handleVolumeChange}
-                min={0}
-                max={1}
-                step={0.1}
-                colorScheme="blue"
-              >
-                <SliderTrack>
-                  <SliderFilledTrack />
-                </SliderTrack>
-                <SliderThumb />
-              </Slider>
-            </FormControl>
+            <VoiceSlider
+              label={`Volume (${Math.round(voiceSettings.volume * 100)}%)`}
+              value={voiceSettings.volume}
+              onChange={handleVolumeChange}
+              min={0}
+              max={1}
+              step={0.1}
+            />
           </Grid>
 
           {(IS_WEB_ANDROID || CAP_IS_ANDROID) && (

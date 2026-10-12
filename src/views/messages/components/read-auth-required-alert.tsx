@@ -1,8 +1,8 @@
 import { LockIcon } from "@chakra-ui/icons";
-import { Alert, AlertProps, Box, Button, ButtonGroup, Flex, Text, useToast } from "@chakra-ui/react";
+import { Alert, AlertProps, Box, Button, ButtonGroup, Flex, Text } from "@chakra-ui/react";
 import { useActiveAccount, use$ } from "applesauce-react/hooks";
 import { useMemo } from "react";
-import { combineLatest, lastValueFrom } from "rxjs";
+import { combineLatest } from "rxjs";
 
 import { setRelayAuthMode } from "../../../components/relays/relay-auth-mode-select";
 import useAsyncAction from "../../../hooks/use-async-action";
@@ -10,7 +10,6 @@ import pool from "../../../services/pool";
 
 export default function ReadAuthRequiredAlert({ relays, ...props }: { relays: string[] } & AlertProps) {
   const account = useActiveAccount();
-  const toast = useToast();
 
   const relayState =
     use$(
@@ -24,7 +23,7 @@ export default function ReadAuthRequiredAlert({ relays, ...props }: { relays: st
                 url,
                 combineLatest({
                   required: relay.authRequiredForRead$,
-                  response: relay.authenticationResponse$,
+                  authentications: relay.authentications$,
                   connected: relay.connected$,
                   challenge: relay.challenge$,
                 }),
@@ -32,16 +31,21 @@ export default function ReadAuthRequiredAlert({ relays, ...props }: { relays: st
             }),
           ),
         ),
-      [relays],
+      [relays, account?.pubkey],
     ) ?? {};
 
   const authRequiredRelays = useMemo(
     () =>
       relays.filter((url) => {
         const state = relayState[url];
-        return state?.response === null && state?.required && state?.connected && state?.challenge !== null;
+        return (
+          state?.authentications[account?.pubkey ?? ""]?.response?.ok !== true &&
+          state?.required &&
+          state?.connected &&
+          state?.challenge !== null
+        );
       }),
-    [relays, relayState],
+    [relays, relayState, account?.pubkey],
   );
 
   const authenticateRelays = useAsyncAction(
@@ -55,19 +59,8 @@ export default function ReadAuthRequiredAlert({ relays, ...props }: { relays: st
       // Run authentication in parallel
       await Promise.all(
         authRequiredRelays.map(async (url) => {
-          try {
-            const relay = pool.relay(url);
-            const response = await relay.authenticate(account);
-            if (!response.ok) throw new Error(response.message);
-          } catch (error) {
-            if (error instanceof Error) {
-              toast({
-                title: url,
-                description: error.message,
-                status: "error",
-              });
-            }
-          }
+          const response = await pool.relay(url).authenticate(account);
+          if (!response.ok) throw new Error(`${url}: ${response.message || "Authentication rejected"}`);
         }),
       );
     },

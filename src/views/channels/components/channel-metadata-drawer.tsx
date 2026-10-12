@@ -16,9 +16,8 @@ import {
   LinkBox,
   Text,
 } from "@chakra-ui/react";
-import { kinds } from "nostr-tools";
+import { kinds, NostrEvent } from "nostr-tools";
 
-import { NostrEvent } from "nostr-tools";
 import HoverLinkOverlay from "../../../components/hover-link-overlay";
 import { ExternalLinkIcon } from "../../../components/icons";
 import UserAvatar from "../../../components/user/user-avatar";

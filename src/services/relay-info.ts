@@ -16,7 +16,7 @@ async function getInfo(relay: string, alwaysFetch = false): Promise<RelayInforma
     try {
       info = await nip11.fetchRelayInformation(relay);
       db.put("relayInfo", info, relay);
-    } catch (error) {
+    } catch {
       return null;
     }
   }
@@ -28,8 +28,7 @@ export const relayInfoService = { getInfo };
 Relay.fetchInformationDocument = (url) => from(getInfo(url, true));
 
 if (import.meta.env.DEV) {
-  // @ts-ignore
-  window.relayInfoService = relayInfoService;
+  Reflect.set(window, "relayInfoService", relayInfoService);
 }
 
 export default relayInfoService;

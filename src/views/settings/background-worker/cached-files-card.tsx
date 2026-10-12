@@ -22,6 +22,7 @@ import { useCallback, useState } from "react";
 
 import { ChevronDownIcon, ChevronUpIcon } from "../../../components/icons";
 import ExpandableCard from "../../../components/expandable-card";
+import useAsyncAction from "../../../hooks/use-async-action";
 import {
   getAllCachedFiles,
   clearCache,
@@ -36,7 +37,6 @@ export default function CachedFilesCard() {
   const [cacheInfos, setCacheInfos] = useState<CacheInfo[]>([]);
   const [isLoadingCaches, setIsLoadingCaches] = useState(false);
   const [isClearingCache, setIsClearingCache] = useState<string | null>(null);
-  const [isRefreshingCache, setIsRefreshingCache] = useState(false);
   const [expandedCaches, setExpandedCaches] = useState<Set<string>>(new Set());
   const toast = useToast();
 
@@ -61,81 +61,52 @@ export default function CachedFilesCard() {
   }, [toast]);
 
   // Clear a specific cache
-  const handleClearCache = async (cacheName: string) => {
-    setIsClearingCache(cacheName);
-    try {
-      await clearCache(cacheName);
-      // Remove the cleared cache from the list
-      setCacheInfos((prev) => prev.filter((cache) => cache.name !== cacheName));
-      toast({
-        title: "Cache cleared",
-        description: `Cache "${formatCacheName(cacheName)}" has been cleared successfully`,
-        status: "success",
-        duration: 3000,
-      });
-    } catch (error) {
-      console.error(`Failed to clear cache ${cacheName}:`, error);
-      toast({
-        title: "Failed to clear cache",
-        description: `Could not clear cache "${formatCacheName(cacheName)}"`,
-        status: "error",
-        duration: 3000,
-      });
-    } finally {
-      setIsClearingCache(null);
-    }
-  };
+  const { run: handleClearCache } = useAsyncAction(
+    async (cacheName: string) => {
+      // Track which row's spinner should show; the hook's own `loading` is a
+      // single boolean and cannot distinguish which cache is being cleared.
+      setIsClearingCache(cacheName);
+      try {
+        await clearCache(cacheName);
+        // Remove the cleared cache from the list
+        setCacheInfos((prev) => prev.filter((cache) => cache.name !== cacheName));
+        toast({
+          title: "Cache cleared",
+          description: `Cache "${formatCacheName(cacheName)}" has been cleared successfully`,
+          status: "success",
+          duration: 3000,
+        });
+      } finally {
+        setIsClearingCache(null);
+      }
+    },
+    [toast],
+  );
 
   // Clear all caches
-  const handleClearAllCaches = async () => {
-    setIsClearingCache("all");
-    try {
-      const clearedCaches = await clearAllCaches();
-      setCacheInfos([]);
-      toast({
-        title: "All caches cleared",
-        description: `Cleared ${clearedCaches.length} caches successfully`,
-        status: "success",
-        duration: 3000,
-      });
-    } catch (error) {
-      console.error("Failed to clear all caches:", error);
-      toast({
-        title: "Failed to clear all caches",
-        description: "Could not clear all caches from service worker",
-        status: "error",
-        duration: 3000,
-      });
-    } finally {
-      setIsClearingCache(null);
-    }
-  };
+  const { run: handleClearAllCaches, loading: isClearingAllCaches } = useAsyncAction(async () => {
+    const clearedCaches = await clearAllCaches();
+    setCacheInfos([]);
+    toast({
+      title: "All caches cleared",
+      description: `Cleared ${clearedCaches.length} caches successfully`,
+      status: "success",
+      duration: 3000,
+    });
+  }, [toast]);
 
   // Refresh offline cache
-  const handleRefreshCache = async () => {
-    setIsRefreshingCache(true);
-    try {
-      const cachedFiles = await refreshOfflineCache();
-      // Reload the cached files list to show updated cache
-      await loadCachedFiles();
-      toast({
-        title: "Offline cache updated",
-        description: `Successfully cached ${cachedFiles} files for offline use`,
-        status: "success",
-        duration: 3000,
-      });
-    } catch (error) {
-      console.error("Failed to refresh offline cache:", error);
-      toast({
-        title: "Failed to update offline cache",
-        description: "Could not refresh the offline cache. Check if app is built for production.",
-        status: "error",
-        duration: 3000,
-      });
-    } finally {
-      setIsRefreshingCache(false);
-    }
-  };
+  const { run: handleRefreshCache, loading: isRefreshingCache } = useAsyncAction(async () => {
+    const cachedFiles = await refreshOfflineCache();
+    // Reload the cached files list to show updated cache
+    await loadCachedFiles();
+    toast({
+      title: "Offline cache updated",
+      description: `Successfully cached ${cachedFiles} files for offline use`,
+      status: "success",
+      duration: 3000,
+    });
+  }, [loadCachedFiles, toast]);
 
   // Toggle cache expansion
   const toggleCacheExpansion = (cacheName: string) => {
@@ -185,7 +156,7 @@ export default function CachedFilesCard() {
           colorScheme="red"
           variant="outline"
           onClick={handleClearAllCaches}
-          isLoading={isClearingCache === "all"}
+          isLoading={isClearingAllCaches}
           loadingText="Clearing..."
         >
           Clear All

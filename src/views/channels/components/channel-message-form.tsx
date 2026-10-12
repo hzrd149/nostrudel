@@ -1,12 +1,11 @@
 import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
-import { EventTemplate, kinds } from "nostr-tools";
+import { EventTemplate, kinds, NostrEvent } from "nostr-tools";
 import { Button, ButtonGroup, Flex, FlexProps, Heading } from "@chakra-ui/react";
 import { Emoji } from "applesauce-common/helpers";
 
 import MagicTextArea, { RefType } from "../../../components/magic-textarea";
 import useTextAreaUploadFile, { useTextAreaInsertTextWithForm } from "../../../hooks/use-textarea-upload-file";
-import { NostrEvent } from "nostr-tools";
 import { useContextEmojis } from "../../../providers/global/emoji-provider";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
 import InsertGifButton from "../../../components/gif/insert-gif-button";

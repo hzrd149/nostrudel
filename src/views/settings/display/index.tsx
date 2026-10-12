@@ -2,7 +2,6 @@ import {
   Button,
   Flex,
   FormControl,
-  FormErrorMessage,
   FormHelperText,
   FormLabel,
   IconButton,
@@ -10,7 +9,6 @@ import {
   Link,
   Select,
   Switch,
-  Textarea,
 } from "@chakra-ui/react";
 import { use$ } from "applesauce-react/hooks";
 import { Link as RouterLink } from "react-router-dom";
@@ -18,7 +16,6 @@ import { Link as RouterLink } from "react-router-dom";
 import SimpleView from "../../../components/layout/presets/simple-view";
 import localSettings from "../../../services/preferences";
 import useSettingsForm from "../use-settings-form";
-import { safeUrl } from "../../../helpers/parse";
 import { exchangeRates$, refreshExchangeRates } from "../../../services/exchange-rates";
 import RefreshCw01 from "../../../components/icons/refresh-cw-01";
 

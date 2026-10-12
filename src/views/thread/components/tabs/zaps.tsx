@@ -1,4 +1,4 @@
-import { Box, ButtonGroup, Flex, Text } from "@chakra-ui/react";
+import { Box, ButtonGroup, Flex } from "@chakra-ui/react";
 import { Zap } from "applesauce-common/casts";
 import { KnownEvent } from "applesauce-core/helpers";
 import { getZapPayment, isValidZap } from "applesauce-common/helpers";

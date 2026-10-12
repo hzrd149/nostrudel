@@ -31,7 +31,6 @@ export default function MutedHashtagsSection() {
     const hashtag = newHashtag.trim().replace(/^#/, "").toLowerCase();
     if (!hashtag || muted?.hashtags.has(hashtag)) return;
 
-    // TODO: Create mute list if its missing
     await actions.exec(MuteHashtag, hashtag).forEach((e) => publish("Add muted hashtag", e));
     setNewHashtag("");
   }, [actions, newHashtag, muted, publish]);

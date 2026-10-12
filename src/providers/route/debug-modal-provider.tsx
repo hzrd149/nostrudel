@@ -7,7 +7,7 @@ import { UNSAFE_DataRouterContext } from "react-router-dom";
 import useRouterMarker from "../../hooks/use-router-marker";
 
 export const DebugModalContext = createContext({
-  open: (event: NostrEvent) => {},
+  open: (_event: NostrEvent) => {},
 });
 
 export default function DebugModalProvider({ children }: PropsWithChildren) {

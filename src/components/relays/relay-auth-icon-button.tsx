@@ -1,8 +1,9 @@
-import { IconButton, IconButtonProps, useToast } from "@chakra-ui/react";
-import { useCallback } from "react";
+import { IconButton, IconButtonProps } from "@chakra-ui/react";
+import useAsyncAction from "../../hooks/use-async-action";
+import useRelayAuthentication from "../../hooks/use-relay-authentication";
 
 import { use$ } from "applesauce-react/hooks";
-import authenticationSigner from "../../services/authentication-signer";
+import authenticationSigner, { authenticateRelay } from "../../services/authentication-signer";
 import pool from "../../services/pool";
 import { ErrorIcon } from "../icons";
 import CheckCircleBroken from "../icons/check-circle-broken";
@@ -12,18 +13,13 @@ export function RelayAuthIconButton({
   relay,
   ...props
 }: { relay: string } & Omit<IconButtonProps, "icon" | "aria-label" | "title">) {
-  const toast = useToast();
   const connected = use$(() => pool.relay(relay).connected$, [relay]);
   const challenge = use$(() => pool.relay(relay).challenge$, [relay]);
-  const response = use$(() => pool.relay(relay).authenticationResponse$, [relay]);
+  const { response } = useRelayAuthentication(relay);
   const signing = use$(authenticationSigner.relayState$)?.[relay];
 
-  const authenticate = useCallback(async () => {
-    try {
-      await authenticationSigner.authenticate(relay);
-    } catch (error) {
-      if (error instanceof Error) toast({ status: "error", description: error.message });
-    }
+  const authenticate = useAsyncAction(async () => {
+    await authenticateRelay(relay);
   }, [relay]);
 
   // If the relay is not connected or has no challenge, don't show the button
@@ -44,7 +40,7 @@ export function RelayAuthIconButton({
       return (
         <IconButton
           icon={<ErrorIcon boxSize={6} />}
-          onClick={authenticate}
+          onClick={authenticate.run}
           aria-label="Try again"
           title="Failed"
           colorScheme="red"
@@ -55,7 +51,7 @@ export function RelayAuthIconButton({
       return (
         <IconButton
           icon={<PasscodeLock boxSize={6} />}
-          onClick={authenticate}
+          onClick={authenticate.run}
           isLoading={signing?.status === "signing"}
           aria-label="Authenticate with relay"
           title="Authenticate"

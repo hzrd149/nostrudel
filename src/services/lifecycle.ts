@@ -7,6 +7,8 @@ import { USER_BLOSSOM_SERVER_LIST_KIND } from "blossom-client-sdk";
 import { kinds, nip42 } from "nostr-tools";
 import {
   combineLatest,
+  catchError,
+  EMPTY,
   distinct,
   distinctUntilChanged,
   filter,
@@ -21,6 +23,7 @@ import {
   timer,
 } from "rxjs";
 
+import { logger } from "../helpers/debug";
 import { RECOMMENDED_LOOKUP_RELAYS } from "../const";
 import { APP_SETTING_IDENTIFIER, APP_SETTINGS_KIND } from "../helpers/app-settings";
 import { DirectMessageRelaysModel } from "../models/messages";
@@ -81,16 +84,22 @@ pool.relays$
     switchMap((relays) =>
       merge(
         ...Array.from(relays.values()).map((relay) =>
-          relay.challenge$.pipe(
-            defined(),
-            // Wait for a challenge to change
-            distinctUntilChanged(),
-            // Create auth draft
-            map((c) => nip42.makeAuthEvent(relay.url, c)),
-            // sign draft
-            switchMap((draft) => authenticationSigner.signEvent(draft)),
-            // send auth event
-            switchMap((event) => relay.auth(event)),
+          combineLatest([relay.challenge$, accounts.active$]).pipe(
+            distinctUntilChanged(
+              ([challenge, account], [nextChallenge, nextAccount]) =>
+                challenge === nextChallenge && account?.pubkey === nextAccount?.pubkey,
+            ),
+            switchMap(([challenge, account]) => {
+              if (!challenge || !account || relay.isAuthenticated(account.pubkey)) return EMPTY;
+              return of(nip42.makeAuthEvent(relay.url, challenge)).pipe(
+                switchMap((draft) => authenticationSigner.signEvent(draft)),
+                switchMap((event) => relay.auth(event)),
+                catchError((error) => {
+                  logger.extend("RelayAuthentication")("Authentication failed", relay.url, error);
+                  return EMPTY;
+                }),
+              );
+            }),
           ),
         ),
       ),
@@ -127,7 +136,11 @@ export const legacyMessageSubscription = accounts.active$.pipe(
   // Open a subscription to all relays for incoming messages
   switchMap(([account, inboxes]) =>
     pool
-      .subscription(inboxes, { kinds: [kinds.EncryptedDirectMessage], "#p": [account.pubkey] })
+      .subscription(
+        inboxes,
+        { kinds: [kinds.EncryptedDirectMessage], "#p": [account.pubkey] },
+        { waitForAuth: account.pubkey },
+      )
       .pipe(onlyEvents(), mapEventsToStore(eventStore)),
   ),
   // Ingore all updates since subscribes will get the events from the store
@@ -146,7 +159,7 @@ export const wrappedMessageSubscription = accounts.active$.pipe(
   // Open a subscription to all relays for incoming messages
   switchMap(([account, inboxes]) =>
     pool
-      .subscription(inboxes, { kinds: [kinds.GiftWrap], "#p": [account.pubkey] })
+      .subscription(inboxes, { kinds: [kinds.GiftWrap], "#p": [account.pubkey] }, { waitForAuth: account.pubkey })
       .pipe(onlyEvents(), mapEventsToStore(eventStore)),
   ),
   // Ingore all updates since subscribes will get the events from the store

@@ -11,13 +11,11 @@ import {
   TabPanels,
   Tabs,
   Text,
+  useDisclosure,
 } from "@chakra-ui/react";
-import { kinds } from "nostr-tools";
-import { useNavigate } from "react-router-dom";
+import { kinds, NostrEvent } from "nostr-tools";
 
-import { useDisclosure } from "@chakra-ui/react";
 import { getReplaceableAddress } from "applesauce-core/helpers";
-import { NostrEvent } from "nostr-tools";
 import GenericCommentForm from "../../components/comment/generic-comment-form";
 import { GenericComments } from "../../components/comment/generic-comments";
 import { ErrorBoundary } from "../../components/error-boundary";
@@ -95,8 +93,6 @@ function BadgeCommentsTab({ badge }: { badge: NostrEvent }) {
 }
 
 function BadgeDetailsPage({ badge }: { badge: NostrEvent }) {
-  const navigate = useNavigate();
-
   const image = getBadgeImage(badge);
   const description = getBadgeDescription(badge);
 

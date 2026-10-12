@@ -14,7 +14,7 @@ import {
 import { CloseIcon, RepeatIcon } from "@chakra-ui/icons";
 import { NostrEvent } from "nostr-tools";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { openNappletArtifactCache, resolveNapplet, type ResolvedNapplet } from "@kehto/nip";
+import { openNappletArtifactCache, type ResolvedNapplet } from "@kehto/nip";
 import { injectNappletNamespacePrelude } from "@kehto/shell";
 import { resolveBlob } from "blossom-client-sdk/actions/resolve";
 
@@ -27,9 +27,9 @@ import {
   getNappletRequiredCapabilities,
   getNappletNaddr,
   getNappletTitle,
-  getUnsupportedNappletRequirements,
   type NappletIntent,
 } from "../../helpers/nostr/napplets";
+import { resolveNapplet } from "../../helpers/nostr/napplet-resolve";
 import { useNappletShell } from "../../providers/global/napplet-shell-provider";
 import { installNapplet, isNappletInstalled } from "../../services/installed-napplets";
 import { createNappletIntentDelivery, type NappletIntentDelivery } from "../../services/napplet-intent-delivery";
@@ -95,7 +95,6 @@ export default function NappletFrame({ event, intent, onClose, onResolved, onErr
     let mounted = true;
     const controller = new AbortController();
     const capabilities = getNappletRequiredCapabilities(active);
-    const unsupported = getUnsupportedNappletRequirements(active);
 
     async function load() {
       setLoading(true);
@@ -103,8 +102,6 @@ export default function NappletFrame({ event, intent, onClose, onResolved, onErr
       setNapplet(undefined);
 
       try {
-        if (unsupported.length > 0) throw new Error(`Unsupported napplet requirements: ${unsupported.join(", ")}`);
-
         const cache = await getNappletArtifactCache();
         const resolved = await resolveNapplet({
           event: active,

@@ -1,6 +1,5 @@
-import { isDTag, isPTag, isRTag } from "applesauce-core/helpers";
-import { mergeRelaySets } from "applesauce-core/helpers";
-import { isAddressPointerInList, isEventPointerInList, isProfilePointerInList } from "applesauce-common/helpers/lists";
+import { isDTag, isPTag, isRTag, mergeRelaySets } from "applesauce-core/helpers";
+import { isProfilePointerInList } from "applesauce-common/helpers/lists";
 import dayjs from "dayjs";
 import { EventTemplate, NostrEvent, kinds } from "nostr-tools";
 

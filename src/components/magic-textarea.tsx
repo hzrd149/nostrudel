@@ -21,9 +21,6 @@ import UserAvatar from "./user/user-avatar";
 import UserDnsIdentity from "./user/user-dns-identity";
 import UserName from "./user/user-name";
 
-// Referencing Textarea and Input so they are not removed from the imports
-[Textarea, Input];
-
 export type PeopleToken = SearchResult;
 export type EmojiToken = { id: string; name: string; keywords: string[]; char: string; url?: string };
 type Token = EmojiToken | PeopleToken;
@@ -40,22 +37,15 @@ const Item = ({ entity }: ItemComponentProps<Token>) => {
     const { url, name, char } = entity;
     if (url)
       return (
-        <span role="option" aria-label={`Emoji: ${name}`} style={{ background: "transparent" }}>
+        <span style={{ background: "transparent" }}>
           {name}:{" "}
           <Image src={url} h="1.2em" w="1.2em" display="inline-block" verticalAlign="middle" title={name} alt={name} />
         </span>
       );
-    else
-      return (
-        <span
-          role="option"
-          aria-label={`Emoji: ${name}`}
-          style={{ background: "transparent" }}
-        >{`${name}: ${char}`}</span>
-      );
+    else return <span style={{ background: "transparent" }}>{`${name}: ${char}`}</span>;
   } else if (isPersonToken(entity)) {
     return (
-      <span role="option" aria-label={`User: ${entity.pubkey}`} style={{ background: "transparent" }}>
+      <span style={{ background: "transparent" }}>
         <UserAvatar pubkey={entity.pubkey} size="xs" /> <UserName pubkey={entity.pubkey} />{" "}
         <UserDnsIdentity pubkey={entity.pubkey} onlyIcon />
       </span>
@@ -75,7 +65,7 @@ function output(token: Token) {
 const Loading: ReactTextareaAutocompleteProps<
   Token,
   React.TextareaHTMLAttributes<HTMLTextAreaElement>
->["loadingComponent"] = ({ data }) => (
+>["loadingComponent"] = ({ data: _data }) => (
   <div style={{ padding: "8px", background: "var(--chakra-colors-chakra-body-bg)", textAlign: "center" }}>
     <Spinner size="sm" />
   </div>
@@ -166,27 +156,47 @@ function useAutocompleteTriggers() {
   return triggers;
 }
 
-// @ts-ignore
-export type RefType = ReactTextareaAutocomplete<Token, TextareaProps>;
+/** Chakra's responsive `color` prop clashes with the HTML attribute the autocomplete library's props generic is constrained to */
+type AutocompleteTextareaProps = Omit<TextareaProps, "color">;
+
+export type RefType = ReactTextareaAutocomplete<Token, AutocompleteTextareaProps>;
+
+// Shared props factory for MagicInput/MagicTextArea; only the element and default label differ.
+function createAutocompleteProps<E, R>(
+  textAreaComponent: E,
+  defaultAriaLabel: string,
+  triggers: TriggerType<Token>,
+  ref: React.Ref<R> | undefined,
+  ariaLabel: string | undefined,
+) {
+  return {
+    textAreaComponent,
+    loadingComponent: Loading,
+    minChar: 0,
+    trigger: triggers,
+    innerRef: ref
+      ? typeof ref === "function"
+        ? ref
+        : (el: R) => ((ref as React.MutableRefObject<R>).current = el)
+      : undefined,
+    "aria-label": ariaLabel || defaultAriaLabel,
+    role: "combobox" as const,
+    "aria-autocomplete": "list" as const,
+    "aria-expanded": "false" as const,
+  };
+}
 
 const MagicInput = forwardRef<HTMLInputElement, InputProps & { instanceRef?: LegacyRef<RefType> }>(
   ({ instanceRef, ...props }, ref) => {
     const triggers = useAutocompleteTriggers();
 
     return (
-      // @ts-expect-error
+      // aislop-ignore-next-line ai-slop/ts-directive -- the autocomplete library constrains its props generic to textarea attributes while MagicInput deliberately renders a Chakra Input whose props and handlers are typed for HTMLInputElement, so no props type satisfies the library's own typings
+      // @ts-expect-error -- TS2344: InputProps does not satisfy TextareaHTMLAttributes<HTMLTextAreaElement> because onChange is ChangeEventHandler<HTMLInputElement>
       <ReactTextareaAutocomplete<Token, InputProps>
         {...props}
-        textAreaComponent={Input}
         ref={instanceRef}
-        loadingComponent={Loading}
-        minChar={0}
-        trigger={triggers}
-        innerRef={ref && (typeof ref === "function" ? ref : (el) => (ref.current = el))}
-        aria-label={props["aria-label"] || "Input with autocomplete"}
-        role="combobox"
-        aria-autocomplete="list"
-        aria-expanded="false"
+        {...createAutocompleteProps(Input, "Input with autocomplete", triggers, ref, props["aria-label"])}
       />
     );
   },
@@ -197,19 +207,10 @@ const MagicTextArea = forwardRef<HTMLTextAreaElement, TextareaProps & { instance
     const triggers = useAutocompleteTriggers();
 
     return (
-      // @ts-expect-error
-      <ReactTextareaAutocomplete<Token, TextareaProps>
+      <ReactTextareaAutocomplete<Token, AutocompleteTextareaProps>
         {...props}
         ref={instanceRef}
-        textAreaComponent={Textarea}
-        loadingComponent={Loading}
-        minChar={0}
-        trigger={triggers}
-        innerRef={ref && (typeof ref === "function" ? ref : (el) => (ref.current = el))}
-        aria-label={props["aria-label"] || "Textarea with autocomplete"}
-        role="combobox"
-        aria-autocomplete="list"
-        aria-expanded="false"
+        {...createAutocompleteProps(Textarea, "Textarea with autocomplete", triggers, ref, props["aria-label"])}
       />
     );
   },

@@ -1,6 +1,4 @@
-import dayjs from "dayjs";
 import { NostrEvent } from "nostr-tools";
-import { sortByDate } from "./event";
 
 export function getDMSender(event: NostrEvent) {
   return event.pubkey;
@@ -28,7 +26,11 @@ export function groupIntoConversations(messages: NostrEvent[]) {
       conversations[key] = conversations[key] || { pubkeys, messages: [] };
 
       conversations[key].messages.push(message);
-    } catch (e) {}
+    } catch {
+      // getDMSender/getDMRecipient throws when the message has no "p" tag; skip it rather than
+      // grouping it into a conversation.
+      continue;
+    }
   }
 
   return Object.values(conversations);

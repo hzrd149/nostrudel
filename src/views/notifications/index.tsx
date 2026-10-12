@@ -1,7 +1,6 @@
 import { Badge, ButtonGroup, Flex, SimpleGrid, Text } from "@chakra-ui/react";
 import { useEffect, useMemo } from "react";
 
-import { use$ } from "applesauce-react/hooks";
 import { useLocalStorage } from "react-use";
 import { AtIcon, LightningIcon, QuoteIcon, ReplyIcon, RepostIcon, ThreadIcon } from "../../components/icons";
 import SimpleNavBox from "../../components/layout/box-layout/simple-nav-box";
@@ -11,8 +10,36 @@ import {
   socialNotificationsLoader$,
   zapNotificationsLoader$,
 } from "../../services/notifications";
+import useObservableLoader from "../../hooks/use-observable-loader";
 import { useNotificationCounts } from "./components/notification-counts";
 import TimeRangeSelect, { getTimeRangeLabel, getTimeRangeSince, TimeRange } from "./components/time-range-select";
+
+// Metadata shared by every SimpleNavBox below; null at zero count, otherwise a badge plus the
+// selected time range's label (omitted for the all-time range).
+function NotificationCountBadge({
+  count,
+  timeRange,
+  timeRangeLabel,
+}: {
+  count: number;
+  timeRange: TimeRange;
+  timeRangeLabel: string;
+}) {
+  if (count === 0) return null;
+
+  return (
+    <Flex alignItems="center" gap="2">
+      <Badge colorScheme="primary" fontSize="sm">
+        {count}
+      </Badge>
+      {timeRange !== "all" && (
+        <Text fontSize="xs" color="GrayText">
+          {timeRangeLabel}
+        </Text>
+      )}
+    </Flex>
+  );
+}
 
 export default function NotificationsView() {
   const [timeRange = "2days", setTimeRange] = useLocalStorage<TimeRange>("notifications-time-range");
@@ -21,9 +48,9 @@ export default function NotificationsView() {
   const timeRangeLabel = useMemo(() => getTimeRangeLabel(timeRange).toLowerCase(), [timeRange]);
 
   // Start the event loader
-  const socialLoader = use$(socialNotificationsLoader$);
-  const zapLoader = use$(zapNotificationsLoader$);
-  const shareLoader = use$(shareNotificationsLoader$);
+  const socialLoader = useObservableLoader(socialNotificationsLoader$);
+  const zapLoader = useObservableLoader(zapNotificationsLoader$);
+  const shareLoader = useObservableLoader(shareNotificationsLoader$);
 
   // Load the initial block for all loaders
   useEffect(() => {
@@ -50,18 +77,7 @@ export default function NotificationsView() {
           description="Direct replies to your notes"
           to="/notifications/replies"
           metadata={
-            counts.replies === 0 ? null : (
-              <Flex alignItems="center" gap="2">
-                <Badge colorScheme={counts.replies > 0 ? "primary" : "gray"} fontSize="sm">
-                  {counts.replies}
-                </Badge>
-                {timeRange !== "all" && (
-                  <Text fontSize="xs" color="GrayText">
-                    {timeRangeLabel}
-                  </Text>
-                )}
-              </Flex>
-            )
+            <NotificationCountBadge count={counts.replies} timeRange={timeRange} timeRangeLabel={timeRangeLabel} />
           }
         />
         <SimpleNavBox
@@ -70,18 +86,7 @@ export default function NotificationsView() {
           description="See where you've been mentioned"
           to="/notifications/mentions"
           metadata={
-            counts.mentions === 0 ? null : (
-              <Flex alignItems="center" gap="2">
-                <Badge colorScheme={counts.mentions > 0 ? "primary" : "gray"} fontSize="sm">
-                  {counts.mentions}
-                </Badge>
-                {timeRange !== "all" && (
-                  <Text fontSize="xs" color="GrayText">
-                    {timeRangeLabel}
-                  </Text>
-                )}
-              </Flex>
-            )
+            <NotificationCountBadge count={counts.mentions} timeRange={timeRange} timeRangeLabel={timeRangeLabel} />
           }
         />
         <SimpleNavBox
@@ -90,18 +95,7 @@ export default function NotificationsView() {
           description="Conversations in your threads"
           to="/notifications/threads"
           metadata={
-            counts.threads === 0 ? null : (
-              <Flex alignItems="center" gap="2">
-                <Badge colorScheme={counts.threads > 0 ? "primary" : "gray"} fontSize="sm">
-                  {counts.threads}
-                </Badge>
-                {timeRange !== "all" && (
-                  <Text fontSize="xs" color="GrayText">
-                    {timeRangeLabel}
-                  </Text>
-                )}
-              </Flex>
-            )
+            <NotificationCountBadge count={counts.threads} timeRange={timeRange} timeRangeLabel={timeRangeLabel} />
           }
         />
         <SimpleNavBox
@@ -110,18 +104,7 @@ export default function NotificationsView() {
           description="Who has quoted your notes"
           to="/notifications/quotes"
           metadata={
-            counts.quotes === 0 ? null : (
-              <Flex alignItems="center" gap="2">
-                <Badge colorScheme={counts.quotes > 0 ? "primary" : "gray"} fontSize="sm">
-                  {counts.quotes}
-                </Badge>
-                {timeRange !== "all" && (
-                  <Text fontSize="xs" color="GrayText">
-                    {timeRangeLabel}
-                  </Text>
-                )}
-              </Flex>
-            )
+            <NotificationCountBadge count={counts.quotes} timeRange={timeRange} timeRangeLabel={timeRangeLabel} />
           }
         />
         <SimpleNavBox
@@ -130,18 +113,7 @@ export default function NotificationsView() {
           description="Who has reposted your notes"
           to="/notifications/reposts"
           metadata={
-            counts.reposts === 0 ? null : (
-              <Flex alignItems="center" gap="2">
-                <Badge colorScheme={counts.reposts > 0 ? "primary" : "gray"} fontSize="sm">
-                  {counts.reposts}
-                </Badge>
-                {timeRange !== "all" && (
-                  <Text fontSize="xs" color="GrayText">
-                    {timeRangeLabel}
-                  </Text>
-                )}
-              </Flex>
-            )
+            <NotificationCountBadge count={counts.reposts} timeRange={timeRange} timeRangeLabel={timeRangeLabel} />
           }
         />
         <SimpleNavBox
@@ -150,18 +122,7 @@ export default function NotificationsView() {
           description="Lightning payments you've received"
           to="/notifications/zaps"
           metadata={
-            counts.zaps === 0 ? null : (
-              <Flex alignItems="center" gap="2">
-                <Badge colorScheme={counts.zaps > 0 ? "primary" : "gray"} fontSize="sm">
-                  {counts.zaps}
-                </Badge>
-                {timeRange !== "all" && (
-                  <Text fontSize="xs" color="GrayText">
-                    {timeRangeLabel}
-                  </Text>
-                )}
-              </Flex>
-            )
+            <NotificationCountBadge count={counts.zaps} timeRange={timeRange} timeRangeLabel={timeRangeLabel} />
           }
         />
       </SimpleGrid>

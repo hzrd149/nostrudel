@@ -31,7 +31,10 @@ export default function useOpenGraphData(url: URL) {
         openGraphDataCache.set(url.toString(), data);
         return data;
       } else controller.abort();
-    } catch (e) {}
+    } catch {
+      // Page could not be fetched or had no parseable Open Graph tags; callers render no preview
+      return null;
+    }
     return null;
   }, [url.toString()]);
 }

@@ -9,7 +9,6 @@ import {
   Heading,
   IconButton,
   Link,
-  Text,
   useDisclosure,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";

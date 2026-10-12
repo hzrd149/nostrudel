@@ -64,7 +64,7 @@ export function EmbeddedImage({ src, event, imageProps, ...props }: EmbeddedImag
   const { show } = useRegisterSlide(ref, src ? { type: "image", src, event } : undefined);
   const handleClick = useCallback<MouseEventHandler<HTMLElement>>(
     (e) => {
-      !e.isPropagationStopped() && show();
+      if (!e.isPropagationStopped()) show();
       e.preventDefault();
     },
     [show],

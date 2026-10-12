@@ -31,7 +31,7 @@ export default function useTimelineLoader(
     else return undefined;
   }, [key, sum(relays), sum(filters)]);
 
-  const timeline = useEventModel(TimelineModel, filters && [filters]) ?? [];
+  const timeline = useEventModel(TimelineModel<NostrEvent>, filters && [filters]) ?? [];
   const filteredTimeline = useMemo(() => {
     if (!opts?.eventFilter) return timeline;
     return timeline.filter((event) => opts.eventFilter?.(event));

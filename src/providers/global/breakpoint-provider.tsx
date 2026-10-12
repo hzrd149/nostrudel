@@ -1,8 +1,7 @@
 import { PropsWithChildren, createContext, useContext } from "react";
 import { UseBreakpointOptions, useBreakpoint as useBaseBreakpoint, useTheme } from "@chakra-ui/react";
 import { isObject } from "@chakra-ui/shared-utils";
-import { arrayToObjectNotation } from "@chakra-ui/breakpoint-utils";
-import { breakpoints as defaultBreakPoints } from "@chakra-ui/breakpoint-utils";
+import { arrayToObjectNotation, breakpoints as defaultBreakPoints } from "@chakra-ui/breakpoint-utils";
 
 // ChakraUIs useBreakpointValue renders twice, once with the fallback value then with the actual breakpoint value
 // This causes a lot of re-renders and wasted processing.

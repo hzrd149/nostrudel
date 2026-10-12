@@ -50,6 +50,7 @@ import { UserFollowButton } from "../../../components/user/user-follow-button";
 import UserLink from "../../../components/user/user-link";
 import UserName from "../../../components/user/user-name";
 import { getTextColor } from "../../../helpers/color";
+import { getNip05WellKnownUrl } from "../../../helpers/nip05";
 import { truncatedId } from "../../../helpers/nostr/event";
 import { useAppTitle } from "../../../hooks/use-app-title";
 import useParamsProfilePointer from "../../../hooks/use-params-pubkey-pointer";
@@ -188,9 +189,7 @@ export default function UserAboutView() {
   const pubkeyColor = "#" + user.pubkey.slice(0, 6);
 
   const parsedNip05 = metadata?.nip05 ? parseNIP05Address(metadata.nip05) : undefined;
-  const nip05URL = parsedNip05
-    ? `https://${parsedNip05.domain}/.well-known/nostr.json?name=${parsedNip05.name}`
-    : undefined;
+  const nip05URL = parsedNip05 ? getNip05WellKnownUrl(parsedNip05.name, parsedNip05.domain) : undefined;
 
   const identity = useUserDNSIdentity(user.pubkey);
 

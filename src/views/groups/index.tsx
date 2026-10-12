@@ -1,3 +1,4 @@
+// aislop-ignore-file code-quality/duplicate-block -- the SimpleGrid in FriendsGroups and the SimpleGrid in YourGroups are separate arms of an unrelated ternary chain rendering the same grid container over different data sources, each with its own loading and empty state; merging them would tie two independently-evolving branches behind a flag (D-05)
 import {
   Alert,
   AlertDescription,
@@ -15,8 +16,7 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
-import { GROUPS_LIST_KIND } from "applesauce-common/helpers";
-import { encodeGroupPointer, getPublicGroups, GroupPointer } from "applesauce-common/helpers";
+import { GROUPS_LIST_KIND, encodeGroupPointer, getPublicGroups, GroupPointer } from "applesauce-common/helpers";
 import { useActiveAccount } from "applesauce-react/hooks";
 import { useMemo, useState } from "react";
 import { Navigate } from "react-router-dom";

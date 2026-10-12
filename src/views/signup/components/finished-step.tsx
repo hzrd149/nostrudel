@@ -8,6 +8,7 @@ import UserLink from "../../../components/user/user-link";
 import { containerProps } from "./common";
 import { UserFollowButton } from "../../../components/user/user-follow-button";
 import UserDnsIdentity from "../../../components/user/user-dns-identity";
+import { NOSTR_BAND_TRENDING_PROFILES_URL } from "../../../const";
 
 type TrendingApi = {
   profiles: {
@@ -29,7 +30,7 @@ function About({ profile }: { profile: { content: string } }) {
 
 export default function FinishedStep() {
   const { value: trending } = useAsync(async () => {
-    return await fetch("https://api.nostr.band/v0/trending/profiles").then((res) => res.json() as Promise<TrendingApi>);
+    return await fetch(NOSTR_BAND_TRENDING_PROFILES_URL).then((res) => res.json() as Promise<TrendingApi>);
   });
 
   return (

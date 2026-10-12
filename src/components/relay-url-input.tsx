@@ -18,7 +18,7 @@ export const RelayUrlInput = forwardRef(({ nips, ...props }: { nips?: number[] }
     setError(null);
 
     const subscription = nip66Discovery.fetchRelays().subscribe({
-      next: (relayMap) => {
+      next: (_relayMap) => {
         try {
           let relays: string[];
 
@@ -59,8 +59,9 @@ export const RelayUrlInput = forwardRef(({ nips, ...props }: { nips?: number[] }
         event.currentTarget.value = normalized;
         onChange?.(event as ChangeEvent<HTMLInputElement>);
       }
-    } catch (err) {
+    } catch {
       // Ignore invalid URLs, let form validation handle them
+      return;
     }
   };
 
@@ -85,9 +86,6 @@ export const RelayUrlInput = forwardRef(({ nips, ...props }: { nips?: number[] }
         aria-describedby="relay-suggestions-description"
         aria-invalid={error ? "true" : undefined}
         aria-busy={loading}
-        role="combobox"
-        aria-autocomplete="list"
-        aria-expanded={relaySuggestions.length > 0}
         {...props}
         onBlur={handleBlur}
         onKeyDown={handleKeyDown}
@@ -101,9 +99,9 @@ export const RelayUrlInput = forwardRef(({ nips, ...props }: { nips?: number[] }
               ? `Found ${relaySuggestions.length} relay suggestions`
               : "No relay suggestions available"}
       </Text>
-      <datalist id="relay-suggestions" role="listbox" aria-label="Available relay suggestions">
+      <datalist id="relay-suggestions">
         {relaySuggestions.map((url) => (
-          <option key={url} value={url} role="option" aria-label={`Relay: ${url}`}>
+          <option key={url} value={url}>
             {url}
           </option>
         ))}

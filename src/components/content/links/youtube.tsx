@@ -1,6 +1,8 @@
+// aislop-ignore-file code-quality/duplicate-block -- YoutubePlaylistEmbed and YoutubeVideoEmbed both wrap ExpandableEmbed, but differ in aspect ratio, embed URL construction, and permitted iframe features; a shared abstraction would need more configuration parameters than the duplicated lines it would remove (D-05, revisit only if a third embed type appears)
 import { AspectRatio } from "@chakra-ui/react";
 import ExpandableEmbed from "../components/content-embed";
 import useAppSettings from "../../../hooks/use-user-app-settings";
+import { YOUTUBE_NOCOOKIE_ORIGIN } from "../../../const";
 
 // copied from https://github.com/SimonBrazell/privacy-redirect/blob/master/src/assets/javascripts/helpers/youtube.js
 export const YOUTUBE_DOMAINS = [
@@ -19,7 +21,7 @@ function YoutubePlaylistEmbed({ url }: { url: URL }) {
   const { youtubeRedirect } = useAppSettings();
   const listId = url.searchParams.get("list")!;
 
-  const embedUrl = new URL(`embed/videoseries`, youtubeRedirect || "https://www.youtube-nocookie.com");
+  const embedUrl = new URL(`embed/videoseries`, youtubeRedirect || YOUTUBE_NOCOOKIE_ORIGIN);
   embedUrl.searchParams.set("list", listId);
 
   return (
@@ -53,7 +55,7 @@ function YoutubeVideoEmbed({ url }: { url: URL }) {
   if (url.hostname === "youtu.be") videoId = url.pathname.split("/")[1];
   if (!videoId) return null;
 
-  const embedUrl = new URL(`/embed/${videoId}`, youtubeRedirect || "https://www.youtube-nocookie.com");
+  const embedUrl = new URL(`/embed/${videoId}`, youtubeRedirect || YOUTUBE_NOCOOKIE_ORIGIN);
 
   return (
     <ExpandableEmbed label="Youtube" url={url}>

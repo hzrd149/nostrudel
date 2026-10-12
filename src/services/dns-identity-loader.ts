@@ -1,5 +1,4 @@
 import db from "./database";
-import _throttle from "lodash.throttle";
 import { DnsIdentityLoader } from "applesauce-loaders/loaders/dns-identity-loader";
 import { fetchWithProxy } from "../helpers/request";
 
@@ -17,8 +16,7 @@ export const dnsIdentityLoader = new DnsIdentityLoader({
 dnsIdentityLoader.fetch = fetchWithProxy;
 
 if (import.meta.env.DEV) {
-  // @ts-expect-error debug
-  window.dnsIdentityLoader = dnsIdentityLoader;
+  Reflect.set(window, "dnsIdentityLoader", dnsIdentityLoader);
 }
 
 export default dnsIdentityLoader;

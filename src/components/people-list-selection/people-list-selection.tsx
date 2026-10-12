@@ -15,12 +15,11 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { useActiveAccount } from "applesauce-react/hooks";
-import { kinds } from "nostr-tools";
+import { kinds, NostrEvent } from "nostr-tools";
 import { useCallback, useMemo, useState } from "react";
 import { getReplaceableAddress } from "applesauce-core/helpers";
 import { getProfilePointersFromList } from "applesauce-common/helpers";
 
-import { NostrEvent } from "nostr-tools";
 import { useAsync, useDebounce } from "react-use";
 import { DEFAULT_ANON_PUBKEYS } from "../../const";
 import { getDisplayName } from "../../helpers/nostr/profile";

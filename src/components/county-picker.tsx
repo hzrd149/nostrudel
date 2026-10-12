@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { Select, SelectProps } from "@chakra-ui/react";
 import { getAlpha3Codes, getName, registerLocale } from "i18n-iso-countries";
 
-// TODO: support others
+// Only the English locale is registered because the app UI is not localized, so country names are always English.
 import en from "i18n-iso-countries/langs/en.json";
 registerLocale(en);
 

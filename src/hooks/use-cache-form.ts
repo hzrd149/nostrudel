@@ -4,8 +4,8 @@ import { useBeforeUnload } from "react-router-dom";
 
 import { logger } from "../helpers/debug";
 
-// TODO: Use localforage to cache forms so blobs are supported
-// const storage = localforage.createInstance({ name: "cached-forms" });
+// Forms are cached in localStorage as JSON, so File and Blob values serialise to `{}` and are restored
+// as empty objects, not files (backlog 999.16).
 
 export default function useCacheForm<TFieldValues extends FieldValues = FieldValues>(
   key: string | null,
@@ -45,7 +45,10 @@ export default function useCacheForm<TFieldValues extends FieldValues = FieldVal
         log("Clearing form");
         reset();
       }
-    } catch (e) {}
+    } catch (e) {
+      // The cached form could not be parsed, the form is left at its default values
+      log("Failed to restore cached form", e);
+    }
 
     // save previous key on change or unmount
     return () => {

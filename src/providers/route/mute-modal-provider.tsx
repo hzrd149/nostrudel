@@ -133,7 +133,7 @@ function UnmuteHandler() {
 
     const now = dayjs().unix();
     const expirations = getPubkeysExpiration(muteList);
-    const expired = Object.entries(expirations).filter(([pubkey, ex]) => ex < now);
+    const expired = Object.entries(expirations).filter(([_pubkey, ex]) => ex < now);
 
     if (expired.length > 0) {
       const accepted = await unmuteAll();
@@ -158,7 +158,7 @@ function UnmuteModal({ onClose }: Omit<ModalProps, "children">) {
     const now = dayjs().unix();
     const expirations = getPubkeysExpiration(muteList);
 
-    return Object.entries(expirations).filter(([pubkey, ex]) => ex < now);
+    return Object.entries(expirations).filter(([_pubkey, ex]) => ex < now);
   }, [muteList]);
 
   const unmuteAll = async () => {

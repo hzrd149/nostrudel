@@ -24,7 +24,7 @@ import { useInterval } from "react-use";
 import { V4VStopIcon, V4VStreamIcon } from "../../../../components/icons";
 import useUserLNURLMetadata from "../../../../hooks/use-user-lnurl-metadata";
 
-export default function StreamSatsPerMinute({ pubkey, ...props }: { pubkey: string } & FlexProps) {
+export default function StreamSatsPerMinute({ pubkey }: { pubkey: string } & FlexProps) {
   const [enabled, setEnabled] = useState(false);
   const [amountStr, setAmountStr] = useState("4");
 
@@ -52,7 +52,7 @@ export default function StreamSatsPerMinute({ pubkey, ...props }: { pubkey: stri
         } else throw new Error("Failed to get invoice");
 
         await window.webln.sendPayment(payRequest);
-      } catch (e) {
+      } catch {
         setEnabled(false);
       }
     }

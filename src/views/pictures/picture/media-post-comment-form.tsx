@@ -51,7 +51,6 @@ export default function PicturePostCommentForm({
         isRequired
         value={getValues().content}
         onChange={(e) => setValue("content", e.target.value, { shouldDirty: true })}
-        // @ts-expect-error
         onPaste={onPaste}
       />
       <IconButton

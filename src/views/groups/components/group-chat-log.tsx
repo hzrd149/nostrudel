@@ -1,10 +1,10 @@
 import { mapEventsToStore } from "applesauce-core";
-import { GROUP_MESSAGE_KIND } from "applesauce-common/helpers";
+import { GROUP_MESSAGE_KIND, encodeGroupPointer, GroupPointer } from "applesauce-common/helpers";
 import { getSeenRelays } from "applesauce-core/helpers";
-import { encodeGroupPointer, GroupPointer } from "applesauce-common/helpers";
 import { TimelineModel } from "applesauce-core/models";
 import { useEventModel, useEventStore } from "applesauce-react/hooks";
 import { onlyEvents } from "applesauce-relay";
+import { NostrEvent } from "nostr-tools";
 import { memo, useEffect, useMemo } from "react";
 
 import { normalizeURL } from "nostr-tools/utils";
@@ -47,7 +47,9 @@ const GroupChatLog = memo(({ group }: { group: GroupPointer }) => {
   }, [eventStore, group.relay, filter]);
 
   const messages =
-    useEventModel(TimelineModel, [filter])?.filter((e) => getSeenRelays(e)?.has(normalizeURL(group.relay))) || [];
+    useEventModel(TimelineModel<NostrEvent>, [filter])?.filter((e) =>
+      getSeenRelays(e)?.has(normalizeURL(group.relay)),
+    ) || [];
 
   const grouped = useMemo(() => groupMessages(Array.from(messages).reverse()).reverse(), [messages]);
 

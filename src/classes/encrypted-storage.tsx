@@ -4,8 +4,11 @@ import { pbkdf2 } from "@noble/hashes/pbkdf2.js";
 import { sha256 } from "@noble/hashes/sha2.js";
 import { utf8ToBytes } from "@noble/hashes/utils.js";
 
+import { logger } from "../helpers/debug";
+
 const TEST_KEY = "_pass_test_";
 const TEST_VALUE = "password verification data";
+const log = logger.extend("EncryptedStorage");
 
 /**
  * Apply PKCS#7 padding to bytes to make length a multiple of blockSize.
@@ -120,7 +123,7 @@ export default class EncryptedKeyValueStore {
     let decryptedBytes: Uint8Array;
     try {
       decryptedBytes = decipher.decrypt(encryptedPackage.data);
-    } catch (e) {
+    } catch {
       throw new Error("Decryption failed, incorrect PIN");
     }
 
@@ -128,7 +131,7 @@ export default class EncryptedKeyValueStore {
     let unpaddedBytes: Uint8Array;
     try {
       unpaddedBytes = unpad(decryptedBytes);
-    } catch (e) {
+    } catch {
       throw new Error("Decryption failed, invalid padding");
     }
 
@@ -169,7 +172,10 @@ export default class EncryptedKeyValueStore {
         return true;
       }
     } catch (error) {
-      // decryption failed, do nothing
+      // getItem() threw while testing the password (incorrect PIN or corrupt padding). All three
+      // callers treat a `false` result as "incorrect password", so fall through to that below.
+      log("Failed to unlock encrypted storage", error);
+      return false;
     }
 
     return false;

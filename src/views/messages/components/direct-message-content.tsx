@@ -50,7 +50,7 @@ const linkRenderers = [
 
 function LegacyDirectMessageContent({
   message,
-  text,
+  text: _text,
   children,
   ...props
 }: { message: NostrEvent; text: string; children?: React.ReactNode } & BoxProps) {

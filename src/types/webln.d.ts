@@ -1,4 +1,3 @@
-import { NostrEvent } from "./nostr-event";
 import { WebLNProvider } from "webln";
 
 declare global {
@@ -6,6 +5,8 @@ declare global {
     webln?: WebLNProvider & {
       enabled?: boolean;
       isEnabled?: boolean;
+      /** Optional WebLN method (offered by e.g. Alby) that the `webln` package's typings omit. */
+      getBalance?: () => Promise<{ balance: number }>;
       lnurl?: (lnurl: string) => Promise<{ paymentHash: string; preimage: string }>;
     };
   }

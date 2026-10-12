@@ -1,6 +1,7 @@
 import { MouseEventHandler } from "react";
 import {
   Avatar,
+  Box,
   ButtonGroup,
   Drawer,
   DrawerBody,
@@ -9,7 +10,6 @@ import {
   DrawerProps,
   Flex,
   Text,
-  DrawerHeader,
 } from "@chakra-ui/react";
 import { useActiveAccount } from "applesauce-react/hooks";
 
@@ -18,6 +18,7 @@ import NavItems from "../components";
 import { CollapsedContext } from "../context";
 import RelayConnectionButton from "../components/connections-button";
 import PublishLogButton from "../components/publish-log-button";
+import PendingUnlockButton from "../components/pending-unlock-button";
 
 export default function NavDrawer({ onClose, ...props }: Omit<DrawerProps, "children">) {
   const account = useActiveAccount();
@@ -29,11 +30,13 @@ export default function NavDrawer({ onClose, ...props }: Omit<DrawerProps, "chil
   };
 
   return (
-    <Drawer placement="left" onClose={onClose} aria-label="Main navigation menu" returnFocusOnClose={true} {...props}>
+    <Drawer placement="left" onClose={onClose} returnFocusOnClose={true} {...props}>
       <DrawerOverlay />
-      <DrawerContent role="navigation">
+      <DrawerContent aria-label="Main navigation menu">
         <CollapsedContext.Provider value={false}>
           <DrawerBody
+            as="nav"
+            aria-label="Main navigation"
             display="flex"
             flexDirection="column"
             px="4"
@@ -55,8 +58,16 @@ export default function NavDrawer({ onClose, ...props }: Omit<DrawerProps, "chil
             )}
             <AccountSwitcher />
             <NavItems />
-            <ButtonGroup variant="ghost" onClick={onClose} aria-label="Relay connections">
-              <RelayConnectionButton w="full" />
+            <ButtonGroup
+              variant="ghost"
+              justifyContent="space-evenly"
+              onClick={onClose}
+              aria-label="Navigation controls"
+            >
+              <Box onClick={(e) => e.stopPropagation()}>
+                <PendingUnlockButton />
+              </Box>
+              <RelayConnectionButton />
               <PublishLogButton flexShrink={0} />
             </ButtonGroup>
           </DrawerBody>

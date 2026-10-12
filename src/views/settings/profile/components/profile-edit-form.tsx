@@ -16,12 +16,11 @@ import {
   useDisclosure,
   VStack,
 } from "@chakra-ui/react";
-import { ProfileContent } from "applesauce-core/helpers";
 import { parseNIP05Address } from "applesauce-core/helpers/dns-identity";
 import { IdentityStatus } from "applesauce-loaders/helpers/dns-identity";
 import { useActiveAccount } from "applesauce-react/hooks";
-import { useEffect, useRef, useState } from "react";
-import { useForm, useFormContext } from "react-hook-form";
+import { useRef } from "react";
+import { useFormContext } from "react-hook-form";
 
 import { ChevronDownIcon, ChevronUpIcon, OutboxIcon } from "../../../../components/icons";
 import { isLNURL } from "../../../../helpers/lnurl";
@@ -54,7 +53,7 @@ const validateLightningAddress = async (value?: string) => {
     }
 
     return true;
-  } catch (error) {
+  } catch {
     return "Error validating lightning address";
   }
 };
@@ -79,7 +78,7 @@ const validateNip05 = async (address?: string, userPubkey?: string) => {
         }
         return true;
     }
-  } catch (error) {
+  } catch {
     return "Error validating identity";
   }
 

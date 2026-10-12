@@ -1,6 +1,8 @@
 import { useRef, useEffect, useCallback, useImperativeHandle, forwardRef, type IframeHTMLAttributes } from "react";
 import type { Webxdc as WebxdcAPI, ReceivedStatusUpdate } from "@webxdc/types";
 
+import { isWebxdcMessage } from "./jsonrpc";
+
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
@@ -23,6 +25,11 @@ export interface WebxdcHandle {
 }
 
 type RealtimeChannel = ReturnType<NonNullable<WebxdcAPI<unknown>["joinRealtimeChannel"]>>;
+
+// JSON-RPC request params vary per method and arrive already-parsed from `event.data`;
+// there is no single shape to type them as without re-deriving the whole method table.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type RequestParams = any;
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -54,7 +61,10 @@ async function resolveXdc(xdc: Uint8Array | string): Promise<ArrayBuffer> {
  *  3. Proxies every JSON-RPC request to the provided `Webxdc` instance.
  *  4. Forwards `webxdc.update` notifications into the frame.
  */
-export const Webxdc = forwardRef<WebxdcHandle, WebxdcProps>(function Webxdc({ id, xdc, webxdc, ...iframeProps }, ref) {
+export const Webxdc = forwardRef<WebxdcHandle, WebxdcProps>(function Webxdc(
+  { id, xdc, webxdc, title = "Webxdc app", ...iframeProps },
+  ref,
+) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
   // Keep latest props in refs so the message handler always sees current values
@@ -68,6 +78,7 @@ export const Webxdc = forwardRef<WebxdcHandle, WebxdcProps>(function Webxdc({ id
     xdcRef.current = xdc;
   }, [xdc]);
 
+  // aislop-ignore-next-line ai-slop/hardcoded-url -- webxdc isolates each app in its own https://<id>.webxdc.app origin derived from the app id; the iframe src, the postMessage target and the origin check must all use exactly this origin, so it is not deployment config
   const origin = `https://${id}.webxdc.app`;
 
   // ------------------------------------------------------------------
@@ -103,9 +114,8 @@ export const Webxdc = forwardRef<WebxdcHandle, WebxdcProps>(function Webxdc({ id
       if (event.origin !== origin) return;
       if (event.source !== iframeRef.current?.contentWindow) return;
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const msg = event.data as any;
-      if (!msg || msg.jsonrpc !== "2.0") return;
+      const msg: unknown = event.data;
+      if (!isWebxdcMessage(msg)) return;
 
       const api = webxdcRef.current;
 
@@ -134,105 +144,134 @@ export const Webxdc = forwardRef<WebxdcHandle, WebxdcProps>(function Webxdc({ id
       }
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    async function handleRequest(id: string | number, method: string, params: any) {
+    // Handles the five methods that operate on the app's update stream. Returns true when it
+    // claimed the method (and already called respond/respondError), false otherwise.
+    async function handleUpdateRequest(
+      api: WebxdcAPI<unknown>,
+      method: unknown,
+      params: RequestParams,
+      respond: (result: unknown) => void,
+    ): Promise<boolean> {
+      switch (method) {
+        case "webxdc.sendUpdate": {
+          api.sendUpdate(params.update, "");
+          respond(null);
+          return true;
+        }
+
+        case "webxdc.setUpdateListener": {
+          const serial: number = params.serial ?? 0;
+          // Forward every update into the frame as a notification.
+          await api.setUpdateListener((update: ReceivedStatusUpdate<unknown>) => {
+            post({
+              jsonrpc: "2.0",
+              method: "webxdc.update",
+              params: { update },
+            });
+          }, serial);
+          respond(null);
+          return true;
+        }
+
+        case "webxdc.getAllUpdates": {
+          const updates = await api.getAllUpdates();
+          respond(updates);
+          return true;
+        }
+
+        case "webxdc.sendToChat": {
+          await api.sendToChat(params.message);
+          respond(null);
+          return true;
+        }
+
+        case "webxdc.importFiles": {
+          const files = await api.importFiles(params.filter ?? {});
+          // File objects can't be serialised — convert to transferable form.
+          const result = await Promise.all(
+            files.map(async (f) => ({
+              name: f.name,
+              type: f.type,
+              data: bufToBase64(await f.arrayBuffer()),
+            })),
+          );
+          respond(result);
+          return true;
+        }
+
+        default:
+          return false;
+      }
+    }
+
+    // Handles the three methods that manage realtime channels. Closes over `realtimeChannels`,
+    // the channel map ref declared below this effect — reachable here because the ref already
+    // holds its value by the time this handler runs (the effect body executes after render).
+    // Returns true when it claimed the method, false otherwise.
+    function handleRealtimeRequest(
+      api: WebxdcAPI<unknown>,
+      method: unknown,
+      params: RequestParams,
+      respond: (result: unknown) => void,
+      respondError: (code: number, message: string) => void,
+    ): boolean {
+      switch (method) {
+        case "webxdc.joinRealtimeChannel": {
+          if (!api.joinRealtimeChannel) {
+            respondError(-32601, "Realtime channels are not supported");
+            return true;
+          }
+
+          const rt = api.joinRealtimeChannel();
+          // Generate a channel id to track this listener.
+          const channelId = crypto.randomUUID();
+
+          rt.setListener((data: Uint8Array) => {
+            post({
+              jsonrpc: "2.0",
+              method: "webxdc.realtimeChannel.data",
+              params: { channelId, data: Array.from(data) },
+            });
+          });
+
+          // Store on ref so subsequent calls can find it.
+          realtimeChannels.current.set(channelId, rt);
+          respond({ channelId });
+          return true;
+        }
+
+        case "webxdc.realtimeChannel.send": {
+          const ch = realtimeChannels.current.get(params.channelId);
+          if (ch) ch.send(new Uint8Array(params.data));
+          respond(null);
+          return true;
+        }
+
+        case "webxdc.realtimeChannel.leave": {
+          const ch = realtimeChannels.current.get(params.channelId);
+          if (ch) {
+            ch.leave();
+            realtimeChannels.current.delete(params.channelId);
+          }
+          respond(null);
+          return true;
+        }
+
+        default:
+          return false;
+      }
+    }
+
+    async function handleRequest(id: unknown, method: unknown, params: RequestParams) {
       const api = webxdcRef.current;
 
       const respond = (result: unknown) => post({ jsonrpc: "2.0", id, result });
       const respondError = (code: number, message: string) => post({ jsonrpc: "2.0", id, error: { code, message } });
 
       try {
-        switch (method) {
-          case "webxdc.sendUpdate": {
-            api.sendUpdate(params.update, "");
-            respond(null);
-            break;
-          }
-
-          case "webxdc.setUpdateListener": {
-            const serial: number = params.serial ?? 0;
-            // Forward every update into the frame as a notification.
-            await api.setUpdateListener((update: ReceivedStatusUpdate<unknown>) => {
-              post({
-                jsonrpc: "2.0",
-                method: "webxdc.update",
-                params: { update },
-              });
-            }, serial);
-            respond(null);
-            break;
-          }
-
-          case "webxdc.getAllUpdates": {
-            const updates = await api.getAllUpdates();
-            respond(updates);
-            break;
-          }
-
-          case "webxdc.sendToChat": {
-            await api.sendToChat(params.message);
-            respond(null);
-            break;
-          }
-
-          case "webxdc.importFiles": {
-            const files = await api.importFiles(params.filter ?? {});
-            // File objects can't be serialised — convert to transferable form.
-            const result = await Promise.all(
-              files.map(async (f) => ({
-                name: f.name,
-                type: f.type,
-                data: bufToBase64(await f.arrayBuffer()),
-              })),
-            );
-            respond(result);
-            break;
-          }
-
-          case "webxdc.joinRealtimeChannel": {
-            if (!api.joinRealtimeChannel) {
-              respondError(-32601, "Realtime channels are not supported");
-              break;
-            }
-
-            const rt = api.joinRealtimeChannel();
-            // Generate a channel id to track this listener.
-            const channelId = crypto.randomUUID();
-
-            rt.setListener((data: Uint8Array) => {
-              post({
-                jsonrpc: "2.0",
-                method: "webxdc.realtimeChannel.data",
-                params: { channelId, data: Array.from(data) },
-              });
-            });
-
-            // Store on ref so subsequent calls can find it.
-            realtimeChannels.current.set(channelId, rt);
-            respond({ channelId });
-            break;
-          }
-
-          case "webxdc.realtimeChannel.send": {
-            const ch = realtimeChannels.current.get(params.channelId);
-            if (ch) ch.send(new Uint8Array(params.data));
-            respond(null);
-            break;
-          }
-
-          case "webxdc.realtimeChannel.leave": {
-            const ch = realtimeChannels.current.get(params.channelId);
-            if (ch) {
-              ch.leave();
-              realtimeChannels.current.delete(params.channelId);
-            }
-            respond(null);
-            break;
-          }
-
-          default:
-            respondError(-32601, `Method not found: ${method}`);
-        }
+        if (await handleUpdateRequest(api, method, params, respond)) return;
+        if (handleRealtimeRequest(api, method, params, respond, respondError)) return;
+        respondError(-32601, `Method not found: ${method}`);
       } catch (err) {
         respondError(-1, String(err));
       }
@@ -254,7 +293,7 @@ export const Webxdc = forwardRef<WebxdcHandle, WebxdcProps>(function Webxdc({ id
     };
   }, []);
 
-  return <iframe ref={iframeRef} src={`${origin}/`} {...iframeProps} />;
+  return <iframe ref={iframeRef} src={`${origin}/`} title={title} {...iframeProps} />;
 });
 
 // ---------------------------------------------------------------------------

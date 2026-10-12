@@ -37,7 +37,9 @@ async function createEventCache(type: string | null): Promise<EventCache | null>
     for (const fallback of FALLBACKS) {
       try {
         return await loadEventCacheModule(fallback);
-      } catch (error) {}
+      } catch (error) {
+        log("Failed to load fallback", fallback, error);
+      }
     }
 
     return null;
@@ -87,8 +89,7 @@ localSettings.eventCache.pipe(filter((type) => type !== null && type !== eventCa
 
 if (import.meta.env.DEV) {
   eventCache$.subscribe((cache) => {
-    // @ts-expect-error debug
-    window.eventCache = cache;
+    Reflect.set(window, "eventCache", cache);
   });
 }
 

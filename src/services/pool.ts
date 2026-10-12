@@ -1,13 +1,15 @@
-import { RelayLiveness, RelayPool } from "applesauce-relay";
+import { RelayLiveness } from "applesauce-relay";
 import localforage from "localforage";
 import { nanoid } from "nanoid";
 import { Filter, NostrEvent } from "nostr-tools";
-import { BehaviorSubject, combineLatest, interval, map, merge, Observable, shareReplay, switchMap } from "rxjs";
+import { BehaviorSubject, combineLatest, map, merge, Observable, shareReplay, switchMap } from "rxjs";
+
+import AppRelayPool from "../classes/app-relay";
 
 export type ConnectionState = "connecting" | "connected" | "retrying" | "dormant" | "error";
 
 // Create a single relay pool for all relay connections
-const pool = new RelayPool({ keepAlive: 60_000 });
+const pool = new AppRelayPool({ keepAlive: 60_000 });
 
 // Create a liveness tracker for relays
 export const liveness = new RelayLiveness({
@@ -76,8 +78,7 @@ export function nostrRequest(relays: string[], filters: Filter[], id?: string): 
 }
 
 if (import.meta.env.DEV) {
-  // @ts-expect-error
-  window.pool = pool;
+  Reflect.set(window, "pool", pool);
 }
 
 export default pool;

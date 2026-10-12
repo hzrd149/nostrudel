@@ -1,7 +1,6 @@
 import { bech32 } from "@scure/base";
 import { NostrEvent, utils } from "nostr-tools";
-import { AddressPointer, EventPointer, isETag, isPTag } from "applesauce-core/helpers";
-import { ProfileContent } from "applesauce-core/helpers";
+import { AddressPointer, EventPointer, isETag, isPTag, ProfileContent } from "applesauce-core/helpers";
 import { getZapPayment, ZapEvent } from "applesauce-common/helpers";
 
 // based on https://github.com/nbd-wtf/nostr-tools/blob/master/nip57.ts
@@ -15,6 +14,7 @@ export async function getZapEndpoint(metadata: ProfileContent): Promise<null | s
       lnurl = utils.utf8Decoder.decode(data);
     } else if (lud16) {
       const [name, domain] = lud16.split("@");
+      // aislop-ignore-next-line ai-slop/hardcoded-url -- LUD-16 defines the pay endpoint of a lightning address name@domain as https://<domain>/.well-known/lnurlp/<name>; the host comes from the user's address, so there is nothing to configure
       lnurl = `https://${domain}/.well-known/lnurlp/${name}`;
     } else {
       return null;
@@ -26,7 +26,7 @@ export async function getZapEndpoint(metadata: ProfileContent): Promise<null | s
     if (body.allowsNostr && body.nostrPubkey) {
       return body.callback;
     }
-  } catch (err) {
+  } catch {
     /*-*/
   }
 

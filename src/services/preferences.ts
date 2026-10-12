@@ -1,6 +1,7 @@
 import { Preferences } from "@capacitor/preferences";
 import { bytesToHex, hexToBytes } from "@noble/hashes/utils.js";
 import { type SerializedAccount } from "applesauce-accounts";
+import { safeParse } from "applesauce-core/helpers";
 
 import { PreferenceSubject } from "../classes/preference-subject";
 import { DEFAULT_FALLBACK_RELAYS, DEFAULT_MAX_CONNECTIONS, DEFAULT_MAX_RELAYS_PER_USER } from "../const";
@@ -55,6 +56,7 @@ const displayCurrency = await PreferenceSubject.stringNullable("display-currency
 const exchangeRateRefreshInterval = await PreferenceSubject.number("exchange-rate-refresh-interval", 1000 * 60 * 60);
 const exchangeRateEndpoint = await PreferenceSubject.string(
   "exchange-rate-endpoint",
+  // aislop-ignore-next-line ai-slop/hardcoded-url -- default of the user-editable exchange-rate-endpoint preference, so it is already configurable; a const.ts constant would still trip the rule on its /api/ path
   "https://mempool.space/api/v1/prices",
 );
 
@@ -100,6 +102,31 @@ const encryptionSalt = await PreferenceSubject.create<Uint8Array>(
   },
 );
 const encryptDecryptionCache = await PreferenceSubject.boolean("encrypt-decryption-cache", true);
+
+// Pending unlock
+/**
+ * Whether to automatically unlock every registered pending-unlock category (hidden mutes, the decryption
+ * cache, etc.) without requiring a click. Defaults to false — D-01 forbids silent signer calls by default,
+ * so a fresh install performs no automatic unlock.
+ */
+const autoUnlockAll = await PreferenceSubject.boolean("auto-unlock-all", false);
+/**
+ * Per-category auto-unlock opt-ins, keyed by the pending-unlock category id. Used only when `autoUnlockAll`
+ * is false. Keyed by category id (not a fixed enum) so the list grows as sources register (D-05) without
+ * editing this file again.
+ */
+const autoUnlockCategories = await PreferenceSubject.create<Record<string, boolean>>(
+  "auto-unlock-categories",
+  {},
+  {
+    decode: (raw) => {
+      const value = safeParse<Record<string, boolean>>(raw);
+      if (value && typeof value === "object") return value;
+      else return {};
+    },
+    encode: (value) => JSON.stringify(value),
+  },
+);
 
 // Direct messages
 const enableDecryptionCache = await PreferenceSubject.boolean("enable-decryption-cache", true);
@@ -165,6 +192,10 @@ const localSettings = {
   encryptionSalt,
   encryptDecryptionCache,
 
+  // Pending unlock
+  autoUnlockAll,
+  autoUnlockCategories,
+
   // Direct messages
   autoDecryptMessages,
   enableDecryptionCache,
@@ -197,8 +228,7 @@ if (cleanup.length) {
 }
 
 if (import.meta.env.DEV) {
-  // @ts-expect-error debug
-  window.localSettings = localSettings;
+  Reflect.set(window, "localSettings", localSettings);
 }
 
 export default localSettings;

@@ -1,6 +1,5 @@
 import { defined } from "applesauce-core";
-import { LRU, OutboxMap } from "applesauce-core/helpers";
-import { createOutboxMap } from "applesauce-core/helpers";
+import { LRU, OutboxMap, createOutboxMap } from "applesauce-core/helpers";
 import { getProfilePointersFromList } from "applesauce-common/helpers";
 import { LoadableAddressPointer } from "applesauce-loaders/loaders";
 import hash_sum from "hash-sum";
@@ -51,8 +50,7 @@ class OutboxCacheService {
 const outboxCacheService = new OutboxCacheService();
 
 if (import.meta.env.DEV) {
-  //@ts-ignore
-  window.outboxCacheService = outboxCacheService;
+  Reflect.set(window, "outboxCacheService", outboxCacheService);
 }
 
 export default outboxCacheService;

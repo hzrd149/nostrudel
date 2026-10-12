@@ -53,7 +53,6 @@ export default function ChatMessageForm({ stream, hideZapButton }: { stream: Nos
             isRequired
             value={getValues().content}
             onChange={(e) => setValue("content", e.target.value, { shouldDirty: true })}
-            // @ts-expect-error
             onPaste={onPaste}
           />
           <Button colorScheme="primary" type="submit" isLoading={formState.isSubmitting}>

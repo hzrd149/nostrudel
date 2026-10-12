@@ -1,5 +1,7 @@
 import { EventTemplate, NostrEvent, nip98 } from "nostr-tools";
 
+import { NOSTR_BUILD_UPLOAD_URL } from "../../const";
+
 type NostrBuildResponse = {
   status: "success" | "error";
   message: string;
@@ -34,19 +36,16 @@ export async function nostrBuildUploadImage(file: File, sign?: (draft: EventTemp
   if (!(file.type.includes("image") || file.type.includes("video") || file.type.includes("audio")))
     throw new Error("Unsupported file type");
 
-  const url = "https://nostr.build/api/v2/upload/files";
-
   const payload = new FormData();
   payload.append("fileToUpload", file);
 
   const headers: HeadersInit = {};
   if (sign) {
-    // @ts-ignore
-    const token = await nip98.getToken(url, "POST", sign, true);
+    const token = await nip98.getToken(NOSTR_BUILD_UPLOAD_URL, "POST", sign, true);
     headers.Authorization = token;
   }
 
-  const response = await fetch(url, { body: payload, method: "POST", headers }).then(
+  const response = await fetch(NOSTR_BUILD_UPLOAD_URL, { body: payload, method: "POST", headers }).then(
     (res) => res.json() as Promise<NostrBuildResponse>,
   );
 

@@ -1,6 +1,6 @@
 import { ButtonGroup, ButtonGroupProps, IconButton } from "@chakra-ui/react";
 
-import { ImageGridTimelineIcon, NoteFeedIcon, TimelineHealthIcon } from "../icons";
+import { ImageGridTimelineIcon, NoteFeedIcon } from "../icons";
 import { TimelineViewType } from "./index";
 import useRouteSearchValue from "../../hooks/use-route-search-value";
 

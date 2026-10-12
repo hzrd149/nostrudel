@@ -198,6 +198,5 @@ export function sortComparePubkeys(a: string, b: string) {
 }
 
 if (import.meta.env.DEV) {
-  // @ts-expect-error
-  window.socialGraph = socialGraph$;
+  Reflect.set(window, "socialGraph", socialGraph$);
 }

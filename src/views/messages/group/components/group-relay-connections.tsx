@@ -7,7 +7,7 @@ import { DirectMessageRelaysModel } from "../../../../models/messages";
 import { connections$ } from "../../../../services/pool";
 
 export default function GroupRelayConnectionsButton({
-  group,
+  group: _group,
   ...props
 }: Omit<ButtonProps, "children" | "colorScheme"> & { group: string }) {
   const account = useActiveAccount()!;

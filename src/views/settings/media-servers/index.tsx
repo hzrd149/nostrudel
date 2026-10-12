@@ -35,6 +35,7 @@ import useAppSettings from "../../../hooks/use-user-app-settings";
 import useUsersBlossomServers from "../../../hooks/use-user-blossom-servers";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
 import BlossomServerLink from "../../../components/blossom/blossom-server-link";
+import { RECOMMENDED_BLOSSOM_SERVERS } from "../../../const";
 
 function ServerRow({ server, index }: { server: string | URL; index: number }) {
   const actions = useActionRunner();
@@ -122,13 +123,14 @@ function AddServerForm() {
 
       await addServer.run(url);
       reset();
-    } catch (error) {
+    } catch {
       toast({ status: "error", description: "Cant reach server" });
     }
   });
 
   return (
     <Flex as="form" onSubmit={submit} gap="2">
+      {/* aislop-ignore-next-line ai-slop/hardcoded-url -- placeholder hint shown to the user, never requested; deriving it from RECOMMENDED_BLOSSOM_SERVERS would need slash-stripping logic only to keep the visible text unchanged */}
       <Input {...register("server", { required: true })} required placeholder="https://nostr.download" />
       <Button type="submit" colorScheme="primary">
         Add
@@ -170,26 +172,19 @@ function MissingServers() {
       </AlertDescription>
       <Divider maxW="96" w="full" my="2" />
       <Flex gap="2" direction="column" maxW="sm">
-        <Button
-          onClick={() => addServer.run("https://nostr.download/")}
-          isLoading={addServer.loading}
-          leftIcon={<BlossomServerFavicon server="https://nostr.download/" size="sm" />}
-          variant="link"
-          w="full"
-          justifyContent="flex-start"
-        >
-          nostr.download
-        </Button>
-        <Button
-          onClick={() => addServer.run("https://blossom.primal.net/")}
-          isLoading={addServer.loading}
-          leftIcon={<BlossomServerFavicon server="https://blossom.primal.net/" size="sm" />}
-          variant="link"
-          w="full"
-          justifyContent="flex-start"
-        >
-          blossom.primal.net
-        </Button>
+        {RECOMMENDED_BLOSSOM_SERVERS.map((url) => (
+          <Button
+            key={url}
+            onClick={() => addServer.run(url)}
+            isLoading={addServer.loading}
+            leftIcon={<BlossomServerFavicon server={url} size="sm" />}
+            variant="link"
+            w="full"
+            justifyContent="flex-start"
+          >
+            {new URL(url).hostname}
+          </Button>
+        ))}
       </Flex>
     </Alert>
   );

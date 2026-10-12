@@ -2,7 +2,10 @@ import React, { useCallback, useContext, useState } from "react";
 import { createDefer, Deferred } from "applesauce-core/promise";
 
 import InvoiceModal from "../../components/invoice-modal";
+import { logger } from "../../helpers/debug";
 import useAppSettings from "../../hooks/use-user-app-settings";
+
+const log = logger.extend("InvoiceModal");
 
 export type InvoiceModalContext = {
   requestPay: (invoice: string) => Promise<void>;
@@ -31,7 +34,10 @@ export default function InvoiceModalProvider({ children }: { children: React.Rea
 
         handlePaid();
         return;
-      } catch (e) {}
+      } catch (e) {
+        // WebLN payment failed, falling back to the manual invoice modal
+        log("WebLN payment failed, falling back to the manual invoice modal", e);
+      }
     }
 
     const defer = createDefer<void>();

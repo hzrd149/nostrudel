@@ -13,7 +13,6 @@ import {
 } from "@chakra-ui/react";
 import { BookmarkEvent, CreateBookmarkList, UnbookmarkEvent } from "applesauce-actions/actions/bookmarks";
 import { getEventUID, getReplaceableIdentifier } from "applesauce-core/helpers";
-import { isEventPointerInList } from "applesauce-common/helpers/lists";
 import { useActionRunner, useActiveAccount } from "applesauce-react/hooks";
 import { kinds, NostrEvent } from "nostr-tools";
 

@@ -7,8 +7,8 @@ function relays(relays: string[]) {
 }
 
 /**
- * The default pubkey to use when viewing the app logged out
- * TODO: might be cool to cycle through a list of pubkeys for each session
+ * The default pubkeys to use when viewing the app logged out.
+ * DEFAULT_ANON_PUBKEY picks one of them at random each time the app loads.
  */
 export const DEFAULT_ANON_PUBKEYS = [
   "532d830dffe09c13e75e8b145c825718fc12b0003f61d61e9077721c7fff93cb",
@@ -21,6 +21,28 @@ export const DEFAULT_ANON_PUBKEYS = [
 export const DEFAULT_ANON_PUBKEY = DEFAULT_ANON_PUBKEYS[Math.floor(Math.random() * DEFAULT_ANON_PUBKEYS.length)];
 
 export const DEFAULT_SHARE_SERVICE = "https://njump.me/";
+
+/** Share services suggested on the privacy page; the first entry is DEFAULT_SHARE_SERVICE */
+export const SHARE_SERVICES = [DEFAULT_SHARE_SERVICE, "https://nostr.com/", "https://nostr.at/", "https://nostr.eu/"];
+
+/** Embed origin for YouTube videos and playlists when the user has not set a youtubeRedirect */
+export const YOUTUBE_NOCOOKIE_ORIGIN = "https://www.youtube-nocookie.com";
+
+/** Blossom servers offered when the user has none; the trailing slash is the value stored in their server list */
+export const RECOMMENDED_BLOSSOM_SERVERS = ["https://nostr.download/", "https://blossom.primal.net/"];
+
+/** nostr.build upload endpoint; also the NIP-98 u tag value, so it must stay byte-identical */
+// aislop-ignore-next-line ai-slop/hardcoded-url -- nostr.build's fixed upload API; the exact string is also signed into the NIP-98 u tag, so it cannot be rebuilt or normalised, and its /api/ path trips the rule wherever the constant lives
+export const NOSTR_BUILD_UPLOAD_URL = "https://nostr.build/api/v2/upload/files";
+
+/** nostr.band trending-profiles API that fills the signup follow suggestions */
+// aislop-ignore-next-line ai-slop/hardcoded-url -- nostr.band's public trending API is the only source for the signup suggestions and is deliberately not a user setting; its api. host trips the rule wherever the constant lives
+export const NOSTR_BAND_TRENDING_PROFILES_URL = "https://api.nostr.band/v0/trending/profiles";
+
+/** Third-party CORS checker linked from NIP-05 errors */
+// aislop-ignore-next-line ai-slop/hardcoded-url -- third-party CORS checker that only builds a help link for users, not deployment config; its .dev host trips the rule wherever the constant lives
+export const CORS_TEST_URL = "https://cors-test.codehappy.dev/";
+
 export const DEFAULT_SEARCH_RELAYS = relays([
   "wss://relay.nostr.band",
   "wss://search.nos.today",

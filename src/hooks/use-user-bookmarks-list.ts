@@ -1,7 +1,6 @@
 import { useMemo } from "react";
 import { kinds } from "nostr-tools";
-import { getEventPointersFromList } from "applesauce-common/helpers/lists";
-import { getAddressPointersFromList } from "applesauce-common/helpers/lists";
+import { getEventPointersFromList, getAddressPointersFromList } from "applesauce-common/helpers/lists";
 import { useActiveAccount } from "applesauce-react/hooks";
 
 import useReplaceableEvent from "./use-replaceable-event";

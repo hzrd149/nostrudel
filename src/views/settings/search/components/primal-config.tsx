@@ -1,4 +1,4 @@
-import { Card, FormControl, FormHelperText, FormLabel, Input } from "@chakra-ui/react";
+import { FormControl, FormHelperText, FormLabel, Input } from "@chakra-ui/react";
 import { use$ } from "applesauce-react/hooks";
 
 import { DEFAULT_PRIMAL_CACHE_URL } from "../../../../const";

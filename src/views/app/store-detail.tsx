@@ -6,31 +6,30 @@ import {
   Box,
   Button,
   ButtonGroup,
-  Code,
   Divider,
   Flex,
   Heading,
-  Link,
   SimpleGrid,
   Spinner,
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
 import { NostrEvent } from "nostr-tools";
-import { ReactNode, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link as RouterLink, useParams } from "react-router-dom";
 
 import GenericCommentForm from "../../components/comment/generic-comment-form";
 import { GenericComments } from "../../components/comment/generic-comments";
-import DebugEventButton from "../../components/debug-modal/debug-event-button";
 import { ErrorBoundary } from "../../components/error-boundary";
 import { ThreadIcon } from "../../components/icons";
 import SimpleView from "../../components/layout/presets/simple-view";
+import NappletMenu from "../../components/napplets/napplet-menu";
 import EventQuoteButton from "../../components/note/event-quote-button";
 import Timestamp from "../../components/timestamp";
 import EventShareButton from "../../components/timeline/note/components/event-share-button";
 import NoteReactions from "../../components/timeline/note/components/note-reactions";
 import UserAvatar from "../../components/user/user-avatar";
+import UserLink from "../../components/user/user-link";
 import UserName from "../../components/user/user-name";
 import EventZapButton from "../../components/zap/event-zap-button";
 import {
@@ -51,19 +50,9 @@ import { useReadRelays } from "../../hooks/use-client-relays";
 import useEvent from "../../hooks/use-event";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { getInstalledNapplet, installNapplet, uninstallNapplet } from "../../services/installed-napplets";
+import { eventDeleteManager } from "../../services/event-store";
 
 const RELATED_NAPPLETS_LIMIT = 6;
-
-function DetailRow({ label, children }: { label: string; children: ReactNode }) {
-  return (
-    <Box>
-      <Text color="GrayText" fontSize="sm">
-        {label}
-      </Text>
-      {children}
-    </Box>
-  );
-}
 
 function RelatedNappletCard({ event }: { event: NostrEvent }) {
   const address = getNappletNaddr(event);
@@ -159,13 +148,7 @@ function NappletStoreDetailPage({ event, address }: { event: NostrEvent; address
           {title} by <UserName pubkey={event.pubkey} />
         </Text>
       }
-      actions={
-        <ButtonGroup variant="ghost" size="sm" ms="auto">
-          <DebugEventButton event={event} />
-          <EventShareButton event={event} />
-          <EventQuoteButton event={event} />
-        </ButtonGroup>
-      }
+      actions={<NappletMenu event={event} variant="ghost" size="sm" ms="auto" />}
     >
       <Flex direction="column" gap="4" maxW="6xl" mx="auto" w="full">
         <Flex gap="4" alignItems="flex-start" wrap={{ base: "wrap", md: "nowrap" }}>
@@ -174,7 +157,7 @@ function NappletStoreDetailPage({ event, address }: { event: NostrEvent; address
             <Heading size="lg">{title}</Heading>
             <Flex gap="2" color="GrayText" fontSize="sm" alignItems="center" wrap="wrap">
               <Text>
-                By <UserName pubkey={event.pubkey} />
+                By <UserLink pubkey={event.pubkey} color="inherit" />
               </Text>
               <Text>·</Text>
               <Timestamp timestamp={event.created_at} />
@@ -213,46 +196,27 @@ function NappletStoreDetailPage({ event, address }: { event: NostrEvent; address
 
         <Divider />
 
-        <SimpleGrid columns={{ base: 1, lg: 2 }} spacing="8">
-          <Flex direction="column" gap="3">
-            <Heading size="sm">Supported intents</Heading>
-            {archetypes.length === 0 ? (
-              <Text color="GrayText">No archetypes declared.</Text>
-            ) : (
-              <Flex direction="column" gap="3">
-                {archetypes.map((archetype) => (
-                  <Box key={archetype.name}>
-                    <Heading size="xs" mb="1">
-                      {archetype.name}
-                    </Heading>
-                    <Flex gap="1" wrap="wrap">
-                      {archetype.actions.map((action) => (
-                        <Badge key={action}>{action}</Badge>
-                      ))}
-                    </Flex>
-                  </Box>
-                ))}
-              </Flex>
-            )}
-          </Flex>
-
-          <Flex direction="column" gap="3">
-            <Heading size="sm">Details</Heading>
-            <DetailRow label="Kind">
-              <Text>{event.kind}</Text>
-            </DetailRow>
-            <DetailRow label="Manifest pointer">
-              <Code userSelect="all" whiteSpace="normal">
-                {naddr || address}
-              </Code>
-            </DetailRow>
-            <DetailRow label="Author">
-              <Link as={RouterLink} to={`/u/${event.pubkey}`}>
-                <UserName pubkey={event.pubkey} />
-              </Link>
-            </DetailRow>
-          </Flex>
-        </SimpleGrid>
+        <Flex direction="column" gap="3">
+          <Heading size="sm">Supported intents</Heading>
+          {archetypes.length === 0 ? (
+            <Text color="GrayText">No archetypes declared.</Text>
+          ) : (
+            <Flex direction="column" gap="3">
+              {archetypes.map((archetype) => (
+                <Box key={archetype.name}>
+                  <Heading size="xs" mb="1">
+                    {archetype.name}
+                  </Heading>
+                  <Flex gap="1" wrap="wrap">
+                    {archetype.actions.map((action) => (
+                      <Badge key={action}>{action}</Badge>
+                    ))}
+                  </Flex>
+                </Box>
+              ))}
+            </Flex>
+          )}
+        </Flex>
 
         <Divider />
 
@@ -311,6 +275,11 @@ function NappletStoreDetailView() {
   const pointer = useMemo(() => (address ? parseNappletPointer(address) : undefined), [address]);
   const eventPointer = useMemo(() => (pointer ? getNappletEventPointer(pointer) : undefined), [pointer]);
   const event: NostrEvent | undefined = useEvent(eventPointer);
+  const [lastLoaded, setLastLoaded] = useState<{ address: string; event: NostrEvent }>();
+
+  useEffect(() => {
+    if (address && event) setLastLoaded({ address, event });
+  }, [address, event]);
 
   if (!address || !pointer || !eventPointer) {
     return (
@@ -323,7 +292,19 @@ function NappletStoreDetailView() {
     );
   }
 
-  if (!event) return <Spinner />;
+  if (!event) {
+    if (lastLoaded?.address === address && eventDeleteManager.check(lastLoaded.event)) {
+      return (
+        <SimpleView title={getNappletTitle(lastLoaded.event)}>
+          <Alert status="info">
+            <AlertIcon />
+            <AlertDescription>This napplet manifest has been deleted.</AlertDescription>
+          </Alert>
+        </SimpleView>
+      );
+    }
+    return <Spinner />;
+  }
 
   if (!isNappletManifestKind(event.kind) || !validateNappletManifest(event)) {
     return (

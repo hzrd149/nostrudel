@@ -1,5 +1,6 @@
 import { Link, Text } from "@chakra-ui/react";
 import { Identity, IdentityStatus } from "applesauce-loaders/helpers/dns-identity";
+import { getCorsTestUrl, getNip05WellKnownUrl } from "../../helpers/nip05";
 import { ExternalLinkIcon } from "../icons";
 
 export default function DNSIdentityWarning({ identity, pubkey }: { pubkey: string; identity: Identity }) {
@@ -10,11 +11,7 @@ export default function DNSIdentityWarning({ identity, pubkey }: { pubkey: strin
       return (
         <Text color="yellow.500">
           Unable to check DNS identity due to CORS error{" "}
-          <Link
-            color="blue.500"
-            href={`https://cors-test.codehappy.dev/?url=${encodeURIComponent(`https://${identity.domain}/.well-known/nostr.json?name=${identity.name}`)}&method=get`}
-            isExternal
-          >
+          <Link color="blue.500" href={getCorsTestUrl(getNip05WellKnownUrl(identity.name, identity.domain))} isExternal>
             Test
             <ExternalLinkIcon ml="1" />
           </Link>

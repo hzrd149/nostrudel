@@ -35,7 +35,7 @@ export function fetchWithProxy(url: URL | string, opts?: RequestInit) {
 
   // if its an onion domain try the request proxy first
   if ((u.host.endsWith(".onion") || u.host.endsWith(".i2p")) && !proxyFailedHosts.has(u.host)) {
-    return fetch(createRequestProxyUrl(url), opts).catch((e) => {
+    return fetch(createRequestProxyUrl(url), opts).catch(() => {
       proxyFailedHosts.add(u.host);
       return fetch(url, opts);
     });
@@ -47,7 +47,7 @@ export function fetchWithProxy(url: URL | string, opts?: RequestInit) {
   }
 
   // try clear net first and fallback to request proxy
-  return fetch(url, opts).catch((e) => {
+  return fetch(url, opts).catch(() => {
     clearNetFailedHosts.add(u.host);
     return fetch(createRequestProxyUrl(url), opts);
   });

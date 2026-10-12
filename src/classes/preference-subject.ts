@@ -22,10 +22,8 @@ export class PreferenceSubject<T = string> extends BehaviorSubject<T> {
   ) {
     super(value);
 
-    this.key = key;
     this.decode = opts?.decode;
     this.encode = opts?.encode;
-    this.fallback = fallback;
   }
 
   async next(value: T) {
