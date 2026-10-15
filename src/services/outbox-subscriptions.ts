@@ -1,8 +1,7 @@
 import { mapEventsToStore } from "applesauce-core";
 import { LoadableAddressPointer } from "applesauce-loaders/loaders";
 import { Filter } from "nostr-tools";
-import { ignoreElements, NEVER, Observable, switchMap } from "rxjs";
-import { onlyEvents } from "applesauce-relay";
+import { ignoreElements, Observable } from "rxjs";
 
 import { logger } from "../helpers/debug";
 import { eventStore } from "./event-store";
@@ -21,28 +20,11 @@ class OutboxSubscriptionsService {
   subscription(list: LoadableAddressPointer, filter: Filter): Observable<never> {
     log(`Creating subscription for ${list.kind}:${list.pubkey}:${list.identifier}`, filter);
 
-    return outboxCacheService.getOutboxMap(list).pipe(
-      switchMap((outboxMap) => {
-        // Check if we have any relays in the outbox map
-        const relays = Object.keys(outboxMap);
-        if (relays.length === 0) {
-          log(`No relays found for ${list.kind}:${list.pubkey}:${list.identifier}`);
-          return NEVER;
-        }
-
-        log(`Subscribing to ${relays.length} relays for ${list.kind}:${list.pubkey}:${list.identifier}`);
-
-        // Use pool.outboxSubscription which automatically handles authors from the outbox map
-        // The filter should not include authors as they're added automatically
-        const { authors: _authors, ...filterWithoutAuthors } = filter;
-
-        return pool.outboxSubscription(outboxMap, filterWithoutAuthors).pipe(
-          onlyEvents(),
-          mapEventsToStore(eventStore),
-          // Ignore all updates since subscribers will get the events from the store
-          ignoreElements(),
-        );
-      }),
+    const { authors: _authors, ...filterWithoutAuthors } = filter;
+    return pool.outboxSubscription(outboxCacheService.getOutboxMap(list), filterWithoutAuthors).pipe(
+      mapEventsToStore(eventStore),
+      // Consumers render from the store; the pool retains unchanged relay subscriptions.
+      ignoreElements(),
     );
   }
 }

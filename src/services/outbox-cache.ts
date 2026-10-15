@@ -39,7 +39,7 @@ class OutboxCacheService {
       // Group outboxes by relay
       map((selection) => createOutboxMap(selection)),
       // Share the outbox map so it can be cached
-      shareReplay(1),
+      shareReplay({ bufferSize: 1, refCount: true }),
     );
 
     this.outboxMaps.set(key, outboxMap$);
