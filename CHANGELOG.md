@@ -1,5 +1,36 @@
 # nostrudel
 
+## 1.2.0
+
+### Minor Changes
+
+- 2be34d6: Remove Launchpad view
+- dddbd43: Removed support for wiki articles
+- f28717f: Add muted users to mute settings view
+- 214c6f7: Cleanup remote signer signin flow
+- 5188d7a: Add NAP-COMMON support for NIP-5D napplets
+- 46be2b2: Cleanup event debug model
+- 46be2b2: Add "Other apps" tab under threads
+- 52301c4: Add support for webxdc apps
+- 46be2b2: Update to applesauce v6
+- f28717f: Remove broken advanced tab on relay details page
+- 9d25aa3: Remove support for relatr user lookup
+- 137e3e7: Support showing sats in currencies from mempool.space
+- e4011ff: Redesign signin flow: merge nostr connect pages into one, card-based option layout
+- d7e15c2: Add reusable NappletFrame support for mounting NIP-5D napplets
+- f04315e: Add a Napplets tab to user profiles showing their napplets as a grid of app tiles that open directly, show NIP-5D napplet icons in the store, and add a "Delete Napplet" option to the napplet menu for authors
+
+### Patch Changes
+
+- f04315e: App detail page header actions are now a single menu (share, copy app address, quote, view raw), and the details section is gone.
+- 21706b3: Fix unnecessary history requests while feeds are idle and cancel pending loads when leaving a feed.
+- 56d972b: Support `requires: link` in NAP-LINK napplet manifests
+- 4c5dd61: Fix relay information loading and refresh expired cached relay details.
+- f04315e: Approving a napplet's NAP-RESOURCE permission now covers every server, replacing the per-server network prompt
+- 69c3c23: Avoid restarting unchanged feed subscriptions when outbox relay selection updates.
+- 660f081: Allow pinning any kind 1 note with relay hints while hiding non-NIP-51 pin actions
+- f04315e: Long highlights wrap inside their post context instead of being cut off at the edge of the card (#359).
+
 ## 1.1.0
 
 ### Minor Changes
