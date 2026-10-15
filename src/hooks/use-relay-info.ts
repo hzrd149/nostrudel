@@ -10,7 +10,7 @@ export function useRelayInfo(relay?: string, alwaysFetch = false) {
   } = useAsync(async () => {
     if (relay) return await relayInfoService.getInfo(relay, alwaysFetch);
     else return undefined;
-  }, [relay]);
+  }, [relay, alwaysFetch]);
 
   return { info, loading, error };
 }

@@ -1,23 +1,22 @@
-import { Relay } from "applesauce-relay";
-import { nip11 } from "nostr-tools";
+import { ensureHttpURL, normalizeURL } from "applesauce-core/helpers";
+import { DEFAULT_INFORMATION_CACHE_MS, Relay } from "applesauce-relay";
 import { RelayInformation } from "nostr-tools/nip11";
-import { from } from "rxjs";
 import { fetchWithProxy } from "../helpers/request";
+import { logger } from "../helpers/debug";
+import pool from "./pool";
+import { relayInformationCache } from "./relay-information-cache";
 
-import db from "./database";
-
-// Use CORS fetch implementation
-nip11.useFetchImplementation(fetchWithProxy);
+const log = logger.extend("RelayInformation");
 
 async function getInfo(relay: string, alwaysFetch = false): Promise<RelayInformation | null> {
-  let info = (await db.get("relayInfo", relay)) as RelayInformation | null;
+  if (!alwaysFetch) return pool.relay(relay).getInformation();
 
-  if (!info || alwaysFetch) {
+  const info = await Relay.fetchInformationDocument(relay);
+  if (info) {
     try {
-      info = await nip11.fetchRelayInformation(relay);
-      db.put("relayInfo", info, relay);
-    } catch {
-      return null;
+      await relayInformationCache.set(normalizeURL(relay), info, DEFAULT_INFORMATION_CACHE_MS);
+    } catch (error) {
+      log("Failed to cache refreshed relay information", error);
     }
   }
   return info;
@@ -25,7 +24,18 @@ async function getInfo(relay: string, alwaysFetch = false): Promise<RelayInforma
 
 export const relayInfoService = { getInfo };
 
-Relay.fetchInformationDocument = (url) => from(getInfo(url, true));
+Relay.fetchInformationDocument = async (url) => {
+  try {
+    const response = await fetchWithProxy(ensureHttpURL(url), {
+      headers: { Accept: "application/nostr+json" },
+      signal: AbortSignal.timeout(10_000),
+    });
+    return response.ok ? await response.json() : null;
+  } catch {
+    // Missing NIP-11 documents are supported; Applesauce exposes them as null.
+    return null;
+  }
+};
 
 if (import.meta.env.DEV) {
   Reflect.set(window, "relayInfoService", relayInfoService);

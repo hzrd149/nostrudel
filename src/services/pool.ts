@@ -5,11 +5,12 @@ import { Filter, NostrEvent } from "nostr-tools";
 import { BehaviorSubject, combineLatest, map, merge, Observable, shareReplay, switchMap } from "rxjs";
 
 import AppRelayPool from "../classes/app-relay";
+import { relayInformationCache } from "./relay-information-cache";
 
 export type ConnectionState = "connecting" | "connected" | "retrying" | "dormant" | "error";
 
 // Create a single relay pool for all relay connections
-const pool = new AppRelayPool({ keepAlive: 60_000 });
+const pool = new AppRelayPool({ keepAlive: 60_000, informationCache: relayInformationCache });
 
 // Create a liveness tracker for relays
 export const liveness = new RelayLiveness({
