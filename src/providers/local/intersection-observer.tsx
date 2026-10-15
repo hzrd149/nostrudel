@@ -6,10 +6,12 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useLayoutEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
-import { useMount, useUnmount } from "react-use";
+import { useUnmount } from "react-use";
 import { BehaviorSubject, Subject } from "rxjs";
 
 const IntersectionObserverContext = createContext<{
@@ -77,28 +79,25 @@ export default function IntersectionObserverProvider({
   callback: IntersectionObserverCallback;
 }) {
   const [subject] = useState(() => new BehaviorSubject<IntersectionObserverEntry[]>([]));
+  const callbackRef = useRef(callback);
+  useLayoutEffect(() => {
+    callbackRef.current = callback;
+  }, [callback]);
 
   const handleIntersection = useCallback<IntersectionObserverCallback>(
     (entries, observer) => {
-      callback(entries, observer);
+      callbackRef.current(entries, observer);
       subject.next(entries);
     },
-    [subject, callback],
+    [subject],
   );
 
-  const [observer, setObserver] = useState<IntersectionObserver>(
-    () => new IntersectionObserver(handleIntersection, { rootMargin, threshold }),
-  );
-
-  useMount(() => {
-    if (root?.current) {
-      // recreate observer with root
-      setObserver(new IntersectionObserver(handleIntersection, { rootMargin, threshold, root: root.current }));
-    }
-  });
-  useUnmount(() => {
-    if (observer) observer.disconnect();
-  });
+  const [observer, setObserver] = useState<IntersectionObserver>();
+  useEffect(() => {
+    const instance = new IntersectionObserver(handleIntersection, { rootMargin, threshold, root: root?.current });
+    setObserver(instance);
+    return () => instance.disconnect();
+  }, [handleIntersection, root, rootMargin, threshold]);
 
   const context = useMemo(
     () => ({

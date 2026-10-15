@@ -1,42 +1,47 @@
-import { useEffect, useRef } from "react";
-import { useInterval } from "react-use";
-import { NostrEvent } from "nostr-tools";
 import { TimelineLoader } from "applesauce-loaders/loaders";
+import { useEffect, useMemo } from "react";
+import { BehaviorSubject, filter, interval, map, merge, throttleTime, timer } from "rxjs";
 
+import { logger } from "../helpers/debug";
+import { loadTimelineWindow } from "../helpers/load-timeline-window";
 import { useCachedIntersectionMapCallback } from "../providers/local/intersection-observer";
 import { eventStore } from "../services/event-store";
 
+const log = logger.extend("TimelineCursor");
+
 export function useTimelineCurserIntersectionCallback(loader?: TimelineLoader) {
-  const oldest = useRef<NostrEvent | undefined>(undefined);
+  const cursor$ = useMemo(() => (loader ? new BehaviorSubject<number | undefined>(undefined) : undefined), [loader]);
 
-  // Request next batch when components mounts
   useEffect(() => {
-    if (loader)
-      setTimeout(() => {
-        loader(-Infinity).subscribe();
-      }, 100);
-  }, [loader]);
+    if (!loader || !cursor$) return;
 
-  // if the cursor is set too far ahead and the last block did not overlap with the cursor
-  // we need to keep loading blocks until the timeline is complete or the blocks pass the cursor
-  useInterval(() => {
-    if (oldest.current) loader?.(oldest.current.created_at).subscribe();
-  }, 1000);
+    const visible$ = cursor$.pipe(filter((cursor): cursor is number => cursor !== undefined));
+    const updates$ = merge(
+      timer(100).pipe(map(() => -Infinity)),
+      visible$.pipe(throttleTime(1000, undefined, { leading: true, trailing: true })),
+      // Sparse feeds can need several blocks to reach the same visible cursor. The loader skips
+      // these ticks once its loaded range covers the cursor, so idle ticks do not send requests.
+      interval(1000).pipe(
+        map(() => cursor$.value),
+        filter((cursor): cursor is number => cursor !== undefined),
+      ),
+    );
+    const subscription = loadTimelineWindow(loader, updates$).subscribe({
+      error: (error) => log("Failed to load timeline", error),
+    });
+    return () => subscription.unsubscribe();
+  }, [loader, cursor$]);
 
   return useCachedIntersectionMapCallback(
-    (map) => {
-      // find oldest event that is visible
-      for (const [id, entry] of map) {
+    (entries) => {
+      let oldest: number | undefined;
+      for (const [id, entry] of entries) {
         if (!entry.isIntersecting) continue;
         const event = eventStore.getEvent(id);
-        if (!event) continue;
-        if (!oldest.current || event.created_at < oldest.current.created_at) {
-          oldest.current = event;
-        }
+        if (event) oldest = Math.min(oldest ?? Infinity, event.created_at);
       }
-
-      if (oldest.current) loader?.(oldest.current.created_at).subscribe();
+      if (cursor$ && oldest !== cursor$.value) cursor$.next(oldest);
     },
-    [loader],
+    [cursor$],
   );
 }
