@@ -7,6 +7,7 @@ export * from "./music";
 export * from "./nostr";
 export * from "./reddit";
 export * from "./simplex";
+export * from "./threespeak";
 export * from "./twitter";
 export * from "./video";
 export * from "./webxdc";
