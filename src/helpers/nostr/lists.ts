@@ -4,7 +4,7 @@ import dayjs from "dayjs";
 import { EventTemplate, NostrEvent, kinds } from "nostr-tools";
 
 import { isAddressableKind } from "nostr-tools/kinds";
-import { getEventCoordinate, replaceOrAddSimpleTag } from "./event";
+import { getEventCoordinate } from "./event";
 
 export const USER_GROUPS_LIST_KIND = 10009;
 
@@ -48,18 +48,8 @@ export function getListTitle(event: NostrEvent) {
   );
 }
 
-/** @deprecated use EventFactory operations instead */
-export function setListName(draft: EventTemplate, name: string) {
-  replaceOrAddSimpleTag(draft, "name", name);
-}
-
 export function getListDescription(event: NostrEvent) {
   return event.tags.find((t) => t[0] === "description")?.[1];
-}
-
-/** @deprecated use EventFactory operations instead */
-export function setListDescription(draft: EventTemplate, description: string) {
-  replaceOrAddSimpleTag(draft, "description", description);
 }
 
 /** Filters out empty and junk lists created by other clients */
@@ -165,25 +155,6 @@ export function listRemoveEvent(list: NostrEvent | EventTemplate, event: NostrEv
     kind: list.kind,
     content: list.content,
     tags: list.tags.filter((t) => !(t[0] === tag[0] && t[1] === tag[1])),
-  };
-}
-
-export function listAddRelay(list: NostrEvent | EventTemplate, relay: string): EventTemplate {
-  if (list.tags.some((t) => t[0] === "e" && t[1] === relay)) throw new Error("Relay already in list");
-  return {
-    created_at: dayjs().unix(),
-    kind: list.kind,
-    content: list.content,
-    tags: [...list.tags, ["relay", relay]],
-  };
-}
-
-export function listRemoveRelay(list: NostrEvent | EventTemplate, relay: string): EventTemplate {
-  return {
-    created_at: dayjs().unix(),
-    kind: list.kind,
-    content: list.content,
-    tags: list.tags.filter((t) => !(t[0] === "relay" && t[1] === relay)),
   };
 }
 

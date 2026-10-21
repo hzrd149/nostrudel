@@ -118,10 +118,4 @@ export function writeEvent(events: NostrEvent | NostrEvent[]): void {
   else writeEvent$.next(events);
 }
 
-export function clearEvents(): Promise<void> {
-  const cache = eventCache$.value;
-  if (!cache) return Promise.resolve();
-  return cache.clear?.() ?? Promise.resolve();
-}
-
 export { getEvents as cacheRequest };

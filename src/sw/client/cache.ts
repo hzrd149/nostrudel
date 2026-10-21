@@ -1,5 +1,5 @@
 // Utility functions to interact with service worker cache using RPC
-import type { CachedFile, CacheInfo } from "../worker/cache";
+import type { CacheInfo } from "../worker/cache";
 import { serviceWorkerRPC } from "./rpc";
 import { firstValueFrom } from "rxjs";
 
@@ -9,12 +9,6 @@ const client = serviceWorkerRPC;
 export const getAllCachedFiles = async (): Promise<CacheInfo[]> => {
   if (!client) throw new Error("Service worker not available");
   return await firstValueFrom(client.call("cache.getAll", void 0));
-};
-
-// Get cached files for a specific cache
-export const getCachedFilesByName = async (cacheName: string): Promise<CachedFile[]> => {
-  if (!client) throw new Error("Service worker not available");
-  return await firstValueFrom(client.call("cache.getByName", { cacheName }));
 };
 
 // Clear a specific cache

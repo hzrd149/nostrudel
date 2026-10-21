@@ -9,25 +9,6 @@ export function getRelayVariations(relay: string) {
   } else return [relay, relay + "/"];
 }
 
-export function splitNostrFilterByPubkeys(
-  filter: Filter | Filter[],
-  relayPubkeyMap: Record<string, string[]>,
-): Record<string, Filter | Filter[]> {
-  if (Array.isArray(filter)) {
-    const dir: Record<string, Filter[]> = {};
-
-    for (const query of filter) {
-      const split = splitQueryByPubkeys(query, relayPubkeyMap);
-      for (const [relay, splitQuery] of Object.entries(split)) {
-        dir[relay] = dir[relay] || [];
-        dir[relay].push(splitQuery);
-      }
-    }
-
-    return dir;
-  } else return splitQueryByPubkeys(filter, relayPubkeyMap);
-}
-
 export function splitQueryByPubkeys(query: Filter, relayPubkeyMap: Record<string, string[]>) {
   const filtersByRelay: Record<string, Filter> = {};
 

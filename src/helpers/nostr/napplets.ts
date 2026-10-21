@@ -219,10 +219,6 @@ export function parseNappletIntent(value: string | null): NappletIntent | undefi
   }
 }
 
-export function getNappletDTag(event: NostrEvent) {
-  return getTagValue(event, "d") || event.id;
-}
-
 export type NappletCoordinate = { kind: number; pubkey: string; identifier: string };
 
 /**

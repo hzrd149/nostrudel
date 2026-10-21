@@ -33,9 +33,6 @@ export function getRequestInput(e: NostrEvent) {
 export function getRequestRelays(event: NostrEvent) {
   return event.tags.find((t) => t[0] === "relays")?.slice(1) ?? [];
 }
-export function getRequestOutputType(event: NostrEvent): string | undefined {
-  return event.tags.find((t) => t[0] === "output")?.[1];
-}
 
 export function getRequestInputParams(e: NostrEvent, k: string) {
   return e.tags.filter((t) => t[0] === "param" && t[1] === k).map((t) => t[2]);
@@ -63,11 +60,6 @@ export function getResultEventIds(result: NostrEvent) {
 export type DVMResponse = { pubkey: string; result?: NostrEvent; status?: NostrEvent };
 export type DVMJob = { request: NostrEvent; responses: DVMResponse[] };
 export type ChainedDVMJob = DVMJob & { next: ChainedDVMJob[]; prevId?: string; prev?: ChainedDVMJob };
-
-export function getJobStatusType(job: DVMJob, dvm?: string) {
-  const response = dvm ? job.responses[0] : job.responses.find((r) => r.pubkey === dvm);
-  return response?.status?.tags.find((t) => t[0] === "status")?.[1];
-}
 
 export function groupEventsIntoJobs(events: NostrEvent[]) {
   const jobs: Record<string, DVMJob> = {};

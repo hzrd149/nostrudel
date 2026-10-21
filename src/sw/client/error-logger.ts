@@ -56,26 +56,3 @@ export const logServiceWorkerErrors = async (): Promise<void> => {
     (log, index) => `Error ${index + 1} - ${log.context} (${log.timestamp})`,
   );
 };
-
-// Log error logs by context to console (for debugging)
-export const logServiceWorkerErrorsByContext = async (context: string): Promise<void> => {
-  const logs = await getServiceWorkerErrorLogsByContext(context);
-
-  if (logs.length === 0) {
-    console.log(`No service worker errors found for context: ${context}`);
-    return;
-  }
-
-  renderErrorLogGroup(
-    logs,
-    `Service Worker Error Logs (${context}):`,
-    (log, index) => `Error ${index + 1} - ${log.timestamp}`,
-  );
-};
-
-// Development helper: Log and clear errors
-export const debugServiceWorkerErrors = async (): Promise<void> => {
-  await logServiceWorkerErrors();
-  await clearServiceWorkerErrorLogs();
-  console.log("Error logs cleared");
-};

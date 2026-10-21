@@ -1,5 +1,5 @@
 import { kinds, nip19, NostrEvent } from "nostr-tools";
-import type { AddressPointer, EventPointer } from "nostr-tools/nip19";
+import type { EventPointer } from "nostr-tools/nip19";
 
 import relayScoreboardService from "./relay-scoreboard";
 import { eventStore } from "./event-store";
@@ -33,11 +33,6 @@ export function getEventRelayHints(event: NostrEvent, count = 2): string[] {
   return pickBestRelays([...getAuthorHints(event.pubkey), ...getSeenHints(event)]).slice(0, count);
 }
 
-/** Returns relay things for an address pointer */
-export function getAddressPointerRelayHints(pointer: AddressPointer) {
-  return pickBestRelays([...getAuthorHints(pointer.pubkey)]);
-}
-
 /** Gets relay hints for an event pointer */
 export function getEventPointerRelayHints(pointerOrId: string | EventPointer): string[] {
   if (typeof pointerOrId === "string") {
@@ -51,22 +46,6 @@ export function getEventPointerRelayHints(pointerOrId: string | EventPointer): s
     else if (pointerOrId.author) return getAuthorHints(pointerOrId.author);
     else return [];
   }
-}
-
-/** Gets a single relay hint for am event pointer */
-export function getEventPointerRelayHint(pointerOrId: string | EventPointer): string | undefined {
-  return getEventPointerRelayHints(pointerOrId)[0];
-}
-
-/** Returns a single relay hint for an event */
-export function getEventRelayHint(id: string): string | undefined {
-  const event = eventStore.getEvent(id);
-  return event && getEventRelayHints(event, 1)[0];
-}
-
-/** Returns a relay hint for a single pubkey */
-export function getPubkeyRelayHint(pubkey: string): string | undefined {
-  return getAuthorHints(pubkey)[0];
 }
 
 /** Returns a nevent or naddr for an event */

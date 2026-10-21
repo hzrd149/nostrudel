@@ -90,11 +90,3 @@ export interface ClientWorkerCommands extends RPCCommandDirectory {
     result: number;
   };
 }
-
-// Commands for the worker to send to the client
-export interface WorkerClientCommands extends RPCCommandDirectory {
-  "worker.ping": {
-    payload: void;
-    result: { pong: boolean };
-  };
-}

@@ -68,9 +68,6 @@ export async function persistGraph(): Promise<void> {
   }
 }
 
-/** Backwards-compatible alias for {@link persistGraph} */
-export const saveSocialGraph = persistGraph;
-
 /** Loads the social graph from local storage if a cached blob is present */
 async function loadGraph(): Promise<void> {
   const cached = (await idbKeyValueStore.getItem(cacheKey)) as Uint8Array | undefined;

@@ -2,15 +2,8 @@ import { isPTag } from "applesauce-core/helpers";
 import { getHiddenMutedThings, getPublicMutedThings, isHiddenMutesUnlocked } from "applesauce-common/helpers";
 import dayjs from "dayjs";
 import { EventTemplate, kinds, NostrEvent } from "nostr-tools";
-import { getPubkeysFromList, isPubkeyInList, listAddPerson, listRemovePerson } from "./lists";
+import { isPubkeyInList, listAddPerson, listRemovePerson } from "./lists";
 
-export function getPubkeysFromMuteList(muteList: NostrEvent | EventTemplate) {
-  const expirations = getPubkeysExpiration(muteList);
-  return getPubkeysFromList(muteList).map((p) => ({
-    pubkey: p.pubkey,
-    expiration: expirations[p.pubkey] ?? Infinity,
-  }));
-}
 export function getPubkeysExpiration(muteList: NostrEvent | EventTemplate) {
   return muteList.tags.reduce<Record<string, number>>((dir, tag) => {
     if (tag[0] === "mute_expiration" && tag[1] && tag[2]) {

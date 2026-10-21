@@ -6,7 +6,7 @@ import {
   isRTag,
 } from "applesauce-core/helpers";
 import dayjs from "dayjs";
-import { kinds, NostrEvent } from "nostr-tools";
+import { NostrEvent } from "nostr-tools";
 import { decode } from "nostr-tools/nip19";
 
 /** @deprecated */
@@ -33,23 +33,6 @@ export function getPointerFromTag(tag: string[]): ReturnType<typeof decode> | nu
   }
 
   return null;
-}
-
-/** @deprecated use kinds.ZapGoal */
-export const GOAL_KIND = kinds.ZapGoal;
-
-export type ParsedGoal = {
-  event: NostrEvent;
-  author: string;
-  amount: number;
-  relays: string[];
-};
-
-export function getGoalPointerFromEvent(event: NostrEvent) {
-  const tag = event.tags.find((t) => t[0] === "goal");
-  const id = tag?.[1];
-  const relay = tag?.[2];
-  return id ? { id, relay } : undefined;
 }
 
 export function getGoalName(goal: NostrEvent) {
@@ -97,18 +80,4 @@ export function validateGoal(goal: NostrEvent) {
   const relays = getGoalRelays(goal);
   if (relays.length) throw new Error("zero relays");
   return true;
-}
-
-export function safeValidateGoal(goal: NostrEvent) {
-  try {
-    return validateGoal(goal);
-  } catch {
-    // Goal event failed validation; callers filter it out
-    return false;
-  }
-}
-
-export function getGoalTag(goal: NostrEvent, relay?: string) {
-  const id = goal.id;
-  return ["goal", id, relay].filter(Boolean);
 }

@@ -7,19 +7,13 @@ import StickerSquare from "./icons/sticker-square";
 import Code01 from "./icons/code-01";
 import DistributeSpacingVertical from "./icons/distribute-spacing-vertical";
 import Grid01 from "./icons/grid-01";
-import Microscope from "./icons/microscope";
 import ChevronDown from "./icons/chevron-down";
 import ChevronUp from "./icons/chevron-up";
 import ChevronLeft from "./icons/chevron-left";
 import ChevronRight from "./icons/chevron-right";
 import Zap from "./icons/zap";
-import Target04 from "./icons/target-04";
-import Award01 from "./icons/award-01";
-import LayoutRight from "./icons/layout-right";
 import ThumbsUp from "./icons/thumbs-up";
 import ThumbsDown from "./icons/thumbs-down";
-import LogOut01 from "./icons/log-out-01";
-import Tool02 from "./icons/tool-02";
 import ImagePlus from "./icons/image-plus";
 import LockUnlocked01 from "./icons/lock-unlocked-01";
 import Lock01 from "./icons/lock-01";
@@ -33,13 +27,11 @@ import Eye from "./icons/eye";
 import EyeOff from "./icons/eye-off";
 import Colors from "./icons/colors";
 import Database01 from "./icons/database-01";
-import Speedometer03 from "./icons/speedometer-03";
 import UserCircle from "./icons/user-circle";
 import DotsHorizontal from "./icons/dots-horizontal";
 import Feather from "./icons/feather";
 import List from "./icons/list";
 import VideoRecorder from "./icons/video-recorder";
-import Map01 from "./icons/map-01";
 import PlayCircle from "./icons/play-circle";
 import StopCircle from "./icons/stop-circle";
 import CheckVerified01 from "./icons/check-verified-01";
@@ -64,11 +56,9 @@ import Pin01 from "./icons/pin-01";
 import MessageChatSquare from "./icons/message-chat-square";
 import Package from "./icons/package";
 import Magnet from "./icons/magnet";
-import Recording02 from "./icons/recording-02";
 import Upload01 from "./icons/upload-01";
 import Modem02 from "./icons/modem-02";
 import Edit04 from "./icons/edit-04";
-import Film02 from "./icons/film-02";
 import Camera01 from "./icons/camera-01";
 import Monero from "./icons/monero";
 
@@ -83,7 +73,6 @@ export const MoreIcon = DotsHorizontal;
 export const CodeIcon = Code01;
 
 export const SettingsIcon = Settings02;
-export const LogoutIcon = LogOut01;
 export const ProfileIcon = UserCircle;
 
 export const CopyToClipboardIcon = Copy01;
@@ -156,8 +145,6 @@ export const GithubIcon = createIcon({
   defaultProps,
 });
 
-export const ToolsIcon = Tool02;
-
 export const EditIcon = PencilLine;
 
 export const WritingIcon = Feather;
@@ -171,10 +158,6 @@ export const ListsIcon = List;
 export const LiveStreamIcon = VideoRecorder;
 
 export const ImageGridTimelineIcon = Grid01;
-
-export const TimelineHealthIcon = Microscope;
-
-export const MapIcon = Map01;
 
 export const StarEmptyIcon = createIcon({
   displayName: "StarEmptyIcon",
@@ -214,24 +197,11 @@ export const AddReactionIcon = createIcon({
 });
 
 export const EmojiPacksIcon = FaceSmile;
-export const GoalIcon = Target04;
-export const BadgeIcon = Award01;
-
-export const DrawerIcon = LayoutRight;
 
 export const UnmuteIcon = Eye;
 export const MuteIcon = EyeOff;
 
 export const AppearanceIcon = Colors;
-export const DatabaseIcon = Database01;
-export const PerformanceIcon = Speedometer03;
-
-/** @deprecated */
-export const GhostIcon = createIcon({
-  displayName: "GhostIcon",
-  d: "M12 2C16.9706 2 21 6.02944 21 11V18.5C21 20.433 19.433 22 17.5 22C16.3001 22 15.2413 21.3962 14.6107 20.476C14.0976 21.3857 13.1205 22 12 22C10.8795 22 9.9024 21.3857 9.38728 20.4754C8.75869 21.3962 7.69985 22 6.5 22C4.63144 22 3.10487 20.5357 3.00518 18.692L3 18.5V11C3 6.02944 7.02944 2 12 2ZM12 4C8.21455 4 5.1309 7.00478 5.00406 10.7593L5 11L4.99927 18.4461L5.00226 18.584C5.04504 19.3751 5.70251 20 6.5 20C6.95179 20 7.36652 19.8007 7.64704 19.4648L7.73545 19.3478C8.57033 18.1248 10.3985 18.2016 11.1279 19.4904C11.3053 19.8038 11.6345 20 12 20C12.3651 20 12.6933 19.8044 12.8687 19.4934C13.5692 18.2516 15.2898 18.1317 16.1636 19.2151L16.2606 19.3455C16.5401 19.7534 16.9976 20 17.5 20C18.2797 20 18.9204 19.4051 18.9931 18.6445L19 18.5V11C19 7.13401 15.866 4 12 4ZM12 12C13.1046 12 14 13.1193 14 14.5C14 15.8807 13.1046 17 12 17C10.8954 17 10 15.8807 10 14.5C10 13.1193 10.8954 12 12 12ZM9.5 8C10.3284 8 11 8.67157 11 9.5C11 10.3284 10.3284 11 9.5 11C8.67157 11 8 10.3284 8 9.5C8 8.67157 8.67157 8 9.5 8ZM14.5 8C15.3284 8 16 8.67157 16 9.5C16 10.3284 15.3284 11 14.5 11C13.6716 11 13 10.3284 13 9.5C13 8.67157 13.6716 8 14.5 8Z",
-  defaultProps,
-});
 
 export const ECashIcon = BankNote01;
 export const WalletIcon = Wallet02;
@@ -241,12 +211,10 @@ export const ChannelsIcon = MessageChatSquare;
 export const ThreadIcon = MessageChatSquare;
 export const ThingsIcon = Package;
 export const TorrentIcon = Magnet;
-export const TrackIcon = Recording02;
 
 export const InboxIcon = Download01;
 export const OutboxIcon = Upload01;
 
 export const ArticleIcon = Edit04;
-export const VideoIcon = Film02;
 
 export const MediaIcon = Camera01;

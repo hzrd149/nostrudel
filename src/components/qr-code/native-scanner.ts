@@ -1,5 +1,4 @@
-import { ScanResult, type Barcode } from "@capacitor-mlkit/barcode-scanning";
-import { Observable, Subject } from "rxjs";
+import { ScanResult } from "@capacitor-mlkit/barcode-scanning";
 
 import { logger } from "../../helpers/debug";
 
@@ -56,34 +55,6 @@ export async function installNativeScanner(): Promise<boolean> {
   if (!granted) throw new Error("Camera access denied");
 
   return true;
-}
-
-export async function getScanningStream(): Promise<Observable<Barcode>> {
-  const { BarcodeScanner } = await import("@capacitor-mlkit/barcode-scanning");
-
-  const subject = new Subject<Barcode>();
-  await BarcodeScanner.addListener("barcodesScanned", (event) => {
-    for (const barcode of event.barcodes) {
-      subject.next(barcode);
-    }
-  });
-
-  await BarcodeScanner.addListener("scanError", (event) => {
-    subject.error(new Error(event.message));
-  });
-
-  return subject;
-}
-
-export async function startScanning(): Promise<void> {
-  const { BarcodeScanner } = await import("@capacitor-mlkit/barcode-scanning");
-  await BarcodeScanner.startScan();
-}
-
-export async function stopScanning(): Promise<void> {
-  const { BarcodeScanner } = await import("@capacitor-mlkit/barcode-scanning");
-  await BarcodeScanner.removeAllListeners();
-  await BarcodeScanner.stopScan();
 }
 
 export async function scanSingle(): Promise<ScanResult> {

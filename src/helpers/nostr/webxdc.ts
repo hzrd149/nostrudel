@@ -82,11 +82,3 @@ export function isWebxdcUrl(url: URL | string): boolean {
     return false;
   }
 }
-
-/**
- * Get the webxdc identifier from a kind 4932 or 20932 state update event.
- * This is stored in the "i" tag.
- */
-export function getWebxdcUpdateId(event: NostrEvent): string | undefined {
-  return getTagValue(event, "i");
-}

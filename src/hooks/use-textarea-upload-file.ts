@@ -6,15 +6,6 @@ import insertTextIntoMagicTextarea from "../helpers/magic-textarea";
 import { useUploadContext } from "../providers/local/upload-provider";
 import useUploadFile from "./use-upload-file";
 
-export function useTextAreaUploadFileWithForm(
-  ref: MutableRefObject<RefType | null>,
-  getValues: UseFormGetValues<any>,
-  setValue: UseFormSetValue<any>,
-) {
-  const insertText = useTextAreaInsertTextWithForm(ref, getValues, setValue);
-  return useTextAreaUploadFile(insertText);
-}
-
 export function useTextAreaInsertTextWithForm(
   ref: MutableRefObject<RefType | null>,
   getValues: UseFormGetValues<any>,

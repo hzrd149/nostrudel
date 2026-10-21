@@ -18,8 +18,6 @@ import { eventStore } from "../../services/event-store";
 import pool from "../../services/pool";
 import localSettings from "../../services/preferences";
 
-export type PublishResults = { packets: PublishResponse[]; relays: Record<string, PublishResponse> };
-
 export class PublishLogEntry {
   public id = nanoid();
 

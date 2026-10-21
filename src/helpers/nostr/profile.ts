@@ -4,12 +4,6 @@ import { ProfileContent } from "applesauce-core/helpers";
 
 import { truncatedId } from "./event";
 
-export function getSearchNames(profile: ProfileContent) {
-  if (!profile) return [];
-
-  return [profile.display_name, profile.name, profile.displayName].filter(Boolean) as string[];
-}
-
 const matchEmoji = emojiRegex();
 export function getDisplayName(metadata: ProfileContent | undefined, pubkey: string, removeEmojis = false) {
   let displayName = metadata?.display_name || metadata?.displayName || metadata?.name;

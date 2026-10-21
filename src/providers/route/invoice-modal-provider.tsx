@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { createDefer, Deferred } from "applesauce-core/promise";
 
 import InvoiceModal from "../../components/invoice-modal";
@@ -16,10 +16,6 @@ export const InvoiceModalContext = React.createContext<InvoiceModalContext>({
     throw new Error("not setup yet");
   },
 });
-
-export function useInvoiceModalContext() {
-  return useContext(InvoiceModalContext);
-}
 
 export default function InvoiceModalProvider({ children }: { children: React.ReactNode }) {
   const [invoice, setInvoice] = useState<string>();

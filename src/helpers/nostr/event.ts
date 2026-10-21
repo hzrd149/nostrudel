@@ -1,30 +1,13 @@
-import { getOrComputeCachedValue, isDTag, isReplaceable } from "applesauce-core/helpers";
+import { getOrComputeCachedValue, isDTag } from "applesauce-core/helpers";
 import { getNip10References } from "applesauce-common/helpers";
-import dayjs from "dayjs";
 import { EventTemplate, kinds, NostrEvent } from "nostr-tools";
-import { AddressPointer, EventPointer } from "nostr-tools/nip19";
+import { AddressPointer } from "nostr-tools/nip19";
 
 import { safeDecode } from "../nip19";
 import { getMatchNostrLink } from "../regexp";
 import { truncateId } from "../string";
 
 export { truncateId as truncatedId };
-
-export function pointerMatchEvent(event: NostrEvent, pointer: AddressPointer | EventPointer) {
-  if (isReplaceable(event.kind)) {
-    if (Reflect.has(pointer, "pubkey")) {
-      const p = pointer as AddressPointer;
-      const d = event.tags.find(isDTag)?.[1];
-      return event.pubkey === p.pubkey && event.kind === p.kind && d === p.identifier;
-    }
-  } else {
-    if (Reflect.has(pointer, "id")) {
-      const p = pointer as EventPointer;
-      return p.id === event.id;
-    }
-  }
-  return false;
-}
 
 const isReplySymbol = Symbol("isReply");
 export function isReply(event: NostrEvent | EventTemplate) {
@@ -110,18 +93,6 @@ export function sortByDate<T extends { created_at: number }>(a: T, b: T) {
 }
 
 /**
- * create a copy of the event with a new created_at
- * @deprecated use EventFactory operations instead */
-export function cloneEvent(kind: number, event?: EventTemplate | NostrEvent): EventTemplate {
-  return {
-    kind: event?.kind ?? kind,
-    created_at: dayjs().unix(),
-    content: event?.content ?? "",
-    tags: event?.tags ? Array.from(event.tags) : [],
-  };
-}
-
-/**
  * either replaces the existing tag or adds a new one
  * @deprecated use EventFactory operations with includeNameValueTag
  */
@@ -131,24 +102,6 @@ export function replaceOrAddSimpleTag(draft: EventTemplate, tagName: string, val
   } else {
     draft.tags.push([tagName, value]);
   }
-}
-
-function groupByKind(events: NostrEvent[]) {
-  const byKind: Record<number, NostrEvent[]> = {};
-  for (const event of events) {
-    byKind[event.kind] = byKind[event.kind] || [];
-    byKind[event.kind].push(event);
-  }
-  return byKind;
-}
-
-export function getSortedKinds(events: NostrEvent[]) {
-  const byKind = groupByKind(events);
-
-  return Object.entries(byKind)
-    .map(([kind, events]) => ({ kind, count: events.length }))
-    .sort((a, b) => b.count - a.count)
-    .reduce((dir, k) => ({ ...dir, [k.kind]: k.count }), {} as Record<string, number>);
 }
 
 export { getEventUID } from "applesauce-core/helpers";

@@ -5,8 +5,6 @@ import { normalizeRelayUrl } from "applesauce-core/helpers";
 import { unique } from "../helpers/array";
 import nip66Discovery from "../services/nip66-relay-discovery";
 
-export type RelayUrlInputProps = Omit<InputProps, "type">;
-
 export const RelayUrlInput = forwardRef(({ nips, ...props }: { nips?: number[] } & Omit<InputProps, "type">, ref) => {
   const { onChange, onBlur, onKeyDown } = props;
   const [relaysJson, setRelaysJson] = useState<string[]>([]);

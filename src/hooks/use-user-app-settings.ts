@@ -8,7 +8,6 @@ import { APP_SETTING_IDENTIFIER, APP_SETTINGS_KIND, AppSettings, DEFAULT_APP_SET
 import { AppSettingsQuery } from "../models";
 import { usePublishEvent } from "../providers/global/publish-provider";
 import useReplaceableEvent from "./use-replaceable-event";
-import { ProfilePointer } from "nostr-tools/nip19";
 
 function buildAppSettingsEvent(settings: Partial<AppSettings>): EventTemplate {
   return {
@@ -17,10 +16,6 @@ function buildAppSettingsEvent(settings: Partial<AppSettings>): EventTemplate {
     content: JSON.stringify(settings),
     created_at: dayjs().unix(),
   };
-}
-
-export function useUserAppSettings(pubkey?: string | ProfilePointer) {
-  return useEventModel(AppSettingsQuery, pubkey ? [pubkey] : undefined) ?? DEFAULT_APP_SETTINGS;
 }
 
 export default function useAppSettings() {

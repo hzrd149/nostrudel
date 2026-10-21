@@ -1,12 +1,6 @@
 import { ChangeEventHandler, ClipboardEventHandler, useCallback } from "react";
-import { UseFormSetValue } from "react-hook-form";
 
 import useUploadFile from "./use-upload-file";
-
-export function useInputUploadFileWithForm(setValue: UseFormSetValue<any>, field: string) {
-  const setText = useCallback((text: string) => setValue(field, text), [setValue]);
-  return useInputUploadFile(setText);
-}
 
 export default function useInputUploadFile(setText: (text: string) => void) {
   const uploadFile = useUploadFile();

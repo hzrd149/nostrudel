@@ -70,10 +70,6 @@ export function getInstalledNapplets() {
   return installedNapplets$.value;
 }
 
-export function isNappletInstalled(address: string) {
-  return getInstalledNapplets().some((item) => item.address === address);
-}
-
 export function getInstalledNapplet(address: string) {
   return getInstalledNapplets().find((item) => item.address === address);
 }
@@ -156,13 +152,6 @@ export function getDefaultIntentHandler(archetype: string, action = "open") {
 
 export function setDefaultIntentHandler(archetype: string, action: string, address: string) {
   writeHandlerPreferences({ ...intentHandlerPreferences$.value, [intentKey(archetype, action)]: address });
-  localNappletChanges$.next();
-}
-
-export function clearDefaultIntentHandler(archetype: string, action = "open") {
-  const preferences = { ...intentHandlerPreferences$.value };
-  delete preferences[intentKey(archetype, action)];
-  writeHandlerPreferences(preferences);
   localNappletChanges$.next();
 }
 

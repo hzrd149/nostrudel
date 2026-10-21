@@ -26,18 +26,6 @@ export function getBadgeImage(event: NostrEvent) {
     size: tag[2],
   };
 }
-export function getBadgeThumbnails(event: NostrEvent) {
-  return event.tags
-    .filter((t) => t[0] === "thumb")
-    .map(
-      (tag) =>
-        tag && {
-          src: tag[1],
-          size: tag[2],
-        },
-    )
-    .filter(Boolean);
-}
 
 export function getBadgeAwardPubkeys(event: NostrEvent) {
   return event.tags

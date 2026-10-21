@@ -13,10 +13,6 @@ export function isSignedNostrEvent(event: unknown): event is NostrEvent {
   return typeof event === "object" && event !== null && typeof (event as NostrEvent).sig === "string";
 }
 
-export async function saveEvents(events: NostrEvent[]) {
-  await addEvents(database, events);
-}
-
 const indexeddbCache: EventCache = {
   type: "nostr-idb",
   read: (filters) =>

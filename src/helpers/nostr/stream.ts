@@ -78,15 +78,6 @@ export function getStreamEndTime(stream: NostrEvent) {
   return str ? parseInt(str) : getStreamStatus(stream) === "ended" ? stream.created_at : undefined;
 }
 
-export function getStreamParticipants(stream: NostrEvent) {
-  const current = getTagValue(stream, "current_participants");
-  const total = getTagValue(stream, "total_participants");
-  return {
-    current: current ? parseInt(current) : undefined,
-    total: total ? parseInt(total) : undefined,
-  };
-}
-
 export function getStreamHashtags(stream: NostrEvent) {
   return stream.tags.filter((t) => t[0] === "t").map((t) => t[1]);
 }
