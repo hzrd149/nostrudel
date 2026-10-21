@@ -13,13 +13,11 @@ import {
   combineLatest,
   distinctUntilChanged,
   filter,
-  interval,
   map,
   Observable,
   of,
   pairwise,
   shareReplay,
-  startWith,
   switchMap,
   take,
 } from "rxjs";
@@ -47,15 +45,12 @@ export const decryptionCache$ = localSettings.enableDecryptionCache.pipe(
         else return kv;
       }),
       switchMap((cache) => {
-        if (cache instanceof EncryptedStorage) {
-          // Create an observable that polls for when the cache is unlocked
-          return interval(1000).pipe(
-            startWith(cache),
-            map(() => cache.unlocked),
+        // Re-emit the encrypted cache when it is unlocked
+        if (cache instanceof EncryptedStorage)
+          return cache.unlocked$.pipe(
             distinctUntilChanged(),
             map(() => cache),
           );
-        }
         return of(cache);
       }),
     );
@@ -81,9 +76,14 @@ decryptionCache$.pipe(pairwise()).subscribe(([prev, curr]) => {
   if (curr === null && prev) prev.clear();
 });
 
+/** Whether the decryption cache is encrypted and still waiting for a password */
+export const decryptionCacheLocked$ = decryptionCache$.pipe(
+  map((cache) => cache instanceof EncryptedStorage && !cache.unlocked),
+  distinctUntilChanged(),
+);
+
 // Observable for decryption cache statistics
-export const decryptionCacheStats$ = localSettings.encryptDecryptionCache.pipe(
-  switchMap(() => decryptionCache$),
+export const decryptionCacheStats$ = decryptionCache$.pipe(
   defined(),
   switchMap(async (cache) => {
     // Get the underlying localforage instance

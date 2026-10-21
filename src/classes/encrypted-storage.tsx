@@ -3,6 +3,7 @@ import { bytesToUtf8 } from "@noble/ciphers/utils.js";
 import { pbkdf2 } from "@noble/hashes/pbkdf2.js";
 import { sha256 } from "@noble/hashes/sha2.js";
 import { utf8ToBytes } from "@noble/hashes/utils.js";
+import { BehaviorSubject } from "rxjs";
 
 import { logger } from "../helpers/debug";
 
@@ -54,8 +55,10 @@ function unpad(bytes: Uint8Array): Uint8Array {
 
 export default class EncryptedKeyValueStore {
   private key: Uint8Array | null = null;
+  /** Emits true once {@link unlock} succeeds */
+  readonly unlocked$ = new BehaviorSubject(false);
   get unlocked() {
-    return this.key !== null;
+    return this.unlocked$.value;
   }
 
   constructor(
@@ -151,6 +154,11 @@ export default class EncryptedKeyValueStore {
     return this.database.clear();
   }
 
+  private setKey(key: Uint8Array) {
+    this.key = key;
+    this.unlocked$.next(true);
+  }
+
   /** Verify if a password can decrypt stored data */
   async unlock(password: string, testKey: string = TEST_KEY): Promise<boolean> {
     // Create a key from the password
@@ -164,11 +172,11 @@ export default class EncryptedKeyValueStore {
       if (testValue === null) {
         // First setup
         await this.setItem(testKey, TEST_VALUE, key);
-        this.key = this.deriveKey(password);
+        this.setKey(key);
         return true;
       } else if (testValue === TEST_VALUE) {
         // Save the key for later
-        this.key = this.deriveKey(password);
+        this.setKey(key);
         return true;
       }
     } catch (error) {

@@ -30,12 +30,13 @@ import { firstValueFrom } from "rxjs";
 
 import EncryptedStorage from "../../classes/encrypted-storage";
 import useAsyncAction from "../../hooks/use-async-action";
-import { decryptionCache$, decryptionCacheStats$ } from "../../services/decryption-cache";
+import { decryptionCache$, decryptionCacheLocked$, decryptionCacheStats$ } from "../../services/decryption-cache";
 import localSettings from "../../services/preferences";
 
 export default function RequireDecryptionCache({ children }: { children: JSX.Element }) {
   const stats = use$(decryptionCacheStats$);
   const cache = use$(decryptionCache$);
+  const locked = use$(decryptionCacheLocked$);
   const autoDecryptMessages = use$(localSettings.autoDecryptMessages);
   const [password, setPassword] = useState("");
   const toast = useToast();
@@ -98,7 +99,7 @@ export default function RequireDecryptionCache({ children }: { children: JSX.Ele
   }, [toast]);
 
   // If cache is not encrypted or is already unlocked, render children
-  if (cache === null || (cache instanceof EncryptedStorage ? cache.unlocked : true)) {
+  if (cache === null || !locked) {
     return children;
   }
 
