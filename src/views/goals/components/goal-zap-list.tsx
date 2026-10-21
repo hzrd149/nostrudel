@@ -1,7 +1,6 @@
 import { Box, Flex, Spacer, Text } from "@chakra-ui/react";
-import { Zap } from "applesauce-common/casts";
-import { KnownEvent } from "applesauce-core/helpers";
-import { kinds, NostrEvent } from "nostr-tools";
+import { Zap, ZapGoal } from "applesauce-common/casts";
+import { use$ } from "applesauce-react/hooks";
 
 import { LightningIcon } from "../../../components/icons";
 import TextNoteContents from "../../../components/timeline/note/text-note-contents";
@@ -9,34 +8,31 @@ import Timestamp from "../../../components/timestamp";
 import UserAvatarLink from "../../../components/user/user-avatar-link";
 import UserLink from "../../../components/user/user-link";
 import ValueDisplay from "../../../components/value-display";
-import { getGoalRelays } from "../../../helpers/nostr/goal";
-import useCastEvent from "../../../hooks/use-cast-event";
-import useEventZaps from "../../../hooks/use-event-zaps";
+import useCastTimeline from "../../../hooks/use-cast-timeline";
 
-function GoalZap({ zap }: { zap: KnownEvent<kinds.Zap> }) {
-  const cast = useCastEvent(zap, Zap);
-  if (!cast?.amount) return null;
+function GoalZap({ zap }: { zap: Zap }) {
+  if (!zap.amount) return null;
 
   return (
     <Flex gap="2">
-      <UserAvatarLink pubkey={cast.sender.pubkey} size="md" />
+      <UserAvatarLink pubkey={zap.sender.pubkey} size="md" />
       <Box>
         <Text>
-          <UserLink fontSize="lg" fontWeight="bold" pubkey={cast.sender.pubkey} mr="2" />
-          <Timestamp timestamp={zap.created_at} />
+          <UserLink fontSize="lg" fontWeight="bold" pubkey={zap.sender.pubkey} mr="2" />
+          <Timestamp timestamp={zap.event.created_at} />
         </Text>
-        {cast.request.content && <TextNoteContents event={cast.request} />}
+        {zap.request.content && <TextNoteContents event={zap.request} />}
       </Box>
       <Spacer />
       <Text>
-        <LightningIcon /> <ValueDisplay sats={cast.amount / 1000} />
+        <LightningIcon /> <ValueDisplay sats={zap.amount / 1000} />
       </Text>
     </Flex>
   );
 }
 
-export default function GoalZapList({ goal }: { goal: NostrEvent }) {
-  const zaps = useEventZaps(goal, getGoalRelays(goal));
+export default function GoalZapList({ goal }: { goal: ZapGoal }) {
+  const zaps = useCastTimeline(use$(goal.zaps$), Zap);
 
   return (
     <>

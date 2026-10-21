@@ -1,26 +1,24 @@
 import { Box, Flex, FlexProps } from "@chakra-ui/react";
-import { castEvent, Zap } from "applesauce-common/casts";
-
-import { NostrEvent } from "nostr-tools";
+import { castEvent, Zap, ZapGoal } from "applesauce-common/casts";
+import { use$ } from "applesauce-react/hooks";
 import { useMemo } from "react";
+
 import { LightningIcon } from "../../../components/icons";
 import ValueDisplay from "../../../components/value-display";
 import UserAvatarLink from "../../../components/user/user-avatar-link";
 import UserLink from "../../../components/user/user-link";
-import { getGoalRelays } from "../../../helpers/nostr/goal";
-import useEventZaps from "../../../hooks/use-event-zaps";
 import { eventStore } from "../../../services/event-store";
 
 export default function GoalTopZappers({
   goal,
   max,
   ...props
-}: Omit<FlexProps, "children"> & { goal: NostrEvent; max?: number }) {
-  const zaps = useEventZaps(goal, getGoalRelays(goal));
+}: Omit<FlexProps, "children"> & { goal: ZapGoal; max?: number }) {
+  const zaps = use$(goal.zaps$);
 
   const totals = useMemo(
     () =>
-      zaps.reduce<Record<string, number>>((dir, zapEvent) => {
+      (zaps ?? []).reduce<Record<string, number>>((dir, zapEvent) => {
         const zap = castEvent(zapEvent, Zap, eventStore);
         if (!zap.amount) return dir;
         dir[zap.sender.pubkey] = (dir[zap.sender.pubkey] ?? 0) + zap.amount;

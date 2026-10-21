@@ -1,10 +1,11 @@
 import { useNavigate } from "react-router-dom";
-import { Button, ButtonGroup, Divider, Flex, Heading, Spacer, Spinner } from "@chakra-ui/react";
+import { Button, ButtonGroup, Divider, Flex, Heading, Spacer, Spinner, Text } from "@chakra-ui/react";
+import { ZapGoal } from "applesauce-common/casts";
 
 import { ChevronLeftIcon } from "../../components/icons";
 import GoalMenu from "./components/goal-menu";
-import { getGoalAmount, getGoalName } from "../../helpers/nostr/goal";
 import GoalProgress from "./components/goal-progress";
+import useCastEvent from "../../hooks/use-cast-event";
 import useSingleEvent from "../../hooks/use-single-event";
 import UserAvatar from "../../components/user/user-avatar";
 import UserLink from "../../components/user/user-link";
@@ -19,8 +20,10 @@ export default function GoalDetailsView() {
   const navigate = useNavigate();
   const pointer = useParamsEventPointer("id");
 
-  const goal = useSingleEvent(pointer);
-  if (!goal) return <Spinner />;
+  const event = useSingleEvent(pointer);
+  const goal = useCastEvent(event, ZapGoal);
+  if (!event) return <Spinner />;
+  if (!goal) return <Text>Invalid zap goal</Text>;
 
   return (
     <VerticalPageLayout overflow="hidden" h="full">
@@ -30,19 +33,19 @@ export default function GoalDetailsView() {
         </Button>
 
         <Heading size="md" isTruncated>
-          {getGoalName(goal)} (<ValueDisplay sats={getGoalAmount(goal) / 1000} />)
+          {goal.description} (<ValueDisplay sats={(goal.amount ?? 0) / 1000} />)
         </Heading>
 
         <Spacer />
 
         <ButtonGroup>
           <GoalZapButton goal={goal} />
-          <GoalMenu aria-label="More options" goal={goal} />
+          <GoalMenu aria-label="More options" goal={goal.event} />
         </ButtonGroup>
       </Flex>
       <Flex gap="2" alignItems="center">
-        <UserAvatar pubkey={goal.pubkey} size="sm" />
-        <UserLink pubkey={goal.pubkey} fontWeight="bold" fontSize="lg" />
+        <UserAvatar pubkey={goal.author.pubkey} size="sm" />
+        <UserLink pubkey={goal.author.pubkey} fontWeight="bold" fontSize="lg" />
       </Flex>
 
       <GoalContents goal={goal} />

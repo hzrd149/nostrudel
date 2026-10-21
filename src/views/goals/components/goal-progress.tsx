@@ -1,24 +1,21 @@
 import { Flex, Progress, Text } from "@chakra-ui/react";
+import { ZapGoal } from "applesauce-common/casts";
+import { use$ } from "applesauce-react/hooks";
 
-import { NostrEvent } from "nostr-tools";
 import { LightningIcon } from "../../../components/icons";
 import ValueDisplay from "../../../components/value-display";
-import { getGoalAmount, getGoalRelays } from "../../../helpers/nostr/goal";
-import { totalZaps } from "../../../helpers/nostr/zaps";
-import useEventZaps from "../../../hooks/use-event-zaps";
 
-export default function GoalProgress({ goal }: { goal: NostrEvent }) {
-  const amount = getGoalAmount(goal);
-  const zaps = useEventZaps(goal, getGoalRelays(goal));
-  const raised = totalZaps(zaps);
+export default function GoalProgress({ goal }: { goal: ZapGoal }) {
+  const progress = use$(goal.progress$);
+  if (!progress) return null;
 
   return (
     <Flex gap="2" alignItems="center">
       <LightningIcon />
-      <Progress value={(raised / amount) * 100} colorScheme="yellow" flex={1} />
+      <Progress value={progress.percentage} colorScheme="yellow" flex={1} />
       <Text>
-        <ValueDisplay sats={raised / 1000} /> / <ValueDisplay sats={amount / 1000} /> (
-        {Math.round((raised / amount) * 1000) / 10}%)
+        <ValueDisplay sats={progress.total / 1000} /> / <ValueDisplay sats={progress.target / 1000} /> (
+        {Math.round(progress.percentage * 10) / 10}%)
       </Text>
     </Flex>
   );
