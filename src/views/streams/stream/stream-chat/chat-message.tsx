@@ -1,18 +1,19 @@
 import { Box, Text } from "@chakra-ui/react";
+import { castEvent, Stream } from "applesauce-common/casts";
 import { NostrEvent } from "nostr-tools";
 import { memo } from "react";
 
 import UserAvatar from "../../../../components/user/user-avatar";
 import UserLink from "../../../../components/user/user-link";
 import EventZapButton from "../../../../components/zap/event-zap-button";
-import { getStreamHost } from "../../../../helpers/nostr/stream";
 import useEventIntersectionRef from "../../../../hooks/use-event-intersection-ref";
 import { ContentSettingsProvider } from "../../../../providers/local/content-settings";
+import { eventStore } from "../../../../services/event-store";
 import ChatMessageContent from "./chat-message-content";
 
 function ChatMessage({ event, stream }: { event: NostrEvent; stream: NostrEvent }) {
   const ref = useEventIntersectionRef(event);
-  const host = getStreamHost(stream);
+  const host = castEvent(stream, Stream, eventStore).host.pubkey;
 
   return (
     <ContentSettingsProvider event={event}>

@@ -3,7 +3,6 @@ import { Stream } from "applesauce-common/casts";
 import { NostrEvent } from "nostr-tools";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 
-import { getStreamRelays } from "../../../helpers/nostr/stream";
 import useCastEvent from "../../../hooks/use-cast-event";
 import useShareableEventAddress from "../../../hooks/use-shareable-event-address";
 import { useBreakpointValue } from "../../../providers/global/breakpoint-provider";
@@ -13,10 +12,10 @@ import UserAvatar from "../../user/user-avatar";
 import UserLink from "../../user/user-link";
 
 export default function EmbeddedStream({ stream, ...props }: Omit<CardProps, "children"> & { stream: NostrEvent }) {
-  const naddr = useShareableEventAddress(stream, getStreamRelays(stream));
+  const cast = useCastEvent(stream, Stream);
+  const naddr = useShareableEventAddress(stream, cast?.relays);
   const isVertical = useBreakpointValue({ base: true, md: false });
   const navigate = useNavigate();
-  const cast = useCastEvent(stream, Stream);
 
   const host = cast?.host.pubkey ?? stream.pubkey;
   const starts = cast?.startTime;

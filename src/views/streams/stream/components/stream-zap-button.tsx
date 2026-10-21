@@ -1,11 +1,12 @@
 import { Button, IconButton, useDisclosure } from "@chakra-ui/react";
+import { castEvent, Stream } from "applesauce-common/casts";
 import { NostrEvent } from "nostr-tools";
 
 import ZapModal from "../../../../components/event-zap-modal";
 import { LightningIcon } from "../../../../components/icons";
-import { getStreamHost } from "../../../../helpers/nostr/stream";
 import { useReadRelays } from "../../../../hooks/use-client-relays";
 import useUserLNURLMetadata from "../../../../hooks/use-user-lnurl-metadata";
+import { eventStore } from "../../../../services/event-store";
 
 export default function StreamZapButton({
   stream,
@@ -18,7 +19,7 @@ export default function StreamZapButton({
   onZap?: () => void;
   label?: string;
 }) {
-  const host = getStreamHost(stream);
+  const host = castEvent(stream, Stream, eventStore).host.pubkey;
   const zapModal = useDisclosure();
   const zapMetadata = useUserLNURLMetadata(host);
   const relays = useReadRelays();

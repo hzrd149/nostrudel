@@ -1,6 +1,5 @@
 import { MenuDivider, MenuGroup, MenuItem, useToast } from "@chakra-ui/react";
-import { NostrEvent } from "nostr-tools";
-import { useMemo } from "react";
+import { Stream } from "applesauce-common/casts";
 
 import DebugEventMenuItem from "../../../components/debug-modal/debug-event-menu-item";
 import { CopyToClipboardIcon, ExternalLinkIcon } from "../../../components/icons";
@@ -9,15 +8,11 @@ import { DotsMenuButton, MenuIconButtonProps } from "../../../components/menu/do
 import OpenInAppMenuItem from "../../../components/menu/open-in-app";
 import QuoteEventMenuItem from "../../../components/menu/quote-event";
 import ShareLinkMenuItem from "../../../components/menu/share-link";
-import { getStreamStreamingURLs } from "../../../helpers/nostr/stream";
 import useAsyncAction from "../../../hooks/use-async-action";
 
-export default function StreamMenu({
-  stream,
-  ...props
-}: { stream: NostrEvent } & Omit<MenuIconButtonProps, "children">) {
+export default function StreamMenu({ stream, ...props }: { stream: Stream } & Omit<MenuIconButtonProps, "children">) {
   const toast = useToast();
-  const streamURL = useMemo(() => getStreamStreamingURLs(stream)[0], [stream]);
+  const streamURL = stream.streamingURLs[0];
 
   const { run: copyStreamURL } = useAsyncAction(async () => {
     if (!streamURL) return;
@@ -30,11 +25,11 @@ export default function StreamMenu({
 
   return (
     <DotsMenuButton {...props}>
-      <OpenInAppMenuItem event={stream} />
-      <ShareLinkMenuItem event={stream} />
-      <QuoteEventMenuItem event={stream} />
-      <CopyEmbedCodeMenuItem event={stream} />
-      <DebugEventMenuItem event={stream} />
+      <OpenInAppMenuItem event={stream.event} />
+      <ShareLinkMenuItem event={stream.event} />
+      <QuoteEventMenuItem event={stream.event} />
+      <CopyEmbedCodeMenuItem event={stream.event} />
+      <DebugEventMenuItem event={stream.event} />
       {streamURL && (
         <>
           <MenuDivider />

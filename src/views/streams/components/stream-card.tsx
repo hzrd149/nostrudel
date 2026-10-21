@@ -70,7 +70,7 @@ function StreamCard({ stream, ...props }: CardProps & { stream: Stream }) {
       </CardBody>
       <ButtonGroup size="sm" variant="ghost" position="absolute" right="2" top="2" zIndex={1}>
         <StreamFavoriteButton stream={stream} />
-        <StreamMenuButton stream={stream.event} aria-label="Stream options" />
+        <StreamMenuButton stream={stream} aria-label="Stream options" />
       </ButtonGroup>
     </Card>
   );

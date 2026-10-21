@@ -1,14 +1,16 @@
 import { memo } from "react";
 import { NostrEvent } from "nostr-tools";
+import { castEvent, Stream } from "applesauce-common/casts";
 import { isStreamURL } from "applesauce-core/helpers";
 
 import LiveVideoPlayer from "../../../components/live-video-player";
-import { getStreamImage, getStreamRecording, getStreamStreamingURLs } from "../../../helpers/nostr/stream";
+import { eventStore } from "../../../services/event-store";
 
 function LiveVideoCard({ stream }: { stream: NostrEvent }) {
-  const videoStreams = getStreamStreamingURLs(stream).filter(isStreamURL);
-  const recording = getStreamRecording(stream);
-  const image = getStreamImage(stream);
+  const cast = castEvent(stream, Stream, eventStore);
+  const videoStreams = cast.streamingURLs.filter(isStreamURL);
+  const recording = cast.recording;
+  const image = cast.image;
 
   return (
     <LiveVideoPlayer

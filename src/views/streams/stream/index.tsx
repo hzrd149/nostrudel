@@ -27,7 +27,6 @@ import { ExternalLinkIcon } from "../../../components/icons";
 import SimpleView from "../../../components/layout/presets/simple-view";
 import UserAvatarLink from "../../../components/user/user-avatar-link";
 import UserLink from "../../../components/user/user-link";
-import { getStreamHost } from "../../../helpers/nostr/stream";
 import { useAppTitle } from "../../../hooks/use-app-title";
 import useCastEvent from "../../../hooks/use-cast-event";
 import useParamsAddressPointer from "../../../hooks/use-params-address-pointer";
@@ -50,8 +49,8 @@ import StreamChat, { ChatDisplayMode } from "./stream-chat";
 import StreamChatLog from "./stream-chat/chat-log";
 import ChatMessageForm from "./stream-chat/stream-chat-form";
 
-function StreamPageTitle({ stream, cast }: { stream: NostrEvent; cast: Stream }) {
-  const host = getStreamHost(stream);
+function StreamPageTitle({ cast }: { cast: Stream }) {
+  const host = cast.host.pubkey;
   const viewers = cast.viewers;
 
   return (
@@ -99,17 +98,17 @@ function DesktopStreamPage({ stream, cast }: { stream: NostrEvent; cast: Stream 
   };
 
   const title = cast.title;
-  const host = getStreamHost(stream);
+  const host = cast.host.pubkey;
 
   useAppTitle(title);
 
   return (
     <SimpleView
-      title={<StreamPageTitle stream={stream} cast={cast} />}
+      title={<StreamPageTitle cast={cast} />}
       actions={
         <ButtonGroup ml="auto">
           <StreamFavoriteButton stream={cast} />
-          <StreamMenu stream={stream} aria-label="Stream menu" />
+          <StreamMenu stream={cast} aria-label="Stream menu" />
           <Button onClick={() => setShowChat((v) => !v)}>{showChat ? "Hide" : "Show"} Chat</Button>
         </ButtonGroup>
       }
@@ -139,10 +138,10 @@ function DesktopStreamPage({ stream, cast }: { stream: NostrEvent; cast: Stream 
           <Spacer />
           {!!window.webln && <StreamSatsPerMinute pubkey={host} />}
         </Flex>
-        <StreamSummaryContent stream={stream} />
+        <StreamSummaryContent stream={cast} />
         {stream.tags.length > 0 && (
           <Flex gap="2" wrap="wrap">
-            <StreamHashtags stream={stream} />
+            <StreamHashtags stream={cast} />
           </Flex>
         )}
 
@@ -158,18 +157,18 @@ function MobileStreamPage({ stream, cast }: { stream: NostrEvent; cast: Stream }
   const showChat = useDisclosure();
 
   const title = cast.title;
-  const host = getStreamHost(stream);
+  const host = cast.host.pubkey;
 
   useAppTitle(title);
 
   return (
     <>
       <SimpleView
-        title={<StreamPageTitle stream={stream} cast={cast} />}
+        title={<StreamPageTitle cast={cast} />}
         actions={
           <ButtonGroup size="sm" ml="auto">
             <StreamFavoriteButton stream={cast} />
-            <StreamMenu stream={stream} aria-label="Stream menu" />
+            <StreamMenu stream={cast} aria-label="Stream menu" />
             <Button onClick={showChat.onOpen}>Show Chat</Button>
           </ButtonGroup>
         }
@@ -185,10 +184,10 @@ function MobileStreamPage({ stream, cast }: { stream: NostrEvent; cast: Stream }
                 <UserLink pubkey={host} />
               </Box>
             </Flex>
-            <StreamSummaryContent stream={stream} />
+            <StreamSummaryContent stream={cast} />
             {stream.tags.length > 0 && (
               <Flex gap="2" wrap="wrap">
-                <StreamHashtags stream={stream} />
+                <StreamHashtags stream={cast} />
               </Flex>
             )}
             <StreamZapButton stream={stream} label="Zap Stream" />
@@ -217,12 +216,10 @@ function MobileStreamPage({ stream, cast }: { stream: NostrEvent; cast: Stream }
   );
 }
 
-function StreamPage({ stream }: { stream: NostrEvent }) {
+function StreamPage({ stream, cast }: { stream: NostrEvent; cast: Stream }) {
   const isMobile = useBreakpointValue({ base: true, lg: false });
-  const cast = useCastEvent(stream, Stream);
   const Layout = isMobile ? MobileStreamPage : DesktopStreamPage;
 
-  if (!cast) return <Spinner />;
   return <Layout stream={stream} cast={cast} />;
 }
 
@@ -248,14 +245,19 @@ export default function StreamView() {
   const pointer = useParamsAddressPointer("naddr", true);
 
   const stream = useReplaceableEvent(pointer);
+  const cast = useCastEvent(stream, Stream);
 
   const displayMode = (params.get("displayMode") as ChatDisplayMode) ?? undefined;
 
-  if (!stream) return <Spinner />;
+  if (!stream || !cast) return <Spinner />;
   return (
     // add snort and damus relays so zap.stream will always see zaps
-    <UserEmojiProvider pubkey={getStreamHost(stream)}>
-      {displayMode ? <ChatWidget stream={stream} displayMode={displayMode} /> : <StreamPage stream={stream} />}
+    <UserEmojiProvider pubkey={cast.host.pubkey}>
+      {displayMode ? (
+        <ChatWidget stream={stream} displayMode={displayMode} />
+      ) : (
+        <StreamPage stream={stream} cast={cast} />
+      )}
     </UserEmojiProvider>
   );
 }

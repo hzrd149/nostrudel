@@ -1,17 +1,19 @@
 import { Flex } from "@chakra-ui/react";
+import { castEvent, Stream } from "applesauce-common/casts";
 import { isValidZap } from "applesauce-common/helpers";
 import { kinds, NostrEvent } from "nostr-tools";
 import { memo } from "react";
 
-import { getStreamEndTime, getStreamStartTime } from "../../../helpers/nostr/stream";
+import { eventStore } from "../../../services/event-store";
 import useStreamChatTimeline from "../stream/stream-chat/use-stream-chat-timeline";
 import ZapMessageMemo from "../stream/stream-chat/zap-message";
 
 function ZapsCard({ stream }: { stream: NostrEvent }) {
   const { timeline } = useStreamChatTimeline(stream);
 
-  const starts = getStreamStartTime(stream);
-  const ends = getStreamEndTime(stream);
+  const cast = castEvent(stream, Stream, eventStore);
+  const starts = cast.startTime;
+  const ends = cast.endTime;
 
   // refresh when a new event
   const zapMessages = timeline

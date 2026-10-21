@@ -1,4 +1,5 @@
 import { Button, Flex, Select } from "@chakra-ui/react";
+import { castEvent, Stream } from "applesauce-common/casts";
 import { getEventUID } from "applesauce-core/helpers";
 import { kinds, NostrEvent } from "nostr-tools";
 import { useState } from "react";
@@ -12,9 +13,9 @@ import { useActiveAccount } from "applesauce-react/hooks";
 import { ChevronLeftIcon } from "../../../components/icons";
 import RequireActiveAccount from "../../../components/router/require-active-account";
 import { getEventCoordinate } from "../../../helpers/nostr/event";
-import { getStreamStatus, getStreamTitle } from "../../../helpers/nostr/stream";
 import { useReadRelays } from "../../../hooks/use-client-relays";
 import useTimelineLoader from "../../../hooks/use-timeline-loader";
+import { eventStore } from "../../../services/event-store";
 import ChatCard from "./chat-card";
 import UsersCard from "./users-card";
 import VideoCard from "./video-card";
@@ -93,11 +94,14 @@ function StreamModerationPage() {
           onChange={(e) => setSelected(streams.find((s) => getEventCoordinate(s) === e.target.value))}
           w="lg"
         >
-          {streams.map((stream) => (
-            <option key={getEventUID(stream)} value={getEventCoordinate(stream)}>
-              {getStreamTitle(stream)} ({getStreamStatus(stream)})
-            </option>
-          ))}
+          {streams.map((stream) => {
+            const cast = castEvent(stream, Stream, eventStore);
+            return (
+              <option key={getEventUID(stream)} value={getEventCoordinate(stream)}>
+                {cast.title} ({cast.status})
+              </option>
+            );
+          })}
         </Select>
       </Flex>
       {selected && <StreamModerationDashboard stream={selected} />}

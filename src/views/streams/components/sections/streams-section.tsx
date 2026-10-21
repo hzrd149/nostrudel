@@ -7,7 +7,7 @@ import { Filter, kinds } from "nostr-tools";
 import { useCallback, useMemo } from "react";
 import { of, throttleTime } from "rxjs";
 
-import type { StreamStatus } from "../../../../helpers/nostr/stream";
+import type { StreamStatus } from "applesauce-common/helpers";
 import useClientSideMuteFilter from "../../../../hooks/use-client-side-mute-filter";
 import { eventStore } from "../../../../services/event-store";
 import StreamCard from "../stream-card";
