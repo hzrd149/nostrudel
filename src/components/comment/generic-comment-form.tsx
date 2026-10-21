@@ -19,15 +19,15 @@ import InsertReactionButton from "../reactions/insert-reaction-button";
 import UploadProvider, { useUploadContext } from "../../providers/local/upload-provider";
 import UploadStatus from "../upload-status";
 
-function GenericCommentFormInner({
-  event,
-  onSubmitted,
-  onCancel,
-}: {
+type GenericCommentFormProps = {
   event: NostrEvent;
   onSubmitted?: (comment: NostrEvent) => void;
   onCancel?: () => void;
-}) {
+  /** A bare textarea and submit button, without autofocus, attachment buttons or a preview */
+  simple?: boolean;
+};
+
+function GenericCommentFormInner({ event, onSubmitted, onCancel, simple }: GenericCommentFormProps) {
   const publish = usePublishEvent();
   const emojis = useContextEmojis();
 
@@ -55,6 +55,7 @@ function GenericCommentFormInner({
 
     if (pub && onSubmitted) onSubmitted(pub.event);
     clearCache();
+    reset();
   });
 
   const formRef = useRef<HTMLFormElement | null>(null);
@@ -62,17 +63,17 @@ function GenericCommentFormInner({
   // throttle preview
   const throttleValues = useThrottle(getValues(), 500);
   const { value: preview } = useAsync(
-    () => CommentFactory.create(event, throttleValues.content, { emojis }),
-    [throttleValues, emojis],
+    async () => (simple ? undefined : CommentFactory.create(event, throttleValues.content, { emojis })),
+    [throttleValues, emojis, simple],
   );
 
   return (
-    <Flex as="form" direction="column" gap="2" pb="4" onSubmit={submit} ref={formRef}>
+    <Flex as="form" direction="column" gap="2" pb={simple ? 0 : 4} onSubmit={submit} ref={formRef}>
       <MagicTextArea
         placeholder="Comment"
-        autoFocus
-        mb="2"
-        rows={4}
+        autoFocus={!simple}
+        mb={simple ? 0 : 2}
+        rows={simple ? 2 : 4}
         isRequired
         value={getValues().content}
         onChange={(e) => setValue("content", e.target.value, { shouldDirty: true })}
@@ -84,11 +85,13 @@ function GenericCommentFormInner({
       />
       <UploadStatus />
       <Flex gap="2" alignItems="center">
-        <ButtonGroup size="sm">
-          <InsertImageButton onUploaded={insertText} aria-label="Upload image" />
-          <InsertGifButton onSelectURL={insertText} aria-label="Add gif" />
-          <InsertReactionButton onSelect={insertText} aria-label="Add Emoji" />
-        </ButtonGroup>
+        {!simple && (
+          <ButtonGroup size="sm">
+            <InsertImageButton onUploaded={insertText} aria-label="Upload image" />
+            <InsertGifButton onSelectURL={insertText} aria-label="Add gif" />
+            <InsertReactionButton onSelect={insertText} aria-label="Add Emoji" />
+          </ButtonGroup>
+        )}
         <ButtonGroup size="sm" ml="auto">
           {onCancel && <Button onClick={onCancel}>Cancel</Button>}
           <Button
@@ -113,11 +116,7 @@ function GenericCommentFormInner({
   );
 }
 
-export default function GenericCommentForm(props: {
-  event: NostrEvent;
-  onSubmitted?: (comment: NostrEvent) => void;
-  onCancel?: () => void;
-}) {
+export default function GenericCommentForm(props: GenericCommentFormProps) {
   return (
     <UploadProvider>
       <GenericCommentFormInner {...props} />

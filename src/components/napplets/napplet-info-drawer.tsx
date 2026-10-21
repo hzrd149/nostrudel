@@ -20,7 +20,6 @@ import {
   Stack,
   StackDivider,
   Text,
-  useDisclosure,
 } from "@chakra-ui/react";
 import { useActiveAccount } from "applesauce-react/hooks";
 import { NostrEvent } from "nostr-tools";
@@ -155,7 +154,6 @@ function ReleaseSection({
 function FriendComments({ event }: { event: NostrEvent }) {
   const account = useActiveAccount();
   const contacts = useUserContacts(account?.pubkey);
-  const form = useDisclosure();
 
   const authors = useMemo(
     () => (account ? [account.pubkey, ...(contacts ?? []).map((c) => c.pubkey)] : undefined),
@@ -164,14 +162,7 @@ function FriendComments({ event }: { event: NostrEvent }) {
 
   return (
     <Flex direction="column" gap="2">
-      {account &&
-        (form.isOpen ? (
-          <GenericCommentForm event={event} onCancel={form.onClose} onSubmitted={form.onClose} />
-        ) : (
-          <Button leftIcon={<ThreadIcon />} onClick={form.onOpen} mr="auto">
-            Comment
-          </Button>
-        ))}
+      {account && <GenericCommentForm event={event} simple />}
       <GenericComments
         event={event}
         authors={authors}
