@@ -32,21 +32,18 @@ export function useNotificationCounts(timeRange: TimeRange): NotificationCounts 
   const reposts = use$(repostNotifications$) ?? EMPTY_ITEMS;
   const zaps = use$(zapNotifications$) ?? EMPTY_ITEMS;
 
-  const since = getTimeRangeSince(timeRange);
+  const since = useMemo(() => getTimeRangeSince(timeRange), [timeRange]);
 
   return useMemo(() => {
     const filterThreads = (items: ThreadNotification[]): ThreadNotification[] => {
-      if (!since) return items;
       return items.filter((item) => item.timestamp >= since);
     };
 
     const filterEvents = (items: NostrEvent[]): NostrEvent[] => {
-      if (!since) return items;
       return items.filter((item) => item.created_at >= since);
     };
 
     const filterGroups = <T extends { latest: number }>(items: T[]): T[] => {
-      if (!since) return items;
       return items.filter((item) => item.latest >= since);
     };
 

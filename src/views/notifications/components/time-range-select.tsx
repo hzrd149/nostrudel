@@ -1,38 +1,29 @@
 import { Select, SelectProps } from "@chakra-ui/react";
-import dayjs from "dayjs";
 
-export type TimeRange = "all" | "24h" | "2days" | "lastWeek";
+const DAY = 86400;
 
-export function getTimeRangeSince(range: TimeRange): number | undefined {
-  if (range === "all") return undefined;
+export const TIME_RANGES = {
+  day: { label: "Last 24 hours", seconds: DAY },
+  "3days": { label: "Last 3 days", seconds: 3 * DAY },
+  week: { label: "Last week", seconds: 7 * DAY },
+  month: { label: "Last month", seconds: 30 * DAY },
+  "3months": { label: "Last 3 months", seconds: 90 * DAY },
+} as const;
 
-  const now = dayjs();
+export type TimeRange = keyof typeof TIME_RANGES;
+export const DEFAULT_TIME_RANGE: TimeRange = "week";
 
-  switch (range) {
-    case "24h":
-      return now.subtract(1, "day").startOf("day").unix();
-    case "2days":
-      return now.subtract(2, "days").startOf("day").unix();
-    case "lastWeek":
-      return now.subtract(7, "days").startOf("day").unix();
-    default:
-      return undefined;
-  }
+/** Returns the range if it is a known one, otherwise the default (covers stale persisted values) */
+export function parseTimeRange(value: unknown): TimeRange {
+  return typeof value === "string" && Object.hasOwn(TIME_RANGES, value) ? (value as TimeRange) : DEFAULT_TIME_RANGE;
+}
+
+export function getTimeRangeSince(range: TimeRange): number {
+  return Math.floor(Date.now() / 1000) - TIME_RANGES[range].seconds;
 }
 
 export function getTimeRangeLabel(range: TimeRange): string {
-  switch (range) {
-    case "all":
-      return "All Known";
-    case "24h":
-      return "24h";
-    case "2days":
-      return "Last 2 Days";
-    case "lastWeek":
-      return "Last Week";
-    default:
-      return "Custom Range";
-  }
+  return TIME_RANGES[range].label;
 }
 
 export interface TimeRangeSelectProps extends Omit<SelectProps, "value" | "onChange" | "children"> {
@@ -42,11 +33,12 @@ export interface TimeRangeSelectProps extends Omit<SelectProps, "value" | "onCha
 
 export default function TimeRangeSelect({ value, onChange, ...props }: TimeRangeSelectProps) {
   return (
-    <Select value={value} onChange={(e) => onChange(e.target.value as TimeRange)} w="auto" rounded="md" {...props}>
-      <option value="24h">Last 24 Hours</option>
-      <option value="2days">Last 2 Days</option>
-      <option value="lastWeek">Last Week</option>
-      <option value="all">All Known</option>
+    <Select value={value} onChange={(e) => onChange(parseTimeRange(e.target.value))} w="auto" rounded="md" {...props}>
+      {Object.entries(TIME_RANGES).map(([range, { label }]) => (
+        <option key={range} value={range}>
+          {label}
+        </option>
+      ))}
     </Select>
   );
 }
