@@ -1,15 +1,17 @@
+import { Reaction } from "applesauce-common/casts";
 import { useActiveAccount } from "applesauce-react/hooks";
 import { NostrEvent } from "nostr-tools";
 import { useMemo, useState } from "react";
 
 import { groupReactions } from "../../helpers/nostr/reactions";
+import useCastTimeline from "../../hooks/use-cast-timeline";
 import useEventReactions from "../../hooks/use-event-reactions";
 import { useAddReaction } from "./common-hooks";
 import ReactionGroupButton from "./reaction-group-button";
 
 export default function EventReactionButtons({ event, max }: { event: NostrEvent; max?: number }) {
   const account = useActiveAccount();
-  const reactions = useEventReactions(event) ?? [];
+  const reactions = useCastTimeline(useEventReactions(event), Reaction);
   const grouped = useMemo(() => groupReactions(reactions), [reactions]);
 
   const addReaction = useAddReaction(event, grouped);

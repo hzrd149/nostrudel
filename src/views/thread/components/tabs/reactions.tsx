@@ -5,26 +5,7 @@ import { useMemo } from "react";
 import ReactionIcon from "../../../../components/event-reactions/reaction-icon";
 import UserAvatarLink from "../../../../components/user/user-avatar-link";
 import UserLink from "../../../../components/user/user-link";
-
-type ReactionCastGroup = { emoji: string; url?: string; name?: string; pubkeys: string[] };
-
-function groupReactionCasts(reactions: Reaction[]): ReactionCastGroup[] {
-  const groups: Record<string, ReactionCastGroup> = {};
-  for (const reaction of reactions) {
-    const emoji = reaction.content;
-    const customEmoji = reaction.emoji;
-    groups[emoji] = groups[emoji] || {
-      emoji,
-      url: customEmoji?.url,
-      name: customEmoji?.shortcode,
-      pubkeys: [],
-    };
-    if (!groups[emoji].pubkeys.includes(reaction.event.pubkey)) {
-      groups[emoji].pubkeys.push(reaction.event.pubkey);
-    }
-  }
-  return Object.values(groups).sort((a, b) => b.pubkeys.length - a.pubkeys.length);
-}
+import { groupReactions } from "../../../../helpers/nostr/reactions";
 
 function ShowMoreGrid({
   pubkeys,
@@ -54,7 +35,7 @@ function ShowMoreGrid({
 }
 
 export default function PostReactionsTab({ reactions }: { reactions: Reaction[] }) {
-  const groups = useMemo(() => groupReactionCasts(reactions), [reactions]);
+  const groups = useMemo(() => groupReactions(reactions), [reactions]);
 
   return (
     <Flex gap="2" direction="column" px="2">

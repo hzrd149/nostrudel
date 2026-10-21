@@ -1,4 +1,5 @@
 import { Card, CardProps, Flex, LinkBox, Spacer, Text } from "@chakra-ui/react";
+import { getReactionEmoji } from "applesauce-common/helpers";
 import { NostrEvent, nip25 } from "nostr-tools";
 
 import { ContentSettingsProvider } from "../../../providers/local/content-settings";
@@ -19,7 +20,7 @@ export default function EmbeddedReaction({ event, ...props }: Omit<CardProps, "c
           <UserAvatarLink pubkey={event.pubkey} size="xs" />
           <UserLink pubkey={event.pubkey} fontWeight="bold" isTruncated fontSize="lg" />
           <Text as="span">Reacted with</Text>
-          <ReactionIcon emoji={event.content} url={event.tags.find((t) => t[0] === "emoji")?.[1]} />
+          <ReactionIcon emoji={event.content} url={getReactionEmoji(event)?.url} />
           <Text as="span">to</Text>
           {pointer && <NoteLink noteId={pointer.id} />}
           <Spacer />
