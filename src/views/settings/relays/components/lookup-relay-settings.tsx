@@ -4,14 +4,13 @@ import { useActiveAccount } from "applesauce-react/hooks";
 
 import RelayFavicon from "../../../../components/relay/relay-favicon";
 import RelayLink from "../../../../components/relay/relay-link";
-import RelayName from "../../../../components/relay/relay-name";
-import RelayDiscoveryMultiSelectModal from "../../../../components/relays/relay-discovery/multi-select-modal";
 import { RECOMMENDED_LOOKUP_RELAYS } from "../../../../const";
 import { getRelaysFromList } from "../../../../helpers/nostr/lists";
 import useAsyncAction from "../../../../hooks/use-async-action";
 import useUserLookupRelayList from "../../../../hooks/use-user-lookup-relay-list";
 import { usePublishEvent } from "../../../../providers/global/publish-provider";
 import AddRelayForm from "./add-relay-form";
+import DiscoverLookupRelaysModal from "./discover-lookup-relays-modal";
 import RelayControl from "./relay-control";
 
 export default function LookupRelaySettings() {
@@ -21,7 +20,6 @@ export default function LookupRelaySettings() {
   const discoverModal = useDisclosure();
 
   const lookupRelays = lookupRelayList ? getRelaysFromList(lookupRelayList) : [];
-  const recommendations = RECOMMENDED_LOOKUP_RELAYS.filter((url) => lookupRelays.includes(url) === false);
 
   const addRelay = useAsyncAction(
     async (url: string | string[]) => {
@@ -65,7 +63,7 @@ export default function LookupRelaySettings() {
           {lookupRelays.length === 0 && (
             <Text color="GrayText" fontStyle="italic">
               You have not published a lookup relay list yet, the recommended lookup relays are being used. Add a relay
-              below to publish your own list.
+              or discover the ones your contacts use to publish your own list.
             </Text>
           )}
 
@@ -79,30 +77,13 @@ export default function LookupRelaySettings() {
             </Button>
           </Flex>
           {discoverModal.isOpen && (
-            <RelayDiscoveryMultiSelectModal
+            <DiscoverLookupRelaysModal
               isOpen={discoverModal.isOpen}
               onClose={discoverModal.onClose}
-              attributes={["Indexer"]}
+              pubkey={account.pubkey}
               hidden={lookupRelays}
               onSelect={addRelay.run}
             />
-          )}
-
-          {recommendations.length > 0 && (
-            <Flex gap="2" alignItems="center" wrap="wrap">
-              {recommendations.map((url) => (
-                <Button
-                  key={url}
-                  variant="ghost"
-                  size="sm"
-                  leftIcon={<RelayFavicon relay={url} size="xs" />}
-                  isLoading={addRelay.loading}
-                  onClick={() => addRelay.run(url)}
-                >
-                  <RelayName relay={url} />
-                </Button>
-              ))}
-            </Flex>
           )}
         </>
       )}
