@@ -1,4 +1,5 @@
 import { Link, Table, TableContainer, Tbody, Td, Th, Thead, Tr } from "@chakra-ui/react";
+import { parseFileMetadataTags } from "applesauce-common/helpers";
 import { getTagValue } from "applesauce-core/helpers";
 import { kinds, NostrEvent } from "nostr-tools";
 import { Link as RouterLink } from "react-router-dom";
@@ -17,9 +18,8 @@ import IntersectionObserverProvider from "../../../providers/local/intersection-
 
 function FileRow({ file }: { file: NostrEvent }) {
   const ref = useEventIntersectionRef<HTMLTableRowElement>(file);
-  const name = getTagValue(file, "name") || getTagValue(file, "summary") || "Unknown";
-  const type = getTagValue(file, "m");
-  const size = getTagValue(file, "size");
+  const { summary, type, size } = parseFileMetadataTags(file.tags);
+  const name = getTagValue(file, "name") || summary || "Unknown";
 
   const nevent = useShareableEventAddress(file);
 
@@ -31,7 +31,7 @@ function FileRow({ file }: { file: NostrEvent }) {
         </Link>
       </Td>
       <Td>{type}</Td>
-      <Td>{size && formatBytes(parseInt(size))}</Td>
+      <Td>{size !== undefined && formatBytes(size)}</Td>
       <Td isNumeric>
         <Timestamp timestamp={file.created_at} />
       </Td>

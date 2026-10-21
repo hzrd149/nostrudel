@@ -1,5 +1,5 @@
 import { Alert, AlertDescription, AlertIcon, AlertTitle, Box } from "@chakra-ui/react";
-import { getTagValue } from "applesauce-core/helpers";
+import { parseFileMetadataTags } from "applesauce-common/helpers";
 import { NostrEvent } from "nostr-tools";
 import { useEffect, useState } from "react";
 
@@ -32,11 +32,10 @@ function STLViewerWrapper({ url }: { url: string }) {
 }
 
 export default function FilePreview({ file }: { file: NostrEvent }) {
-  const type = getTagValue(file, "m");
-  const sha256 = getTagValue(file, "x");
+  const { type, sha256, url: fileUrl, image } = parseFileMetadataTags(file.tags);
   const servers = useUsersMediaServers(file.pubkey) || [];
 
-  let url = getTagValue(file, "url");
+  let url = fileUrl;
   if (!url && servers && sha256 && servers.length > 0) url = new URL(sha256, servers[0]).toString();
 
   if (url) {
@@ -46,7 +45,6 @@ export default function FilePreview({ file }: { file: NostrEvent }) {
     if (type === "model/stl") return <STLViewerWrapper url={url} />;
   }
 
-  const image = getTagValue(file, "image");
   if (image) return <TrustImage h="full" src={image} />;
 
   return (

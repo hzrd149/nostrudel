@@ -10,6 +10,7 @@ import {
   LinkBox,
   Text,
 } from "@chakra-ui/react";
+import { parseFileMetadataTags } from "applesauce-common/helpers";
 import { getTagValue } from "applesauce-core/helpers";
 import { memo, useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
@@ -39,9 +40,8 @@ import MimeTypePicker from "./mime-type-picker";
 
 const FileCard = memo(({ file, ...props }: { file: NostrEvent } & Omit<CardProps, "children">) => {
   const ref = useEventIntersectionRef<HTMLDivElement>(file);
-  const name = getTagValue(file, "name") || getTagValue(file, "summary") || "Unknown";
-  const type = getTagValue(file, "m");
-  const size = getTagValue(file, "size");
+  const { summary, type, size } = parseFileMetadataTags(file.tags);
+  const name = getTagValue(file, "name") || summary || "Unknown";
   const nevent = useShareableEventAddress(file);
 
   return (
@@ -61,7 +61,7 @@ const FileCard = memo(({ file, ...props }: { file: NostrEvent } & Omit<CardProps
       <CardFooter p="4" pt="0">
         <Flex justifyContent="space-between" w="full">
           <Text color="gray.600">
-            {type} • {size && formatBytes(parseInt(size))}
+            {type} • {size !== undefined && formatBytes(size)}
           </Text>
           <Timestamp timestamp={file.created_at} />
         </Flex>

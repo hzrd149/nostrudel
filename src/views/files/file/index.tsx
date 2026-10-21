@@ -11,6 +11,7 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
+import { parseFileMetadataTags } from "applesauce-common/helpers";
 import { getTagValue } from "applesauce-core/helpers";
 import { NostrEvent } from "nostr-tools";
 
@@ -35,11 +36,7 @@ import FilePreview from "./preview";
 
 function FileDetailsPage({ file }: { file: NostrEvent }) {
   const name = getTagValue(file, "name");
-  const summary = getTagValue(file, "summary");
-  const magnet = getTagValue(file, "magnet");
-  const type = getTagValue(file, "m");
-  const size = getTagValue(file, "size");
-  const sha256 = getTagValue(file, "x");
+  const { summary, magnet, type, size, sha256 } = parseFileMetadataTags(file.tags);
   const comment = useDisclosure();
 
   return (
@@ -75,7 +72,7 @@ function FileDetailsPage({ file }: { file: NostrEvent }) {
       <Flex mx="auto" maxW="6xl" w="full" gap="2" direction="column">
         <Flex gap="2">
           {type && <Text>{type}</Text>}
-          {size && <Text>{formatBytes(parseInt(size))}</Text>}
+          {size !== undefined && <Text>{formatBytes(size)}</Text>}
         </Flex>
 
         {sha256 && (

@@ -1,4 +1,5 @@
 import { Button, ButtonProps, useToast } from "@chakra-ui/react";
+import { parseFileMetadataTags } from "applesauce-common/helpers";
 import { getTagValue } from "applesauce-core/helpers";
 import { useActiveAccount } from "applesauce-react/hooks";
 import { createDownloadAuth } from "blossom-client-sdk";
@@ -20,8 +21,7 @@ export default function FileDownloadButton({
   const account = useActiveAccount();
 
   const servers = useUsersMediaServers(file.pubkey) || [];
-  const url = getTagValue(file, "url");
-  const sha256 = getTagValue(file, "x");
+  const { url, sha256, fallback = [] } = parseFileMetadataTags(file.tags);
   const name = getTagValue(file, "name");
 
   const signer = useCallback(
@@ -46,7 +46,6 @@ export default function FileDownloadButton({
         );
 
       // download from fallback
-      const fallback = file.tags.filter((t) => t[0] === "fallback").map((t) => t[1]);
       if (!url && fallback.length > 0) {
         for (const url of fallback) {
           blob = await fetch(url).then(
