@@ -1,5 +1,5 @@
 import { Alert, AlertDescription, AlertIcon, AlertTitle, Select, SimpleGrid, Text } from "@chakra-ui/react";
-import { useActiveAccount, use$ } from "applesauce-react/hooks";
+import { useActiveAccount } from "applesauce-react/hooks";
 import { nip19 } from "nostr-tools";
 import { memo, useMemo, useState } from "react";
 
@@ -8,7 +8,7 @@ import SimpleView from "../../../components/layout/presets/simple-view";
 import UserAvatar from "../../../components/user/user-avatar";
 import UserName from "../../../components/user/user-name";
 import useUserContactList from "../../../hooks/use-user-contact-list";
-import { socialGraph$ } from "../../../services/social-graph";
+import useSocialGraph from "../../../hooks/use-social-graph";
 
 const UserCard = memo(({ pubkey, blindspot }: { pubkey: string; blindspot: string[] }) => {
   return (
@@ -25,10 +25,10 @@ export default function BlindspotHomeView() {
   const account = useActiveAccount()!;
   const [sort, setSort] = useState("quality"); // follows, quality
 
-  const graph = use$(socialGraph$);
+  const { graph, version } = useSocialGraph();
   const contacts = useUserContactList(account.pubkey);
 
-  const pubkeys = useMemo(() => graph.getFollowedByUser(account.pubkey), [graph, account.pubkey]);
+  const pubkeys = useMemo(() => graph.getFollowedByUser(account.pubkey), [graph, version, account.pubkey]);
 
   const blindspots = useMemo(() => {
     if (!contacts || !pubkeys) return [];

@@ -23,6 +23,16 @@ export const socialGraph$ = new BehaviorSubject<SocialGraph>(
   new SocialGraph(accounts.active?.pubkey ?? SOCIAL_GRAPH_FALLBACK_PUBKEY),
 );
 
+/**
+ * Bumped whenever the graph in {@link socialGraph$} is mutated in place, since re-emitting the same
+ * instance does not re-render `use$` consumers. Use {@link useSocialGraph} in components.
+ */
+export const socialGraphVersion$ = new BehaviorSubject(0);
+
+function graphMutated() {
+  socialGraphVersion$.next(socialGraphVersion$.value + 1);
+}
+
 /** The current state of the social graph sync */
 export const syncState$ = new BehaviorSubject<{ loaded: number } | null>(null);
 
@@ -117,6 +127,7 @@ export function startSocialGraphSync(opts: { relays?: string[]; distance: number
     .subscribe({
       next: () => {
         socialGraph$.next(socialGraph$.value);
+        graphMutated();
       },
       error: (error) => {
         log("Social graph sync failed", error);
@@ -172,7 +183,9 @@ if (CAP_IS_WEB) {
 
 // Set the social graph root to the active account pubkey
 combineLatest([socialGraph$, accounts.active$]).subscribe(([graph, account]) => {
-  graph.setRoot(account?.pubkey ?? SOCIAL_GRAPH_FALLBACK_PUBKEY);
+  const root = account?.pubkey ?? SOCIAL_GRAPH_FALLBACK_PUBKEY;
+  if (graph.getRoot() === root) return;
+  graph.setRoot(root).then(graphMutated, (err) => log("Failed to set social graph root", err));
 });
 
 /** Sort an array of things by their authors distance from the root */

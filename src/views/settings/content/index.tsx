@@ -18,7 +18,7 @@ import SimpleView from "../../../components/layout/presets/simple-view";
 import { humanReadableSats } from "../../../helpers/lightning";
 import { useAppTitle } from "../../../hooks/use-app-title";
 import localSettings from "../../../services/preferences";
-import { socialGraph$ } from "../../../services/social-graph";
+import useSocialGraph from "../../../hooks/use-social-graph";
 
 function SocialGraphSlider({
   value,
@@ -33,7 +33,7 @@ function SocialGraphSlider({
 }) {
   const id = useId();
   const labels = ["Just you", "Friends", "Friends of Friends", "3rd degree", "4th degree", "5th degree", "Everyone"];
-  const graph = use$(socialGraph$);
+  const { graph, version } = useSocialGraph();
 
   const count = useMemo(() => {
     if (value === null) return null;
@@ -43,7 +43,7 @@ function SocialGraphSlider({
       total += graph.getUsersByFollowDistance(i).size;
     }
     return total;
-  }, [value]);
+  }, [value, graph, version]);
 
   return (
     <FormControl pb="6">

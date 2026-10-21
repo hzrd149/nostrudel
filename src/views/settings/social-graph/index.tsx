@@ -34,11 +34,11 @@ import { useUserOutbox } from "../../../hooks/use-user-mailboxes";
 import { useBreakpointValue } from "../../../providers/global/breakpoint-provider";
 import { updateSocialGraphCron } from "../../../services/cron";
 import localSettings from "../../../services/preferences";
+import useSocialGraph from "../../../hooks/use-social-graph";
 import {
   clearSocialGraph,
   persistGraph,
   saveState$,
-  socialGraph$,
   startSocialGraphSync,
   stopSocialGraphSync,
   sync$,
@@ -56,9 +56,12 @@ const SINCE_OPTIONS: { label: string; value: number | null }[] = [
 ];
 
 function DistanceRow({ distance, max }: { distance: number; max: number }) {
-  const graph = use$(socialGraph$);
+  const { graph, version } = useSocialGraph();
 
-  const pubkeys = useMemo(() => (graph ? Array.from(graph.getUsersByFollowDistance(distance)) : []), [graph, distance]);
+  const pubkeys = useMemo(
+    () => (graph ? Array.from(graph.getUsersByFollowDistance(distance)) : []),
+    [graph, version, distance],
+  );
 
   const total = pubkeys.length;
 
@@ -93,7 +96,7 @@ export default function SocialGraphSettings() {
   useAppTitle("Social Graph");
   const toast = useToast();
 
-  const graph = use$(socialGraph$);
+  const { graph } = useSocialGraph();
   const sync = use$(sync$);
   const syncState = use$(syncState$);
   const saveState = use$(saveState$);

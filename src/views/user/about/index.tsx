@@ -59,7 +59,7 @@ import { useUserDNSIdentity } from "../../../hooks/use-user-dns-identity";
 import useUserMailboxes from "../../../hooks/use-user-mailboxes";
 import useUserProfile from "../../../hooks/use-user-profile";
 import { profileLoader } from "../../../services/loaders";
-import { socialGraph$ } from "../../../services/social-graph";
+import useSocialGraph from "../../../hooks/use-social-graph";
 import DNSIdentityWarning from "../../../components/user/dns-identity-warning";
 import { QrIconButton } from "../components/share-qr-button";
 import { UserProfileMenu } from "../components/user-profile-menu";
@@ -71,10 +71,10 @@ import UserProfileBadges from "./user-profile-badges";
 import UserRecentEvents from "./user-recent-events";
 
 function FollowedBy({ pubkey }: { pubkey: string }) {
-  const socialGraph = use$(socialGraph$);
+  const { graph: socialGraph, version } = useSocialGraph();
   const followedBy = useMemo(
     () => socialGraph && Array.from(socialGraph.followedByFriends(pubkey)).sort(() => Math.random() - 0.5),
-    [pubkey, socialGraph],
+    [pubkey, socialGraph, version],
   );
 
   const modal = useDisclosure();
