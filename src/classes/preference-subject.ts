@@ -32,8 +32,8 @@ export class PreferenceSubject<T = string> extends BehaviorSubject<T> {
   }
 
   clear() {
-    localStorage.removeItem(this.key);
     super.next(this.fallback);
+    return Preferences.remove({ key: this.key });
   }
 
   async save(value: T = this.value) {
