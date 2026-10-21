@@ -3,6 +3,7 @@ import { use$ } from "applesauce-react/hooks";
 import SimpleView from "../../../components/layout/presets/simple-view";
 import { useAppTitle } from "../../../hooks/use-app-title";
 import { legacyMessageSubscription, wrappedMessageSubscription } from "../../../services/lifecycle";
+import GiftWrapSync from "./components/gift-wrap-sync";
 import LockedMessagesSection from "./components/locked-messages";
 import RelayDistributionChart from "./components/relay-distribution-chart";
 import { Box } from "@chakra-ui/react";
@@ -18,6 +19,7 @@ export default function InboxView() {
       <Box w="full" overflow="hidden">
         <RelayDistributionChart />
       </Box>
+      <GiftWrapSync />
       <LockedMessagesSection />
     </SimpleView>
   );

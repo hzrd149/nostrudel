@@ -1,6 +1,6 @@
 import { IAccount } from "applesauce-accounts";
 import { LOOKUP_RELAY_LIST_KIND } from "applesauce-common/helpers";
-import { isFromCache, relaySet } from "applesauce-core/helpers";
+import { isFromCache, relaySet, unixNow } from "applesauce-core/helpers";
 import { defined, mapEventsToStore } from "applesauce-core/observable";
 import { onlyEvents } from "applesauce-relay";
 import { USER_BLOSSOM_SERVER_LIST_KIND } from "blossom-client-sdk";
@@ -33,6 +33,7 @@ import { eventStore } from "./event-store";
 import { replaceableLoader } from "./loaders";
 import pool from "./pool";
 import localSettings from "./preferences";
+import { GIFT_WRAP_JITTER, giftWrapStartupSync$ } from "./wrapped-messages";
 
 // watch for new events and send them to the cache relay
 eventStore.insert$.pipe(filter((event) => !isFromCache(event))).subscribe(writeEvent);
@@ -153,11 +154,19 @@ export const wrappedMessageSubscription = accounts.active$.pipe(
     const inboxes = eventStore.model(DirectMessageRelaysModel, account.pubkey).pipe(defined());
     return combineLatest([of(account), inboxes]);
   }),
-  // Open a subscription to all relays for incoming messages
+  // Follow new gift wraps, reaching back because their timestamps are randomized into the past
+  // Older history comes from the cache and the startup sync
   switchMap(([account, inboxes]) =>
-    pool
-      .subscription(inboxes, { kinds: [kinds.GiftWrap], "#p": [account.pubkey] }, { waitForAuth: account.pubkey })
-      .pipe(onlyEvents(), mapEventsToStore(eventStore)),
+    merge(
+      giftWrapStartupSync$,
+      pool
+        .subscription(
+          inboxes,
+          { kinds: [kinds.GiftWrap], "#p": [account.pubkey], since: unixNow() - GIFT_WRAP_JITTER },
+          { waitForAuth: account.pubkey },
+        )
+        .pipe(onlyEvents(), mapEventsToStore(eventStore)),
+    ),
   ),
   // Ingore all updates since subscribes will get the events from the store
   ignoreElements(),
