@@ -181,8 +181,6 @@ export default function UserRecentEvents({ pubkey }: { pubkey: string }) {
   });
   const all = useDisclosure();
 
-  // const recent = useStoreQuery(TimelineQuery, [{ authors: [pubkey], limit: 100 }]);
-
   const byKind = recent?.reduce(
     (dir, event) => {
       if (dir[event.kind]) dir[event.kind].events.push(event);

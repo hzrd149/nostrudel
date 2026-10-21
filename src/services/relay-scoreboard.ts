@@ -100,9 +100,6 @@ class RelayScoreboardService {
   getAverageConnectionTime(relay: string) {
     return this.relayConnectionTime.get(relay).getAverage();
   }
-  // getTimeoutCount(relay: string) {
-  //   return this.relayTimeouts.get(relay).getCount();
-  // }
 
   hasConnected(relay: string) {
     return this.relayConnectionTime.get(relay).getCount() > 0;
@@ -140,11 +137,6 @@ class RelayScoreboardService {
     if (ejectTime > 1000 * 200) score += 5;
     return score;
   }
-  // getTimeoutsScore(relay: string) {
-  //   const timeouts = this.getTimeoutCount(relay);
-  //   // subtract 5 points for ever time its timed out
-  //   return -(timeouts * 5);
-  // }
   getRelayScore(relay: string) {
     let score = 0;
 
@@ -201,7 +193,6 @@ class RelayScoreboardService {
       const responseTimes = this.relayResponseTimes.get(relay).save();
       const ejectTimes = this.relayEjectTime.get(relay).save();
       const connectionTimes = this.relayConnectionTime.get(relay).save();
-      // const timeouts = this.relayTimeouts.get(relay).save();
       transaction.store.put({ relay, responseTimes, ejectTimes, connectionTimes });
     }
     await transaction.done;

@@ -31,7 +31,6 @@ export default function StreamZapButton({
     isDisabled: !zapMetadata.metadata?.allowsNostr,
   };
 
-  // const zapEvent = goal || stream.event
   const zapEvent = stream;
 
   return (

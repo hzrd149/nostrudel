@@ -29,8 +29,6 @@ export default function RelayList({ events, ...props }: Omit<FlexProps, "childre
     else return events;
   }, [filterThrottle, events]);
 
-  // const commonNips = useMemo(() => computeCommonNips(filtered), [filtered]);
-
   return (
     <Flex direction="column" gap="2" overflow="hidden" {...props}>
       <Flex gap="2">

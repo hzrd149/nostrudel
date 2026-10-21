@@ -38,9 +38,6 @@ export default function RelayMapView() {
 
     if (network) filter["#n"] = [network];
     if (county) {
-      // if (filter["#L"]) filter["#L"].push("countryCode");
-      // else filter["#L"] = ["countryCode"];
-
       if (filter["#l"]) filter["#l"].push(county);
       else filter["#l"] = [county];
     }
