@@ -1,5 +1,6 @@
 import { Box, Flex, LinkBox, Text } from "@chakra-ui/react";
-import { getProfileContent, isReplaceable } from "applesauce-core/helpers";
+import { AppHandler as AppHandlerCast } from "applesauce-common/casts";
+import { getAddressPointerForEvent, getEventPointerForEvent, isReplaceable } from "applesauce-core/helpers";
 import { useActiveAccount } from "applesauce-react/hooks";
 import { kinds, NostrEvent } from "nostr-tools";
 import { useCallback, useMemo } from "react";
@@ -8,7 +9,7 @@ import HoverLinkOverlay from "../../../../components/hover-link-overlay";
 import ArrowRight from "../../../../components/icons/arrow-right";
 import { MetadataAvatar } from "../../../../components/user/user-avatar";
 import { CAP_IS_WEB } from "../../../../env";
-import { getDisplayName } from "../../../../helpers/nostr/profile";
+import useCastTimeline from "../../../../hooks/use-cast-timeline";
 import { useReadRelays } from "../../../../hooks/use-client-relays";
 import useEventIntersectionRef from "../../../../hooks/use-event-intersection-ref";
 import { useTimelineCurserIntersectionCallback } from "../../../../hooks/use-timeline-cursor-intersection-callback";
@@ -16,22 +17,21 @@ import useTimelineLoader from "../../../../hooks/use-timeline-loader";
 import { useUserInbox } from "../../../../hooks/use-user-mailboxes";
 import useUserContacts from "../../../../hooks/use-user-contacts";
 import IntersectionObserverProvider from "../../../../providers/local/intersection-observer";
-import { getSharableEventAddress } from "../../../../services/relay-hints";
+import { getEventRelayHints } from "../../../../services/relay-hints";
 
-export type AppWithLink = { app: NostrEvent; link: string };
+type AppWithLink = { app: AppHandlerCast; link: string };
 
 function AppHandler({ app, link }: AppWithLink) {
-  const metadata = useMemo(() => getProfileContent(app), [app]);
-  const ref = useEventIntersectionRef(app);
+  const ref = useEventIntersectionRef(app.event);
 
   return (
     <Flex as={LinkBox} gap="2" py="2" px="4" alignItems="center" ref={ref} overflow="hidden" shrink={0}>
-      <MetadataAvatar metadata={metadata} />
+      <MetadataAvatar metadata={app.metadata} />
       <Box overflow="hidden">
         <HoverLinkOverlay fontWeight="bold" href={link} isExternal>
-          {getDisplayName(metadata, app.pubkey)}
+          {app.name}
         </HoverLinkOverlay>
-        <Text noOfLines={3}>{metadata?.about}</Text>
+        <Text noOfLines={3}>{app.description}</Text>
       </Box>
       <ArrowRight boxSize={6} ml="auto" />
     </Flex>
@@ -43,8 +43,12 @@ export default function OtherAppsTab({ event }: { event: NostrEvent }) {
   const inboxes = useUserInbox(event.pubkey);
   const readRelays = useReadRelays(inboxes);
 
-  const sharableAddress = useMemo(() => getSharableEventAddress(event), [event]);
-  const addressType = isReplaceable(event.kind) ? "naddr" : "nevent";
+  const pointer = useMemo(() => {
+    const relays = getEventRelayHints(event, 2);
+    return isReplaceable(event.kind)
+      ? getAddressPointerForEvent(event, relays)
+      : getEventPointerForEvent(event, relays);
+  }, [event]);
 
   const contacts = useUserContacts(CAP_IS_WEB ? account?.pubkey : undefined);
   const contactPubkeys = useMemo(() => contacts?.map((c) => c.pubkey), [contacts]);
@@ -59,31 +63,24 @@ export default function OtherAppsTab({ event }: { event: NostrEvent }) {
     };
   }, [event.kind, contactPubkeys]);
 
-  const { loader, timeline: appHandlers } = useTimelineLoader(
-    `${event.kind}-app-handlers`,
-    readRelays,
-    appHandlerFilter,
-    { eventFilter: appHandlerEventFilter },
-  );
+  const { loader, timeline } = useTimelineLoader(`${event.kind}-app-handlers`, readRelays, appHandlerFilter, {
+    eventFilter: appHandlerEventFilter,
+  });
   const intersectionCallback = useTimelineCurserIntersectionCallback(loader);
+  const appHandlers = useCastTimeline(timeline, AppHandlerCast);
 
   const apps = useMemo<AppWithLink[]>(() => {
-    if (!sharableAddress) return [];
+    if (!pointer) return [];
     const seen = new Set<string>();
     return appHandlers.reduce<AppWithLink[]>((acc, app) => {
-      if (seen.has(app.pubkey)) return acc;
-      try {
-        getProfileContent(app);
-      } catch {
-        return acc;
-      }
-      const tag = app.tags.find((t) => t[0] === "web" && t[2] === addressType) || app.tags.find((t) => t[0] === "web");
-      if (!tag || !tag[1]) return acc;
-      seen.add(app.pubkey);
-      acc.push({ app, link: tag[1].replace("<bech32>", sharableAddress) });
+      if (seen.has(app.event.pubkey) || !app.metadata) return acc;
+      const link = app.link(pointer, "web");
+      if (!link) return acc;
+      seen.add(app.event.pubkey);
+      acc.push({ app, link });
       return acc;
     }, []);
-  }, [appHandlers, sharableAddress, addressType]);
+  }, [appHandlers, pointer]);
 
   if (apps.length === 0) {
     return (
