@@ -5,6 +5,7 @@ import { use$ } from "applesauce-react/hooks";
 import { onlyEvents } from "applesauce-relay";
 import { NostrEvent } from "nostr-tools";
 import { useMemo } from "react";
+import { ignoreElements } from "rxjs";
 
 import { useReadRelays } from "../../../hooks/use-client-relays";
 import { useUserInbox } from "../../../hooks/use-user-mailboxes";
@@ -19,7 +20,7 @@ export default function DebugEventReferencesPage({ event }: { event: NostrEvent 
   const filters = useMemo(() => buildCommonEventRelationFilters({}, event), [event]);
 
   // Start a live subscription to the event store for the event references
-  use$(() => pool.subscription(relays, filters).pipe(onlyEvents(), mapEventsToStore(eventStore)), [relays, filters]);
+  use$(() => pool.subscription(relays, filters).pipe(onlyEvents(), mapEventsToStore(eventStore), ignoreElements()), [relays, filters]);
 
   // Get the events from the event store
   const events = use$(() => eventStore.timeline(filters), [filters]) ?? [];

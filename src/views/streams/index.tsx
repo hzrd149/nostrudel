@@ -4,7 +4,7 @@ import { unixNow } from "applesauce-core/helpers";
 import { use$ } from "applesauce-react/hooks";
 import { kinds } from "nostr-tools";
 import { useMemo } from "react";
-import { NEVER } from "rxjs";
+import { ignoreElements, NEVER } from "rxjs";
 
 import SimpleView from "../../components/layout/presets/simple-view";
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
@@ -54,7 +54,7 @@ function StreamsPage() {
   // `eventStore.timeline()`.
   const subscription$ = useMemo(() => {
     if (!pointer || !filters) return NEVER;
-    return pool.subscription(readRelays, filters).pipe(mapEventsToStore(eventStore));
+    return pool.subscription(readRelays, filters).pipe(mapEventsToStore(eventStore), ignoreElements());
   }, [pointer, filters, readRelays]);
 
   use$(subscription$);
