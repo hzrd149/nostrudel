@@ -4,12 +4,17 @@ import {
   createReactionsLoader,
   createSocialGraphLoader,
   createTagValueLoader,
-  createUserListsLoader,
+  createSyncLoader,
   createZapsLoader,
   createEventLoaderForStore,
   LoadableAddressPointer,
 } from "applesauce-loaders/loaders";
 import { kinds } from "nostr-tools";
+import { ProfilePointer } from "nostr-tools/nip19";
+import { concat, defer } from "rxjs";
+import { getOutboxes, mergeRelaySets } from "applesauce-core/helpers";
+import { mapEventsToStore } from "applesauce-core";
+import { SET_KINDS } from "../helpers/nostr/lists";
 import { cacheRequest } from "./event-cache";
 import { eventStore } from "./event-store";
 import { lookupRelays$ } from "./lookup-relays";
@@ -81,11 +86,23 @@ export const pollResponseLoader = createTagValueLoader(pool, "e", {
   extraRelays: localSettings.fallbackRelays,
 });
 
-export const userSetsLoader = createUserListsLoader(pool, {
-  cacheRequest,
-  eventStore,
-  extraRelays: localSettings.fallbackRelays,
-});
+const syncUserSets = createSyncLoader({ pool, eventStore });
+
+export function userSetsLoader(user: ProfilePointer) {
+  const filter = { authors: [user.pubkey], kinds: SET_KINDS };
+  return concat(
+    cacheRequest([filter]).pipe(mapEventsToStore(eventStore)),
+    defer(() => {
+      const mailboxes = eventStore.getReplaceable(kinds.RelayList, user.pubkey);
+      const relays = mergeRelaySets(
+        mailboxes && getOutboxes(mailboxes),
+        user.relays,
+        localSettings.fallbackRelays.value,
+      );
+      return syncUserSets({ relays, filter }).events$;
+    }),
+  );
+}
 
 export const channelMetadataLoader = createTagValueLoader(pool, "e", {
   kinds: [kinds.ChannelMetadata],

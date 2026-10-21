@@ -92,19 +92,22 @@ export function startSocialGraphSync(opts: { relays?: string[]; distance: number
 
   log(`Starting social graph sync (distance=${opts.distance}, relays=${relays?.join(",") ?? "default"})`);
 
-  const sub = socialGraphLoader({
+  const result = socialGraphLoader({
     pubkey: root,
     relays,
     distance: opts.distance,
     since: opts.since,
-  })
+  });
+  const events$ = result.events$.pipe(
+    tap((event) => socialGraph$.value.handleEvent(event)),
+    mapEventsToStore(eventStore),
+    tap(() => {
+      const current = syncState$.value ?? { loaded: 0 };
+      syncState$.next({ loaded: current.loaded + 1 });
+    }),
+  );
+  const sub = combineLatest([events$, result.status$])
     .pipe(
-      tap((event) => socialGraph$.value.handleEvent(event)),
-      mapEventsToStore(eventStore),
-      tap(() => {
-        const current = syncState$.value ?? { loaded: 0 };
-        syncState$.next({ loaded: current.loaded + 1 });
-      }),
       throttleTime(1000),
       exhaustMap(async () => {
         await socialGraph$.value.recalculateFollowDistances();
@@ -114,6 +117,10 @@ export function startSocialGraphSync(opts: { relays?: string[]; distance: number
     .subscribe({
       next: () => {
         socialGraph$.next(socialGraph$.value);
+      },
+      error: (error) => {
+        log("Social graph sync failed", error);
+        sync$.next(null);
       },
       complete: () => {
         sync$.next(null);

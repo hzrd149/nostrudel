@@ -1,42 +1,40 @@
 import { createTimelineLoader } from "applesauce-loaders/loaders";
-import { finalizeEvent, NostrEvent } from "nostr-tools";
+import { Filter, finalizeEvent, NostrEvent } from "nostr-tools";
 import { Observable, Subject, of } from "rxjs";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { loadTimelineWindow } from "./load-timeline-window";
+import { loadMoreTimeline, loadTimelineWindow } from "./load-timeline-window";
 
-function event(created_at: number): NostrEvent {
-  return finalizeEvent({ kind: 1, content: "", tags: [], created_at }, new Uint8Array(32).fill(1));
-}
+afterEach(() => vi.restoreAllMocks());
 
 describe("timeline window ownership", () => {
-  it("catches up to a sparse visible cursor and then stops requesting history", () => {
-    const request = vi.fn((_relays, filters) => of(event((filters[0].until ?? 1000) - 10)));
-    const loader = createTimelineLoader(request, ["wss://example.com"], { kinds: [1] });
+  it("uses finite windows and avoids repeat requests for an unchanged visible cursor", async () => {
+    vi.spyOn(Date, "now").mockReturnValue(10 * 86400 * 1000);
+    const request = vi.fn((_relays: unknown, filters: Filter[]) => {
+      const created_at = Math.max(1, (filters[0].until ?? 0) - 43200);
+      return of(finalizeEvent({ kind: 1, content: "", tags: [], created_at }, new Uint8Array(32).fill(1)));
+    });
+    const loader = createTimelineLoader(request, ["wss://example.com"], { kinds: [1] }, { prefetch: 0 });
     const cursor$ = new Subject<number>();
     const subscription = loadTimelineWindow(loader, cursor$).subscribe();
+    await vi.waitFor(() => expect(request.mock.calls.length).toBeGreaterThan(0));
+    const initialCalls = request.mock.calls.length;
     cursor$.next(-Infinity);
-    for (let tick = 0; tick < 60; tick++) cursor$.next(950);
-    expect(request).toHaveBeenCalledTimes(5);
+    for (let tick = 0; tick < 60; tick++) cursor$.next(9.75 * 86400);
+    expect(request).toHaveBeenCalledTimes(initialCalls);
+    cursor$.next(7.1 * 86400);
+    await vi.waitFor(() => expect(request.mock.calls.length).toBeGreaterThan(initialCalls));
+    const expandedCalls = request.mock.calls.length;
+    expect(expandedCalls).toBeGreaterThan(initialCalls);
+    for (let tick = 0; tick < 60; tick++) cursor$.next(7.1 * 86400);
+    expect(request).toHaveBeenCalledTimes(expandedCalls);
+    loadMoreTimeline(loader);
+    await vi.waitFor(() => expect(request.mock.calls.length).toBeGreaterThan(expandedCalls));
     subscription.unsubscribe();
+    expect(cursor$.observed).toBe(false);
   });
 
-  it("skips idle requests after catching up and loads when the cursor moves older", () => {
-    const request = vi.fn((_relays, filters) => of(event((filters[0].until ?? 1000) - 10)));
-    const loader = createTimelineLoader(request, ["wss://example.com"], { kinds: [1] });
-    const cursor$ = new Subject<number>();
-    const subscription = loadTimelineWindow(loader, cursor$).subscribe();
-    cursor$.next(-Infinity);
-    for (let tick = 0; tick < 60; tick++) cursor$.next(990);
-    expect(request).toHaveBeenCalledTimes(1);
-    cursor$.next(950);
-    expect(request).toHaveBeenCalledTimes(2);
-    subscription.unsubscribe();
-    cursor$.next(900);
-    expect(request).toHaveBeenCalledTimes(2);
-  });
-
-  it("retains in-flight requests across ticks and cancels them when the owner leaves", () => {
+  it("retains in-flight requests across ticks and cancels them when the owner leaves", async () => {
     const pending = new Subject<NostrEvent>();
     const cancel = vi.fn();
     const request = vi.fn(
@@ -49,16 +47,13 @@ describe("timeline window ownership", () => {
           };
         }),
     );
-    const loader = createTimelineLoader(request, ["wss://example.com"], { kinds: [1] });
+    const loader = createTimelineLoader(request, ["wss://example.com"], { kinds: [1] }, { prefetch: 0 });
     const cursor$ = new Subject<number>();
-    const next = vi.fn();
-    const subscription = loadTimelineWindow(loader, cursor$).subscribe(next);
+    const subscription = loadTimelineWindow(loader, cursor$).subscribe();
     cursor$.next(-Infinity);
-    for (let tick = 0; tick < 60; tick++) cursor$.next(900);
-    expect(request).toHaveBeenCalledTimes(1);
+    for (let tick = 0; tick < 60; tick++) cursor$.next(Math.floor(Date.now() / 1000));
+    await vi.waitFor(() => expect(request).toHaveBeenCalledTimes(1));
     expect(cancel).not.toHaveBeenCalled();
-    pending.next(event(990));
-    expect(next).toHaveBeenCalledTimes(1);
     subscription.unsubscribe();
     expect(cancel).toHaveBeenCalledTimes(1);
     expect(cursor$.observed).toBe(false);

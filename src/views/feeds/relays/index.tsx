@@ -102,7 +102,7 @@ function DiscoverRelays({ pubkey, showUsers: _showUsers }: { pubkey: string; sho
   const loader = useOutboxTimelineLoader(pointer, filter && { ...filter, kinds: [FAVORITE_RELAYS_KIND] });
 
   // Load first page when component mounts
-  useMount(() => loader?.().subscribe());
+  useMount(() => loader?.({ since: 0, until: Math.floor(Date.now() / 1000) }).subscribe());
 
   // get contacts for timelien
   const contacts = useUserContacts(pubkey);

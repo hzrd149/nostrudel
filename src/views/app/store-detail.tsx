@@ -106,7 +106,7 @@ function RelatedNapplets({ event }: { event: NostrEvent }) {
   const related = timeline.slice(0, RELATED_NAPPLETS_LIMIT);
 
   useEffect(() => {
-    const sub = loader?.(-Infinity).subscribe();
+    const sub = loader?.({ since: 0, until: Math.floor(Date.now() / 1000) }).subscribe();
     return () => sub?.unsubscribe();
   }, [loader]);
 

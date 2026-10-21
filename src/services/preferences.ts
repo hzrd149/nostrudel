@@ -64,7 +64,9 @@ const exchangeRateEndpoint = await PreferenceSubject.string(
 const addClientTag = await PreferenceSubject.boolean("add-client-tag", false);
 
 // Performance
-const verifyEventMethod = await PreferenceSubject.string("verify-event-method", "wasm"); // wasm, internal, none
+const verifyEventMethod = await PreferenceSubject.string("verify-event-method", "wasm"); // wasm, internal, none (wasm-strict is a legacy alias)
+
+const optimisticVerification = await PreferenceSubject.boolean("optimistic-verification", true);
 
 // Privacy
 const enableDebugApi = await PreferenceSubject.boolean("debug-api", false);
@@ -172,6 +174,7 @@ const localSettings = {
 
   addClientTag,
   verifyEventMethod,
+  optimisticVerification,
   defaultAuthenticationMode,
   proactivelyAuthenticate,
   relayAuthenticationMode,

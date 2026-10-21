@@ -54,11 +54,14 @@ export default function NotificationsView() {
 
   // Load the initial block for all loaders
   useEffect(() => {
-    const ts = getTimeRangeSince(timeRange);
-    socialLoader?.(ts).subscribe();
-    zapLoader?.(ts).subscribe();
-    shareLoader?.(ts).subscribe();
-  }, [socialLoader, zapLoader, shareLoader]);
+    const window = { since: getTimeRangeSince(timeRange) ?? 0, until: Math.floor(Date.now() / 1000) };
+    const subscriptions = [
+      socialLoader?.(window).subscribe(),
+      zapLoader?.(window).subscribe(),
+      shareLoader?.(window).subscribe(),
+    ];
+    return () => subscriptions.forEach((sub) => sub?.unsubscribe());
+  }, [socialLoader, zapLoader, shareLoader, timeRange]);
 
   return (
     <SimpleView

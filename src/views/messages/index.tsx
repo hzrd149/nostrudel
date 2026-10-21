@@ -113,7 +113,8 @@ function Groups() {
 
   // Start the legacy messages timeline
   useEffect(() => {
-    loader?.();
+    const sub = loader?.({ since: 0, until: Math.floor(Date.now() / 1000) }).subscribe();
+    return () => sub?.unsubscribe();
   }, [loader]);
 
   // v5: useEventModel expects array of arguments
