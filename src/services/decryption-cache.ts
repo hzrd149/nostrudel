@@ -25,8 +25,10 @@ import {
 
 import EncryptedStorage from "../classes/encrypted-storage";
 import { logger } from "../helpers/debug";
+import { isSignerRejection } from "../helpers/nostr/gift-wrap-decryption";
 import accounts from "./accounts";
 import { eventStore } from "./event-store";
+import { isGiftWrapFailed, markGiftWrapFailed } from "./gift-wrap-decryption";
 import localSettings from "./preferences";
 
 const log = logger.extend("DecryptionCache");
@@ -139,12 +141,16 @@ async function autoDecryptMessagesFallback(event: NostrEvent) {
     return unlockLegacyMessage(event, account.pubkey, account);
   }
 
-  // Unlock gift wraps to user
+  // Unlock gift wraps to user, skipping ones that already failed so they don't prompt the signer again
   if (
     event.kind === kinds.GiftWrap &&
-    (event.pubkey === account.pubkey || event.tags.find(isPTag)?.[1] === account.pubkey)
+    (event.pubkey === account.pubkey || event.tags.find(isPTag)?.[1] === account.pubkey) &&
+    !isGiftWrapFailed(event.id)
   ) {
-    return unlockGiftWrap(event, account);
+    return unlockGiftWrap(event, account).catch((error) => {
+      if (!isSignerRejection(error)) markGiftWrapFailed(event.id);
+      throw error;
+    });
   }
 }
 

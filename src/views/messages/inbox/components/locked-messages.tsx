@@ -20,13 +20,7 @@ import {
   Tr,
   VStack,
 } from "@chakra-ui/react";
-import {
-  getGiftWrapRumor,
-  isGiftWrapUnlocked,
-  Rumor,
-  unlockGiftWrap,
-  getConversationParticipants,
-} from "applesauce-common/helpers";
+import { getGiftWrapRumor, Rumor, getConversationParticipants } from "applesauce-common/helpers";
 import { GiftWrapsModel } from "applesauce-common/models";
 import { useActiveAccount, useEventModel } from "applesauce-react/hooks";
 import { kinds } from "nostr-tools";
@@ -37,7 +31,7 @@ import { UnlockIcon } from "../../../../components/icons";
 import Timestamp from "../../../../components/timestamp";
 import UserAvatar from "../../../../components/user/user-avatar";
 import UserName from "../../../../components/user/user-name";
-import useAsyncAction from "../../../../hooks/use-async-action";
+import useGiftWrapDecryption from "../../../../hooks/use-gift-wrap-decryption";
 import { DirectMessageRelaysModel } from "../../../../models/messages";
 import ReadAuthRequiredAlert from "../../components/read-auth-required-alert";
 
@@ -155,14 +149,14 @@ export default function LockedMessagesSection() {
 
   // Get all gift wraps for the account
   const initiallyLockedIds = useRef<Set<string>>(new Set());
-  const locked = useEventModel(GiftWrapsModel, account ? [account.pubkey, true] : undefined);
+  const { locked, failed, running, decrypted, start, stop, retryFailed } = useGiftWrapDecryption();
   useEffect(() => {
     if (!locked) return;
     for (const gift of locked) initiallyLockedIds.current.add(gift.id);
   }, [locked]);
 
   // Get all unlocked gift wraps that were previously locked
-  const unlocked = useEventModel(GiftWrapsModel, account ? [account.pubkey, false] : undefined);
+  const unlocked = useEventModel(GiftWrapsModel, account ? [account.pubkey, true] : undefined);
   const messages = useMemo(() => {
     if (!unlocked) return [];
     return unlocked.filter((gift) => initiallyLockedIds.current.has(gift.id));
@@ -207,23 +201,6 @@ export default function LockedMessagesSection() {
     });
   }, [messages]);
 
-  // Method to decrypt all locked messages
-  const decryptAll = useAsyncAction(async () => {
-    if (!account || !locked) return;
-
-    for (const giftWrap of locked) {
-      if (isGiftWrapUnlocked(giftWrap)) continue;
-
-      try {
-        await unlockGiftWrap(giftWrap, account);
-      } catch (error) {
-        if (error instanceof Error && error.message.toLocaleLowerCase().includes("user")) break;
-
-        console.error("Failed to decrypt gift wrap:", giftWrap.id, error);
-      }
-    }
-  }, [locked, account]);
-
   return (
     <VStack spacing={6} align="stretch">
       {/* Summary section */}
@@ -242,18 +219,27 @@ export default function LockedMessagesSection() {
                   ? "All messages have been decrypted"
                   : "Click to decrypt all messages and see your conversations"}
               </Text>
+              {failed && failed.length > 0 && (
+                <Text color="GrayText" fontSize="sm">
+                  {failed.length} could not be decrypted.{" "}
+                  <Button variant="link" size="sm" onClick={retryFailed}>
+                    Retry
+                  </Button>
+                </Text>
+              )}
             </VStack>
 
-            {locked && locked.length > 0 && (
-              <Button
-                leftIcon={<UnlockIcon boxSize={5} />}
-                onClick={decryptAll.run}
-                isLoading={decryptAll.loading}
-                colorScheme="primary"
-                loadingText="Decrypting..."
-              >
-                Decrypt All
+            {running ? (
+              <Button onClick={stop} variant="ghost">
+                Stop decrypting ({decrypted} done)
               </Button>
+            ) : (
+              locked &&
+              locked.length > 0 && (
+                <Button leftIcon={<UnlockIcon boxSize={5} />} onClick={start} colorScheme="primary">
+                  Decrypt All
+                </Button>
+              )
             )}
           </Flex>
         </Card>

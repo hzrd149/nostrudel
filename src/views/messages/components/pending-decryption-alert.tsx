@@ -1,30 +1,10 @@
 import { Alert, AlertIcon, Button, Flex, Text } from "@chakra-ui/react";
-import { isGiftWrapUnlocked, unlockGiftWrap } from "applesauce-common/helpers";
-import { GiftWrapsModel } from "applesauce-common/models";
-import { useActiveAccount, useEventModel } from "applesauce-react/hooks";
 
 import { UnlockIcon } from "../../../components/icons";
-import useAsyncAction from "../../../hooks/use-async-action";
+import useGiftWrapDecryption from "../../../hooks/use-gift-wrap-decryption";
 
 export default function PendingLockedAlert() {
-  const account = useActiveAccount()!;
-  const locked = useEventModel(GiftWrapsModel, account ? [account.pubkey, true] : undefined);
-
-  const decryptAll = useAsyncAction(async () => {
-    if (!account || !locked) return;
-
-    for (const giftWrap of locked) {
-      if (isGiftWrapUnlocked(giftWrap)) continue;
-
-      try {
-        await unlockGiftWrap(giftWrap, account);
-      } catch (error) {
-        if (error instanceof Error && error.message.toLocaleLowerCase().includes("user")) break;
-
-        console.error("Failed to decrypt gift wrap:", giftWrap.id, error);
-      }
-    }
-  }, [locked, account]);
+  const { locked, running, decrypted, start, stop } = useGiftWrapDecryption();
 
   if (!locked || locked.length === 0) return null;
 
@@ -33,19 +13,19 @@ export default function PendingLockedAlert() {
       <AlertIcon />
       <Flex align="center" justify="space-between" width="100%">
         <Text>
-          {locked.length} message{locked.length !== 1 ? "s" : ""} pending decryption.
+          {running
+            ? `Decrypting… ${decrypted} done, ${locked.length} left`
+            : `${locked.length} message${locked.length !== 1 ? "s" : ""} pending decryption.`}
         </Text>
-        <Button
-          size="sm"
-          leftIcon={<UnlockIcon boxSize={4} />}
-          onClick={decryptAll.run}
-          isLoading={decryptAll.loading}
-          colorScheme="orange"
-          variant="solid"
-          loadingText="Decrypting..."
-        >
-          Decrypt All
-        </Button>
+        {running ? (
+          <Button size="sm" onClick={stop} variant="ghost">
+            Stop
+          </Button>
+        ) : (
+          <Button size="sm" leftIcon={<UnlockIcon boxSize={4} />} onClick={start} colorScheme="orange" variant="solid">
+            Decrypt All
+          </Button>
+        )}
       </Flex>
     </Alert>
   );

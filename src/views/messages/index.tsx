@@ -11,7 +11,7 @@ import {
 } from "@chakra-ui/react";
 import { mergeRelaySets } from "applesauce-core/helpers";
 import { Rumor } from "applesauce-common/helpers";
-import { GiftWrapsModel, LegacyMessagesGroups, WrappedMessagesGroups } from "applesauce-common/models";
+import { LegacyMessagesGroups, WrappedMessagesGroups } from "applesauce-common/models";
 import { useActiveAccount, useEventModel, use$ } from "applesauce-react/hooks";
 import { NostrEvent, kinds } from "nostr-tools";
 import { BehaviorSubject } from "rxjs";
@@ -29,6 +29,7 @@ import UserAvatar from "../../components/user/user-avatar";
 import UserName from "../../components/user/user-name";
 import { useLegacyMessagePlaintext } from "../../hooks/use-legacy-message-plaintext";
 import { loadTimelineWhileVisible } from "../../helpers/load-timeline-window";
+import useGiftWrapDecryption from "../../hooks/use-gift-wrap-decryption";
 import useScrollRestoreRef from "../../hooks/use-scroll-restore";
 import { useUserInbox } from "../../hooks/use-user-mailboxes";
 import RequireDecryptionCache from "../../providers/route/require-decryption-cache";
@@ -162,9 +163,7 @@ function Groups() {
 }
 
 function MessagesHomePage() {
-  const account = useActiveAccount()!;
-
-  const locked = useEventModel(GiftWrapsModel, [account.pubkey, true]);
+  const { locked } = useGiftWrapDecryption();
 
   return (
     <SimpleParentView

@@ -3,7 +3,11 @@ import { kinds } from "nostr-tools";
 import { map } from "rxjs";
 
 import { mergeTimelineLoaders } from "../helpers/load-timeline-window";
-import { LegacyConversationRelaysModel, LegacyMessageInboxesModel, LegacyMessageOutboxesModel } from "../models/messages";
+import {
+  LegacyConversationRelaysModel,
+  LegacyMessageInboxesModel,
+  LegacyMessageOutboxesModel,
+} from "../models/messages";
 import { cacheRequest } from "./event-cache";
 import { eventStore } from "./event-store";
 import pool from "./pool";
@@ -48,4 +52,3 @@ export function createLegacyConversationLoader(self: string, other: string): Tim
     options,
   );
 }
-
