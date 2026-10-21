@@ -48,7 +48,7 @@ export default function NavItems() {
       {favoriteApps.map((app) => (
         <NavItem key={app.id} to={app.to} icon={app.icon || QuestionIcon} label={app.title} />
       ))}
-      <NavItem to="/other-stuff" icon={Package} label="All Apps" />
+      <NavItem to="/app/store" icon={Package} label="App Store" />
       {recentApps.length > 0 && (
         <>
           <Divider />
