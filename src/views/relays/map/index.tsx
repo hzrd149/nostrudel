@@ -1,16 +1,16 @@
 import { Flex, Select } from "@chakra-ui/react";
-import { getEventUID, isReplaceable, matchFilter } from "applesauce-core/helpers";
-import { onlyEvents } from "applesauce-relay";
-import { Filter, NostrEvent } from "nostr-tools";
-import { useEffect, useState } from "react";
+import { RELAY_DISCOVERY_KIND } from "applesauce-common/helpers";
+import { getEventUID, unixNow } from "applesauce-core/helpers";
+import { use$ } from "applesauce-react/hooks";
+import { Filter } from "nostr-tools";
+import { useMemo, useState } from "react";
 import { useThrottle } from "react-use";
 
 import CountyPicker from "../../../components/county-picker";
 import SimpleView from "../../../components/layout/presets/simple-view";
 import useRouteStateValue from "../../../hooks/use-route-state-value";
 import { useBreakpointValue } from "../../../providers/global/breakpoint-provider";
-import { writeEvent } from "../../../services/event-cache";
-import pool from "../../../services/pool";
+import { relayDiscoveryTimeline } from "../../../services/relay-discovery";
 import RelayStatusDetails from "./components/relay-details";
 import RelayList from "./components/relay-list";
 import RelayMap from "./components/relay-map";
@@ -25,48 +25,28 @@ export default function RelayMapView() {
   const [county, setCounty] = useState("");
 
   const selected = useRouteStateValue<string>("selected");
-  const [events, setEvents] = useState<Record<string, NostrEvent>>({});
-
-  useEffect(() => {
+  const filter = useMemo(() => {
     const filter: Filter = {
-      kinds: [30166],
+      kinds: [RELAY_DISCOVERY_KIND],
       // set from https://github.com/nostr-protocol/nips/pull/230#pullrequestreview-2290873405
-      since: Math.round(Date.now() / 1000) - 60 * 60 * 2,
+      since: unixNow() - 60 * 60 * 2,
     };
 
     if (monitor) filter.authors = [monitor];
-
     if (network) filter["#n"] = [network];
-    if (county) {
-      if (filter["#l"]) filter["#l"].push(county);
-      else filter["#l"] = [county];
-    }
+    if (county) filter["#l"] = [county];
 
-    const sub = pool
-      .subscription([discoveryRelay], filter)
-      .pipe(onlyEvents())
-      .subscribe((event) => {
-        if (isReplaceable(event.kind)) {
-          setEvents((arr) => ({ ...arr, [getEventUID(event)]: event }));
-          // Cache the event for NIP-66 discovery service
-          writeEvent(event);
-        }
-      });
+    return filter;
+  }, [monitor, network, county]);
 
-    // remove non matching events
-    setEvents((dir) => {
-      const newDir: typeof dir = {};
-      for (const [uid, event] of Object.entries(dir)) {
-        if (matchFilter(filter, event)) newDir[uid] = event;
-      }
-      return newDir;
-    });
-
-    return () => sub.unsubscribe();
-  }, [monitor, network, county, setEvents, discoveryRelay]);
+  const timeline = use$(() => relayDiscoveryTimeline([discoveryRelay], filter), [filter, discoveryRelay]);
+  const events = useMemo(
+    () => Object.fromEntries((timeline ?? []).map((event) => [getEventUID(event), event])),
+    [timeline],
+  );
 
   // throttle updates to map
-  const eventsThrottle = useThrottle(Object.values(events), 250);
+  const eventsThrottle = useThrottle(timeline ?? [], 250);
 
   return (
     <SelectedContext.Provider value={selected}>

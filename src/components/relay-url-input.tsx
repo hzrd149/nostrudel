@@ -1,50 +1,52 @@
-import { ChangeEvent, FocusEventHandler, forwardRef, KeyboardEventHandler, useEffect, useState } from "react";
 import { Input, InputProps, Text } from "@chakra-ui/react";
-import { normalizeRelayUrl } from "applesauce-core/helpers";
+import { RelayDiscovery } from "applesauce-common/casts";
+import { RELAY_DISCOVERY_KIND } from "applesauce-common/helpers";
+import { castTimelineStream } from "applesauce-common/observable";
+import { normalizeRelayUrl, normalizeURL, unixNow } from "applesauce-core/helpers";
+import { use$ } from "applesauce-react/hooks";
+import { ChangeEvent, FocusEventHandler, forwardRef, KeyboardEventHandler, useMemo } from "react";
 
+import { DEFAULT_RELAY_DISCOVERY_RELAYS } from "../const";
 import { unique } from "../helpers/array";
-import nip66Discovery from "../services/nip66-relay-discovery";
+import { eventStore } from "../services/event-store";
+import { relayDiscoveryTimeline } from "../services/relay-discovery";
+
+/** The NIP-66 monitor used for relay URL suggestions */
+const SUGGESTION_MONITORS = ["9b85d54cc4bc886d60782f80d676e41bc637ed3ecc73d2bb5aabadc499d6a340"];
+
+/** Relays reported by the suggestion monitor in the last day, optionally only those supporting all `nips` */
+function useRelaySuggestions(nips?: number[]) {
+  const discoveries = use$(
+    () =>
+      relayDiscoveryTimeline(DEFAULT_RELAY_DISCOVERY_RELAYS, {
+        kinds: [RELAY_DISCOVERY_KIND],
+        authors: SUGGESTION_MONITORS,
+        since: unixNow() - 60 * 60 * 24,
+      }).pipe(castTimelineStream(RelayDiscovery, eventStore)),
+    [],
+  );
+
+  return useMemo(() => {
+    if (!discoveries) return undefined;
+
+    const urls: string[] = [];
+    for (const discovery of discoveries) {
+      if (!discovery.url) continue;
+      if (nips && nips.length > 0) {
+        const supported = discovery.supportedNIPs.map((nip) => parseInt(nip));
+        if (!nips.every((nip) => supported.includes(nip))) continue;
+      }
+      urls.push(normalizeURL(discovery.url));
+    }
+    return unique(urls);
+  }, [discoveries, nips]);
+}
 
 export const RelayUrlInput = forwardRef(({ nips, ...props }: { nips?: number[] } & Omit<InputProps, "type">, ref) => {
   const { onChange, onBlur, onKeyDown } = props;
-  const [relaysJson, setRelaysJson] = useState<string[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
-
-  useEffect(() => {
-    setLoading(true);
-    setError(null);
-
-    const subscription = nip66Discovery.fetchRelays().subscribe({
-      next: (_relayMap) => {
-        try {
-          let relays: string[];
-
-          if (nips && nips.length > 0) {
-            relays = nip66Discovery.getRelaysByNIPs(nips);
-          } else {
-            relays = nip66Discovery.getOnlineRelays();
-          }
-
-          setRelaysJson(relays);
-          setLoading(false);
-        } catch (err) {
-          setError(err as Error);
-          setLoading(false);
-        }
-      },
-      error: (err) => {
-        setError(err);
-        setLoading(false);
-      },
-    });
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [nips?.join("|")]);
-
-  const relaySuggestions = unique(relaysJson ?? []);
+  const suggestions = useRelaySuggestions(nips);
+  const loading = suggestions === undefined;
+  const relaySuggestions = suggestions ?? [];
 
   // Normalize the value (add wss:// if missing) and notify the form of the change
   const normalizeValue = (event: { currentTarget: HTMLInputElement }) => {
@@ -82,7 +84,6 @@ export const RelayUrlInput = forwardRef(({ nips, ...props }: { nips?: number[] }
         type="url"
         aria-label="Relay URL"
         aria-describedby="relay-suggestions-description"
-        aria-invalid={error ? "true" : undefined}
         aria-busy={loading}
         {...props}
         onBlur={handleBlur}
@@ -91,11 +92,9 @@ export const RelayUrlInput = forwardRef(({ nips, ...props }: { nips?: number[] }
       <Text id="relay-suggestions-description" srOnly>
         {loading
           ? "Loading relay suggestions..."
-          : error
-            ? "Error loading relay suggestions"
-            : relaySuggestions.length > 0
-              ? `Found ${relaySuggestions.length} relay suggestions`
-              : "No relay suggestions available"}
+          : relaySuggestions.length > 0
+            ? `Found ${relaySuggestions.length} relay suggestions`
+            : "No relay suggestions available"}
       </Text>
       <datalist id="relay-suggestions">
         {relaySuggestions.map((url) => (

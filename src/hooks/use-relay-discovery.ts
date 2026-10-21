@@ -4,16 +4,12 @@ import {
   isValidRelayDiscovery,
   RELAY_DISCOVERY_KIND,
 } from "applesauce-common/helpers";
-import { mapEventsToStore } from "applesauce-core";
 import { use$ } from "applesauce-react/hooks";
-import { onlyEvents } from "applesauce-relay";
 import { Filter, NostrEvent } from "nostr-tools";
 import { useMemo } from "react";
-import { ignoreElements } from "rxjs";
 
 import { DEFAULT_RELAY_DISCOVERY_MONITORS, DEFAULT_RELAY_DISCOVERY_RELAYS } from "../const";
-import { eventStore } from "../services/event-store";
-import pool from "../services/pool";
+import { relayDiscoveryTimeline } from "../services/relay-discovery";
 
 export type RelayDiscoveryEntry = {
   /** The normalized relay URL */
@@ -47,14 +43,7 @@ export default function useRelayDiscovery(
     return filter;
   }, [attributesKey, monitors.join(",")]);
 
-  // Subscribe to the discovery relays and save events to the store
-  use$(
-    () => pool.subscription(discoveryRelays, filter).pipe(onlyEvents(), mapEventsToStore(eventStore), ignoreElements()),
-    [filter, discoveryRelays.join(",")],
-  );
-
-  // Read matching events back from the event store
-  const events = use$(() => eventStore.timeline(filter), [filter]);
+  const events = use$(() => relayDiscoveryTimeline(discoveryRelays, filter), [filter, discoveryRelays.join(",")]);
 
   return useMemo(() => {
     if (!events) return undefined;
