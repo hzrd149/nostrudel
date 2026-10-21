@@ -1,36 +1,43 @@
-import { useCallback, useEffect, useState } from "react";
+import { safeParse } from "applesauce-core/helpers/json";
+import { use$ } from "applesauce-react/hooks";
+import { useCallback } from "react";
+import { BehaviorSubject, fromEvent, filter } from "rxjs";
+
+const subjects = new Map<string, BehaviorSubject<string[]>>();
+
+function read(storageKey: string): string[] {
+  const value = localStorage.getItem(storageKey);
+  const parsed = value ? safeParse<string[]>(value) : undefined;
+  return Array.isArray(parsed) ? parsed : [];
+}
+
+/** One shared subject per key so every hook instance (and other tabs) see updates */
+function getRecent$(storageKey: string) {
+  let subject = subjects.get(storageKey);
+  if (!subject) {
+    const created = new BehaviorSubject(read(storageKey));
+    fromEvent<StorageEvent>(window, "storage")
+      .pipe(filter((e) => e.key === storageKey))
+      .subscribe(() => created.next(read(storageKey)));
+    subjects.set(storageKey, created);
+    subject = created;
+  }
+  return subject;
+}
 
 export default function useRecentIds(key: string, maxLength?: number) {
-  const value = localStorage.getItem("recent-" + key);
-  const recent = value ? (JSON.parse(value) as string[]) : [];
-
-  const [_, update] = useState(0);
-  useEffect(() => {
-    const listener = (e: StorageEvent) => {
-      if (e.key === key) update(Math.random());
-    };
-    window.addEventListener("storage", listener);
-
-    return () => window.removeEventListener("storage", listener);
-  }, [key, update]);
-
-  const setRecent = useCallback((recent: string[] | ((recent: string[]) => string[])) => {
-    if (typeof recent === "function") {
-      const value = localStorage.getItem("recent-" + key);
-      const newArr = recent(value ? (JSON.parse(value) as string[]) : []);
-      localStorage.setItem("recent-" + key, JSON.stringify(newArr));
-    } else localStorage.setItem("recent-" + key, JSON.stringify(recent));
-  }, []);
+  const storageKey = "recent-" + key;
+  const recent$ = getRecent$(storageKey);
+  const recent = use$(recent$);
 
   const useThing = useCallback(
     (app: string) => {
-      setRecent((arr = []) => {
-        const newArr = [app].concat(...arr.filter((a) => a !== app));
-        if (maxLength) return newArr.slice(0, maxLength);
-        else return newArr;
-      });
+      const next = [app, ...recent$.value.filter((a) => a !== app)];
+      const trimmed = maxLength ? next.slice(0, maxLength) : next;
+      localStorage.setItem(storageKey, JSON.stringify(trimmed));
+      recent$.next(trimmed);
     },
-    [setRecent],
+    [recent$, storageKey, maxLength],
   );
 
   return { recent, useThing };
