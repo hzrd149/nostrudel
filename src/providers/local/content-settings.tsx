@@ -1,7 +1,8 @@
+import { use$ } from "applesauce-react/hooks";
 import { NostrEvent } from "nostr-tools";
 import React, { PropsWithChildren, useContext, useMemo, useState } from "react";
 
-import { shouldBlurMedia, shouldHideEmbed } from "../../services/event-policies";
+import { eventPolicies$ } from "../../services/event-policies";
 
 export type TContentSettings = {
   blurMedia: boolean;
@@ -31,17 +32,18 @@ export function ContentSettingsProvider({
 }) {
   const [override, setOverride] = useState<Partial<TContentSettings>>();
   const parent = useContext(ContentSettings);
+  const policies = use$(eventPolicies$);
 
   const context = useMemo(() => {
     const ctx: TContentSettings = Object.create(parent);
 
     // Blur media if the event does not pass the media policy
     if (blurMedia !== undefined) ctx.blurMedia = blurMedia;
-    else if (event) ctx.blurMedia = shouldBlurMedia(event);
+    else if (event && policies) ctx.blurMedia = policies.shouldBlurMedia(event);
 
     // Hide embeds if the event does not pass the embeds policy
     if (hideEmbeds !== undefined) ctx.hideEmbeds = hideEmbeds;
-    else if (event) ctx.hideEmbeds = shouldHideEmbed(event);
+    else if (event && policies) ctx.hideEmbeds = policies.shouldHideEmbed(event);
 
     // Set an local overrides
     if (override) Object.assign(ctx, override);
@@ -50,7 +52,7 @@ export function ContentSettingsProvider({
     ctx.setOverride = setOverride;
 
     return ctx;
-  }, [parent, blurMedia, hideEmbeds, override, setOverride]);
+  }, [parent, event, policies, blurMedia, hideEmbeds, override]);
 
   return <ContentSettings.Provider value={context}>{children}</ContentSettings.Provider>;
 }
