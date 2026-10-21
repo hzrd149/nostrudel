@@ -1,12 +1,11 @@
 import { Box, Heading, SimpleGrid, Text } from "@chakra-ui/react";
-import { kinds } from "applesauce-core/helpers";
+import { kinds, unixNow } from "applesauce-core/helpers";
 import { FAVORITE_RELAYS_KIND, getRelaysFromList } from "applesauce-common/helpers";
 import { TimelineModel } from "applesauce-core/models";
 import { LoadableAddressPointer } from "applesauce-loaders/loaders";
 import { useActiveAccount, useEventModel, use$ } from "applesauce-react/hooks";
 import { NostrEvent } from "nostr-tools";
-import { useMemo } from "react";
-import { useMount } from "react-use";
+import { useEffect, useMemo } from "react";
 
 import { ErrorBoundary } from "../../../components/error-boundary";
 import SimpleNavBox from "../../../components/layout/box-layout/simple-nav-box";
@@ -101,8 +100,10 @@ function DiscoverRelays({ pubkey, showUsers: _showUsers }: { pubkey: string; sho
   // Create a timeline loader for the contacts favorite relays
   const loader = useOutboxTimelineLoader(pointer, filter && { ...filter, kinds: [FAVORITE_RELAYS_KIND] });
 
-  // Load first page when component mounts
-  useMount(() => loader?.({ since: 0, until: Math.floor(Date.now() / 1000) }).subscribe());
+  useEffect(() => {
+    const sub = loader?.({ since: 0, until: unixNow() }).subscribe();
+    return () => sub?.unsubscribe();
+  }, [loader]);
 
   // get contacts for timelien
   const contacts = useUserContacts(pubkey);

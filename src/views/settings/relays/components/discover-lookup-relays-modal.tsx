@@ -19,13 +19,13 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { getRelaysFromList, LOOKUP_RELAY_LIST_KIND } from "applesauce-common/helpers";
-import { kinds } from "applesauce-core/helpers";
+import { kinds, unixNow } from "applesauce-core/helpers";
 import { TimelineModel } from "applesauce-core/models";
 import { LoadableAddressPointer } from "applesauce-loaders/loaders";
 import { useEventModel } from "applesauce-react/hooks";
 import { NostrEvent } from "nostr-tools";
-import { memo, useCallback, useMemo, useState } from "react";
-import { useMount, useThrottle } from "react-use";
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
+import { useThrottle } from "react-use";
 
 import RelayFavicon from "../../../../components/relay/relay-favicon";
 import RelayName from "../../../../components/relay/relay-name";
@@ -50,7 +50,10 @@ function useContactsLookupRelays(pubkey: string) {
   const pointer = useMemo(() => ({ kind: kinds.Contacts, pubkey }) satisfies LoadableAddressPointer, [pubkey]);
   const filter = useMemo(() => ({ kinds: [LOOKUP_RELAY_LIST_KIND] }), []);
   const loader = useOutboxTimelineLoader(pointer, filter);
-  useMount(() => loader?.({ since: 0, until: Math.floor(Date.now() / 1000) }).subscribe());
+  useEffect(() => {
+    const sub = loader?.({ since: 0, until: unixNow() }).subscribe();
+    return () => sub?.unsubscribe();
+  }, [loader]);
 
   const contacts = useUserContacts(pubkey);
   const lists = useEventModel(
