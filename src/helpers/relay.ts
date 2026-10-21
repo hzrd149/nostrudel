@@ -29,7 +29,7 @@ export function splitQueryByPubkeys(query: Filter, relayPubkeyMap: Record<string
   return filtersByRelay;
 }
 
-export function getConnectionStateColor(state: ConnectionState): ThemeTypings["colorSchemes"] {
+export function getConnectionStateColor(state?: ConnectionState): ThemeTypings["colorSchemes"] {
   switch (state) {
     case "connecting":
       return "blue";
