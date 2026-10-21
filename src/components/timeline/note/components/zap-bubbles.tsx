@@ -1,27 +1,22 @@
 import { Flex, FlexProps, Tag, TagLabel } from "@chakra-ui/react";
-import { kinds, NostrEvent } from "nostr-tools";
+import { NostrEvent } from "nostr-tools";
 import styled from "@emotion/styled";
-import { KnownEvent } from "applesauce-core/helpers";
-import { getZapPayment, getZapRequest } from "applesauce-common/helpers";
+import { Zap } from "applesauce-common/casts";
 
+import useCastTimeline from "../../../../hooks/use-cast-timeline";
 import useEventZaps from "../../../../hooks/use-event-zaps";
 import UserAvatarLink from "../../../user/user-avatar-link";
 import { LightningIcon } from "../../../icons";
 import ValueDisplay from "../../../value-display";
 
-function ZapBubble({ zap }: { zap: KnownEvent<kinds.Zap> }) {
-  const request = getZapRequest(zap);
-  const payment = getZapPayment(zap);
-
-  if (!payment) return null;
-
+function ZapBubble({ zap }: { zap: Zap }) {
   return (
     <Tag key={zap.id} borderRadius="full" py="1" flexShrink={0} variant="outline">
       <LightningIcon mr="1" color="yellow.400" />
       <TagLabel fontWeight="bold">
-        <ValueDisplay sats={(payment.amount ?? 0) / 1000} />
+        <ValueDisplay sats={(zap.amount ?? 0) / 1000} />
       </TagLabel>
-      <UserAvatarLink pubkey={request.pubkey} size="xs" square={false} ml="2" />
+      <UserAvatarLink pubkey={zap.sender.pubkey} size="xs" square={false} ml="2" />
     </Tag>
   );
 }
@@ -34,11 +29,10 @@ const HiddenScrollbar = styled(Flex)`
 `;
 
 export default function ZapBubbles({ event, ...props }: { event: NostrEvent } & Omit<FlexProps, "children">) {
-  const zaps = useEventZaps(event);
+  const zaps = useCastTimeline(useEventZaps(event), Zap);
+  const sorted = [...zaps].sort((a, b) => (b.amount ?? 0) - (a.amount ?? 0));
 
-  if (!zaps || zaps.length === 0) return null;
-
-  const sorted = zaps.sort((a, b) => (getZapPayment(b)?.amount ?? 0) - (getZapPayment(a)?.amount ?? 0));
+  if (sorted.length === 0) return null;
 
   return (
     <HiddenScrollbar overflowY="hidden" overflowX="auto" gap="2" {...props}>

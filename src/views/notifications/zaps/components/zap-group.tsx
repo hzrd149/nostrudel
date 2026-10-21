@@ -1,5 +1,5 @@
 import { Box, Flex, LinkBox, Text } from "@chakra-ui/react";
-import { ZapEvent, getZapAmount, getZapPayment, getZapSender } from "applesauce-common/helpers";
+import { Zap } from "applesauce-common/casts";
 import { getTagValue, naddrEncode, neventEncode } from "applesauce-core/helpers";
 import { memo, useMemo } from "react";
 
@@ -10,18 +10,16 @@ import UserAvatar from "../../../../components/user/user-avatar";
 import UserName from "../../../../components/user/user-name";
 import ValueDisplay from "../../../../components/value-display";
 import { TZapGroup } from "../../../../helpers/nostr/zaps";
+import useCastTimeline from "../../../../hooks/use-cast-timeline";
 import useEventIntersectionRef from "../../../../hooks/use-event-intersection-ref";
 import useReplaceableEvent from "../../../../hooks/use-replaceable-event";
 import useSingleEvent from "../../../../hooks/use-single-event";
 
-function ZapBubble({ zap }: { zap: ZapEvent }) {
-  const sender = getZapSender(zap);
-  const amount = getZapAmount(zap);
-
+function ZapBubble({ zap }: { zap: Zap }) {
   return (
     <Box display="flex" alignItems="center" gap="2">
-      <UserAvatar pubkey={sender} size="sm" showNip05={false} />
-      <ValueDisplay sats={amount / 1000} fontWeight="bold" />
+      <UserAvatar pubkey={zap.sender.pubkey} size="sm" showNip05={false} />
+      <ValueDisplay sats={zap.amount / 1000} fontWeight="bold" />
     </Box>
   );
 }
@@ -34,9 +32,8 @@ function ZapGroup({ group }: { group: TZapGroup }) {
   const ref = useEventIntersectionRef(group.events[0]);
 
   // Sort zaps by amount (highest first)
-  const sortedZaps = useMemo(() => {
-    return [...group.events].sort((a, b) => (getZapPayment(b)?.amount ?? 0) - (getZapPayment(a)?.amount ?? 0));
-  }, [group.events]);
+  const zaps = useCastTimeline(group.events, Zap);
+  const sortedZaps = useMemo(() => [...zaps].sort((a, b) => (b.amount ?? 0) - (a.amount ?? 0)), [zaps]);
 
   const link = useMemo(() => {
     if (group.addressPointer) return `/l/${naddrEncode(group.addressPointer)}`;
@@ -64,11 +61,11 @@ function ZapGroup({ group }: { group: TZapGroup }) {
       {/* Zap Bubbles */}
       {sortedZaps.length > 0 && sortedZaps.length === 1 ? (
         <Box display="flex" alignItems="center" gap="2">
-          <UserAvatar pubkey={getZapSender(sortedZaps[0])} size="sm" showNip05={false} />
+          <UserAvatar pubkey={sortedZaps[0].sender.pubkey} size="sm" showNip05={false} />
           <Text>
-            <UserName pubkey={getZapSender(sortedZaps[0])} fontWeight="bold" /> Zapped
+            <UserName pubkey={sortedZaps[0].sender.pubkey} fontWeight="bold" /> Zapped
           </Text>
-          <ValueDisplay sats={getZapAmount(sortedZaps[0]) / 1000} fontWeight="bold" />
+          <ValueDisplay sats={sortedZaps[0].amount / 1000} fontWeight="bold" />
         </Box>
       ) : (
         <Flex gap="2" overflow="hidden">

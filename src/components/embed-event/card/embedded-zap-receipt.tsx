@@ -1,15 +1,10 @@
 import { Box, ButtonGroup, Card, CardBody, CardHeader, CardProps, LinkBox, Text } from "@chakra-ui/react";
+import { Zap } from "applesauce-common/casts";
 import { DecodeResult, KnownEvent } from "applesauce-core/helpers";
-import {
-  getZapAddressPointer,
-  getZapEventPointer,
-  getZapPayment,
-  getZapRecipient,
-  getZapRequest,
-  getZapSender,
-} from "applesauce-common/helpers";
 import { kinds } from "nostr-tools";
 import { useMemo } from "react";
+
+import useCastEvent from "../../../hooks/use-cast-event";
 
 import { LightningIcon } from "../../icons";
 import TextNoteContents from "../../timeline/note/text-note-contents";
@@ -24,32 +19,28 @@ export default function EmbeddedZapRecept({
   zap,
   ...props
 }: Omit<CardProps, "children"> & { zap: KnownEvent<kinds.Zap> }) {
-  const sender = getZapSender(zap);
-  const recipient = getZapRecipient(zap);
-  const payment = getZapPayment(zap);
-  const request = getZapRequest(zap);
-  if (!recipient || !payment) return null;
+  const cast = useCastEvent(zap, Zap);
 
   const pointer = useMemo(() => {
-    const event = getZapEventPointer(zap);
-    if (event) return { type: "nevent", data: event } satisfies DecodeResult;
+    if (!cast) return;
+    if (cast.eventPointer) return { type: "nevent", data: cast.eventPointer } satisfies DecodeResult;
+    if (cast.addressPointer) return { type: "naddr", data: cast.addressPointer } satisfies DecodeResult;
+  }, [cast]);
 
-    const address = getZapAddressPointer(zap);
-    if (address) return { type: "naddr", data: address } satisfies DecodeResult;
-  }, [zap]);
+  if (!cast) return null;
 
   return (
     <Card as={LinkBox} {...props}>
       <CardHeader display="flex" p="2" gap="2" alignItems="center">
-        <UserAvatar pubkey={sender} size="sm" />
-        <UserLink pubkey={sender} fontWeight="bold" />
+        <UserAvatar pubkey={cast.sender.pubkey} size="sm" />
+        <UserLink pubkey={cast.sender.pubkey} fontWeight="bold" />
         <Text>Zapped</Text>
-        <UserLink pubkey={recipient} fontWeight="bold" />
+        <UserLink pubkey={cast.recipient.pubkey} fontWeight="bold" />
 
-        {payment.amount && (
+        {cast.amount && (
           <>
             <LightningIcon color="yellow.500" boxSize={5} />
-            <ValueDisplay sats={payment.amount / 1000} />
+            <ValueDisplay sats={cast.amount / 1000} />
           </>
         )}
 
@@ -60,7 +51,7 @@ export default function EmbeddedZapRecept({
       </CardHeader>
       <CardBody px="2" pb="2" pt="0" display="flex" flexDirection="column" gap="2">
         <Box>
-          <TextNoteContents event={request} />
+          <TextNoteContents event={cast.request} />
         </Box>
 
         {pointer && <EmbedEventPointerCard pointer={pointer} />}

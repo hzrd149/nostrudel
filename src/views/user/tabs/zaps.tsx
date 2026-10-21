@@ -1,9 +1,9 @@
 import { Box, Flex, Select, Text } from "@chakra-ui/react";
-import { isATag, isETag, KnownEvent, parseReplaceableAddress } from "applesauce-core/helpers";
-import { getZapPayment, getZapRequest, isValidZap } from "applesauce-common/helpers";
+import { Zap } from "applesauce-common/casts";
+import { isValidZap } from "applesauce-common/helpers";
 import { useRenderedContent } from "applesauce-react/hooks";
 import dayjs from "dayjs";
-import { kinds, NostrEvent } from "nostr-tools";
+import { NostrEvent } from "nostr-tools";
 import { ReactNode, useCallback, useState } from "react";
 
 import { components } from "../../../components/content";
@@ -17,7 +17,8 @@ import Timestamp from "../../../components/timestamp";
 import UserAvatarLink from "../../../components/user/user-avatar-link";
 import UserLink from "../../../components/user/user-link";
 import ValueDisplay from "../../../components/value-display";
-import { isNoteZap, isProfileZap, totalZaps } from "../../../helpers/nostr/zaps";
+import { isNoteZap, isProfileZap } from "../../../helpers/nostr/zaps";
+import useCastTimeline from "../../../hooks/use-cast-timeline";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
 import useParamsProfilePointer from "../../../hooks/use-params-pubkey-pointer";
 import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
@@ -28,32 +29,16 @@ import IntersectionObserverProvider from "../../../providers/local/intersection-
 const ZapContentSymbol = Symbol.for("zap-content");
 const linkRenderers = [renderGenericUrl];
 
-function Zap({ zap }: { zap: KnownEvent<kinds.Zap> }) {
-  const ref = useEventIntersectionRef(zap);
+function ZapItem({ zap }: { zap: Zap }) {
+  const ref = useEventIntersectionRef(zap.event);
 
-  const request = getZapRequest(zap);
-  const payment = getZapPayment(zap);
-
-  const eventId = request.tags.find(isETag)?.[1];
-  const coordinate = request.tags.find(isATag)?.[1];
-  const parsedCoordinate = coordinate ? parseReplaceableAddress(coordinate) : null;
+  const request = zap.request;
 
   let eventJSX: ReactNode | null = null;
-  if (parsedCoordinate && parsedCoordinate.identifier) {
-    eventJSX = (
-      <EmbedEventPointerCard
-        pointer={{
-          type: "naddr",
-          data: {
-            pubkey: parsedCoordinate.pubkey,
-            identifier: parsedCoordinate.identifier,
-            kind: parsedCoordinate.kind,
-          },
-        }}
-      />
-    );
-  } else if (eventId) {
-    eventJSX = <EmbedEventPointerCard pointer={{ type: "note", data: eventId }} />;
+  if (zap.addressPointer?.identifier) {
+    eventJSX = <EmbedEventPointerCard pointer={{ type: "naddr", data: zap.addressPointer }} />;
+  } else if (zap.eventPointer) {
+    eventJSX = <EmbedEventPointerCard pointer={{ type: "nevent", data: zap.eventPointer }} />;
   }
 
   const content = useRenderedContent(request, components, { linkRenderers, cacheKey: ZapContentSymbol });
@@ -61,13 +46,13 @@ function Zap({ zap }: { zap: KnownEvent<kinds.Zap> }) {
   return (
     <Box ref={ref}>
       <Flex gap="2" alignItems="center" wrap="wrap" mb="2">
-        <UserAvatarLink pubkey={request.pubkey} size="sm" />
-        <UserLink pubkey={request.pubkey} fontWeight="bold" />
+        <UserAvatarLink pubkey={zap.sender.pubkey} size="sm" />
+        <UserLink pubkey={zap.sender.pubkey} fontWeight="bold" />
         <Text>Zapped</Text>
-        {payment?.amount && (
+        {zap.amount && (
           <Flex gap="2">
             <LightningIcon color="yellow.400" />
-            <ValueDisplay sats={payment.amount / 1000} />
+            <ValueDisplay sats={zap.amount / 1000} />
           </Flex>
         )}
         <Timestamp ml="auto" timestamp={request.created_at} />
@@ -103,7 +88,8 @@ export default function UserZapsTab() {
     { eventFilter },
   );
 
-  const zaps = timeline.filter(isValidZap);
+  const zaps = useCastTimeline(timeline.filter(isValidZap), Zap);
+  const total = zaps.reduce((t, zap) => t + (zap.amount ?? 0), 0);
 
   const callback = useTimelineCurserIntersectionCallback(loader);
 
@@ -120,15 +106,15 @@ export default function UserZapsTab() {
             <Flex gap="2">
               <LightningIcon color="yellow.400" />
               <Text>
-                <ValueDisplay sats={totalZaps(zaps) / 1000} /> in the last{" "}
-                {dayjs.unix(zaps[zaps.length - 1].created_at).fromNow(true)}
+                <ValueDisplay sats={total / 1000} /> in the last{" "}
+                {dayjs.unix(zaps[zaps.length - 1].event.created_at).fromNow(true)}
               </Text>
             </Flex>
           )}
         </Flex>
-        {zaps.map((zaps) => (
-          <ErrorBoundary key={zaps.id} event={zaps}>
-            <Zap zap={zaps} />
+        {zaps.map((zap) => (
+          <ErrorBoundary key={zap.id} event={zap.event}>
+            <ZapItem zap={zap} />
           </ErrorBoundary>
         ))}
 

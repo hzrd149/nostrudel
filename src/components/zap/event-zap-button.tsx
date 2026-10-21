@@ -1,8 +1,8 @@
 import { Button, ButtonProps, IconButton, useDisclosure } from "@chakra-ui/react";
-import { getZapSender } from "applesauce-common/helpers";
+import { Zap } from "applesauce-common/casts";
 import { useActiveAccount } from "applesauce-react/hooks";
 
-import { totalZaps } from "../../helpers/nostr/zaps";
+import useCastTimeline from "../../hooks/use-cast-timeline";
 import useEventZaps from "../../hooks/use-event-zaps";
 import { NostrEvent } from "nostr-tools";
 import { LightningIcon } from "../icons";
@@ -21,10 +21,10 @@ export type NoteZapButtonProps = Omit<ButtonProps, "children"> & {
 export default function EventZapButton({ event, allowComment, showEventPreview, ...props }: NoteZapButtonProps) {
   const account = useActiveAccount();
   const { metadata } = useUserLNURLMetadata(event.pubkey);
-  const zaps = useEventZaps(event) ?? [];
+  const zaps = useCastTimeline(useEventZaps(event), Zap);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const hasZapped = !!account && zaps.some((zap) => getZapSender(zap) === account.pubkey);
+  const hasZapped = !!account && zaps.some((zap) => zap.sender.pubkey === account.pubkey);
 
   const readRelays = useReadRelays();
   const onZapped = () => {
@@ -32,7 +32,7 @@ export default function EventZapButton({ event, allowComment, showEventPreview, 
     zapsLoader(event, readRelays).subscribe();
   };
 
-  const total = totalZaps(zaps);
+  const total = zaps.reduce((t, zap) => t + (zap.amount ?? 0), 0);
   const canZap = !!metadata?.allowsNostr || event.tags.some((t) => t[0] === "zap");
 
   return (
