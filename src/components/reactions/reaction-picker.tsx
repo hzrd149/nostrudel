@@ -1,12 +1,9 @@
 import { useMemo } from "react";
-import { getEmojiPackName, Emoji, getEmojiPackEmojis } from "applesauce-common/helpers";
-import { getEventUID } from "applesauce-core/helpers";
-import { getAddressPointersFromList } from "applesauce-common/helpers/lists";
-import { useActiveAccount } from "applesauce-react/hooks";
+import { Emoji } from "applesauce-common/helpers";
+import { useActiveAccount, use$ } from "applesauce-react/hooks";
 
 import EmojiPicker, { defaultCategories, NativeEmoji } from "./emoji-picker";
-import useFavoriteEmojiPacks from "../../hooks/use-favorite-emoji-packs";
-import useReplaceableEvents from "../../hooks/use-replaceable-events";
+import useCastUser from "../../hooks/use-cast-user";
 
 export default function ReactionPicker({
   autoFocus,
@@ -16,30 +13,24 @@ export default function ReactionPicker({
   onSelect?: (emoji: string | Emoji) => void;
 }) {
   const account = useActiveAccount();
-  const favoritePacks = useFavoriteEmojiPacks(account?.pubkey);
-  const packs = useReplaceableEvents(favoritePacks ? getAddressPointersFromList(favoritePacks) : []);
+  const favoritePacks = use$(useCastUser(account?.pubkey)?.favoriteEmojis$.packs$);
+  const packs = useMemo(() => favoritePacks ?? [], [favoritePacks]);
   const custom = useMemo(
     () =>
-      packs.map((pack) => {
-        const id = getEventUID(pack);
-        const name = getEmojiPackName(pack) || "Unnamed";
-        const emojis = getEmojiPackEmojis(pack);
-
-        return {
-          id,
-          name,
-          emojis: emojis.map((e) => ({
-            id: e.shortcode,
-            name: e.shortcode,
-            keywords: [e.shortcode, e.shortcode.toUpperCase(), e.shortcode.replaceAll("_", "")],
-            skins: [{ src: e.url }],
-          })),
-        };
-      }),
+      packs.map((pack) => ({
+        id: pack.uid,
+        name: pack.name || "Unnamed",
+        emojis: pack.emojis.map((e) => ({
+          id: e.shortcode,
+          name: e.shortcode,
+          keywords: [e.shortcode, e.shortcode.toUpperCase(), e.shortcode.replaceAll("_", "")],
+          skins: [{ src: e.url }],
+        })),
+      })),
     [packs],
   );
 
-  const categories = useMemo(() => [...packs.map((p) => getEventUID(p)), ...defaultCategories], [packs]);
+  const categories = useMemo(() => [...packs.map((p) => p.uid), ...defaultCategories], [packs]);
 
   const handleSelect = (emoji: NativeEmoji) => {
     if (emoji.src) onSelect?.({ shortcode: emoji.name, url: emoji.src });

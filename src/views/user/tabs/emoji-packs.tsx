@@ -1,12 +1,11 @@
 import { getEventUID } from "applesauce-core/helpers";
 import { Heading, SimpleGrid } from "@chakra-ui/react";
 import { kinds } from "nostr-tools";
+import { use$ } from "applesauce-react/hooks";
 
 import ScrollLayout from "../../../components/layout/presets/scroll-layout";
-import { getPackCordsFromFavorites } from "../../../helpers/nostr/emoji-packs";
-import useFavoriteEmojiPacks from "../../../hooks/use-favorite-emoji-packs";
+import useCastUser from "../../../hooks/use-cast-user";
 import useParamsProfilePointer from "../../../hooks/use-params-pubkey-pointer";
-import useReplaceableEvents from "../../../hooks/use-replaceable-events";
 import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
 import useTimelineLoader from "../../../hooks/use-timeline-loader";
 import { useUserOutbox } from "../../../hooks/use-user-mailboxes";
@@ -22,8 +21,7 @@ export default function UserEmojiPacksTab() {
     kinds: [kinds.Emojisets],
   });
 
-  const favoritePacks = useFavoriteEmojiPacks(user);
-  const favorites = useReplaceableEvents(favoritePacks && getPackCordsFromFavorites(favoritePacks));
+  const favorites = use$(useCastUser(user).favoriteEmojis$.packs$) ?? [];
 
   const callback = useTimelineCurserIntersectionCallback(loader);
 
@@ -48,8 +46,8 @@ export default function UserEmojiPacksTab() {
               Favorite packs
             </Heading>
             <SimpleGrid columns={{ base: 1, lg: 2 }} spacing="2">
-              {favorites.map((event) => (
-                <EmojiPackCard key={getEventUID(event)} pack={event} />
+              {favorites.map((pack) => (
+                <EmojiPackCard key={pack.uid} pack={pack.event} />
               ))}
             </SimpleGrid>
           </>
