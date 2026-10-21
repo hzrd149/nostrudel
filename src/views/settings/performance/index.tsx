@@ -1,4 +1,16 @@
-import { FormControl, FormHelperText, FormLabel, Select, Stack, Switch } from "@chakra-ui/react";
+import {
+  FormControl,
+  FormHelperText,
+  FormLabel,
+  NumberDecrementStepper,
+  NumberIncrementStepper,
+  NumberInput,
+  NumberInputField,
+  NumberInputStepper,
+  Select,
+  Stack,
+  Switch,
+} from "@chakra-ui/react";
 import { use$ } from "applesauce-react/hooks";
 
 import SimpleView from "../../../components/layout/presets/simple-view";
@@ -51,10 +63,59 @@ function VerifyEventSettings() {
   );
 }
 
+function ConnectionSettings() {
+  const maxConnections = use$(localSettings.maxConnections);
+  const maxRelaysPerUser = use$(localSettings.maxRelaysPerUser);
+
+  return (
+    <Stack spacing="6">
+      <FormControl>
+        <FormLabel htmlFor="maxConnections">Max connections</FormLabel>
+        <NumberInput
+          id="maxConnections"
+          min={0}
+          max={30}
+          value={maxConnections}
+          onChange={(_, value) => localSettings.maxConnections.next(value)}
+          maxW="sm"
+        >
+          <NumberInputField />
+          <NumberInputStepper>
+            <NumberIncrementStepper />
+            <NumberDecrementStepper />
+          </NumberInputStepper>
+        </NumberInput>
+        <FormHelperText>
+          The maximum number of relay connections the app should make when fetching events by users.
+        </FormHelperText>
+      </FormControl>
+      <FormControl>
+        <FormLabel htmlFor="maxRelaysPerUser">Max relays per user</FormLabel>
+        <NumberInput
+          id="maxRelaysPerUser"
+          min={0}
+          max={30}
+          value={maxRelaysPerUser}
+          onChange={(_, value) => localSettings.maxRelaysPerUser.next(value)}
+          maxW="sm"
+        >
+          <NumberInputField />
+          <NumberInputStepper>
+            <NumberIncrementStepper />
+            <NumberDecrementStepper />
+          </NumberInputStepper>
+        </NumberInput>
+        <FormHelperText>The maximum number of relays that can be selected for a user.</FormHelperText>
+      </FormControl>
+    </Stack>
+  );
+}
+
 export default function PerformanceSettings() {
   return (
     <SimpleView title="Performance">
       <VerifyEventSettings />
+      <ConnectionSettings />
     </SimpleView>
   );
 }

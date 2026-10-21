@@ -16,7 +16,6 @@ import ContentPoliciesSettings from "./content";
 import PostSettings from "./post";
 import PrivacySettings from "./privacy";
 import AppRelaysView from "./relays";
-import OutboxSelectionSettings from "./outbox-selection";
 import SearchSettings from "./search";
 import SocialGraphView from "./social-graph";
 import ProfileSettingsView from "./profile";
@@ -49,7 +48,6 @@ export default [
       { path: "media-servers", Component: MediaServersView },
       { path: "search", Component: SearchSettings },
       { path: "relays", Component: AppRelaysView },
-      { path: "outbox-selection", Component: OutboxSelectionSettings },
       { path: "social-graph", Component: SocialGraphView },
       { path: "mutes", Component: MutesSettings },
       { path: "content", Component: ContentPoliciesSettings },

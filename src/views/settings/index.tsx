@@ -72,9 +72,6 @@ export default function SettingsView() {
       <SimpleNavItem to="/settings/relays" leftIcon={<RelayIcon boxSize={5} />}>
         Relays
       </SimpleNavItem>
-      <SimpleNavItem to="/settings/outbox-selection" leftIcon={<RelayIcon boxSize={5} />}>
-        Outbox Selection
-      </SimpleNavItem>
       <SimpleNavItem to="/settings/cache" leftIcon={<Database01 boxSize={5} />}>
         Event Cache
       </SimpleNavItem>

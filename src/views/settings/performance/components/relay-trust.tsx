@@ -1,12 +1,12 @@
 import {
-  Accordion,
-  AccordionButton,
-  AccordionIcon,
-  AccordionItem,
-  AccordionPanel,
-  Box,
   Button,
   HStack,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalHeader,
+  ModalOverlay,
   Progress,
   Table,
   TableContainer,
@@ -16,6 +16,7 @@ import {
   Th,
   Thead,
   Tr,
+  useDisclosure,
 } from "@chakra-ui/react";
 import type { OptimisticEventVerifier } from "applesauce-core";
 import { use$ } from "applesauce-react/hooks";
@@ -90,23 +91,23 @@ function RelayTrustDetails() {
 }
 
 export default function RelayTrust() {
+  const modal = useDisclosure();
+
   return (
-    <Accordion allowToggle>
-      <AccordionItem>
-        {({ isExpanded }) => (
-          <>
-            <h2>
-              <AccordionButton>
-                <Box flex="1" textAlign="left">
-                  Relay trust scores
-                </Box>
-                <AccordionIcon />
-              </AccordionButton>
-            </h2>
-            <AccordionPanel>{isExpanded && <RelayTrustDetails />}</AccordionPanel>
-          </>
-        )}
-      </AccordionItem>
-    </Accordion>
+    <>
+      <Button onClick={modal.onOpen} alignSelf="flex-start">
+        Relay trust scores
+      </Button>
+      <Modal isOpen={modal.isOpen} onClose={modal.onClose} size="4xl" scrollBehavior="inside">
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader p="4">Relay trust scores</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody px="4" pt="0" pb="4">
+            <RelayTrustDetails />
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+    </>
   );
 }

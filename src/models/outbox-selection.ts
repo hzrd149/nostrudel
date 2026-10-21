@@ -1,36 +1,11 @@
-import { includeFallbackRelays, includeMailboxes, Model } from "applesauce-core";
-import { OutboxMap, groupPubkeysByRelay, selectOptimalRelays } from "applesauce-core/helpers";
-import { getProfilePointersFromList } from "applesauce-common/helpers";
-import { LoadableAddressPointer } from "applesauce-loaders/loaders";
+import { includeFallbackRelays, includeMailboxes } from "applesauce-core";
+import { selectOptimalRelays } from "applesauce-core/helpers";
 import { ignoreUnhealthyRelaysOnPointers } from "applesauce-relay";
 import { ProfilePointer } from "nostr-tools/nip19";
-import { combineLatestWith, debounceTime, map, MonoTypeOperatorFunction, of, pipe, switchMap } from "rxjs";
+import { combineLatestWith, debounceTime, map, MonoTypeOperatorFunction, pipe } from "rxjs";
 import { eventStore } from "../services/event-store";
 import liveness from "../services/relay-liveness";
 import localSettings from "../services/preferences";
-
-/** Gets the outboxes for a list of users */
-export function OutboxSelectionModel(
-  list: LoadableAddressPointer,
-): Model<{ outboxes: OutboxMap; selection: ProfilePointer[] } | undefined> {
-  return (events) =>
-    events.replaceable(list).pipe(
-      map((event) => (event ? getProfilePointersFromList(event) : undefined)),
-      switchMap((users) => {
-        // NOTE: dealing with undefined inside of RxJS observables feels like an anti-pattern, cant i just filter(v => !!v) instead and leave react to deal with the value not being ready?
-        if (!users) return of(undefined);
-
-        return of(users).pipe(
-          outboxSelection(),
-          // Select optimal relays
-          map((selection) => {
-            const outboxes = groupPubkeysByRelay(selection);
-            return { outboxes, selection };
-          }),
-        );
-      }),
-    );
-}
 
 /** Include outboxes and remove unhealthy relays */
 export function includeOutboxRelays(): MonoTypeOperatorFunction<ProfilePointer[]> {
