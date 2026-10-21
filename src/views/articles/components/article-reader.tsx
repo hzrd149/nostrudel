@@ -23,10 +23,12 @@ import {
   useToast,
   VStack,
 } from "@chakra-ui/react";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { useAsync, useUnmount } from "react-use";
+import { use$ } from "applesauce-react/hooks";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useAsync } from "react-use";
 import { remark } from "remark";
 import stripMarkdown from "strip-markdown";
+import { fromEvent, map, startWith } from "rxjs";
 
 import { ArticleSpeechReader, ReaderState, TextChunk, VoiceSettings } from "../../../classes/article-speech-reader";
 import { SettingsIcon } from "../../../components/icons";
@@ -56,26 +58,25 @@ function VoiceSlider({ label, value, onChange, min, max, step }: VoiceSliderProp
   );
 }
 
+const DEFAULT_READER_STATE: ReaderState = {
+  isPlaying: false,
+  currentChunkIndex: 0,
+  progress: 0,
+  isCompleted: false,
+};
+const DEFAULT_VOICE_SETTINGS: VoiceSettings = {
+  selectedVoice: "",
+  rate: 1,
+  pitch: 1,
+  volume: 1,
+};
+
 function ArticleReader({
   markdown,
   ...props
 }: {
   markdown: string;
 } & Omit<CardProps, "children">) {
-  const readerRef = useRef<ArticleSpeechReader | null>(null);
-  const [readerState, setReaderState] = useState<ReaderState>({
-    isPlaying: false,
-    currentChunkIndex: 0,
-    progress: 0,
-    isCompleted: false,
-  });
-  const [voiceSettings, setVoiceSettings] = useState<VoiceSettings>({
-    selectedVoice: "",
-    rate: 1,
-    pitch: 1,
-    volume: 1,
-  });
-  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
   const [showSettings, setShowSettings] = useState(false);
   const toast = useToast();
 
@@ -111,86 +112,78 @@ function ArticleReader({
     return textChunks;
   }, [markdown]);
 
-  // Initialize voices
+  const voices =
+    use$(
+      () =>
+        fromEvent(speechSynthesis, "voiceschanged").pipe(
+          startWith(null),
+          map(() => speechSynthesis.getVoices()),
+        ),
+      [],
+    ) ?? [];
+
+  // Create a new reader when the chunks change and destroy the old one
+  const reader = useMemo(() => (chunks && chunks.length > 0 ? new ArticleSpeechReader(chunks) : undefined), [chunks]);
+  useEffect(() => () => reader?.destroy(), [reader]);
+
   useEffect(() => {
-    const loadVoices = () => {
-      const availableVoices = speechSynthesis.getVoices();
-      setVoices(availableVoices);
-    };
-
-    loadVoices();
-    speechSynthesis.onvoiceschanged = loadVoices;
-
-    return () => {
-      speechSynthesis.onvoiceschanged = null;
-    };
-  }, []);
-
-  // Create reader instance when chunks change
-  useEffect(() => {
-    if (chunks && chunks.length > 0) {
-      // Destroy previous reader
-      if (readerRef.current) {
-        readerRef.current.destroy();
-      }
-
-      // Create new reader
-      const reader = new ArticleSpeechReader(chunks);
-      readerRef.current = reader;
-
-      // Subscribe to state changes
-      const stateSubscription = reader.state$.subscribe(setReaderState);
-      const voiceSettingsSubscription = reader.voiceSettings$.subscribe(setVoiceSettings);
-      const errorSubscription = reader.error$.subscribe((error) => {
-        toast({
-          title: "Speech Error",
-          description: error,
-          status: "error",
-        });
+    const sub = reader?.error$.subscribe((error) => {
+      toast({
+        title: "Speech Error",
+        description: error,
+        status: "error",
       });
+    });
+    return () => sub?.unsubscribe();
+  }, [reader, toast]);
 
-      return () => {
-        stateSubscription.unsubscribe();
-        voiceSettingsSubscription.unsubscribe();
-        errorSubscription.unsubscribe();
-      };
-    }
-  }, [chunks, toast]);
-
-  // Cleanup on unmount
-  useUnmount(() => {
-    readerRef.current?.destroy();
-  });
+  const readerState: ReaderState = use$(reader?.state$) ?? DEFAULT_READER_STATE;
+  const voiceSettings: VoiceSettings = use$(reader?.voiceSettings$) ?? DEFAULT_VOICE_SETTINGS;
 
   // Event handlers
   const togglePlayPause = useCallback(() => {
-    if (!readerRef.current) return;
+    if (!reader) return;
     if (readerState.isPlaying) {
-      readerRef.current.pause();
+      reader.pause();
     } else {
-      readerRef.current.play();
+      reader.play();
     }
-  }, [readerState.isPlaying]);
+  }, [reader, readerState.isPlaying]);
 
-  const handleProgressChange = useCallback((value: number) => {
-    readerRef.current?.seekToProgress(value);
-  }, []);
+  const handleProgressChange = useCallback(
+    (value: number) => {
+      reader?.seekToProgress(value);
+    },
+    [reader],
+  );
 
-  const handleVoiceChange = useCallback((selectedVoice: string) => {
-    readerRef.current?.updateVoiceSettings({ selectedVoice });
-  }, []);
+  const handleVoiceChange = useCallback(
+    (selectedVoice: string) => {
+      reader?.updateVoiceSettings({ selectedVoice });
+    },
+    [reader],
+  );
 
-  const handleRateChange = useCallback((rate: number) => {
-    readerRef.current?.updateVoiceSettings({ rate });
-  }, []);
+  const handleRateChange = useCallback(
+    (rate: number) => {
+      reader?.updateVoiceSettings({ rate });
+    },
+    [reader],
+  );
 
-  const handlePitchChange = useCallback((pitch: number) => {
-    readerRef.current?.updateVoiceSettings({ pitch });
-  }, []);
+  const handlePitchChange = useCallback(
+    (pitch: number) => {
+      reader?.updateVoiceSettings({ pitch });
+    },
+    [reader],
+  );
 
-  const handleVolumeChange = useCallback((volume: number) => {
-    readerRef.current?.updateVoiceSettings({ volume });
-  }, []);
+  const handleVolumeChange = useCallback(
+    (volume: number) => {
+      reader?.updateVoiceSettings({ volume });
+    },
+    [reader],
+  );
 
   // Handle processing error
   if (processingError) {
@@ -244,7 +237,7 @@ function ArticleReader({
           </Slider>
           <HStack justifyContent="space-between">
             <Text fontSize="sm" color="gray.600">
-              {readerState.currentChunkIndex + 1} / {readerRef.current?.getTotalChunks() || 0} chunks
+              {readerState.currentChunkIndex + 1} / {reader?.getTotalChunks() || 0} chunks
             </Text>
             <Text fontSize="sm" color="gray.600">
               {Math.round(readerState.progress)}%
@@ -264,7 +257,7 @@ function ArticleReader({
       {/* Current Text Display */}
       {readerState.isPlaying && (
         <Text fontSize="sm" fontStyle="italic">
-          {readerRef.current?.getCurrentChunk()?.text || ""}
+          {reader?.getCurrentChunk()?.text || ""}
         </Text>
       )}
 
