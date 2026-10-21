@@ -1,14 +1,19 @@
-import { useCallback, useEffect, useRef, useMemo, useState } from "react";
-import { useActiveAccount } from "applesauce-react/hooks";
+import { useCallback, useEffect, useRef, useMemo } from "react";
 import { nip19, EventTemplate, NostrEvent } from "nostr-tools";
 import type { Webxdc as WebxdcAPI, SendingStatusUpdate, ReceivedStatusUpdate, RealtimeListener } from "@webxdc/types";
 import { onlyEvents } from "applesauce-relay";
+import { mapEventsToStore } from "applesauce-core";
+import { use$, useActiveAccount } from "applesauce-react/hooks";
+import { ignoreElements, map } from "rxjs";
 
+import { eventStore } from "../services/event-store";
 import pool from "../services/pool";
 import useUserProfile from "./use-user-profile";
 import { useReadRelays } from "./use-client-relays";
 import { usePublishEvent } from "../providers/global/publish-provider";
 import { WEBXDC_UPDATE_KIND, WEBXDC_REALTIME_KIND } from "../helpers/nostr/webxdc";
+
+const EMPTY_EVENTS: NostrEvent[] = [];
 
 /**
  * Subscribes to the persistent kind 4932 state-update events for this session and converts the
@@ -19,28 +24,20 @@ import { WEBXDC_UPDATE_KIND, WEBXDC_REALTIME_KIND } from "../helpers/nostr/webxd
  * neither half of the state-updates sub-hook is left over the plain-function budget.
  */
 function useWebxdcCollectedUpdates(uuid: string, relays: string[]): ReceivedStatusUpdate<unknown>[] {
-  // Track all received state update events (for serial assignment + getAllUpdates)
-  const [stateEvents, setStateEvents] = useState<NostrEvent[]>([]);
+  const filter = useMemo(() => ({ kinds: [WEBXDC_UPDATE_KIND], "#i": [uuid] }), [uuid]);
 
-  // Subscribe to kind 4932 persistent state updates
-  useEffect(() => {
-    if (!uuid || relays.length === 0) return;
+  // Keep a live subscription so updates from other peers after EOSE still arrive
+  use$(() => {
+    if (!uuid || relays.length === 0) return undefined;
+    return pool.subscription(relays, filter).pipe(onlyEvents(), mapEventsToStore(eventStore), ignoreElements());
+  }, [uuid, relays, filter]);
 
-    const sub = pool
-      .request(relays, [{ kinds: [WEBXDC_UPDATE_KIND], "#i": [uuid] }])
-      .pipe(onlyEvents())
-      .subscribe((event) => {
-        setStateEvents((prev) => {
-          // Deduplicate by event id
-          const alreadyHave = prev.some((e) => e.id === event.id);
-          if (alreadyHave) return prev;
-          const next = [...prev, event].sort((a, b) => a.created_at - b.created_at);
-          return next;
-        });
-      });
-
-    return () => sub.unsubscribe();
-  }, [uuid, relays]);
+  // The store dedupes and sorts newest-first; serials are assigned oldest-first
+  const stateEvents =
+    use$(
+      () => (uuid ? eventStore.timeline(filter).pipe(map((events) => [...events].reverse())) : undefined),
+      [uuid, filter],
+    ) ?? EMPTY_EVENTS;
 
   // Convert events to ReceivedStatusUpdates with serial numbers
   return useMemo((): ReceivedStatusUpdate<unknown>[] => {
@@ -163,8 +160,9 @@ function useWebxdcRealtimeChannel(
     let realtimeListener: ((data: Uint8Array) => void) | null = null;
 
     // Subscribe to ephemeral kind 20932 events for this UUID
+    // A live subscription is required: ephemeral events only arrive after EOSE
     const sub = pool
-      .request(relays, [{ kinds: [WEBXDC_REALTIME_KIND], "#i": [uuid], since: Math.floor(Date.now() / 1000) }])
+      .subscription(relays, [{ kinds: [WEBXDC_REALTIME_KIND], "#i": [uuid], since: Math.floor(Date.now() / 1000) }])
       .pipe(onlyEvents())
       .subscribe((event) => {
         if (abortController.signal.aborted) return;
