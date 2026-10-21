@@ -2,7 +2,7 @@ import { Box, Button, Divider, Flex, Heading, Link, Spacer, Text } from "@chakra
 import { useActiveAccount, use$ } from "applesauce-react/hooks";
 import { NostrEvent } from "nostr-tools";
 import { useCallback, useMemo } from "react";
-import { map, NEVER, of, throttleTime } from "rxjs";
+import { NEVER } from "rxjs";
 
 import NoteFilterTypeButtons from "../../components/note-filter-type-buttons";
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
@@ -15,8 +15,8 @@ import { isReply, isRepost } from "../../helpers/nostr/event";
 import useClientSideMuteFilter from "../../hooks/use-client-side-mute-filter";
 import useLocalStorageDisclosure from "../../hooks/use-localstorage-disclosure";
 import { useOutboxTimelineLoader } from "../../hooks/use-outbox-timeline-loader";
+import useTimelineEvents from "../../hooks/use-timeline-events";
 import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
-import { eventStore } from "../../services/event-store";
 import outboxSubscriptionsService from "../../services/outbox-subscriptions";
 import { unixNow } from "applesauce-core/helpers";
 import { shareAndHold } from "../../helpers/observable";
@@ -53,17 +53,7 @@ function HomePage() {
   use$(subscription$);
 
   // Subscribe to event store for timeline events
-  const timeline =
-    use$(
-      () =>
-        filter
-          ? eventStore.timeline({ ...filter, kinds: GENERIC_TIMELINE_KINDS }).pipe(
-              throttleTime(500),
-              map((events) => events.filter(eventFilter)),
-            )
-          : of([]),
-      [filter, eventFilter],
-    ) ?? [];
+  const timeline = useTimelineEvents(filter && { ...filter, kinds: GENERIC_TIMELINE_KINDS }, eventFilter);
 
   const header = (
     <Flex gap="2" wrap="wrap" alignItems="center">

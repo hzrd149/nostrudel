@@ -5,6 +5,7 @@ import { useMemo } from "react";
 import { Photo } from "react-photo-album";
 
 import { isImageURL } from "../../../helpers/url";
+import useScrollAnchor from "../../../hooks/timeline/use-scroll-anchor";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
 import { useBreakpointValue } from "../../../providers/global/breakpoint-provider";
 import { GalleryImage } from "../../content/components/gallery";
@@ -34,11 +35,17 @@ function ImageGallery({ images }: { images: PhotoWithEvent[] }) {
   );
 }
 
-export default function MediaTimeline({ timeline }: { timeline: NostrEvent[] }) {
+/**
+ * @param since the oldest created_at loaded far enough to render, unset to render every event
+ */
+export default function MediaTimeline({ timeline, since }: { timeline: NostrEvent[]; since?: number }) {
+  useScrollAnchor();
+
   const images = useMemo(() => {
     const images: PhotoWithEvent[] = [];
 
     for (const event of timeline) {
+      if (since !== undefined && event.created_at < since) continue;
       if (event.kind === kinds.Repost || event.kind === kinds.GenericRepost) continue;
       const urls = event.content.matchAll(URL_REGEX);
 
@@ -48,7 +55,7 @@ export default function MediaTimeline({ timeline }: { timeline: NostrEvent[] }) 
     }
 
     return images;
-  }, [timeline]);
+  }, [timeline, since]);
 
   return (
     <LightboxProvider>

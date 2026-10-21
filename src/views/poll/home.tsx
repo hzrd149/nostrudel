@@ -2,7 +2,7 @@ import { Button, Flex, Spacer } from "@chakra-ui/react";
 import { useActiveAccount, use$ } from "applesauce-react/hooks";
 import { NostrEvent } from "nostr-tools";
 import { useCallback, useMemo } from "react";
-import { map, NEVER, of, throttleTime } from "rxjs";
+import { NEVER } from "rxjs";
 import { unixNow } from "applesauce-core/helpers";
 
 import { AddIcon } from "../../components/icons";
@@ -14,8 +14,8 @@ import { shareAndHold } from "../../helpers/observable";
 import { POLL_KIND } from "../../helpers/nostr/polls";
 import useClientSideMuteFilter from "../../hooks/use-client-side-mute-filter";
 import { useOutboxTimelineLoader } from "../../hooks/use-outbox-timeline-loader";
+import useTimelineEvents from "../../hooks/use-timeline-events";
 import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
-import { eventStore } from "../../services/event-store";
 import outboxSubscriptionsService from "../../services/outbox-subscriptions";
 
 function PollHomePage() {
@@ -45,17 +45,7 @@ function PollHomePage() {
   use$(subscription$);
 
   // Subscribe to event store for timeline events
-  const timeline =
-    use$(
-      () =>
-        filter
-          ? eventStore.timeline({ ...filter, kinds: [POLL_KIND] }).pipe(
-              throttleTime(500),
-              map((events) => events.filter(eventFilter)),
-            )
-          : of([]),
-      [filter, eventFilter],
-    ) ?? [];
+  const timeline = useTimelineEvents(filter && { ...filter, kinds: [POLL_KIND] }, eventFilter);
 
   const header = (
     <Flex gap="2" wrap="wrap" alignItems="center">

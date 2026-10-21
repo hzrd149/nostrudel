@@ -1,18 +1,22 @@
 import { FlexProps } from "@chakra-ui/react";
 // v5: Expressions was removed, define URL regex inline
 const URL_REGEX = /https?:\/\/[^\s]+/g;
+import { use$ } from "applesauce-react/hooks";
 import { TimelineLoader } from "applesauce-loaders/loaders";
 import { NostrEvent } from "nostr-tools";
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 
+import { getTimelineRange } from "../../helpers/timeline-range";
 import useRouteSearchValue from "../../hooks/use-route-search-value";
-import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
-import IntersectionObserverProvider from "../../providers/local/intersection-observer";
-import LoadMoreButton from "../timeline/load-more-button";
+import IntersectionObserverProvider, {
+  useCachedIntersectionMapCallback,
+} from "../../providers/local/intersection-observer";
+import { eventStore } from "../../services/event-store";
 import VerticalPageLayout from "../vertical-page-layout";
 import GenericNoteTimeline from "./generic-note-timeline";
 import MediaTimeline from "./media-timeline";
+import TimelineRangeEnd from "./timeline-range-end";
 
 export function useTimelinePageEventFilter() {
   const [params] = useSearchParams();
@@ -38,7 +42,30 @@ export default function TimelinePage({
   FlexProps,
   "children" | "direction" | "gap" | "as"
 >) {
-  const callback = useTimelineCurserIntersectionCallback(loader);
+  const range = loader ? getTimelineRange(loader) : undefined;
+  const since = use$(range?.range$)?.since;
+
+  // Load the visible part of the timeline and grow the rendered range while the page is open
+  useEffect(() => {
+    if (!range) return;
+    const sub = range.run().subscribe();
+    return () => sub.unsubscribe();
+  }, [range]);
+
+  // Report the oldest note on screen so the loader keeps it covered
+  const callback = useCachedIntersectionMapCallback(
+    (entries) => {
+      if (!range) return;
+      let oldest: number | undefined;
+      for (const [id, entry] of entries) {
+        if (!entry.isIntersecting) continue;
+        const event = eventStore.getEvent(id);
+        if (event) oldest = Math.min(oldest ?? Infinity, event.created_at);
+      }
+      if (oldest !== range.view$.value.visibleSince) range.view$.next({ ...range.view$.value, visibleSince: oldest });
+    },
+    [range],
+  );
 
   const viewParam = useRouteSearchValue("view", "timeline");
   const mode = (viewParam.value as TimelineViewType) ?? "timeline";
@@ -46,10 +73,10 @@ export default function TimelinePage({
   const renderTimeline = () => {
     switch (mode) {
       case "timeline":
-        return <GenericNoteTimeline timeline={timeline} />;
+        return <GenericNoteTimeline timeline={timeline} since={since} />;
 
       case "images":
-        return <MediaTimeline timeline={timeline} />;
+        return <MediaTimeline timeline={timeline} since={since} />;
       default:
         return null;
     }
@@ -60,7 +87,7 @@ export default function TimelinePage({
       <VerticalPageLayout mx="auto" gap="4" {...props}>
         {header}
         {renderTimeline()}
-        <LoadMoreButton loader={loader} />
+        {range && <TimelineRangeEnd range={range} />}
       </VerticalPageLayout>
     </IntersectionObserverProvider>
   );

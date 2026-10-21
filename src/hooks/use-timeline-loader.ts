@@ -1,6 +1,4 @@
 import { createTimelineLoader } from "applesauce-loaders/loaders";
-import { TimelineModel } from "applesauce-core/models";
-import { useEventModel } from "applesauce-react/hooks";
 import sum from "hash-sum";
 import { Filter, NostrEvent } from "nostr-tools";
 import { useMemo } from "react";
@@ -8,6 +6,7 @@ import { useMemo } from "react";
 import { cacheRequest } from "../services/event-cache";
 import { eventStore } from "../services/event-store";
 import pool from "../services/pool";
+import useTimelineEvents from "./use-timeline-events";
 
 type Options = {
   eventFilter?: (event: NostrEvent) => boolean;
@@ -31,15 +30,11 @@ export default function useTimelineLoader(
     else return undefined;
   }, [key, sum(relays), sum(filters)]);
 
-  const timeline = useEventModel(TimelineModel<NostrEvent>, filters && [filters]) ?? [];
-  const filteredTimeline = useMemo(() => {
-    if (!opts?.eventFilter) return timeline;
-    return timeline.filter((event) => opts.eventFilter?.(event));
-  }, [timeline, opts?.eventFilter]);
+  const timeline = useTimelineEvents(filters, opts?.eventFilter);
 
   return {
     loader,
     /** @deprecated get the events from the eventStore instead */
-    timeline: filteredTimeline,
+    timeline,
   };
 }
