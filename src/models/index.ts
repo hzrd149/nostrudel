@@ -1,5 +1,4 @@
 export * from "./app-settings.js";
-export * from "./badges.js";
 export * from "./blossom-servers.js";
 export * from "./channel-metadata.js";
 export * from "./event-zaps.js";

@@ -13,9 +13,9 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
+import { Badge, BadgeAward } from "applesauce-common/casts";
 import { kinds, NostrEvent } from "nostr-tools";
 
-import { getReplaceableAddress } from "applesauce-core/helpers";
 import GenericCommentForm from "../../components/comment/generic-comment-form";
 import { GenericComments } from "../../components/comment/generic-comments";
 import { ErrorBoundary } from "../../components/error-boundary";
@@ -25,8 +25,9 @@ import UserAvatar from "../../components/user/user-avatar";
 import UserAvatarLink from "../../components/user/user-avatar-link";
 import UserLink from "../../components/user/user-link";
 import UserName from "../../components/user/user-name";
-import { getBadgeAwardPubkeys, getBadgeDescription, getBadgeImage, getBadgeName } from "../../helpers/nostr/badges";
 import { useReadRelays } from "../../hooks/use-client-relays";
+import useCastEvent from "../../hooks/use-cast-event";
+import useCastTimeline from "../../hooks/use-cast-timeline";
 import useParamsAddressPointer from "../../hooks/use-params-address-pointer";
 import useReplaceableEvent from "../../hooks/use-replaceable-event";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
@@ -48,12 +49,11 @@ function BadgeActivityTab({ awards }: { awards: NostrEvent[] }) {
 }
 
 function BadgeUsersTab({ awards }: { awards: NostrEvent[] }) {
+  const casts = useCastTimeline(awards, BadgeAward);
   const pubkeys = new Set<string>();
-  if (awards) {
-    for (const award of awards) {
-      for (const { pubkey } of getBadgeAwardPubkeys(award)) {
-        pubkeys.add(pubkey);
-      }
+  for (const award of casts) {
+    for (const { pubkey } of award.recipients) {
+      pubkeys.add(pubkey);
     }
   }
 
@@ -92,13 +92,12 @@ function BadgeCommentsTab({ badge }: { badge: NostrEvent }) {
   );
 }
 
-function BadgeDetailsPage({ badge }: { badge: NostrEvent }) {
-  const image = getBadgeImage(badge);
-  const description = getBadgeDescription(badge);
+function BadgeDetailsPage({ badge }: { badge: Badge }) {
+  const image = badge.image;
+  const description = badge.description;
 
   const readRelays = useReadRelays();
-  const coordinate = getReplaceableAddress(badge);
-  if (!coordinate) throw new Error("Invalid badge - no coordinate"); // v5: can return null
+  const coordinate = badge.uid;
   const { loader, timeline } = useTimelineLoader(`${coordinate}-awards`, readRelays, {
     "#a": [coordinate],
     kinds: [kinds.BadgeAward],
@@ -106,31 +105,29 @@ function BadgeDetailsPage({ badge }: { badge: NostrEvent }) {
 
   const callback = useTimelineCurserIntersectionCallback(loader);
 
-  if (!badge) return <Spinner />;
-
   return (
     <SimpleView
-      icon={<UserAvatar pubkey={badge.pubkey} size="sm" />}
+      icon={<UserAvatar pubkey={badge.event.pubkey} size="sm" />}
       title={
         <>
-          <UserName pubkey={badge.pubkey} /> | {getBadgeName(badge)}
+          <UserName pubkey={badge.event.pubkey} /> | {badge.name}
         </>
       }
-      actions={<BadgeMenu aria-label="More options" badge={badge} variant="ghost" ms="auto" />}
+      actions={<BadgeMenu aria-label="More options" badge={badge.event} variant="ghost" ms="auto" />}
     >
       <IntersectionObserverProvider callback={callback}>
         <Flex direction={{ base: "column", lg: "row" }} gap="4">
           {image && (
-            <Image src={image.src} maxW="3in" mr="2" mb="2" mx={{ base: "auto", lg: "initial" }} borderRadius="lg" />
+            <Image src={image.url} maxW="3in" mr="2" mb="2" mx={{ base: "auto", lg: "initial" }} borderRadius="lg" />
           )}
           <Flex direction="column">
-            <Heading size="md">{getBadgeName(badge)}</Heading>
+            <Heading size="md">{badge.name}</Heading>
             <Text>
-              Created by: <UserAvatarLink pubkey={badge.pubkey} size="xs" />{" "}
-              <UserLink fontWeight="bold" pubkey={badge.pubkey} />
+              Created by: <UserAvatarLink pubkey={badge.event.pubkey} size="xs" />{" "}
+              <UserLink fontWeight="bold" pubkey={badge.event.pubkey} />
             </Text>
             <Text>
-              Created: <Timestamp timestamp={badge.created_at} />
+              Created: <Timestamp timestamp={badge.event.created_at} />
             </Text>
             {description && (
               <>
@@ -157,7 +154,7 @@ function BadgeDetailsPage({ badge }: { badge: NostrEvent }) {
               <BadgeUsersTab awards={timeline} />
             </TabPanel>
             <TabPanel px="0">
-              <BadgeCommentsTab badge={badge} />
+              <BadgeCommentsTab badge={badge.event} />
             </TabPanel>
           </TabPanels>
         </Tabs>
@@ -168,7 +165,7 @@ function BadgeDetailsPage({ badge }: { badge: NostrEvent }) {
 
 export default function BadgeDetailsView() {
   const pointer = useParamsAddressPointer("naddr");
-  const badge = useReplaceableEvent(pointer);
+  const badge = useCastEvent(useReplaceableEvent(pointer), Badge);
 
   if (!badge) return <Spinner />;
 

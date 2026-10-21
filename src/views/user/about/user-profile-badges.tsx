@@ -16,26 +16,21 @@ import {
   Tooltip,
   useDisclosure,
 } from "@chakra-ui/react";
-import { NostrEvent } from "nostr-tools";
-import { useState } from "react";
+import { Badge as BadgeCast, BadgeAward } from "applesauce-common/casts";
+import { use$ } from "applesauce-react/hooks";
+import { useMemo, useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
 
-import { AddressPointer } from "applesauce-core/helpers";
-
-// v5: getCoordinateFromAddressPointer was removed
-const getCoordinateFromAddressPointer = (pointer: AddressPointer) =>
-  `${pointer.kind}:${pointer.pubkey}:${pointer.identifier}`;
 import Timestamp from "../../../components/timestamp";
 import UserAvatarLink from "../../../components/user/user-avatar-link";
 import UserLink from "../../../components/user/user-link";
-import { getBadgeDescription, getBadgeImage, getBadgeName } from "../../../helpers/nostr/badges";
-import useUserProfileBadges from "../../../hooks/use-user-profile-badges";
+import useCastUser from "../../../hooks/use-cast-user";
 import { getSharableEventAddress } from "../../../services/relay-hints";
 
-function Badge({ badge, award }: { badge: NostrEvent; award: NostrEvent }) {
-  const naddr = getSharableEventAddress(badge);
+function Badge({ badge, award }: { badge: BadgeCast; award: BadgeAward }) {
+  const naddr = getSharableEventAddress(badge.event);
   const modal = useDisclosure();
-  const description = getBadgeDescription(badge);
+  const description = badge.description;
 
   return (
     <>
@@ -47,26 +42,27 @@ function Badge({ badge, award }: { badge: NostrEvent; award: NostrEvent }) {
           modal.onOpen();
         }}
       >
-        <Tooltip label={getBadgeName(badge)}>
-          <Image w="14" h="14" src={getBadgeImage(badge)?.src ?? ""} />
+        <Tooltip label={badge.name}>
+          <Image w="14" h="14" src={badge.image?.url ?? ""} />
         </Tooltip>
       </Link>
 
       <Modal isOpen={modal.isOpen} onClose={modal.onClose}>
         <ModalOverlay />
         <ModalContent>
-          <Image src={getBadgeImage(badge)?.src ?? ""} />
+          <Image src={badge.image?.url ?? ""} />
           <ModalCloseButton />
           <ModalHeader px="4" pt="2" pb="0">
-            {getBadgeName(badge)}
+            {badge.name}
           </ModalHeader>
           <ModalBody px="4" py="2">
             <Text>
-              Created by <UserAvatarLink pubkey={badge.pubkey} size="xs" />{" "}
-              <UserLink fontWeight="bold" pubkey={badge.pubkey} /> on <Timestamp timestamp={badge.created_at} />
+              Created by <UserAvatarLink pubkey={badge.event.pubkey} size="xs" />{" "}
+              <UserLink fontWeight="bold" pubkey={badge.event.pubkey} /> on{" "}
+              <Timestamp timestamp={badge.event.created_at} />
             </Text>
             <Text>
-              Date Awarded: <Timestamp timestamp={award.created_at} />
+              Date Awarded: <Timestamp timestamp={award.event.created_at} />
             </Text>
             <Heading size="sm" mt="4">
               Description:
@@ -85,20 +81,30 @@ function Badge({ badge, award }: { badge: NostrEvent; award: NostrEvent }) {
 }
 
 export default function UserProfileBadges({ pubkey, ...props }: Omit<FlexProps, "children"> & { pubkey: string }) {
-  const badges = useUserProfileBadges({ pubkey });
+  const slots = use$(useCastUser(pubkey).profileBadges$.badges$);
   const [limit, setLimit] = useState<number | null>(10);
 
-  if (!badges || badges.length === 0) return null;
+  // skip slots that have not loaded and show each badge once, in profile badges list order
+  const badges = useMemo(() => {
+    const seen = new Set<string>();
+    const loaded: { badge: BadgeCast; award: BadgeAward }[] = [];
+    for (const { badge, award } of slots ?? []) {
+      if (!badge || !award || seen.has(badge.uid)) continue;
+      seen.add(badge.uid);
+      loaded.push({ badge, award });
+    }
+    return loaded;
+  }, [slots]);
+
+  if (badges.length === 0) return null;
 
   return (
     <Flex direction="column" gap="2" {...props}>
       <Heading size="md">Badges</Heading>
       <Flex gap="2" wrap="wrap" alignItems="center">
-        {(limit !== null ? badges.slice(0, limit) : badges)
-          .filter((b) => !!b.badge && !!b.award)
-          .map(({ badge, award, badgePointer }) => (
-            <Badge key={getCoordinateFromAddressPointer(badgePointer)} badge={badge!} award={award!} />
-          ))}
+        {(limit !== null ? badges.slice(0, limit) : badges).map(({ badge, award }) => (
+          <Badge key={badge.uid} badge={badge} award={award} />
+        ))}
         {limit !== null && badges.length > limit && (
           <Button variant="outline" onClick={() => setLimit(null)}>
             Show More
