@@ -10,6 +10,7 @@ import {
 } from "../helpers/nostr/napplets";
 import {
   parseInstalledNappletEntries,
+  toSyncedNapplet,
   type IntentHandlerPreferences,
   type NappletSyncData,
 } from "../helpers/nostr/napplet-sync";
@@ -22,6 +23,8 @@ export type InstalledNapplet = {
   archetypes: NappletArchetype[];
   installedAt: number;
   lastOpenedAt: number;
+  /** created_at of the manifest last opened on this device */
+  openedVersion?: number;
 };
 
 const STORAGE_KEY = "nostrudel:napplet:installed";
@@ -129,14 +132,20 @@ export function setInstalledNappletScope(pubkey: string | undefined) {
 /** The installs and handler choices in the shape that is synced to the account */
 export function getNappletSyncData(): NappletSyncData {
   return {
-    installed: getInstalledNapplets().map(({ lastOpenedAt: _lastOpenedAt, ...item }) => item),
+    installed: getInstalledNapplets().map(toSyncedNapplet),
     handlers: intentHandlerPreferences$.value,
   };
 }
 
 export function applyNappletSyncData(data: NappletSyncData) {
-  const opened = new Map(getInstalledNapplets().map((item) => [item.address, item.lastOpenedAt]));
-  write(data.installed.map((item) => ({ ...item, lastOpenedAt: opened.get(item.address) ?? item.installedAt })));
+  const local = new Map(getInstalledNapplets().map((item) => [item.address, item]));
+  write(
+    data.installed.map((item) => ({
+      ...item,
+      lastOpenedAt: local.get(item.address)?.lastOpenedAt ?? item.installedAt,
+      openedVersion: local.get(item.address)?.openedVersion,
+    })),
+  );
   writeHandlerPreferences(data.handlers);
 }
 
@@ -187,6 +196,7 @@ export function installNapplet(event: NostrEvent, address = getNappletNaddr(even
     archetypes: getNappletArchetypes(event),
     installedAt: existing?.installedAt ?? now,
     lastOpenedAt: now,
+    openedVersion: existing?.openedVersion,
   };
 
   write([next, ...getInstalledNapplets().filter((item) => item.address !== address)]);
@@ -194,10 +204,27 @@ export function installNapplet(event: NostrEvent, address = getNappletNaddr(even
   return next;
 }
 
-export function touchInstalledNapplet(address: string) {
-  write(
-    getInstalledNapplets().map((item) => (item.address === address ? { ...item, lastOpenedAt: Date.now() } : item)),
-  );
+/**
+ * Records that an installed napplet was opened with this manifest, refreshing its stored title,
+ * description, and archetypes when the manifest is newer than the one last opened.
+ */
+export function openInstalledNapplet(event: NostrEvent, address = getNappletNaddr(event)) {
+  const existing = address && getInstalledNapplet(address);
+  if (!existing) return;
+
+  const newer = event.created_at >= (existing.openedVersion ?? 0);
+  const next: InstalledNapplet = newer
+    ? {
+        ...existing,
+        title: getNappletTitle(event),
+        description: getNappletDescription(event),
+        archetypes: getNappletArchetypes(event),
+        openedVersion: event.created_at,
+        lastOpenedAt: Date.now(),
+      }
+    : { ...existing, lastOpenedAt: Date.now() };
+
+  write(getInstalledNapplets().map((item) => (item.address === existing.address ? next : item)));
 }
 
 export function uninstallNapplet(address: string) {

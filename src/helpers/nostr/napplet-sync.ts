@@ -40,16 +40,17 @@ function parseArchetypes(value: unknown): NappletArchetype[] {
   );
 }
 
-/** Parses stored or synced install entries, dropping malformed ones. `lastOpenedAt` is device-local and optional. */
-export function parseInstalledNappletEntries(value: unknown): (SyncedNapplet & { lastOpenedAt?: number })[] {
+/** Device-local fields that are stored with an install but never synced */
+export type LocalNappletFields = { lastOpenedAt?: number; openedVersion?: number };
+
+/** Parses stored or synced install entries, dropping malformed ones */
+export function parseInstalledNappletEntries(value: unknown): (SyncedNapplet & LocalNappletFields)[] {
   if (!Array.isArray(value)) return [];
 
   return value.flatMap((item) => {
     if (!item || typeof item !== "object") return [];
-    const { address, title, description, pubkey, archetypes, installedAt, lastOpenedAt } = item as Record<
-      string,
-      unknown
-    >;
+    const { address, title, description, pubkey, archetypes, installedAt, lastOpenedAt, openedVersion } =
+      item as Record<string, unknown>;
     if (typeof address !== "string" || !address) return [];
     if (typeof title !== "string" || !title) return [];
     if (typeof pubkey !== "string" || !pubkey) return [];
@@ -64,9 +65,18 @@ export function parseInstalledNappletEntries(value: unknown): (SyncedNapplet & {
         archetypes: parseArchetypes(archetypes),
         installedAt,
         lastOpenedAt: typeof lastOpenedAt === "number" ? lastOpenedAt : undefined,
+        openedVersion: typeof openedVersion === "number" ? openedVersion : undefined,
       },
     ];
   });
+}
+
+export function toSyncedNapplet({
+  lastOpenedAt: _lastOpenedAt,
+  openedVersion: _openedVersion,
+  ...item
+}: SyncedNapplet & LocalNappletFields): SyncedNapplet {
+  return item;
 }
 
 /** Parses the decrypted NIP-78 content, dropping anything malformed */
@@ -81,7 +91,7 @@ export function parseNappletSyncData(value: unknown): NappletSyncData {
   }
 
   return {
-    installed: parseInstalledNappletEntries(installed).map(({ lastOpenedAt: _lastOpenedAt, ...item }) => item),
+    installed: parseInstalledNappletEntries(installed).map(toSyncedNapplet),
     handlers: cleanHandlers,
   };
 }

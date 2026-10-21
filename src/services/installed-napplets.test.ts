@@ -1,7 +1,10 @@
+import { NAPPLET_KIND_NAMED } from "@kehto/nip";
+import { finalizeEvent } from "nostr-tools";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 
 import type { InstalledNapplet } from "./installed-napplets";
 
+let service: typeof import("./installed-napplets");
 let getInstalledNappletPath: typeof import("./installed-napplets").getInstalledNappletPath;
 
 beforeAll(async () => {
@@ -13,7 +16,8 @@ beforeAll(async () => {
   });
   vi.stubGlobal("window", { addEventListener: () => {} });
 
-  ({ getInstalledNappletPath } = await import("./installed-napplets"));
+  service = await import("./installed-napplets");
+  ({ getInstalledNappletPath } = service);
 });
 
 function napplet(address: string, archetypes: string[]): InstalledNapplet {
@@ -43,5 +47,36 @@ describe("getInstalledNappletPath", () => {
     const a = napplet("naddr1a", ["app", "editor"]);
     const b = napplet("naddr1b", ["app"]);
     expect(getInstalledNappletPath(a, [a, b])).toBe("/app/editor");
+  });
+});
+
+const key = new Uint8Array(32).fill(2);
+
+function manifest(title: string, created_at: number) {
+  return finalizeEvent(
+    {
+      kind: NAPPLET_KIND_NAMED,
+      created_at,
+      content: "",
+      tags: [
+        ["d", "app"],
+        ["title", title],
+        ["x", "0".repeat(64)],
+      ],
+    },
+    key,
+  );
+}
+
+describe("openInstalledNapplet", () => {
+  it("refreshes stored details from a newer manifest and ignores older ones", () => {
+    const address = service.installNapplet(manifest("First", 100))!.address;
+    expect(service.getInstalledNapplet(address)?.openedVersion).toBeUndefined();
+
+    service.openInstalledNapplet(manifest("Second", 200));
+    expect(service.getInstalledNapplet(address)).toMatchObject({ title: "Second", openedVersion: 200 });
+
+    service.openInstalledNapplet(manifest("Older", 150));
+    expect(service.getInstalledNapplet(address)).toMatchObject({ title: "Second", openedVersion: 200 });
   });
 });

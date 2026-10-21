@@ -22,6 +22,7 @@ import Menu01 from "../icons/menu-01";
 import SimpleView from "../layout/presets/simple-view";
 import Timestamp from "../timestamp";
 import NappletInfoDrawer from "./napplet-info-drawer";
+import NappletUpdateNotice from "./napplet-update-notice";
 import {
   NAPPLET_KIND_SNAPSHOT,
   getNappletRequiredCapabilities,
@@ -31,7 +32,7 @@ import {
 } from "../../helpers/nostr/napplets";
 import { resolveNapplet } from "../../helpers/nostr/napplet-resolve";
 import { useNappletShell } from "../../providers/global/napplet-shell-provider";
-import { installNapplet } from "../../services/installed-napplets";
+import { installNapplet, openInstalledNapplet } from "../../services/installed-napplets";
 import useInstalledNapplets from "../../hooks/use-installed-napplets";
 import { createNappletIntentDelivery, type NappletIntentDelivery } from "../../services/napplet-intent-delivery";
 
@@ -82,7 +83,13 @@ export default function NappletFrame({ event, intent, onClose, onResolved, onErr
   const title = getNappletTitle(active);
   const address = getNappletNaddr(event);
   const installedNapplets = useInstalledNapplets();
-  const installed = !address || installedNapplets.some((napplet) => napplet.address === address);
+  const installedNapplet = address ? installedNapplets.find((napplet) => napplet.address === address) : undefined;
+  const installed = !address || !!installedNapplet;
+  const isInstalled = !!installedNapplet;
+
+  useEffect(() => {
+    if (isInstalled) openInstalledNapplet(event, address);
+  }, [event, address, isInstalled]);
 
   useEffect(() => {
     intentRef.current = intent;
@@ -246,6 +253,14 @@ export default function NappletFrame({ event, intent, onClose, onResolved, onErr
         </ButtonGroup>
       }
     >
+      {installedNapplet && (
+        <NappletUpdateNotice
+          key={event.id}
+          event={event}
+          openedVersion={installedNapplet.openedVersion}
+          onShowVersions={info.onOpen}
+        />
+      )}
       {version && (
         <Alert status="info" flexShrink={0}>
           <AlertIcon />
