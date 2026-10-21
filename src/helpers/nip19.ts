@@ -14,6 +14,20 @@ export function safeDecode(str: string) {
   }
 }
 
+/** Returns the event id or pointer a decoded note, nevent or naddr refers to */
+export function getDecodedEventPointer(decoded: nip19.DecodedResult) {
+  switch (decoded.type) {
+    case "note":
+      return decoded.data;
+    case "nevent":
+      return decoded.data;
+    case "naddr":
+      return decoded.data;
+    default:
+      return undefined;
+  }
+}
+
 export function normalizeToHexPubkey(hex: string) {
   if (isHexKey(hex)) return hex;
   const decode = safeDecode(hex);

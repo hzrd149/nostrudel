@@ -30,7 +30,8 @@ import { getHandlerLinkTemplate } from "applesauce-common/helpers";
 import { useNavigate } from "react-router-dom";
 
 import useTimelineLoader from "../../hooks/use-timeline-loader";
-import useSingleEvent from "../../hooks/use-single-event";
+import { getDecodedEventPointer } from "../../helpers/nip19";
+import useEvent from "../../hooks/use-event";
 import useReplaceableEvent from "../../hooks/use-replaceable-event";
 import { useReadRelays } from "../../hooks/use-client-relays";
 import { getDisplayName } from "../../helpers/nostr/profile";
@@ -48,14 +49,7 @@ import { buildShareUrl } from "../../helpers/share";
 import { getInstalledNapplet, getInstalledNappletPath } from "../../services/installed-napplets";
 
 function useEventFromDecode(decoded: DecodeResult) {
-  switch (decoded.type) {
-    case "note":
-      return useSingleEvent(decoded.data);
-    case "nevent":
-      return useSingleEvent(decoded.data);
-    case "naddr":
-      return useReplaceableEvent(decoded.data);
-  }
+  return useEvent(getDecodedEventPointer(decoded));
 }
 function getKindFromDecoded(decoded: DecodeResult) {
   switch (decoded.type) {

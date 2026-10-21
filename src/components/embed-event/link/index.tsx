@@ -3,11 +3,10 @@ import { Link, LinkProps } from "@chakra-ui/react";
 import { DecodeResult } from "applesauce-core/helpers";
 import { kinds, NostrEvent } from "nostr-tools";
 
-import { safeDecode } from "../../../helpers/nip19";
+import { getDecodedEventPointer, safeDecode } from "../../../helpers/nip19";
 import { KindNames } from "../../../helpers/nostr/kinds";
-import useReplaceableEvent from "../../../hooks/use-replaceable-event";
 import useShareableEventAddress from "../../../hooks/use-shareable-event-address";
-import useSingleEvent from "../../../hooks/use-single-event";
+import useEvent from "../../../hooks/use-event";
 import LoadingNostrLink from "../../loading-nostr-link";
 import RouterLink from "../../router-link";
 import UserName from "../../user/user-name";
@@ -40,23 +39,9 @@ export function EmbedEventPointerLink({
   ...props
 }: { pointer: DecodeResult | string } & Omit<LinkProps, "children" | "href">) {
   const parsedPointer = typeof pointer === "string" ? safeDecode(pointer) : pointer;
+  const event = useEvent(parsedPointer ? getDecodedEventPointer(parsedPointer) : undefined);
   if (!parsedPointer) return null;
 
-  pointer = parsedPointer;
-
-  let event: NostrEvent | undefined = undefined;
-  switch (pointer.type) {
-    case "note":
-      event = useSingleEvent(pointer.data);
-      break;
-    case "nevent":
-      event = useSingleEvent(pointer.data.id);
-      break;
-    case "naddr":
-      event = useReplaceableEvent(pointer.data);
-      break;
-  }
-
-  if (!event) return <LoadingNostrLink link={pointer} />;
+  if (!event) return <LoadingNostrLink link={parsedPointer} />;
   return <EmbedEventLink event={event} {...props} />;
 }
