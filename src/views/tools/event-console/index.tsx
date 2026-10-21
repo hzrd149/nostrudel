@@ -17,7 +17,7 @@ import { safeParse } from "applesauce-core/helpers/json";
 import stringify from "json-stringify-deterministic";
 import _throttle from "lodash.throttle";
 import { NostrEvent } from "nostr-tools";
-import { memo, useCallback, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { useLocation, useSearchParams } from "react-router-dom";
 import { useLocalStorage } from "react-use";
 import { Subscription } from "rxjs";
@@ -57,7 +57,10 @@ export default function EventConsoleView() {
   const queryRelay = useDisclosure({ defaultIsOpen: params.has("relay") });
   const [relay, setRelay] = useState(params.get("relay") || "");
 
-  const [sub, setSub] = useState<Subscription | null>(null);
+  // Kept in a ref so a new query and unmount both close the previous REQ
+  const subRef = useRef<Subscription | null>(null);
+  const [subscribed, setSubscribed] = useState(false);
+  useEffect(() => () => subRef.current?.unsubscribe(), []);
 
   const [query, setQuery] = useState(() => {
     if (params.has("filter") || location.state?.filter) {
@@ -84,8 +87,9 @@ export default function EventConsoleView() {
       setEvents([]);
       setError("");
 
-      // stop previous subscription
-      if (sub) sub.unsubscribe();
+      subRef.current?.unsubscribe();
+      subRef.current = null;
+      setSubscribed(false);
 
       const buffer: NostrEvent[] = [];
       const flush = _throttle(
@@ -106,18 +110,17 @@ export default function EventConsoleView() {
         if (!relay) throw new Error("Must set relay");
 
         // query remote relay
-        const sub = pool.subscription([relay], filter).pipe(onlyEvents()).subscribe(handleEvent);
-        setSub(sub);
+        subRef.current = pool.subscription([relay], filter).pipe(onlyEvents()).subscribe(handleEvent);
       } else {
         // query cache relay
-        const sub = getEvents([filter]).subscribe(handleEvent);
-        setSub(sub);
+        subRef.current = getEvents([filter]).subscribe(handleEvent);
       }
+      setSubscribed(true);
     } catch (e) {
       if (e instanceof Error) setError(e.message);
     }
     setLoading(false);
-  }, [queryRelay.isOpen, query, relay, relay, sub]);
+  }, [queryRelay.isOpen, query, relay]);
 
   const submitRef = useRef(loadEvents);
   submitRef.current = loadEvents;
@@ -169,7 +172,7 @@ export default function EventConsoleView() {
 
       <Flex gap="2" alignItems="center">
         <Text>{events.length} events</Text>
-        {sub && <Text color="green.500">Subscribed</Text>}
+        {subscribed && <Text color="green.500">Subscribed</Text>}
         <ButtonGroup ms="auto" size="sm">
           {events.length > 0 && (
             <IconButton
