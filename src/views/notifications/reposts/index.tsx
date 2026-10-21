@@ -16,6 +16,7 @@ import RelayDistributionButton from "../components/relay-distribution-button";
 import MailboxSettingsButton from "../components/mailbox-settings-button";
 import TimePeriodHeader from "../components/time-period-header";
 import NotificationSyncLayout from "../components/notification-sync-layout";
+import NotificationSyncStatus from "../components/notification-sync-status";
 import RepostGroup from "./components/repost-group";
 
 type ListItem = TimeGroupedListItem<TRepostGroup>;
@@ -63,7 +64,8 @@ export default function SharesTab() {
       flush
       gap={0}
       actions={
-        <ButtonGroup ms="auto">
+        <ButtonGroup ms="auto" alignItems="center">
+          <NotificationSyncStatus states={[sync]} />
           <RelayDistributionButton filter={filter} title="Reposts Notifications Relay Distribution" />
           <MailboxSettingsButton />
         </ButtonGroup>

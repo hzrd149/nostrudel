@@ -46,7 +46,7 @@ function syncFilter(filter: Filter, relays$: Observable<string[]>) {
     return createNotificationSync({
       filter,
       relays$,
-      window: { since: Math.max(0, until - 2 * 86400), until },
+      window: { since: Math.max(0, until - 7 * 86400), until },
       eventStore,
       syncLoader,
       cacheRequest,

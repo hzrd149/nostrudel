@@ -17,6 +17,7 @@ import RelayDistributionButton from "../components/relay-distribution-button";
 import MailboxSettingsButton from "../components/mailbox-settings-button";
 import TimePeriodHeader from "../components/time-period-header";
 import NotificationSyncLayout from "../components/notification-sync-layout";
+import NotificationSyncStatus from "../components/notification-sync-status";
 import ThreadGroup from "./components/thread-group";
 
 type ListItem = TimeGroupedListItem<ThreadNotification>;
@@ -64,7 +65,8 @@ export default function ThreadsTab() {
       flush
       gap={0}
       actions={
-        <ButtonGroup ms="auto">
+        <ButtonGroup ms="auto" alignItems="center">
+          <NotificationSyncStatus states={[sync]} />
           <RelayDistributionButton filter={filter} title="Threads Notifications Relay Distribution" />
           <MailboxSettingsButton />
         </ButtonGroup>

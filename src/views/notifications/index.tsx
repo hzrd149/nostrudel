@@ -1,4 +1,4 @@
-import { Badge, Button, ButtonGroup, Flex, SimpleGrid, Text } from "@chakra-ui/react";
+import { Badge, ButtonGroup, Flex, SimpleGrid, Text } from "@chakra-ui/react";
 import { useMemo } from "react";
 
 import { useLocalStorage } from "react-use";
@@ -6,7 +6,7 @@ import { AtIcon, LightningIcon, QuoteIcon, ReplyIcon, RepostIcon, ThreadIcon } f
 import SimpleNavBox from "../../components/layout/box-layout/simple-nav-box";
 import SimpleView from "../../components/layout/presets/simple-view";
 import useNotificationSync from "../../hooks/use-notification-sync";
-import { getNotificationSyncSummary } from "../../helpers/notification-sync";
+import NotificationSyncStatus from "./components/notification-sync-status";
 import { useNotificationCounts } from "./components/notification-counts";
 import TimeRangeSelect, { getTimeRangeLabel, getTimeRangeSince, TimeRange } from "./components/time-range-select";
 
@@ -38,7 +38,7 @@ function NotificationCountBadge({
 }
 
 export default function NotificationsView() {
-  const [timeRange = "2days", setTimeRange] = useLocalStorage<TimeRange>("notifications-time-range");
+  const [timeRange = "lastWeek", setTimeRange] = useLocalStorage<TimeRange>("notifications-time-range");
   const counts = useNotificationCounts(timeRange);
 
   const timeRangeLabel = useMemo(() => getTimeRangeLabel(timeRange).toLowerCase(), [timeRange]);
@@ -48,37 +48,18 @@ export default function NotificationsView() {
   const reposts = useNotificationSync("reposts", since);
   const zaps = useNotificationSync("zaps", since);
   const states = [social, reposts, zaps];
-  const loading = states.some((state) => getNotificationSyncSummary(state).loading);
-  const incomplete = states.some((state) => {
-    const summary = getNotificationSyncSummary(state);
-    return summary.incomplete || summary.noRelays;
-  });
 
   return (
     <SimpleView
       title="Notifications"
       flush
       actions={
-        <ButtonGroup ms="auto">
+        <ButtonGroup ms="auto" alignItems="center">
+          <NotificationSyncStatus states={states} />
           <TimeRangeSelect value={timeRange} onChange={setTimeRange} />
         </ButtonGroup>
       }
     >
-      {loading && (
-        <Text as="output" aria-live="polite" px="4">
-          Syncing notifications…
-        </Text>
-      )}
-      {incomplete && (
-        <Flex alignItems="center" gap="2" px="4">
-          <Text as="output" aria-live="polite">
-            Some notification sources are unavailable. Counts may be incomplete.
-          </Text>
-          <Button onClick={() => states.forEach((state) => state?.retry())} isDisabled={loading}>
-            Retry
-          </Button>
-        </Flex>
-      )}
       <SimpleGrid columns={{ base: 1, lg: 2, xl: 3 }}>
         <SimpleNavBox
           icon={<ReplyIcon boxSize={12} />}

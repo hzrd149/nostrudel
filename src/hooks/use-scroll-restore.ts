@@ -1,6 +1,7 @@
-import { logger } from "applesauce-core";
 import { RefCallback, useCallback, useLayoutEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
+
+import { logger } from "../helpers/debug";
 
 const log = logger.extend("useScrollRestoreRef");
 
@@ -49,7 +50,7 @@ export default function useScrollRestoreRef<T extends HTMLElement = HTMLDivEleme
       if (container) {
         const savedScroll = sessionStorage.getItem(key);
         if (savedScroll) {
-          log("Restoring scroll position", container, parseInt(savedScroll, 10));
+          log("Restoring scroll position", key, parseInt(savedScroll, 10));
           container.scrollTop = parseInt(savedScroll, 10);
         }
       }
@@ -70,7 +71,7 @@ export function useVirtualListScrollRestore(name = "default") {
   const outerRef = useCallback(
     (container: HTMLDivElement | null) => {
       ref.current = container;
-      if (container) log("Found scroll container", container);
+      if (container) log("Found scroll container", key);
     },
     [key],
   );
@@ -81,7 +82,7 @@ export function useVirtualListScrollRestore(name = "default") {
       if (list) {
         const savedScroll = sessionStorage.getItem(key);
         if (savedScroll) {
-          log("Restoring scroll position", list, parseInt(savedScroll, 10));
+          log("Restoring scroll position", key, parseInt(savedScroll, 10));
           list.scrollTo(parseInt(savedScroll, 10));
         }
       }
