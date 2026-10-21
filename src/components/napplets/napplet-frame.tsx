@@ -113,7 +113,12 @@ export default function NappletFrame({ event, intent, onClose, onResolved, onErr
           cache,
           fetchBlob: (sha256Hex, servers) => fetchNappletBlob(sha256Hex, servers, controller.signal),
         });
-        const identity = { pubkey: active.pubkey, dTag: resolved.dTag, aggregateHash: resolved.aggregateHash };
+        const identity = {
+          pubkey: active.pubkey,
+          dTag: resolved.dTag,
+          aggregateHash: resolved.aggregateHash,
+          title: getNappletTitle(active),
+        };
         const allowed = await requestConsent(active, identity, capabilities);
         if (!allowed) throw new Error("Napplet access denied");
         if (!mounted) return;

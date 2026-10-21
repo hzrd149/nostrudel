@@ -124,6 +124,17 @@ export function parseNappletManifest(event: NostrEvent): NappletManifest {
   };
 }
 
+/** The identity permissions are granted to: one version of one napplet */
+export function getNappletIdentity(event: NostrEvent) {
+  const manifest = parseNappletManifest(event);
+  return {
+    pubkey: event.pubkey,
+    dTag: manifest.dTag,
+    aggregateHash: manifest.aggregateHash,
+    title: getNappletTitle(event),
+  };
+}
+
 export function validateNappletManifest(event: NostrEvent) {
   try {
     parseNappletManifest(event);

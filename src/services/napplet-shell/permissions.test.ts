@@ -3,9 +3,11 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
   addAlwaysAllowed,
+  getAlwaysAllowed,
   grantCapabilities,
   hasApprovedCapability,
   isAlwaysAllowed,
+  revokeAlwaysAllowed,
   revokeCapabilities,
   type NappletIdentity,
 } from "./permissions";
@@ -110,5 +112,29 @@ describe("always-allow list", () => {
 
   it("starts empty when nothing was stored", () => {
     expect(isAlwaysAllowed(identity)).toBe(false);
+  });
+
+  it("records the capabilities that were allowed", () => {
+    addAlwaysAllowed(identity, [relayWrite]);
+
+    expect(getAlwaysAllowed()).toMatchObject([{ ...identity, capabilities: [relayWrite] }]);
+  });
+
+  it("reads grants stored as bare identity keys", () => {
+    localStorage.setItem("nostrudel:napplet:always-allow", JSON.stringify(["pk-a:app:with:colons:hash-1"]));
+
+    expect(getAlwaysAllowed()).toMatchObject([{ pubkey: "pk-a", dTag: "app:with:colons", aggregateHash: "hash-1" }]);
+  });
+
+  it("revokes every version of a napplet and leaves other napplets alone", () => {
+    addAlwaysAllowed(identity);
+    addAlwaysAllowed({ ...identity, aggregateHash: "hash-2" });
+    addAlwaysAllowed({ ...identity, dTag: "other" });
+
+    revokeAlwaysAllowed(identity.pubkey, identity.dTag);
+
+    expect(isAlwaysAllowed(identity)).toBe(false);
+    expect(isAlwaysAllowed({ ...identity, aggregateHash: "hash-2" })).toBe(false);
+    expect(isAlwaysAllowed({ ...identity, dTag: "other" })).toBe(true);
   });
 });

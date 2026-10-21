@@ -160,7 +160,7 @@ export function NappletShellProvider({ children }: PropsWithChildren) {
       if (!consent) return;
       if (allow) {
         grantCapabilities(bridge, consent.identity, consent.capabilities);
-        if (always) addAlwaysAllowed(consent.identity);
+        if (always) addAlwaysAllowed(consent.identity, consent.capabilities);
       } else {
         revokeCapabilities(consent.identity);
       }

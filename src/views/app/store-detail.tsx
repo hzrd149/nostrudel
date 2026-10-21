@@ -23,6 +23,7 @@ import { GenericComments } from "../../components/comment/generic-comments";
 import { ErrorBoundary } from "../../components/error-boundary";
 import { ThreadIcon } from "../../components/icons";
 import SimpleView from "../../components/layout/presets/simple-view";
+import NappletInstallModal from "../../components/napplets/napplet-install-modal";
 import NappletMenu from "../../components/napplets/napplet-menu";
 import EventQuoteButton from "../../components/note/event-quote-button";
 import Timestamp from "../../components/timestamp";
@@ -50,7 +51,7 @@ import { useReadRelays } from "../../hooks/use-client-relays";
 import useEvent from "../../hooks/use-event";
 import useInstalledNapplets from "../../hooks/use-installed-napplets";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
-import { installNapplet, uninstallNapplet } from "../../services/installed-napplets";
+import { uninstallNapplet } from "../../services/installed-napplets";
 import { eventDeleteManager } from "../../services/event-store";
 
 const RELATED_NAPPLETS_LIMIT = 6;
@@ -134,6 +135,7 @@ function RelatedNapplets({ event }: { event: NostrEvent }) {
 
 function NappletStoreDetailPage({ event, address }: { event: NostrEvent; address: string }) {
   const comment = useDisclosure();
+  const install = useDisclosure();
   const installed = useInstalledNapplets().some((napplet) => napplet.address === address);
   const title = getNappletTitle(event);
   const description = getNappletDescription(event);
@@ -175,7 +177,7 @@ function NappletStoreDetailPage({ event, address }: { event: NostrEvent; address
                 Uninstall
               </Button>
             ) : (
-              <Button variant="outline" isDisabled={!naddr} onClick={() => installNapplet(event, naddr)}>
+              <Button variant="outline" isDisabled={!naddr} onClick={install.onOpen}>
                 Install
               </Button>
             )}
@@ -254,6 +256,7 @@ function NappletStoreDetailPage({ event, address }: { event: NostrEvent; address
           <GenericComments event={event} />
         </Flex>
       </Flex>
+      {naddr && install.isOpen && <NappletInstallModal event={event} isOpen onClose={install.onClose} />}
     </SimpleView>
   );
 }

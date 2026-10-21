@@ -1,4 +1,5 @@
-import type { Capability, ShellBridge } from "@kehto/shell";
+import { ALL_CAPABILITIES, type Capability, type ShellBridge } from "@kehto/shell";
+import { map, Observable, startWith, Subject } from "rxjs";
 
 import { logger } from "../../helpers/debug";
 
@@ -29,22 +30,79 @@ export function hasApprovedCapability(identity: NappletIdentity, capability: Cap
   return approvedCapabilities.get(identityKey(identity))?.has(capability) ?? false;
 }
 
-function getAlwaysAllowed() {
+/** A napplet version the user chose to always allow, and what it was allowed */
+export type AlwaysAllowedGrant = NappletIdentity & { capabilities: Capability[]; grantedAt: number };
+
+const CAPABILITIES = new Set<unknown>(ALL_CAPABILITIES);
+
+function isCapability(value: unknown): value is Capability {
+  return CAPABILITIES.has(value);
+}
+
+/** Parses a stored grant; older versions stored only the `pubkey:dTag:aggregateHash` key */
+function parseGrant(value: unknown): AlwaysAllowedGrant[] {
+  if (typeof value === "string") {
+    const parts = value.split(":");
+    if (parts.length < 3) return [];
+    const pubkey = parts[0];
+    const aggregateHash = parts[parts.length - 1];
+    return [{ pubkey, dTag: parts.slice(1, -1).join(":"), aggregateHash, capabilities: [], grantedAt: 0 }];
+  }
+
+  if (!value || typeof value !== "object") return [];
+  const { pubkey, dTag, aggregateHash, title, capabilities, grantedAt } = value as Record<string, unknown>;
+  if (typeof pubkey !== "string" || typeof dTag !== "string" || typeof aggregateHash !== "string") return [];
+
+  return [
+    {
+      pubkey,
+      dTag,
+      aggregateHash,
+      title: typeof title === "string" ? title : undefined,
+      capabilities: Array.isArray(capabilities) ? capabilities.filter(isCapability) : [],
+      grantedAt: typeof grantedAt === "number" ? grantedAt : 0,
+    },
+  ];
+}
+
+export function getAlwaysAllowed(): AlwaysAllowedGrant[] {
   try {
-    return JSON.parse(localStorage.getItem(ALWAYS_ALLOW_STORAGE_KEY) ?? "[]") as string[];
+    const parsed = JSON.parse(localStorage.getItem(ALWAYS_ALLOW_STORAGE_KEY) ?? "[]");
+    return Array.isArray(parsed) ? parsed.flatMap(parseGrant) : [];
   } catch {
     return [];
   }
 }
 
-export function addAlwaysAllowed(identity: NappletIdentity) {
-  const allowed = new Set(getAlwaysAllowed());
-  allowed.add(identityKey(identity));
-  localStorage.setItem(ALWAYS_ALLOW_STORAGE_KEY, JSON.stringify(Array.from(allowed)));
+const alwaysAllowedChanges$ = new Subject<void>();
+
+/** The always-allowed napplet versions, updated when one is added or revoked */
+export const alwaysAllowed$: Observable<AlwaysAllowedGrant[]> = alwaysAllowedChanges$.pipe(
+  startWith(undefined),
+  map(getAlwaysAllowed),
+);
+
+function writeAlwaysAllowed(grants: AlwaysAllowedGrant[]) {
+  localStorage.setItem(ALWAYS_ALLOW_STORAGE_KEY, JSON.stringify(grants));
+  alwaysAllowedChanges$.next();
+}
+
+export function addAlwaysAllowed(identity: NappletIdentity, capabilities: Capability[] = []) {
+  const key = identityKey(identity);
+  writeAlwaysAllowed([
+    ...getAlwaysAllowed().filter((grant) => identityKey(grant) !== key),
+    { ...identity, capabilities, grantedAt: Math.round(Date.now() / 1000) },
+  ]);
 }
 
 export function isAlwaysAllowed(identity: NappletIdentity) {
-  return getAlwaysAllowed().includes(identityKey(identity));
+  const key = identityKey(identity);
+  return getAlwaysAllowed().some((grant) => identityKey(grant) === key);
+}
+
+/** Removes "always allow" from every version of a napplet; it asks again the next time it opens */
+export function revokeAlwaysAllowed(pubkey: string, dTag: string) {
+  writeAlwaysAllowed(getAlwaysAllowed().filter((grant) => grant.pubkey !== pubkey || grant.dTag !== dTag));
 }
 
 export function grantCapabilities(bridge: ShellBridge, identity: NappletIdentity, capabilities: Capability[]) {

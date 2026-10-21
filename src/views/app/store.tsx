@@ -53,6 +53,7 @@ import {
 } from "../../services/installed-napplets";
 import { nappletSyncStatus$, syncInstalledNapplets, type NappletSyncStatus } from "../../services/napplet-sync";
 import InstalledNappletCard from "../napplets/components/installed-napplet-card";
+import NappletPermissionsPanel from "../napplets/components/napplet-permissions-panel";
 import NappletStoreCard from "../napplets/components/napplet-store-card";
 
 function getNappletSearchValues(event: NostrEvent) {
@@ -395,7 +396,7 @@ function DiscoverPanel({ installedAddresses }: { installedAddresses: Set<string>
   );
 }
 
-const STORE_TABS = ["discover", "installed", "handlers"];
+const STORE_TABS = ["discover", "installed", "handlers", "permissions"];
 
 function AppStoreContent() {
   const installed = useInstalledNapplets();
@@ -415,6 +416,7 @@ function AppStoreContent() {
           <Tab>Discover</Tab>
           <Tab>Installed</Tab>
           <Tab>Handlers</Tab>
+          <Tab>Permissions</Tab>
         </TabList>
         <TabPanels>
           <TabPanel px="0">
@@ -425,6 +427,9 @@ function AppStoreContent() {
           </TabPanel>
           <TabPanel px="0">
             <HandlerPanel installed={installed} />
+          </TabPanel>
+          <TabPanel px="0">
+            <NappletPermissionsPanel />
           </TabPanel>
         </TabPanels>
       </Tabs>
