@@ -222,7 +222,7 @@ export default function LockedMessagesSection() {
               {failed && failed.length > 0 && (
                 <Text color="GrayText" fontSize="sm">
                   {failed.length} could not be decrypted.{" "}
-                  <Button variant="link" size="sm" onClick={retryFailed}>
+                  <Button variant="link" onClick={retryFailed}>
                     Retry
                   </Button>
                 </Text>

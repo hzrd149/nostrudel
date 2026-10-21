@@ -53,7 +53,6 @@ export default function GiftWrapSync() {
       {startup && <SyncStatus status={startup} label="last 30 days" />}
       <Flex gap="2">
         <Select
-          size="sm"
           value={span}
           onChange={(e) => setSpan(Number(e.target.value))}
           isDisabled={running}
@@ -66,11 +65,11 @@ export default function GiftWrapSync() {
           ))}
         </Select>
         {running ? (
-          <Button size="sm" flexShrink={0} onClick={() => setRun(undefined)}>
+          <Button flexShrink={0} onClick={() => setRun(undefined)}>
             Cancel
           </Button>
         ) : (
-          <Button size="sm" flexShrink={0} colorScheme="primary" onClick={start}>
+          <Button flexShrink={0} colorScheme="primary" onClick={start}>
             Sync older messages
           </Button>
         )}

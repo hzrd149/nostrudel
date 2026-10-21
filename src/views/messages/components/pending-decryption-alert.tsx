@@ -18,11 +18,11 @@ export default function PendingLockedAlert() {
             : `${locked.length} message${locked.length !== 1 ? "s" : ""} pending decryption.`}
         </Text>
         {running ? (
-          <Button size="sm" onClick={stop} variant="ghost">
+          <Button onClick={stop} variant="ghost">
             Stop
           </Button>
         ) : (
-          <Button size="sm" leftIcon={<UnlockIcon boxSize={4} />} onClick={start} colorScheme="orange" variant="solid">
+          <Button leftIcon={<UnlockIcon boxSize={5} />} onClick={start} colorScheme="orange" variant="solid">
             Decrypt All
           </Button>
         )}
