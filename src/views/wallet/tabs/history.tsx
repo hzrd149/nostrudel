@@ -1,6 +1,7 @@
-import { Flex, Text } from "@chakra-ui/react";
+import { Button, Flex, Text } from "@chakra-ui/react";
 import { use$ } from "applesauce-react/hooks";
 import { WalletHistory } from "applesauce-wallet/casts";
+import { memo, useMemo } from "react";
 
 import CashuMintFavicon from "../../../components/cashu/cashu-mint-favicon";
 import CashuMintName from "../../../components/cashu/cashu-mint-name";
@@ -9,10 +10,11 @@ import { ErrorBoundary } from "../../../components/error-boundary";
 import ArrowBlockDown from "../../../components/icons/arrow-block-down";
 import ArrowBlockUp from "../../../components/icons/arrow-block-up";
 import Timestamp from "../../../components/timestamp";
+import useRenderLimit from "../../../hooks/use-render-limit";
 import { useNutWallet } from "../../../hooks/use-wallets";
 
 /** A single NIP-60 history entry (direction, amount, mint) */
-function HistoryEntry({ entry }: { entry: WalletHistory }) {
+const HistoryEntry = memo(function HistoryEntry({ entry }: { entry: WalletHistory }) {
   // meta$ emits once the entry content is decrypted, re-rendering the row
   const meta = use$(entry.meta$);
   if (!meta) return null;
@@ -44,14 +46,15 @@ function HistoryEntry({ entry }: { entry: WalletHistory }) {
       </Flex>
     </Flex>
   );
-}
+});
 
 export default function WalletHistoryTab() {
   const wallet = useNutWallet();
   const history = use$(wallet?.history$);
 
   // Locked entries are hidden, only show ones that can be decrypted
-  const unlocked = history?.filter((entry) => entry.unlocked);
+  const unlocked = useMemo(() => history?.filter((entry) => entry.unlocked), [history]);
+  const { visible, hasMore, more } = useRenderLimit(unlocked);
 
   return (
     <Flex direction="column" w="full" maxW="2xl" mx="auto">
@@ -60,11 +63,16 @@ export default function WalletHistoryTab() {
       ) : !unlocked || unlocked.length === 0 ? (
         <Text color="GrayText">No history yet.</Text>
       ) : (
-        unlocked.map((entry) => (
+        visible?.map((entry) => (
           <ErrorBoundary key={entry.id} event={entry.event}>
             <HistoryEntry entry={entry} />
           </ErrorBoundary>
         ))
+      )}
+      {hasMore && (
+        <Button variant="ghost" onClick={more}>
+          Show more
+        </Button>
       )}
     </Flex>
   );

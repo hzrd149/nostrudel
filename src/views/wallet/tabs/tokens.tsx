@@ -21,7 +21,7 @@ import {
 import { getEncodedToken, normalizeProofAmounts, ProofState } from "@cashu/cashu-ts";
 import { use$, useActiveAccount } from "applesauce-react/hooks";
 import { WalletToken } from "applesauce-wallet/casts";
-import { useMemo, useState } from "react";
+import { memo, useMemo, useState } from "react";
 
 import CashuMintFavicon from "../../../components/cashu/cashu-mint-favicon";
 import CashuMintName from "../../../components/cashu/cashu-mint-name";
@@ -33,6 +33,7 @@ import Lock01 from "../../../components/icons/lock-01";
 import QrCodeSvg from "../../../components/qr-code/qr-code-svg";
 import Timestamp from "../../../components/timestamp";
 import useAsyncAction from "../../../hooks/use-async-action";
+import useRenderLimit from "../../../hooks/use-render-limit";
 import { useNutWallet } from "../../../hooks/use-wallets";
 import { useDeleteEventContext } from "../../../providers/route/delete-event-provider";
 import { getCashuWallet } from "../../../services/cashu-mints";
@@ -56,7 +57,7 @@ function TokenQrModal({ token, onClose }: { token: string; onClose: () => void }
 }
 
 /** A compact card for a single NIP-60 token event with its value, mint and actions */
-function TokenCard({ token }: { token: WalletToken }) {
+const TokenCard = memo(function TokenCard({ token }: { token: WalletToken }) {
   const account = useActiveAccount()!;
   const qrModal = useDisclosure();
   const { deleteEvent } = useDeleteEventContext();
@@ -91,7 +92,7 @@ function TokenCard({ token }: { token: WalletToken }) {
           {unlocked ? (
             <>
               {token.amount}
-              <Text as="span" fontSize="sm" fontWeight="normal" color="GrayText" ms="1">
+              <Text as="span" fontWeight="normal" color="GrayText" ms="1">
                 sats
               </Text>
             </>
@@ -100,13 +101,13 @@ function TokenCard({ token }: { token: WalletToken }) {
           )}
         </Text>
         <Spacer />
-        <Timestamp timestamp={token.event.created_at} fontSize="sm" color="GrayText" />
+        <Timestamp timestamp={token.event.created_at} color="GrayText" />
       </CardHeader>
       <CardBody px="3" py="2" display="flex" alignItems="center" gap="2">
         {unlocked && token.mint ? (
           <>
             <CashuMintFavicon mint={token.mint} size="xs" />
-            <CashuMintName mint={token.mint} fontSize="sm" isTruncated />
+            <CashuMintName mint={token.mint} isTruncated />
           </>
         ) : (
           <Button size="xs" variant="link" onClick={unlock.run} isLoading={unlock.loading}>
@@ -145,7 +146,7 @@ function TokenCard({ token }: { token: WalletToken }) {
       {qrModal.isOpen && encoded && <TokenQrModal token={encoded} onClose={qrModal.onClose} />}
     </Card>
   );
-}
+});
 
 export default function WalletTokensTab() {
   const wallet = useNutWallet();
@@ -158,6 +159,7 @@ export default function WalletTokensTab() {
     await wallet?.unlock();
   }, [wallet]);
 
+  const { visible, hasMore, more } = useRenderLimit(tokens);
   const hasLocked = tokens?.some((token) => !token.unlocked) ?? false;
 
   return (
@@ -183,12 +185,17 @@ export default function WalletTokensTab() {
         <Text color="GrayText">No tokens yet — receive a cashu token or a lightning payment to get started.</Text>
       ) : (
         <SimpleGrid columns={{ base: 1, sm: 2, lg: 3, xl: 4 }} spacing="2">
-          {tokens.map((token) => (
+          {visible?.map((token) => (
             <ErrorBoundary key={token.id} event={token.event}>
               <TokenCard token={token} />
             </ErrorBoundary>
           ))}
         </SimpleGrid>
+      )}
+      {hasMore && (
+        <Button variant="ghost" onClick={more}>
+          Show more
+        </Button>
       )}
 
       {sendModal.isOpen && <SendTokenModal isOpen onClose={sendModal.onClose} />}
