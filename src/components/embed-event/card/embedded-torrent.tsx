@@ -17,7 +17,8 @@ import { NostrEvent } from "nostr-tools";
 import { MouseEventHandler, useCallback } from "react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 
-import { getTorrentMagnetLink, getTorrentSize, getTorrentTitle } from "../../../helpers/nostr/torrents";
+import { getTorrentTitle } from "applesauce-common/helpers";
+import { getTorrentMagnetLink, getTorrentSize } from "../../../helpers/nostr/torrents";
 import { formatBytes } from "../../../helpers/number";
 import { getSharableEventAddress } from "../../../services/relay-hints";
 import HoverLinkOverlay from "../../hover-link-overlay";

@@ -1,4 +1,12 @@
 // aislop-ignore-file code-quality/duplicate-block -- torrentCatagories is a static taxonomy; repeated {name,tag} entries are independent data, not extractable code
+import {
+  buildTorrentMagnetLink,
+  getTorrentFiles,
+  getTorrentInfoHash,
+  getTorrentTitle,
+  getTorrentTrackers,
+} from "applesauce-common/helpers";
+import { getTagValue } from "applesauce-core/helpers";
 import { NostrEvent } from "nostr-tools";
 
 export const TORRENT_KIND = 2003;
@@ -16,57 +24,24 @@ export const Trackers = [
   "udp://tracker.empire-js.us:1337",
 ];
 
-export function getTorrentTitle(torrent: NostrEvent) {
-  const title = torrent.tags.find((t) => t[0] === "title")?.[1];
-  if (!title) throw new Error("Missing title");
-  return title;
+// Older events used a "btih" tag before NIP-35 settled on "x"
+function getInfoHash(torrent: NostrEvent) {
+  return getTorrentInfoHash(torrent) ?? getTagValue(torrent, "btih");
 }
-export function getTorrentBtih(torrent: NostrEvent) {
-  const btih = torrent.tags.find((a) => a[0] === "btih" || a[0] === "x")?.[1];
-  if (!btih) throw new Error("Missing btih");
-  return btih;
-}
-export function getTorrentFiles(torrent: NostrEvent) {
-  return torrent.tags
-    .filter((t) => t[0] === "file")
-    .map((t) => {
-      const name = t[1] as string;
-      const size = t[2] ? parseInt(t[2]) : undefined;
-      return { name, size };
-    });
-}
+
 export function getTorrentSize(torrent: NostrEvent) {
-  return getTorrentFiles(torrent).reduce((acc, f) => (f.size ? (acc += f.size) : acc), 0);
+  return getTorrentFiles(torrent).reduce((acc, f) => acc + (f.size ?? 0), 0);
 }
 
 export function getTorrentMagnetLink(torrent: NostrEvent) {
-  const btih = getTorrentBtih(torrent);
-  const magnet = {
-    xt: `urn:btih:${btih}`,
-    dn: name,
-    tr: Trackers,
-  };
-  const params = Object.entries(magnet)
-    .map(([k, v]) => {
-      if (Array.isArray(v)) {
-        return v.map((a) => `${k}=${encodeURIComponent(a)}`).join("&");
-      } else {
-        return `${k}=${v as string}`;
-      }
-    })
-    .flat()
-    .join("&");
-  return `magnet:?${params}`;
+  const infoHash = getInfoHash(torrent);
+  if (!infoHash) return undefined;
+  const trackers = getTorrentTrackers(torrent);
+  return buildTorrentMagnetLink(infoHash, trackers.length > 0 ? trackers : Trackers, getTorrentTitle(torrent));
 }
 
 export function validateTorrent(torrent: NostrEvent) {
-  try {
-    getTorrentTitle(torrent);
-    getTorrentBtih(torrent);
-    return true;
-  } catch {
-    return false;
-  }
+  return !!getTorrentTitle(torrent) && !!getInfoHash(torrent);
 }
 
 export type Category = {
