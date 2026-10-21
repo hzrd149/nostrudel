@@ -1,5 +1,5 @@
 import { NostrEvent } from "nostr-tools";
-import { BehaviorSubject } from "rxjs";
+import { BehaviorSubject, Subject } from "rxjs";
 
 import {
   getNappletArchetypes,
@@ -8,6 +8,11 @@ import {
   getNappletTitle,
   type NappletArchetype,
 } from "../helpers/nostr/napplets";
+import {
+  parseInstalledNappletEntries,
+  type IntentHandlerPreferences,
+  type NappletSyncData,
+} from "../helpers/nostr/napplet-sync";
 
 export type InstalledNapplet = {
   address: string;
@@ -22,31 +27,25 @@ export type InstalledNapplet = {
 const STORAGE_KEY = "nostrudel:napplet:installed";
 const HANDLER_STORAGE_KEY = "nostrudel:napplet:intent-handlers";
 
-type IntentHandlerPreferences = Record<string, string>;
+/** The account pubkey whose synced installs are active, or undefined for the device list */
+let scope: string | undefined;
+
+function scopedKey(key: string, pubkey = scope) {
+  return pubkey ? `${key}:${pubkey}` : key;
+}
+
+/** Emits when the user installs, uninstalls, or changes a default handler (not on open or sync) */
+export const localNappletChanges$ = new Subject<void>();
 
 export function intentKey(archetype: string, action = "open") {
   return `${archetype}/${action}`;
 }
 
-function read(): InstalledNapplet[] {
+function read(pubkey = scope): InstalledNapplet[] {
   try {
-    const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "[]");
-    return Array.isArray(parsed)
-      ? parsed.flatMap((item: Partial<InstalledNapplet>) => {
-          if (!item.address || !item.title || !item.pubkey || !item.installedAt || !item.lastOpenedAt) return [];
-          return [
-            {
-              address: item.address,
-              title: item.title,
-              description: item.description,
-              pubkey: item.pubkey,
-              archetypes: Array.isArray(item.archetypes) ? item.archetypes : [],
-              installedAt: item.installedAt,
-              lastOpenedAt: item.lastOpenedAt,
-            },
-          ];
-        })
-      : [];
+    return parseInstalledNappletEntries(JSON.parse(localStorage.getItem(scopedKey(STORAGE_KEY, pubkey)) ?? "[]")).map(
+      (item) => ({ ...item, lastOpenedAt: item.lastOpenedAt ?? item.installedAt }),
+    );
   } catch {
     return [];
   }
@@ -60,7 +59,7 @@ function sortInstalled(list: InstalledNapplet[]) {
 export const installedNapplets$ = new BehaviorSubject<InstalledNapplet[]>(sortInstalled(read()));
 
 function write(list: InstalledNapplet[]) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+  localStorage.setItem(scopedKey(STORAGE_KEY), JSON.stringify(list));
   installedNapplets$.next(sortInstalled(list));
 }
 
@@ -86,9 +85,9 @@ export function getInstalledNappletsForIntent(archetype: string, action = "open"
   );
 }
 
-function readHandlerPreferences(): IntentHandlerPreferences {
+function readHandlerPreferences(pubkey = scope): IntentHandlerPreferences {
   try {
-    const parsed = JSON.parse(localStorage.getItem(HANDLER_STORAGE_KEY) ?? "{}");
+    const parsed = JSON.parse(localStorage.getItem(scopedKey(HANDLER_STORAGE_KEY, pubkey)) ?? "{}");
     return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : {};
   } catch {
     return {};
@@ -99,15 +98,47 @@ function readHandlerPreferences(): IntentHandlerPreferences {
 export const intentHandlerPreferences$ = new BehaviorSubject<IntentHandlerPreferences>(readHandlerPreferences());
 
 function writeHandlerPreferences(preferences: IntentHandlerPreferences) {
-  localStorage.setItem(HANDLER_STORAGE_KEY, JSON.stringify(preferences));
+  localStorage.setItem(scopedKey(HANDLER_STORAGE_KEY), JSON.stringify(preferences));
   intentHandlerPreferences$.next(preferences);
 }
 
 // Keep other tabs' installs and handler choices in sync
 window.addEventListener("storage", (e) => {
-  if (e.key === STORAGE_KEY) installedNapplets$.next(sortInstalled(read()));
-  else if (e.key === HANDLER_STORAGE_KEY) intentHandlerPreferences$.next(readHandlerPreferences());
+  if (e.key === scopedKey(STORAGE_KEY)) installedNapplets$.next(sortInstalled(read()));
+  else if (e.key === scopedKey(HANDLER_STORAGE_KEY)) intentHandlerPreferences$.next(readHandlerPreferences());
 });
+
+/**
+ * Switches between the device list (no pubkey) and an account's synced list. The first time an
+ * account is used on this device it starts from a copy of the device list, so existing installs
+ * carry over and get synced.
+ */
+export function setInstalledNappletScope(pubkey: string | undefined) {
+  if (pubkey === scope) return;
+
+  if (pubkey && localStorage.getItem(scopedKey(STORAGE_KEY, pubkey)) === null) {
+    localStorage.setItem(scopedKey(STORAGE_KEY, pubkey), JSON.stringify(read(undefined)));
+    localStorage.setItem(scopedKey(HANDLER_STORAGE_KEY, pubkey), JSON.stringify(readHandlerPreferences(undefined)));
+  }
+
+  scope = pubkey;
+  installedNapplets$.next(sortInstalled(read()));
+  intentHandlerPreferences$.next(readHandlerPreferences());
+}
+
+/** The installs and handler choices in the shape that is synced to the account */
+export function getNappletSyncData(): NappletSyncData {
+  return {
+    installed: getInstalledNapplets().map(({ lastOpenedAt: _lastOpenedAt, ...item }) => item),
+    handlers: intentHandlerPreferences$.value,
+  };
+}
+
+export function applyNappletSyncData(data: NappletSyncData) {
+  const opened = new Map(getInstalledNapplets().map((item) => [item.address, item.lastOpenedAt]));
+  write(data.installed.map((item) => ({ ...item, lastOpenedAt: opened.get(item.address) ?? item.installedAt })));
+  writeHandlerPreferences(data.handlers);
+}
 
 export function getDefaultIntentHandler(archetype: string, action = "open") {
   const address = intentHandlerPreferences$.value[intentKey(archetype, action)];
@@ -116,12 +147,14 @@ export function getDefaultIntentHandler(archetype: string, action = "open") {
 
 export function setDefaultIntentHandler(archetype: string, action: string, address: string) {
   writeHandlerPreferences({ ...intentHandlerPreferences$.value, [intentKey(archetype, action)]: address });
+  localNappletChanges$.next();
 }
 
 export function clearDefaultIntentHandler(archetype: string, action = "open") {
   const preferences = { ...intentHandlerPreferences$.value };
   delete preferences[intentKey(archetype, action)];
   writeHandlerPreferences(preferences);
+  localNappletChanges$.next();
 }
 
 export function getInstalledNappletForIntent(archetype: string, action = "open", installed = getInstalledNapplets()) {
@@ -157,6 +190,7 @@ export function installNapplet(event: NostrEvent, address = getNappletNaddr(even
   };
 
   write([next, ...getInstalledNapplets().filter((item) => item.address !== address)]);
+  if (!existing) localNappletChanges$.next();
   return next;
 }
 
@@ -174,4 +208,5 @@ export function uninstallNapplet(address: string) {
     if (value === address) delete preferences[key];
   }
   writeHandlerPreferences(preferences);
+  localNappletChanges$.next();
 }

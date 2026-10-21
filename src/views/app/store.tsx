@@ -18,6 +18,7 @@ import {
   Tabs,
   Text,
 } from "@chakra-ui/react";
+import { use$ } from "applesauce-react/hooks";
 import { matchSorter } from "match-sorter";
 import { NostrEvent } from "nostr-tools";
 import { FormEventHandler, memo, useCallback, useEffect, useMemo, useState } from "react";
@@ -38,6 +39,7 @@ import {
   isValidNappletStoreEvent,
 } from "../../helpers/nostr/napplets";
 import { useReadRelays } from "../../hooks/use-client-relays";
+import useAsyncAction from "../../hooks/use-async-action";
 import useInstalledNapplets, { useIntentHandlerPreferences } from "../../hooks/use-installed-napplets";
 import useRouteSearchValue from "../../hooks/use-route-search-value";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
@@ -49,6 +51,7 @@ import {
   uninstallNapplet,
   type InstalledNapplet,
 } from "../../services/installed-napplets";
+import { nappletSyncStatus$, syncInstalledNapplets, type NappletSyncStatus } from "../../services/napplet-sync";
 import InstalledNappletCard from "../napplets/components/installed-napplet-card";
 import NappletStoreCard from "../napplets/components/napplet-store-card";
 
@@ -137,9 +140,37 @@ const InstalledPointerForm = memo(function InstalledPointerForm() {
   );
 });
 
+const SYNC_STATUS_TEXT: Record<NappletSyncStatus, string> = {
+  device: "Installed apps are saved on this device. Sign in with a signer to sync them between devices.",
+  locked: "Your synced apps are encrypted. Unlock them to see installs from your other devices.",
+  unsynced: "Some changes have not been synced to your account yet.",
+  syncing: "Syncing installed apps…",
+  synced: "Installed apps are synced to your account.",
+};
+
+function NappletSyncStatusLine() {
+  const status = use$(nappletSyncStatus$);
+  const { loading, run } = useAsyncAction(syncInstalledNapplets, []);
+  const canSync = status === "locked" || status === "unsynced";
+
+  return (
+    <Flex gap="2" alignItems="center" wrap="wrap">
+      <Text color="GrayText" fontSize="sm">
+        {SYNC_STATUS_TEXT[status]}
+      </Text>
+      {canSync && (
+        <Button size="xs" variant="link" colorScheme="primary" onClick={run} isLoading={loading}>
+          {status === "locked" ? "Unlock" : "Sync now"}
+        </Button>
+      )}
+    </Flex>
+  );
+}
+
 function InstalledPanel({ installed }: { installed: InstalledNapplet[] }) {
   return (
     <Flex direction="column" gap="4">
+      <NappletSyncStatusLine />
       <InstalledPointerForm />
 
       {installed.length === 0 ? (
