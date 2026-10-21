@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { IconButton, IconButtonProps } from "@chakra-ui/react";
+import { useActiveAccount, use$ } from "applesauce-react/hooks";
 import { EventTemplate, kinds, NostrEvent } from "nostr-tools";
 import dayjs from "dayjs";
 
 import { StarEmptyIcon, StarFullIcon } from "../../../components/icons";
 import { getEventCoordinate } from "../../../helpers/nostr/event";
-import useFavoriteEmojiPacks from "../../../hooks/use-favorite-emoji-packs";
+import useCastUser from "../../../hooks/use-cast-user";
 import { listAddCoordinate, listRemoveCoordinate } from "../../../helpers/nostr/lists";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
 
@@ -14,7 +15,8 @@ export default function EmojiPackFavoriteButton({
   ...props
 }: { pack: NostrEvent } & Omit<IconButtonProps, "children" | "aria-label" | "isLoading" | "onClick">) {
   const publish = usePublishEvent();
-  const favoritePacks = useFavoriteEmojiPacks();
+  const account = useActiveAccount();
+  const favoritePacks = use$(useCastUser(account?.pubkey)?.favoriteEmojis$)?.event;
   const coordinate = getEventCoordinate(pack);
   const isFavorite = favoritePacks?.tags.some((t) => t[1] === coordinate);
   const [loading, setLoading] = useState(false);

@@ -2,23 +2,21 @@ import { getEventUID } from "applesauce-core/helpers";
 import { Button, Flex, Heading, Link, SimpleGrid, useDisclosure } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 import { kinds } from "nostr-tools";
-import { getAddressPointersFromList } from "applesauce-common/helpers";
 
-import { useActiveAccount } from "applesauce-react/hooks";
+import { useActiveAccount, use$ } from "applesauce-react/hooks";
 import { ExternalLinkIcon } from "../../components/icons";
 import { getEventCoordinate } from "../../helpers/nostr/event";
 import { useReadRelays } from "../../hooks/use-client-relays";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import EmojiPackCard from "./components/emoji-pack-card";
-import useFavoriteEmojiPacks from "../../hooks/use-favorite-emoji-packs";
-import useReplaceableEvents from "../../hooks/use-replaceable-events";
+import useCastUser from "../../hooks/use-cast-user";
 import EmojiPackCreateModal from "./components/create-modal";
 import VerticalPageLayout from "../../components/vertical-page-layout";
 
 function UserEmojiPackMangerPage() {
   const account = useActiveAccount()!;
 
-  const favoritePacks = useFavoriteEmojiPacks(account.pubkey);
+  const favorites = use$(useCastUser(account.pubkey).favoriteEmojis$.packs$) ?? [];
   const readRelays = useReadRelays();
   const { timeline: packs } = useTimelineLoader(
     `${account.pubkey}-emoji-packs`,
@@ -31,10 +29,9 @@ function UserEmojiPackMangerPage() {
       : undefined,
   );
 
-  const favorites = useReplaceableEvents(favoritePacks && getAddressPointersFromList(favoritePacks));
   const filtered = packs.filter((pack) => {
     const cord = getEventCoordinate(pack);
-    return !favorites.some((e) => getEventCoordinate(e) === cord);
+    return !favorites.some((favorite) => getEventCoordinate(favorite.event) === cord);
   });
 
   return (
@@ -45,8 +42,8 @@ function UserEmojiPackMangerPage() {
             Favorite packs
           </Heading>
           <SimpleGrid columns={{ base: 1, lg: 2 }} spacing="2">
-            {favorites.map((event) => (
-              <EmojiPackCard key={getEventUID(event)} pack={event} />
+            {favorites.map((favorite) => (
+              <EmojiPackCard key={favorite.uid} pack={favorite.event} />
             ))}
           </SimpleGrid>
         </>
