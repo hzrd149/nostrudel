@@ -17,7 +17,6 @@ import useSingleEvent from "../../hooks/use-single-event";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
-import ThreadsProvider from "../../providers/local/thread-provider";
 import ChannelImage from "./components/channel-image";
 import ChannelJoinButton from "./components/channel-join-button";
 import ChannelMenu from "./components/channel-menu";
@@ -65,7 +64,7 @@ function ChannelPage({ channel }: { channel: NostrEvent }) {
     },
     [clientMuteFilter],
   );
-  const { loader, timeline } = useTimelineLoader(
+  const { loader } = useTimelineLoader(
     `${truncateId(channel.id)}-chat-messages`,
     relays,
     {
@@ -77,35 +76,33 @@ function ChannelPage({ channel }: { channel: NostrEvent }) {
   const callback = useTimelineCurserIntersectionCallback(loader);
 
   return (
-    <ThreadsProvider messages={timeline}>
-      <IntersectionObserverProvider callback={callback}>
-        <SimpleView
-          scroll={false}
-          flush
-          title={
-            <Flex gap="2" alignItems="center">
-              <ChannelImage channel={channel} w="10" rounded="md" />
-              {metadata?.name}
-            </Flex>
-          }
-          actions={
-            <ButtonGroup size="sm" ms="auto">
-              <ChannelJoinButton channel={channel} hideBelow="lg" />
-              <Button onClick={drawer.onOpen}>Channel Info</Button>
-              <ChannelMenu channel={channel} aria-label="More Options" />
-            </ButtonGroup>
-          }
-        >
-          <Flex direction="column-reverse" p="4" gap={2} flexGrow={1} h={0} overflowX="hidden" overflowY="auto">
-            <ChannelChatLog channel={channel} />
-            <LoadMoreButton loader={loader} />
+    <IntersectionObserverProvider callback={callback}>
+      <SimpleView
+        scroll={false}
+        flush
+        title={
+          <Flex gap="2" alignItems="center">
+            <ChannelImage channel={channel} w="10" rounded="md" />
+            {metadata?.name}
           </Flex>
+        }
+        actions={
+          <ButtonGroup size="sm" ms="auto">
+            <ChannelJoinButton channel={channel} hideBelow="lg" />
+            <Button onClick={drawer.onOpen}>Channel Info</Button>
+            <ChannelMenu channel={channel} aria-label="More Options" />
+          </ButtonGroup>
+        }
+      >
+        <Flex direction="column-reverse" p="4" gap={2} flexGrow={1} h={0} overflowX="hidden" overflowY="auto">
+          <ChannelChatLog channel={channel} />
+          <LoadMoreButton loader={loader} />
+        </Flex>
 
-          <ChannelMessageForm channel={channel} px="2" pb="2" />
-        </SimpleView>
-        {drawer.isOpen && <ChannelMetadataDrawer isOpen onClose={drawer.onClose} channel={channel} size="lg" />}
-      </IntersectionObserverProvider>
-    </ThreadsProvider>
+        <ChannelMessageForm channel={channel} px="2" pb="2" />
+      </SimpleView>
+      {drawer.isOpen && <ChannelMetadataDrawer isOpen onClose={drawer.onClose} channel={channel} size="lg" />}
+    </IntersectionObserverProvider>
   );
 }
 
