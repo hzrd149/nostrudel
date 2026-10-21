@@ -18,7 +18,7 @@ import {
   Spinner,
   Text,
 } from "@chakra-ui/react";
-import { LOOKUP_RELAY_LIST_KIND } from "applesauce-common/helpers";
+import { getRelaysFromList, LOOKUP_RELAY_LIST_KIND } from "applesauce-common/helpers";
 import { kinds } from "applesauce-core/helpers";
 import { TimelineModel } from "applesauce-core/models";
 import { LoadableAddressPointer } from "applesauce-loaders/loaders";
@@ -31,7 +31,6 @@ import RelayFavicon from "../../../../components/relay/relay-favicon";
 import RelayName from "../../../../components/relay/relay-name";
 import UserAvatar from "../../../../components/user/user-avatar";
 import { RECOMMENDED_LOOKUP_RELAYS } from "../../../../const";
-import { getRelaysFromList } from "../../../../helpers/nostr/lists";
 import useAsyncAction from "../../../../hooks/use-async-action";
 import { useOutboxTimelineLoader } from "../../../../hooks/use-outbox-timeline-loader";
 import useRelayDiscovery from "../../../../hooks/use-relay-discovery";

@@ -1,10 +1,9 @@
 import { useActiveAccount, use$ } from "applesauce-react/hooks";
 
 import { DEFAULT_SEARCH_RELAYS, LOCAL_RELAY_URL } from "../const";
-import { getRelaysFromList } from "../helpers/nostr/lists";
 import { eventCache$ } from "../services/event-cache";
 import { useRelayInfo } from "./use-relay-info";
-import useUserSearchRelayList from "./use-user-search-relay-list";
+import useCastUser from "./use-cast-user";
 
 export function useCacheRelaySupportsSearch(): boolean {
   const eventCache = use$(eventCache$);
@@ -15,8 +14,7 @@ export function useCacheRelaySupportsSearch(): boolean {
 
 export default function useSearchRelays(): string[] {
   const account = useActiveAccount();
-  const searchRelayList = useUserSearchRelayList(account && { pubkey: account.pubkey });
-  const searchRelays = searchRelayList ? getRelaysFromList(searchRelayList) : DEFAULT_SEARCH_RELAYS;
+  const searchRelayList = use$(useCastUser(account?.pubkey)?.searchRelays$);
 
-  return searchRelays;
+  return searchRelayList ? searchRelayList.relays : DEFAULT_SEARCH_RELAYS;
 }

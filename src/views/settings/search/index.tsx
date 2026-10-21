@@ -18,10 +18,9 @@ import { useActiveAccount, use$ } from "applesauce-react/hooks";
 import { kinds } from "nostr-tools";
 
 import SimpleView from "../../../components/layout/presets/simple-view";
-import { getRelaysFromList } from "../../../helpers/nostr/lists";
 import { useRelayInfo } from "../../../hooks/use-relay-info";
 import useAsyncAction from "../../../hooks/use-async-action";
-import useUserSearchRelayList from "../../../hooks/use-user-search-relay-list";
+import useCastUser from "../../../hooks/use-cast-user";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
 import localSettings from "../../../services/preferences";
 import { LookupProvider } from "../../../services/user-lookup";
@@ -67,9 +66,10 @@ function RelayEntry({
 export default function SearchSettings() {
   const publish = usePublishEvent();
   const account = useActiveAccount();
-  const searchRelayList = useUserSearchRelayList(account && { pubkey: account.pubkey });
+  const searchRelayListCast = use$(useCastUser(account?.pubkey)?.searchRelays$);
+  const searchRelayList = searchRelayListCast?.event;
 
-  const searchRelays = searchRelayList ? getRelaysFromList(searchRelayList) : [];
+  const searchRelays = searchRelayListCast?.relays ?? [];
 
   const addRelay = useAsyncAction(async (url: string) => {
     const draft = await (searchRelayList

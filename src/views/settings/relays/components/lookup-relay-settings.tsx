@@ -1,13 +1,12 @@
 import { Button, Flex, Heading, Text, useDisclosure } from "@chakra-ui/react";
 import { LookupRelayListFactory } from "applesauce-common/factories";
-import { useActiveAccount } from "applesauce-react/hooks";
+import { useActiveAccount, use$ } from "applesauce-react/hooks";
 
 import RelayFavicon from "../../../../components/relay/relay-favicon";
 import RelayLink from "../../../../components/relay/relay-link";
 import { RECOMMENDED_LOOKUP_RELAYS } from "../../../../const";
-import { getRelaysFromList } from "../../../../helpers/nostr/lists";
 import useAsyncAction from "../../../../hooks/use-async-action";
-import useUserLookupRelayList from "../../../../hooks/use-user-lookup-relay-list";
+import useCastUser from "../../../../hooks/use-cast-user";
 import { usePublishEvent } from "../../../../providers/global/publish-provider";
 import AddRelayForm from "./add-relay-form";
 import DiscoverLookupRelaysModal from "./discover-lookup-relays-modal";
@@ -16,10 +15,11 @@ import RelayControl from "./relay-control";
 export default function LookupRelaySettings() {
   const publish = usePublishEvent();
   const account = useActiveAccount();
-  const lookupRelayList = useUserLookupRelayList(account && { pubkey: account.pubkey });
+  const lookupRelayListCast = use$(useCastUser(account?.pubkey)?.lookupRelayList$);
+  const lookupRelayList = lookupRelayListCast?.event;
   const discoverModal = useDisclosure();
 
-  const lookupRelays = lookupRelayList ? getRelaysFromList(lookupRelayList) : [];
+  const lookupRelays = lookupRelayListCast?.relays ?? [];
 
   const addRelay = useAsyncAction(
     async (url: string | string[]) => {

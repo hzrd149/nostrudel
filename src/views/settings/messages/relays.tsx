@@ -4,9 +4,8 @@ import { addRelayTag, removeRelayTag } from "applesauce-core/operations/tag/rela
 import { useActiveAccount, use$ } from "applesauce-react/hooks";
 import { kinds } from "nostr-tools";
 
-import { getRelaysFromList } from "../../../helpers/nostr/lists";
-import useAddressableEvent from "../../../hooks/use-addressable-event";
 import useAsyncAction from "../../../hooks/use-async-action";
+import useCastUser from "../../../hooks/use-cast-user";
 import { useRelayInfo } from "../../../hooks/use-relay-info";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
 import AddRelayForm from "../relays/components/add-relay-form";
@@ -49,11 +48,9 @@ export default function DirectMessageRelaysSection() {
   const account = useActiveAccount();
   const publish = usePublishEvent();
 
-  const dmRelayList = useAddressableEvent(
-    account ? { kind: kinds.DirectMessageRelaysList, pubkey: account.pubkey } : undefined,
-  );
-
-  const relays = dmRelayList ? getRelaysFromList(dmRelayList) : [];
+  const user = useCastUser(account?.pubkey);
+  const dmRelayList = use$(() => user?.replaceable(kinds.DirectMessageRelaysList), [user]);
+  const relays = use$(user?.directMessageRelays$) ?? [];
 
   const addRelay = useAsyncAction(async (relay: string) => {
     const draft = await (dmRelayList
