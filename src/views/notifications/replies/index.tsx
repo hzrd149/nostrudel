@@ -1,4 +1,4 @@
-import { Box, ButtonGroup, Flex } from "@chakra-ui/react";
+import { Box, ButtonGroup } from "@chakra-ui/react";
 import { COMMENT_KIND } from "applesauce-common/helpers";
 import { useActiveAccount, use$ } from "applesauce-react/hooks";
 import { Filter, kinds, NostrEvent } from "nostr-tools";
@@ -10,17 +10,20 @@ import { ErrorBoundary } from "../../../components/error-boundary";
 import SimpleView from "../../../components/layout/presets/simple-view";
 import { groupByTimePeriod, TimeGroupedListItem } from "../../../helpers/time-grouping";
 import { useVirtualListScrollRestore } from "../../../hooks/use-scroll-restore";
+import useNotificationSync from "../../../hooks/use-notification-sync";
 import { replyNotifications$ } from "../../../services/notifications";
+
 import RelayDistributionButton from "../components/relay-distribution-button";
 import MailboxSettingsButton from "../components/mailbox-settings-button";
 import TimePeriodHeader from "../components/time-period-header";
+import NotificationSyncLayout from "../components/notification-sync-layout";
 import ReplyCard from "./components/reply-card";
 
 type ListItem = TimeGroupedListItem<NostrEvent>;
+const EMPTY_ITEMS: NostrEvent[] = [];
 
 function ListItemRow({ index, style, data }: ListChildComponentProps<ListItem[]>) {
   const item = data[index];
-
   return (
     <Box style={style}>
       {item.type === "header" ? (
@@ -37,32 +40,22 @@ function ListItemRow({ index, style, data }: ListChildComponentProps<ListItem[]>
 export default function RepliesTab() {
   const scroll = useVirtualListScrollRestore("manual");
   const account = useActiveAccount()!;
-
-  // Get reply notifications from the observable
-  const replies = use$(replyNotifications$) ?? [];
-
-  // Filter for fetching events in the modal
+  const items = use$(replyNotifications$) ?? EMPTY_ITEMS;
+  const sync = useNotificationSync("replies");
   const filter = useMemo<Filter>(
-    () => ({
-      kinds: [kinds.ShortTextNote, COMMENT_KIND],
-      "#p": [account.pubkey],
-    }),
+    () => ({ kinds: [kinds.ShortTextNote, COMMENT_KIND], "#p": [account.pubkey] }),
     [account.pubkey],
   );
-
-  // Group replies by time period
-  const listItems = useMemo<ListItem[]>(() => {
-    return groupByTimePeriod(
-      replies,
-      (event) => event.created_at,
-      (event) => event.id,
-    );
-  }, [replies]);
-
-  const getItemSize = (index: number) => {
-    const item = listItems[index];
-    return item.type === "header" ? 60 : 80;
-  };
+  const listItems = useMemo<ListItem[]>(
+    () =>
+      groupByTimePeriod(
+        items,
+        (item) => item.created_at,
+        (item) => item.id,
+      ),
+    [items],
+  );
+  const getItemSize = (index: number) => (listItems[index].type === "header" ? 60 : 80);
 
   return (
     <SimpleView
@@ -72,35 +65,29 @@ export default function RepliesTab() {
       gap={0}
       actions={
         <ButtonGroup ms="auto">
-          <RelayDistributionButton filter={filter} title="Reply Notifications Relay Distribution" />
+          <RelayDistributionButton filter={filter} title="Replies Notifications Relay Distribution" />
           <MailboxSettingsButton />
         </ButtonGroup>
       }
     >
-      <Flex direction="column" flex={1}>
-        {listItems.length > 0 ? (
-          <AutoSizer>
-            {({ height, width }) => (
-              <List
-                itemKey={(index, data) => data[index].key}
-                itemCount={listItems.length}
-                itemSize={getItemSize}
-                itemData={listItems}
-                width={width}
-                height={height}
-                outerRef={scroll.outerRef}
-                ref={scroll.ref}
-              >
-                {ListItemRow}
-              </List>
-            )}
-          </AutoSizer>
-        ) : (
-          <Box mt="4" textAlign="center">
-            No replies yet
-          </Box>
-        )}
-      </Flex>
+      <NotificationSyncLayout state={sync} empty={listItems.length === 0}>
+        <AutoSizer>
+          {({ height, width }) => (
+            <List
+              itemKey={(index, data) => data[index].key}
+              itemCount={listItems.length}
+              itemSize={getItemSize}
+              itemData={listItems}
+              width={width}
+              height={height}
+              outerRef={scroll.outerRef}
+              ref={scroll.ref}
+            >
+              {ListItemRow}
+            </List>
+          )}
+        </AutoSizer>
+      </NotificationSyncLayout>
     </SimpleView>
   );
 }

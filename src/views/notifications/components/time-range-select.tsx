@@ -42,18 +42,11 @@ export interface TimeRangeSelectProps extends Omit<SelectProps, "value" | "onCha
 
 export default function TimeRangeSelect({ value, onChange, ...props }: TimeRangeSelectProps) {
   return (
-    <Select
-      value={value}
-      onChange={(e) => onChange(e.target.value as TimeRange)}
-      size="sm"
-      w="auto"
-      rounded="md"
-      {...props}
-    >
-      <option value="custom">Custom Range</option>
+    <Select value={value} onChange={(e) => onChange(e.target.value as TimeRange)} w="auto" rounded="md" {...props}>
       <option value="24h">Last 24 Hours</option>
       <option value="2days">Last 2 Days</option>
       <option value="lastWeek">Last Week</option>
+      <option value="all">All Known</option>
     </Select>
   );
 }

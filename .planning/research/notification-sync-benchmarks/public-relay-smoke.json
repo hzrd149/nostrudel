@@ -1,0 +1,206 @@
+{
+  "environment": {
+    "node": "v26.5.0",
+    "platform": "linux",
+    "transport": "public relay",
+    "signatureVerifier": "nostr-tools",
+    "cacheBackend": "in-memory seed"
+  },
+  "filter": {
+    "kinds": [
+      1,
+      30023,
+      1111
+    ],
+    "#p": [
+      "266815e0c9210dfa324c6cba3573b14bee49da4209a9456f9484e5106cd408a5"
+    ],
+    "since": 1792434772,
+    "until": 1792607572
+  },
+  "relays": [
+    "wss://relay.damus.io"
+  ],
+  "cachedEvents": 0,
+  "deadline": 5000,
+  "summary": [
+    {
+      "method": "timeline",
+      "completeTrials": 0,
+      "medianMs": null,
+      "p95Ms": null
+    },
+    {
+      "method": "example-sync",
+      "completeTrials": 0,
+      "medianMs": null,
+      "p95Ms": null
+    },
+    {
+      "method": "app-sync",
+      "completeTrials": 1,
+      "medianMs": 1421.667058,
+      "p95Ms": 1421.667058
+    }
+  ],
+  "coverage": [
+    {
+      "round": 1,
+      "comparable": false,
+      "methods": [
+        {
+          "method": "timeline",
+          "events": 0,
+          "missingFromUnion": [
+            "7b26f1603597428bd5affc6a150dc522671bf005ba8e5d741ed5eacf51f5b2f4",
+            "10f58087de129a3ac1935b1663c21d1267269cda551fb40163b4334a00ace17e",
+            "c5fd96aebdce373177c54fc329d17f04f322257fbc2291eac82e28e721bb52ca",
+            "33a19d3122fad4c5e4780fab2ff88d7e9c5580d4ee14294471d9219f6d9470d7",
+            "c7e2340833a5eb8d8c4004faddbbdeeb2de0be591c819c3ba82053bfd68afc40",
+            "9fef502ed721bbea1ffa6ee644a633076fc42d7f8110a42b155ace6c4ba73db0",
+            "498787d18023fdf62749294d831d2af821a718f2b323ccb24c36fe41290b75fc",
+            "a8037788605eb137b2da15ac45a1678f79b386e3489b8162046381a11e620fec",
+            "5190e814a3be4781ba9daed2d53d1da1784be3313c84533e85583b1ad02b3e9b",
+            "a1e2ddf8234fb01271eeaaff01b0a2bd38fc5aa2cf5a694d552c660930c62cc1",
+            "bcf40637b6b8fad72a5c2258f7ce0bac4c0b434b9def31f070325931fb14c5d1",
+            "dba718abe1643d53e55cbd9a22dcc4f1926b319bc01e6e48ff667599ec366cbc",
+            "71031443597f666b1b0f0740ff5616495a973264034f486c35b8fd9aa5ab98b5",
+            "5bacc586d39b7109b84bae2fa2c8430d119208bfa4ae7e430a2cb4d3602d0c74",
+            "e890801996895e1813ad69642868c15ab394bff30148aee8f9003e0a4eaa4865",
+            "83a9ca2b4bc576c8796d1244f8eb070dee5e5e3ba05763a13995c555b010d95b",
+            "7f82241ca441c035ab118e7764605c606a21cc075ea88ac6b34228d53c9d604b",
+            "f7de6e0864f1eea599bd604058fe5d3b70c89b5bdc6d795329cc37d4fc8473fc",
+            "8f334e1e9b90f362a168bbf51308140d72074974727edff8dcae40aa2edf1804"
+          ]
+        },
+        {
+          "method": "example-sync",
+          "events": 0,
+          "missingFromUnion": [
+            "7b26f1603597428bd5affc6a150dc522671bf005ba8e5d741ed5eacf51f5b2f4",
+            "10f58087de129a3ac1935b1663c21d1267269cda551fb40163b4334a00ace17e",
+            "c5fd96aebdce373177c54fc329d17f04f322257fbc2291eac82e28e721bb52ca",
+            "33a19d3122fad4c5e4780fab2ff88d7e9c5580d4ee14294471d9219f6d9470d7",
+            "c7e2340833a5eb8d8c4004faddbbdeeb2de0be591c819c3ba82053bfd68afc40",
+            "9fef502ed721bbea1ffa6ee644a633076fc42d7f8110a42b155ace6c4ba73db0",
+            "498787d18023fdf62749294d831d2af821a718f2b323ccb24c36fe41290b75fc",
+            "a8037788605eb137b2da15ac45a1678f79b386e3489b8162046381a11e620fec",
+            "5190e814a3be4781ba9daed2d53d1da1784be3313c84533e85583b1ad02b3e9b",
+            "a1e2ddf8234fb01271eeaaff01b0a2bd38fc5aa2cf5a694d552c660930c62cc1",
+            "bcf40637b6b8fad72a5c2258f7ce0bac4c0b434b9def31f070325931fb14c5d1",
+            "dba718abe1643d53e55cbd9a22dcc4f1926b319bc01e6e48ff667599ec366cbc",
+            "71031443597f666b1b0f0740ff5616495a973264034f486c35b8fd9aa5ab98b5",
+            "5bacc586d39b7109b84bae2fa2c8430d119208bfa4ae7e430a2cb4d3602d0c74",
+            "e890801996895e1813ad69642868c15ab394bff30148aee8f9003e0a4eaa4865",
+            "83a9ca2b4bc576c8796d1244f8eb070dee5e5e3ba05763a13995c555b010d95b",
+            "7f82241ca441c035ab118e7764605c606a21cc075ea88ac6b34228d53c9d604b",
+            "f7de6e0864f1eea599bd604058fe5d3b70c89b5bdc6d795329cc37d4fc8473fc",
+            "8f334e1e9b90f362a168bbf51308140d72074974727edff8dcae40aa2edf1804"
+          ]
+        },
+        {
+          "method": "app-sync",
+          "events": 19,
+          "missingFromUnion": []
+        }
+      ]
+    }
+  ],
+  "results": [
+    {
+      "method": "timeline",
+      "round": 1,
+      "complete": false,
+      "elapsedMs": 1908.914283,
+      "relayStatus": [
+        {
+          "source": "wss://relay.damus.io",
+          "filter": {
+            "kinds": [
+              1,
+              30023,
+              1111
+            ],
+            "#p": [
+              "266815e0c9210dfa324c6cba3573b14bee49da4209a9456f9484e5106cd408a5"
+            ]
+          },
+          "window": {
+            "since": 1792434772,
+            "until": 1792607572
+          },
+          "buffer": {
+            "since": 1792434772,
+            "until": 1792607572
+          },
+          "state": "incomplete",
+          "reason": "request",
+          "error": {
+            "name": "RelayGroupError",
+            "message": "All relays failed"
+          }
+        },
+        {
+          "source": "cache",
+          "filter": {
+            "kinds": [
+              1,
+              30023,
+              1111
+            ],
+            "#p": [
+              "266815e0c9210dfa324c6cba3573b14bee49da4209a9456f9484e5106cd408a5"
+            ]
+          },
+          "window": {
+            "since": 1792434772,
+            "until": 1792607572
+          },
+          "buffer": {
+            "since": 0,
+            "until": 1792607573
+          },
+          "state": "covered"
+        }
+      ],
+      "events": 0
+    },
+    {
+      "method": "example-sync",
+      "round": 1,
+      "complete": false,
+      "elapsedMs": 851.948543,
+      "relayStatus": {
+        "wss://relay.damus.io/": {
+          "relay": "wss://relay.damus.io/",
+          "state": "error",
+          "count": 0,
+          "negentropy": false,
+          "method": "request",
+          "error": {
+            "name": "RelayConnectionError",
+            "message": "Connection to wss://relay.damus.io/ failed"
+          }
+        }
+      },
+      "events": 0
+    },
+    {
+      "method": "app-sync",
+      "round": 1,
+      "complete": true,
+      "elapsedMs": 1421.667058,
+      "firstEventMs": 1374.884932,
+      "relayStatus": {
+        "wss://relay.damus.io/": {
+          "relay": "wss://relay.damus.io/",
+          "state": "complete",
+          "count": 19,
+          "negentropy": false,
+          "method": "request"
+        }
+      },
+      "events": 19
+    }
+  ]
+}

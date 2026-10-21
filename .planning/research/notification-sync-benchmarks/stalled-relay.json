@@ -1,0 +1,189 @@
+{
+  "environment": {
+    "node": "v26.5.0",
+    "platform": "linux",
+    "transport": "localhost NIP-77 fixture",
+    "signatureVerifier": "nostr-tools",
+    "cacheBackend": "in-memory seed"
+  },
+  "fixture": {
+    "mode": "negentropy",
+    "events": 20,
+    "latency": 2000,
+    "cache": "empty"
+  },
+  "filter": {
+    "kinds": [
+      1,
+      30023,
+      1111
+    ],
+    "#p": [
+      "1b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f"
+    ],
+    "since": 1792434942,
+    "until": 1792607742
+  },
+  "relays": [
+    "ws://127.0.0.1:43521/"
+  ],
+  "cachedEvents": 0,
+  "deadline": 100,
+  "summary": [
+    {
+      "method": "timeline",
+      "completeTrials": 0,
+      "matchedTrials": 0,
+      "medianMs": null,
+      "p95Ms": null
+    },
+    {
+      "method": "example-sync",
+      "completeTrials": 0,
+      "matchedTrials": 0,
+      "medianMs": null,
+      "p95Ms": null
+    },
+    {
+      "method": "app-sync",
+      "completeTrials": 0,
+      "matchedTrials": 0,
+      "medianMs": null,
+      "p95Ms": null
+    }
+  ],
+  "coverage": [
+    {
+      "round": 1,
+      "comparable": false,
+      "methods": [
+        {
+          "method": "timeline",
+          "events": 0,
+          "missingFromUnion": []
+        },
+        {
+          "method": "example-sync",
+          "events": 0,
+          "missingFromUnion": []
+        },
+        {
+          "method": "app-sync",
+          "events": 0,
+          "missingFromUnion": []
+        }
+      ]
+    }
+  ],
+  "results": [
+    {
+      "method": "timeline",
+      "round": 1,
+      "complete": false,
+      "elapsedMs": 105.99683900000002,
+      "wire": {
+        "requests": 0,
+        "negotiations": 0,
+        "sentEvents": 0,
+        "sentBytes": 0,
+        "receivedBytes": 161
+      },
+      "error": "Timeout has occurred",
+      "relayStatus": [
+        {
+          "source": "ws://127.0.0.1:43521/",
+          "filter": {
+            "kinds": [
+              1,
+              30023,
+              1111
+            ],
+            "#p": [
+              "1b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f"
+            ]
+          },
+          "window": {
+            "since": 1792434942,
+            "until": 1792607742
+          },
+          "buffer": {
+            "since": 1792434942,
+            "until": 1792607742
+          },
+          "state": "loading"
+        },
+        {
+          "source": "cache",
+          "filter": {
+            "kinds": [
+              1,
+              30023,
+              1111
+            ],
+            "#p": [
+              "1b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f"
+            ]
+          },
+          "window": {
+            "since": 1792434942,
+            "until": 1792607742
+          },
+          "buffer": {
+            "since": 0,
+            "until": 1792607743
+          },
+          "state": "covered"
+        }
+      ],
+      "events": 0
+    },
+    {
+      "method": "example-sync",
+      "round": 1,
+      "complete": false,
+      "elapsedMs": 100.9353450000001,
+      "wire": {
+        "requests": 0,
+        "negotiations": 0,
+        "sentEvents": 0,
+        "sentBytes": 0,
+        "receivedBytes": 219
+      },
+      "error": "Timeout has occurred",
+      "relayStatus": {
+        "ws://127.0.0.1:43521/": {
+          "relay": "ws://127.0.0.1:43521/",
+          "state": "loading",
+          "count": 0,
+          "negentropy": true,
+          "method": "negentropy"
+        }
+      },
+      "events": 0
+    },
+    {
+      "method": "app-sync",
+      "round": 1,
+      "complete": false,
+      "elapsedMs": 103.39151900000002,
+      "wire": {
+        "requests": 0,
+        "negotiations": 0,
+        "sentEvents": 0,
+        "sentBytes": 0,
+        "receivedBytes": 372
+      },
+      "error": "Timeout has occurred",
+      "relayStatus": {
+        "ws://127.0.0.1:43521/": {
+          "relay": "ws://127.0.0.1:43521/",
+          "state": "loading",
+          "count": 0,
+          "negentropy": true,
+          "method": "negentropy"
+        }
+      },
+      "events": 0
+    }
+  ]
+}

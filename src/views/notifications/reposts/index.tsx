@@ -1,28 +1,28 @@
-import { Box, ButtonGroup, Flex } from "@chakra-ui/react";
+import { Box, ButtonGroup } from "@chakra-ui/react";
+import { useActiveAccount, use$ } from "applesauce-react/hooks";
+import { Filter, kinds } from "nostr-tools";
 import { useMemo } from "react";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { VariableSizeList as List, ListChildComponentProps } from "react-window";
 
-import { useActiveAccount, use$ } from "applesauce-react/hooks";
-import { kinds } from "nostr-tools";
 import { ErrorBoundary } from "../../../components/error-boundary";
 import SimpleView from "../../../components/layout/presets/simple-view";
 import { groupByTimePeriod, TimeGroupedListItem } from "../../../helpers/time-grouping";
 import { useVirtualListScrollRestore } from "../../../hooks/use-scroll-restore";
-import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
-import IntersectionObserverProvider from "../../../providers/local/intersection-observer";
-import { repostNotifications$, shareNotificationsLoader$, TRepostGroup } from "../../../services/notifications";
-import useObservableLoader from "../../../hooks/use-observable-loader";
+import useNotificationSync from "../../../hooks/use-notification-sync";
+import { repostNotifications$ } from "../../../services/notifications";
+import { TRepostGroup } from "../../../helpers/nostr/notification-groups";
 import RelayDistributionButton from "../components/relay-distribution-button";
 import MailboxSettingsButton from "../components/mailbox-settings-button";
 import TimePeriodHeader from "../components/time-period-header";
+import NotificationSyncLayout from "../components/notification-sync-layout";
 import RepostGroup from "./components/repost-group";
 
 type ListItem = TimeGroupedListItem<TRepostGroup>;
+const EMPTY_ITEMS: TRepostGroup[] = [];
 
 function ListItemRow({ index, style, data }: ListChildComponentProps<ListItem[]>) {
   const item = data[index];
-
   return (
     <Box style={style}>
       {item.type === "header" ? (
@@ -37,78 +37,56 @@ function ListItemRow({ index, style, data }: ListChildComponentProps<ListItem[]>
 }
 
 export default function SharesTab() {
-  const loader = useObservableLoader(shareNotificationsLoader$);
-  const callback = useTimelineCurserIntersectionCallback(loader);
   const scroll = useVirtualListScrollRestore("manual");
-
-  // Get account
   const account = useActiveAccount()!;
-
-  // Filter for fetching events in the modal
-  const filter = useMemo(
-    () => ({
-      kinds: [kinds.Repost, kinds.GenericRepost],
-      "#p": [account.pubkey],
-    }),
+  const items = use$(repostNotifications$) ?? EMPTY_ITEMS;
+  const sync = useNotificationSync("reposts");
+  const filter = useMemo<Filter>(
+    () => ({ kinds: [kinds.Repost, kinds.GenericRepost], "#p": [account.pubkey] }),
     [account.pubkey],
   );
-
-  // Get grouped repost notifications from the observable stream
-  const groups = use$(repostNotifications$) ?? [];
-
-  // Group repost groups by time period
-  const listItems = useMemo<ListItem[]>(() => {
-    return groupByTimePeriod(
-      groups,
-      (group) => group.latest,
-      (group) => group.key,
-    );
-  }, [groups]);
-
-  const getItemSize = (index: number) => {
-    const item = listItems[index];
-    return item.type === "header" ? 60 : 88;
-  };
+  const listItems = useMemo<ListItem[]>(
+    () =>
+      groupByTimePeriod(
+        items,
+        (item) => item.latest,
+        (item) => item.key,
+      ),
+    [items],
+  );
+  const getItemSize = (index: number) => (listItems[index].type === "header" ? 60 : 88);
 
   return (
-    <IntersectionObserverProvider callback={callback}>
-      <SimpleView
-        title="Reposts"
-        scroll={false}
-        flush
-        gap={0}
-        actions={
-          <ButtonGroup ms="auto">
-            <RelayDistributionButton filter={filter} title="Repost Notifications Relay Distribution" />
-            <MailboxSettingsButton />
-          </ButtonGroup>
-        }
-      >
-        <Flex direction="column" flex={1}>
-          {listItems.length > 0 ? (
-            <AutoSizer>
-              {({ height, width }) => (
-                <List
-                  itemKey={(index, data) => data[index].key}
-                  itemCount={listItems.length}
-                  itemSize={getItemSize}
-                  itemData={listItems}
-                  width={width}
-                  height={height}
-                  outerRef={scroll.outerRef}
-                  ref={scroll.ref}
-                >
-                  {ListItemRow}
-                </List>
-              )}
-            </AutoSizer>
-          ) : (
-            <Box mt="4" textAlign="center">
-              No shares yet
-            </Box>
+    <SimpleView
+      title="Reposts"
+      scroll={false}
+      flush
+      gap={0}
+      actions={
+        <ButtonGroup ms="auto">
+          <RelayDistributionButton filter={filter} title="Reposts Notifications Relay Distribution" />
+          <MailboxSettingsButton />
+        </ButtonGroup>
+      }
+    >
+      <NotificationSyncLayout state={sync} empty={listItems.length === 0}>
+        <AutoSizer>
+          {({ height, width }) => (
+            <List
+              itemKey={(index, data) => data[index].key}
+              itemCount={listItems.length}
+              itemSize={getItemSize}
+              itemData={listItems}
+              width={width}
+              height={height}
+              outerRef={scroll.outerRef}
+              ref={scroll.ref}
+            >
+              {ListItemRow}
+            </List>
           )}
-        </Flex>
-      </SimpleView>
-    </IntersectionObserverProvider>
+        </AutoSizer>
+      </NotificationSyncLayout>
+    </SimpleView>
   );
 }

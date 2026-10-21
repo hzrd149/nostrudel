@@ -1,0 +1,746 @@
+{
+  "environment": {
+    "node": "v26.5.0",
+    "platform": "linux",
+    "transport": "localhost NIP-77 fixture",
+    "signatureVerifier": "nostr-tools",
+    "cacheBackend": "in-memory seed"
+  },
+  "fixture": {
+    "mode": "fallback",
+    "events": 1000,
+    "latency": 10,
+    "cache": "empty"
+  },
+  "filter": {
+    "kinds": [
+      1,
+      30023,
+      1111
+    ],
+    "#p": [
+      "1b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f"
+    ],
+    "since": 1792433821,
+    "until": 1792606621
+  },
+  "relays": [
+    "ws://127.0.0.1:40805/"
+  ],
+  "cachedEvents": 0,
+  "deadline": 15000,
+  "summary": [
+    {
+      "method": "timeline",
+      "completeTrials": 5,
+      "medianMs": 1280.2405610000005,
+      "p95Ms": 1360.3112489999985
+    },
+    {
+      "method": "example-sync",
+      "completeTrials": 5,
+      "medianMs": 1253.1563720000013,
+      "p95Ms": 1294.2326489999996
+    },
+    {
+      "method": "app-sync",
+      "completeTrials": 5,
+      "medianMs": 1246.2482089999994,
+      "p95Ms": 1265.7632759999997
+    }
+  ],
+  "coverage": [
+    {
+      "round": 1,
+      "comparable": true,
+      "methods": [
+        {
+          "method": "timeline",
+          "events": 1002,
+          "missingFromUnion": []
+        },
+        {
+          "method": "example-sync",
+          "events": 1002,
+          "missingFromUnion": []
+        },
+        {
+          "method": "app-sync",
+          "events": 1002,
+          "missingFromUnion": []
+        }
+      ]
+    },
+    {
+      "round": 2,
+      "comparable": true,
+      "methods": [
+        {
+          "method": "example-sync",
+          "events": 1002,
+          "missingFromUnion": []
+        },
+        {
+          "method": "app-sync",
+          "events": 1002,
+          "missingFromUnion": []
+        },
+        {
+          "method": "timeline",
+          "events": 1002,
+          "missingFromUnion": []
+        }
+      ]
+    },
+    {
+      "round": 3,
+      "comparable": true,
+      "methods": [
+        {
+          "method": "app-sync",
+          "events": 1002,
+          "missingFromUnion": []
+        },
+        {
+          "method": "timeline",
+          "events": 1002,
+          "missingFromUnion": []
+        },
+        {
+          "method": "example-sync",
+          "events": 1002,
+          "missingFromUnion": []
+        }
+      ]
+    },
+    {
+      "round": 4,
+      "comparable": true,
+      "methods": [
+        {
+          "method": "timeline",
+          "events": 1002,
+          "missingFromUnion": []
+        },
+        {
+          "method": "example-sync",
+          "events": 1002,
+          "missingFromUnion": []
+        },
+        {
+          "method": "app-sync",
+          "events": 1002,
+          "missingFromUnion": []
+        }
+      ]
+    },
+    {
+      "round": 5,
+      "comparable": true,
+      "methods": [
+        {
+          "method": "example-sync",
+          "events": 1002,
+          "missingFromUnion": []
+        },
+        {
+          "method": "app-sync",
+          "events": 1002,
+          "missingFromUnion": []
+        },
+        {
+          "method": "timeline",
+          "events": 1002,
+          "missingFromUnion": []
+        }
+      ]
+    }
+  ],
+  "results": [
+    {
+      "method": "timeline",
+      "round": 1,
+      "complete": true,
+      "elapsedMs": 1300.0613650000003,
+      "firstEventMs": 39.232543000000305,
+      "wire": {
+        "requests": 12,
+        "negotiations": 0,
+        "sentEvents": 1013,
+        "sentBytes": 706423,
+        "receivedBytes": 2295
+      },
+      "relayStatus": [
+        {
+          "source": "ws://127.0.0.1:40805/",
+          "filter": {
+            "kinds": [
+              1,
+              30023,
+              1111
+            ],
+            "#p": [
+              "1b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f"
+            ]
+          },
+          "window": {
+            "since": 1792433821,
+            "until": 1792606621
+          },
+          "buffer": {
+            "since": 0,
+            "until": 1792606623
+          },
+          "state": "covered"
+        },
+        {
+          "source": "cache",
+          "filter": {
+            "kinds": [
+              1,
+              30023,
+              1111
+            ],
+            "#p": [
+              "1b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f"
+            ]
+          },
+          "window": {
+            "since": 1792433821,
+            "until": 1792606621
+          },
+          "buffer": {
+            "since": 0,
+            "until": 1792606623
+          },
+          "state": "covered"
+        }
+      ],
+      "events": 1002
+    },
+    {
+      "method": "example-sync",
+      "round": 1,
+      "complete": true,
+      "elapsedMs": 1294.2326489999996,
+      "firstEventMs": 43.028343999999834,
+      "wire": {
+        "requests": 11,
+        "negotiations": 1,
+        "sentEvents": 1002,
+        "sentBytes": 698790,
+        "receivedBytes": 2566
+      },
+      "relayStatus": {
+        "ws://127.0.0.1:40805/": {
+          "relay": "ws://127.0.0.1:40805/",
+          "state": "complete",
+          "count": 1002,
+          "negentropy": true,
+          "method": "request",
+          "fallbackReason": {
+            "name": "RelayClosedError",
+            "message": "error: fixture sync unavailable"
+          }
+        }
+      },
+      "events": 1002
+    },
+    {
+      "method": "app-sync",
+      "round": 1,
+      "complete": true,
+      "elapsedMs": 1264.0860580000008,
+      "firstEventMs": 28.71476000000075,
+      "wire": {
+        "requests": 12,
+        "negotiations": 1,
+        "sentEvents": 1002,
+        "sentBytes": 698822,
+        "receivedBytes": 2715
+      },
+      "relayStatus": {
+        "ws://127.0.0.1:40805/": {
+          "relay": "ws://127.0.0.1:40805/",
+          "state": "complete",
+          "count": 1002,
+          "negentropy": true,
+          "method": "request",
+          "fallbackReason": {
+            "name": "RelayClosedError",
+            "message": "error: fixture sync unavailable"
+          }
+        }
+      },
+      "events": 1002
+    },
+    {
+      "method": "example-sync",
+      "round": 2,
+      "complete": true,
+      "elapsedMs": 1241.5090729999993,
+      "firstEventMs": 27.827620000000024,
+      "wire": {
+        "requests": 11,
+        "negotiations": 1,
+        "sentEvents": 1002,
+        "sentBytes": 698790,
+        "receivedBytes": 2599
+      },
+      "relayStatus": {
+        "ws://127.0.0.1:40805/": {
+          "relay": "ws://127.0.0.1:40805/",
+          "state": "complete",
+          "count": 1002,
+          "negentropy": true,
+          "method": "request",
+          "fallbackReason": {
+            "name": "RelayClosedError",
+            "message": "error: fixture sync unavailable"
+          }
+        }
+      },
+      "events": 1002
+    },
+    {
+      "method": "app-sync",
+      "round": 2,
+      "complete": true,
+      "elapsedMs": 1241.629677,
+      "firstEventMs": 26.121721999999863,
+      "wire": {
+        "requests": 12,
+        "negotiations": 1,
+        "sentEvents": 1002,
+        "sentBytes": 698822,
+        "receivedBytes": 2715
+      },
+      "relayStatus": {
+        "ws://127.0.0.1:40805/": {
+          "relay": "ws://127.0.0.1:40805/",
+          "state": "complete",
+          "count": 1002,
+          "negentropy": true,
+          "method": "request",
+          "fallbackReason": {
+            "name": "RelayClosedError",
+            "message": "error: fixture sync unavailable"
+          }
+        }
+      },
+      "events": 1002
+    },
+    {
+      "method": "timeline",
+      "round": 2,
+      "complete": true,
+      "elapsedMs": 1280.2405610000005,
+      "firstEventMs": 13.94627600000058,
+      "wire": {
+        "requests": 12,
+        "negotiations": 0,
+        "sentEvents": 1013,
+        "sentBytes": 706423,
+        "receivedBytes": 2361
+      },
+      "relayStatus": [
+        {
+          "source": "ws://127.0.0.1:40805/",
+          "filter": {
+            "kinds": [
+              1,
+              30023,
+              1111
+            ],
+            "#p": [
+              "1b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f"
+            ]
+          },
+          "window": {
+            "since": 1792433821,
+            "until": 1792606621
+          },
+          "buffer": {
+            "since": 0,
+            "until": 1792606629
+          },
+          "state": "covered"
+        },
+        {
+          "source": "cache",
+          "filter": {
+            "kinds": [
+              1,
+              30023,
+              1111
+            ],
+            "#p": [
+              "1b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f"
+            ]
+          },
+          "window": {
+            "since": 1792433821,
+            "until": 1792606621
+          },
+          "buffer": {
+            "since": 0,
+            "until": 1792606629
+          },
+          "state": "covered"
+        }
+      ],
+      "events": 1002
+    },
+    {
+      "method": "app-sync",
+      "round": 3,
+      "complete": true,
+      "elapsedMs": 1265.7632759999997,
+      "firstEventMs": 27.477529999998296,
+      "wire": {
+        "requests": 12,
+        "negotiations": 1,
+        "sentEvents": 1002,
+        "sentBytes": 698822,
+        "receivedBytes": 2715
+      },
+      "relayStatus": {
+        "ws://127.0.0.1:40805/": {
+          "relay": "ws://127.0.0.1:40805/",
+          "state": "complete",
+          "count": 1002,
+          "negentropy": true,
+          "method": "request",
+          "fallbackReason": {
+            "name": "RelayClosedError",
+            "message": "error: fixture sync unavailable"
+          }
+        }
+      },
+      "events": 1002
+    },
+    {
+      "method": "timeline",
+      "round": 3,
+      "complete": true,
+      "elapsedMs": 1360.3112489999985,
+      "firstEventMs": 15.091757999998663,
+      "wire": {
+        "requests": 12,
+        "negotiations": 0,
+        "sentEvents": 1013,
+        "sentBytes": 706423,
+        "receivedBytes": 2361
+      },
+      "relayStatus": [
+        {
+          "source": "ws://127.0.0.1:40805/",
+          "filter": {
+            "kinds": [
+              1,
+              30023,
+              1111
+            ],
+            "#p": [
+              "1b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f"
+            ]
+          },
+          "window": {
+            "since": 1792433821,
+            "until": 1792606621
+          },
+          "buffer": {
+            "since": 0,
+            "until": 1792606632
+          },
+          "state": "covered"
+        },
+        {
+          "source": "cache",
+          "filter": {
+            "kinds": [
+              1,
+              30023,
+              1111
+            ],
+            "#p": [
+              "1b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f"
+            ]
+          },
+          "window": {
+            "since": 1792433821,
+            "until": 1792606621
+          },
+          "buffer": {
+            "since": 0,
+            "until": 1792606632
+          },
+          "state": "covered"
+        }
+      ],
+      "events": 1002
+    },
+    {
+      "method": "example-sync",
+      "round": 3,
+      "complete": true,
+      "elapsedMs": 1257.0970379999999,
+      "firstEventMs": 26.61695200000031,
+      "wire": {
+        "requests": 11,
+        "negotiations": 1,
+        "sentEvents": 1002,
+        "sentBytes": 698790,
+        "receivedBytes": 2566
+      },
+      "relayStatus": {
+        "ws://127.0.0.1:40805/": {
+          "relay": "ws://127.0.0.1:40805/",
+          "state": "complete",
+          "count": 1002,
+          "negentropy": true,
+          "method": "request",
+          "fallbackReason": {
+            "name": "RelayClosedError",
+            "message": "error: fixture sync unavailable"
+          }
+        }
+      },
+      "events": 1002
+    },
+    {
+      "method": "timeline",
+      "round": 4,
+      "complete": true,
+      "elapsedMs": 1250.375897,
+      "firstEventMs": 15.21325699999943,
+      "wire": {
+        "requests": 12,
+        "negotiations": 0,
+        "sentEvents": 1013,
+        "sentBytes": 706423,
+        "receivedBytes": 2328
+      },
+      "relayStatus": [
+        {
+          "source": "ws://127.0.0.1:40805/",
+          "filter": {
+            "kinds": [
+              1,
+              30023,
+              1111
+            ],
+            "#p": [
+              "1b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f"
+            ]
+          },
+          "window": {
+            "since": 1792433821,
+            "until": 1792606621
+          },
+          "buffer": {
+            "since": 0,
+            "until": 1792606634
+          },
+          "state": "covered"
+        },
+        {
+          "source": "cache",
+          "filter": {
+            "kinds": [
+              1,
+              30023,
+              1111
+            ],
+            "#p": [
+              "1b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f"
+            ]
+          },
+          "window": {
+            "since": 1792433821,
+            "until": 1792606621
+          },
+          "buffer": {
+            "since": 0,
+            "until": 1792606634
+          },
+          "state": "covered"
+        }
+      ],
+      "events": 1002
+    },
+    {
+      "method": "example-sync",
+      "round": 4,
+      "complete": true,
+      "elapsedMs": 1253.1563720000013,
+      "firstEventMs": 26.717577000001256,
+      "wire": {
+        "requests": 11,
+        "negotiations": 1,
+        "sentEvents": 1002,
+        "sentBytes": 698790,
+        "receivedBytes": 2566
+      },
+      "relayStatus": {
+        "ws://127.0.0.1:40805/": {
+          "relay": "ws://127.0.0.1:40805/",
+          "state": "complete",
+          "count": 1002,
+          "negentropy": true,
+          "method": "request",
+          "fallbackReason": {
+            "name": "RelayClosedError",
+            "message": "error: fixture sync unavailable"
+          }
+        }
+      },
+      "events": 1002
+    },
+    {
+      "method": "app-sync",
+      "round": 4,
+      "complete": true,
+      "elapsedMs": 1246.2482089999994,
+      "firstEventMs": 25.451380999998946,
+      "wire": {
+        "requests": 12,
+        "negotiations": 1,
+        "sentEvents": 1002,
+        "sentBytes": 698822,
+        "receivedBytes": 2715
+      },
+      "relayStatus": {
+        "ws://127.0.0.1:40805/": {
+          "relay": "ws://127.0.0.1:40805/",
+          "state": "complete",
+          "count": 1002,
+          "negentropy": true,
+          "method": "request",
+          "fallbackReason": {
+            "name": "RelayClosedError",
+            "message": "error: fixture sync unavailable"
+          }
+        }
+      },
+      "events": 1002
+    },
+    {
+      "method": "example-sync",
+      "round": 5,
+      "complete": true,
+      "elapsedMs": 1242.5189599999976,
+      "firstEventMs": 26.672328999997262,
+      "wire": {
+        "requests": 11,
+        "negotiations": 1,
+        "sentEvents": 1002,
+        "sentBytes": 698790,
+        "receivedBytes": 2599
+      },
+      "relayStatus": {
+        "ws://127.0.0.1:40805/": {
+          "relay": "ws://127.0.0.1:40805/",
+          "state": "complete",
+          "count": 1002,
+          "negentropy": true,
+          "method": "request",
+          "fallbackReason": {
+            "name": "RelayClosedError",
+            "message": "error: fixture sync unavailable"
+          }
+        }
+      },
+      "events": 1002
+    },
+    {
+      "method": "app-sync",
+      "round": 5,
+      "complete": true,
+      "elapsedMs": 1246.0834400000022,
+      "firstEventMs": 26.284723000000668,
+      "wire": {
+        "requests": 12,
+        "negotiations": 1,
+        "sentEvents": 1002,
+        "sentBytes": 698822,
+        "receivedBytes": 2715
+      },
+      "relayStatus": {
+        "ws://127.0.0.1:40805/": {
+          "relay": "ws://127.0.0.1:40805/",
+          "state": "complete",
+          "count": 1002,
+          "negentropy": true,
+          "method": "request",
+          "fallbackReason": {
+            "name": "RelayClosedError",
+            "message": "error: fixture sync unavailable"
+          }
+        }
+      },
+      "events": 1002
+    },
+    {
+      "method": "timeline",
+      "round": 5,
+      "complete": true,
+      "elapsedMs": 1260.4782419999974,
+      "firstEventMs": 14.393606999998156,
+      "wire": {
+        "requests": 12,
+        "negotiations": 0,
+        "sentEvents": 1013,
+        "sentBytes": 706423,
+        "receivedBytes": 2361
+      },
+      "relayStatus": [
+        {
+          "source": "ws://127.0.0.1:40805/",
+          "filter": {
+            "kinds": [
+              1,
+              30023,
+              1111
+            ],
+            "#p": [
+              "1b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f"
+            ]
+          },
+          "window": {
+            "since": 1792433821,
+            "until": 1792606621
+          },
+          "buffer": {
+            "since": 0,
+            "until": 1792606640
+          },
+          "state": "covered"
+        },
+        {
+          "source": "cache",
+          "filter": {
+            "kinds": [
+              1,
+              30023,
+              1111
+            ],
+            "#p": [
+              "1b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f"
+            ]
+          },
+          "window": {
+            "since": 1792433821,
+            "until": 1792606621
+          },
+          "buffer": {
+            "since": 0,
+            "until": 1792606640
+          },
+          "state": "covered"
+        }
+      ],
+      "events": 1002
+    }
+  ]
+}

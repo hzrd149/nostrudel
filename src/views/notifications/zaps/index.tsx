@@ -1,6 +1,6 @@
-import { Box, ButtonGroup, Flex } from "@chakra-ui/react";
+import { Box, ButtonGroup } from "@chakra-ui/react";
 import { useActiveAccount, use$ } from "applesauce-react/hooks";
-import { kinds } from "nostr-tools";
+import { Filter, kinds } from "nostr-tools";
 import { useMemo } from "react";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { VariableSizeList as List, ListChildComponentProps } from "react-window";
@@ -8,22 +8,21 @@ import { VariableSizeList as List, ListChildComponentProps } from "react-window"
 import { ErrorBoundary } from "../../../components/error-boundary";
 import SimpleView from "../../../components/layout/presets/simple-view";
 import { groupByTimePeriod, TimeGroupedListItem } from "../../../helpers/time-grouping";
-import { TZapGroup } from "../../../helpers/nostr/zaps";
 import { useVirtualListScrollRestore } from "../../../hooks/use-scroll-restore";
-import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
-import IntersectionObserverProvider from "../../../providers/local/intersection-observer";
-import { zapNotificationsLoader$, zapNotifications$ } from "../../../services/notifications";
-import useObservableLoader from "../../../hooks/use-observable-loader";
+import useNotificationSync from "../../../hooks/use-notification-sync";
+import { zapNotifications$ } from "../../../services/notifications";
+import { TZapGroup } from "../../../helpers/nostr/zaps";
 import RelayDistributionButton from "../components/relay-distribution-button";
 import MailboxSettingsButton from "../components/mailbox-settings-button";
 import TimePeriodHeader from "../components/time-period-header";
+import NotificationSyncLayout from "../components/notification-sync-layout";
 import ZapGroup from "./components/zap-group";
 
 type ListItem = TimeGroupedListItem<TZapGroup>;
+const EMPTY_ITEMS: TZapGroup[] = [];
 
 function ListItemRow({ index, style, data }: ListChildComponentProps<ListItem[]>) {
   const item = data[index];
-
   return (
     <Box style={style}>
       {item.type === "header" ? (
@@ -39,79 +38,52 @@ function ListItemRow({ index, style, data }: ListChildComponentProps<ListItem[]>
 
 export default function ZapsTab() {
   const scroll = useVirtualListScrollRestore("manual");
-
-  // Start the zap notifications loader
-  const loader = useObservableLoader(zapNotificationsLoader$);
-  const callback = useTimelineCurserIntersectionCallback(loader);
-
-  // Get account
   const account = useActiveAccount()!;
-
-  // Filter for fetching events in the modal
-  const filter = useMemo(
-    () => ({
-      kinds: [kinds.Zap],
-      "#p": [account.pubkey],
-    }),
-    [account.pubkey],
+  const items = use$(zapNotifications$) ?? EMPTY_ITEMS;
+  const sync = useNotificationSync("zaps");
+  const filter = useMemo<Filter>(() => ({ kinds: [kinds.Zap], "#p": [account.pubkey] }), [account.pubkey]);
+  const listItems = useMemo<ListItem[]>(
+    () =>
+      groupByTimePeriod(
+        items,
+        (item) => item.latest,
+        (item) => item.key,
+      ),
+    [items],
   );
-
-  // Get grouped zap notifications from the observable
-  const groups = use$(zapNotifications$) ?? [];
-
-  // Group zap groups by time period and flatten into list items
-  const listItems = useMemo<ListItem[]>(() => {
-    return groupByTimePeriod(
-      groups,
-      (group) => group.latest,
-      (group) => group.key,
-    );
-  }, [groups]);
-
-  const getItemSize = (index: number) => {
-    const item = listItems[index];
-    return item.type === "header" ? 60 : 88;
-  };
+  const getItemSize = (index: number) => (listItems[index].type === "header" ? 60 : 88);
 
   return (
-    <IntersectionObserverProvider callback={callback}>
-      <SimpleView
-        title="Zaps"
-        scroll={false}
-        flush
-        gap={0}
-        actions={
-          <ButtonGroup ms="auto">
-            <RelayDistributionButton filter={filter} title="Zap Notifications Relay Distribution" />
-            <MailboxSettingsButton />
-          </ButtonGroup>
-        }
-      >
-        <Flex direction="column" flex={1}>
-          {listItems.length > 0 ? (
-            <AutoSizer>
-              {({ height, width }) => (
-                <List
-                  itemKey={(index, data) => data[index].key}
-                  itemCount={listItems.length}
-                  itemSize={getItemSize}
-                  itemData={listItems}
-                  width={width}
-                  height={height}
-                  outerRef={scroll.outerRef}
-                  ref={scroll.ref}
-                >
-                  {ListItemRow}
-                </List>
-              )}
-            </AutoSizer>
-          ) : (
-            <Box mt="4" textAlign="center">
-              No zaps yet
-            </Box>
+    <SimpleView
+      title="Zaps"
+      scroll={false}
+      flush
+      gap={0}
+      actions={
+        <ButtonGroup ms="auto">
+          <RelayDistributionButton filter={filter} title="Zaps Notifications Relay Distribution" />
+          <MailboxSettingsButton />
+        </ButtonGroup>
+      }
+    >
+      <NotificationSyncLayout state={sync} empty={listItems.length === 0}>
+        <AutoSizer>
+          {({ height, width }) => (
+            <List
+              itemKey={(index, data) => data[index].key}
+              itemCount={listItems.length}
+              itemSize={getItemSize}
+              itemData={listItems}
+              width={width}
+              height={height}
+              outerRef={scroll.outerRef}
+              ref={scroll.ref}
+            >
+              {ListItemRow}
+            </List>
           )}
-        </Flex>
-      </SimpleView>
-    </IntersectionObserverProvider>
+        </AutoSizer>
+      </NotificationSyncLayout>
+    </SimpleView>
   );
 }

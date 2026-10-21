@@ -1,16 +1,12 @@
-import { Badge, ButtonGroup, Flex, SimpleGrid, Text } from "@chakra-ui/react";
-import { useEffect, useMemo } from "react";
+import { Badge, Button, ButtonGroup, Flex, SimpleGrid, Text } from "@chakra-ui/react";
+import { useMemo } from "react";
 
 import { useLocalStorage } from "react-use";
 import { AtIcon, LightningIcon, QuoteIcon, ReplyIcon, RepostIcon, ThreadIcon } from "../../components/icons";
 import SimpleNavBox from "../../components/layout/box-layout/simple-nav-box";
 import SimpleView from "../../components/layout/presets/simple-view";
-import {
-  shareNotificationsLoader$,
-  socialNotificationsLoader$,
-  zapNotificationsLoader$,
-} from "../../services/notifications";
-import useObservableLoader from "../../hooks/use-observable-loader";
+import useNotificationSync from "../../hooks/use-notification-sync";
+import { getNotificationSyncSummary } from "../../helpers/notification-sync";
 import { useNotificationCounts } from "./components/notification-counts";
 import TimeRangeSelect, { getTimeRangeLabel, getTimeRangeSince, TimeRange } from "./components/time-range-select";
 
@@ -47,21 +43,16 @@ export default function NotificationsView() {
 
   const timeRangeLabel = useMemo(() => getTimeRangeLabel(timeRange).toLowerCase(), [timeRange]);
 
-  // Start the event loader
-  const socialLoader = useObservableLoader(socialNotificationsLoader$);
-  const zapLoader = useObservableLoader(zapNotificationsLoader$);
-  const shareLoader = useObservableLoader(shareNotificationsLoader$);
-
-  // Load the initial block for all loaders
-  useEffect(() => {
-    const window = { since: getTimeRangeSince(timeRange) ?? 0, until: Math.floor(Date.now() / 1000) };
-    const subscriptions = [
-      socialLoader?.(window).subscribe(),
-      zapLoader?.(window).subscribe(),
-      shareLoader?.(window).subscribe(),
-    ];
-    return () => subscriptions.forEach((sub) => sub?.unsubscribe());
-  }, [socialLoader, zapLoader, shareLoader, timeRange]);
+  const since = useMemo(() => getTimeRangeSince(timeRange), [timeRange]);
+  const social = useNotificationSync("conversations", since);
+  const reposts = useNotificationSync("reposts", since);
+  const zaps = useNotificationSync("zaps", since);
+  const states = [social, reposts, zaps];
+  const loading = states.some((state) => getNotificationSyncSummary(state).loading);
+  const incomplete = states.some((state) => {
+    const summary = getNotificationSyncSummary(state);
+    return summary.incomplete || summary.noRelays;
+  });
 
   return (
     <SimpleView
@@ -73,6 +64,21 @@ export default function NotificationsView() {
         </ButtonGroup>
       }
     >
+      {loading && (
+        <Text as="output" aria-live="polite" px="4">
+          Syncing notifications…
+        </Text>
+      )}
+      {incomplete && (
+        <Flex alignItems="center" gap="2" px="4">
+          <Text as="output" aria-live="polite">
+            Some notification sources are unavailable. Counts may be incomplete.
+          </Text>
+          <Button onClick={() => states.forEach((state) => state?.retry())} isDisabled={loading}>
+            Retry
+          </Button>
+        </Flex>
+      )}
       <SimpleGrid columns={{ base: 1, lg: 2, xl: 3 }}>
         <SimpleNavBox
           icon={<ReplyIcon boxSize={12} />}

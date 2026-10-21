@@ -22,13 +22,15 @@ export type NotificationCounts = {
   zaps: number;
 };
 
+const EMPTY_ITEMS: never[] = [];
+
 export function useNotificationCounts(timeRange: TimeRange): NotificationCounts {
-  const threads = use$(threadNotifications$) ?? [];
-  const replies = use$(replyNotifications$) ?? [];
-  const mentions = use$(mentionNotifications$) ?? [];
-  const quotes = use$(quoteNotifications$) ?? [];
-  const reposts = use$(repostNotifications$) ?? [];
-  const zaps = use$(zapNotifications$) ?? [];
+  const threads = use$(threadNotifications$) ?? EMPTY_ITEMS;
+  const replies = use$(replyNotifications$) ?? EMPTY_ITEMS;
+  const mentions = use$(mentionNotifications$) ?? EMPTY_ITEMS;
+  const quotes = use$(quoteNotifications$) ?? EMPTY_ITEMS;
+  const reposts = use$(repostNotifications$) ?? EMPTY_ITEMS;
+  const zaps = use$(zapNotifications$) ?? EMPTY_ITEMS;
 
   const since = getTimeRangeSince(timeRange);
 

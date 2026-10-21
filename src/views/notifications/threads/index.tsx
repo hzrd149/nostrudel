@@ -1,7 +1,7 @@
-import { Box, ButtonGroup, Flex } from "@chakra-ui/react";
+import { Box, ButtonGroup } from "@chakra-ui/react";
 import { COMMENT_KIND } from "applesauce-common/helpers";
 import { useActiveAccount, use$ } from "applesauce-react/hooks";
-import { kinds } from "nostr-tools";
+import { Filter, kinds } from "nostr-tools";
 import { useMemo } from "react";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { VariableSizeList as List, ListChildComponentProps } from "react-window";
@@ -10,21 +10,20 @@ import { ErrorBoundary } from "../../../components/error-boundary";
 import SimpleView from "../../../components/layout/presets/simple-view";
 import { groupByTimePeriod, TimeGroupedListItem } from "../../../helpers/time-grouping";
 import { useVirtualListScrollRestore } from "../../../hooks/use-scroll-restore";
-import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
-import IntersectionObserverProvider from "../../../providers/local/intersection-observer";
-import { socialNotificationsLoader$, threadNotifications$ } from "../../../services/notifications";
-import useObservableLoader from "../../../hooks/use-observable-loader";
+import useNotificationSync from "../../../hooks/use-notification-sync";
+import { threadNotifications$ } from "../../../services/notifications";
+import { ThreadNotification } from "../../../helpers/nostr/notifications";
 import RelayDistributionButton from "../components/relay-distribution-button";
 import MailboxSettingsButton from "../components/mailbox-settings-button";
 import TimePeriodHeader from "../components/time-period-header";
+import NotificationSyncLayout from "../components/notification-sync-layout";
 import ThreadGroup from "./components/thread-group";
-import { ThreadNotification } from "./helpers";
 
 type ListItem = TimeGroupedListItem<ThreadNotification>;
+const EMPTY_ITEMS: ThreadNotification[] = [];
 
 function ListItemRow({ index, style, data }: ListChildComponentProps<ListItem[]>) {
   const item = data[index];
-
   return (
     <Box style={style}>
       {item.type === "header" ? (
@@ -41,76 +40,54 @@ function ListItemRow({ index, style, data }: ListChildComponentProps<ListItem[]>
 export default function ThreadsTab() {
   const scroll = useVirtualListScrollRestore("manual");
   const account = useActiveAccount()!;
-
-  // Start the event loader
-  const loader = useObservableLoader(socialNotificationsLoader$);
-  const callback = useTimelineCurserIntersectionCallback(loader);
-
-  // Subscribe to the processed thread notifications observable
-  const notifications = use$(threadNotifications$) ?? [];
-
-  // Filter for fetching events in the modal
-  const filter = useMemo(
-    () => ({
-      kinds: [kinds.ShortTextNote, COMMENT_KIND],
-      "#p": [account.pubkey],
-    }),
+  const items = use$(threadNotifications$) ?? EMPTY_ITEMS;
+  const sync = useNotificationSync("conversations");
+  const filter = useMemo<Filter>(
+    () => ({ kinds: [kinds.ShortTextNote, COMMENT_KIND], "#p": [account.pubkey] }),
     [account.pubkey],
   );
-
-  // Group notifications by time period
-  const listItems = useMemo<ListItem[]>(() => {
-    return groupByTimePeriod(
-      notifications,
-      (notification) => notification.timestamp,
-      (notification) => notification.data.key,
-    );
-  }, [notifications]);
-
-  const getItemSize = (index: number) => {
-    const item = listItems[index];
-    return item.type === "header" ? 60 : 80;
-  };
+  const listItems = useMemo<ListItem[]>(
+    () =>
+      groupByTimePeriod(
+        items,
+        (item) => item.timestamp,
+        (item) => item.data.key,
+      ),
+    [items],
+  );
+  const getItemSize = (index: number) => (listItems[index].type === "header" ? 60 : 80);
 
   return (
-    <IntersectionObserverProvider callback={callback}>
-      <SimpleView
-        title="Threads"
-        scroll={false}
-        flush
-        gap={0}
-        actions={
-          <ButtonGroup ms="auto">
-            <RelayDistributionButton filter={filter} title="Thread Notifications Relay Distribution" />
-            <MailboxSettingsButton />
-          </ButtonGroup>
-        }
-      >
-        <Flex direction="column" flex={1}>
-          {listItems.length > 0 ? (
-            <AutoSizer>
-              {({ height, width }) => (
-                <List
-                  itemKey={(index, data) => data[index].key}
-                  itemCount={listItems.length}
-                  itemSize={getItemSize}
-                  itemData={listItems}
-                  width={width}
-                  height={height}
-                  outerRef={scroll.outerRef}
-                  ref={scroll.ref}
-                >
-                  {ListItemRow}
-                </List>
-              )}
-            </AutoSizer>
-          ) : (
-            <Box mt="4" textAlign="center">
-              No thread notifications yet
-            </Box>
+    <SimpleView
+      title="Threads"
+      scroll={false}
+      flush
+      gap={0}
+      actions={
+        <ButtonGroup ms="auto">
+          <RelayDistributionButton filter={filter} title="Threads Notifications Relay Distribution" />
+          <MailboxSettingsButton />
+        </ButtonGroup>
+      }
+    >
+      <NotificationSyncLayout state={sync} empty={listItems.length === 0}>
+        <AutoSizer>
+          {({ height, width }) => (
+            <List
+              itemKey={(index, data) => data[index].key}
+              itemCount={listItems.length}
+              itemSize={getItemSize}
+              itemData={listItems}
+              width={width}
+              height={height}
+              outerRef={scroll.outerRef}
+              ref={scroll.ref}
+            >
+              {ListItemRow}
+            </List>
           )}
-        </Flex>
-      </SimpleView>
-    </IntersectionObserverProvider>
+        </AutoSizer>
+      </NotificationSyncLayout>
+    </SimpleView>
   );
 }

@@ -1,4 +1,4 @@
-import { Box, ButtonGroup, Flex } from "@chakra-ui/react";
+import { Box, ButtonGroup } from "@chakra-ui/react";
 import { COMMENT_KIND } from "applesauce-common/helpers";
 import { useActiveAccount, use$ } from "applesauce-react/hooks";
 import { Filter, kinds, NostrEvent } from "nostr-tools";
@@ -10,20 +10,20 @@ import { ErrorBoundary } from "../../../components/error-boundary";
 import SimpleView from "../../../components/layout/presets/simple-view";
 import { groupByTimePeriod, TimeGroupedListItem } from "../../../helpers/time-grouping";
 import { useVirtualListScrollRestore } from "../../../hooks/use-scroll-restore";
-import { quoteNotifications$, socialNotificationsLoader$ } from "../../../services/notifications";
-import useObservableLoader from "../../../hooks/use-observable-loader";
+import useNotificationSync from "../../../hooks/use-notification-sync";
+import { quoteNotifications$ } from "../../../services/notifications";
+
 import RelayDistributionButton from "../components/relay-distribution-button";
 import MailboxSettingsButton from "../components/mailbox-settings-button";
 import TimePeriodHeader from "../components/time-period-header";
+import NotificationSyncLayout from "../components/notification-sync-layout";
 import QuoteCard from "./components/quote-card";
-import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
-import IntersectionObserverProvider from "../../../providers/local/intersection-observer";
 
 type ListItem = TimeGroupedListItem<NostrEvent>;
+const EMPTY_ITEMS: NostrEvent[] = [];
 
 function ListItemRow({ index, style, data }: ListChildComponentProps<ListItem[]>) {
   const item = data[index];
-
   return (
     <Box style={style}>
       {item.type === "header" ? (
@@ -40,36 +40,22 @@ function ListItemRow({ index, style, data }: ListChildComponentProps<ListItem[]>
 export default function QuotesTab() {
   const scroll = useVirtualListScrollRestore("manual");
   const account = useActiveAccount()!;
-
-  // Get quote notifications from the observable
-  const quotes = use$(quoteNotifications$) ?? [];
-
-  // Start the event loader
-  const loader = useObservableLoader(socialNotificationsLoader$);
-  const callback = useTimelineCurserIntersectionCallback(loader);
-
-  // Filter for fetching events in the modal
+  const items = use$(quoteNotifications$) ?? EMPTY_ITEMS;
+  const sync = useNotificationSync("quotes");
   const filter = useMemo<Filter>(
-    () => ({
-      kinds: [kinds.ShortTextNote, kinds.LongFormArticle, COMMENT_KIND],
-      "#p": [account.pubkey],
-    }),
+    () => ({ kinds: [kinds.ShortTextNote, kinds.LongFormArticle, COMMENT_KIND], "#p": [account.pubkey] }),
     [account.pubkey],
   );
-
-  // Group quotes by time period
-  const listItems = useMemo<ListItem[]>(() => {
-    return groupByTimePeriod(
-      quotes,
-      (event) => event.created_at,
-      (event) => event.id,
-    );
-  }, [quotes]);
-
-  const getItemSize = (index: number) => {
-    const item = listItems[index];
-    return item.type === "header" ? 60 : 80;
-  };
+  const listItems = useMemo<ListItem[]>(
+    () =>
+      groupByTimePeriod(
+        items,
+        (item) => item.created_at,
+        (item) => item.id,
+      ),
+    [items],
+  );
+  const getItemSize = (index: number) => (listItems[index].type === "header" ? 60 : 80);
 
   return (
     <SimpleView
@@ -79,37 +65,29 @@ export default function QuotesTab() {
       gap={0}
       actions={
         <ButtonGroup ms="auto">
-          <RelayDistributionButton filter={filter} title="Quote Notifications Relay Distribution" />
+          <RelayDistributionButton filter={filter} title="Quotes Notifications Relay Distribution" />
           <MailboxSettingsButton />
         </ButtonGroup>
       }
     >
-      <IntersectionObserverProvider callback={callback}>
-        <Flex direction="column" flex={1}>
-          {listItems.length > 0 ? (
-            <AutoSizer>
-              {({ height, width }) => (
-                <List
-                  itemKey={(index, data) => data[index].key}
-                  itemCount={listItems.length}
-                  itemSize={getItemSize}
-                  itemData={listItems}
-                  width={width}
-                  height={height}
-                  outerRef={scroll.outerRef}
-                  ref={scroll.ref}
-                >
-                  {ListItemRow}
-                </List>
-              )}
-            </AutoSizer>
-          ) : (
-            <Box mt="4" textAlign="center">
-              No quotes yet
-            </Box>
+      <NotificationSyncLayout state={sync} empty={listItems.length === 0}>
+        <AutoSizer>
+          {({ height, width }) => (
+            <List
+              itemKey={(index, data) => data[index].key}
+              itemCount={listItems.length}
+              itemSize={getItemSize}
+              itemData={listItems}
+              width={width}
+              height={height}
+              outerRef={scroll.outerRef}
+              ref={scroll.ref}
+            >
+              {ListItemRow}
+            </List>
           )}
-        </Flex>
-      </IntersectionObserverProvider>
+        </AutoSizer>
+      </NotificationSyncLayout>
     </SimpleView>
   );
 }

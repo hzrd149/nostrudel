@@ -1,0 +1,706 @@
+{
+  "environment": {
+    "node": "v26.5.0",
+    "platform": "linux",
+    "transport": "localhost NIP-77 fixture",
+    "signatureVerifier": "nostr-tools",
+    "cacheBackend": "in-memory seed"
+  },
+  "fixture": {
+    "mode": "negentropy",
+    "events": 1000,
+    "latency": 10,
+    "cache": "empty"
+  },
+  "filter": {
+    "kinds": [
+      1,
+      30023,
+      1111
+    ],
+    "#p": [
+      "1b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f"
+    ],
+    "since": 1792433245,
+    "until": 1792606045
+  },
+  "relays": [
+    "ws://127.0.0.1:33117/"
+  ],
+  "cachedEvents": 0,
+  "deadline": 15000,
+  "summary": [
+    {
+      "method": "timeline",
+      "completeTrials": 5,
+      "medianMs": 1275.3542300000008,
+      "p95Ms": 1671.2984609999999
+    },
+    {
+      "method": "example-sync",
+      "completeTrials": 5,
+      "medianMs": 1181.8221490000005,
+      "p95Ms": 1235.7665350000002
+    },
+    {
+      "method": "app-sync",
+      "completeTrials": 5,
+      "medianMs": 1179.882736999998,
+      "p95Ms": 1217.727178
+    }
+  ],
+  "coverage": [
+    {
+      "round": 1,
+      "comparable": true,
+      "methods": [
+        {
+          "method": "timeline",
+          "events": 1002,
+          "missingFromUnion": []
+        },
+        {
+          "method": "example-sync",
+          "events": 1002,
+          "missingFromUnion": []
+        },
+        {
+          "method": "app-sync",
+          "events": 1002,
+          "missingFromUnion": []
+        }
+      ]
+    },
+    {
+      "round": 2,
+      "comparable": true,
+      "methods": [
+        {
+          "method": "example-sync",
+          "events": 1002,
+          "missingFromUnion": []
+        },
+        {
+          "method": "app-sync",
+          "events": 1002,
+          "missingFromUnion": []
+        },
+        {
+          "method": "timeline",
+          "events": 1002,
+          "missingFromUnion": []
+        }
+      ]
+    },
+    {
+      "round": 3,
+      "comparable": true,
+      "methods": [
+        {
+          "method": "app-sync",
+          "events": 1002,
+          "missingFromUnion": []
+        },
+        {
+          "method": "timeline",
+          "events": 1002,
+          "missingFromUnion": []
+        },
+        {
+          "method": "example-sync",
+          "events": 1002,
+          "missingFromUnion": []
+        }
+      ]
+    },
+    {
+      "round": 4,
+      "comparable": true,
+      "methods": [
+        {
+          "method": "timeline",
+          "events": 1002,
+          "missingFromUnion": []
+        },
+        {
+          "method": "example-sync",
+          "events": 1002,
+          "missingFromUnion": []
+        },
+        {
+          "method": "app-sync",
+          "events": 1002,
+          "missingFromUnion": []
+        }
+      ]
+    },
+    {
+      "round": 5,
+      "comparable": true,
+      "methods": [
+        {
+          "method": "example-sync",
+          "events": 1002,
+          "missingFromUnion": []
+        },
+        {
+          "method": "app-sync",
+          "events": 1002,
+          "missingFromUnion": []
+        },
+        {
+          "method": "timeline",
+          "events": 1002,
+          "missingFromUnion": []
+        }
+      ]
+    }
+  ],
+  "results": [
+    {
+      "method": "timeline",
+      "round": 1,
+      "complete": true,
+      "elapsedMs": 1671.2984609999999,
+      "firstEventMs": 38.86175400000002,
+      "wire": {
+        "requests": 12,
+        "negotiations": 0,
+        "sentEvents": 1013,
+        "sentBytes": 706423,
+        "receivedBytes": 2295
+      },
+      "relayStatus": [
+        {
+          "source": "ws://127.0.0.1:33117/",
+          "filter": {
+            "kinds": [
+              1,
+              30023,
+              1111
+            ],
+            "#p": [
+              "1b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f"
+            ]
+          },
+          "window": {
+            "since": 1792433245,
+            "until": 1792606045
+          },
+          "buffer": {
+            "since": 0,
+            "until": 1792606047
+          },
+          "state": "covered"
+        },
+        {
+          "source": "cache",
+          "filter": {
+            "kinds": [
+              1,
+              30023,
+              1111
+            ],
+            "#p": [
+              "1b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f"
+            ]
+          },
+          "window": {
+            "since": 1792433245,
+            "until": 1792606045
+          },
+          "buffer": {
+            "since": 0,
+            "until": 1792606047
+          },
+          "state": "covered"
+        }
+      ],
+      "events": 1002
+    },
+    {
+      "method": "example-sync",
+      "round": 1,
+      "complete": true,
+      "elapsedMs": 1235.7665350000002,
+      "firstEventMs": 51.456448000000364,
+      "wire": {
+        "requests": 11,
+        "negotiations": 1,
+        "sentEvents": 1002,
+        "sentBytes": 762899,
+        "receivedBytes": 68105
+      },
+      "relayStatus": {
+        "ws://127.0.0.1:33117/": {
+          "relay": "ws://127.0.0.1:33117/",
+          "state": "complete",
+          "count": 1002,
+          "negentropy": true,
+          "method": "negentropy"
+        }
+      },
+      "events": 1002
+    },
+    {
+      "method": "app-sync",
+      "round": 1,
+      "complete": true,
+      "elapsedMs": 1217.727178,
+      "firstEventMs": 39.859158999999636,
+      "wire": {
+        "requests": 12,
+        "negotiations": 1,
+        "sentEvents": 1002,
+        "sentBytes": 762931,
+        "receivedBytes": 68320
+      },
+      "relayStatus": {
+        "ws://127.0.0.1:33117/": {
+          "relay": "ws://127.0.0.1:33117/",
+          "state": "complete",
+          "count": 1002,
+          "negentropy": true,
+          "method": "negentropy"
+        }
+      },
+      "events": 1002
+    },
+    {
+      "method": "example-sync",
+      "round": 2,
+      "complete": true,
+      "elapsedMs": 1181.8221490000005,
+      "firstEventMs": 36.871602000000166,
+      "wire": {
+        "requests": 11,
+        "negotiations": 1,
+        "sentEvents": 1002,
+        "sentBytes": 762899,
+        "receivedBytes": 68204
+      },
+      "relayStatus": {
+        "ws://127.0.0.1:33117/": {
+          "relay": "ws://127.0.0.1:33117/",
+          "state": "complete",
+          "count": 1002,
+          "negentropy": true,
+          "method": "negentropy"
+        }
+      },
+      "events": 1002
+    },
+    {
+      "method": "app-sync",
+      "round": 2,
+      "complete": true,
+      "elapsedMs": 1191.023482999999,
+      "firstEventMs": 33.48606699999982,
+      "wire": {
+        "requests": 12,
+        "negotiations": 1,
+        "sentEvents": 1002,
+        "sentBytes": 762931,
+        "receivedBytes": 68320
+      },
+      "relayStatus": {
+        "ws://127.0.0.1:33117/": {
+          "relay": "ws://127.0.0.1:33117/",
+          "state": "complete",
+          "count": 1002,
+          "negentropy": true,
+          "method": "negentropy"
+        }
+      },
+      "events": 1002
+    },
+    {
+      "method": "timeline",
+      "round": 2,
+      "complete": true,
+      "elapsedMs": 1279.6028920000008,
+      "firstEventMs": 15.17011199999979,
+      "wire": {
+        "requests": 12,
+        "negotiations": 0,
+        "sentEvents": 1013,
+        "sentBytes": 706423,
+        "receivedBytes": 2427
+      },
+      "relayStatus": [
+        {
+          "source": "ws://127.0.0.1:33117/",
+          "filter": {
+            "kinds": [
+              1,
+              30023,
+              1111
+            ],
+            "#p": [
+              "1b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f"
+            ]
+          },
+          "window": {
+            "since": 1792433245,
+            "until": 1792606045
+          },
+          "buffer": {
+            "since": 0,
+            "until": 1792606054
+          },
+          "state": "covered"
+        },
+        {
+          "source": "cache",
+          "filter": {
+            "kinds": [
+              1,
+              30023,
+              1111
+            ],
+            "#p": [
+              "1b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f"
+            ]
+          },
+          "window": {
+            "since": 1792433245,
+            "until": 1792606045
+          },
+          "buffer": {
+            "since": 0,
+            "until": 1792606054
+          },
+          "state": "covered"
+        }
+      ],
+      "events": 1002
+    },
+    {
+      "method": "app-sync",
+      "round": 3,
+      "complete": true,
+      "elapsedMs": 1179.6990850000002,
+      "firstEventMs": 35.561555000000226,
+      "wire": {
+        "requests": 12,
+        "negotiations": 1,
+        "sentEvents": 1002,
+        "sentBytes": 762931,
+        "receivedBytes": 68254
+      },
+      "relayStatus": {
+        "ws://127.0.0.1:33117/": {
+          "relay": "ws://127.0.0.1:33117/",
+          "state": "complete",
+          "count": 1002,
+          "negentropy": true,
+          "method": "negentropy"
+        }
+      },
+      "events": 1002
+    },
+    {
+      "method": "timeline",
+      "round": 3,
+      "complete": true,
+      "elapsedMs": 1275.3542300000008,
+      "firstEventMs": 15.077924999999595,
+      "wire": {
+        "requests": 12,
+        "negotiations": 0,
+        "sentEvents": 1013,
+        "sentBytes": 706423,
+        "receivedBytes": 2427
+      },
+      "relayStatus": [
+        {
+          "source": "ws://127.0.0.1:33117/",
+          "filter": {
+            "kinds": [
+              1,
+              30023,
+              1111
+            ],
+            "#p": [
+              "1b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f"
+            ]
+          },
+          "window": {
+            "since": 1792433245,
+            "until": 1792606045
+          },
+          "buffer": {
+            "since": 0,
+            "until": 1792606056
+          },
+          "state": "covered"
+        },
+        {
+          "source": "cache",
+          "filter": {
+            "kinds": [
+              1,
+              30023,
+              1111
+            ],
+            "#p": [
+              "1b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f"
+            ]
+          },
+          "window": {
+            "since": 1792433245,
+            "until": 1792606045
+          },
+          "buffer": {
+            "since": 0,
+            "until": 1792606056
+          },
+          "state": "covered"
+        }
+      ],
+      "events": 1002
+    },
+    {
+      "method": "example-sync",
+      "round": 3,
+      "complete": true,
+      "elapsedMs": 1166.2966300000007,
+      "firstEventMs": 31.111845999999787,
+      "wire": {
+        "requests": 11,
+        "negotiations": 1,
+        "sentEvents": 1002,
+        "sentBytes": 762899,
+        "receivedBytes": 68105
+      },
+      "relayStatus": {
+        "ws://127.0.0.1:33117/": {
+          "relay": "ws://127.0.0.1:33117/",
+          "state": "complete",
+          "count": 1002,
+          "negentropy": true,
+          "method": "negentropy"
+        }
+      },
+      "events": 1002
+    },
+    {
+      "method": "timeline",
+      "round": 4,
+      "complete": true,
+      "elapsedMs": 1268.540735999999,
+      "firstEventMs": 14.726501999999527,
+      "wire": {
+        "requests": 12,
+        "negotiations": 0,
+        "sentEvents": 1013,
+        "sentBytes": 706423,
+        "receivedBytes": 2394
+      },
+      "relayStatus": [
+        {
+          "source": "ws://127.0.0.1:33117/",
+          "filter": {
+            "kinds": [
+              1,
+              30023,
+              1111
+            ],
+            "#p": [
+              "1b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f"
+            ]
+          },
+          "window": {
+            "since": 1792433245,
+            "until": 1792606045
+          },
+          "buffer": {
+            "since": 0,
+            "until": 1792606059
+          },
+          "state": "covered"
+        },
+        {
+          "source": "cache",
+          "filter": {
+            "kinds": [
+              1,
+              30023,
+              1111
+            ],
+            "#p": [
+              "1b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f"
+            ]
+          },
+          "window": {
+            "since": 1792433245,
+            "until": 1792606045
+          },
+          "buffer": {
+            "since": 0,
+            "until": 1792606059
+          },
+          "state": "covered"
+        }
+      ],
+      "events": 1002
+    },
+    {
+      "method": "example-sync",
+      "round": 4,
+      "complete": true,
+      "elapsedMs": 1175.5228150000003,
+      "firstEventMs": 33.66644199999973,
+      "wire": {
+        "requests": 11,
+        "negotiations": 1,
+        "sentEvents": 1002,
+        "sentBytes": 762899,
+        "receivedBytes": 68105
+      },
+      "relayStatus": {
+        "ws://127.0.0.1:33117/": {
+          "relay": "ws://127.0.0.1:33117/",
+          "state": "complete",
+          "count": 1002,
+          "negentropy": true,
+          "method": "negentropy"
+        }
+      },
+      "events": 1002
+    },
+    {
+      "method": "app-sync",
+      "round": 4,
+      "complete": true,
+      "elapsedMs": 1179.882736999998,
+      "firstEventMs": 37.39209800000026,
+      "wire": {
+        "requests": 12,
+        "negotiations": 1,
+        "sentEvents": 1002,
+        "sentBytes": 762931,
+        "receivedBytes": 68320
+      },
+      "relayStatus": {
+        "ws://127.0.0.1:33117/": {
+          "relay": "ws://127.0.0.1:33117/",
+          "state": "complete",
+          "count": 1002,
+          "negentropy": true,
+          "method": "negentropy"
+        }
+      },
+      "events": 1002
+    },
+    {
+      "method": "example-sync",
+      "round": 5,
+      "complete": true,
+      "elapsedMs": 1188.8078980000028,
+      "firstEventMs": 33.96186200000011,
+      "wire": {
+        "requests": 11,
+        "negotiations": 1,
+        "sentEvents": 1002,
+        "sentBytes": 762899,
+        "receivedBytes": 68204
+      },
+      "relayStatus": {
+        "ws://127.0.0.1:33117/": {
+          "relay": "ws://127.0.0.1:33117/",
+          "state": "complete",
+          "count": 1002,
+          "negentropy": true,
+          "method": "negentropy"
+        }
+      },
+      "events": 1002
+    },
+    {
+      "method": "app-sync",
+      "round": 5,
+      "complete": true,
+      "elapsedMs": 1173.7614790000007,
+      "firstEventMs": 33.32021199999872,
+      "wire": {
+        "requests": 12,
+        "negotiations": 1,
+        "sentEvents": 1002,
+        "sentBytes": 762931,
+        "receivedBytes": 68320
+      },
+      "relayStatus": {
+        "ws://127.0.0.1:33117/": {
+          "relay": "ws://127.0.0.1:33117/",
+          "state": "complete",
+          "count": 1002,
+          "negentropy": true,
+          "method": "negentropy"
+        }
+      },
+      "events": 1002
+    },
+    {
+      "method": "timeline",
+      "round": 5,
+      "complete": true,
+      "elapsedMs": 1265.4929250000023,
+      "firstEventMs": 13.60884200000146,
+      "wire": {
+        "requests": 12,
+        "negotiations": 0,
+        "sentEvents": 1013,
+        "sentBytes": 706423,
+        "receivedBytes": 2427
+      },
+      "relayStatus": [
+        {
+          "source": "ws://127.0.0.1:33117/",
+          "filter": {
+            "kinds": [
+              1,
+              30023,
+              1111
+            ],
+            "#p": [
+              "1b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f"
+            ]
+          },
+          "window": {
+            "since": 1792433245,
+            "until": 1792606045
+          },
+          "buffer": {
+            "since": 0,
+            "until": 1792606065
+          },
+          "state": "covered"
+        },
+        {
+          "source": "cache",
+          "filter": {
+            "kinds": [
+              1,
+              30023,
+              1111
+            ],
+            "#p": [
+              "1b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f"
+            ]
+          },
+          "window": {
+            "since": 1792433245,
+            "until": 1792606045
+          },
+          "buffer": {
+            "since": 0,
+            "until": 1792606065
+          },
+          "state": "covered"
+        }
+      ],
+      "events": 1002
+    }
+  ]
+}

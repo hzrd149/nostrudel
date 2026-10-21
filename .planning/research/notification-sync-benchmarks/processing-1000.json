@@ -1,0 +1,96 @@
+{
+  "base": "50573ded51682a2242f6852dddca95a6f7ea5e71",
+  "node": "v26.5.0",
+  "count": 1000,
+  "threads": 50,
+  "scope": "CPU only; original thread grouping on every event versus one shared social snapshot, including reply/mention/quote classification; excludes store insertion and React rendering",
+  "batchDelayMs": 100,
+  "summary": [
+    {
+      "method": "legacy",
+      "samples": 5,
+      "medianMs": 3.694572999999764,
+      "p95Ms": 6.581924000000072,
+      "projectionsPerBurst": 1000
+    },
+    {
+      "method": "snapshot",
+      "samples": 5,
+      "medianMs": 0.9572760000000926,
+      "p95Ms": 27.008234999999786,
+      "projectionsPerBurst": 1
+    }
+  ],
+  "rows": [
+    {
+      "method": "legacy",
+      "round": 1,
+      "elapsedMs": 6.581924000000072,
+      "groups": 50,
+      "events": 1000
+    },
+    {
+      "method": "snapshot",
+      "round": 1,
+      "elapsedMs": 27.008234999999786,
+      "groups": 50,
+      "events": 1000
+    },
+    {
+      "method": "snapshot",
+      "round": 2,
+      "elapsedMs": 1.0493149999997513,
+      "groups": 50,
+      "events": 1000
+    },
+    {
+      "method": "legacy",
+      "round": 2,
+      "elapsedMs": 3.694572999999764,
+      "groups": 50,
+      "events": 1000
+    },
+    {
+      "method": "legacy",
+      "round": 3,
+      "elapsedMs": 3.898899999999685,
+      "groups": 50,
+      "events": 1000
+    },
+    {
+      "method": "snapshot",
+      "round": 3,
+      "elapsedMs": 0.9572760000000926,
+      "groups": 50,
+      "events": 1000
+    },
+    {
+      "method": "snapshot",
+      "round": 4,
+      "elapsedMs": 0.694774999999936,
+      "groups": 50,
+      "events": 1000
+    },
+    {
+      "method": "legacy",
+      "round": 4,
+      "elapsedMs": 3.1301900000003116,
+      "groups": 50,
+      "events": 1000
+    },
+    {
+      "method": "legacy",
+      "round": 5,
+      "elapsedMs": 3.425481000000218,
+      "groups": 50,
+      "events": 1000
+    },
+    {
+      "method": "snapshot",
+      "round": 5,
+      "elapsedMs": 0.6890849999999773,
+      "groups": 50,
+      "events": 1000
+    }
+  ]
+}

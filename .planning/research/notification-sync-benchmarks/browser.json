@@ -1,0 +1,108 @@
+{
+  "environment": "isolated headless Chrome context, localhost fixture, readonly account",
+  "results": [
+    {
+      "route": "replies",
+      "mode": "direct route, empty store and persistent cache, reused shell",
+      "passed": true,
+      "elapsedMs": 543.8885020000002,
+      "items": 40,
+      "failedParents": 0,
+      "failedRelays": [],
+      "width": 1440,
+      "scrollWidth": 1440,
+      "buttons": 1
+    },
+    {
+      "route": "mentions",
+      "mode": "direct route, empty store and persistent cache, reused shell",
+      "passed": true,
+      "elapsedMs": 328.33900500000027,
+      "items": 41,
+      "failedParents": 0,
+      "failedRelays": [],
+      "width": 1440,
+      "scrollWidth": 1440,
+      "buttons": 1
+    },
+    {
+      "route": "quotes",
+      "mode": "direct route, empty store and persistent cache, reused shell",
+      "passed": true,
+      "elapsedMs": 309.1295560000008,
+      "items": 1,
+      "failedParents": 0,
+      "failedRelays": [],
+      "width": 1440,
+      "scrollWidth": 1440,
+      "buttons": 1
+    },
+    {
+      "route": "threads",
+      "mode": "direct route, empty store and persistent cache, reused shell",
+      "passed": true,
+      "elapsedMs": 313.3832189999994,
+      "items": 1,
+      "failedParents": 0,
+      "failedRelays": [],
+      "width": 1440,
+      "scrollWidth": 1440,
+      "buttons": 1
+    },
+    {
+      "route": "reposts",
+      "mode": "direct route, empty store and persistent cache, reused shell",
+      "passed": true,
+      "elapsedMs": 312.7242870000009,
+      "items": 1,
+      "failedParents": 0,
+      "failedRelays": [],
+      "width": 1440,
+      "scrollWidth": 1440,
+      "buttons": 1
+    },
+    {
+      "route": "zaps",
+      "mode": "direct route, empty store and persistent cache, reused shell",
+      "passed": true,
+      "elapsedMs": 312.8221880000001,
+      "items": 1,
+      "failedParents": 0,
+      "failedRelays": [],
+      "width": 1440,
+      "scrollWidth": 1440,
+      "buttons": 1
+    },
+    {
+      "route": "overview",
+      "passed": true
+    },
+    {
+      "route": "overview/range-and-older-history",
+      "passed": true
+    },
+    {
+      "route": "mentions/live",
+      "passed": true
+    },
+    {
+      "route": "mentions/cached-restart",
+      "passed": true
+    },
+    {
+      "route": "mentions/partial-and-retry",
+      "passed": true
+    },
+    {
+      "route": "mentions/mute-and-account-isolation",
+      "passed": true
+    },
+    {
+      "route": "mentions/mobile",
+      "passed": true,
+      "width": 390,
+      "scrollWidth": 390
+    }
+  ],
+  "errors": []
+}

@@ -1,105 +1,28 @@
-import { getEventUID } from "applesauce-core/helpers";
-import { COMMENT_KIND, matchMutes, type MutedThings } from "applesauce-common/helpers";
-import { createTimelineLoader, TimelineLoader } from "applesauce-loaders/loaders";
-import { kinds, type Filter, type NostrEvent } from "nostr-tools";
-import { combineLatest, map, Observable, of, OperatorFunction, scan, shareReplay, switchMap } from "rxjs";
+import { MutedThings } from "applesauce-common/helpers";
+import { Filter, NostrEvent } from "nostr-tools";
+import { distinctUntilChanged, map, of, startWith, switchMap } from "rxjs";
 
+import { observeNotifications } from "../../helpers/notification-query";
+import { shareAndHold } from "../../helpers/observable";
 import { MutesQuery } from "../../models";
 import accounts from "../accounts";
-import { cacheRequest } from "../event-cache";
 import { eventStore } from "../event-store";
-import localSettings from "../preferences";
-import pool from "../pool";
 
-// Get users mailboxes
-const mailboxes$ = accounts.active$.pipe(
-  switchMap((account) => (account ? eventStore.mailboxes(account.pubkey) : of(null))),
-);
-
-// Get users inboxes or fallback relays
-export const inboxes$ = combineLatest([mailboxes$, localSettings.fallbackRelays]).pipe(
-  map(([mailboxes, fallbackRelays]) => mailboxes?.inboxes ?? fallbackRelays),
-);
-
-export function isMutedNotification(event: NostrEvent, user: string, mutes: MutedThings | undefined): boolean {
-  if (event.pubkey === user) return false;
-
-  return mutes ? matchMutes(mutes, event) : false;
-}
-
-export function filterNotificationEvents<T extends NostrEvent>(
-  events: T[],
-  user: string,
-  mutes: MutedThings | undefined,
-): T[] {
-  return events.filter((event) => !isMutedNotification(event, user, mutes));
-}
-
-export function filterNotificationsByMutes<T extends NostrEvent>(user: string): OperatorFunction<T[], T[]> {
-  return (source) =>
-    combineLatest([source, eventStore.model(MutesQuery, user)]).pipe(
-      map(([events, mutes]) => filterNotificationEvents(events, user, mutes)),
-    );
-}
-
-/** Compose a notification timeline loader over the user's inboxes from a filter builder */
-function createNotificationsLoader(getFilters: (pubkey: string) => Filter[]): Observable<TimelineLoader | null> {
-  return combineLatest([accounts.active$, inboxes$]).pipe(
-    map(([account, inboxes]) => {
-      if (!account || inboxes.length === 0) return null;
-
-      return createTimelineLoader(pool, inboxes, getFilters(account.pubkey), {
-        limit: 100,
-        cache: cacheRequest,
-        eventStore,
-      });
-    }),
-    // Only create a single timeline
-    shareReplay(1),
+export function createNotificationQuery<T>(
+  filters: (user: string) => Filter[],
+  project: (events: NostrEvent[], user: string, mutes: MutedThings | undefined) => T,
+  empty: T,
+) {
+  return accounts.active$.pipe(
+    map((account) => account?.pubkey),
+    distinctUntilChanged(),
+    switchMap((user) =>
+      user
+        ? observeNotifications(eventStore, filters(user), eventStore.model(MutesQuery, user), (events, mutes) =>
+            project(events, user, mutes),
+          ).pipe(startWith(empty))
+        : of(empty),
+    ),
+    shareAndHold(1000),
   );
 }
-
-/** Timeline loader for share notifications from the user's inboxes */
-export const shareNotificationsLoader$: Observable<TimelineLoader | null> = createNotificationsLoader((pubkey) => [
-  {
-    "#p": [pubkey],
-    kinds: [kinds.Repost, kinds.GenericRepost],
-  },
-]);
-
-/** Timeline loader for social notifications from the user's inboxes */
-export const socialNotificationsLoader$: Observable<TimelineLoader | null> = createNotificationsLoader((pubkey) => [
-  {
-    "#p": [pubkey],
-    kinds: [kinds.ShortTextNote, kinds.LongFormArticle, COMMENT_KIND],
-  },
-  // Also load the users own timeline from their inboxes so that replies to their own notes are shown
-  { authors: [pubkey], kinds: [kinds.ShortTextNote, kinds.LongFormArticle, COMMENT_KIND] },
-]);
-
-/** Timeline loader for zap notifications from the user's inboxes */
-export const zapNotificationsLoader$: Observable<TimelineLoader | null> = createNotificationsLoader((pubkey) => [
-  {
-    "#p": [pubkey],
-    kinds: [kinds.Zap],
-  },
-]);
-
-/** An observable of all event ids the user has authored */
-export const userEvents$ = accounts.active$.pipe(
-  switchMap((account) => {
-    if (!account) return of(new Set<string>());
-
-    return eventStore
-      .filters({
-        authors: [account.pubkey],
-      })
-      .pipe(
-        scan((ids, event) => {
-          ids.add(getEventUID(event));
-          return ids;
-        }, new Set<string>()),
-      );
-  }),
-  shareReplay(1),
-);
