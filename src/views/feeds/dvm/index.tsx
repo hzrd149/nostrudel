@@ -1,4 +1,5 @@
 import { Heading, SimpleGrid } from "@chakra-ui/react";
+import { AppHandler } from "applesauce-common/casts";
 import { getAddressPointerForEvent, getEventUID, getReplaceableAddress } from "applesauce-core/helpers";
 import { NostrEvent } from "nostr-social-graph";
 import { kinds } from "nostr-tools";
@@ -11,6 +12,7 @@ import Timestamp from "../../../components/timestamp";
 import { DVM_CONTENT_DISCOVERY_JOB_KIND, isValidContentDVM } from "../../../helpers/nostr/dvm";
 import { isEventInList } from "../../../helpers/nostr/lists";
 import { useReadRelays } from "../../../hooks/use-client-relays";
+import useCastEvent from "../../../hooks/use-cast-event";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
 import useFavoriteFeeds from "../../../hooks/use-favorite-feeds";
 import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
@@ -20,12 +22,11 @@ import DVMAvatar from "./components/dvm-avatar";
 import { DVMName } from "./components/dvm-name";
 
 function DVMFeedRow({ dvm, ...props }: { dvm: NostrEvent }) {
-  const metadata = JSON.parse(dvm.content);
+  const handler = useCastEvent(dvm, AppHandler);
   const pointer = useMemo(() => getAddressPointerForEvent(dvm), [dvm]);
+  const ref = useEventIntersectionRef(dvm);
 
   if (!pointer) return null; // v5: can return null
-
-  const ref = useEventIntersectionRef(dvm);
 
   return (
     <SimpleNavBox
@@ -37,7 +38,7 @@ function DVMFeedRow({ dvm, ...props }: { dvm: NostrEvent }) {
       }
       icon={<DVMAvatar pointer={pointer} w="16" />}
       title={<DVMName pointer={pointer} fontWeight="bold" fontSize="md" />}
-      description={metadata.about}
+      description={handler?.description}
       to={`/feeds/dvm/${getReplaceableAddress(dvm)}`}
       {...props}
     />

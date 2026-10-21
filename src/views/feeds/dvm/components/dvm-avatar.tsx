@@ -2,8 +2,7 @@ import { forwardRef } from "react";
 import { Link } from "react-router-dom";
 import { nip19 } from "nostr-tools";
 import { Box, BoxProps } from "@chakra-ui/react";
-
-import useUserProfile from "../../../../hooks/use-user-profile";
+import { getProfilePicture } from "applesauce-core/helpers";
 
 import { AddressPointer } from "nostr-tools/nip19";
 import useDVMMetadata from "../../../../hooks/use-dvm-metadata";
@@ -13,9 +12,7 @@ type DVMAvatarProps = {
 } & Omit<BoxProps, "children">;
 
 export const DVMAvatar = forwardRef<HTMLDivElement, DVMAvatarProps>(({ pointer, ...props }, ref) => {
-  const dvmMetadata = useDVMMetadata(pointer);
-  const userMetadata = useUserProfile(pointer.pubkey);
-  const image = dvmMetadata?.image || userMetadata?.picture || "";
+  const image = getProfilePicture(useDVMMetadata(pointer)) || "";
 
   return (
     <Box

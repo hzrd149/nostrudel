@@ -1,7 +1,9 @@
 import { Card, CardProps, Heading, LinkBox, LinkOverlayProps, Text } from "@chakra-ui/react";
+import { AppHandler } from "applesauce-common/casts";
 import { getAddressPointerForEvent, getReplaceableAddress, NostrEvent } from "applesauce-core/helpers";
 import { useMemo } from "react";
 import { Link as RouterLink, To } from "react-router-dom";
+import useCastEvent from "../../../hooks/use-cast-event";
 import DVMAvatar from "../../../views/feeds/dvm/components/dvm-avatar";
 import { DVMName } from "../../../views/feeds/dvm/components/dvm-name";
 import HoverLinkOverlay from "../../hover-link-overlay";
@@ -13,7 +15,7 @@ export default function EmbeddedDVM({
   onClick,
   ...props
 }: Omit<CardProps, "children"> & { dvm: NostrEvent; to?: To; onClick?: LinkOverlayProps["onClick"] }) {
-  const metadata = JSON.parse(dvm.content);
+  const handler = useCastEvent(dvm, AppHandler);
   const pointer = useMemo(() => getAddressPointerForEvent(dvm), [dvm]);
 
   if (!pointer) return null; // v5: getAddressPointerForEvent can return null
@@ -29,7 +31,7 @@ export default function EmbeddedDVM({
           <DVMName pointer={pointer} />
         </HoverLinkOverlay>
       </Heading>
-      <Text>{metadata.about}</Text>
+      <Text>{handler?.description}</Text>
     </Card>
   );
 }

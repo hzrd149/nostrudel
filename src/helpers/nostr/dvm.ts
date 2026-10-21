@@ -7,17 +7,6 @@ export const DVM_STATUS_KIND = 7000;
 export const DVM_CONTENT_DISCOVERY_JOB_KIND = 5300;
 export const DVM_CONTENT_DISCOVERY_RESULT_KIND = 6300;
 
-type DVMMetadata = {
-  name?: string;
-  about?: string;
-  image?: string;
-  nip90Params?: Record<string, { required: boolean; values: string[] }>;
-};
-export function parseDVMMetadata(event: NostrEvent) {
-  const metadata = safeParse(event.content) || {};
-  return metadata as DVMMetadata;
-}
-
 export function getRequestInputTag(e: NostrEvent) {
   return e.tags.find((t) => t[0] === "i");
 }
