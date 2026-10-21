@@ -1,3 +1,4 @@
+import { truncateId } from "../../../helpers/string";
 import { ChatIcon } from "@chakra-ui/icons";
 import {
   Badge,
@@ -51,7 +52,6 @@ import UserLink from "../../../components/user/user-link";
 import UserName from "../../../components/user/user-name";
 import { getTextColor } from "../../../helpers/color";
 import { getNip05WellKnownUrl } from "../../../helpers/nip05";
-import { truncatedId } from "../../../helpers/nostr/event";
 import { useAppTitle } from "../../../hooks/use-app-title";
 import useParamsProfilePointer from "../../../hooks/use-params-pubkey-pointer";
 import useUserContacts from "../../../hooks/use-user-contacts";
@@ -278,7 +278,7 @@ export default function UserAboutView() {
         )}
         <Flex gap="2">
           <KeyIcon boxSize="1.2em" />
-          <Text>{truncatedId(npub, 10)}</Text>
+          <Text>{truncateId(npub, 10)}</Text>
           <CopyIconButton value={npub} title="Copy npub" aria-label="Copy npub" size="xs" variant="ghost" />
         </Flex>
 

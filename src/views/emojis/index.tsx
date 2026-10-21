@@ -1,3 +1,4 @@
+import { getEventUID } from "applesauce-core/helpers";
 import { Button, Flex, Heading, Link, SimpleGrid, useDisclosure } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 import { kinds } from "nostr-tools";
@@ -5,7 +6,7 @@ import { getAddressPointersFromList } from "applesauce-common/helpers";
 
 import { useActiveAccount } from "applesauce-react/hooks";
 import { ExternalLinkIcon } from "../../components/icons";
-import { getEventCoordinate, getEventUID } from "../../helpers/nostr/event";
+import { getEventCoordinate } from "../../helpers/nostr/event";
 import { useReadRelays } from "../../hooks/use-client-relays";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import EmojiPackCard from "./components/emoji-pack-card";

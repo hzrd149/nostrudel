@@ -1,9 +1,9 @@
+import { getArticlePublished } from "applesauce-common/helpers";
 import { Box, Card, CardBody, CardProps, Flex, Heading, Image, LinkBox, Text } from "@chakra-ui/react";
 import { getTagValue } from "applesauce-core/helpers";
 import { NostrEvent } from "nostr-tools";
 import { Link as RouterLink } from "react-router-dom";
 
-import { getArticlePublishDate } from "../../../helpers/nostr/long-form";
 import { formatBytes } from "../../../helpers/number";
 import useShareableEventAddress from "../../../hooks/use-shareable-event-address";
 import HoverLinkOverlay from "../../hover-link-overlay";
@@ -40,7 +40,7 @@ export default function EmbeddedFile({ file, ...props }: Omit<CardProps, "childr
         <Flex gap="2" alignItems="center" mb="2">
           <UserAvatarLink pubkey={file.pubkey} size="sm" />
           <UserLink pubkey={file.pubkey} fontWeight="bold" isTruncated />
-          <Timestamp timestamp={getArticlePublishDate(file) ?? file.created_at} />
+          <Timestamp timestamp={getArticlePublished(file) ?? file.created_at} />
         </Flex>
         <Heading size="md">
           <HoverLinkOverlay as={RouterLink} to={`/files/${naddr}`}>

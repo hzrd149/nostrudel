@@ -1,10 +1,10 @@
+import { getArticleTitle } from "applesauce-common/helpers";
 import { Link, LinkProps } from "@chakra-ui/react";
 import { DecodeResult } from "applesauce-core/helpers";
 import { kinds, NostrEvent } from "nostr-tools";
 
 import { safeDecode } from "../../../helpers/nip19";
 import { KindNames } from "../../../helpers/nostr/kinds";
-import { getArticleTitle } from "../../../helpers/nostr/long-form";
 import useReplaceableEvent from "../../../hooks/use-replaceable-event";
 import useShareableEventAddress from "../../../hooks/use-shareable-event-address";
 import useSingleEvent from "../../../hooks/use-single-event";

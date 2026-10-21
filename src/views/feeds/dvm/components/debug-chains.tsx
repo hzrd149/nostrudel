@@ -1,3 +1,4 @@
+import { truncateId } from "../../../../helpers/string";
 import {
   Accordion,
   AccordionButton,
@@ -16,7 +17,6 @@ import {
 } from "@chakra-ui/react";
 import { ChainedDVMJob, getEventIdsFromJobs, getRequestInput, getRequestRelays } from "../../../../helpers/nostr/dvm";
 import dayjs from "dayjs";
-import { truncatedId } from "../../../../helpers/nostr/event";
 import { CopyIconButton } from "../../../../components/copy-icon-button";
 import { NostrEvent } from "nostr-tools";
 import UserLink from "../../../../components/user/user-link";
@@ -25,7 +25,7 @@ function JobResult({ result }: { result: NostrEvent }) {
   return (
     <>
       <Text isTruncated>
-        ID: {truncatedId(result.id)} <CopyIconButton size="xs" aria-label="copy id" value={result.id} />
+        ID: {truncateId(result.id)} <CopyIconButton size="xs" aria-label="copy id" value={result.id} />
       </Text>
       <Flex gap="2" alignItems="center" overflow="hidden">
         <Text isTruncated>Content: {result.content}</Text>{" "}
@@ -38,7 +38,7 @@ function JobStatus({ status }: { status: NostrEvent }) {
   return (
     <>
       <Text isTruncated>
-        ID: {truncatedId(status.id)} <CopyIconButton size="xs" aria-label="copy id" value={status.id} />
+        ID: {truncateId(status.id)} <CopyIconButton size="xs" aria-label="copy id" value={status.id} />
       </Text>
       <Text isTruncated>Status: {status.tags.find((t) => t[0] === "status")?.[1]}</Text>
       <Text isTruncated>Content: {status.content}</Text>
@@ -58,7 +58,7 @@ function ChainedJob({ job }: { job: ChainedDVMJob }) {
       </Text>
       {input && (
         <Text>
-          Input: {truncatedId(input.value)} ({input.type})
+          Input: {truncateId(input.value)} ({input.type})
         </Text>
       )}
       <Heading size="sm">Relays:</Heading>
@@ -80,7 +80,7 @@ function ChainedJob({ job }: { job: ChainedDVMJob }) {
       {job.prev && (
         <>
           <Flex gap="2" alignItems="center">
-            <Heading size="sm">Previous ({truncatedId(job.prev.request.id)}):</Heading>
+            <Heading size="sm">Previous ({truncateId(job.prev.request.id)}):</Heading>
             <Button onClick={showPrev.onToggle} size="xs">
               {showPrev.isOpen ? "Hide" : "Show"}
             </Button>

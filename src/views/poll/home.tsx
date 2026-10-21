@@ -1,3 +1,4 @@
+import { POLL_KIND } from "applesauce-common/helpers";
 import { Button, Flex, Spacer } from "@chakra-ui/react";
 import { useActiveAccount, use$ } from "applesauce-react/hooks";
 import { NostrEvent } from "nostr-tools";
@@ -11,7 +12,6 @@ import RouterLink from "../../components/router-link";
 import TimelinePage, { useTimelinePageEventFilter } from "../../components/timeline-page";
 import TimelineViewTypeButtons from "../../components/timeline-page/timeline-view-type";
 import { shareAndHold } from "../../helpers/observable";
-import { POLL_KIND } from "../../helpers/nostr/polls";
 import useClientSideMuteFilter from "../../hooks/use-client-side-mute-filter";
 import { useOutboxTimelineLoader } from "../../hooks/use-outbox-timeline-loader";
 import useTimelineEvents from "../../hooks/use-timeline-events";

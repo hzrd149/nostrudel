@@ -1,8 +1,9 @@
+import { parseReplaceableAddress } from "applesauce-core/helpers";
 import { useParams } from "react-router-dom";
 import { nip19 } from "nostr-tools";
 import type { AddressPointer } from "nostr-tools/nip19";
 
-import { CustomAddressPointer, parseCoordinate } from "../helpers/nostr/event";
+import { CustomAddressPointer } from "../helpers/nostr/event";
 
 export default function useParamsAddressPointer(key: string): AddressPointer;
 export default function useParamsAddressPointer(key: string, requireD: true): AddressPointer;
@@ -13,8 +14,8 @@ export default function useParamsAddressPointer(key: string, requireD: boolean =
   if (!value) throw new Error(`Missing ${key} in route`);
 
   if (value.includes(":")) {
-    // v5: parseCoordinate signature changed, now only takes (value, requireIdentifier)
-    const result = parseCoordinate(value, requireD);
+    // v5: parseReplaceableAddress signature changed, now only takes (value, requireIdentifier)
+    const result = parseReplaceableAddress(value, requireD);
     if (!result) throw new Error(`Invalid coordinate: ${value}`); // v5: can return null
     return result as AddressPointer;
   }

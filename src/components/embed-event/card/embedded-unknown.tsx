@@ -13,11 +13,10 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { getHandlerLinkTemplate } from "applesauce-common/helpers";
-import { DecodeResult, encodeDecodeResult } from "applesauce-core/helpers";
+import { DecodeResult, encodeDecodeResult, parseReplaceableAddress } from "applesauce-core/helpers";
 import { nip19, NostrEvent } from "nostr-tools";
 import { useContext, useMemo } from "react";
 
-import { parseCoordinate } from "../../../helpers/nostr/event";
 import useReplaceableEvent from "../../../hooks/use-replaceable-event";
 import { AppHandlerContext } from "../../../providers/route/app-handler-provider";
 import { getSharableEventAddress } from "../../../services/relay-hints";
@@ -48,7 +47,7 @@ export default function EmbeddedUnknown({ event, ...props }: Omit<CardProps, "ch
     const value = clientTag?.[2]?.trim();
     if (!value) return undefined;
     try {
-      return parseCoordinate(value, true) ?? undefined;
+      return parseReplaceableAddress(value, true) ?? undefined;
     } catch {
       return undefined;
     }

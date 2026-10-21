@@ -8,9 +8,6 @@ import {
 } from "applesauce-common/helpers";
 import { NostrEvent } from "nostr-tools";
 
-export { POLL_KIND, POLL_RESPONSE_KIND, getPollOptions };
-export type { PollOption };
-
 export type PollResult = PollOption & {
   count: number;
   percent: number;

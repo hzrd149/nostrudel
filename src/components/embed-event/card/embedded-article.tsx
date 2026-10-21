@@ -1,13 +1,8 @@
+import { getArticleTitle, getArticlePublished, getArticleImage, getArticleSummary } from "applesauce-common/helpers";
 import { Box, Card, CardBody, CardProps, Flex, Heading, Image, LinkBox, Text } from "@chakra-ui/react";
 import { NostrEvent } from "nostr-tools";
 import { Link as RouterLink } from "react-router-dom";
 
-import {
-  getArticleImage,
-  getArticlePublishDate,
-  getArticleSummary,
-  getArticleTitle,
-} from "../../../helpers/nostr/long-form";
 import useShareableEventAddress from "../../../hooks/use-shareable-event-address";
 import ArticleTags from "../../../views/articles/components/article-tags";
 import HoverLinkOverlay from "../../hover-link-overlay";
@@ -42,7 +37,7 @@ export default function EmbeddedArticle({ article, ...props }: Omit<CardProps, "
         <Flex gap="2" alignItems="center" mb="2">
           <UserAvatarLink pubkey={article.pubkey} size="sm" />
           <UserLink pubkey={article.pubkey} fontWeight="bold" isTruncated />
-          <Timestamp timestamp={getArticlePublishDate(article) ?? article.created_at} />
+          <Timestamp timestamp={getArticlePublished(article) ?? article.created_at} />
         </Flex>
         <Heading size="md">
           <HoverLinkOverlay as={RouterLink} to={`/articles/${naddr}`}>

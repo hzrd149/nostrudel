@@ -1,5 +1,5 @@
 import { Box, Flex, Select, Text } from "@chakra-ui/react";
-import { isATag, isETag, KnownEvent } from "applesauce-core/helpers";
+import { isATag, isETag, KnownEvent, parseReplaceableAddress } from "applesauce-core/helpers";
 import { getZapPayment, getZapRequest, isValidZap } from "applesauce-common/helpers";
 import { useRenderedContent } from "applesauce-react/hooks";
 import dayjs from "dayjs";
@@ -17,7 +17,6 @@ import Timestamp from "../../../components/timestamp";
 import UserAvatarLink from "../../../components/user/user-avatar-link";
 import UserLink from "../../../components/user/user-link";
 import ValueDisplay from "../../../components/value-display";
-import { parseCoordinate } from "../../../helpers/nostr/event";
 import { isNoteZap, isProfileZap, totalZaps } from "../../../helpers/nostr/zaps";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
 import useParamsProfilePointer from "../../../hooks/use-params-pubkey-pointer";
@@ -37,7 +36,7 @@ function Zap({ zap }: { zap: KnownEvent<kinds.Zap> }) {
 
   const eventId = request.tags.find(isETag)?.[1];
   const coordinate = request.tags.find(isATag)?.[1];
-  const parsedCoordinate = coordinate ? parseCoordinate(coordinate) : null;
+  const parsedCoordinate = coordinate ? parseReplaceableAddress(coordinate) : null;
 
   let eventJSX: ReactNode | null = null;
   if (parsedCoordinate && parsedCoordinate.identifier) {

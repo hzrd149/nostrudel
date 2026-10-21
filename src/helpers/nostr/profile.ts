@@ -2,7 +2,7 @@ import { nip19 } from "nostr-tools";
 import emojiRegex from "emoji-regex";
 import { ProfileContent } from "applesauce-core/helpers";
 
-import { truncatedId } from "./event";
+import { truncateId } from "../string";
 
 const matchEmoji = emojiRegex();
 export function getDisplayName(metadata: ProfileContent | undefined, pubkey: string, removeEmojis = false) {
@@ -13,5 +13,5 @@ export function getDisplayName(metadata: ProfileContent | undefined, pubkey: str
     return displayName;
   }
 
-  return truncatedId(nip19.npubEncode(pubkey));
+  return truncateId(nip19.npubEncode(pubkey));
 }

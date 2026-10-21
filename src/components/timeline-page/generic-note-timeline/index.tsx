@@ -1,3 +1,4 @@
+import { POLL_KIND } from "applesauce-common/helpers";
 import { memo, useState } from "react";
 import { Box, Button } from "@chakra-ui/react";
 import { kinds, NostrEvent } from "nostr-tools";
@@ -11,7 +12,6 @@ import useScrollAnchor from "../../../hooks/timeline/use-scroll-anchor";
 import { useScrollContainer } from "../../../providers/local/scroll-container";
 import TimelineItem from "../../timeline/timeline-item";
 import { getEventUID } from "applesauce-core/helpers";
-import { POLL_KIND } from "../../../helpers/nostr/polls";
 
 const INITIAL_NOTES = 10;
 const NOTE_BUFFER = 5;

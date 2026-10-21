@@ -1,6 +1,6 @@
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/react";
 import styled from "@emotion/styled";
-import { COMMENT_KIND, getPollRelays } from "applesauce-common/helpers";
+import { COMMENT_KIND, getPollRelays, POLL_RESPONSE_KIND } from "applesauce-common/helpers";
 import { CommentsModel } from "applesauce-common/models";
 import { mapEventsToStore } from "applesauce-core";
 import { getSeenRelays, mergeRelaySets } from "applesauce-core/helpers";
@@ -13,7 +13,7 @@ import GenericCommentForm from "../../../components/comment/generic-comment-form
 import { GenericComments } from "../../../components/comment/generic-comments";
 import { CAP_IS_WEB } from "../../../env";
 import { getContentTagRefs } from "../../../helpers/nostr/event";
-import { getPollResponses, POLL_RESPONSE_KIND } from "../../../helpers/nostr/polls";
+import { getPollResponses } from "../../../helpers/nostr/polls";
 import { useReadRelays } from "../../../hooks/use-client-relays";
 import useRouteSearchValue from "../../../hooks/use-route-search-value";
 import { useUserInbox } from "../../../hooks/use-user-mailboxes";

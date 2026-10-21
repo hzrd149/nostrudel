@@ -1,3 +1,4 @@
+import { getEventUID } from "applesauce-core/helpers";
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { BoxProps } from "@chakra-ui/react";
 import { NostrEvent } from "nostr-tools";
@@ -5,7 +6,6 @@ import L from "leaflet";
 
 import LeafletMap from "../../../../components/map/leaflet-map";
 import useEventMarkers, { getEventLatLng } from "../../../../hooks/use-event-markers";
-import { getEventUID } from "../../../../helpers/nostr/event";
 import { SelectedContext } from "../selected-context";
 
 export default function RelayMap({ events, ...props }: Omit<BoxProps, "children"> & { events: NostrEvent[] }) {

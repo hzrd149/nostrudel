@@ -1,3 +1,4 @@
+import { getEventUID } from "applesauce-core/helpers";
 import { Card, Flex, LinkBox, SimpleGrid } from "@chakra-ui/react";
 import { kinds, NostrEvent } from "nostr-tools";
 import { useMemo } from "react";
@@ -8,7 +9,6 @@ import LoadMoreButton from "../../../../components/timeline/load-more-button";
 import UserAvatarLink from "../../../../components/user/user-avatar-link";
 import UserDnsIdentity from "../../../../components/user/user-dns-identity";
 import UserLink from "../../../../components/user/user-link";
-import { getEventUID } from "../../../../helpers/nostr/event";
 import { getRelaysFromList } from "../../../../helpers/nostr/lists";
 import { getRelayVariations } from "../../../../helpers/relay";
 import useEventIntersectionRef from "../../../../hooks/use-event-intersection-ref";

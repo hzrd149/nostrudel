@@ -1,8 +1,8 @@
+import { getNip10References } from "applesauce-common/helpers";
 import { kinds as eventKinds, NostrEvent } from "nostr-tools";
 import { useMemo } from "react";
 
 import { unique } from "../helpers/array";
-import { getThreadReferences } from "../helpers/nostr/event";
 import useTimelineLoader from "./use-timeline-loader";
 
 /**
@@ -19,7 +19,7 @@ export default function useThreadTimelineLoader(
   relays: Iterable<string>,
   kinds?: number[],
 ) {
-  const refs = focusedEvent && getThreadReferences(focusedEvent);
+  const refs = focusedEvent && getNip10References(focusedEvent);
   const rootPointer = refs?.root?.e || (focusedEvent && { id: focusedEvent.id });
 
   const readRelays = useMemo(() => unique([...relays, ...(rootPointer?.relays ?? [])]), [relays, rootPointer?.relays]);

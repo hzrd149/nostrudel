@@ -2,7 +2,7 @@ import { Alert, AlertIcon, AlertTitle, Button, Flex, Spinner, useDisclosure } fr
 import { NostrEvent, kinds, nip19 } from "nostr-tools";
 import { Navigate, useParams } from "react-router-dom";
 import { DecodeResult } from "applesauce-core/helpers";
-import { PICTURE_POST_KIND } from "applesauce-common/helpers";
+import { PICTURE_POST_KIND, POLL_KIND } from "applesauce-common/helpers";
 
 import GenericCommentForm from "../../components/comment/generic-comment-form";
 import { GenericComments } from "../../components/comment/generic-comments";
@@ -12,7 +12,6 @@ import { ThreadIcon } from "../../components/icons";
 import SimpleView from "../../components/layout/presets/simple-view";
 import { TORRENT_KIND } from "../../helpers/nostr/torrents";
 import { FLARE_VIDEO_KIND } from "../../helpers/nostr/video";
-import { POLL_KIND } from "../../helpers/nostr/polls";
 import { isNappletManifestKind } from "../../helpers/nostr/napplets";
 import useReplaceableEvent from "../../hooks/use-replaceable-event";
 import useSingleEvent from "../../hooks/use-single-event";

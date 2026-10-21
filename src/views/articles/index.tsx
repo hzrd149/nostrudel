@@ -1,3 +1,4 @@
+import { getArticleTitle } from "applesauce-common/helpers";
 import { Box, Divider, Flex } from "@chakra-ui/react";
 import { getEventUID } from "applesauce-core/helpers";
 import { use$ } from "applesauce-react/hooks";
@@ -10,7 +11,6 @@ import { map, of } from "rxjs";
 import { ErrorBoundary } from "../../components/error-boundary";
 import SimpleView from "../../components/layout/presets/simple-view";
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
-import { getArticleTitle } from "../../helpers/nostr/long-form";
 import useClientSideMuteFilter from "../../hooks/use-client-side-mute-filter";
 import { useOutboxTimelineLoader } from "../../hooks/use-outbox-timeline-loader";
 import { useVirtualListScrollRestore } from "../../hooks/use-scroll-restore";

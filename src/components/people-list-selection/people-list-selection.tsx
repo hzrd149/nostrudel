@@ -17,13 +17,12 @@ import {
 import { useActiveAccount } from "applesauce-react/hooks";
 import { kinds, NostrEvent } from "nostr-tools";
 import { useCallback, useMemo, useState } from "react";
-import { getReplaceableAddress } from "applesauce-core/helpers";
+import { getReplaceableAddress, getEventUID } from "applesauce-core/helpers";
 import { getProfilePointersFromList } from "applesauce-common/helpers";
 
 import { useAsync, useDebounce } from "react-use";
 import { DEFAULT_ANON_PUBKEYS } from "../../const";
 import { getDisplayName } from "../../helpers/nostr/profile";
-import { getEventUID } from "../../helpers/nostr/event";
 import { getListTitle } from "../../helpers/nostr/lists";
 import useFavoriteLists from "../../hooks/use-favorite-lists";
 import useUserContactList from "../../hooks/use-user-contact-list";

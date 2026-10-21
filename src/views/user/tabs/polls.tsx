@@ -1,3 +1,4 @@
+import { POLL_KIND } from "applesauce-common/helpers";
 import { Divider } from "@chakra-ui/react";
 import { getEventUID } from "applesauce-core/helpers";
 
@@ -5,7 +6,6 @@ import { ErrorBoundary } from "../../../components/error-boundary";
 import ScrollLayout from "../../../components/layout/presets/scroll-layout";
 import LoadMoreButton from "../../../components/timeline/load-more-button";
 import TimelinePoll from "../../../components/timeline/poll";
-import { POLL_KIND } from "../../../helpers/nostr/polls";
 import useParamsProfilePointer from "../../../hooks/use-params-pubkey-pointer";
 import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
 import useTimelineLoader from "../../../hooks/use-timeline-loader";

@@ -24,6 +24,7 @@ import {
   getProfileContent,
   getReplaceableAddress,
   getReplaceableAddressFromPointer,
+  parseReplaceableAddress,
 } from "applesauce-core/helpers";
 import { getHandlerLinkTemplate } from "applesauce-common/helpers";
 import { useNavigate } from "react-router-dom";
@@ -33,7 +34,6 @@ import useSingleEvent from "../../hooks/use-single-event";
 import useReplaceableEvent from "../../hooks/use-replaceable-event";
 import { useReadRelays } from "../../hooks/use-client-relays";
 import { getDisplayName } from "../../helpers/nostr/profile";
-import { parseCoordinate } from "../../helpers/nostr/event";
 import { MetadataAvatar } from "../user/user-avatar";
 import HoverLinkOverlay from "../hover-link-overlay";
 import ArrowRight from "../icons/arrow-right";
@@ -151,7 +151,7 @@ export default function AppHandlerModal({
     const value = clientTag?.[2]?.trim();
     if (!value) return undefined;
     try {
-      return parseCoordinate(value, true) ?? undefined;
+      return parseReplaceableAddress(value, true) ?? undefined;
     } catch {
       return undefined;
     }

@@ -1,3 +1,4 @@
+import { getArticleTitle, getArticlePublished, getArticleImage, getArticleSummary } from "applesauce-common/helpers";
 import { NostrEvent } from "nostr-tools";
 import { Box, Button, Flex, Heading, Image, Spinner, Text, useDisclosure } from "@chakra-ui/react";
 import dayjs from "dayjs";
@@ -6,12 +7,6 @@ import { ThreadIcon } from "../../components/icons";
 import useParamsAddressPointer from "../../hooks/use-params-address-pointer";
 import useReplaceableEvent from "../../hooks/use-replaceable-event";
 import VerticalPageLayout from "../../components/vertical-page-layout";
-import {
-  getArticleImage,
-  getArticlePublishDate,
-  getArticleSummary,
-  getArticleTitle,
-} from "../../helpers/nostr/long-form";
 import UserLink from "../../components/user/user-link";
 import UserAvatarLink from "../../components/user/user-avatar-link";
 import UserDnsIdentityIcon from "../../components/user/user-dns-identity-icon";
@@ -31,7 +26,7 @@ import ArticleReader from "./components/article-reader";
 function ArticlePage({ article }: { article: NostrEvent }) {
   const image = getArticleImage(article);
   const title = getArticleTitle(article);
-  const published = getArticlePublishDate(article);
+  const published = getArticlePublished(article);
   const summary = getArticleSummary(article);
 
   const comment = useDisclosure();

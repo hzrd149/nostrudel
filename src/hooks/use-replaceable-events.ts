@@ -1,9 +1,10 @@
+import { parseReplaceableAddress } from "applesauce-core/helpers";
 import { useEventStore, use$ } from "applesauce-react/hooks";
 import { NostrEvent } from "nostr-tools";
 
 import hash_sum from "hash-sum";
 import { combineLatest, map, of } from "rxjs";
-import { CustomAddressPointer, parseCoordinate } from "../helpers/nostr/event";
+import { CustomAddressPointer } from "../helpers/nostr/event";
 
 export default function useReplaceableEvents(coordinates: string[] | CustomAddressPointer[] | undefined): NostrEvent[] {
   const eventStore = useEventStore();
@@ -13,7 +14,7 @@ export default function useReplaceableEvents(coordinates: string[] | CustomAddre
       if (!coordinates) return of([]);
 
       const models = coordinates
-        .map((str) => (typeof str === "string" ? parseCoordinate(str) : str))
+        .map((str) => (typeof str === "string" ? parseReplaceableAddress(str) : str))
         .filter((c) => c !== null)
         .map((cord) => eventStore.replaceable(cord));
 

@@ -1,9 +1,10 @@
+import { getNip10References } from "applesauce-common/helpers";
+import { truncateId } from "../../../../helpers/string";
 import { Flex, Link, Text } from "@chakra-ui/react";
 import { NostrEvent } from "nostr-tools";
 import { AddressPointer, EventPointer, naddrEncode, neventEncode } from "nostr-tools/nip19";
 import { Link as RouterLink } from "react-router-dom";
 
-import { getThreadReferences, truncatedId } from "../../../../helpers/nostr/event";
 import useSingleEvent from "../../../../hooks/use-single-event";
 import { CompactNoteContent } from "../../../compact-note-content";
 import { ReplyIcon } from "../../../icons";
@@ -18,7 +19,7 @@ function ReplyToE({ pointer }: { pointer: EventPointer }) {
       <Text>
         Replying to{" "}
         <Link as={RouterLink} to={`/l/${nevent}`} color="blue.500">
-          {truncatedId(nevent)}
+          {truncateId(nevent)}
         </Link>
       </Text>
     );
@@ -40,14 +41,14 @@ function ReplyToA({ pointer }: { pointer: AddressPointer }) {
     <Text>
       Replying to{" "}
       <Link as={RouterLink} to={`/l/${naddr}`} color="blue.500">
-        {truncatedId(naddr)}
+        {truncateId(naddr)}
       </Link>
     </Text>
   );
 }
 
 export default function ReplyContext({ event }: { event: NostrEvent }) {
-  const refs = getThreadReferences(event);
+  const refs = getNip10References(event);
   if (!refs.reply) return null;
 
   return (

@@ -1,9 +1,9 @@
+import { getEventUID } from "applesauce-core/helpers";
 import { Heading, SimpleGrid } from "@chakra-ui/react";
 import { kinds } from "nostr-tools";
 
 import ScrollLayout from "../../../components/layout/presets/scroll-layout";
 import { getPackCordsFromFavorites } from "../../../helpers/nostr/emoji-packs";
-import { getEventUID } from "../../../helpers/nostr/event";
 import useFavoriteEmojiPacks from "../../../hooks/use-favorite-emoji-packs";
 import useParamsProfilePointer from "../../../hooks/use-params-pubkey-pointer";
 import useReplaceableEvents from "../../../hooks/use-replaceable-events";

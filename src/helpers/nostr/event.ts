@@ -5,9 +5,6 @@ import { AddressPointer } from "nostr-tools/nip19";
 
 import { safeDecode } from "../nip19";
 import { getMatchNostrLink } from "../regexp";
-import { truncateId } from "../string";
-
-export { truncateId as truncatedId };
 
 const isReplySymbol = Symbol("isReply");
 export function isReply(event: NostrEvent | EventTemplate) {
@@ -72,9 +69,6 @@ export function filterTagsByContentRefs(content: string, tags: string[][], refer
   return tags.filter((t) => contentTagRefs.includes(t) === referenced);
 }
 
-/** @deprecated use getNip10References instead */
-export { getNip10References as getThreadReferences };
-
 /** @deprecated */
 export function getEventCoordinate(event: NostrEvent) {
   const d = event.tags.find(isDTag)?.[1];
@@ -84,9 +78,6 @@ export function getEventCoordinate(event: NostrEvent) {
 export type CustomAddressPointer = Omit<AddressPointer, "identifier"> & {
   identifier?: string;
 };
-
-// parseCoordinate was renamed to parseReplaceableAddress in v5
-export { parseReplaceableAddress as parseCoordinate } from "applesauce-core/helpers/pointers";
 
 export function sortByDate<T extends { created_at: number }>(a: T, b: T) {
   return b.created_at - a.created_at;
@@ -103,5 +94,3 @@ export function replaceOrAddSimpleTag(draft: EventTemplate, tagName: string, val
     draft.tags.push([tagName, value]);
   }
 }
-
-export { getEventUID } from "applesauce-core/helpers";
