@@ -38,6 +38,10 @@ export class CronTask {
         this.lastRun.next(Date.now());
         this.log(`Task ${this.name} completed`);
       },
+      error: (err) => {
+        this.running.next(false);
+        this.log(`Task ${this.name} failed`, err);
+      },
     });
   }
 
