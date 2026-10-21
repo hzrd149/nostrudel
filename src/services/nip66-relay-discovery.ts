@@ -1,9 +1,10 @@
 import { isReplaceable, normalizeURL } from "applesauce-core/helpers";
 import { onlyEvents } from "applesauce-relay";
 import { Filter, NostrEvent } from "nostr-tools";
-import { BehaviorSubject, Observable } from "rxjs";
+import { BehaviorSubject, Observable, reduce } from "rxjs";
 
 import { getSupportedNIPs, MONITOR_STATS_KIND } from "../helpers/nostr/relay-stats";
+import { logger } from "../helpers/debug";
 import { cacheRequest, writeEvent } from "./event-cache";
 import pool from "./pool";
 
@@ -12,6 +13,19 @@ const DISCOVERY_RELAYS = ["wss://relay.nostr.watch", "wss://monitorlizard.nostr1
 
 // Default monitor pubkey (can be overridden)
 const DEFAULT_MONITORS: string[] = ["9b85d54cc4bc886d60782f80d676e41bc637ed3ecc73d2bb5aabadc499d6a340"];
+
+const log = logger.extend("NIP66RelayDiscovery");
+
+/** Adds the event to the map if it is the most recent one for its relay */
+function keepLatest(map: Map<string, NostrEvent>, event: NostrEvent) {
+  if (event.kind !== MONITOR_STATS_KIND) return map;
+  const url = event.tags.find((t) => t[0] === "d")?.[1];
+  if (!url) return map;
+  const normalizedUrl = normalizeURL(url);
+  const existing = map.get(normalizedUrl);
+  if (!existing || existing.created_at < event.created_at) map.set(normalizedUrl, event);
+  return map;
+}
 
 export interface RelayInfo {
   url: string;
@@ -31,42 +45,25 @@ class NIP66RelayDiscovery {
     this.loadCachedEvents();
   }
 
-  private async loadCachedEvents() {
-    try {
-      // Load cached 30166 events from event cache
-      const filter: Filter = {
-        kinds: [MONITOR_STATS_KIND],
-        since: Math.round(Date.now() / 1000) - 60 * 60 * 24, // Last 24 hours
-      };
+  private loadCachedEvents() {
+    // Load cached 30166 events from the last 24 hours
+    const filter: Filter = {
+      kinds: [MONITOR_STATS_KIND],
+      since: Math.round(Date.now() / 1000) - 60 * 60 * 24,
+    };
 
-      const cached = cacheRequest([filter]);
-      const relayMap = new Map<string, NostrEvent>();
-
-      cached.subscribe((event) => {
-        if (event && event.kind === MONITOR_STATS_KIND) {
-          const url = event.tags.find((t) => t[0] === "d")?.[1];
-          if (url) {
-            const normalizedUrl = normalizeURL(url);
-
-            // Only keep the most recent event for each relay
-            const existing = relayMap.get(normalizedUrl);
-            if (!existing || existing.created_at < event.created_at) {
-              relayMap.set(normalizedUrl, event);
-            }
-          }
-        }
-      });
-
-      // Wait a bit for cache to load
-      setTimeout(() => {
-        if (relayMap.size > 0) {
+    // Wait for the cache read to complete instead of guessing how long it takes, and merge into
+    // the current map so events from the live subscription are not overwritten
+    cacheRequest([filter])
+      .pipe(reduce((map, event) => keepLatest(map, event), new Map(this.relayEvents$.value)))
+      .subscribe({
+        next: (relayMap) => {
+          if (relayMap.size === this.relayEvents$.value.size) return;
           this.relayEvents$.next(relayMap);
           this.lastFetch = Date.now();
-        }
-      }, 100);
-    } catch (error) {
-      console.error("Failed to load cached relay events:", error);
-    }
+        },
+        error: (error) => log("Failed to load cached relay events", error),
+      });
   }
 
   private subscribe(monitors: string[] = DEFAULT_MONITORS) {
