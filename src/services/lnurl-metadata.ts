@@ -29,13 +29,15 @@ class LNURLMetadataService {
     try {
       const metadata = await fetchWithProxy(url).then((res) => res.json() as Promise<LNURLError | LNURLPMetadata>);
       if ((metadata as LNURLPMetadata).tag === "payRequest") {
+        this.metadata.set(addressOrLNURL, metadata as LNURLPMetadata);
         return metadata as LNURLPMetadata;
       }
     } catch (e) {
       // The lookup failed, the caller receives no metadata
       log("Failed to fetch LNURL metadata", addressOrLNURL, e);
+    } finally {
+      this.pending.delete(addressOrLNURL);
     }
-    this.pending.delete(addressOrLNURL);
   }
 
   async requestMetadata(addressOrLNURL: string, alwaysFetch = false) {
