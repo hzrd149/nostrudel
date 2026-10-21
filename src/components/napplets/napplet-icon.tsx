@@ -30,11 +30,11 @@ async function fetchVerifiedIcon(icon: NappletIcon, servers: string[]) {
 }
 
 /** A napplet's NIP-5D icon, rendered only from hash-verified bytes, with generic artwork as the fallback. */
-export default function NappletIconImage({ event, ...props }: { event: NostrEvent } & CenterProps) {
+export default function NappletIconImage({ event, ...props }: { event?: NostrEvent } & CenterProps) {
   const [src, setSrc] = useState<string>();
 
   useEffect(() => {
-    const icon = getNappletIcon(event);
+    const icon = event && getNappletIcon(event);
     if (!icon) return;
 
     let url: string | undefined;
@@ -54,7 +54,7 @@ export default function NappletIconImage({ event, ...props }: { event: NostrEven
 
   return (
     <Center borderRadius="xl" overflow="hidden" bg="var(--chakra-colors-chakra-subtle-bg)" flexShrink={0} {...props}>
-      {src ? (
+      {src && event ? (
         <Image src={src} alt={getNappletTitle(event)} w="full" h="full" objectFit="cover" />
       ) : (
         <PuzzlePiece01 boxSize="50%" color="GrayText" />
