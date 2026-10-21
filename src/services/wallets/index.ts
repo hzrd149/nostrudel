@@ -1,8 +1,19 @@
-import { parseLNURLOrAddress, type EncryptedContentCache } from "applesauce-common/helpers";
+import { parseLNURLOrAddress } from "applesauce-common/helpers";
 import type { ISigner } from "applesauce-signers";
 import { WalletConnect } from "applesauce-wallet-connect";
 import { NutWallet, WalletStatus } from "applesauce-wallet/wallet";
-import { BehaviorSubject, combineLatest, map, Observable, of, shareReplay, Subscription, switchMap } from "rxjs";
+import {
+  BehaviorSubject,
+  combineLatest,
+  distinctUntilChanged,
+  map,
+  Observable,
+  of,
+  shareReplay,
+  startWith,
+  switchMap,
+  take,
+} from "rxjs";
 
 import { logger } from "../../helpers/debug";
 import accounts from "../accounts";
@@ -62,74 +73,72 @@ export const nutWalletStaleTokenCount$: Observable<number> = nutWallet$.pipe(
   shareReplay(1),
 );
 
-let currentNut: { pubkey: string; wallet: NutWallet; backend: WalletBackend; sub: Subscription } | null = null;
+/** Creates and starts a NIP-60 wallet, publishing it to {@link nutWallet$} until unsubscribed */
+function runNutWallet(pubkey: string, signer: ISigner): Observable<NutWalletState> {
+  // Hand the wallet the current decryption cache at construction so it restores decrypted tokens from the
+  // cache before decrypting them itself, instead of racing it
+  return decryptionCache$.pipe(
+    take(1),
+    switchMap(
+      (cache) =>
+        new Observable<NutWalletState>((subscriber) => {
+          const wallet = new NutWallet({
+            pubkey,
+            signer,
+            pool,
+            eventStore,
+            couch,
+            autoUnlock: localSettings.autoUnlockNutWallet.value,
+            decryptionCache: cache ?? undefined,
+          });
+          const backend = nutWalletBackend(wallet, pubkey);
+          nutWallet$.next(wallet);
 
-// Track the latest decryption cache so a new NIP-60 wallet can be handed it at construction. The wallet
-// restores decrypted tokens from this cache before decrypting them itself, avoiding a race where tokens
-// would otherwise be re-decrypted before the cache had a chance to restore them.
-let decryptionCache: EncryptedContentCache | undefined;
-decryptionCache$.subscribe((cache) => (decryptionCache = cache ?? undefined));
+          const sub = wallet.status$
+            .pipe(
+              map((status): NutWalletState => {
+                if (status === WalletStatus.Ready) return { status: "ready", backend };
+                if (status === WalletStatus.Missing) return { status: "missing" };
+                return { status: "loading" };
+              }),
+              startWith<NutWalletState>({ status: "loading" }),
+            )
+            .subscribe((state) => subscriber.next(state));
+          wallet.start().catch((error) => log("Failed to start NIP-60 wallet", error));
 
-function teardownNutWallet() {
-  if (!currentNut) return;
-  currentNut.sub.unsubscribe();
-  currentNut.wallet.stop();
-  currentNut = null;
-  nutWallet$.next(null);
+          return () => {
+            sub.unsubscribe();
+            wallet.stop();
+            if (nutWallet$.value === wallet) nutWallet$.next(null);
+          };
+        }),
+    ),
+  );
 }
 
 /**
  * Loads a NIP-60 wallet for the active account and tracks whether one actually exists. Switching accounts
- * tears down the old wallet and starts a fresh one; signing out clears it entirely. Decryption is gated by
- * the `autoUnlockNutWallet` preference so the signer is not prompted on load unless the user opted in.
+ * tears down the old wallet and starts a fresh one; signing out or disabling the wallet clears it entirely.
+ * Decryption is gated by the `autoUnlockNutWallet` preference so the signer is not prompted on load unless
+ * the user opted in.
  */
-function syncNutWallet() {
-  const signer = accounts.active;
-  const pubkey = signer?.pubkey;
-
-  if (!signer || !pubkey) {
-    teardownNutWallet();
-    nutWalletState$.next({ status: "signed-out" });
-    return;
-  }
-
-  // The wallet has been turned off globally — never load it
-  if (!localSettings.enableNutWallet.value) {
-    teardownNutWallet();
-    nutWalletState$.next({ status: "disabled" });
-    return;
-  }
-
-  // Already tracking this account's wallet
-  if (currentNut?.pubkey === pubkey) return;
-  teardownNutWallet();
-
-  nutWalletState$.next({ status: "loading" });
-  const wallet = new NutWallet({
-    pubkey,
-    signer: signer as ISigner,
-    pool,
-    eventStore,
-    couch,
-    autoUnlock: localSettings.autoUnlockNutWallet.value,
-    decryptionCache,
-  });
-  const backend = nutWalletBackend(wallet, pubkey);
-  const sub = wallet.status$.subscribe((status) => {
-    // Ignore updates from a wallet that has since been torn down
-    if (currentNut?.wallet !== wallet) return;
-    if (status === WalletStatus.Ready) nutWalletState$.next({ status: "ready", backend });
-    else if (status === WalletStatus.Missing) nutWalletState$.next({ status: "missing" });
-    else nutWalletState$.next({ status: "loading" });
-  });
-  currentNut = { pubkey, wallet, backend, sub };
-  nutWallet$.next(wallet);
-  wallet.start().catch((error) => log("Failed to start NIP-60 wallet", error));
-}
+combineLatest([
+  accounts.active$.pipe(distinctUntilChanged((a, b) => a?.pubkey === b?.pubkey)),
+  localSettings.enableNutWallet,
+])
+  .pipe(
+    switchMap(([account, enabled]): Observable<NutWalletState> => {
+      if (!account) return of({ status: "signed-out" });
+      // The wallet has been turned off globally — never load it
+      if (!enabled) return of({ status: "disabled" });
+      return runNutWallet(account.pubkey, account as ISigner);
+    }),
+  )
+  .subscribe((state) => nutWalletState$.next(state));
 
 /**
  * Enables or disables the NIP-60 (Cashu) wallet globally and persists the choice. Disabling tears down the
- * loaded wallet immediately; enabling reloads it for the active account (handled by the subscription below).
+ * loaded wallet immediately; enabling reloads it for the active account (handled by the subscription above).
  */
 export async function setNutWalletEnabled(enabled: boolean): Promise<void> {
   await localSettings.enableNutWallet.next(enabled);
@@ -270,10 +279,6 @@ export async function resolveInvoice(input: string, sats?: number): Promise<stri
 
 // Load NWC wallets now and whenever the persisted config changes
 localSettings.wallets.subscribe(reconcileNwc);
-// Load the NIP-60 wallet for the active account and reload it when the account changes
-accounts.active$.subscribe(() => syncNutWallet());
-// Reload (or tear down) the NIP-60 wallet whenever it is enabled or disabled
-localSettings.enableNutWallet.subscribe(() => syncNutWallet());
 
 if (import.meta.env.DEV) {
   Reflect.set(window, "wallets", {
