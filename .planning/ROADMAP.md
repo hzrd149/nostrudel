@@ -177,6 +177,12 @@ Plans:
 
 Not part of the aislop scan catalogue above — a navigation/direction change reported directly.
 
+**Nav swap landed (2026-10-21, 8608fce27):** `index.tsx:51` now reads
+`<NavItem to="/app/store" icon={Package} label="App Store" />`, in both the desktop side nav and
+the mobile drawer. Nothing links to `/other-stuff` any more; the route still resolves. What
+remains is the open question below and migrating `internalTools` into napplets. The full store
+build-out is 999.19–999.23.
+
 The app store button should be pinned to the side nav in the slot the "All Apps" link currently
 occupies. Rationale from the capture: the forward direction is to migrate the tools and the
 smaller internal views into napplets, so the store — not a static index of built-in views —
@@ -309,6 +315,118 @@ advanced-option inputs (content-warning reason, PoW difficulty, zap split) would
 An `as="form"` with Enter guards was rejected for Phase 8.
 
 - **Needs:** a design decision on which inputs may submit, plus manual UAT of both composers.
+
+Plans:
+
+- [ ] TBD (promote with /gsd-review-backlog when ready)
+
+### Napplet store build-out (captured 2026-10-21)
+
+The goal is a full-featured store for browsing, discovering and installing NIP-5D napplets.
+Review sources: applesauce v7 (`applesauce-common` napplet helpers/casts/factories, NIP-78
+app-data, NIP-89 recommendations) and the applesauce `napplet/store` example, compared against
+`src/views/app/store.tsx`, `store-detail.tsx`, `src/services/installed-napplets.ts` and
+`src/services/napplet-shell/*`.
+
+Decisions (2026-10-21):
+
+- **Installed apps sync through NIP-78 app data** (kind 30078) using applesauce's
+  `applesauce-common/helpers/app-data` (`getAppDataContent`, `unlockAppData`,
+  `getAppDataEncryption`), `AppDataFactory` and the `UpdateAppData(identifier, data)` action.
+  No custom list kind. noStrudel already stores settings in kind 30078 (`src/models/app-settings.ts`).
+- **Napplets only.** No Zapstore / NIP-82 support; those are a different kind of app.
+- **Reactions and NIP-22 comments are the social signal.** No ratings kind for now.
+
+Suggested order: 999.19 (done) → 999.20 → 999.21 → 999.22 → 999.23.
+
+### Phase 999.19: Fix napplet store and launch bugs, adopt applesauce napplet APIs (DONE)
+
+**Landed:** 39870d773 (2026-10-21), done directly without promotion. Applesauce adoption is
+partial by design: applesauce reads archetypes from `z` tags, while noStrudel derives them from
+`i` intent tags through kehto, so only the getters with matching semantics were swapped (icon,
+servers, source, snapshot parent pointer).
+
+- **Intents broken for apps opened at `/app/...`.** Only `NappletView`
+  (`src/views/napplets/napplet.tsx:99`) calls `setIntentNavigator`, and that view redirects to
+  `/app/...` immediately and clears it on unmount. `AppView` (`src/views/app/index.tsx`) never sets
+  one, so `invoke` returns "napplet frame is not available" (`intent-service.ts:93,130`).
+- **Wrong app can launch.** `getInstalledNappletPath` builds the path from the first archetype
+  (`installed-napplets.ts:104-107`); two installed apps that share an archetype collide and the
+  most recently opened wins.
+- **Profile tab installed badge.** `src/views/user/tabs/napplets.tsx:49` hard-codes
+  `installed={false}`.
+- **Dead code:** `src/services/recent-napplets.ts`, `napplet-app-tile.tsx`.
+- Replace the custom manifest parsing in `src/helpers/nostr/napplets.ts` with applesauce's
+  `helpers/napplet` getters and `Napplet` casts where they cover it; keep custom code only where
+  the parser is deliberately more permissive.
+- Make the installed-apps store observable instead of synchronous localStorage re-reads
+  (`store.tsx:370-371`). Keep the active store tab in the URL.
+
+### Phase 999.20: Sync installed napplets with NIP-78 app data (BACKLOG)
+
+**Goal:** [Captured for future planning]
+**Requirements:** TBD
+**Plans:** 0 plans
+
+- Store the installed list (and default intent handlers, `nostrudel:napplet:intent-handlers`) in a
+  kind 30078 event via `AppDataFactory` / `UpdateAppData`. Decide the `d` identifier and whether
+  to encrypt (applesauce supports encrypted app data; an install list is private by nature).
+- localStorage stays as the offline cache and the anonymous-user store; migrate existing
+  `nostrudel:napplet:installed` entries on first sign-in.
+- Refresh stored manifest metadata when a newer manifest arrives and surface the update
+  (`getNappUpdateBehavior: "banner"` is already set in `adapter.ts:117` but unused).
+- Show capabilities at install time, not only on first launch. Add a permissions page to revoke
+  "Always allow" grants (`permissions.ts:272-306`; flagged in `.planning/codebase/CONCERNS.md`).
+
+Plans:
+
+- [ ] TBD (promote with /gsd-review-backlog when ready)
+
+### Phase 999.21: Store discovery: categories, search, sort, filters (BACKLOG)
+
+**Goal:** [Captured for future planning]
+**Requirements:** TBD
+**Plans:** 0 plans
+
+- Categories from archetypes (`z` tags) with relay-side `#z` filters.
+- NIP-50 relay search alongside the current local matchSorter search (`store.tsx:321-329`).
+- Sort: newest, recently updated, popular with follows (reaction counts).
+- Filters: from people I follow, by required capability (`#R`).
+- Replace "Featured" (currently `timeline[0]`, duplicated in the grid, `store.tsx:298-304`).
+- Reference: applesauce example `napplet/store`.
+
+Plans:
+
+- [ ] TBD (promote with /gsd-review-backlog when ready)
+
+### Phase 999.22: Store social signals: reactions and comments (BACKLOG)
+
+**Goal:** [Captured for future planning]
+**Requirements:** TBD
+**Plans:** 0 plans
+
+- Reaction and comment counts on store cards, via the `Napplet` cast's `reactions$` / `comments$`.
+- Comments presented as reviews on the detail page.
+- "Liked by people you follow" as a discovery row and sort key.
+- No ratings kind (decision 2026-10-21).
+
+Plans:
+
+- [ ] TBD (promote with /gsd-review-backlog when ready)
+
+### Phase 999.23: Store detail page and publisher profiles (BACKLOG)
+
+**Goal:** [Captured for future planning]
+**Requirements:** TBD
+**Plans:** 0 plans
+
+- Version history on the detail page from `snapshots$` / `lineage$` (today only in the in-frame
+  drawer, `napplet-info-drawer.tsx`, `use-napplet-versions.ts`).
+- Show the source link (parsed at `napplets.ts:116`, never rendered).
+- Publisher card with all of the author's napplets (`user.napplets$`), replacing the 6-item
+  "More by this author".
+- Screenshots need a manifest tag convention agreed upstream with NIP-5D / kehto; out of scope
+  until then.
 
 Plans:
 
