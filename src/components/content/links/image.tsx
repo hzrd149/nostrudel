@@ -5,8 +5,10 @@ import {
   handleMediaFallbacks,
   USER_BLOSSOM_SERVER_LIST_KIND,
 } from "blossom-client-sdk";
+import { defined } from "applesauce-core/observable";
 import { NostrEvent } from "nostr-tools";
 import { forwardRef, MouseEventHandler, useCallback, useEffect, useRef } from "react";
+import { firstValueFrom, map, of, timeout } from "rxjs";
 
 import { buildImageProxyURL } from "../../../helpers/image";
 import { isImageURL } from "../../../helpers/url";
@@ -41,15 +43,20 @@ export type EmbeddedImageProps = Omit<LinkProps, "children" | "href" | "onClick"
   imageProps?: TrustImageProps;
 };
 
+const MEDIA_SERVERS_TIMEOUT = 2000;
+
 export function getPubkeyMediaServers(pubkey?: string) {
   if (!pubkey) return;
 
-  return new Promise<URL[] | undefined>((res) => {
-    const event = eventStore.getReplaceable(USER_BLOSSOM_SERVER_LIST_KIND, pubkey);
-    const servers = event && getServersFromServerListEvent(event);
-
-    if (servers) res(servers);
-  });
+  // Wait briefly for the server list to load, then give up so the fallback chain is not left hanging
+  return firstValueFrom(
+    eventStore.replaceable(USER_BLOSSOM_SERVER_LIST_KIND, pubkey).pipe(
+      defined(),
+      map((event) => getServersFromServerListEvent(event)),
+      timeout({ first: MEDIA_SERVERS_TIMEOUT, with: () => of(undefined) }),
+    ),
+    { defaultValue: undefined },
+  );
 }
 
 export function useImageThumbnail(src?: string) {
