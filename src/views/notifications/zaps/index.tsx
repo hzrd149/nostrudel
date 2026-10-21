@@ -1,6 +1,5 @@
 import { Box, ButtonGroup } from "@chakra-ui/react";
-import { useActiveAccount, use$ } from "applesauce-react/hooks";
-import { Filter, kinds } from "nostr-tools";
+import { use$ } from "applesauce-react/hooks";
 import { useMemo } from "react";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { VariableSizeList as List, ListChildComponentProps } from "react-window";
@@ -12,10 +11,9 @@ import { useVirtualListScrollRestore } from "../../../hooks/use-scroll-restore";
 import useNotificationSync from "../../../hooks/use-notification-sync";
 import { zapNotifications$ } from "../../../services/notifications";
 import { TZapGroup } from "../../../helpers/nostr/zaps";
-import RelayDistributionButton from "../components/relay-distribution-button";
 import MailboxSettingsButton from "../components/mailbox-settings-button";
 import TimePeriodHeader from "../components/time-period-header";
-import NotificationSyncLayout from "../components/notification-sync-layout";
+import NotificationSyncLayout, { useLoadOlderOnScrollEnd } from "../components/notification-sync-layout";
 import NotificationSyncStatus from "../components/notification-sync-status";
 import ZapGroup from "./components/zap-group";
 
@@ -39,10 +37,8 @@ function ListItemRow({ index, style, data }: ListChildComponentProps<ListItem[]>
 
 export default function ZapsTab() {
   const scroll = useVirtualListScrollRestore("manual");
-  const account = useActiveAccount()!;
   const items = use$(zapNotifications$) ?? EMPTY_ITEMS;
   const sync = useNotificationSync("zaps");
-  const filter = useMemo<Filter>(() => ({ kinds: [kinds.Zap], "#p": [account.pubkey] }), [account.pubkey]);
   const listItems = useMemo<ListItem[]>(
     () =>
       groupByTimePeriod(
@@ -52,6 +48,7 @@ export default function ZapsTab() {
       ),
     [items],
   );
+  const onItemsRendered = useLoadOlderOnScrollEnd(sync, listItems.length);
   const getItemSize = (index: number) => (listItems[index].type === "header" ? 60 : 88);
 
   return (
@@ -63,7 +60,6 @@ export default function ZapsTab() {
       actions={
         <ButtonGroup ms="auto" alignItems="center">
           <NotificationSyncStatus states={[sync]} />
-          <RelayDistributionButton filter={filter} title="Zaps Notifications Relay Distribution" />
           <MailboxSettingsButton />
         </ButtonGroup>
       }
@@ -79,6 +75,7 @@ export default function ZapsTab() {
               width={width}
               height={height}
               outerRef={scroll.outerRef}
+              onItemsRendered={onItemsRendered}
               ref={scroll.ref}
             >
               {ListItemRow}

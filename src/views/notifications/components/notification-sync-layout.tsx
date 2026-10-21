@@ -1,7 +1,19 @@
-import { Box, Button, Flex } from "@chakra-ui/react";
-import { ReactNode } from "react";
+import { Box, Flex, Spinner } from "@chakra-ui/react";
+import { ReactNode, useCallback } from "react";
+import { ListOnItemsRenderedProps } from "react-window";
 
 import { getNotificationSyncSummary, NotificationSyncState } from "../../../helpers/notification-sync";
+
+/** Returns an onItemsRendered handler that loads older notifications once the last item is visible */
+export function useLoadOlderOnScrollEnd(state: NotificationSyncState | undefined, itemCount: number) {
+  const loadMore = state?.loadMore;
+  return useCallback(
+    ({ visibleStopIndex }: ListOnItemsRenderedProps) => {
+      if (itemCount > 0 && visibleStopIndex >= itemCount - 1) loadMore?.();
+    },
+    [loadMore, itemCount],
+  );
+}
 
 export default function NotificationSyncLayout({
   state,
@@ -28,11 +40,11 @@ export default function NotificationSyncLayout({
           children
         )}
       </Box>
-      <Box m="4">
-        <Button onClick={state?.loadMore} isLoading={loading} isDisabled={!state || noRelays || state.since === 0}>
-          Load older
-        </Button>
-      </Box>
+      {loading && !empty && (
+        <Flex justifyContent="center" p="2">
+          <Spinner size="sm" />
+        </Flex>
+      )}
     </Flex>
   );
 }
