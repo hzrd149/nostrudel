@@ -6,10 +6,11 @@ import SimpleNavBox from "../../components/layout/box-layout/simple-nav-box";
 import SimpleView from "../../components/layout/presets/simple-view";
 import AppFavoriteButton from "../../components/navigation/app-favorite-button";
 import PuzzlePiece01 from "../../components/icons/puzzle-piece-01";
+import useInstalledNapplets from "../../hooks/use-installed-napplets";
 import useRecentIds from "../../hooks/use-recent-ids";
 import useRouteSearchValue from "../../hooks/use-route-search-value";
 import { useBreakpointValue } from "../../providers/global/breakpoint-provider";
-import { getInstalledNappletPath, getInstalledNapplets } from "../../services/installed-napplets";
+import { getInstalledNappletPath } from "../../services/installed-napplets";
 import { AppIcon } from "./component/app-card";
 
 const tabs = ["all", "tools"];
@@ -36,16 +37,17 @@ export default function OtherStuffView() {
   const tab = useRouteSearchValue("tab", "all");
   const { recent: recentApps, useThing: useApp } = useRecentIds("apps");
   const autoFocusSearch = useBreakpointValue({ base: false, lg: true });
+  const installedNapplets = useInstalledNapplets();
   const installedNappletApps = useMemo<App[]>(
     () =>
-      getInstalledNapplets().map((napplet) => ({
+      installedNapplets.map((napplet) => ({
         id: `napplet:${napplet.address}`,
         title: napplet.title,
         description: napplet.description || "Installed NIP-5D napplet",
         icon: PuzzlePiece01,
-        to: getInstalledNappletPath(napplet),
+        to: getInstalledNappletPath(napplet, installedNapplets),
       })),
-    [],
+    [installedNapplets],
   );
   const allApps = useMemo(() => [...staticApps, ...installedNappletApps], [installedNappletApps]);
 

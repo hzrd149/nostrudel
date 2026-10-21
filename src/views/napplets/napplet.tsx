@@ -16,7 +16,6 @@ import {
   type NappletIntent,
 } from "../../helpers/nostr/napplets";
 import useEvent from "../../hooks/use-event";
-import { useNappletShell } from "../../providers/global/napplet-shell-provider";
 
 export function NappletRouteLoader({
   address,
@@ -90,19 +89,8 @@ export function NappletRouteLoader({
 
 export default function NappletView() {
   const { address } = useParams<{ address: string }>();
-  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { setIntentNavigator } = useNappletShell();
   const pointer = useMemo(() => (address ? parseNappletPointer(address) : undefined), [address]);
-
-  useEffect(() => {
-    setIntentNavigator((nextIntent, handler) => {
-      const archetype = handler.archetypes.find((entry) => entry.name === nextIntent.archetype)?.name;
-      navigate(`/app/${archetype || handler.address}?${NAPPLET_INTENT_PARAM}=${encodeNappletIntent(nextIntent)}`);
-    });
-
-    return () => setIntentNavigator(null);
-  }, [navigate, setIntentNavigator]);
 
   if (!address || !pointer)
     return (

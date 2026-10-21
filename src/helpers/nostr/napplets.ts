@@ -1,3 +1,9 @@
+import {
+  getNappletIcon,
+  getNappletParentPointer,
+  getNappletServers,
+  getNappletSource,
+} from "applesauce-common/helpers";
 import { DecodeResult, getTagValue, isReplaceable } from "applesauce-core/helpers";
 import { Filter, nip19, NostrEvent } from "nostr-tools";
 import { isAddressableKind } from "nostr-tools/kinds";
@@ -15,6 +21,7 @@ import { manifestToIntentCatalogEntry } from "@kehto/services";
 import { ALL_CAPABILITIES, type Capability } from "@kehto/shell";
 
 export { NAPPLET_KIND_NAMED, NAPPLET_KIND_ROOT, NAPPLET_KIND_SNAPSHOT, isNappletManifestKind };
+export { getNappletIcon, getNappletServers, getNappletSource };
 
 export type NappletArchetype = {
   name: string;
@@ -108,12 +115,12 @@ export function parseNappletManifest(event: NostrEvent): NappletManifest {
     dTag: getTagValue(event, "d") ?? "",
     paths,
     aggregateHash,
-    servers: tagValues(event, "server"),
+    servers: getNappletServers(event),
     requires: Array.from(new Set([...tagValues(event, "requires"), ...tagValues(event, "R")])),
     archetypes: getManifestArchetypes(event),
     title: getTagValue(event, "title"),
     description: getTagValue(event, "description") || event.content || undefined,
-    source: getTagValue(event, "source"),
+    source: getNappletSource(event),
   };
 }
 
@@ -169,25 +176,6 @@ export function isValidNappletStoreEvent(event: NostrEvent) {
   return isNappletManifestKind(event.kind) && validateNappletManifest(event) && !!getNappletNaddr(event);
 }
 
-export type NappletIcon = { sha256: string; type: string };
-
-const NAPPLET_ICON_TYPES = new Set(["image/png", "image/jpeg", "image/webp"]);
-
-/** The NIP-5D `["icon", <sha256>, <mime-type>]` tag, or undefined when absent, malformed, or an unsupported format. */
-export function getNappletIcon(event: NostrEvent): NappletIcon | undefined {
-  const tag = event.tags.find((t) => t[0] === "icon");
-  if (!tag) return undefined;
-
-  const [, sha256, type] = tag;
-  if (!sha256 || !/^[0-9a-f]{64}$/.test(sha256) || !NAPPLET_ICON_TYPES.has(type)) return undefined;
-
-  return { sha256, type };
-}
-
-export function getNappletServers(event: NostrEvent) {
-  return event.tags.filter((t) => t[0] === "server" && t[1]).map((t) => t[1]);
-}
-
 export function encodeNappletIntent(intent: NappletIntent) {
   return encodeURIComponent(JSON.stringify(intent));
 }
@@ -237,14 +225,8 @@ export type NappletCoordinate = { kind: number; pubkey: string; identifier: stri
  */
 export function getNappletCoordinate(event: NostrEvent): NappletCoordinate | undefined {
   if (event.kind === NAPPLET_KIND_SNAPSHOT) {
-    const address = getTagValue(event, "a");
-    if (!address) return undefined;
-
-    const [kind, pubkey, identifier = ""] = address.split(":");
-    const parsed = Number(kind);
-    if (!Number.isFinite(parsed) || !pubkey) return undefined;
-
-    return { kind: parsed, pubkey, identifier };
+    const parent = getNappletParentPointer(event);
+    return parent && { kind: parent.kind, pubkey: parent.pubkey, identifier: parent.identifier };
   }
 
   if (isAddressableKind(event.kind)) {

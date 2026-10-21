@@ -1,4 +1,4 @@
-import { NAPPLET_KIND_NAMED, computeAggregateHash } from "@kehto/nip";
+import { NAPPLET_KIND_NAMED, NAPPLET_KIND_ROOT, NAPPLET_KIND_SNAPSHOT, computeAggregateHash } from "@kehto/nip";
 import { bytesToHex } from "@noble/hashes/utils.js";
 import { sha256 } from "@noble/hashes/sha2.js";
 import { finalizeEvent } from "nostr-tools";
@@ -7,6 +7,7 @@ import { describe, expect, it } from "vitest";
 import { resolveNapplet } from "./napplet-resolve";
 import {
   getNappletArchetypes,
+  getNappletCoordinate,
   getNappletRequiredCapabilities,
   getUnsupportedNappletRequirements,
   isValidNappletStoreEvent,
@@ -107,6 +108,49 @@ describe("parseNappletManifest", () => {
       ),
     ).toThrow();
     expect(() => parseNappletManifest(manifest([["x", htmlHash]], 1))).toThrow();
+  });
+});
+
+describe("getNappletCoordinate", () => {
+  it("resolves a snapshot to the napplet named in its a tag", () => {
+    const pubkey = singleFile.pubkey;
+    const snapshot = manifest(
+      [
+        ["x", htmlHash],
+        ["a", `${NAPPLET_KIND_NAMED}:${pubkey}:n-44f63e5422b`],
+      ],
+      NAPPLET_KIND_SNAPSHOT,
+    );
+
+    expect(getNappletCoordinate(snapshot)).toEqual({ kind: NAPPLET_KIND_NAMED, pubkey, identifier: "n-44f63e5422b" });
+  });
+
+  it("resolves a snapshot of a root napplet to an empty identifier", () => {
+    const pubkey = singleFile.pubkey;
+    const snapshot = manifest(
+      [
+        ["x", htmlHash],
+        ["a", `${NAPPLET_KIND_ROOT}:${pubkey}:`],
+      ],
+      NAPPLET_KIND_SNAPSHOT,
+    );
+
+    expect(getNappletCoordinate(snapshot)).toEqual({ kind: NAPPLET_KIND_ROOT, pubkey, identifier: "" });
+  });
+
+  it("returns undefined for a snapshot without a valid a tag", () => {
+    expect(getNappletCoordinate(manifest([["x", htmlHash]], NAPPLET_KIND_SNAPSHOT))).toBeUndefined();
+    expect(
+      getNappletCoordinate(
+        manifest(
+          [
+            ["x", htmlHash],
+            ["a", `${NAPPLET_KIND_NAMED}:not-hex:d`],
+          ],
+          NAPPLET_KIND_SNAPSHOT,
+        ),
+      ),
+    ).toBeUndefined();
   });
 });
 

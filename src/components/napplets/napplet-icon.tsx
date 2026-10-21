@@ -2,9 +2,10 @@ import { Center, CenterProps, Image } from "@chakra-ui/react";
 import { sha256 } from "@noble/hashes/sha2.js";
 import { bytesToHex } from "@noble/hashes/utils.js";
 import { NostrEvent } from "nostr-tools";
+import { type NappletIcon } from "applesauce-common/helpers";
 import { useEffect, useState } from "react";
 
-import { getNappletIcon, getNappletServers, getNappletTitle, NappletIcon } from "../../helpers/nostr/napplets";
+import { getNappletIcon, getNappletServers, getNappletTitle } from "../../helpers/nostr/napplets";
 import PuzzlePiece01 from "../icons/puzzle-piece-01";
 
 async function fetchVerifiedIcon(icon: NappletIcon, servers: string[]) {

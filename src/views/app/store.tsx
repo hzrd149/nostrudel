@@ -38,12 +38,13 @@ import {
   isValidNappletStoreEvent,
 } from "../../helpers/nostr/napplets";
 import { useReadRelays } from "../../hooks/use-client-relays";
+import useInstalledNapplets, { useIntentHandlerPreferences } from "../../hooks/use-installed-napplets";
+import useRouteSearchValue from "../../hooks/use-route-search-value";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
 import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
 import {
-  getDefaultIntentHandler,
-  getInstalledNapplets,
+  intentKey,
   setDefaultIntentHandler,
   uninstallNapplet,
   type InstalledNapplet,
@@ -136,7 +137,7 @@ const InstalledPointerForm = memo(function InstalledPointerForm() {
   );
 });
 
-function InstalledPanel({ installed, refresh }: { installed: InstalledNapplet[]; refresh: () => void }) {
+function InstalledPanel({ installed }: { installed: InstalledNapplet[] }) {
   return (
     <Flex direction="column" gap="4">
       <InstalledPointerForm />
@@ -149,10 +150,7 @@ function InstalledPanel({ installed, refresh }: { installed: InstalledNapplet[];
             <InstalledNappletCard
               key={napplet.address}
               napplet={napplet}
-              onUninstall={() => {
-                uninstallNapplet(napplet.address);
-                refresh();
-              }}
+              onUninstall={() => uninstallNapplet(napplet.address)}
             />
           ))}
         </Flex>
@@ -161,7 +159,8 @@ function InstalledPanel({ installed, refresh }: { installed: InstalledNapplet[];
   );
 }
 
-function HandlerPanel({ installed, refresh }: { installed: InstalledNapplet[]; refresh: () => void }) {
+function HandlerPanel({ installed }: { installed: InstalledNapplet[] }) {
+  const preferences = useIntentHandlerPreferences();
   const groups = useMemo(() => {
     const map = new Map<string, { archetype: string; action: string; napplets: InstalledNapplet[] }>();
 
@@ -190,8 +189,10 @@ function HandlerPanel({ installed, refresh }: { installed: InstalledNapplet[]; r
         <Text color="GrayText">No installed apps currently collide on supported intents.</Text>
       )}
       {groups.map((group) => {
-        const selected =
-          getDefaultIntentHandler(group.archetype, group.action)?.address || group.napplets[0]?.address || "";
+        const preferred = preferences[intentKey(group.archetype, group.action)];
+        const selected = group.napplets.some((napplet) => napplet.address === preferred)
+          ? preferred
+          : group.napplets[0]?.address || "";
 
         return (
           <Card key={`${group.archetype}/${group.action}`} variant="outline" size="sm">
@@ -211,10 +212,7 @@ function HandlerPanel({ installed, refresh }: { installed: InstalledNapplet[]; r
                   maxW="sm"
                   value={selected}
                   isDisabled={group.napplets.length < 2}
-                  onChange={(e) => {
-                    setDefaultIntentHandler(group.archetype, group.action, e.target.value);
-                    refresh();
-                  }}
+                  onChange={(e) => setDefaultIntentHandler(group.archetype, group.action, e.target.value)}
                 >
                   {group.napplets.map((napplet) => (
                     <option key={napplet.address} value={napplet.address}>
@@ -366,14 +364,22 @@ function DiscoverPanel({ installedAddresses }: { installedAddresses: Set<string>
   );
 }
 
+const STORE_TABS = ["discover", "installed", "handlers"];
+
 function AppStoreContent() {
-  const [installed, setInstalled] = useState(() => getInstalledNapplets());
-  const refreshInstalled = useCallback(() => setInstalled(getInstalledNapplets()), []);
+  const installed = useInstalledNapplets();
   const installedAddresses = useMemo(() => new Set(installed.map((napplet) => napplet.address)), [installed]);
+  const tab = useRouteSearchValue("tab", STORE_TABS[0]);
+  const tabIndex = Math.max(0, STORE_TABS.indexOf(tab.value));
 
   return (
     <SimpleView title="App Store">
-      <Tabs colorScheme="primary" variant="soft-rounded">
+      <Tabs
+        colorScheme="primary"
+        variant="soft-rounded"
+        index={tabIndex}
+        onChange={(i) => (i === 0 ? tab.clearValue() : tab.setValue(STORE_TABS[i]))}
+      >
         <TabList gap="2" flexWrap="wrap">
           <Tab>Discover</Tab>
           <Tab>Installed</Tab>
@@ -384,10 +390,10 @@ function AppStoreContent() {
             <DiscoverPanel installedAddresses={installedAddresses} />
           </TabPanel>
           <TabPanel px="0">
-            <InstalledPanel installed={installed} refresh={refreshInstalled} />
+            <InstalledPanel installed={installed} />
           </TabPanel>
           <TabPanel px="0">
-            <HandlerPanel installed={installed} refresh={refreshInstalled} />
+            <HandlerPanel installed={installed} />
           </TabPanel>
         </TabPanels>
       </Tabs>

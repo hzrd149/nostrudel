@@ -17,6 +17,7 @@ import NappletIntentChoiceModal from "../../components/napplets/intent-choice-mo
 import { unique } from "../../helpers/array";
 import { DEFAULT_APP_SETTINGS } from "../../helpers/app-settings";
 import { type NappletIntent } from "../../helpers/nostr/napplets";
+import useInstalledNapplets from "../../hooks/use-installed-napplets";
 import { AppSettingsQuery, BlossomServersQuery } from "../../models";
 import accounts from "../../services/accounts";
 import { getInstalledNapplets, type InstalledNapplet } from "../../services/installed-napplets";
@@ -83,7 +84,7 @@ export function NappletShellProvider({ children }: PropsWithChildren) {
   const [intentChoice, setIntentChoice] = useState<IntentChoiceRequest>();
   const intentNavigatorRef = useRef<((intent: NappletIntent, handler: InstalledNapplet) => void) | null>(null);
   const getIntentNavigator = useCallback(() => intentNavigatorRef.current, []);
-  const installedNapplets = useMemo(() => getInstalledNapplets(), [intentChoice]);
+  const installedNapplets = useInstalledNapplets();
 
   const chooseIntentHandler = useCallback((intent: NappletIntent) => {
     if (getInstalledNapplets().length === 0) return Promise.resolve(undefined);

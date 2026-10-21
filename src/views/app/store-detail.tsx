@@ -48,8 +48,9 @@ import {
 } from "../../helpers/nostr/napplets";
 import { useReadRelays } from "../../hooks/use-client-relays";
 import useEvent from "../../hooks/use-event";
+import useInstalledNapplets from "../../hooks/use-installed-napplets";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
-import { getInstalledNapplet, installNapplet, uninstallNapplet } from "../../services/installed-napplets";
+import { installNapplet, uninstallNapplet } from "../../services/installed-napplets";
 import { eventDeleteManager } from "../../services/event-store";
 
 const RELATED_NAPPLETS_LIMIT = 6;
@@ -133,7 +134,7 @@ function RelatedNapplets({ event }: { event: NostrEvent }) {
 
 function NappletStoreDetailPage({ event, address }: { event: NostrEvent; address: string }) {
   const comment = useDisclosure();
-  const [installed, setInstalled] = useState(() => !!getInstalledNapplet(address));
+  const installed = useInstalledNapplets().some((napplet) => napplet.address === address);
   const title = getNappletTitle(event);
   const description = getNappletDescription(event);
   const archetypes = getNappletArchetypes(event);
@@ -170,24 +171,11 @@ function NappletStoreDetailPage({ event, address }: { event: NostrEvent; address
             </Button>
             <EventZapButton event={event} showEventPreview={false} variant="outline" />
             {installed ? (
-              <Button
-                variant="outline"
-                onClick={() => {
-                  uninstallNapplet(address);
-                  setInstalled(false);
-                }}
-              >
+              <Button variant="outline" onClick={() => uninstallNapplet(address)}>
                 Uninstall
               </Button>
             ) : (
-              <Button
-                variant="outline"
-                isDisabled={!naddr}
-                onClick={() => {
-                  installNapplet(event, naddr);
-                  setInstalled(true);
-                }}
-              >
+              <Button variant="outline" isDisabled={!naddr} onClick={() => installNapplet(event, naddr)}>
                 Install
               </Button>
             )}

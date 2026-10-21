@@ -11,7 +11,8 @@ import { defaultAnonFavoriteApps, defaultUserFavoriteApps, internalApps, interna
 import NavItem from "./nav-item";
 import Plus from "../../icons/plus";
 import useFavoriteInternalIds from "../../../hooks/use-favorite-internal-ids";
-import { getInstalledNappletPath, getInstalledNapplets } from "../../../services/installed-napplets";
+import useInstalledNapplets from "../../../hooks/use-installed-napplets";
+import { getInstalledNappletPath } from "../../../services/installed-napplets";
 
 export default function NavItems() {
   const account = useActiveAccount();
@@ -19,6 +20,7 @@ export default function NavItems() {
   const defaultApps = account ? defaultUserFavoriteApps : defaultAnonFavoriteApps;
   const { ids: favorites = defaultApps } = useFavoriteInternalIds("apps", "app");
   const { recent } = useRecentIds("apps", 3);
+  const installed = useInstalledNapplets();
 
   const favoriteApps = useMemo(() => {
     const internal = [...internalApps, ...internalTools];
@@ -26,19 +28,19 @@ export default function NavItems() {
   }, [favorites]);
 
   const recentApps = useMemo(() => {
-    const installedNapplets = getInstalledNapplets().map((napplet) => ({
+    const installedNapplets = installed.map((napplet) => ({
       id: `napplet:${napplet.address}`,
       title: napplet.title,
       description: napplet.description || "Installed NIP-5D napplet",
       icon: undefined,
-      to: getInstalledNappletPath(napplet),
+      to: getInstalledNappletPath(napplet, installed),
     }));
     const internal = [...internalApps, ...internalTools, ...installedNapplets];
     return recent
       .filter((id) => !favorites.includes(id))
       .map((id) => internal.find((app) => app.id === id))
       .filter((a) => !!a);
-  }, [recent, favorites]);
+  }, [recent, favorites, installed]);
 
   return (
     <>

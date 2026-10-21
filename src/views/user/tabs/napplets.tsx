@@ -1,9 +1,16 @@
 import { SimpleGrid, Text } from "@chakra-ui/react";
+import { useMemo } from "react";
 
 import { ErrorBoundary } from "../../../components/error-boundary";
 import ScrollLayout from "../../../components/layout/presets/scroll-layout";
 import LoadMoreButton from "../../../components/timeline/load-more-button";
-import { NAPPLET_KIND_NAMED, NAPPLET_KIND_ROOT, isValidNappletStoreEvent } from "../../../helpers/nostr/napplets";
+import {
+  NAPPLET_KIND_NAMED,
+  NAPPLET_KIND_ROOT,
+  getNappletNaddr,
+  isValidNappletStoreEvent,
+} from "../../../helpers/nostr/napplets";
+import useInstalledNapplets from "../../../hooks/use-installed-napplets";
 import useParamsProfilePointer from "../../../hooks/use-params-pubkey-pointer";
 import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
 import useTimelineLoader from "../../../hooks/use-timeline-loader";
@@ -22,6 +29,8 @@ export default function UserNappletsTab() {
     { eventFilter: isValidNappletStoreEvent },
   );
   const callback = useTimelineCurserIntersectionCallback(loader);
+  const installed = useInstalledNapplets();
+  const installedAddresses = useMemo(() => new Set(installed.map((napplet) => napplet.address)), [installed]);
 
   return (
     <ScrollLayout maxW="6xl" center>
@@ -32,7 +41,7 @@ export default function UserNappletsTab() {
             <ErrorBoundary key={event.id} event={event}>
               <NappletStoreCard
                 event={event}
-                installed={false}
+                installed={installedAddresses.has(getNappletNaddr(event) ?? "")}
                 showAuthor={false}
                 borderWidth="0"
                 boxShadow="none"

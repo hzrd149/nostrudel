@@ -1,4 +1,5 @@
 import { NostrEvent } from "nostr-tools";
+import { BehaviorSubject } from "rxjs";
 
 import {
   getNappletArchetypes,
@@ -23,7 +24,7 @@ const HANDLER_STORAGE_KEY = "nostrudel:napplet:intent-handlers";
 
 type IntentHandlerPreferences = Record<string, string>;
 
-function intentKey(archetype: string, action = "open") {
+export function intentKey(archetype: string, action = "open") {
   return `${archetype}/${action}`;
 }
 
@@ -51,28 +52,36 @@ function read(): InstalledNapplet[] {
   }
 }
 
+function sortInstalled(list: InstalledNapplet[]) {
+  return [...list].sort((a, b) => b.lastOpenedAt - a.lastOpenedAt);
+}
+
+/** Installed napplets, most recently opened first */
+export const installedNapplets$ = new BehaviorSubject<InstalledNapplet[]>(sortInstalled(read()));
+
 function write(list: InstalledNapplet[]) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+  installedNapplets$.next(sortInstalled(list));
 }
 
 export function getInstalledNapplets() {
-  return read().sort((a, b) => b.lastOpenedAt - a.lastOpenedAt);
+  return installedNapplets$.value;
 }
 
 export function isNappletInstalled(address: string) {
-  return read().some((item) => item.address === address);
+  return getInstalledNapplets().some((item) => item.address === address);
 }
 
 export function getInstalledNapplet(address: string) {
-  return read().find((item) => item.address === address);
+  return getInstalledNapplets().find((item) => item.address === address);
 }
 
-export function getInstalledNappletByArchetype(archetype: string) {
-  return getInstalledNapplets().find((item) => item.archetypes.some((entry) => entry.name === archetype));
+export function getInstalledNappletByArchetype(archetype: string, installed = getInstalledNapplets()) {
+  return installed.find((item) => item.archetypes.some((entry) => entry.name === archetype));
 }
 
-export function getInstalledNappletsForIntent(archetype: string, action = "open") {
-  return getInstalledNapplets().filter((item) =>
+export function getInstalledNappletsForIntent(archetype: string, action = "open", installed = getInstalledNapplets()) {
+  return installed.filter((item) =>
     item.archetypes.some((entry) => entry.name === archetype && entry.actions.includes(action)),
   );
 }
@@ -86,33 +95,49 @@ function readHandlerPreferences(): IntentHandlerPreferences {
   }
 }
 
+/** Default intent handler addresses keyed by `archetype/action` */
+export const intentHandlerPreferences$ = new BehaviorSubject<IntentHandlerPreferences>(readHandlerPreferences());
+
 function writeHandlerPreferences(preferences: IntentHandlerPreferences) {
   localStorage.setItem(HANDLER_STORAGE_KEY, JSON.stringify(preferences));
+  intentHandlerPreferences$.next(preferences);
 }
 
+// Keep other tabs' installs and handler choices in sync
+window.addEventListener("storage", (e) => {
+  if (e.key === STORAGE_KEY) installedNapplets$.next(sortInstalled(read()));
+  else if (e.key === HANDLER_STORAGE_KEY) intentHandlerPreferences$.next(readHandlerPreferences());
+});
+
 export function getDefaultIntentHandler(archetype: string, action = "open") {
-  const address = readHandlerPreferences()[intentKey(archetype, action)];
+  const address = intentHandlerPreferences$.value[intentKey(archetype, action)];
   return address ? getInstalledNapplet(address) : undefined;
 }
 
 export function setDefaultIntentHandler(archetype: string, action: string, address: string) {
-  writeHandlerPreferences({ ...readHandlerPreferences(), [intentKey(archetype, action)]: address });
+  writeHandlerPreferences({ ...intentHandlerPreferences$.value, [intentKey(archetype, action)]: address });
 }
 
 export function clearDefaultIntentHandler(archetype: string, action = "open") {
-  const preferences = readHandlerPreferences();
+  const preferences = { ...intentHandlerPreferences$.value };
   delete preferences[intentKey(archetype, action)];
   writeHandlerPreferences(preferences);
 }
 
-export function getInstalledNappletForIntent(archetype: string, action = "open") {
-  const handlers = getInstalledNappletsForIntent(archetype, action);
+export function getInstalledNappletForIntent(archetype: string, action = "open", installed = getInstalledNapplets()) {
+  const handlers = getInstalledNappletsForIntent(archetype, action, installed);
   const preferred = getDefaultIntentHandler(archetype, action);
   return preferred && handlers.some((handler) => handler.address === preferred.address) ? preferred : handlers[0];
 }
 
-export function getInstalledNappletPath(napplet: InstalledNapplet) {
-  const archetype = napplet.archetypes[0]?.name;
+/** The launch path for an installed napplet: its archetype when no other installed app claims it, otherwise its naddr */
+export function getInstalledNappletPath(napplet: InstalledNapplet, installed = getInstalledNapplets()) {
+  const archetype = napplet.archetypes.find(
+    (entry) =>
+      !installed.some(
+        (other) => other.address !== napplet.address && other.archetypes.some((o) => o.name === entry.name),
+      ),
+  )?.name;
   return `/app/${archetype || napplet.address}`;
 }
 
@@ -120,7 +145,7 @@ export function installNapplet(event: NostrEvent, address = getNappletNaddr(even
   if (!address) return undefined;
 
   const now = Date.now();
-  const existing = read().find((item) => item.address === address);
+  const existing = getInstalledNapplet(address);
   const next: InstalledNapplet = {
     address,
     title: getNappletTitle(event),
@@ -131,18 +156,20 @@ export function installNapplet(event: NostrEvent, address = getNappletNaddr(even
     lastOpenedAt: now,
   };
 
-  write([next, ...read().filter((item) => item.address !== address)]);
+  write([next, ...getInstalledNapplets().filter((item) => item.address !== address)]);
   return next;
 }
 
 export function touchInstalledNapplet(address: string) {
-  write(read().map((item) => (item.address === address ? { ...item, lastOpenedAt: Date.now() } : item)));
+  write(
+    getInstalledNapplets().map((item) => (item.address === address ? { ...item, lastOpenedAt: Date.now() } : item)),
+  );
 }
 
 export function uninstallNapplet(address: string) {
-  write(read().filter((item) => item.address !== address));
+  write(getInstalledNapplets().filter((item) => item.address !== address));
 
-  const preferences = readHandlerPreferences();
+  const preferences = { ...intentHandlerPreferences$.value };
   for (const [key, value] of Object.entries(preferences)) {
     if (value === address) delete preferences[key];
   }

@@ -31,7 +31,8 @@ import {
 } from "../../helpers/nostr/napplets";
 import { resolveNapplet } from "../../helpers/nostr/napplet-resolve";
 import { useNappletShell } from "../../providers/global/napplet-shell-provider";
-import { installNapplet, isNappletInstalled } from "../../services/installed-napplets";
+import { installNapplet } from "../../services/installed-napplets";
+import useInstalledNapplets from "../../hooks/use-installed-napplets";
 import { createNappletIntentDelivery, type NappletIntentDelivery } from "../../services/napplet-intent-delivery";
 
 export type NappletFrameProps = {
@@ -80,11 +81,8 @@ export default function NappletFrame({ event, intent, onClose, onResolved, onErr
 
   const title = getNappletTitle(active);
   const address = getNappletNaddr(event);
-  const [installed, setInstalled] = useState(() => (address ? isNappletInstalled(address) : true));
-
-  useEffect(() => {
-    setInstalled(address ? isNappletInstalled(address) : true);
-  }, [address]);
+  const installedNapplets = useInstalledNapplets();
+  const installed = !address || installedNapplets.some((napplet) => napplet.address === address);
 
   useEffect(() => {
     intentRef.current = intent;
@@ -230,13 +228,7 @@ export default function NappletFrame({ event, intent, onClose, onResolved, onErr
       actions={
         <ButtonGroup size="sm" variant="ghost" ms="auto">
           {address && !installed && (
-            <Button
-              colorScheme="primary"
-              onClick={() => {
-                installNapplet(event, address);
-                setInstalled(true);
-              }}
-            >
+            <Button colorScheme="primary" onClick={() => installNapplet(event, address)}>
               Install
             </Button>
           )}
