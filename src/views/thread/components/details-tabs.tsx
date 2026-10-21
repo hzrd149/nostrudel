@@ -2,17 +2,17 @@ import { Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/react";
 import styled from "@emotion/styled";
 import { Note } from "applesauce-common/casts";
 import { mapEventsToStore } from "applesauce-core";
-import { use$ } from "applesauce-react/hooks";
+import { use$, useEventModel } from "applesauce-react/hooks";
 import { kinds } from "nostr-tools";
 import { ReactNode } from "react";
-import { map } from "rxjs";
+import { ignoreElements } from "rxjs";
 
 import { CAP_IS_WEB } from "../../../env";
-import { getContentTagRefs } from "../../../helpers/nostr/event";
 import { useReadRelays } from "../../../hooks/use-client-relays";
 import useEventZaps from "../../../hooks/use-event-zaps";
 import useRouteSearchValue from "../../../hooks/use-route-search-value";
 import { useUserInbox } from "../../../hooks/use-user-mailboxes";
+import { QuotesModel } from "../../../models";
 import { eventStore } from "../../../services/event-store";
 import pool from "../../../services/pool";
 import { repliesByDate } from "../helpers";
@@ -45,29 +45,16 @@ export default function DetailsTabs({ note }: { note: Note }) {
         { "#e": [id], limit: 100 },
         { "#q": [id], limit: 100 },
       ])
-      .pipe(mapEventsToStore(eventStore));
+      .pipe(mapEventsToStore(eventStore), ignoreElements());
   }, [note.id, readRelays.join(",")]);
 
   const replies = use$(note.replies$);
   const reactions = use$(note.reactions$);
   const zaps = useEventZaps(note.event);
 
-  const quotes = use$(
-    () =>
-      eventStore.timeline({ kinds: [kinds.ShortTextNote], "#q": [note.id] }).pipe(
-        map((events) =>
-          events.filter((e) => {
-            return (
-              e.tags.some((t) => t[0] === "q" && t[1] === note.event.id) ||
-              getContentTagRefs(e.content, e.tags).some((t) => t[0] === "e" && t[1] === note.event.id)
-            );
-          }),
-        ),
-      ),
-    [note.id, readRelays.join(",")],
-  );
+  const quotes = useEventModel(QuotesModel, [note.id]);
 
-  const events = use$(() => eventStore.timeline({ "#e": [note.id] }), [note.id, readRelays.join(",")]);
+  const events = use$(() => eventStore.timeline({ "#e": [note.id] }), [note.id]);
   const reposts = events?.filter((e) => e.kind === kinds.Repost || e.kind === kinds.GenericRepost);
 
   const unknown = events?.filter(

@@ -1,25 +1,18 @@
 import { CheckIcon } from "@chakra-ui/icons";
 import { Box, Button, Flex, Progress, Text, Tooltip, type FlexProps } from "@chakra-ui/react";
 import { PollResponseFactory } from "applesauce-common/factories";
-import {
-  getPollEndsAt,
-  getPollQuestion,
-  getPollRelays,
-  getPollType,
-  POLL_RESPONSE_KIND,
-} from "applesauce-common/helpers";
+import { getPollEndsAt, getPollQuestion, getPollRelays, getPollType } from "applesauce-common/helpers";
 import { getSeenRelays, mergeRelaySets } from "applesauce-core/helpers";
-import { use$, useActiveAccount } from "applesauce-react/hooks";
+import { useActiveAccount, useEventModel } from "applesauce-react/hooks";
 import { NostrEvent } from "nostr-tools";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
 import { getAccountPollVote, getPollResults } from "../../helpers/nostr/polls";
 import useAsyncAction from "../../hooks/use-async-action";
 import { useReadRelays } from "../../hooks/use-client-relays";
+import { PollResponsesModel } from "../../models";
 import { ContentSettingsProvider } from "../../providers/local/content-settings";
 import { usePublishEvent } from "../../providers/global/publish-provider";
-import { eventStore } from "../../services/event-store";
-import { pollResponseLoader } from "../../services/loaders";
 import { ErrorBoundary } from "../error-boundary";
 import TextNoteContents from "../timeline/note/text-note-contents";
 
@@ -39,23 +32,14 @@ export default function PollContent({
   );
   const responseRelayKey = responseRelays.join("\n");
 
-  useEffect(() => {
-    if (readOnly) return;
-
-    const sub = pollResponseLoader({ value: event.id, relays: responseRelays }).subscribe();
-    return () => sub.unsubscribe();
-  }, [event.id, responseRelayKey, readOnly]);
-
-  const responses =
-    use$(() => eventStore.timeline({ kinds: [POLL_RESPONSE_KIND], "#e": [event.id] }), [event.id, responseRelayKey]) ??
-    [];
+  const responses = useEventModel(PollResponsesModel, [event, readOnly ? undefined : responseRelays]);
 
   const pollType = getPollType(event);
   const endsAt = getPollEndsAt(event);
   const isExpired = !!endsAt && endsAt < Math.floor(Date.now() / 1000);
-  const { results, total } = useMemo(() => getPollResults(event, responses), [event, responses]);
+  const { results, total } = useMemo(() => getPollResults(event, responses ?? []), [event, responses]);
   const selectedOptions = useMemo(
-    () => getAccountPollVote(event, responses, account?.pubkey),
+    () => getAccountPollVote(event, responses ?? [], account?.pubkey),
     [event, responses, account?.pubkey],
   );
   const [draftSelection, setDraftSelection] = useState<string[]>([]);

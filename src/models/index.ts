@@ -4,5 +4,7 @@ export * from "./channel-metadata.js";
 export * from "./event-zaps.js";
 export * from "./lists.js";
 export * from "./mutes.js";
+export * from "./poll-responses.js";
+export * from "./quotes.js";
 export * from "./reactions.js";
 export * from "./stream.js";

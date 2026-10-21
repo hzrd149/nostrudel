@@ -1,24 +1,23 @@
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/react";
 import styled from "@emotion/styled";
-import { COMMENT_KIND, getPollRelays, POLL_RESPONSE_KIND } from "applesauce-common/helpers";
+import { COMMENT_KIND, getPollRelays } from "applesauce-common/helpers";
 import { CommentsModel } from "applesauce-common/models";
 import { mapEventsToStore } from "applesauce-core";
 import { getSeenRelays, mergeRelaySets } from "applesauce-core/helpers";
 import { use$, useEventModel } from "applesauce-react/hooks";
 import { kinds, NostrEvent } from "nostr-tools";
-import { ReactNode, useEffect, useMemo } from "react";
-import { map } from "rxjs";
+import { ReactNode, useMemo } from "react";
+import { ignoreElements } from "rxjs";
 
 import GenericCommentForm from "../../../components/comment/generic-comment-form";
 import { GenericComments } from "../../../components/comment/generic-comments";
 import { CAP_IS_WEB } from "../../../env";
-import { getContentTagRefs } from "../../../helpers/nostr/event";
 import { getPollResponses } from "../../../helpers/nostr/polls";
 import { useReadRelays } from "../../../hooks/use-client-relays";
 import useRouteSearchValue from "../../../hooks/use-route-search-value";
 import { useUserInbox } from "../../../hooks/use-user-mailboxes";
+import { PollResponsesModel, QuotesModel } from "../../../models";
 import { eventStore } from "../../../services/event-store";
-import { pollResponseLoader } from "../../../services/loaders";
 import pool from "../../../services/pool";
 import OtherAppsTab from "../../thread/components/tabs/other-apps";
 import PostQuotesTab from "../../thread/components/tabs/quotes";
@@ -49,7 +48,6 @@ export default function PollDetailsTabs({
     () => mergeRelaySets(getPollRelays(poll), getSeenRelays(poll), readRelays),
     [poll, readRelays.join(",")],
   );
-  const pollResponseRelayKey = pollResponseRelays.join(",");
 
   use$(() => {
     return pool
@@ -58,37 +56,15 @@ export default function PollDetailsTabs({
         { "#q": [poll.id], limit: 100 },
         { "#E": [poll.id], kinds: [COMMENT_KIND], limit: 100 },
       ])
-      .pipe(mapEventsToStore(eventStore));
+      .pipe(mapEventsToStore(eventStore), ignoreElements());
   }, [poll.id, readRelays.join(",")]);
 
-  useEffect(() => {
-    const sub = pollResponseLoader({ value: poll.id, relays: pollResponseRelays }).subscribe();
-    return () => sub.unsubscribe();
-  }, [poll.id, pollResponseRelayKey]);
-
   const comments = useEventModel(CommentsModel, [poll]);
-  const quotes = use$(
-    () =>
-      eventStore.timeline({ kinds: [kinds.ShortTextNote], "#q": [poll.id] }).pipe(
-        map((events) =>
-          events.filter((event) => {
-            return (
-              event.tags.some((tag) => tag[0] === "q" && tag[1] === poll.id) ||
-              getContentTagRefs(event.content, event.tags).some((tag) => tag[0] === "e" && tag[1] === poll.id)
-            );
-          }),
-        ),
-      ),
-    [poll.id, readRelays.join(",")],
-  );
-  const events = use$(() => eventStore.timeline({ "#e": [poll.id] }), [poll.id, readRelays.join(",")]);
+  const quotes = useEventModel(QuotesModel, [poll.id]);
+  const events = use$(() => eventStore.timeline({ "#e": [poll.id] }), [poll.id]);
   const reposts = events?.filter((event) => event.kind === kinds.Repost || event.kind === kinds.GenericRepost);
-  const responseEvents =
-    use$(
-      () => eventStore.timeline({ kinds: [POLL_RESPONSE_KIND], "#e": [poll.id] }),
-      [poll.id, pollResponseRelayKey],
-    ) ?? [];
-  const votes = useMemo(() => getPollResponses(poll, responseEvents), [poll, responseEvents]);
+  const responseEvents = useEventModel(PollResponsesModel, [poll, pollResponseRelays]);
+  const votes = useMemo(() => getPollResponses(poll, responseEvents ?? []), [poll, responseEvents]);
 
   const tabs: { id: string; name: string; element: ReactNode; visible: boolean; right?: boolean }[] = [
     {
