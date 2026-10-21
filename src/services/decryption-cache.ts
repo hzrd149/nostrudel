@@ -21,6 +21,7 @@ import {
   shareReplay,
   startWith,
   switchMap,
+  take,
 } from "rxjs";
 
 import EncryptedStorage from "../classes/encrypted-storage";
@@ -70,8 +71,8 @@ localSettings.encryptDecryptionCache
   .pipe(
     pairwise(),
     filter(([prev, curr]) => prev !== curr),
-    switchMap(() => decryptionCache$),
-    defined(),
+    // take(1) so later lock-state re-emissions of the same cache don't clear it again
+    switchMap(() => decryptionCache$.pipe(defined(), take(1))),
   )
   .subscribe((cache) => cache.clear());
 
