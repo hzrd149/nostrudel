@@ -1,31 +1,44 @@
 import {
   Button,
-  Checkbox,
+  Card,
   Code,
   Flex,
   FormControl,
   FormHelperText,
   FormLabel,
   Heading,
+  IconButton,
+  SimpleGrid,
+  Spinner,
   Switch,
   Text,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { RelayMonitor } from "applesauce-common/casts";
-import { isValidRelayMonitorAnnouncement, RELAY_MONITOR_ANNOUNCEMENT_KIND } from "applesauce-common/helpers";
-import { castEvent, mapEventsToStore } from "applesauce-core";
 import { use$ } from "applesauce-react/hooks";
-import { useMemo } from "react";
-import { map, of, switchMap } from "rxjs";
+import { useState } from "react";
+import { of, switchMap } from "rxjs";
 
+import { AddIcon, TrashIcon } from "../../../../components/icons";
 import NipLink from "../../../../components/nip-link";
-import RelayName from "../../../../components/relay/relay-name";
 import UserAvatar from "../../../../components/user/user-avatar";
 import UserName from "../../../../components/user/user-name";
-import { MAX_LIVENESS_MONITORS, NIP66_MONITOR_RELAYS } from "../../../../const";
-import { eventStore } from "../../../../services/event-store";
-import pool from "../../../../services/pool";
+import { MAX_LIVENESS_MONITORS } from "../../../../const";
+import useAsyncAction from "../../../../hooks/use-async-action";
 import localSettings from "../../../../services/preferences";
 import liveness from "../../../../services/relay-liveness";
+import {
+  publishRelayMonitors,
+  relayMonitorSyncStatus$,
+  setRelayLivenessMonitors,
+  unlockRelayMonitors,
+} from "../../../../services/relay-monitor-sync";
+import RelayLivenessStatus from "./relay-liveness-status";
+import RelayMonitorSelectModal, {
+  MonitorSummary,
+  useMonitorProfile,
+  useRelayMonitors,
+} from "./relay-monitor-select-modal";
 
 export default function RelayLivenessSettings() {
   const localEnabled = use$(localSettings.localRelayLiveness);
@@ -53,7 +66,6 @@ export default function RelayLivenessSettings() {
           <Code>dead</Code>.
         </FormHelperText>
       </FormControl>
-      {localEnabled && <LocalUnhealthyRelays />}
 
       <Heading size="sm" mt="2">
         Remote monitors
@@ -66,46 +78,48 @@ export default function RelayLivenessSettings() {
         relay monitors. A relay is only skipped when all selected monitors report it offline.
       </Text>
       <RelayMonitorPicker />
-      <RemoteUnhealthyRelays />
+      <RelayMonitorSyncStatus />
+      <RelayLivenessStatus />
     </Flex>
   );
 }
 
-function LocalUnhealthyRelays() {
-  const unhealthy = use$(liveness.local.unhealthy$) ?? [];
+function RelayMonitorSyncStatus() {
+  const status = use$(relayMonitorSyncStatus$);
+  const unlock = useAsyncAction(unlockRelayMonitors);
+  const sync = useAsyncAction(publishRelayMonitors);
 
-  return unhealthy.map((url) => <LocalRelayState key={url} url={url} />);
-}
-
-function LocalRelayState({ url }: { url: string }) {
-  const state = use$(() => liveness.local.state(url), [url]);
-
-  return (
-    <Flex gap="2" pl="2" alignItems="center">
-      <Text isTruncated>
-        <RelayName relay={url} />
-      </Text>
-      <Code>{state?.state === "dead" ? "dead" : "backoff"}</Code>
-      {state?.state === "dead" && (
-        <Button size="sm" colorScheme="orange" variant="link" onClick={() => liveness.local.revive(url)} ms="auto">
-          Revive
-        </Button>
-      )}
-    </Flex>
-  );
-}
-
-function RemoteUnhealthyRelays() {
-  const unhealthy = use$(() => liveness.remote$.pipe(switchMap((remote) => remote?.unhealthy$ ?? of([]))), []) ?? [];
-
-  return unhealthy.map((url) => (
-    <Flex key={url} gap="2" pl="2" alignItems="center">
-      <Text isTruncated>
-        <RelayName relay={url} />
-      </Text>
-      <Code>offline</Code>
-    </Flex>
-  ));
+  switch (status) {
+    case "locked":
+      return (
+        <Flex gap="2" alignItems="center">
+          <Text color="GrayText">Your synced monitors are encrypted.</Text>
+          <Button size="sm" variant="link" colorScheme="primary" onClick={unlock.run} isLoading={unlock.loading}>
+            Unlock
+          </Button>
+        </Flex>
+      );
+    case "unsynced":
+      return (
+        <Flex gap="2" alignItems="center">
+          <Text color="GrayText">These monitors are only saved on this device.</Text>
+          <Button size="sm" variant="link" colorScheme="primary" onClick={sync.run} isLoading={sync.loading}>
+            Sync to account
+          </Button>
+        </Flex>
+      );
+    case "syncing":
+      return (
+        <Flex gap="2" alignItems="center">
+          <Spinner size="xs" />
+          <Text color="GrayText">Syncing monitors...</Text>
+        </Flex>
+      );
+    case "synced":
+      return <Text color="GrayText">Synced privately across your devices.</Text>;
+    default:
+      return null;
+  }
 }
 
 function RelayMonitorPicker() {
@@ -113,76 +127,142 @@ function RelayMonitorPicker() {
   const errors =
     use$(() => liveness.remote$.pipe(switchMap((remote) => remote?.errors$ ?? of<Record<string, string>>({}))), []) ??
     {};
+  const monitors = useRelayMonitors();
+  const modal = useDisclosure();
+  const [slot, setSlot] = useState(0);
 
-  use$(
-    () =>
-      pool
-        .request(NIP66_MONITOR_RELAYS, [{ kinds: [RELAY_MONITOR_ANNOUNCEMENT_KIND] }])
-        .pipe(mapEventsToStore(eventStore)),
-    [],
-  );
-  const monitors = use$(
-    () =>
-      eventStore
-        .timeline({ kinds: [RELAY_MONITOR_ANNOUNCEMENT_KIND] })
-        .pipe(
-          map((events) =>
-            events.filter(isValidRelayMonitorAnnouncement).map((event) => castEvent(event, RelayMonitor, eventStore)),
-          ),
-        ),
-    [],
+  const { run: setMonitor } = useAsyncAction(
+    async (index: number, pubkey?: string) => {
+      const next = [...selected];
+      if (pubkey) next[index] = pubkey;
+      else next.splice(index, 1);
+      await setRelayLivenessMonitors(next.filter(Boolean));
+    },
+    [selected],
   );
 
-  // Keep selected monitors visible even before their announcements load
-  const pubkeys = useMemo(
-    () => Array.from(new Set([...selected, ...(monitors ?? []).map((monitor) => monitor.event.pubkey)])),
-    [selected, monitors],
-  );
-
-  const toggle = (pubkey: string) => {
-    if (selected.includes(pubkey)) localSettings.relayLivenessMonitors.next(selected.filter((p) => p !== pubkey));
-    else localSettings.relayLivenessMonitors.next([...selected, pubkey]);
-  };
-
-  return pubkeys.map((pubkey) => {
-    const monitor = monitors?.find((m) => m.event.pubkey === pubkey);
-    const isSelected = selected.includes(pubkey);
-
-    return (
-      <Flex key={pubkey} gap="2" pl="2" alignItems="center">
-        <Checkbox
-          isChecked={isSelected}
-          isDisabled={!isSelected && selected.length >= MAX_LIVENESS_MONITORS}
-          onChange={() => toggle(pubkey)}
-        />
-        <UserAvatar pubkey={pubkey} size="sm" />
-        <Flex direction="column" overflow="hidden">
-          <UserName pubkey={pubkey} isTruncated />
-          {monitor && <MonitorDetails monitor={monitor} />}
-          {errors[pubkey] && (
-            <Text fontSize="sm" color="red.500" isTruncated>
-              {errors[pubkey]}
-            </Text>
-          )}
-        </Flex>
-      </Flex>
-    );
-  });
-}
-
-function MonitorDetails({ monitor }: { monitor: RelayMonitor }) {
-  const frequency = monitor.frequency;
-  const parts = [
-    frequency
-      ? `every ${frequency >= 3600 ? `${Math.round(frequency / 3600)}h` : `${Math.round(frequency / 60)}m`}`
-      : undefined,
-    monitor.checks.length > 0 ? `checks ${monitor.checks.join(", ")}` : undefined,
-  ].filter(Boolean);
-  if (parts.length === 0) return null;
+  const slots = Array.from({ length: MAX_LIVENESS_MONITORS }, (_, i) => selected[i] as string | undefined);
 
   return (
-    <Text fontSize="sm" color="GrayText" isTruncated>
-      {parts.join(" · ")}
-    </Text>
+    <>
+      <SimpleGrid columns={{ base: 1, md: MAX_LIVENESS_MONITORS }} gap="2">
+        {slots.map((pubkey, i) => (
+          <RelayMonitorCard
+            key={pubkey ?? `empty-${i}`}
+            pubkey={pubkey}
+            monitor={pubkey ? monitors?.find((m) => m.event.pubkey === pubkey) : undefined}
+            error={pubkey ? errors[pubkey] : undefined}
+            onSelect={() => {
+              setSlot(i);
+              modal.onOpen();
+            }}
+            onRemove={() => setMonitor(i)}
+          />
+        ))}
+      </SimpleGrid>
+      {modal.isOpen && (
+        <RelayMonitorSelectModal
+          isOpen
+          onClose={modal.onClose}
+          monitors={monitors}
+          selected={selected}
+          onSelect={(pubkey) => setMonitor(slot, pubkey)}
+        />
+      )}
+    </>
+  );
+}
+
+function RelayMonitorCard({
+  pubkey,
+  monitor,
+  error,
+  onSelect,
+  onRemove,
+}: {
+  pubkey?: string;
+  monitor?: RelayMonitor;
+  error?: string;
+  onSelect: () => void;
+  onRemove: () => void;
+}) {
+  if (!pubkey)
+    return (
+      <Card
+        as="button"
+        variant="outline"
+        borderStyle="dashed"
+        p="4"
+        minH="20"
+        display="flex"
+        flexDirection="row"
+        alignItems="center"
+        justifyContent="center"
+        gap="2"
+        color="GrayText"
+        onClick={onSelect}
+        _hover={{ bg: "var(--chakra-colors-chakra-subtle-bg)" }}
+      >
+        <AddIcon boxSize={5} />
+        <Text>Select monitor</Text>
+      </Card>
+    );
+
+  return (
+    <SelectedMonitorCard pubkey={pubkey} monitor={monitor} error={error} onSelect={onSelect} onRemove={onRemove} />
+  );
+}
+
+function SelectedMonitorCard({
+  pubkey,
+  monitor,
+  error,
+  onSelect,
+  onRemove,
+}: {
+  pubkey: string;
+  monitor?: RelayMonitor;
+  error?: string;
+  onSelect: () => void;
+  onRemove: () => void;
+}) {
+  useMonitorProfile(pubkey);
+
+  return (
+    <Card
+      variant="outline"
+      p="4"
+      minH="20"
+      display="flex"
+      flexDirection="row"
+      alignItems="center"
+      gap="2"
+      cursor="pointer"
+      onClick={onSelect}
+      _hover={{ bg: "var(--chakra-colors-chakra-subtle-bg)" }}
+    >
+      <UserAvatar pubkey={pubkey} size="md" />
+      <Flex direction="column" overflow="hidden" gap="1">
+        <UserName pubkey={pubkey} fontWeight="bold" isTruncated />
+        {monitor && <MonitorSummary monitor={monitor} />}
+        {error && (
+          <Text fontSize="sm" color="red.500" isTruncated>
+            {error}
+          </Text>
+        )}
+      </Flex>
+      <IconButton
+        icon={<TrashIcon />}
+        aria-label="Remove monitor"
+        size="sm"
+        variant="ghost"
+        colorScheme="red"
+        ms="auto"
+        onClick={(e) => {
+          e.stopPropagation();
+          onRemove();
+        }}
+      />
+    </Card>
   );
 }

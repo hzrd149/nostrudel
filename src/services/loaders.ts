@@ -65,6 +65,7 @@ eventStore.eventLoader = createEventLoaderForStore(eventStore, pool, {
   cacheRequest,
   bufferTime: 500,
   extraRelays: localSettings.fallbackRelays,
+  lookupRelays: lookupRelays$,
 });
 
 export const zapsLoader = createZapsLoader(pool, {
