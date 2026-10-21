@@ -4,11 +4,12 @@ import { useActiveAccount } from "applesauce-react/hooks";
 import { ReadonlyAccount } from "applesauce-accounts/accounts";
 import { QuestionIcon } from "@chakra-ui/icons";
 
-import { LightningIcon, SettingsIcon } from "../../icons";
+import { SettingsIcon } from "../../icons";
 import Package from "../../icons/package";
 import useRecentIds from "../../../hooks/use-recent-ids";
 import { defaultAnonFavoriteApps, defaultUserFavoriteApps, internalApps, internalTools } from "../../navigation/apps";
 import NavItem from "./nav-item";
+import WalletNavItem from "./wallet-nav-item";
 import Plus from "../../icons/plus";
 import useFavoriteInternalIds from "../../../hooks/use-favorite-internal-ids";
 import useInstalledNapplets from "../../../hooks/use-installed-napplets";
@@ -60,7 +61,7 @@ export default function NavItems() {
         </>
       )}
       <Spacer />
-      <NavItem to="/support" icon={LightningIcon} label="Support" />
+      {account && <WalletNavItem />}
       <NavItem label="Settings" icon={SettingsIcon} to="/settings" />
     </>
   );

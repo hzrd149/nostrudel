@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { ReactNode, useContext } from "react";
 import { Button, ComponentWithAs, IconButton, IconButtonProps, IconProps } from "@chakra-ui/react";
 import { Link as RouterLink, useLocation } from "react-router-dom";
 
@@ -8,14 +8,18 @@ export default function NavItem({
   to,
   icon: Icon,
   label,
+  title = label,
   colorScheme,
   variant,
+  badge,
 }: {
   to: string;
   icon: ComponentWithAs<"svg", IconProps>;
   label: string;
+  title?: string;
   colorScheme?: IconButtonProps["colorScheme"];
   variant?: IconButtonProps["variant"];
+  badge?: ReactNode;
 }) {
   const collapsed = useContext(CollapsedContext);
   const location = useLocation();
@@ -24,8 +28,8 @@ export default function NavItem({
     return (
       <IconButton
         as={RouterLink}
-        aria-label={label}
-        title={label}
+        aria-label={title}
+        title={title}
         icon={<Icon boxSize={5} />}
         fontSize="24"
         variant={variant || "ghost"}
@@ -38,8 +42,8 @@ export default function NavItem({
     return (
       <Button
         as={RouterLink}
-        aria-label={label}
-        title={label}
+        aria-label={title}
+        title={title}
         leftIcon={<Icon boxSize={5} />}
         variant={variant || "link"}
         p="2"
@@ -49,6 +53,7 @@ export default function NavItem({
         flexShrink={0}
       >
         {label}
+        {badge}
       </Button>
     );
 }

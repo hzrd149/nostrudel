@@ -22,7 +22,6 @@ import OtherStuffView from "./views/other-stuff";
 import PollHomeView from "./views/poll/home";
 import PollView from "./views/poll/poll";
 import SearchView from "./views/search";
-import SupportView from "./views/support";
 import ThreadView from "./views/thread";
 
 const HashTagView = lazy(() => import("./views/hashtag"));
@@ -118,7 +117,6 @@ export const router = createBrowserRouter(
         { path: "streams", children: streamsRoutes },
         { path: "groups", children: groupsRoutes },
         { path: "tools", children: toolsRoutes },
-        { path: "support", Component: SupportView },
         { path: "l/:link", Component: NostrLinkView },
         { path: "t", Component: HashTagView },
         { path: "t/:hashtag", Component: HashTagView },
