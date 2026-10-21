@@ -6,6 +6,11 @@ This guide provides essential information for AI coding agents working on the no
 
 noStrudel is a React/TypeScript web application for exploring the [nostr protocol](https://github.com/nostr-protocol). It uses Vite as the build tool, Chakra UI for components, and a custom state management layer built around the applesauce pattern for Nostr data.
 
+## Committing
+
+- Commit after each significant change (a feature, fix, or refactor that typechecks and passes tests) instead of leaving work uncommitted at the end of a session.
+- The maintainer often stages or edits files in parallel: commit only your own paths with `git commit --only -- <paths>` and leave unrelated working-tree changes alone.
+
 ## Project Structure
 
 ```
