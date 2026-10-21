@@ -25,7 +25,7 @@ import { addRelayHintsToPointer, getDisplayName } from "applesauce-core/helpers"
 import { parseNIP05Address } from "applesauce-core/helpers/dns-identity";
 import { parseLNURLOrAddress } from "applesauce-common/helpers";
 import { useActiveAccount, use$ } from "applesauce-react/hooks";
-import { kinds, nip19 } from "nostr-tools";
+import { kinds } from "nostr-tools";
 import { useMemo } from "react";
 import { Link as RouterLink } from "react-router-dom";
 
@@ -54,10 +54,8 @@ import { getTextColor } from "../../../helpers/color";
 import { getNip05WellKnownUrl } from "../../../helpers/nip05";
 import { useAppTitle } from "../../../hooks/use-app-title";
 import useParamsProfilePointer from "../../../hooks/use-params-pubkey-pointer";
-import useUserContacts from "../../../hooks/use-user-contacts";
-import { useUserDNSIdentity } from "../../../hooks/use-user-dns-identity";
-import useUserMailboxes from "../../../hooks/use-user-mailboxes";
-import useUserProfile from "../../../hooks/use-user-profile";
+import useCastUser from "../../../hooks/use-cast-user";
+import useDnsIdentity from "../../../hooks/use-dns-identity";
 import { profileLoader } from "../../../services/loaders";
 import useSocialGraph from "../../../hooks/use-social-graph";
 import DNSIdentityWarning from "../../../components/user/dns-identity-warning";
@@ -129,8 +127,7 @@ function FollowedBy({ pubkey }: { pubkey: string }) {
 }
 
 function PublishesToRelays({ pubkey }: { pubkey: string }) {
-  const mailboxes = useUserMailboxes(pubkey);
-  const outboxes = mailboxes?.outboxes ?? [];
+  const outboxes = use$(useCastUser(pubkey).outboxes$) ?? [];
 
   if (outboxes.length === 0)
     return (
@@ -166,12 +163,13 @@ export default function UserAboutView() {
   const colorModal = useDisclosure();
   const pubkey = user.pubkey;
 
-  const mailboxes = useUserMailboxes(user);
-  const metadata = useUserProfile(user);
-  const contacts = useUserContacts(user);
+  const userCast = useCastUser(user);
+  const mailboxes = use$(userCast.mailboxes$);
+  const profile = use$(userCast.profile$);
+  const contacts = use$(userCast.contacts$);
   const followsYou = useMemo(() => contacts?.some((c) => c.pubkey === account?.pubkey), [contacts, account]);
 
-  useAppTitle(getDisplayName(metadata, user.pubkey));
+  useAppTitle(getDisplayName(profile?.metadata, user.pubkey));
 
   // Force metadata load
   use$(
@@ -185,19 +183,19 @@ export default function UserAboutView() {
     [user, mailboxes?.outboxes],
   );
 
-  const npub = useMemo(() => nip19.npubEncode(user.pubkey), [user.pubkey]);
+  const npub = userCast.npub;
   const pubkeyColor = "#" + user.pubkey.slice(0, 6);
 
-  const parsedNip05 = metadata?.nip05 ? parseNIP05Address(metadata.nip05) : undefined;
+  const parsedNip05 = profile?.dnsIdentity ? parseNIP05Address(profile.dnsIdentity) : undefined;
   const nip05URL = parsedNip05 ? getNip05WellKnownUrl(parsedNip05.name, parsedNip05.domain) : undefined;
 
-  const identity = useUserDNSIdentity(user.pubkey);
+  const identity = useDnsIdentity(profile?.dnsIdentity);
 
   return (
     <ScrollLayout flush>
-      {metadata?.banner ? (
+      {profile?.banner ? (
         <Image
-          src={metadata.banner}
+          src={profile.banner}
           w="full"
           h="20vh"
           objectFit="cover"
@@ -227,7 +225,7 @@ export default function UserAboutView() {
             as={RouterLink}
             icon={<ChatIcon />}
             aria-label="Message"
-            to={`/messages/${npub ?? pubkey}`}
+            to={`/messages/${npub}`}
             variant="ghost"
           />
           <QrIconButton user={pointerWithRelays} title="Show QrCode" aria-label="Show QrCode" variant="ghost" />
@@ -249,11 +247,11 @@ export default function UserAboutView() {
           </Link>
         </Flex>
 
-        {metadata?.lud16 && (
+        {profile?.lud16 && (
           <Flex gap="2">
             <LightningIcon boxSize="1.2em" />
-            <Link href={parseLNURLOrAddress(metadata.lud16)?.toString()} isExternal>
-              {metadata.lud16}
+            <Link href={parseLNURLOrAddress(profile.lud16)?.toString()} isExternal>
+              {profile.lud16}
             </Link>
           </Flex>
         )}
@@ -268,11 +266,11 @@ export default function UserAboutView() {
             {identity && <DNSIdentityWarning identity={identity} pubkey={pubkey} />}
           </Box>
         )}
-        {metadata?.website && (
+        {profile?.website && (
           <Flex gap="2">
             <ExternalLinkIcon boxSize="1.2em" />
-            <Link href={metadata.website} target="_blank" color="blue.500" isExternal>
-              {metadata.website}
+            <Link href={profile.website} target="_blank" color="blue.500" isExternal>
+              {profile.website}
             </Link>
           </Flex>
         )}
