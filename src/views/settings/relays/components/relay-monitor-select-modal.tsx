@@ -23,7 +23,7 @@ import { use$ } from "applesauce-react/hooks";
 import dayjs from "dayjs";
 import { nip19 } from "nostr-tools";
 import { useMemo, useState } from "react";
-import { map, switchMap } from "rxjs";
+import { ignoreElements, map, switchMap } from "rxjs";
 
 import { SearchIcon } from "../../../../components/icons";
 import UserAvatar from "../../../../components/user/user-avatar";
@@ -45,7 +45,7 @@ export function useRelayMonitors(): RelayMonitor[] | undefined {
     () =>
       pool
         .request(NIP66_MONITOR_RELAYS, [{ kinds: [RELAY_MONITOR_ANNOUNCEMENT_KIND] }])
-        .pipe(mapEventsToStore(eventStore)),
+        .pipe(mapEventsToStore(eventStore), ignoreElements()),
     [],
   );
 

@@ -9,6 +9,7 @@ import { use$ } from "applesauce-react/hooks";
 import { onlyEvents } from "applesauce-relay";
 import { Filter, NostrEvent } from "nostr-tools";
 import { useMemo } from "react";
+import { ignoreElements } from "rxjs";
 
 import { DEFAULT_RELAY_DISCOVERY_MONITORS, DEFAULT_RELAY_DISCOVERY_RELAYS } from "../const";
 import { eventStore } from "../services/event-store";
@@ -48,7 +49,7 @@ export default function useRelayDiscovery(
 
   // Subscribe to the discovery relays and save events to the store
   use$(
-    () => pool.subscription(discoveryRelays, filter).pipe(onlyEvents(), mapEventsToStore(eventStore)),
+    () => pool.subscription(discoveryRelays, filter).pipe(onlyEvents(), mapEventsToStore(eventStore), ignoreElements()),
     [filter, discoveryRelays.join(",")],
   );
 
