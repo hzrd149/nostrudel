@@ -3,8 +3,6 @@ import { Select, SelectProps } from "@chakra-ui/react";
 const DAY = 86400;
 
 export const TIME_RANGES = {
-  day: { label: "Last 24 hours", seconds: DAY },
-  "3days": { label: "Last 3 days", seconds: 3 * DAY },
   week: { label: "Last week", seconds: 7 * DAY },
   month: { label: "Last month", seconds: 30 * DAY },
   "3months": { label: "Last 3 months", seconds: 90 * DAY },
