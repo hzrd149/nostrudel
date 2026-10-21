@@ -2,7 +2,7 @@ import { MailboxesModel } from "applesauce-core/models";
 import { useEventModel, use$ } from "applesauce-react/hooks";
 import { ProfilePointer } from "nostr-tools/nip19";
 import { useMemo } from "react";
-import { liveness } from "../services/pool";
+import liveness from "../services/relay-liveness";
 import localSettings from "../services/preferences";
 
 export default function useUserMailboxes(user?: string | ProfilePointer) {

@@ -6,7 +6,7 @@ import { ignoreUnhealthyRelaysOnPointers } from "applesauce-relay";
 import { ProfilePointer } from "nostr-tools/nip19";
 import { combineLatestWith, debounceTime, map, MonoTypeOperatorFunction, of, pipe, switchMap } from "rxjs";
 import { eventStore } from "../services/event-store";
-import { liveness } from "../services/pool";
+import liveness from "../services/relay-liveness";
 import localSettings from "../services/preferences";
 
 /** Gets the outboxes for a list of users */

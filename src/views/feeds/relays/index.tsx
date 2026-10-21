@@ -19,7 +19,7 @@ import useFavoriteRelays from "../../../hooks/use-favorite-relays";
 import { useOutboxTimelineLoader } from "../../../hooks/use-outbox-timeline-loader";
 import { useRelayInfo } from "../../../hooks/use-relay-info";
 import useUserContacts from "../../../hooks/use-user-contacts";
-import { liveness } from "../../../services/pool";
+import liveness from "../../../services/relay-liveness";
 import { RelayFavoriteIconButton } from "./components/relay-favorite-button";
 
 function FavoriteRelayRow({ relay }: { relay: string }) {

@@ -42,6 +42,12 @@ const cleanupNutWalletThreshold = await PreferenceSubject.numberNullable("cleanu
 const fallbackRelays = await PreferenceSubject.array<string>("fallback-relays", DEFAULT_FALLBACK_RELAYS);
 const extraPublishRelays = await PreferenceSubject.array<string>("extra-publish-relays", []);
 
+// Relay liveness
+/** Whether to track relay connection failures locally and skip relays that keep failing */
+const localRelayLiveness = await PreferenceSubject.boolean("local-relay-liveness", true);
+/** The pubkeys of the NIP-66 monitors whose reports are used to skip offline relays */
+const relayLivenessMonitors = await PreferenceSubject.array<string>("relay-liveness-monitors", []);
+
 // Remove the legacy lookup relays preference, lookup relays are now stored in a kind 10086 list on nostr
 await Preferences.remove({ key: "lookup-relays" });
 
@@ -160,6 +166,8 @@ const localSettings = {
   // Relays
   fallbackRelays,
   extraPublishRelays,
+  localRelayLiveness,
+  relayLivenessMonitors,
 
   // Event cache
   idbMaxEvents,

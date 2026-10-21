@@ -63,6 +63,12 @@ export const RECOMMENDED_LOOKUP_RELAYS = relays([
   "wss://indexer.coracle.social",
 ]);
 
+/** The relays NIP-66 monitors publish their announcements and relay reports to */
+export const NIP66_MONITOR_RELAYS = relays(["wss://relay.nostr.watch/", "wss://monitorlizard.nostr1.com/"]);
+
+/** The maximum number of NIP-66 monitors that can be used for relay liveness */
+export const MAX_LIVENESS_MONITORS = 2;
+
 /** The default set of relays to use for fetching users events who have out published outboxes */
 export const DEFAULT_FALLBACK_RELAYS = relays(["wss://relay.primal.net/", "wss://nos.lol/"]);
 

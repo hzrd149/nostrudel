@@ -14,7 +14,7 @@ import RelayName from "../../../components/relay/relay-name";
 import { useAppTitle } from "../../../hooks/use-app-title";
 import { useRelayInfo } from "../../../hooks/use-relay-info";
 import { eventStore } from "../../../services/event-store";
-import { liveness } from "../../../services/pool";
+import liveness from "../../../services/relay-liveness";
 
 function OutboxRelayRow({ relay, pubkeys, totalUsers }: { relay: string; pubkeys: string[]; totalUsers?: number }) {
   const { info } = useRelayInfo(relay);
