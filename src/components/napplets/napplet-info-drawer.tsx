@@ -6,7 +6,6 @@ import {
   AccordionPanel,
   Badge,
   Button,
-  Divider,
   Drawer,
   DrawerBody,
   DrawerCloseButton,
@@ -124,7 +123,7 @@ function ReleaseSection({
 }) {
   return (
     <AccordionItem>
-      <AccordionButton px="1">
+      <AccordionButton px="0">
         <Flex alignItems="center" gap="2" flexGrow={1}>
           {icon}
           <Heading size="sm">{title}</Heading>
@@ -132,7 +131,7 @@ function ReleaseSection({
         </Flex>
         <AccordionIcon />
       </AccordionButton>
-      <AccordionPanel px="1" pb="2">
+      <AccordionPanel px="0" pt="0" pb="2">
         <Stack divider={<StackDivider />} spacing="0">
           {releases.map((release) => (
             <ReleaseRow
@@ -251,12 +250,11 @@ export default function NappletInfoDrawer({
               </Flex>
             )}
 
-            <Divider />
             <Accordion allowMultiple>
               <AccordionItem>
                 {({ isExpanded }) => (
                   <>
-                    <AccordionButton px="1">
+                    <AccordionButton px="0">
                       <Flex alignItems="center" gap="2" flexGrow={1}>
                         <ThreadIcon boxSize="5" />
                         <Heading size="sm">Friends' comments</Heading>
@@ -264,7 +262,7 @@ export default function NappletInfoDrawer({
                       <AccordionIcon />
                     </AccordionButton>
                     {/* Only query relays for comments once the section is expanded */}
-                    <AccordionPanel px="1" pb="2">
+                    <AccordionPanel px="0" pt="0" pb="2">
                       {isExpanded && <FriendComments event={event} />}
                     </AccordionPanel>
                   </>
