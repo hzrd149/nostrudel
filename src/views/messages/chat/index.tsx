@@ -121,7 +121,7 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
       if (message.kind === kinds.EncryptedDirectMessage && isEvent(message)) {
         const ts = getExpirationTimestamp(message);
         if (ts) return ts - message.created_at;
-      } else if (message.kind === kinds.EncryptedDirectMessage) {
+      } else if (message.kind === kinds.PrivateDirectMessage) {
         const giftWrap = getRumorGiftWraps(message)[0];
         const ts = getExpirationTimestamp(giftWrap);
         if (ts) return ts - message.created_at;

@@ -354,7 +354,7 @@ export default function SendMessageForm({
       );
       for (let e of events) {
         const pubkey = getTagValue(e, "p");
-        if (!pubkey) return;
+        if (!pubkey) continue;
         const relays = inboxes?.[pubkey];
         const profile = eventStore.getReplaceable(kinds.Metadata, pubkey);
 
