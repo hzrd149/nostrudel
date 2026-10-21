@@ -337,7 +337,7 @@ Decisions (2026-10-21):
 - **Napplets only.** No Zapstore / NIP-82 support; those are a different kind of app.
 - **Reactions and NIP-22 comments are the social signal.** No ratings kind for now.
 
-Suggested order: 999.19 (done) → 999.20 → 999.21 → 999.22 → 999.23.
+Suggested order: 999.19 (done) → 999.20 (done) → 999.21 → 999.22 → 999.23.
 
 ### Phase 999.19: Fix napplet store and launch bugs, adopt applesauce napplet APIs (DONE)
 
@@ -362,11 +362,21 @@ servers, source, snapshot parent pointer).
 - Make the installed-apps store observable instead of synchronous localStorage re-reads
   (`store.tsx:370-371`). Keep the active store tab in the URL.
 
-### Phase 999.20: Sync installed napplets with NIP-78 app data (BACKLOG)
+### Phase 999.20: Sync installed napplets with NIP-78 app data (DONE)
 
-**Goal:** [Captured for future planning]
-**Requirements:** TBD
-**Plans:** 0 plans
+**Landed:** 887a6194c, ddf318892, 64049c172 (2026-10-21), done directly without promotion.
+
+- Encrypted (NIP-44) kind 30078, `d=nostrudel-napplets`, holding installs and default handlers.
+  Built with `AppDataFactory(...).as(signer).encryptedContent(...)` because applesauce's
+  `AppDataFactory.data(data, true)` / `UpdateAppData` do not pass the signer to `setContent` and
+  throw for encrypted content.
+- Per-account local lists (`nostrudel:napplet:installed:<pubkey>`), seeded from the device list the
+  first time an account is used; three-way merge against the last synced state
+  (`nostrudel:napplet:synced:<pubkey>`). Locked lists register as the `napplets` pending-unlock
+  category; changes made while locked prompt the signer when they publish.
+- `getNappUpdateBehavior: "banner"` turned out to be unused by kehto; the update notice is
+  noStrudel's own (`openedVersion` per device).
+- Not done: re-consent when a manifest's `R`/`O` tags change without a new aggregate hash.
 
 - Store the installed list (and default intent handlers, `nostrudel:napplet:intent-handlers`) in a
   kind 30078 event via `AppDataFactory` / `UpdateAppData`. Decide the `d` identifier and whether
@@ -377,10 +387,6 @@ servers, source, snapshot parent pointer).
   (`getNappUpdateBehavior: "banner"` is already set in `adapter.ts:117` but unused).
 - Show capabilities at install time, not only on first launch. Add a permissions page to revoke
   "Always allow" grants (`permissions.ts:272-306`; flagged in `.planning/codebase/CONCERNS.md`).
-
-Plans:
-
-- [ ] TBD (promote with /gsd-review-backlog when ready)
 
 ### Phase 999.21: Store discovery: categories, search, sort, filters (BACKLOG)
 
