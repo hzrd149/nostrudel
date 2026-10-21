@@ -1,6 +1,5 @@
-import { nanoid } from "nanoid";
-import { Filter, NostrEvent } from "nostr-tools";
-import { BehaviorSubject, combineLatest, map, merge, Observable, shareReplay, switchMap } from "rxjs";
+import { combineLatestByValue } from "applesauce-core/observable";
+import { combineLatest, map, shareReplay } from "rxjs";
 
 import AppRelayPool from "../classes/app-relay";
 import { relayInformationCache } from "./relay-information-cache";
@@ -11,61 +10,22 @@ export type ConnectionState = "connecting" | "connected" | "retrying" | "dormant
 // Create a single relay pool for all relay connections
 const pool = new AppRelayPool({ keepAlive: 60_000, informationCache: relayInformationCache, liveness });
 
+// Map of relay url -> connection state. Built like pool.status$, but RelayStatus has no attempts or error
 export const connections$ = pool.relays$.pipe(
-  switchMap((relays) =>
-    // Create a map of relay url -> connection state
-    combineLatest(
-      Object.fromEntries(
-        Array.from(relays.entries()).map(([url, relay]) => [
-          url,
-          combineLatest([relay.connected$, relay.attempts$, relay.error$]).pipe(
-            map(([connected, attempts, error]): ConnectionState => {
-              if (connected) return "connected";
-              if (error) return "error";
-              if (!connected && attempts > 0) return "retrying";
-              return "dormant";
-            }),
-          ),
-        ]),
-      ),
+  map((relays) => Array.from(relays.values())),
+  combineLatestByValue((relay) =>
+    combineLatest([relay.connected$, relay.attempts$, relay.error$]).pipe(
+      map(([connected, attempts, error]): [string, ConnectionState] => {
+        if (connected) return [relay.url, "connected"];
+        if (error) return [relay.url, "error"];
+        if (attempts > 0) return [relay.url, "retrying"];
+        return [relay.url, "dormant"];
+      }),
     ),
   ),
+  map((states) => Object.fromEntries(states.values())),
   shareReplay(1),
 );
-
-export type Notice = { id: string; from: string; message: string; timestamp: Date };
-
-// capture all notices sent from relays
-export const notices$ = new BehaviorSubject<Notice[]>([]);
-
-// Subscribe to notices and add them to the notices$ subject
-pool.relays$
-  .pipe(
-    switchMap((relays) =>
-      merge(
-        ...Array.from(relays.values()).map((relay) =>
-          relay.notice$.pipe(
-            map(
-              (message) =>
-                ({
-                  id: nanoid(),
-                  from: relay.url,
-                  message: message,
-                  timestamp: new Date(),
-                }) as Notice,
-            ),
-          ),
-        ),
-      ),
-    ),
-  )
-  .subscribe((notice) => {
-    notices$.next([...notices$.value, notice]);
-  });
-
-export function nostrRequest(relays: string[], filters: Filter[], id?: string): Observable<NostrEvent> {
-  return pool.request(relays, filters, { id });
-}
 
 if (import.meta.env.DEV) {
   Reflect.set(window, "pool", pool);
