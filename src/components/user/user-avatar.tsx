@@ -1,7 +1,7 @@
 import { Avatar, AvatarProps } from "@chakra-ui/react";
 import styled from "@emotion/styled";
 import { getProfilePicture, ProfileContent } from "applesauce-core/helpers";
-import { useActiveAccount, use$ } from "applesauce-react/hooks";
+import { useActiveAccount, useEventModel, use$ } from "applesauce-react/hooks";
 import { ProfilePointer } from "nostr-tools/nip19";
 import { forwardRef, memo, useMemo } from "react";
 import { useAsync } from "react-use";
@@ -11,9 +11,9 @@ import { buildImageProxyURL } from "../../helpers/image";
 import { getDisplayName } from "../../helpers/nostr/profile";
 import { safeUrl } from "../../helpers/parse";
 import useAppSettings from "../../hooks/use-user-app-settings";
-import useUserMuteList from "../../hooks/use-user-mute-list";
 import useUserProfile from "../../hooks/use-user-profile";
 import UserDnsIdentityIcon from "./user-dns-identity-icon";
+import { MutesQuery } from "../../models";
 import localSettings from "../../services/preferences";
 
 export const UserIdenticon = memo(({ pubkey }: { pubkey: string }) => {
@@ -40,9 +40,10 @@ export const UserAvatar = forwardRef<HTMLDivElement, UserAvatarProps>(
   ({ user, pubkey, relay, noProxy, size, showNip05, ...props }, ref) => {
     const profile = useUserProfile(user ? user : { pubkey: pubkey!, relays: relay ? [relay] : [] });
     const account = useActiveAccount();
-    const muteList = useUserMuteList(account?.pubkey);
-
-    const muted = muteList?.tags.some((t) => t[0] === "p" && t[1] === pubkey);
+    // MutesQuery includes hidden (encrypted) mutes and indexes pubkeys in a Set
+    const mutes = useEventModel(MutesQuery, account ? [account.pubkey] : undefined);
+    const target = user?.pubkey ?? pubkey;
+    const muted = !!target && !!mutes?.pubkeys.has(target);
 
     return (
       <MetadataAvatar
