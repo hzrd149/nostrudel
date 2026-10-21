@@ -1,5 +1,7 @@
 import {
+  Box,
   Button,
+  Divider,
   Flex,
   FormControl,
   FormLabel,
@@ -13,23 +15,36 @@ import {
   ModalHeader,
   ModalOverlay,
   ModalProps,
+  Select,
   Tab,
   TabList,
   TabPanel,
   TabPanels,
   Tabs,
-  Text,
   Textarea,
+  useDisclosure,
   useToast,
 } from "@chakra-ui/react";
 import { WalletConnect } from "applesauce-wallet-connect";
 import { generateSecretKey } from "nostr-tools";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
+import { ChevronDownIcon, ChevronUpIcon } from "../../../components/icons";
 import QrCodeSvg from "../../../components/qr-code/qr-code-svg";
 import { RelayUrlInput } from "../../../components/relay-url-input";
 import pool from "../../../services/pool";
 import { addNwcWallet, WALLET_TYPE_LABELS } from "../../../services/wallets";
+
+const DAY = 24 * 60 * 60;
+
+/** Connection lifetimes offered for the wallet auth request, in seconds (0 means it never expires) */
+const EXPIRATION_OPTIONS = [
+  { label: "Never", value: 0 },
+  { label: "1 day", value: DAY },
+  { label: "1 week", value: 7 * DAY },
+  { label: "1 month", value: 30 * DAY },
+  { label: "1 year", value: 365 * DAY },
+];
 
 /**
  * NWC "wallet auth" connect flow (NIP-47): show a QR the user scans with their wallet. When the wallet
@@ -37,6 +52,8 @@ import { addNwcWallet, WALLET_TYPE_LABELS } from "../../../services/wallets";
  */
 function NwcQrConnect({ onConnect }: { onConnect: (uri: string) => void }) {
   const [relay, setRelay] = useState("wss://relay.getalby.com/v1");
+  const [expiration, setExpiration] = useState(0);
+  const advanced = useDisclosure();
   const client = useMemo(() => new WalletConnect({ pool, relays: [relay], secret: generateSecretKey() }), [relay]);
 
   useEffect(() => {
@@ -59,8 +76,9 @@ function NwcQrConnect({ onConnect }: { onConnect: (uri: string) => void }) {
       client.getAuthURI({
         methods: ["get_balance", "get_info", "list_transactions", "make_invoice", "pay_invoice"],
         name: "noStrudel",
+        expiresAt: expiration ? Math.floor(Date.now() / 1000) + expiration : undefined,
       }),
-    [client],
+    [client, expiration],
   );
 
   return (
@@ -72,9 +90,26 @@ function NwcQrConnect({ onConnect }: { onConnect: (uri: string) => void }) {
       <Button as={Link} href={uri} colorScheme="primary" w="full">
         Open in wallet
       </Button>
-      <Text fontSize="sm" color="GrayText" textAlign="center">
-        Scan with a NWC wallet (e.g. Alby) — it connects back automatically.
-      </Text>
+      <Button w="full" variant="link" p="2" onClick={advanced.onToggle}>
+        <Divider />
+        <Box as="span" ml="4" mr="2">
+          Advanced
+        </Box>
+        {advanced.isOpen ? <ChevronUpIcon boxSize={5} mr="2" /> : <ChevronDownIcon boxSize={5} mr="2" />}
+        <Divider />
+      </Button>
+      {advanced.isOpen && (
+        <FormControl>
+          <FormLabel>Expiration</FormLabel>
+          <Select value={expiration} onChange={(e) => setExpiration(parseInt(e.target.value))}>
+            {EXPIRATION_OPTIONS.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </Select>
+        </FormControl>
+      )}
     </Flex>
   );
 }
