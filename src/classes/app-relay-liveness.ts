@@ -34,7 +34,7 @@ export class AppRelayLiveness implements PoolLivenessSource {
       switchMap(([localEnabled, remote]) =>
         combineLatest([localEnabled ? local.unhealthy$ : of([]), remote ? remote.unhealthy$ : of([])]),
       ),
-      map(([local, remote]) => Array.from(new Set([...local, ...remote])).sort()),
+      map(([localUnhealthy, remoteUnhealthy]) => Array.from(new Set([...localUnhealthy, ...remoteUnhealthy])).sort()),
       distinctUntilChanged(sameList),
       shareReplay(1),
     );
