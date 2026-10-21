@@ -12,11 +12,17 @@ import useTimelineLoader from "../../hooks/use-timeline-loader";
 import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import CommentPost from "./comment-post";
 import { sortByDate } from "../../helpers/nostr/event";
-import { useMemo } from "react";
+import { ReactNode, useMemo } from "react";
 
-export type GenericCommentsProps = { event: NostrEvent } & Omit<FlexProps, "children">;
+export type GenericCommentsProps = {
+  event: NostrEvent;
+  /** Only show top-level comments by these pubkeys */
+  authors?: string[];
+  /** Rendered when there are no comments to show */
+  empty?: ReactNode;
+} & Omit<FlexProps, "children">;
 
-export function GenericComments({ event, ...flexProps }: GenericCommentsProps) {
+export function GenericComments({ event, authors, empty, ...flexProps }: GenericCommentsProps) {
   const readRelays = useReadRelays();
   const { loader } = useTimelineLoader(
     `${getEventUID(event)}-comments`,
@@ -35,11 +41,17 @@ export function GenericComments({ event, ...flexProps }: GenericCommentsProps) {
   const comments = useEventModel(CommentsModel, [event]);
   const callback = useTimelineCurserIntersectionCallback(loader);
 
-  const sorted = useMemo(() => (comments ? [...comments].sort((a, b) => sortByDate(a, b)) : undefined), [comments]);
+  const sorted = useMemo(() => {
+    if (!comments) return undefined;
+    const allowed = authors && new Set(authors);
+    const visible = allowed ? comments.filter((c) => allowed.has(c.pubkey)) : [...comments];
+    return visible.sort((a, b) => sortByDate(a, b));
+  }, [comments, authors]);
 
   return (
     <IntersectionObserverProvider callback={callback}>
       <Flex direction="column" gap="2" {...flexProps}>
+        {sorted?.length === 0 && empty}
         {sorted?.map((comment) => (
           <CommentPost key={comment.id} event={comment} level={0} />
         ))}

@@ -20,11 +20,16 @@ import {
   Stack,
   StackDivider,
   Text,
+  useDisclosure,
 } from "@chakra-ui/react";
+import { useActiveAccount } from "applesauce-react/hooks";
 import { NostrEvent } from "nostr-tools";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
 
+import GenericCommentForm from "../comment/generic-comment-form";
+import { GenericComments } from "../comment/generic-comments";
+import { ThreadIcon } from "../icons";
 import ClockRewind from "../icons/clock-rewind";
 import LayersThree01 from "../icons/layers-three-01";
 import SeenOnRelaysButton from "../note/seen-on-relays-button";
@@ -38,6 +43,7 @@ import {
   getNappletTitle,
 } from "../../helpers/nostr/napplets";
 import useNappletVersions from "../../hooks/use-napplet-versions";
+import useUserContacts from "../../hooks/use-user-contacts";
 
 type NappletInfoDrawerProps = Omit<DrawerProps, "children"> & {
   /** The latest/canonical manifest event — the napplet the drawer describes */
@@ -145,6 +151,40 @@ function ReleaseSection({
   );
 }
 
+/** Comments on the napplet from people the active account follows (and the account itself). */
+function FriendComments({ event }: { event: NostrEvent }) {
+  const account = useActiveAccount();
+  const contacts = useUserContacts(account?.pubkey);
+  const form = useDisclosure();
+
+  const authors = useMemo(
+    () => (account ? [account.pubkey, ...(contacts ?? []).map((c) => c.pubkey)] : undefined),
+    [account, contacts],
+  );
+
+  return (
+    <Flex direction="column" gap="2">
+      {account &&
+        (form.isOpen ? (
+          <GenericCommentForm event={event} onCancel={form.onClose} onSubmitted={form.onClose} />
+        ) : (
+          <Button leftIcon={<ThreadIcon />} onClick={form.onOpen} mr="auto">
+            Comment
+          </Button>
+        ))}
+      <GenericComments
+        event={event}
+        authors={authors}
+        empty={
+          <Text fontSize="sm" color="GrayText">
+            {account ? "None of your friends have commented yet." : "No comments yet."}
+          </Text>
+        }
+      />
+    </Flex>
+  );
+}
+
 /** Right-side drawer describing the running napplet, with its version history and snapshots. */
 export default function NappletInfoDrawer({
   event,
@@ -220,35 +260,48 @@ export default function NappletInfoDrawer({
               </Flex>
             )}
 
-            {(showHistory || showSnapshots) && (
-              <>
-                <Divider />
-                <Accordion allowMultiple>
-                  {showHistory && (
-                    <ReleaseSection
-                      title="Version history"
-                      icon={<ClockRewind boxSize="5" />}
-                      releases={versions}
-                      event={event}
-                      active={active}
-                      onSelect={onSelect}
-                      onClose={onClose}
-                    />
-                  )}
-                  {showSnapshots && (
-                    <ReleaseSection
-                      title="Snapshots"
-                      icon={<LayersThree01 boxSize="5" />}
-                      releases={snapshots}
-                      event={event}
-                      active={active}
-                      onSelect={onSelect}
-                      onClose={onClose}
-                    />
-                  )}
-                </Accordion>
-              </>
-            )}
+            <Divider />
+            <Accordion allowMultiple>
+              <AccordionItem>
+                {({ isExpanded }) => (
+                  <>
+                    <AccordionButton px="1">
+                      <Flex alignItems="center" gap="2" flexGrow={1}>
+                        <ThreadIcon boxSize="5" />
+                        <Heading size="sm">Friends' comments</Heading>
+                      </Flex>
+                      <AccordionIcon />
+                    </AccordionButton>
+                    {/* Only query relays for comments once the section is expanded */}
+                    <AccordionPanel px="1" pb="2">
+                      {isExpanded && <FriendComments event={event} />}
+                    </AccordionPanel>
+                  </>
+                )}
+              </AccordionItem>
+              {showHistory && (
+                <ReleaseSection
+                  title="Version history"
+                  icon={<ClockRewind boxSize="5" />}
+                  releases={versions}
+                  event={event}
+                  active={active}
+                  onSelect={onSelect}
+                  onClose={onClose}
+                />
+              )}
+              {showSnapshots && (
+                <ReleaseSection
+                  title="Snapshots"
+                  icon={<LayersThree01 boxSize="5" />}
+                  releases={snapshots}
+                  event={event}
+                  active={active}
+                  onSelect={onSelect}
+                  onClose={onClose}
+                />
+              )}
+            </Accordion>
           </Flex>
         </DrawerBody>
       </DrawerContent>
