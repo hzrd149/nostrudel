@@ -6,13 +6,16 @@ import { getProfilePicture } from "applesauce-core/helpers";
 
 import { AddressPointer } from "nostr-tools/nip19";
 import useDVMMetadata from "../../../../hooks/use-dvm-metadata";
+import useUserProfile from "../../../../hooks/use-user-profile";
 
 type DVMAvatarProps = {
   pointer: AddressPointer;
 } & Omit<BoxProps, "children">;
 
 export const DVMAvatar = forwardRef<HTMLDivElement, DVMAvatarProps>(({ pointer, ...props }, ref) => {
-  const image = getProfilePicture(useDVMMetadata(pointer)) || "";
+  const metadata = useDVMMetadata(pointer);
+  const profile = useUserProfile(pointer.pubkey);
+  const image = getProfilePicture(metadata) || getProfilePicture(profile) || "";
 
   return (
     <Box

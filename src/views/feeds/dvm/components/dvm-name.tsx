@@ -5,6 +5,7 @@ import { nip19 } from "nostr-tools";
 import { getDisplayName } from "../../../../helpers/nostr/profile";
 import { AddressPointer } from "nostr-tools/nip19";
 import useDVMMetadata from "../../../../hooks/use-dvm-metadata";
+import useUserProfile from "../../../../hooks/use-user-profile";
 
 export function DVMName({
   pointer,
@@ -14,10 +15,12 @@ export function DVMName({
   pointer: AddressPointer;
 }) {
   const metadata = useDVMMetadata(pointer);
+  // Fall back per field to the author's profile while the handler loads or when it omits a name
+  const profile = useUserProfile(pointer.pubkey);
 
   return (
     <Text as={as} {...props}>
-      {getDisplayName(metadata, pointer.pubkey)}
+      {metadata?.name || getDisplayName(profile, pointer.pubkey)}
     </Text>
   );
 }
