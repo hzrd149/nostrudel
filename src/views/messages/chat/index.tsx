@@ -27,6 +27,7 @@ import { legacyMessageSubscription, wrappedMessageSubscription } from "../../../
 import DirectMessageGroup from "../components/direct-message-group";
 import PendingLockedAlert from "../components/pending-decryption-alert";
 import ReadAuthRequiredAlert from "../components/read-auth-required-alert";
+import DecryptLegacyMessagesButton from "./components/decrypt-legacy-messages-button";
 import SendMessageForm from "./components/direct-message-form";
 import DirectMessageRelayConnectionsButton from "./components/direct-message-relay-connections";
 import DirectMessageSettingsDrawer from "./components/direct-settings-drawer";
@@ -124,6 +125,7 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
         }
         actions={
           <ButtonGroup ml="auto">
+            <DecryptLegacyMessagesButton other={pubkey} variant="ghost" />
             <DirectMessageRelayConnectionsButton other={pubkey} variant="ghost" onClick={openSettingsDrawer} />
             <IconButton
               aria-label="Settings"

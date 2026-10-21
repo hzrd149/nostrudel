@@ -2,7 +2,6 @@ import {
   Alert,
   AlertIcon,
   Box,
-  Button,
   Drawer,
   DrawerBody,
   DrawerCloseButton,
@@ -15,7 +14,7 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
-import { isLegacyMessageUnlocked, unlockLegacyMessage } from "applesauce-common/helpers";
+import { isLegacyMessageUnlocked } from "applesauce-common/helpers";
 import { useActiveAccount, useEventModel } from "applesauce-react/hooks";
 
 import RelayFavicon from "../../../../components/relay/relay-favicon";
@@ -29,7 +28,6 @@ import { useUserInbox } from "../../../../hooks/use-user-mailboxes";
 import { DirectMessageRelaysModel } from "../../../../models/messages";
 import InboxesStatusSection from "../../components/inboxes-status-section";
 import { LegacyMessagesGroup } from "applesauce-common/models";
-import useAsyncAction from "../../../../hooks/use-async-action";
 import { useMemo } from "react";
 import RelayLink from "../../../../components/relay/relay-link";
 
@@ -97,17 +95,6 @@ function LegacyMessagesSection({
   const account = useActiveAccount()!;
   const messages = useEventModel(LegacyMessagesGroup, [account.pubkey, other]);
 
-  // Action to decrypt all messages
-  const decryptAll = useAsyncAction(async () => {
-    if (!messages) return;
-
-    for (const message of messages) {
-      if (isLegacyMessageUnlocked(message) === false) {
-        unlockLegacyMessage(message, account.pubkey, account);
-      }
-    }
-  }, [messages, account]);
-
   const locked = useMemo(() => {
     if (!messages) return [];
     return messages.filter((m) => isLegacyMessageUnlocked(m) === false);
@@ -170,19 +157,6 @@ function LegacyMessagesSection({
           <Text fontSize="sm">Total legacy messages: {messages?.length || 0}</Text>
           <Text fontSize="sm">Encrypted messages: {locked.length}</Text>
         </Box>
-        {locked.length > 0 && (
-          <Box display="flex" justifyContent="flex-end">
-            <Button
-              size="sm"
-              colorScheme="blue"
-              onClick={decryptAll.run}
-              isLoading={decryptAll.loading}
-              loadingText="Decrypting..."
-            >
-              Decrypt All
-            </Button>
-          </Box>
-        )}
       </VStack>
     </VStack>
   );
