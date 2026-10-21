@@ -11,6 +11,11 @@ import {
   Heading,
   SimpleGrid,
   Spinner,
+  Tab,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Tabs,
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
@@ -50,11 +55,15 @@ import {
 import { useReadRelays } from "../../hooks/use-client-relays";
 import useEvent from "../../hooks/use-event";
 import useInstalledNapplets from "../../hooks/use-installed-napplets";
+import useRouteSearchValue from "../../hooks/use-route-search-value";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { uninstallNapplet } from "../../services/installed-napplets";
 import { eventDeleteManager } from "../../services/event-store";
+import NappletDetailPermissions from "../napplets/components/napplet-detail-permissions";
+import NappletDetailStorage from "../napplets/components/napplet-detail-storage";
 
 const RELATED_NAPPLETS_LIMIT = 6;
+const DETAIL_TABS = ["details", "comments", "permissions", "storage"];
 
 function RelatedNappletCard({ event }: { event: NostrEvent }) {
   const address = getNappletNaddr(event);
@@ -143,6 +152,9 @@ function NappletStoreDetailPage({ event, address }: { event: NostrEvent; address
   const capabilities = getNappletRequiredCapabilities(event);
   const unsupported = getUnsupportedNappletRequirements(event);
   const naddr = getNappletNaddr(event);
+  const tabs = installed ? DETAIL_TABS : DETAIL_TABS.slice(0, 2);
+  const tab = useRouteSearchValue("tab", tabs[0]);
+  const tabIndex = Math.max(0, tabs.indexOf(tab.value));
 
   return (
     <SimpleView
@@ -184,77 +196,104 @@ function NappletStoreDetailPage({ event, address }: { event: NostrEvent; address
           </ButtonGroup>
         </Flex>
 
-        <Divider />
+        <Tabs
+          colorScheme="primary"
+          variant="soft-rounded"
+          isLazy
+          index={tabIndex}
+          onChange={(i) => (i === 0 ? tab.clearValue() : tab.setValue(tabs[i]))}
+        >
+          <TabList gap="2" flexWrap="wrap">
+            <Tab>Details</Tab>
+            <Tab>Comments</Tab>
+            {installed && <Tab>Permissions</Tab>}
+            {installed && <Tab>Storage</Tab>}
+          </TabList>
+          <TabPanels>
+            <TabPanel px="0">
+              <Flex direction="column" gap="4">
+                <Flex direction="column" gap="3">
+                  <Heading size="sm">Supported intents</Heading>
+                  {archetypes.length === 0 ? (
+                    <Text color="GrayText">No archetypes declared.</Text>
+                  ) : (
+                    <Flex direction="column" gap="3">
+                      {archetypes.map((archetype) => (
+                        <Box key={archetype.name}>
+                          <Heading size="xs" mb="1">
+                            {archetype.name}
+                          </Heading>
+                          <Flex gap="1" wrap="wrap">
+                            {archetype.actions.map((action) => (
+                              <Badge key={action}>{action}</Badge>
+                            ))}
+                          </Flex>
+                        </Box>
+                      ))}
+                    </Flex>
+                  )}
+                </Flex>
 
-        <Flex direction="column" gap="3">
-          <Heading size="sm">Supported intents</Heading>
-          {archetypes.length === 0 ? (
-            <Text color="GrayText">No archetypes declared.</Text>
-          ) : (
-            <Flex direction="column" gap="3">
-              {archetypes.map((archetype) => (
-                <Box key={archetype.name}>
-                  <Heading size="xs" mb="1">
-                    {archetype.name}
-                  </Heading>
-                  <Flex gap="1" wrap="wrap">
-                    {archetype.actions.map((action) => (
-                      <Badge key={action}>{action}</Badge>
-                    ))}
-                  </Flex>
-                </Box>
-              ))}
-            </Flex>
-          )}
-        </Flex>
+                <Divider />
 
-        <Divider />
+                <Flex direction="column" gap="3">
+                  <Heading size="sm">Capabilities</Heading>
+                  {capabilities.length === 0 ? (
+                    <Text color="GrayText">No shell capabilities requested.</Text>
+                  ) : (
+                    <Flex gap="1" wrap="wrap">
+                      {capabilities.map((capability) => (
+                        <Badge key={capability} colorScheme="primary">
+                          {capability}
+                        </Badge>
+                      ))}
+                    </Flex>
+                  )}
+                  {unsupported.length > 0 && (
+                    <Alert status="warning">
+                      <AlertIcon />
+                      <AlertDescription>Unsupported requirements: {unsupported.join(", ")}</AlertDescription>
+                    </Alert>
+                  )}
+                </Flex>
 
-        <Flex direction="column" gap="3">
-          <Heading size="sm">Capabilities</Heading>
-          {capabilities.length === 0 ? (
-            <Text color="GrayText">No shell capabilities requested.</Text>
-          ) : (
-            <Flex gap="1" wrap="wrap">
-              {capabilities.map((capability) => (
-                <Badge key={capability} colorScheme="primary">
-                  {capability}
-                </Badge>
-              ))}
-            </Flex>
-          )}
-          {unsupported.length > 0 && (
-            <Alert status="warning">
-              <AlertIcon />
-              <AlertDescription>Unsupported requirements: {unsupported.join(", ")}</AlertDescription>
-            </Alert>
-          )}
-        </Flex>
+                <RelatedNapplets event={event} />
 
-        <RelatedNapplets event={event} />
+                <Divider />
 
-        <Divider />
-
-        <Flex gap="2" wrap="wrap" alignItems="center">
-          <ButtonGroup size="sm" variant="ghost">
-            <EventShareButton event={event} />
-            <EventQuoteButton event={event} />
-          </ButtonGroup>
-          <NoteReactions event={event} size="sm" variant="ghost" />
-        </Flex>
-
-        <Divider />
-
-        <Flex maxW="4xl" w="full" gap="2" direction="column">
-          {comment.isOpen ? (
-            <GenericCommentForm event={event} onCancel={comment.onClose} onSubmitted={comment.onClose} />
-          ) : (
-            <Button leftIcon={<ThreadIcon />} onClick={comment.onOpen} mr="auto">
-              Comment
-            </Button>
-          )}
-          <GenericComments event={event} />
-        </Flex>
+                <Flex gap="2" wrap="wrap" alignItems="center">
+                  <ButtonGroup size="sm" variant="ghost">
+                    <EventShareButton event={event} />
+                    <EventQuoteButton event={event} />
+                  </ButtonGroup>
+                  <NoteReactions event={event} size="sm" variant="ghost" />
+                </Flex>
+              </Flex>
+            </TabPanel>
+            <TabPanel px="0">
+              <Flex maxW="4xl" w="full" gap="2" direction="column">
+                {comment.isOpen ? (
+                  <GenericCommentForm event={event} onCancel={comment.onClose} onSubmitted={comment.onClose} />
+                ) : (
+                  <Button leftIcon={<ThreadIcon />} onClick={comment.onOpen} mr="auto">
+                    Comment
+                  </Button>
+                )}
+                <GenericComments event={event} />
+              </Flex>
+            </TabPanel>
+            {installed && (
+              <TabPanel px="0">
+                <NappletDetailPermissions event={event} />
+              </TabPanel>
+            )}
+            {installed && (
+              <TabPanel px="0">
+                <NappletDetailStorage event={event} />
+              </TabPanel>
+            )}
+          </TabPanels>
+        </Tabs>
       </Flex>
       {naddr && install.isOpen && <NappletInstallModal event={event} isOpen onClose={install.onClose} />}
     </SimpleView>
