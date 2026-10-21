@@ -19,7 +19,7 @@ import SimpleView from "../../components/layout/presets/simple-view";
 import { SettingsIcon } from "../../components/icons";
 import RouterLink from "../../components/router-link";
 import { useActiveWallet, useNutWalletState, useNutWalletUnlocked } from "../../hooks/use-wallets";
-import { type WalletBackend } from "../../services/wallets";
+import useRouteSearchValue from "../../hooks/use-route-search-value";
 import UnlockNutWalletModal from "../settings/wallet/unlock-nut-wallet-modal";
 import CreateWalletModal from "./components/create-wallet-modal";
 import WalletBalanceCard from "./components/wallet-balance-card";
@@ -51,26 +51,13 @@ function CreateWalletPrompt() {
   );
 }
 
-/** Default history tab shown for wallets without their own management tabs (WebLN, NWC) */
-function BackendHistorySection({ wallet }: { wallet: WalletBackend }) {
-  return (
-    <Tabs w="full" colorScheme="primary">
-      <TabList mb="1em">
-        <Tab>History</Tab>
-      </TabList>
-      <TabPanels>
-        <TabPanel p="0">
-          <WalletHistory wallet={wallet} />
-        </TabPanel>
-      </TabPanels>
-    </Tabs>
-  );
-}
+const NUT_WALLET_TABS = ["history", "tokens", "settings"];
 
 /** Unlock prompt + management tabs for the NIP-60 wallet */
 function NutWalletSection() {
   const unlocked = useNutWalletUnlocked();
   const unlockModal = useDisclosure();
+  const { value: tab, setValue: setTab } = useRouteSearchValue("tab", NUT_WALLET_TABS[0]);
 
   return (
     <>
@@ -88,7 +75,14 @@ function NutWalletSection() {
         </Alert>
       )}
 
-      <Tabs w="full" isLazy colorScheme="primary">
+      <Tabs
+        w="full"
+        isLazy
+        lazyBehavior="keepMounted"
+        colorScheme="primary"
+        index={Math.max(NUT_WALLET_TABS.indexOf(tab), 0)}
+        onChange={(i) => setTab(NUT_WALLET_TABS[i])}
+      >
         <TabList mb="1em">
           <Tab>History</Tab>
           <Tab>Tokens</Tab>
@@ -160,7 +154,7 @@ export default function WalletHomeView() {
       )}
 
       {nutState.status === "missing" && <CreateWalletPrompt />}
-      {active && (active.type === "nutwallet" ? <NutWalletSection /> : <BackendHistorySection wallet={active} />)}
+      {active && (active.type === "nutwallet" ? <NutWalletSection /> : <WalletHistory wallet={active} />)}
     </SimpleView>
   );
 }
