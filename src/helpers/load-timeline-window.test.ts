@@ -1,9 +1,9 @@
 import { createTimelineLoader } from "applesauce-loaders/loaders";
 import { Filter, finalizeEvent, NostrEvent } from "nostr-tools";
-import { Observable, Subject, of } from "rxjs";
+import { BehaviorSubject, EMPTY, Observable, Subject, of } from "rxjs";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { loadMoreTimeline, loadTimelineWindow } from "./load-timeline-window";
+import { loadMoreTimeline, loadTimelineWhileVisible, loadTimelineWindow } from "./load-timeline-window";
 
 afterEach(() => vi.restoreAllMocks());
 
@@ -57,5 +57,28 @@ describe("timeline window ownership", () => {
     subscription.unsubscribe();
     expect(cancel).toHaveBeenCalledTimes(1);
     expect(cursor$.observed).toBe(false);
+  });
+});
+
+describe("loadTimelineWhileVisible", () => {
+  it("only widens the window while the end of the list is visible", async () => {
+    vi.spyOn(Date, "now").mockReturnValue(100 * 86400 * 1000);
+    const request = vi.fn((_relays: unknown, _filters: Filter[]) => EMPTY as Observable<NostrEvent>);
+    const loader = createTimelineLoader(request, ["wss://example.com"], { kinds: [4] }, { prefetch: 0 });
+    let oldest = Infinity;
+    const status = loader.status$.subscribe((statuses) => {
+      for (const s of statuses) oldest = Math.min(oldest, s.window.since);
+    });
+    const end$ = new BehaviorSubject(false);
+    const subscription = loadTimelineWhileVisible(loader, end$).subscribe();
+
+    await vi.waitFor(() => expect(request).toHaveBeenCalled());
+    await new Promise((resolve) => setTimeout(resolve, 20));
+    expect(oldest).toBe(99 * 86400);
+
+    end$.next(true);
+    await vi.waitFor(() => expect(oldest).toBe(0));
+    subscription.unsubscribe();
+    status.unsubscribe();
   });
 });

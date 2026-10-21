@@ -15,15 +15,14 @@ import UserAvatarLink from "../../../components/user/user-avatar-link";
 import UserLink from "../../../components/user/user-link";
 import { groupMessages } from "../../../helpers/nostr/dms";
 import { sortByDate } from "../../../helpers/nostr/event";
-import { truncateId } from "../../../helpers/string";
 import useParamsProfilePointer from "../../../hooks/use-params-pubkey-pointer";
 import useRouterMarker from "../../../hooks/use-router-marker";
 import useScrollRestoreRef from "../../../hooks/use-scroll-restore";
 import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
-import useTimelineLoader from "../../../hooks/use-timeline-loader";
 import { useUserInbox } from "../../../hooks/use-user-mailboxes";
 import { DirectMessageRelaysModel } from "../../../models/messages";
 import IntersectionObserverProvider from "../../../providers/local/intersection-observer";
+import { createLegacyConversationLoader } from "../../../services/legacy-messages";
 import { legacyMessageSubscription, wrappedMessageSubscription } from "../../../services/lifecycle";
 import DirectMessageGroup from "../components/direct-message-group";
 import PendingLockedAlert from "../components/pending-decryption-alert";
@@ -75,34 +74,12 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
     marker.reset();
   }, [marker, navigate]);
 
-  // NOTE: its probably not a great idea to read from the other users inboxes, but it does help load missing messages
-  const otherLegacyInboxes = useUserInbox(pubkey);
+  // Read each side's NIP-04 messages from the inboxes of the recipient and the outboxes of the sender
+  const loader = useMemo(() => createLegacyConversationLoader(account.pubkey, pubkey), [account.pubkey, pubkey]);
+
   const selfLegacyInboxes = useUserInbox(account.pubkey);
-  const legacyInboxes = useMemo(
-    () => mergeRelaySets(selfLegacyInboxes, otherLegacyInboxes),
-    [selfLegacyInboxes, otherLegacyInboxes],
-  );
-
-  const { loader } = useTimelineLoader(
-    `${truncateId(pubkey)}-${truncateId(account.pubkey)}-messages`,
-    legacyInboxes,
-    [
-      {
-        kinds: [kinds.EncryptedDirectMessage],
-        "#p": [account.pubkey],
-        authors: [pubkey],
-      },
-      {
-        kinds: [kinds.EncryptedDirectMessage],
-        "#p": [pubkey],
-        authors: [account.pubkey],
-      },
-    ],
-    {},
-  );
-
   const inboxes = useEventModel(DirectMessageRelaysModel, [account.pubkey]);
-  const allReadRelays = useMemo(() => mergeRelaySets(legacyInboxes, inboxes), [legacyInboxes, inboxes]);
+  const allReadRelays = useMemo(() => mergeRelaySets(selfLegacyInboxes, inboxes), [selfLegacyInboxes, inboxes]);
 
   const legacyMessages = useEventModel(LegacyMessagesGroup, [account.pubkey, pubkey]);
   const wrappedMessages = useEventModel(WrappedMessagesGroup, [account.pubkey, pubkey]);

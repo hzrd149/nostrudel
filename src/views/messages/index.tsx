@@ -14,6 +14,7 @@ import { Rumor } from "applesauce-common/helpers";
 import { GiftWrapsModel, LegacyMessagesGroups, WrappedMessagesGroups } from "applesauce-common/models";
 import { useActiveAccount, useEventModel, use$ } from "applesauce-react/hooks";
 import { NostrEvent, kinds } from "nostr-tools";
+import { BehaviorSubject } from "rxjs";
 import { npubEncode } from "nostr-tools/nip19";
 import { useEffect, useMemo } from "react";
 import { Link as RouterLink, useLocation } from "react-router-dom";
@@ -26,14 +27,12 @@ import RequireActiveAccount from "../../components/router/require-active-account
 import Timestamp from "../../components/timestamp";
 import UserAvatar from "../../components/user/user-avatar";
 import UserName from "../../components/user/user-name";
-import useEventIntersectionRef from "../../hooks/use-event-intersection-ref";
 import { useLegacyMessagePlaintext } from "../../hooks/use-legacy-message-plaintext";
+import { loadTimelineWhileVisible } from "../../helpers/load-timeline-window";
 import useScrollRestoreRef from "../../hooks/use-scroll-restore";
-import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
-import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { useUserInbox } from "../../hooks/use-user-mailboxes";
-import IntersectionObserverProvider from "../../providers/local/intersection-observer";
 import RequireDecryptionCache from "../../providers/route/require-decryption-cache";
+import { createLegacyInboxLoader } from "../../services/legacy-messages";
 import { legacyMessageSubscription, wrappedMessageSubscription } from "../../services/lifecycle";
 import { DirectMessageRelaysModel } from "../../models/messages";
 import ReadAuthRequiredAlert from "./components/read-auth-required-alert";
@@ -50,11 +49,10 @@ function ConversationCard({ index, style, data }: ListChildComponentProps<(Legac
   const location = useLocation();
   const lastMessage = conversation.lastMessage;
 
-  const ref = useEventIntersectionRef(lastMessage as NostrEvent);
   const others = conversation.participants.filter((p) => p !== account.pubkey);
 
   return (
-    <LinkBox as={Flex} ref={ref} style={style} gap="2" overflow="hidden" px="2">
+    <LinkBox as={Flex} style={style} gap="2" overflow="hidden" px="2">
       <AvatarGroup size="md" max={3}>
         {others.map((pubkey) => (
           <UserAvatar key={pubkey} pubkey={pubkey} />
@@ -102,20 +100,17 @@ function Groups() {
   use$(legacyMessageSubscription);
   use$(wrappedMessageSubscription);
 
-  // Create a timeline loader for legacy messages
   const legacyInboxes = useUserInbox(account.pubkey);
   const messagesInboxes = useEventModel(DirectMessageRelaysModel, [account.pubkey]);
   const inboxes = useMemo(() => mergeRelaySets(legacyInboxes, messagesInboxes), [legacyInboxes, messagesInboxes]);
-  const { loader } = useTimelineLoader(`${account.pubkey}-legacy-messages`, legacyInboxes ?? [], [
-    { authors: [account.pubkey], kinds: [kinds.EncryptedDirectMessage] },
-    { "#p": [account.pubkey], kinds: [kinds.EncryptedDirectMessage] },
-  ]);
 
-  // Start the legacy messages timeline
+  // Load older NIP-04 messages while the end of the conversation list is on screen
+  const listEnd$ = useMemo(() => new BehaviorSubject(true), []);
+  const loader = useMemo(() => createLegacyInboxLoader(account.pubkey), [account.pubkey]);
   useEffect(() => {
-    const sub = loader?.({ since: 0, until: Math.floor(Date.now() / 1000) }).subscribe();
-    return () => sub?.unsubscribe();
-  }, [loader]);
+    const sub = loadTimelineWhileVisible(loader, listEnd$).subscribe();
+    return () => sub.unsubscribe();
+  }, [loader, listEnd$]);
 
   // v5: useEventModel expects array of arguments
   const legacyGroups = useEventModel(LegacyMessagesGroups, [account.pubkey]) ?? [];
@@ -136,10 +131,12 @@ function Groups() {
   }, [legacyGroups, wrappedGroups]);
 
   const scroll = useScrollRestoreRef("chats");
-  const callback = useTimelineCurserIntersectionCallback(loader);
+  useEffect(() => {
+    if (groups.length === 0) listEnd$.next(true);
+  }, [groups.length, listEnd$]);
 
   return (
-    <IntersectionObserverProvider callback={callback}>
+    <>
       <ReadAuthRequiredAlert relays={inboxes} flexShrink={0} />
       <Flex flex={1} overflow="hidden" position="relative">
         <AutoSizer>
@@ -153,13 +150,14 @@ function Groups() {
               itemSize={64}
               innerRef={scroll}
               overscanCount={10}
+              onItemsRendered={({ visibleStopIndex }) => listEnd$.next(visibleStopIndex >= groups.length - 1)}
             >
               {ConversationCard}
             </FixedSizeList>
           )}
         </AutoSizer>
       </Flex>
-    </IntersectionObserverProvider>
+    </>
   );
 }
 

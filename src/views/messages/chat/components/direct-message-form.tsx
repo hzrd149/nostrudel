@@ -39,7 +39,7 @@ import RouterLink from "../../../../components/router-link";
 import UserName from "../../../../components/user/user-name";
 import useCacheForm from "../../../../hooks/use-cache-form";
 import useTextAreaUploadFile, { useTextAreaInsertTextWithForm } from "../../../../hooks/use-textarea-upload-file";
-import { useUserInbox } from "../../../../hooks/use-user-mailboxes";
+import { useUserInbox, useUserOutbox } from "../../../../hooks/use-user-mailboxes";
 import { DirectMessageRelaysModel, GroupMessageInboxesModel } from "../../../../models/messages";
 import { PublishLogEntry, usePublishEvent } from "../../../../providers/global/publish-provider";
 import { eventStore } from "../../../../services/event-store";
@@ -323,6 +323,7 @@ export default function SendMessageForm({
   const [sending, setSending] = useState<PublishLogEntry[] | null>(null);
   const otherInboxes = useUserInbox(pubkey);
   const selfInboxes = useUserInbox(account.pubkey);
+  const selfOutboxes = useUserOutbox(account.pubkey);
   // v5: GroupMessageInboxesModel signature changed, takes just conversation ID
   const conversationId = [account.pubkey, pubkey].sort().join(",");
   const inboxes = useEventModel(GroupMessageInboxesModel, [conversationId]);
@@ -339,9 +340,11 @@ export default function SendMessageForm({
         actions.exec(SendLegacyMessage, pubkey, values.content, { expiration: expirationTimestamp }).pipe(toArray()),
       );
 
-      // Send legacy direct messages to both users NIP-65 inboxes
+      // Send to the recipient's inboxes and DM relays where they read, and to our outboxes so our other clients find it
+      // Our inboxes are kept for older clients that read sent messages from there
+      const relays = mergeRelaySets(otherInboxes, inboxes?.[pubkey], selfOutboxes, selfInboxes);
       for (let event of events) {
-        publishes.push(await publish("Send message", event, mergeRelaySets(otherInboxes, selfInboxes), false, true));
+        publishes.push(await publish("Send message", event, relays, false, true));
       }
     } else {
       if (!inboxes) throw new Error("Missing both users inboxes");
