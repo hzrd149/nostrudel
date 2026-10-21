@@ -1,10 +1,12 @@
 import { Flex, Heading, Text } from "@chakra-ui/react";
-import { getEmbededSharedEvent } from "applesauce-common/helpers/share";
-import { nip18, NostrEvent } from "nostr-tools";
-import { memo, useEffect } from "react";
+import { Share } from "applesauce-common/casts";
+import { use$ } from "applesauce-react/hooks";
+import { NostrEvent } from "nostr-tools";
+import { DecodeResult } from "applesauce-core/helpers";
+import { memo, useEffect, useMemo } from "react";
 
+import useCastEvent from "../../hooks/use-cast-event";
 import useEventIntersectionRef from "../../hooks/use-event-intersection-ref";
-import useSingleEvent from "../../hooks/use-single-event";
 import useUserMuteFilter from "../../hooks/use-user-mute-filter";
 import { ContentSettingsProvider } from "../../providers/local/content-settings";
 import { eventStore } from "../../services/event-store";
@@ -18,19 +20,25 @@ import UserLink from "../user/user-link";
 /** A timeline component for the kind 6 and kind 16 share events */
 function TimelineShare({ event }: { event: NostrEvent }) {
   const muteFilter = useUserMuteFilter();
-  const wrappedEvent = getEmbededSharedEvent(event);
+  const share = useCastEvent(event, Share);
+  const wrappedEvent = share?.embedded;
 
   useEffect(() => {
     if (wrappedEvent) eventStore.add(wrappedEvent);
   }, [wrappedEvent]);
 
-  const pointer = nip18.getRepostedEventPointer(event);
-  const loaded = useSingleEvent(pointer);
+  const loaded = use$(share?.shared$);
   const sharedEvent = wrappedEvent || loaded;
+
+  const link = useMemo<DecodeResult | undefined>(() => {
+    if (!share) return undefined;
+    if (share.sharedAddressPointer) return { type: "naddr", data: share.sharedAddressPointer };
+    return { type: "nevent", data: share.sharedEventPointer };
+  }, [share]);
 
   const ref = useEventIntersectionRef(event);
 
-  if ((sharedEvent && muteFilter(sharedEvent)) || !pointer) return null;
+  if ((sharedEvent && muteFilter(sharedEvent)) || !link) return null;
 
   return (
     <ContentSettingsProvider event={event}>
@@ -44,11 +52,7 @@ function TimelineShare({ event }: { event: NostrEvent }) {
           <Text as="span">Shared</Text>
           <NoteMenu event={event} size="sm" variant="ghost" aria-label="note options" ml="auto" />
         </Flex>
-        {!sharedEvent ? (
-          <LoadingNostrLink link={{ type: "nevent", data: pointer }} />
-        ) : (
-          <TimelineItemContent event={sharedEvent} />
-        )}
+        {!sharedEvent ? <LoadingNostrLink link={link} /> : <TimelineItemContent event={sharedEvent} />}
       </Flex>
     </ContentSettingsProvider>
   );

@@ -1,7 +1,7 @@
 import { AvatarGroup, Flex, LinkBox, Text } from "@chakra-ui/react";
 import { getTagValue, naddrEncode, neventEncode } from "applesauce-core/helpers";
-import { getSharedEventPointer } from "applesauce-common/helpers";
-import { getEmbededSharedEvent } from "applesauce-common/helpers/share";
+import { Share } from "applesauce-common/casts";
+import { use$ } from "applesauce-react/hooks";
 import { memo, useEffect, useMemo } from "react";
 
 import HoverLinkOverlay from "../../../../components/hover-link-overlay";
@@ -9,8 +9,8 @@ import RouterLink from "../../../../components/router-link";
 import Timestamp from "../../../../components/timestamp";
 import UserAvatarLink from "../../../../components/user/user-avatar-link";
 import UserName from "../../../../components/user/user-name";
+import useCastEvent from "../../../../hooks/use-cast-event";
 import useEventIntersectionRef from "../../../../hooks/use-event-intersection-ref";
-import useSingleEvent from "../../../../hooks/use-single-event";
 import { eventStore } from "../../../../services/event-store";
 import { TRepostGroup } from "../../../../services/notifications";
 
@@ -18,8 +18,8 @@ function RepostGroup({ group }: { group: TRepostGroup }) {
   const ref = useEventIntersectionRef(group.events[0]);
 
   // Get the shared event
-  const firstShareEvent = group.events[0];
-  const wrappedEvent = useMemo(() => getEmbededSharedEvent(firstShareEvent), [firstShareEvent.content]);
+  const share = useCastEvent(group.events[0], Share);
+  const wrappedEvent = share?.embedded;
 
   // Add the wrapped event to the event store
   useEffect(() => {
@@ -27,8 +27,7 @@ function RepostGroup({ group }: { group: TRepostGroup }) {
   }, [wrappedEvent]);
 
   // Try to load the shared event
-  const eventPointer = useMemo(() => getSharedEventPointer(firstShareEvent), [firstShareEvent]);
-  const loaded = useSingleEvent(eventPointer);
+  const loaded = use$(share?.shared$);
   const sharedEvent = wrappedEvent || loaded;
 
   // Get all unique sharers
