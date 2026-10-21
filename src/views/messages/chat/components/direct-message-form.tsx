@@ -21,6 +21,7 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { SendLegacyMessage, SendWrappedMessage } from "applesauce-actions/actions";
+import { createConversationIdentifier } from "applesauce-common/helpers";
 import { getDisplayName, getTagValue, unixNow, mergeRelaySets } from "applesauce-core/helpers";
 import { useActionRunner, useActiveAccount, useEventModel, use$ } from "applesauce-react/hooks";
 import { kinds } from "nostr-tools";
@@ -324,8 +325,7 @@ export default function SendMessageForm({
   const otherInboxes = useUserInbox(pubkey);
   const selfInboxes = useUserInbox(account.pubkey);
   const selfOutboxes = useUserOutbox(account.pubkey);
-  // v5: GroupMessageInboxesModel signature changed, takes just conversation ID
-  const conversationId = [account.pubkey, pubkey].sort().join(",");
+  const conversationId = createConversationIdentifier(account.pubkey, pubkey);
   const inboxes = useEventModel(GroupMessageInboxesModel, [conversationId]);
   const sendMessage = handleSubmit(async (values) => {
     if (!values.content) return;
@@ -407,7 +407,10 @@ export default function SendMessageForm({
         <>
           <Flex gap="2" direction="column">
             <ExpirationToggleButton value={expiration} onChange={setExpiration} variant="ghost" />
-            <MessageTypeToggleButton value={type} onChange={setType} pubkey={pubkey} variant="ghost" />
+            {/* Notes to self are always gift wrapped, there is no one to fall back to legacy messages for */}
+            {pubkey !== account.pubkey && (
+              <MessageTypeToggleButton value={type} onChange={setType} pubkey={pubkey} variant="ghost" />
+            )}
           </Flex>
           <MagicTextArea
             mb="2"

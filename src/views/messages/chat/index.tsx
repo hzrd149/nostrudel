@@ -1,4 +1,4 @@
-import { ButtonGroup, Flex, IconButton } from "@chakra-ui/react";
+import { ButtonGroup, Flex, IconButton, Text } from "@chakra-ui/react";
 import { getRumorGiftWraps, Rumor } from "applesauce-common/helpers";
 import { isEvent, mergeRelaySets, getExpirationTimestamp } from "applesauce-core/helpers";
 import { LegacyMessagesGroup, WrappedMessagesGroup } from "applesauce-common/models";
@@ -48,6 +48,8 @@ const ChatLog = memo(({ messages }: { messages: (Rumor | NostrEvent)[] }) => {
 function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
   const account = useActiveAccount()!;
   const navigate = useNavigate();
+  // A conversation with only yourself is the notes to self channel, gift wrapped to your own DM relays
+  const isSelf = pubkey === account.pubkey;
   const location = useLocation();
 
   // Keep a subscription open for NIP-04 and NIP-17 messages
@@ -120,7 +122,7 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
         title={
           <Flex gap="2" alignItems="center">
             <UserAvatarLink pubkey={pubkey} size="sm" />
-            <UserLink pubkey={pubkey} fontWeight="bold" />
+            {isSelf ? <Text fontWeight="bold">Notes to self</Text> : <UserLink pubkey={pubkey} fontWeight="bold" />}
           </Flex>
         }
         actions={
@@ -151,7 +153,7 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
           flexShrink={0}
           pubkey={pubkey}
           p="2"
-          initialType={lastReceivedMessage?.kind === kinds.EncryptedDirectMessage ? "nip04" : "nip17"}
+          initialType={!isSelf && lastReceivedMessage?.kind === kinds.EncryptedDirectMessage ? "nip04" : "nip17"}
           initialExpiration={lastExpiration}
         />
 

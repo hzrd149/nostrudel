@@ -43,7 +43,16 @@ function MessagePreview({ message }: { message: NostrEvent }) {
   return plaintext ? <Text isTruncated>{plaintext || "<Encrypted>"}</Text> : <Badge variant="subtle">Encrypted</Badge>;
 }
 
-function ConversationCard({ index, style, data }: ListChildComponentProps<(LegacyGroup | WrappedGroup)[]>) {
+function ConversationPreview({ lastMessage }: { lastMessage: NostrEvent | Rumor }) {
+  if (lastMessage.kind === kinds.EncryptedDirectMessage) return <MessagePreview message={lastMessage as NostrEvent} />;
+  return (
+    <Text fontSize="sm" isTruncated>
+      {lastMessage.content}
+    </Text>
+  );
+}
+
+function ConversationCard({ index, style, data }: ListChildComponentProps<Conversation[]>) {
   const account = useActiveAccount()!;
   const conversation = data[index];
 
@@ -51,31 +60,34 @@ function ConversationCard({ index, style, data }: ListChildComponentProps<(Legac
   const lastMessage = conversation.lastMessage;
 
   const others = conversation.participants.filter((p) => p !== account.pubkey);
+  const isSelf = others.length === 0;
 
   return (
     <LinkBox as={Flex} style={style} gap="2" overflow="hidden" px="2">
       <AvatarGroup size="md" max={3}>
-        {others.map((pubkey) => (
+        {(isSelf ? [account.pubkey] : others).map((pubkey) => (
           <UserAvatar key={pubkey} pubkey={pubkey} />
         ))}
       </AvatarGroup>
       <Flex direction="column" gap="1" overflow="hidden" flex={1} py="2" alignItems="flex-start">
         <Flex gap="2" alignItems="center" overflow="hidden" w="full">
           <Text fontSize="sm" isTruncated>
-            {others.map((pubkey, index) => (
-              <span key={pubkey}>
-                <UserName pubkey={pubkey} />
-                {index < others.length - 1 && ", "}
-              </span>
-            ))}
+            {isSelf
+              ? "Notes to self"
+              : others.map((pubkey, index) => (
+                  <span key={pubkey}>
+                    <UserName pubkey={pubkey} />
+                    {index < others.length - 1 && ", "}
+                  </span>
+                ))}
           </Text>
-          <Timestamp flexShrink={0} timestamp={lastMessage.created_at} ml="auto" />
+          {lastMessage && <Timestamp flexShrink={0} timestamp={lastMessage.created_at} ml="auto" />}
         </Flex>
-        {lastMessage.kind === kinds.EncryptedDirectMessage ? (
-          <MessagePreview message={lastMessage as NostrEvent} />
+        {lastMessage ? (
+          <ConversationPreview lastMessage={lastMessage} />
         ) : (
-          <Text fontSize="sm" isTruncated>
-            {lastMessage.content}
+          <Text fontSize="sm" color="GrayText" isTruncated>
+            Private notes only you can read
           </Text>
         )}
       </Flex>
@@ -84,7 +96,7 @@ function ConversationCard({ index, style, data }: ListChildComponentProps<(Legac
         to={
           others.length > 1
             ? `/messages/group/${others.map(npubEncode).join(":")}`
-            : `/messages/${others.map(npubEncode).join(":")}` + location.search
+            : `/messages/${npubEncode(isSelf ? account.pubkey : others[0])}` + location.search
         }
       />
     </LinkBox>
@@ -93,6 +105,8 @@ function ConversationCard({ index, style, data }: ListChildComponentProps<(Legac
 
 type LegacyGroup = NonNullable<{ id: string; participants: string[]; lastMessage: NostrEvent }>;
 type WrappedGroup = NonNullable<{ id: string; participants: string[]; lastMessage: Rumor }>;
+/** A conversation row, the pinned notes to self row has no message until the first note is written */
+type Conversation = { id: string; participants: string[]; lastMessage?: NostrEvent | Rumor };
 
 function Groups() {
   const account = useActiveAccount()!;
@@ -128,13 +142,14 @@ function Groups() {
       } else byId.set(group.id, group);
     }
 
-    return Array.from(byId.values()).sort((a, b) => b.lastMessage.created_at - a.lastMessage.created_at);
-  }, [legacyGroups, wrappedGroups]);
+    // A conversation with only yourself is the notes to self channel, pinned to the top
+    const notes: Conversation = byId.get(account.pubkey) ?? { id: account.pubkey, participants: [account.pubkey] };
+    byId.delete(account.pubkey);
+    const others = Array.from(byId.values()).sort((a, b) => b.lastMessage.created_at - a.lastMessage.created_at);
+    return [notes, ...others];
+  }, [legacyGroups, wrappedGroups, account.pubkey]);
 
   const scroll = useScrollRestoreRef("chats");
-  useEffect(() => {
-    if (groups.length === 0) listEnd$.next(true);
-  }, [groups.length, listEnd$]);
 
   return (
     <>
@@ -145,8 +160,8 @@ function Groups() {
             <FixedSizeList
               height={height}
               width={width}
-              itemData={groups ?? []}
-              itemCount={groups?.length ?? 0}
+              itemData={groups}
+              itemCount={groups.length}
               itemKey={(i, data) => data[i].id}
               itemSize={64}
               innerRef={scroll}
