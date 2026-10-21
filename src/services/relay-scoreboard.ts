@@ -1,6 +1,11 @@
 import dayjs from "dayjs";
+import { auditTime, Subject } from "rxjs";
+
 import SuperMap from "../classes/super-map";
+import { logger } from "../helpers/debug";
 import db from "./database";
+
+const log = logger.extend("RelayScoreboard");
 
 function clamp(v: number, min: number, max: number) {
   return Math.min(Math.max(v, min), max);
@@ -20,7 +25,10 @@ class TimeMeasure implements RelayMeasure, PersistentMeasure {
   relay: string;
   private measures: [number, Date][] = [];
 
-  constructor(relay: string) {
+  constructor(
+    relay: string,
+    private onChange: (relay: string) => void,
+  ) {
     this.relay = relay;
   }
 
@@ -31,6 +39,7 @@ class TimeMeasure implements RelayMeasure, PersistentMeasure {
   addTime(time: number, date: Date = new Date()) {
     this.measures.unshift([time, date]);
     this.averageCache = null;
+    this.onChange(this.relay);
   }
   getCount() {
     return this.measures.length;
@@ -50,17 +59,16 @@ class TimeMeasure implements RelayMeasure, PersistentMeasure {
   reset() {
     this.measures = [];
     this.averageCache = null;
+    this.onChange(this.relay);
     return this;
   }
   prune(cutOff: Date): this {
-    while (true) {
-      const last = this.measures.pop();
-      if (!last) break;
-      if (last[1] >= cutOff) {
-        this.measures.push(last);
-        this.averageCache = null;
-        break;
-      }
+    const count = this.measures.length;
+    // measures are ordered newest first, so drop old ones from the end
+    while (this.measures.length > 0 && this.measures[this.measures.length - 1][1] < cutOff) this.measures.pop();
+    if (this.measures.length !== count) {
+      this.averageCache = null;
+      this.onChange(this.relay);
     }
     return this;
   }
@@ -77,12 +85,21 @@ class TimeMeasure implements RelayMeasure, PersistentMeasure {
 }
 
 class RelayScoreboardService {
+  /** Relays with measures that changed since the last save */
+  private dirty = new Set<string>();
+  /** Emits whenever a relay's measures change */
+  readonly changed$ = new Subject<string>();
+  private markDirty = (relay: string) => {
+    this.dirty.add(relay);
+    this.changed$.next(relay);
+  };
+
   /** the time it takes for relays to respond to queries */
-  relayResponseTimes = new SuperMap<string, TimeMeasure>((relay) => new TimeMeasure(relay));
+  relayResponseTimes = new SuperMap<string, TimeMeasure>((relay) => new TimeMeasure(relay, this.markDirty));
   /** the time it takes before the relay closes the connection */
-  relayEjectTime = new SuperMap<string, TimeMeasure>((relay) => new TimeMeasure(relay));
+  relayEjectTime = new SuperMap<string, TimeMeasure>((relay) => new TimeMeasure(relay, this.markDirty));
   /** the time it takes to connect to the relay */
-  relayConnectionTime = new SuperMap<string, TimeMeasure>((relay) => new TimeMeasure(relay));
+  relayConnectionTime = new SuperMap<string, TimeMeasure>((relay) => new TimeMeasure(relay, this.markDirty));
 
   prune() {
     const cutOff = dayjs().subtract(1, "week").toDate();
@@ -186,9 +203,14 @@ class RelayScoreboardService {
     }
   }
 
+  /** Save the measures of relays that changed since the last save */
   async saveStats() {
+    if (this.dirty.size === 0) return;
+
+    const relays = Array.from(this.dirty);
+    this.dirty.clear();
+
     const transaction = db.transaction("relayScoreboardStats", "readwrite");
-    const relays = this.getRelays();
     for (const relay of relays) {
       const responseTimes = this.relayResponseTimes.get(relay).save();
       const ejectTimes = this.relayEjectTime.get(relay).save();
@@ -202,12 +224,13 @@ class RelayScoreboardService {
 const relayScoreboardService = new RelayScoreboardService();
 
 setTimeout(() => {
-  relayScoreboardService.loadStats();
+  relayScoreboardService.loadStats().catch((err) => log("Failed to load relay stats", err));
 }, 0);
 
-setInterval(() => {
-  relayScoreboardService.saveStats();
-}, 1000 * 30);
+// Batch changes into at most one write every 30 seconds
+relayScoreboardService.changed$.pipe(auditTime(30_000)).subscribe(() => {
+  relayScoreboardService.saveStats().catch((err) => log("Failed to save relay stats", err));
+});
 
 if (import.meta.env.DEV) {
   Reflect.set(window, "relayScoreboardService", relayScoreboardService);

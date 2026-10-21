@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
 import _throttle from "lodash.throttle";
-import { BehaviorSubject } from "rxjs";
+import { BehaviorSubject, timer } from "rxjs";
 
 import SuperMap from "../classes/super-map";
 import db from "./database";
@@ -104,7 +104,9 @@ class ReadStatusService {
 
 const readStatusService = new ReadStatusService();
 
-setInterval(readStatusService.prune.bind(readStatusService), 30_000);
+timer(30_000, 30_000).subscribe(() => {
+  readStatusService.prune().catch((err) => readStatusService.log("Failed to prune expired entries", err));
+});
 
 if (import.meta.env.DEV) {
   Reflect.set(window, "readStatusService", readStatusService);
