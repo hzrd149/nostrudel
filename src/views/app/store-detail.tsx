@@ -30,6 +30,7 @@ import { ThreadIcon } from "../../components/icons";
 import SimpleView from "../../components/layout/presets/simple-view";
 import NappletInstallModal from "../../components/napplets/napplet-install-modal";
 import NappletMenu from "../../components/napplets/napplet-menu";
+import NappletSourceButton from "../../components/napplets/napplet-source-button";
 import EventQuoteButton from "../../components/note/event-quote-button";
 import Timestamp from "../../components/timestamp";
 import EventShareButton from "../../components/timeline/note/components/event-share-button";
@@ -45,7 +46,6 @@ import {
   getNappletDescription,
   getNappletEventPointer,
   getNappletNaddr,
-  getNappletRequiredCapabilities,
   getNappletTitle,
   getUnsupportedNappletRequirements,
   isNappletManifestKind,
@@ -59,11 +59,12 @@ import useRouteSearchValue from "../../hooks/use-route-search-value";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { uninstallNapplet } from "../../services/installed-napplets";
 import { eventDeleteManager } from "../../services/event-store";
+import NappletDetailAdvanced from "../napplets/components/napplet-detail-advanced";
 import NappletDetailPermissions from "../napplets/components/napplet-detail-permissions";
 import NappletDetailStorage from "../napplets/components/napplet-detail-storage";
 
 const RELATED_NAPPLETS_LIMIT = 6;
-const DETAIL_TABS = ["details", "comments", "permissions", "storage"];
+const DETAIL_TABS = ["details", "comments", "advanced", "permissions", "storage"];
 
 function RelatedNappletCard({ event }: { event: NostrEvent }) {
   const address = getNappletNaddr(event);
@@ -125,14 +126,7 @@ function RelatedNapplets({ event }: { event: NostrEvent }) {
 
   return (
     <Flex direction="column" gap="3">
-      <Flex alignItems="center" gap="3">
-        <Box flex="1">
-          <Heading size="sm">More by this author</Heading>
-          <Text color="GrayText" fontSize="sm">
-            Showing up to {RELATED_NAPPLETS_LIMIT} related apps.
-          </Text>
-        </Box>
-      </Flex>
+      <Heading size="sm">More by this author</Heading>
       <SimpleGrid columns={{ base: 1, md: 2, xl: 3 }} spacing="2">
         {related.map((napplet) => (
           <RelatedNappletCard key={napplet.id} event={napplet} />
@@ -149,10 +143,9 @@ function NappletStoreDetailPage({ event, address }: { event: NostrEvent; address
   const title = getNappletTitle(event);
   const description = getNappletDescription(event);
   const archetypes = getNappletArchetypes(event);
-  const capabilities = getNappletRequiredCapabilities(event);
   const unsupported = getUnsupportedNappletRequirements(event);
   const naddr = getNappletNaddr(event);
-  const tabs = installed ? DETAIL_TABS : DETAIL_TABS.slice(0, 2);
+  const tabs = installed ? DETAIL_TABS : DETAIL_TABS.slice(0, 3);
   const tab = useRouteSearchValue("tab", tabs[0]);
   const tabIndex = Math.max(0, tabs.indexOf(tab.value));
 
@@ -183,6 +176,7 @@ function NappletStoreDetailPage({ event, address }: { event: NostrEvent; address
             <Button as={RouterLink} to={`/app/${naddr || address}`} colorScheme="primary">
               Open
             </Button>
+            <NappletSourceButton event={event} />
             <EventZapButton event={event} showEventPreview={false} variant="outline" />
             {installed ? (
               <Button variant="outline" onClick={() => uninstallNapplet(address)}>
@@ -206,6 +200,7 @@ function NappletStoreDetailPage({ event, address }: { event: NostrEvent; address
           <TabList gap="2" flexWrap="wrap">
             <Tab>Details</Tab>
             <Tab>Comments</Tab>
+            <Tab>Advanced</Tab>
             {installed && <Tab>Permissions</Tab>}
             {installed && <Tab>Storage</Tab>}
           </TabList>
@@ -236,26 +231,12 @@ function NappletStoreDetailPage({ event, address }: { event: NostrEvent; address
 
                 <Divider />
 
-                <Flex direction="column" gap="3">
-                  <Heading size="sm">Capabilities</Heading>
-                  {capabilities.length === 0 ? (
-                    <Text color="GrayText">No shell capabilities requested.</Text>
-                  ) : (
-                    <Flex gap="1" wrap="wrap">
-                      {capabilities.map((capability) => (
-                        <Badge key={capability} colorScheme="primary">
-                          {capability}
-                        </Badge>
-                      ))}
-                    </Flex>
-                  )}
-                  {unsupported.length > 0 && (
-                    <Alert status="warning">
-                      <AlertIcon />
-                      <AlertDescription>Unsupported requirements: {unsupported.join(", ")}</AlertDescription>
-                    </Alert>
-                  )}
-                </Flex>
+                {unsupported.length > 0 && (
+                  <Alert status="warning">
+                    <AlertIcon />
+                    <AlertDescription>Unsupported requirements: {unsupported.join(", ")}</AlertDescription>
+                  </Alert>
+                )}
 
                 <RelatedNapplets event={event} />
 
@@ -281,6 +262,9 @@ function NappletStoreDetailPage({ event, address }: { event: NostrEvent; address
                 )}
                 <GenericComments event={event} />
               </Flex>
+            </TabPanel>
+            <TabPanel px="0">
+              <NappletDetailAdvanced event={event} />
             </TabPanel>
             {installed && (
               <TabPanel px="0">
