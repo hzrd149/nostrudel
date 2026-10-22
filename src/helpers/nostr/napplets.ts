@@ -152,6 +152,10 @@ export function getNappletDescription(event: NostrEvent) {
   return getTagValue(event, "description") || event.content || undefined;
 }
 
+export function getNappletHashtags(event: NostrEvent) {
+  return Array.from(new Set(tagValues(event, "t").map((tag) => tag.toLowerCase())));
+}
+
 export function parseNappletPointer(value: string): DecodeResult | undefined {
   try {
     return nip19.decode(value.trim()) as DecodeResult;

@@ -1,81 +1,88 @@
-import { Badge, Box, Card, CardBody, CardProps, Flex, Heading, LinkBox, LinkOverlay, Text } from "@chakra-ui/react";
+import { Badge, Box, Flex, LinkBox, LinkBoxProps, LinkOverlay, Text } from "@chakra-ui/react";
 import { NostrEvent } from "nostr-tools";
-import { memo } from "react";
+import { memo, type ReactNode } from "react";
 import { Link as RouterLink } from "react-router-dom";
 
+import { LightningIcon, LikeIcon, ThreadIcon } from "../../../components/icons";
 import NappletIconImage from "../../../components/napplets/napplet-icon";
 import UserAvatar from "../../../components/user/user-avatar";
 import UserName from "../../../components/user/user-name";
-import {
-  getNappletArchetypes,
-  getNappletDescription,
-  getNappletNaddr,
-  getNappletTitle,
-} from "../../../helpers/nostr/napplets";
+import { getNappletDescription, getNappletNaddr, getNappletTitle } from "../../../helpers/nostr/napplets";
+import { humanReadableSats } from "../../../helpers/lightning";
+import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
+import { type NappletEngagement } from "../../../hooks/use-napplet-engagement";
+
+/** Fixed height so virtualized grids can size rows without measuring */
+export const NAPPLET_STORE_CARD_HEIGHT = 120;
+
+function EngagementStat({ icon, value }: { icon: ReactNode; value: string }) {
+  return (
+    <Flex gap="1" alignItems="center" flexShrink={0}>
+      {icon}
+      <Text>{value}</Text>
+    </Flex>
+  );
+}
 
 const NappletStoreCard = memo(function NappletStoreCard({
   event,
   installed,
+  engagement,
   showAuthor = true,
   ...props
 }: {
   event: NostrEvent;
   installed: boolean;
+  engagement?: NappletEngagement;
   showAuthor?: boolean;
-} & Omit<CardProps, "children">) {
+} & Omit<LinkBoxProps, "children">) {
+  const ref = useEventIntersectionRef(event);
   const address = getNappletNaddr(event);
-  const title = getNappletTitle(event);
   const description = getNappletDescription(event);
-  const archetypes = getNappletArchetypes(event).filter((archetype) => archetype.name !== "app");
+  const hasEngagement = !!engagement && engagement.likes + engagement.comments + engagement.zaps > 0;
 
   return (
-    <Card
-      as={LinkBox}
-      variant="outline"
-      h="full"
+    <LinkBox
+      ref={ref}
+      display="flex"
+      gap="3"
+      p="3"
+      h={`${NAPPLET_STORE_CARD_HEIGHT}px`}
       overflow="hidden"
-      opacity={address ? 1 : 0.6}
-      pointerEvents={address ? undefined : "none"}
+      borderRadius="lg"
+      _hover={{ bg: "var(--chakra-colors-card-hover-overlay)" }}
       {...props}
     >
-      <CardBody display="flex" flexDirection="column" gap="4">
-        <Flex alignItems="flex-start" gap="3">
-          <NappletIconImage event={event} boxSize="12" />
-          <Box minW="0" flex="1">
-            <Heading size="md" noOfLines={1} mb="1">
-              {address ? (
-                <LinkOverlay as={RouterLink} to={`/app/store/${address}`}>
-                  {title}
-                </LinkOverlay>
-              ) : (
-                title
-              )}
-            </Heading>
-            {showAuthor && (
-              <Flex gap="2" color="GrayText" fontSize="sm" alignItems="center" minW="0">
-                <Text>by</Text>
-                <UserAvatar pubkey={event.pubkey} size="xs" />
-                <UserName pubkey={event.pubkey} fontSize="sm" isTruncated />
-              </Flex>
-            )}
-          </Box>
+      <NappletIconImage event={event} boxSize="14" flexShrink={0} />
+      <Box minW="0" flex="1">
+        <Flex gap="2" alignItems="center" minW="0">
+          <LinkOverlay as={RouterLink} to={`/app/store/${address}`} fontWeight="bold" isTruncated>
+            {getNappletTitle(event)}
+          </LinkOverlay>
           {installed && <Badge colorScheme="primary">Installed</Badge>}
         </Flex>
-
-        <Text color="GrayText" fontSize="sm" noOfLines={3} minH="4.5em">
-          {description || "No description provided."}
-        </Text>
-
-        {archetypes.length > 0 && (
-          <Flex mt="auto" gap="1" wrap="wrap" minW="0">
-            {archetypes.slice(0, 4).map((archetype) => (
-              <Badge key={archetype.name}>{archetype.name}</Badge>
-            ))}
-            {archetypes.length > 4 && <Badge>+{archetypes.length - 4}</Badge>}
+        {(showAuthor || hasEngagement) && (
+          <Flex gap="3" color="GrayText" alignItems="center" minW="0">
+            {showAuthor && (
+              <Flex gap="2" alignItems="center" minW="0" mr="auto">
+                <UserAvatar pubkey={event.pubkey} size="xs" />
+                <UserName pubkey={event.pubkey} isTruncated />
+              </Flex>
+            )}
+            {!!engagement?.likes && <EngagementStat icon={<LikeIcon />} value={String(engagement.likes)} />}
+            {!!engagement?.comments && <EngagementStat icon={<ThreadIcon />} value={String(engagement.comments)} />}
+            {!!engagement?.zaps && (
+              <EngagementStat icon={<LightningIcon />} value={humanReadableSats(engagement.zaps)} />
+            )}
           </Flex>
         )}
-      </CardBody>
-    </Card>
+        {description && (
+          <Text color="GrayText" noOfLines={showAuthor || hasEngagement ? 2 : 3}>
+            {description}
+          </Text>
+        )}
+      </Box>
+    </LinkBox>
   );
 });
 

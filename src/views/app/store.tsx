@@ -1,60 +1,72 @@
 import {
-  Badge,
   Box,
-  Button,
-  Card,
-  CardBody,
+  Drawer,
+  DrawerBody,
+  DrawerCloseButton,
+  DrawerContent,
+  DrawerHeader,
+  DrawerOverlay,
   Flex,
   FormControl,
   FormLabel,
-  Heading,
+  IconButton,
   Input,
   Select,
   SimpleGrid,
-  Tab,
-  TabList,
-  TabPanel,
-  TabPanels,
-  Tabs,
+  Tag,
   Text,
+  useDisclosure,
 } from "@chakra-ui/react";
-import { use$ } from "applesauce-react/hooks";
+import { getEventUID, getReplaceableAddress } from "applesauce-core/helpers";
+import { useActiveAccount } from "applesauce-react/hooks";
 import { matchSorter } from "match-sorter";
-import { NostrEvent } from "nostr-tools";
-import { FormEventHandler, memo, useCallback, useEffect, useMemo, useState } from "react";
-import { Link as RouterLink, useNavigate, useSearchParams } from "react-router-dom";
+import { kinds, NostrEvent } from "nostr-tools";
+import { useCallback, useMemo } from "react";
+import AutoSizer from "react-virtualized-auto-sizer";
+import { FixedSizeList as List, ListChildComponentProps } from "react-window";
 
-import IntersectionObserverProvider from "../../providers/local/intersection-observer";
-import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
+import FilterFunnel02 from "../../components/icons/filter-funnel-02";
 import SimpleView from "../../components/layout/presets/simple-view";
-import UserAvatar from "../../components/user/user-avatar";
-import UserName from "../../components/user/user-name";
+import { getListTitle } from "../../helpers/nostr/lists";
 import {
   NAPPLET_KIND_NAMED,
   NAPPLET_KIND_ROOT,
   getNappletArchetypes,
   getNappletDescription,
+  getNappletHashtags,
   getNappletNaddr,
   getNappletTitle,
   isValidNappletStoreEvent,
 } from "../../helpers/nostr/napplets";
 import { useReadRelays } from "../../hooks/use-client-relays";
-import useAsyncAction from "../../hooks/use-async-action";
-import useInstalledNapplets, { useIntentHandlerPreferences } from "../../hooks/use-installed-napplets";
+import useInstalledNapplets from "../../hooks/use-installed-napplets";
+import useNappletEngagement, { type NappletEngagement } from "../../hooks/use-napplet-engagement";
 import useRouteSearchValue from "../../hooks/use-route-search-value";
+import { useVirtualListScrollRestore } from "../../hooks/use-scroll-restore";
+import useSocialGraph from "../../hooks/use-social-graph";
+import useTimelineEvents from "../../hooks/use-timeline-events";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
 import { useTimelineCurserIntersectionCallback } from "../../hooks/use-timeline-cursor-intersection-callback";
-import PeopleListProvider, { usePeopleListContext } from "../../providers/local/people-list-provider";
-import {
-  intentKey,
-  setDefaultIntentHandler,
-  uninstallNapplet,
-  type InstalledNapplet,
-} from "../../services/installed-napplets";
-import { nappletSyncStatus$, syncInstalledNapplets, type NappletSyncStatus } from "../../services/napplet-sync";
-import InstalledNappletCard from "../napplets/components/installed-napplet-card";
-import NappletPermissionsPanel from "../napplets/components/napplet-permissions-panel";
-import NappletStoreCard from "../napplets/components/napplet-store-card";
+import useUserSets from "../../hooks/use-user-sets";
+import IntersectionObserverProvider from "../../providers/local/intersection-observer";
+import { usePeopleListSelect } from "../../providers/local/people-list-provider";
+import NappletStoreCard, { NAPPLET_STORE_CARD_HEIGHT } from "../napplets/components/napplet-store-card";
+
+type SortMode = "recent" | "likes" | "comments" | "zaps";
+
+const SORT_OPTIONS: { value: SortMode; label: string }[] = [
+  { value: "recent", label: "Newest" },
+  { value: "likes", label: "Most liked" },
+  { value: "comments", label: "Most comments" },
+  { value: "zaps", label: "Most zapped" },
+];
+
+// Friends of friends
+const COMMUNITY_DISTANCE = 2;
+const MAX_HASHTAGS = 20;
+const COLUMN_MIN_WIDTH = 360;
+const MAX_COLUMNS = 3;
+const GRID_SPACING = 4;
 
 function getNappletSearchValues(event: NostrEvent) {
   const archetypes = getNappletArchetypes(event);
@@ -64,383 +76,310 @@ function getNappletSearchValues(event: NostrEvent) {
     getNappletDescription(event),
     getNappletNaddr(event),
     event.pubkey,
+    ...getNappletHashtags(event),
     ...archetypes.flatMap((archetype) => [archetype.name, ...archetype.actions]),
   ].filter((value): value is string => !!value);
 }
 
-const FeaturedNappletCard = memo(function FeaturedNappletCard({ event }: { event: NostrEvent }) {
-  const address = getNappletNaddr(event);
-  const title = getNappletTitle(event);
-  const description = getNappletDescription(event);
-
-  if (!address) return null;
-
-  return (
-    <Card
-      as={RouterLink}
-      to={`/app/store/${address}`}
-      variant="outline"
-      overflow="hidden"
-      bgGradient="linear(to-br, primary.50, transparent)"
-      _dark={{ bgGradient: "linear(to-br, whiteAlpha.200, transparent)" }}
-      _hover={{ textDecoration: "none", borderColor: "primary.400", shadow: "lg" }}
-    >
-      <CardBody>
-        <Box minW="0">
-          <Badge colorScheme="primary" mb="2">
-            Featured
-          </Badge>
-          <Heading size="md" noOfLines={1}>
-            {title}
-          </Heading>
-          <Flex gap="2" color="GrayText" fontSize="sm" alignItems="center" minW="0" mb="2">
-            <Text>by</Text>
-            <UserAvatar pubkey={event.pubkey} size="xs" />
-            <UserName pubkey={event.pubkey} fontSize="sm" isTruncated />
-          </Flex>
-          <Text color="GrayText" noOfLines={2}>
-            {description || "A NIP-5D app published on nostr."}
-          </Text>
-        </Box>
-      </CardBody>
-    </Card>
-  );
-});
-
-const InstalledPointerForm = memo(function InstalledPointerForm() {
-  const navigate = useNavigate();
-  const [value, setValue] = useState("");
-  const submit = useCallback<FormEventHandler<HTMLFormElement>>(
-    (e) => {
-      e.preventDefault();
-      const trimmed = value.trim();
-      if (trimmed) navigate(`/app/store/${trimmed}`);
-    },
-    [navigate, value],
-  );
-
-  return (
-    <Box as="form" onSubmit={submit}>
-      <Flex gap="2" alignItems="flex-end">
-        <FormControl>
-          <FormLabel>Install from manifest pointer</FormLabel>
-          <Input
-            value={value}
-            onChange={(e) => setValue(e.target.value)}
-            placeholder="naddr1..., nevent1..., or note1..."
-          />
-          <Text color="GrayText" fontSize="sm" mt="1">
-            Advanced: paste a napplet manifest pointer to review and install it.
-          </Text>
-        </FormControl>
-        <Button type="submit" colorScheme="primary">
-          View
-        </Button>
-      </Flex>
-    </Box>
-  );
-});
-
-const SYNC_STATUS_TEXT: Record<NappletSyncStatus, string> = {
-  device: "Installed apps are saved on this device. Sign in with a signer to sync them between devices.",
-  locked: "Your synced apps are encrypted. Unlock them to see installs from your other devices.",
-  unsynced: "Some changes have not been synced to your account yet.",
-  syncing: "Syncing installed apps…",
-  synced: "Installed apps are synced to your account.",
-};
-
-function NappletSyncStatusLine() {
-  const status = use$(nappletSyncStatus$);
-  const { loading, run } = useAsyncAction(syncInstalledNapplets, []);
-  const canSync = status === "locked" || status === "unsynced";
-
-  return (
-    <Flex gap="2" alignItems="center" wrap="wrap">
-      <Text color="GrayText" fontSize="sm">
-        {SYNC_STATUS_TEXT[status]}
-      </Text>
-      {canSync && (
-        <Button size="xs" variant="link" colorScheme="primary" onClick={run} isLoading={loading}>
-          {status === "locked" ? "Unlock" : "Sync now"}
-        </Button>
-      )}
-    </Flex>
-  );
+function getNappletTypes(event: NostrEvent) {
+  return getNappletArchetypes(event)
+    .map((archetype) => archetype.name)
+    .filter((name) => name !== "app");
 }
 
-function InstalledPanel({ installed }: { installed: InstalledNapplet[] }) {
-  return (
-    <Flex direction="column" gap="4">
-      <NappletSyncStatusLine />
-      <InstalledPointerForm />
+/** Values found across events, most common first */
+function countValues(events: NostrEvent[], getValues: (event: NostrEvent) => string[]) {
+  const counts = new Map<string, number>();
+  for (const event of events) for (const value of getValues(event)) counts.set(value, (counts.get(value) ?? 0) + 1);
 
-      {installed.length === 0 ? (
-        <Text color="GrayText">Installed NIP-5D apps will appear here.</Text>
-      ) : (
-        <Flex direction="column" gap="2">
-          {installed.map((napplet) => (
-            <InstalledNappletCard
-              key={napplet.address}
-              napplet={napplet}
-              onUninstall={() => uninstallNapplet(napplet.address)}
-            />
+  return Array.from(counts.entries())
+    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+    .map(([value]) => value);
+}
+
+function sortNapplets(events: NostrEvent[], sort: SortMode, engagement: Map<string, NappletEngagement>) {
+  if (sort === "recent") return events;
+
+  const score = (event: NostrEvent) => engagement.get(getEventUID(event))?.[sort] ?? 0;
+  return [...events].sort((a, b) => score(b) - score(a) || b.created_at - a.created_at);
+}
+
+function DiscoverSourceSelect({ value, onChange }: { value: string; onChange: (value: string) => void }) {
+  const account = useActiveAccount();
+  const lists = useUserSets(account?.pubkey)?.filter((list) => list.kind === kinds.Followsets) ?? [];
+
+  return (
+    <Select value={value} onChange={(e) => onChange(e.target.value)}>
+      {account && <option value="following">Following</option>}
+      <option value="community">Community</option>
+      <option value="global">Global</option>
+      {lists.length > 0 && (
+        <optgroup label="Lists">
+          {lists.map((list) => (
+            <option key={getEventUID(list)} value={getReplaceableAddress(list) ?? ""}>
+              {getListTitle(list)}
+            </option>
           ))}
-        </Flex>
+        </optgroup>
       )}
-    </Flex>
+    </Select>
   );
 }
 
-function HandlerPanel({ installed }: { installed: InstalledNapplet[] }) {
-  const preferences = useIntentHandlerPreferences();
-  const groups = useMemo(() => {
-    const map = new Map<string, { archetype: string; action: string; napplets: InstalledNapplet[] }>();
-
-    for (const napplet of installed) {
-      for (const archetype of napplet.archetypes) {
-        for (const action of archetype.actions) {
-          const key = `${archetype.name}/${action}`;
-          const group = map.get(key) ?? { archetype: archetype.name, action, napplets: [] };
-          group.napplets.push(napplet);
-          map.set(key, group);
-        }
-      }
-    }
-
-    return Array.from(map.values()).sort((a, b) =>
-      `${a.archetype}/${a.action}`.localeCompare(`${b.archetype}/${b.action}`),
-    );
-  }, [installed]);
-  const collisions = groups.filter((group) => group.napplets.length > 1);
-
-  if (groups.length === 0) return <Text color="GrayText">Install apps with archetypes to manage intent handlers.</Text>;
-
+function HashtagFilter({
+  hashtags,
+  selected,
+  onSelect,
+}: {
+  hashtags: string[];
+  selected: string | null;
+  onSelect: (hashtag: string | null) => void;
+}) {
   return (
-    <Flex direction="column" gap="4">
-      {collisions.length === 0 && (
-        <Text color="GrayText">No installed apps currently collide on supported intents.</Text>
-      )}
-      {groups.map((group) => {
-        const preferred = preferences[intentKey(group.archetype, group.action)];
-        const selected = group.napplets.some((napplet) => napplet.address === preferred)
-          ? preferred
-          : group.napplets[0]?.address || "";
-
+    <Flex gap="2" wrap="wrap">
+      {hashtags.map((hashtag) => {
+        const isSelected = hashtag === selected;
         return (
-          <Card key={`${group.archetype}/${group.action}`} variant="outline" size="sm">
-            <CardBody>
-              <Flex gap="3" alignItems="center" wrap="wrap">
-                <Box flex="1" minW="xs">
-                  <Heading size="sm">
-                    {group.archetype}/{group.action}
-                  </Heading>
-                  <Text color="GrayText" fontSize="sm">
-                    {group.napplets.length === 1
-                      ? "Handled by one installed app"
-                      : "Choose the default app for this intent"}
-                  </Text>
-                </Box>
-                <Select
-                  maxW="sm"
-                  value={selected}
-                  isDisabled={group.napplets.length < 2}
-                  onChange={(e) => setDefaultIntentHandler(group.archetype, group.action, e.target.value)}
-                >
-                  {group.napplets.map((napplet) => (
-                    <option key={napplet.address} value={napplet.address}>
-                      {napplet.title}
-                    </option>
-                  ))}
-                </Select>
-              </Flex>
-            </CardBody>
-          </Card>
+          <Tag
+            key={hashtag}
+            as="button"
+            fontSize="md"
+            cursor="pointer"
+            colorScheme={isSelected ? "primary" : undefined}
+            variant={isSelected ? "solid" : "subtle"}
+            onClick={() => onSelect(isSelected ? null : hashtag)}
+          >
+            #{hashtag}
+          </Tag>
         );
       })}
     </Flex>
   );
 }
 
-const DiscoverSearchForm = memo(function DiscoverSearchForm({
-  searchQuery,
-  onSearch,
-}: {
-  searchQuery: string;
-  onSearch: (query: string) => void;
-}) {
-  const [searchValue, setSearchValue] = useState(searchQuery);
+type GridData = {
+  rows: NostrEvent[][];
+  columns: number;
+  installedAddresses: Set<string>;
+  engagement: Map<string, NappletEngagement>;
+};
 
-  useEffect(() => {
-    setSearchValue(searchQuery);
-  }, [searchQuery]);
-
-  const submitSearch = useCallback<FormEventHandler<HTMLFormElement>>(
-    (e) => {
-      e.preventDefault();
-      onSearch(searchValue.trim());
-    },
-    [onSearch, searchValue],
-  );
-
+function NappletGridRow({ index, style, data }: ListChildComponentProps<GridData>) {
   return (
-    <Box as="form" onSubmit={submitSearch}>
-      <Flex gap="2" wrap="wrap" alignItems="center">
-        <Input
-          type="search"
-          value={searchValue}
-          onChange={(e) => setSearchValue(e.target.value)}
-          placeholder="Search apps"
-          maxW="xs"
-          size="sm"
-        />
-        <Button type="submit" size="sm" colorScheme="primary">
-          Search
-        </Button>
-      </Flex>
-    </Box>
-  );
-});
-
-function NappletGrid({ events, installedAddresses }: { events: NostrEvent[]; installedAddresses: Set<string> }) {
-  return (
-    <SimpleGrid columns={{ base: 1, md: 2, xl: 3 }} spacing="4">
-      {events.map((event) => {
+    <SimpleGrid style={style} columns={data.columns} spacingX={`${GRID_SPACING}px`}>
+      {data.rows[index].map((event) => {
         const address = getNappletNaddr(event);
         return (
-          <NappletStoreCard key={event.id} event={event} installed={!!address && installedAddresses.has(address)} />
+          <NappletStoreCard
+            key={event.id}
+            event={event}
+            installed={!!address && data.installedAddresses.has(address)}
+            engagement={data.engagement.get(getEventUID(event))}
+          />
         );
       })}
     </SimpleGrid>
   );
 }
 
-function DiscoverTimeline({
-  timeline,
-  callback,
+function NappletGridList({
+  napplets,
   installedAddresses,
+  engagement,
+  width,
+  height,
 }: {
-  timeline: NostrEvent[];
-  callback: IntersectionObserverCallback;
+  napplets: NostrEvent[];
   installedAddresses: Set<string>;
+  engagement: Map<string, NappletEngagement>;
+  width: number;
+  height: number;
 }) {
-  return (
-    <>
-      {timeline[0] && (
-        <Box mb="4">
-          <FeaturedNappletCard event={timeline[0]} />
-        </Box>
-      )}
-      <IntersectionObserverProvider callback={callback}>
-        <NappletGrid events={timeline} installedAddresses={installedAddresses} />
-      </IntersectionObserverProvider>
-    </>
-  );
-}
-
-function DiscoverPanel({ installedAddresses }: { installedAddresses: Set<string> }) {
-  const relays = useReadRelays();
-  const { filter, listId } = usePeopleListContext();
-  const [searchParams, setSearchParams] = useSearchParams();
-  const query = useMemo(() => ({ ...filter, kinds: [NAPPLET_KIND_ROOT, NAPPLET_KIND_NAMED] }), [filter]);
-  const { loader, timeline } = useTimelineLoader(`${listId || "global"}-napplet-store`, relays, query, {
-    eventFilter: isValidNappletStoreEvent,
-  });
-  const callback = useTimelineCurserIntersectionCallback(loader);
-  const searchQuery = (searchParams.get("q") ?? "").trim();
-  const hasSearch = searchQuery.length > 0;
-  const searchResults = useMemo(
-    () =>
-      hasSearch
-        ? matchSorter(timeline, searchQuery, {
-            keys: [(event) => getNappletSearchValues(event)],
-          })
-        : [],
-    [hasSearch, searchQuery, timeline],
-  );
-
-  const submitSearch = useCallback(
-    (query: string) => {
-      const next = new URLSearchParams(searchParams);
-      if (query) next.set("q", query);
-      else next.delete("q");
-      setSearchParams(next);
-    },
-    [searchParams, setSearchParams],
-  );
+  const scroll = useVirtualListScrollRestore("napplet-store");
+  const columns = Math.min(MAX_COLUMNS, Math.max(1, Math.floor(width / COLUMN_MIN_WIDTH)));
+  const data = useMemo<GridData>(() => {
+    const rows: NostrEvent[][] = [];
+    for (let i = 0; i < napplets.length; i += columns) rows.push(napplets.slice(i, i + columns));
+    return { rows, columns, installedAddresses, engagement };
+  }, [napplets, columns, installedAddresses, engagement]);
 
   return (
-    <>
-      <Flex justifyContent="space-between" alignItems="flex-start" mb="3" gap="3" wrap="wrap">
-        <Box>
-          <Heading size="md">Discover apps</Heading>
-          <Text color="GrayText">Browse NIP-5D apps published by friends or globally.</Text>
-        </Box>
-        <Flex gap="2" wrap="wrap" alignItems="center">
-          <DiscoverSearchForm searchQuery={searchQuery} onSearch={submitSearch} />
-          <PeopleListSelection size="sm" />
-        </Flex>
-      </Flex>
-      {hasSearch ? (
-        <Flex direction="column" gap="3">
-          <Text color="GrayText">
-            {searchResults.length === 0
-              ? "No apps found in loaded apps."
-              : `Found ${searchResults.length} app${searchResults.length === 1 ? "" : "s"}`}
-          </Text>
-          {searchResults.length > 0 && <NappletGrid events={searchResults} installedAddresses={installedAddresses} />}
-        </Flex>
-      ) : (
-        <DiscoverTimeline timeline={timeline} callback={callback} installedAddresses={installedAddresses} />
-      )}
-    </>
-  );
-}
-
-const STORE_TABS = ["discover", "installed", "handlers", "permissions"];
-
-function AppStoreContent() {
-  const installed = useInstalledNapplets();
-  const installedAddresses = useMemo(() => new Set(installed.map((napplet) => napplet.address)), [installed]);
-  const tab = useRouteSearchValue("tab", STORE_TABS[0]);
-  const tabIndex = Math.max(0, STORE_TABS.indexOf(tab.value));
-
-  return (
-    <SimpleView title="App Store">
-      <Tabs
-        colorScheme="primary"
-        variant="soft-rounded"
-        index={tabIndex}
-        onChange={(i) => (i === 0 ? tab.clearValue() : tab.setValue(STORE_TABS[i]))}
-      >
-        <TabList gap="2" flexWrap="wrap">
-          <Tab>Discover</Tab>
-          <Tab>Installed</Tab>
-          <Tab>Handlers</Tab>
-          <Tab>Permissions</Tab>
-        </TabList>
-        <TabPanels>
-          <TabPanel px="0">
-            <DiscoverPanel installedAddresses={installedAddresses} />
-          </TabPanel>
-          <TabPanel px="0">
-            <InstalledPanel installed={installed} />
-          </TabPanel>
-          <TabPanel px="0">
-            <HandlerPanel installed={installed} />
-          </TabPanel>
-          <TabPanel px="0">
-            <NappletPermissionsPanel />
-          </TabPanel>
-        </TabPanels>
-      </Tabs>
-    </SimpleView>
+    <List
+      itemCount={data.rows.length}
+      itemSize={NAPPLET_STORE_CARD_HEIGHT + GRID_SPACING}
+      itemData={data}
+      width={width}
+      height={height}
+      {...scroll}
+    >
+      {NappletGridRow}
+    </List>
   );
 }
 
 export default function AppStoreView() {
+  const installed = useInstalledNapplets();
+  const installedAddresses = useMemo(() => new Set(installed.map((napplet) => napplet.address)), [installed]);
+  const relays = useReadRelays();
+  const { graph, version } = useSocialGraph();
+  const search = useRouteSearchValue("q", "");
+  const source = useRouteSearchValue("source", "global");
+  const type = useRouteSearchValue("type");
+  const hashtag = useRouteSearchValue("t");
+  const sortParam = useRouteSearchValue("sort", "recent");
+  const sort = SORT_OPTIONS.some((option) => option.value === sortParam.value)
+    ? (sortParam.value as SortMode)
+    : "recent";
+
+  // Community is the global feed narrowed to the social graph below
+  const isCommunity = source.value === "community";
+  const noop = useCallback(() => {}, []);
+  const { filter } = usePeopleListSelect(isCommunity ? "global" : source.value, noop);
+
+  const eventFilter = useCallback(
+    (event: NostrEvent) =>
+      isValidNappletStoreEvent(event) && (!isCommunity || graph.getFollowDistance(event.pubkey) <= COMMUNITY_DISTANCE),
+    // aislop-ignore-next-line react-hooks/exhaustive-deps -- the graph is mutated in place, so version is the only signal that follow distances changed
+    [isCommunity, graph, version],
+  );
+
+  const baseQuery = useMemo(() => filter && { ...filter, kinds: [NAPPLET_KIND_ROOT, NAPPLET_KIND_NAMED] }, [filter]);
+  const query = useMemo(
+    () => baseQuery && (hashtag.value ? { ...baseQuery, "#t": [hashtag.value] } : baseQuery),
+    [baseQuery, hashtag.value],
+  );
+  const { loader, timeline } = useTimelineLoader(`${source.value}-napplet-store`, relays, query, { eventFilter });
+  const callback = useTimelineCurserIntersectionCallback(loader);
+
+  // Hashtag and type options come from every loaded napplet, so picking one does not hide the rest
+  const available = useTimelineEvents(baseQuery, eventFilter);
+  const hashtags = useMemo(() => {
+    const top = countValues(available, getNappletHashtags).slice(0, MAX_HASHTAGS);
+    return hashtag.value && !top.includes(hashtag.value) ? [hashtag.value, ...top] : top;
+  }, [available, hashtag.value]);
+  const types = useMemo(() => countValues(available, getNappletTypes), [available]);
+
+  const engagement = useNappletEngagement(timeline, relays);
+  const filtersDrawer = useDisclosure();
+  const hasFilters = source.value !== "global" || !!type.value || !!hashtag.value || sort !== "recent";
+
+  const napplets = useMemo(() => {
+    let events = type.value ? timeline.filter((event) => getNappletTypes(event).includes(type.value!)) : timeline;
+
+    const term = search.value.trim();
+    if (term) {
+      const matches = new Set(matchSorter(events, term, { keys: [(event) => getNappletSearchValues(event)] }));
+      events = events.filter((event) => matches.has(event));
+    }
+
+    return sortNapplets(events, sort, engagement);
+  }, [timeline, type.value, search.value, sort, engagement]);
+
+  const sourceSelect = (
+    <DiscoverSourceSelect value={source.value} onChange={(value) => source.setValue(value, false)} />
+  );
+  const typeSelect = types.length > 0 && (
+    <Select value={type.value ?? ""} onChange={(e) => type.setValue(e.target.value || null, false)}>
+      <option value="">All types</option>
+      {types.map((name) => (
+        <option key={name} value={name}>
+          {name}
+        </option>
+      ))}
+    </Select>
+  );
+  const sortSelect = (
+    <Select
+      value={sort}
+      onChange={(e) => sortParam.setValue(e.target.value === "recent" ? null : e.target.value, false)}
+    >
+      {SORT_OPTIONS.map((option) => (
+        <option key={option.value} value={option.value}>
+          {option.label}
+        </option>
+      ))}
+    </Select>
+  );
   return (
-    <PeopleListProvider initList="global">
-      <AppStoreContent />
-    </PeopleListProvider>
+    <SimpleView
+      title="App Store"
+      scroll={false}
+      flush
+      gap="0"
+      actions={
+        <IconButton
+          icon={<FilterFunnel02 boxSize={5} />}
+          aria-label="Filters"
+          ms="auto"
+          colorScheme={hasFilters ? "primary" : undefined}
+          onClick={filtersDrawer.onOpen}
+        />
+      }
+    >
+      <Drawer isOpen={filtersDrawer.isOpen} onClose={filtersDrawer.onClose} placement="right" size="md">
+        <DrawerOverlay />
+        <DrawerContent>
+          <DrawerCloseButton />
+          <DrawerHeader>Filters</DrawerHeader>
+          <DrawerBody display="flex" flexDirection="column" gap="4">
+            <FormControl>
+              <FormLabel>Source</FormLabel>
+              {sourceSelect}
+            </FormControl>
+            {typeSelect && (
+              <FormControl>
+                <FormLabel>Type</FormLabel>
+                {typeSelect}
+              </FormControl>
+            )}
+            <FormControl>
+              <FormLabel>Sort</FormLabel>
+              {sortSelect}
+            </FormControl>
+            {hashtags.length > 0 && (
+              <FormControl>
+                <FormLabel>Hashtags</FormLabel>
+                <HashtagFilter
+                  hashtags={hashtags}
+                  selected={hashtag.value}
+                  onSelect={(t) => hashtag.setValue(t, false)}
+                />
+              </FormControl>
+            )}
+          </DrawerBody>
+        </DrawerContent>
+      </Drawer>
+
+      <Box p="2">
+        <Input
+          type="search"
+          value={search.value}
+          onChange={(e) => search.setValue(e.target.value || null)}
+          placeholder="Search apps"
+        />
+      </Box>
+
+      {napplets.length === 0 ? (
+        <Text color="GrayText" px="2">
+          No apps found.
+        </Text>
+      ) : (
+        <IntersectionObserverProvider callback={callback}>
+          <Box flex={1} minH="0" mx="2">
+            <AutoSizer>
+              {({ width, height }) => (
+                <NappletGridList
+                  napplets={napplets}
+                  installedAddresses={installedAddresses}
+                  engagement={engagement}
+                  width={width}
+                  height={height}
+                />
+              )}
+            </AutoSizer>
+          </Box>
+        </IntersectionObserverProvider>
+      )}
+    </SimpleView>
   );
 }
