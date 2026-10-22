@@ -225,7 +225,16 @@ The directives `aislop-ignore-line`, `aislop-ignore-next-line`, and `aislop-igno
 
 Primary switches must use the brand/primary color scheme (`colorScheme="primary"`) rather than Chakra's default color scheme.
 
-Keep interactive UI elements a consistent default size. Do not use small or extra-small inputs, buttons, or other interactive elements unless explicitly requested; adjust spacing instead.
+### UI Design
+
+noStrudel favors simple, flush UI where content is shown rather than explained. Follow these unless the maintainer explicitly asks otherwise:
+
+- **Flush layouts**: render content directly. Avoid wrapping cards, extra borders, decorative headers, and summary or count headings such as "29 napplets published".
+- **No explanatory subtext**: do not add captions or helper text under headings (e.g. "Showing up to 6 related apps."). Labels and values should speak for themselves.
+- **Hide empty fields**: omit a field or section that has nothing to show instead of filling it with "No X listed." lines. Only show an empty state when the whole view is empty.
+- **Consistent text size**: do not use small text (`fontSize="sm"`/`"xs"`), including for monospace values like hashes. Build hierarchy with headings and font weight, not by shrinking text.
+- **Default control sizes**: do not pass `size="sm"`/`"xs"` to `Button`, `IconButton`, `Select`, `Input` or other interactive elements, and keep icons inside them at default size (`boxSize={5}`). Adjust spacing instead.
+- **Tabs for secondary detail**: put technical or advanced information (hashes, requirements, capabilities) in its own tab on a detail page rather than in collapsible sections on the main tab.
 
 ```typescript
 import { Button, Box, Flex } from "@chakra-ui/react";
