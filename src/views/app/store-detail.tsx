@@ -35,7 +35,7 @@ import EventQuoteButton from "../../components/note/event-quote-button";
 import Timestamp from "../../components/timestamp";
 import EventShareButton from "../../components/timeline/note/components/event-share-button";
 import NoteReactions from "../../components/timeline/note/components/note-reactions";
-import UserAvatar from "../../components/user/user-avatar";
+import NappletIconImage from "../../components/napplets/napplet-icon";
 import UserLink from "../../components/user/user-link";
 import UserName from "../../components/user/user-name";
 import EventZapButton from "../../components/zap/event-zap-button";
@@ -46,6 +46,7 @@ import {
   getNappletDescription,
   getNappletEventPointer,
   getNappletNaddr,
+  getNappletRequiredCapabilities,
   getNappletTitle,
   getUnsupportedNappletRequirements,
   isNappletManifestKind,
@@ -64,7 +65,7 @@ import NappletDetailPermissions from "../napplets/components/napplet-detail-perm
 import NappletDetailStorage from "../napplets/components/napplet-detail-storage";
 
 const RELATED_NAPPLETS_LIMIT = 6;
-const DETAIL_TABS = ["details", "comments", "advanced", "permissions", "storage"];
+const BASE_TABS = ["details", "comments", "advanced"];
 
 function RelatedNappletCard({ event }: { event: NostrEvent }) {
   const address = getNappletNaddr(event);
@@ -145,7 +146,12 @@ function NappletStoreDetailPage({ event, address }: { event: NostrEvent; address
   const archetypes = getNappletArchetypes(event);
   const unsupported = getUnsupportedNappletRequirements(event);
   const naddr = getNappletNaddr(event);
-  const tabs = installed ? DETAIL_TABS : DETAIL_TABS.slice(0, 3);
+  const hasPermissions = getNappletRequiredCapabilities(event).length > 0;
+  const tabs = [
+    ...BASE_TABS,
+    ...(installed && hasPermissions ? ["permissions"] : []),
+    ...(installed ? ["storage"] : []),
+  ];
   const tab = useRouteSearchValue("tab", tabs[0]);
   const tabIndex = Math.max(0, tabs.indexOf(tab.value));
 
@@ -160,7 +166,7 @@ function NappletStoreDetailPage({ event, address }: { event: NostrEvent; address
     >
       <Flex direction="column" gap="4" maxW="6xl" mx="auto" w="full">
         <Flex gap="4" alignItems="flex-start" wrap={{ base: "wrap", md: "nowrap" }}>
-          <UserAvatar pubkey={event.pubkey} size="lg" />
+          <NappletIconImage event={event} boxSize="16" />
           <Flex direction="column" gap="2" flex="1" minW="0">
             <Heading size="lg">{title}</Heading>
             <Flex gap="2" color="GrayText" fontSize="sm" alignItems="center" wrap="wrap">
@@ -201,7 +207,7 @@ function NappletStoreDetailPage({ event, address }: { event: NostrEvent; address
             <Tab>Details</Tab>
             <Tab>Comments</Tab>
             <Tab>Advanced</Tab>
-            {installed && <Tab>Permissions</Tab>}
+            {installed && hasPermissions && <Tab>Permissions</Tab>}
             {installed && <Tab>Storage</Tab>}
           </TabList>
           <TabPanels>
@@ -266,7 +272,7 @@ function NappletStoreDetailPage({ event, address }: { event: NostrEvent; address
             <TabPanel px="0">
               <NappletDetailAdvanced event={event} />
             </TabPanel>
-            {installed && (
+            {installed && hasPermissions && (
               <TabPanel px="0">
                 <NappletDetailPermissions event={event} />
               </TabPanel>

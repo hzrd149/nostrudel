@@ -65,8 +65,8 @@ function NappletPermissionRow({ group }: { group: NappletGrants }) {
         <HoverLinkOverlay as={RouterLink} to={`/app/store/${naddr}`} fontWeight="semibold" noOfLines={1}>
           {manifest ? getNappletTitle(manifest) : group.title}
         </HoverLinkOverlay>
-        <Flex gap="1" fontSize="xs" color="GrayText" alignItems="center" minW="0" wrap="wrap">
-          <UserName pubkey={group.pubkey} fontSize="xs" isTruncated />
+        <Flex gap="1" color="GrayText" alignItems="center" minW="0" wrap="wrap">
+          <UserName pubkey={group.pubkey} isTruncated />
           {group.latest.grantedAt > 0 && (
             <>
               <Text>·</Text>
@@ -75,18 +75,15 @@ function NappletPermissionRow({ group }: { group: NappletGrants }) {
           )}
           {group.versions > 1 && <Text>· {group.versions} versions</Text>}
         </Flex>
-        {group.latest.capabilities.length > 0 && (
-          <Flex gap="1" wrap="wrap" mt="1">
-            {group.latest.capabilities.map((capability) => (
-              <Badge key={capability} textTransform="none">
-                {capability}
-              </Badge>
-            ))}
-          </Flex>
-        )}
+        <Flex gap="1" wrap="wrap" mt="1">
+          {group.latest.capabilities.map((capability) => (
+            <Badge key={capability} textTransform="none">
+              {capability}
+            </Badge>
+          ))}
+        </Flex>
       </Box>
       <Button
-        size="sm"
         variant="ghost"
         zIndex={2}
         onClick={(e) => {
@@ -101,18 +98,21 @@ function NappletPermissionRow({ group }: { group: NappletGrants }) {
   );
 }
 
-export default function NappletPermissionsPanel() {
+/** Always-allowed grants with at least one capability, skipping napplets whose `pubkey:dTag` key is in `exclude` */
+export default function NappletPermissionsPanel({ exclude }: { exclude?: Set<string> }) {
   const grants = use$(alwaysAllowed$);
-  const groups = useMemo(() => groupGrants(grants ?? []), [grants]);
+  const groups = useMemo(
+    () =>
+      groupGrants(grants ?? []).filter(
+        (group) => group.latest.capabilities.length > 0 && !exclude?.has(`${group.pubkey}:${group.dTag}`),
+      ),
+    [grants, exclude],
+  );
 
-  if (groups.length === 0)
-    return <Text color="GrayText">Apps you always allow will appear here. Other apps ask each time they open.</Text>;
+  if (groups.length === 0) return null;
 
   return (
     <Flex direction="column" gap="4">
-      <Text color="GrayText" fontSize="sm">
-        These apps open without asking for permission. Revoking makes them ask again next time they open.
-      </Text>
       {groups.map((group) => (
         <NappletPermissionRow key={`${group.pubkey}:${group.dTag}`} group={group} />
       ))}

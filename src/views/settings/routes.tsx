@@ -3,9 +3,11 @@ import RequireActiveAccount from "../../components/router/require-active-account
 
 import SettingsView from ".";
 import AccountSettings from "./accounts";
+import AppsSettings from "./apps";
 import AuthenticationSettingsView from "./authentication";
 import BackgroundWorkerSettings from "./background-worker";
 import CacheRelayView from "./cache";
+import DefaultAppsSettings from "./default-apps";
 import DisplaySettings from "./display";
 import WalletSettings from "./wallet";
 import MailboxesView from "./mailboxes";
@@ -60,6 +62,8 @@ export default [
       { path: "lightning", Component: WalletSettings },
       { path: "messages", Component: MessagesSettings },
       { path: "background-worker", Component: BackgroundWorkerSettings },
+      { path: "apps", Component: AppsSettings },
+      { path: "default-apps", Component: DefaultAppsSettings },
     ],
   },
 ] satisfies RouteObject[];

@@ -32,8 +32,8 @@ import ClockRewind from "../icons/clock-rewind";
 import LayersThree01 from "../icons/layers-three-01";
 import SeenOnRelaysButton from "../note/seen-on-relays-button";
 import Timestamp from "../timestamp";
-import UserAvatar from "../user/user-avatar";
 import UserName from "../user/user-name";
+import NappletIconImage from "./napplet-icon";
 import {
   NAPPLET_KIND_SNAPSHOT,
   getNappletDescription,
@@ -210,15 +210,17 @@ export default function NappletInfoDrawer({
       <DrawerContent>
         <DrawerCloseButton />
         <DrawerHeader px="3" pt="3" pb="2" pe="10">
-          <Heading size="md" noOfLines={2}>
-            {title}
-          </Heading>
+          <Flex gap="3" alignItems="center" minW="0">
+            <NappletIconImage event={active} boxSize="10" />
+            <Heading size="md" noOfLines={2}>
+              {title}
+            </Heading>
+          </Flex>
         </DrawerHeader>
 
         <DrawerBody px="3" pb="4" pt="0" overflowX="hidden" overflowY="auto">
           <Flex direction="column" gap="3">
             <Flex gap="2" alignItems="center" minW="0">
-              <UserAvatar pubkey={active.pubkey} size="sm" />
               <Flex direction="column" minW="0">
                 <UserName pubkey={active.pubkey} fontWeight="bold" />
                 <Text fontSize="sm" color="GrayText">

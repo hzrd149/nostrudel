@@ -17,6 +17,8 @@ import Database01 from "../../components/icons/database-01";
 import FilterFunnel02 from "../../components/icons/filter-funnel-02";
 import Image01 from "../../components/icons/image-01";
 import Mail02 from "../../components/icons/mail-02";
+import Package from "../../components/icons/package";
+import Route from "../../components/icons/route";
 import Share07 from "../../components/icons/share-07";
 import User01 from "../../components/icons/user-01";
 import SimpleNavItem from "../../components/layout/components/simple-nav-item";
@@ -69,6 +71,12 @@ export default function SettingsView() {
       )}
 
       <DividerHeader title="Client" />
+      <SimpleNavItem to="/settings/apps" leftIcon={<Package boxSize={5} />}>
+        Installed Apps
+      </SimpleNavItem>
+      <SimpleNavItem to="/settings/default-apps" leftIcon={<Route boxSize={5} />}>
+        Default Apps
+      </SimpleNavItem>
       <SimpleNavItem to="/settings/relays" leftIcon={<RelayIcon boxSize={5} />}>
         Relays
       </SimpleNavItem>
