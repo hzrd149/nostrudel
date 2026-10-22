@@ -42,6 +42,7 @@ import EventZapButton from "../../components/zap/event-zap-button";
 import {
   NAPPLET_KIND_NAMED,
   NAPPLET_KIND_ROOT,
+  getConventionAction,
   getNappletArchetypes,
   getNappletDescription,
   getNappletEventPointer,
@@ -225,8 +226,11 @@ function NappletStoreDetailPage({ event, address }: { event: NostrEvent; address
                             {archetype.name}
                           </Heading>
                           <Flex gap="1" wrap="wrap">
-                            {archetype.actions.map((action) => (
-                              <Badge key={action}>{action}</Badge>
+                            {archetype.contracts.map(({ convention, params }) => (
+                              <Badge key={convention}>
+                                {getConventionAction(convention)}
+                                {params.length > 0 && ` (${params.join(", ")})`}
+                              </Badge>
                             ))}
                           </Flex>
                         </Box>

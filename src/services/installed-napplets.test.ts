@@ -25,7 +25,7 @@ function napplet(address: string, archetypes: string[]): InstalledNapplet {
     address,
     title: address,
     pubkey: "pubkey",
-    archetypes: archetypes.map((name) => ({ name, actions: ["open"], protocols: [] })),
+    archetypes: archetypes.map((name) => ({ name, contracts: [{ convention: `napplet:${name}/open`, params: [] }] })),
     installedAt: 1,
     lastOpenedAt: 1,
   };

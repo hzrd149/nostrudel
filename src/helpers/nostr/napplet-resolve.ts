@@ -53,5 +53,12 @@ export async function resolveNapplet({
   const indexHtml = textDecode(files.get(indexEntry.path)!);
   await cache?.writeVerifiedResolution({ event, manifest, files, indexHtml });
 
-  return { dTag: manifest.dTag, aggregateHash: manifest.aggregateHash, files, indexHtml, manifest };
+  return {
+    dTag: manifest.dTag,
+    artifactHash: manifest.aggregateHash,
+    aggregateHash: manifest.aggregateHash,
+    files,
+    indexHtml,
+    manifest,
+  };
 }

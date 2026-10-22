@@ -1,4 +1,5 @@
 import { useToast } from "@chakra-ui/react";
+import type { IntentCandidate } from "@kehto/services";
 import {
   buildShellCapabilities,
   createShellBridge,
@@ -16,12 +17,11 @@ import NappletConsentModal from "../../components/napplets/consent-modal";
 import NappletIntentChoiceModal from "../../components/napplets/intent-choice-modal";
 import { unique } from "../../helpers/array";
 import { DEFAULT_APP_SETTINGS } from "../../helpers/app-settings";
-import { type NappletIntent } from "../../helpers/nostr/napplets";
-import useInstalledNapplets from "../../hooks/use-installed-napplets";
 import { AppSettingsQuery, BlossomServersQuery } from "../../models";
 import accounts from "../../services/accounts";
-import { getInstalledNapplets, type InstalledNapplet } from "../../services/installed-napplets";
+import { installedNapplets$, intentHandlerPreferences$ } from "../../services/installed-napplets";
 import { createAdapter } from "../../services/napplet-shell/adapter";
+import { createNappletIntentService } from "../../services/napplet-shell/intent-service";
 import {
   addAlwaysAllowed,
   grantCapabilities,
@@ -42,9 +42,8 @@ type ConsentRequest = {
 
 type IntentChoiceRequest = {
   archetype: string;
-  action: string;
-  payload: Record<string, string>;
-  resolve: (handler?: InstalledNapplet) => void;
+  candidates: readonly IntentCandidate[];
+  resolve: (catalogId?: string) => void;
 };
 
 type NappletShellContextValue = {
@@ -52,9 +51,9 @@ type NappletShellContextValue = {
   /** Shell capability set computed from the adapter via buildShellCapabilities. */
   capabilities: ShellCapabilities;
   requestConsent: (event: NostrEvent, identity: NappletIdentity, capabilities: Capability[]) => Promise<boolean>;
-  registerFrame: (windowId: string, win: Window, identity: NappletIdentity) => void;
+  /** `catalogId` is the frame's NAP-INTENT identity, attested as `sender` on intents it invokes */
+  registerFrame: (windowId: string, win: Window, identity: NappletIdentity, catalogId: string) => void;
   unregisterFrame: (windowId: string) => void;
-  setIntentNavigator: (navigate: ((intent: NappletIntent, handler: InstalledNapplet) => void) | null) => void;
 };
 
 const NappletShellContext = createContext<NappletShellContextValue | null>(null);
@@ -82,26 +81,48 @@ export function NappletShellProvider({ children }: PropsWithChildren) {
   uploadRef.current = upload;
   const [consent, setConsent] = useState<ConsentRequest>();
   const [intentChoice, setIntentChoice] = useState<IntentChoiceRequest>();
-  const intentNavigatorRef = useRef<((intent: NappletIntent, handler: InstalledNapplet) => void) | null>(null);
-  const getIntentNavigator = useCallback(() => intentNavigatorRef.current, []);
-  const installedNapplets = useInstalledNapplets();
+  const [frameCatalogIds] = useState(() => new Map<string, string>());
 
-  const chooseIntentHandler = useCallback((intent: NappletIntent) => {
-    if (getInstalledNapplets().length === 0) return Promise.resolve(undefined);
-    return new Promise<InstalledNapplet | undefined>((resolve) => setIntentChoice({ ...intent, resolve }));
-  }, []);
+  const intent = useMemo(
+    () =>
+      createNappletIntentService({
+        // Only one chooser at a time; a request made while one is open is cancelled
+        chooseHandler: (archetype, candidates) =>
+          new Promise((resolve) =>
+            setIntentChoice((current) => {
+              if (!current) return { archetype, candidates, resolve };
+              resolve(undefined);
+              return current;
+            }),
+          ),
+        resolveSender: (windowId) => frameCatalogIds.get(windowId),
+      }),
+    [frameCatalogIds],
+  );
+
+  // Push `intent.changed` for every role whose handlers or default may have changed
+  useEffect(() => {
+    let archetypes = new Set<string>();
+    const notify = () => {
+      const next = new Set(installedNapplets$.value.flatMap((napplet) => napplet.archetypes.map((a) => a.name)));
+      for (const archetype of new Set([...archetypes, ...next])) intent.resolver.notifyChanged(archetype);
+      archetypes = next;
+    };
+
+    const subs = [installedNapplets$.subscribe(notify), intentHandlerPreferences$.subscribe(notify)];
+    return () => subs.forEach((sub) => sub.unsubscribe());
+  }, [intent]);
 
   const adapter = useMemo(
     () =>
       createAdapter(
         toast,
-        getIntentNavigator,
-        chooseIntentHandler,
+        intent.service,
         { getBlossomOrigins: () => blossomOriginsRef.current },
         () => uploadRef.current,
         upload.enabled,
       ),
-    [toast, getIntentNavigator, chooseIntentHandler, upload.enabled],
+    [toast, intent, upload.enabled],
   );
   const bridge = useMemo(() => createShellBridge(adapter), [adapter]);
   // Single source of truth for advertised NAP domains: derived from the same
@@ -131,28 +152,29 @@ export function NappletShellProvider({ children }: PropsWithChildren) {
     [bridge],
   );
 
-  const registerFrame = useCallback<NappletShellContextValue["registerFrame"]>((windowId, win, identity) => {
-    originRegistry.register(win, windowId, identity);
-    registerWindowIdentity(windowId, identity);
-  }, []);
+  const registerFrame = useCallback<NappletShellContextValue["registerFrame"]>(
+    (windowId, win, identity, catalogId) => {
+      originRegistry.register(win, windowId, identity);
+      registerWindowIdentity(windowId, identity);
+      frameCatalogIds.set(windowId, catalogId);
+    },
+    [frameCatalogIds],
+  );
 
   const unregisterFrame = useCallback<NappletShellContextValue["unregisterFrame"]>(
     (windowId) => {
       originRegistry.unregister(windowId);
       sessionRegistry.unregister(windowId);
       unregisterWindowIdentity(windowId);
+      frameCatalogIds.delete(windowId);
       bridge.runtime.destroyWindow(windowId);
     },
-    [bridge],
+    [bridge, frameCatalogIds],
   );
 
-  const setIntentNavigator = useCallback<NappletShellContextValue["setIntentNavigator"]>((navigate) => {
-    intentNavigatorRef.current = navigate;
-  }, []);
-
   const context = useMemo(
-    () => ({ bridge, capabilities, requestConsent, registerFrame, unregisterFrame, setIntentNavigator }),
-    [bridge, capabilities, requestConsent, registerFrame, unregisterFrame, setIntentNavigator],
+    () => ({ bridge, capabilities, requestConsent, registerFrame, unregisterFrame }),
+    [bridge, capabilities, requestConsent, registerFrame, unregisterFrame],
   );
 
   const respond = useCallback(
@@ -171,9 +193,9 @@ export function NappletShellProvider({ children }: PropsWithChildren) {
   );
 
   const respondIntentChoice = useCallback(
-    (handler?: InstalledNapplet) => {
+    (catalogId?: string) => {
       if (!intentChoice) return;
-      intentChoice.resolve(handler);
+      intentChoice.resolve(catalogId);
       setIntentChoice(undefined);
     },
     [intentChoice],
@@ -183,11 +205,7 @@ export function NappletShellProvider({ children }: PropsWithChildren) {
     <NappletShellContext.Provider value={context}>
       {children}
       <NappletConsentModal consent={consent} onRespond={respond} />
-      <NappletIntentChoiceModal
-        intentChoice={intentChoice}
-        installedNapplets={installedNapplets}
-        onRespond={respondIntentChoice}
-      />
+      <NappletIntentChoiceModal intentChoice={intentChoice} onRespond={respondIntentChoice} />
     </NappletShellContext.Provider>
   );
 }

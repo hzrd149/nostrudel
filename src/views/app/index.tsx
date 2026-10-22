@@ -1,51 +1,41 @@
 import { Alert, AlertDescription, AlertIcon } from "@chakra-ui/react";
 import { useEffect, useMemo } from "react";
-import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 import SimpleView from "../../components/layout/presets/simple-view";
-import {
-  NAPPLET_INTENT_PARAM,
-  encodeNappletIntent,
-  isNappletManifestKind,
-  parseNappletIntent,
-  parseNappletPointer,
-} from "../../helpers/nostr/napplets";
+import { isNappletManifestKind, parseNappletPointer } from "../../helpers/nostr/napplets";
 import useInstalledNapplets from "../../hooks/use-installed-napplets";
-import { useNappletShell } from "../../providers/global/napplet-shell-provider";
-import { getInstalledNappletByArchetype, getInstalledNappletForIntent } from "../../services/installed-napplets";
+import { getInstalledNappletByCatalogId, getInstalledNappletForArchetype } from "../../services/installed-napplets";
+import { setIntentTargetOpener } from "../../services/napplet-intent-targets";
 import { NappletRouteLoader } from "../napplets/napplet";
 
 export default function AppView() {
   const { id } = useParams<{ id: string }>();
-  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { setIntentNavigator } = useNappletShell();
   const installed = useInstalledNapplets();
   const pointer = useMemo(() => (id ? parseNappletPointer(id) : undefined), [id]);
-  const intent = useMemo(() => parseNappletIntent(searchParams.get(NAPPLET_INTENT_PARAM)), [searchParams]);
-  const installedNapplet = useMemo(() => {
-    if (!id) return undefined;
-    if (intent?.archetype === id) return getInstalledNappletForIntent(id, intent.action, installed);
-    return getInstalledNappletByArchetype(id, installed);
-  }, [id, intent, installed]);
+  const installedNapplet = useMemo(() => id && getInstalledNappletForArchetype(id, installed), [id, installed]);
 
   // Intents invoked by the running napplet open their handler by naddr, which is unambiguous
   useEffect(() => {
-    setIntentNavigator((nextIntent, handler) => {
-      navigate(`/app/${handler.address}?${NAPPLET_INTENT_PARAM}=${encodeNappletIntent(nextIntent)}`);
+    setIntentTargetOpener((catalogId) => {
+      const handler = getInstalledNappletByCatalogId(catalogId);
+      if (!handler) return false;
+
+      navigate(`/app/${handler.address}`);
+      return true;
     });
 
-    return () => setIntentNavigator(null);
-  }, [navigate, setIntentNavigator]);
+    return () => setIntentTargetOpener(null);
+  }, [navigate]);
 
   if (id && pointer?.type === "naddr" && isNappletManifestKind(pointer.data.kind)) {
-    return <NappletRouteLoader address={id} pointer={pointer} intent={intent} />;
+    return <NappletRouteLoader address={id} pointer={pointer} />;
   }
 
   if (id && installedNapplet) {
     const installedPointer = parseNappletPointer(installedNapplet.address);
-    if (installedPointer)
-      return <NappletRouteLoader address={installedNapplet.address} pointer={installedPointer} intent={intent} />;
+    if (installedPointer) return <NappletRouteLoader address={installedNapplet.address} pointer={installedPointer} />;
 
     return (
       <SimpleView title="App">

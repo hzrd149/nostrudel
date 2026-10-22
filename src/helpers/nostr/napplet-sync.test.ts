@@ -40,19 +40,15 @@ describe("mergeNappletSyncData", () => {
 
   it("prefers local handler changes and keeps remote ones otherwise", () => {
     const merged = mergeNappletSyncData(
-      data(["a", "b"], { "notes/open": "a", "chat/open": "a" }),
-      data(["a", "b"], { "notes/open": "b", "chat/open": "a" }),
-      data(["a", "b"], { "notes/open": "a", "chat/open": "b" }),
+      data(["a", "b"], { notes: "a", chat: "a" }),
+      data(["a", "b"], { notes: "b", chat: "a" }),
+      data(["a", "b"], { notes: "a", chat: "b" }),
     );
-    expect(merged.handlers).toEqual({ "notes/open": "b", "chat/open": "b" });
+    expect(merged.handlers).toEqual({ notes: "b", chat: "b" });
   });
 
   it("drops handlers for apps that are no longer installed", () => {
-    const merged = mergeNappletSyncData(
-      data(["a"], { "notes/open": "a" }),
-      data(["a"], { "notes/open": "a" }),
-      data([]),
-    );
+    const merged = mergeNappletSyncData(data(["a"], { notes: "a" }), data(["a"], { notes: "a" }), data([]));
     expect(merged).toEqual(data([]));
   });
 });
@@ -62,10 +58,27 @@ describe("parseNappletSyncData", () => {
     expect(
       parseNappletSyncData({
         installed: [napplet("a"), { address: "b" }, null],
-        handlers: { "notes/open": "a", bad: 1 },
+        handlers: { notes: "a", bad: 1 },
       }),
-    ).toEqual(data(["a"], { "notes/open": "a" }));
+    ).toEqual(data(["a"], { notes: "a" }));
     expect(parseNappletSyncData("nope")).toEqual(data([]));
+  });
+
+  it("migrates per-action handler choices to one per archetype, preferring open", () => {
+    expect(
+      parseNappletSyncData({ installed: [], handlers: { "notes/edit": "a", "notes/open": "b", "chat/send": "c" } })
+        .handlers,
+    ).toEqual({ notes: "b", chat: "c" });
+  });
+
+  it("migrates archetypes stored as bare conventions to contracts", () => {
+    const legacy = {
+      ...napplet("a"),
+      archetypes: [{ name: "notes", actions: ["open"], protocols: ["napplet:notes/open"] }],
+    };
+    expect(parseNappletSyncData({ installed: [legacy], handlers: {} }).installed[0].archetypes).toEqual([
+      { name: "notes", contracts: [{ convention: "napplet:notes/open", params: [] }] },
+    ]);
   });
 });
 
@@ -81,12 +94,12 @@ describe("isSameNappletSyncData", () => {
 describe("createNappletSyncEvent", () => {
   it("encrypts the list to the signer so only they can read it", async () => {
     const signer = new PrivateKeySigner();
-    const synced = data(["a"], { "notes/open": "a" });
+    const synced = data(["a"], { notes: "a" });
     const event = await createNappletSyncEvent(signer, synced);
 
     expect(event.kind).toBe(30078);
     expect(event.tags).toContainEqual(["d", NAPPLET_SYNC_IDENTIFIER]);
-    expect(event.content).not.toContain("notes/open");
+    expect(event.content).not.toContain("notes");
     expect(getAppDataEncryption(event)).toBe("nip44");
 
     // Drop the plaintext cached at creation to force a real decrypt

@@ -12,16 +12,15 @@ import {
   type RelayListEntry,
 } from "@kehto/services";
 import type { RelayPoolLike, ShellAdapter } from "@kehto/shell";
+import type { ServiceHandler } from "@kehto/runtime";
 import type { NostrFilter } from "@napplet/core";
 import { getInboxes, getOutboxes } from "applesauce-core/helpers";
 import { EventTemplate, Filter, kinds, NostrEvent } from "nostr-tools";
 import { catchError, filter, firstValueFrom, of, take, timeout, toArray } from "rxjs";
 
-import type { NappletIntent } from "../../helpers/nostr/napplets";
 import accounts from "../accounts";
 import { cacheRequest, eventCache$, writeEvent } from "../event-cache";
 import { eventStore } from "../event-store";
-import type { InstalledNapplet } from "../installed-napplets";
 import pool from "../pool";
 import verifyEvent from "../verify-event";
 import {
@@ -33,7 +32,6 @@ import {
   reactCommon,
   reportCommon,
 } from "./common-actions";
-import { createNappletIntentService } from "./intent-service";
 import { getReadRelays, getWriteRelays } from "./relay-tiers";
 import { createResourceService, type ResourceServiceOptions } from "./resource-service";
 import { createBlossomUploadService, type UploadConfig } from "./upload-service";
@@ -69,8 +67,7 @@ function getSigner() {
 
 export function createAdapter(
   toast: ReturnType<typeof useToast>,
-  getIntentNavigator: () => ((intent: NappletIntent, handler: InstalledNapplet) => void) | null,
-  chooseIntentHandler: (intent: NappletIntent) => Promise<InstalledNapplet | undefined>,
+  intent: ServiceHandler,
   resource: ResourceServiceOptions,
   getUpload: () => UploadConfig,
   uploadEnabled: boolean,
@@ -232,7 +229,7 @@ export function createAdapter(
     }),
     resource: createResourceService(resource),
     upload: createBlossomUploadService(getUpload),
-    intent: createNappletIntentService({ navigate: getIntentNavigator, chooseHandler: chooseIntentHandler }),
+    intent,
     relay: createRelayPoolService({
       subscribe: (filters, callback, relayUrls) => {
         const sub = pool

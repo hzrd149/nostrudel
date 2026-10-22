@@ -13,29 +13,26 @@ import {
   NAPPLET_KIND_SNAPSHOT,
   NappletResolutionError,
   computeAggregateHash,
+  getNappletCatalogId,
   isNappletManifestKind,
   pathEntriesFromTags,
   type NappletManifest,
 } from "@kehto/nip";
-import { manifestToIntentCatalogEntry } from "@kehto/services";
 import { ALL_CAPABILITIES, type Capability } from "@kehto/shell";
 
-export { NAPPLET_KIND_NAMED, NAPPLET_KIND_ROOT, NAPPLET_KIND_SNAPSHOT, isNappletManifestKind };
+export { NAPPLET_KIND_NAMED, NAPPLET_KIND_ROOT, NAPPLET_KIND_SNAPSHOT, getNappletCatalogId, isNappletManifestKind };
 export { getNappletIcon, getNappletServers, getNappletSource };
+
+/** One accepted intent convention and the parameter names its `i` tag advertises */
+export type NappletIntentContract = {
+  convention: string;
+  params: string[];
+};
 
 export type NappletArchetype = {
   name: string;
-  actions: string[];
-  protocols: string[];
+  contracts: NappletIntentContract[];
 };
-
-export type NappletIntent = {
-  archetype: string;
-  action: string;
-  payload: Record<string, string>;
-};
-
-export const NAPPLET_INTENT_PARAM = "intent";
 
 const CAPABILITIES = new Set<string>(ALL_CAPABILITIES);
 
@@ -63,26 +60,28 @@ const REQUIRED_CAPABILITY_MAP: Record<string, Capability[]> = {
 
 const SHA256_HEX = /^[0-9a-f]{64}$/i;
 const ARCHETYPE_SLUG = /^[a-z0-9][a-z0-9-]*$/;
-const ARCHETYPE_CONVENTION = /^napplet:([^/?#\s]+)\/[^/?#\s]+$/;
+const INTENT_CONVENTION = /^napplet:([a-z0-9][a-z0-9-]*)\/([a-z0-9][a-z0-9-]*)$/;
 
 function tagValues(event: NostrEvent, name: string) {
   return event.tags.filter((t) => t[0] === name && t[1]).map((t) => t[1].trim());
 }
 
-/** Archetype contracts from `i` intent tags (NIP-5D) and legacy `archetype` tags; malformed entries are skipped. */
+/**
+ * NAP-INTENT routing contracts: each `i` convention whose role matches a `z` tag on the same
+ * manifest, with its trailing parameter names. Malformed or role-less entries contribute nothing.
+ */
 function getManifestArchetypes(event: NostrEvent): NappletManifest["archetypes"] {
-  const archetypes = new Map<string, { slug: string; convention: string }>();
-  const add = (slug: string | undefined, convention: string | undefined) => {
-    if (!slug || !convention || !ARCHETYPE_SLUG.test(slug) || !ARCHETYPE_CONVENTION.test(convention)) return;
-    archetypes.set(`${slug} ${convention}`, { slug, convention });
-  };
+  const roles = new Set(tagValues(event, "z").filter((slug) => ARCHETYPE_SLUG.test(slug)));
+  const contracts = new Map<string, { slug: string; convention: string; params: string[] }>();
 
   for (const tag of event.tags) {
-    if (tag[0] === "i") add(ARCHETYPE_CONVENTION.exec(tag[1] ?? "")?.[1], tag[1]);
-    else if (tag[0] === "archetype") add(tag[1], tag[2]);
+    if (tag[0] !== "i") continue;
+    const slug = INTENT_CONVENTION.exec(tag[1] ?? "")?.[1];
+    if (!slug || !roles.has(slug) || contracts.has(tag[1])) continue;
+    contracts.set(tag[1], { slug, convention: tag[1], params: tag.slice(2) });
   }
 
-  return Array.from(archetypes.values());
+  return Array.from(contracts.values());
 }
 
 /**
@@ -113,6 +112,8 @@ export function parseNappletManifest(event: NostrEvent): NappletManifest {
     kind: event.kind,
     pubkey: event.pubkey,
     dTag: getTagValue(event, "d") ?? "",
+    catalogId: getNappletCatalogId(event),
+    artifactHash: aggregateHash,
     paths,
     aggregateHash,
     servers: getNappletServers(event),
@@ -180,47 +181,32 @@ export function getNappletEventPointer(pointer: DecodeResult) {
 export function getNappletNaddr(event: NostrEvent) {
   if (!isReplaceable(event.kind)) return undefined;
 
+  // Root manifests are replaceable with no `d` tag, so their naddr has an empty identifier.
+  if (!isAddressableKind(event.kind))
+    return nip19.naddrEncode({ kind: event.kind, pubkey: event.pubkey, identifier: "" });
+
   const identifier = getTagValue(event, "d");
   if (!identifier) return undefined;
 
   return nip19.naddrEncode({ kind: event.kind, pubkey: event.pubkey, identifier });
 }
 
-/** Whether a manifest can be listed and opened: it has a manifest kind, parses, and has an naddr. */
-export function isValidNappletStoreEvent(event: NostrEvent) {
-  return isNappletManifestKind(event.kind) && validateNappletManifest(event) && !!getNappletNaddr(event);
-}
+/** The NAP-INTENT catalog id of the root or named napplet an naddr points to */
+export function getNappletAddressCatalogId(address: string) {
+  const pointer = parseNappletPointer(address);
+  if (pointer?.type !== "naddr") return undefined;
 
-export function encodeNappletIntent(intent: NappletIntent) {
-  return encodeURIComponent(JSON.stringify(intent));
-}
-
-export function parseNappletIntent(value: string | null): NappletIntent | undefined {
-  if (!value) return undefined;
-
+  const { kind, pubkey, identifier } = pointer.data;
   try {
-    let decoded: unknown;
-    try {
-      decoded = JSON.parse(value) as unknown;
-    } catch {
-      decoded = JSON.parse(decodeURIComponent(value)) as unknown;
-    }
-    if (!decoded || typeof decoded !== "object") return undefined;
-
-    const { archetype, action, payload } = decoded as Record<string, unknown>;
-    if (typeof archetype !== "string" || typeof action !== "string") return undefined;
-
-    const cleanPayload: Record<string, string> = {};
-    if (payload && typeof payload === "object") {
-      for (const [key, item] of Object.entries(payload as Record<string, unknown>)) {
-        if (typeof item === "string") cleanPayload[key] = item;
-      }
-    }
-
-    return { archetype, action, payload: cleanPayload };
+    return getNappletCatalogId({ id: "", kind, pubkey, tags: identifier ? [["d", identifier]] : [] });
   } catch {
     return undefined;
   }
+}
+
+/** Whether a manifest can be listed and opened: it has a manifest kind, parses, and has an naddr. */
+export function isValidNappletStoreEvent(event: NostrEvent) {
+  return isNappletManifestKind(event.kind) && validateNappletManifest(event) && !!getNappletNaddr(event);
 }
 
 export type NappletCoordinate = { kind: number; pubkey: string; identifier: string };
@@ -284,31 +270,26 @@ export function getNappletSnapshotsFilter(event: NostrEvent): Filter | undefined
   return { kinds: [NAPPLET_KIND_SNAPSHOT], "#a": [encodeNappletCoordinate(coordinate)] };
 }
 
-export function conventionId(archetype: string, action: string) {
-  return `napplet:${archetype}/${action}`;
-}
-
-export function intentTopic(archetype: string, action: string) {
-  return `${archetype}:${action}`;
-}
-
-export function readyTopic(archetype: string) {
-  return `${archetype}:ready`;
+/** The action segment of a `napplet:<archetype>/<action>` convention */
+export function getConventionAction(convention: string) {
+  return INTENT_CONVENTION.exec(convention)?.[2];
 }
 
 export function getNappletArchetypes(event: NostrEvent): NappletArchetype[] {
   try {
-    const manifest = parseNappletManifest(event);
-    const catalog = manifestToIntentCatalogEntry(manifest);
-
-    return Object.entries(catalog.archetypes).map(([name, support]) => ({
-      name,
-      actions: support.actions,
-      protocols: support.conventions,
-    }));
+    const archetypes = new Map<string, NappletIntentContract[]>();
+    for (const { slug, convention, params } of parseNappletManifest(event).archetypes) {
+      archetypes.set(slug, [...(archetypes.get(slug) ?? []), { convention, params }]);
+    }
+    return Array.from(archetypes, ([name, contracts]) => ({ name, contracts }));
   } catch {
     return [];
   }
+}
+
+/** The distinct actions an archetype entry accepts */
+export function getArchetypeActions(archetype: NappletArchetype) {
+  return Array.from(new Set(archetype.contracts.map((contract) => getConventionAction(contract.convention) ?? "")));
 }
 
 export function getNappletRequiredCapabilities(event: NostrEvent): Capability[] {

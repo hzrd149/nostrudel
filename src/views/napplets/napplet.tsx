@@ -9,23 +9,12 @@ import SimpleView from "../../components/layout/presets/simple-view";
 import {
   getNappletEventPointer,
   getNappletNaddr,
-  NAPPLET_INTENT_PARAM,
-  encodeNappletIntent,
   isNappletManifestKind,
   parseNappletPointer,
-  type NappletIntent,
 } from "../../helpers/nostr/napplets";
 import useEvent from "../../hooks/use-event";
 
-export function NappletRouteLoader({
-  address,
-  pointer,
-  intent,
-}: {
-  address: string;
-  pointer: DecodeResult;
-  intent?: NappletIntent;
-}) {
+export function NappletRouteLoader({ address, pointer }: { address: string; pointer: DecodeResult }) {
   const navigate = useNavigate();
   const eventPointer = useMemo(() => getNappletEventPointer(pointer), [pointer]);
   const event: NostrEvent | undefined = useEvent(eventPointer);
@@ -36,11 +25,8 @@ export function NappletRouteLoader({
     const naddr = getNappletNaddr(event);
     if (!naddr) return;
 
-    if (naddr !== address) {
-      const search = intent ? `?${NAPPLET_INTENT_PARAM}=${encodeNappletIntent(intent)}` : "";
-      navigate(`/app/${naddr}${search}`, { replace: true });
-    }
-  }, [address, event, intent, navigate]);
+    if (naddr !== address) navigate(`/app/${naddr}`, { replace: true });
+  }, [address, event, navigate]);
 
   if (!eventPointer)
     return (
@@ -84,7 +70,7 @@ export function NappletRouteLoader({
       </SimpleView>
     );
 
-  return <NappletFrame event={event} intent={intent} />;
+  return <NappletFrame event={event} />;
 }
 
 export default function NappletView() {

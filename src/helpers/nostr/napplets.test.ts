@@ -76,12 +76,44 @@ describe("parseNappletManifest", () => {
       ["archetype", "Bad Slug", "napplet:x/y"],
     ]);
     expect(parseNappletManifest(event).archetypes).toEqual([
-      { slug: "feed", convention: "napplet:feed/open" },
-      { slug: "feed", convention: "napplet:feed/edit" },
+      { slug: "feed", convention: "napplet:feed/open", params: [] },
+      { slug: "feed", convention: "napplet:feed/edit", params: ["filters", "relays"] },
     ]);
     expect(getNappletArchetypes(event)).toEqual([
-      { name: "feed", actions: ["open", "edit"], protocols: ["napplet:feed/open", "napplet:feed/edit"] },
+      {
+        name: "feed",
+        contracts: [
+          { convention: "napplet:feed/open", params: [] },
+          { convention: "napplet:feed/edit", params: ["filters", "relays"] },
+        ],
+      },
     ]);
+  });
+
+  it("only accepts intents whose role is advertised by a z tag and ignores legacy archetype tags", () => {
+    const event = manifest([
+      ["x", htmlHash],
+      ["d", "a"],
+      ["z", "profile"],
+      ["i", "napplet:profile/open", "pubkey"],
+      ["i", "napplet:note/open"],
+      ["archetype", "chat", "napplet:chat/open"],
+    ]);
+    expect(getNappletArchetypes(event)).toEqual([
+      { name: "profile", contracts: [{ convention: "napplet:profile/open", params: ["pubkey"] }] },
+    ]);
+  });
+
+  it("assigns publisher and kind safe catalog ids", () => {
+    const named = manifest([
+      ["x", htmlHash],
+      ["d", "a"],
+    ]);
+    const root = manifest([["x", htmlHash]], NAPPLET_KIND_ROOT);
+    const snapshot = manifest([["x", htmlHash]], NAPPLET_KIND_SNAPSHOT);
+    expect(parseNappletManifest(named).catalogId).toBe(`nip5d:${NAPPLET_KIND_NAMED}:${named.pubkey}:a`);
+    expect(parseNappletManifest(root).catalogId).toBe(`nip5d:${NAPPLET_KIND_ROOT}:${root.pubkey}`);
+    expect(parseNappletManifest(snapshot).catalogId).toBe(`nip5d:${NAPPLET_KIND_SNAPSHOT}:${snapshot.id}`);
   });
 
   it("reads R and O domains, reporting only unsupported required ones", () => {

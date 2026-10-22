@@ -1,63 +1,50 @@
-import {
-  Button,
-  Code,
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
-  Stack,
-  Text,
-} from "@chakra-ui/react";
+import { Button, Flex, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay } from "@chakra-ui/react";
+import type { IntentCandidate } from "@kehto/services";
 
-import { type InstalledNapplet } from "../../services/installed-napplets";
+import useInstalledNapplets from "../../hooks/use-installed-napplets";
+import { getInstalledNappletByCatalogId } from "../../services/installed-napplets";
+import InstalledNappletIcon from "./installed-napplet-icon";
 
 export type NappletIntentChoiceRequest = {
   archetype: string;
-  action: string;
+  candidates: readonly IntentCandidate[];
 };
 
 export type NappletIntentChoiceModalProps = {
   intentChoice: NappletIntentChoiceRequest | undefined;
-  installedNapplets: InstalledNapplet[];
-  onRespond: (handler?: InstalledNapplet) => void;
+  onRespond: (catalogId?: string) => void;
 };
 
-export default function NappletIntentChoiceModal({
-  intentChoice,
-  installedNapplets,
-  onRespond,
-}: NappletIntentChoiceModalProps) {
+export default function NappletIntentChoiceModal({ intentChoice, onRespond }: NappletIntentChoiceModalProps) {
+  const installed = useInstalledNapplets();
+
   return (
     <Modal isOpen={!!intentChoice} onClose={() => onRespond()} isCentered>
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>Choose a napplet</ModalHeader>
+        <ModalHeader>Open {intentChoice?.archetype} with</ModalHeader>
         <ModalBody>
-          {intentChoice && (
-            <Stack spacing="3">
-              <Text>
-                No installed napplet declares support for <Code>{intentChoice.archetype}</Code>/
-                <Code>{intentChoice.action}</Code>. Choose a napplet to handle this intent.
-              </Text>
-              <Stack spacing="2">
-                {installedNapplets.map((napplet) => (
-                  <Button
-                    key={napplet.address}
-                    variant="outline"
-                    justifyContent="flex-start"
-                    whiteSpace="normal"
-                    h="auto"
-                    py="3"
-                    onClick={() => onRespond(napplet)}
-                  >
-                    {napplet.title}
-                  </Button>
-                ))}
-              </Stack>
-            </Stack>
-          )}
+          <Flex direction="column" gap="2">
+            {intentChoice?.candidates.map((candidate) => {
+              const napplet = getInstalledNappletByCatalogId(candidate.id, installed);
+
+              return (
+                <Button
+                  key={candidate.id}
+                  variant="outline"
+                  justifyContent="flex-start"
+                  whiteSpace="normal"
+                  h="auto"
+                  py="3"
+                  gap="3"
+                  leftIcon={napplet && <InstalledNappletIcon napplet={napplet} boxSize="8" />}
+                  onClick={() => onRespond(candidate.id)}
+                >
+                  {candidate.title ?? napplet?.title ?? candidate.id}
+                </Button>
+              );
+            })}
+          </Flex>
         </ModalBody>
         <ModalFooter>
           <Button variant="ghost" onClick={() => onRespond()}>

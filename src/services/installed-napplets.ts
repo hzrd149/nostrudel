@@ -2,6 +2,7 @@ import { NostrEvent } from "nostr-tools";
 import { BehaviorSubject, Subject } from "rxjs";
 
 import {
+  getNappletAddressCatalogId,
   getNappletArchetypes,
   getNappletDescription,
   getNappletNaddr,
@@ -9,6 +10,7 @@ import {
   type NappletArchetype,
 } from "../helpers/nostr/napplets";
 import {
+  normalizeHandlerPreferences,
   parseInstalledNappletEntries,
   toSyncedNapplet,
   type IntentHandlerPreferences,
@@ -40,10 +42,6 @@ function scopedKey(key: string, pubkey = scope) {
 /** Emits when the user installs, uninstalls, or changes a default handler (not on open or sync) */
 export const localNappletChanges$ = new Subject<void>();
 
-export function intentKey(archetype: string, action = "open") {
-  return `${archetype}/${action}`;
-}
-
 function read(pubkey = scope): InstalledNapplet[] {
   try {
     return parseInstalledNappletEntries(JSON.parse(localStorage.getItem(scopedKey(STORAGE_KEY, pubkey)) ?? "[]")).map(
@@ -74,26 +72,21 @@ export function getInstalledNapplet(address: string) {
   return getInstalledNapplets().find((item) => item.address === address);
 }
 
-export function getInstalledNappletByArchetype(archetype: string, installed = getInstalledNapplets()) {
-  return installed.find((item) => item.archetypes.some((entry) => entry.name === archetype));
-}
-
-export function getInstalledNappletsForIntent(archetype: string, action = "open", installed = getInstalledNapplets()) {
-  return installed.filter((item) =>
-    item.archetypes.some((entry) => entry.name === archetype && entry.actions.includes(action)),
-  );
+export function getInstalledNappletByCatalogId(catalogId: string, installed = getInstalledNapplets()) {
+  return installed.find((item) => getNappletAddressCatalogId(item.address) === catalogId);
 }
 
 function readHandlerPreferences(pubkey = scope): IntentHandlerPreferences {
   try {
-    const parsed = JSON.parse(localStorage.getItem(scopedKey(HANDLER_STORAGE_KEY, pubkey)) ?? "{}");
-    return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : {};
+    return normalizeHandlerPreferences(
+      JSON.parse(localStorage.getItem(scopedKey(HANDLER_STORAGE_KEY, pubkey)) ?? "{}"),
+    );
   } catch {
     return {};
   }
 }
 
-/** Default intent handler addresses keyed by `archetype/action` */
+/** Default intent handler addresses keyed by archetype */
 export const intentHandlerPreferences$ = new BehaviorSubject<IntentHandlerPreferences>(readHandlerPreferences());
 
 function writeHandlerPreferences(preferences: IntentHandlerPreferences) {
@@ -145,19 +138,20 @@ export function applyNappletSyncData(data: NappletSyncData) {
   writeHandlerPreferences(data.handlers);
 }
 
-export function getDefaultIntentHandler(archetype: string, action = "open") {
-  const address = intentHandlerPreferences$.value[intentKey(archetype, action)];
+export function getDefaultIntentHandler(archetype: string) {
+  const address = intentHandlerPreferences$.value[archetype];
   return address ? getInstalledNapplet(address) : undefined;
 }
 
-export function setDefaultIntentHandler(archetype: string, action: string, address: string) {
-  writeHandlerPreferences({ ...intentHandlerPreferences$.value, [intentKey(archetype, action)]: address });
+export function setDefaultIntentHandler(archetype: string, address: string) {
+  writeHandlerPreferences({ ...intentHandlerPreferences$.value, [archetype]: address });
   localNappletChanges$.next();
 }
 
-export function getInstalledNappletForIntent(archetype: string, action = "open", installed = getInstalledNapplets()) {
-  const handlers = getInstalledNappletsForIntent(archetype, action, installed);
-  const preferred = getDefaultIntentHandler(archetype, action);
+/** The installed napplet that opens for an archetype: the user's default, otherwise the most recently opened */
+export function getInstalledNappletForArchetype(archetype: string, installed = getInstalledNapplets()) {
+  const handlers = installed.filter((item) => item.archetypes.some((entry) => entry.name === archetype));
+  const preferred = getDefaultIntentHandler(archetype);
   return preferred && handlers.some((handler) => handler.address === preferred.address) ? preferred : handlers[0];
 }
 

@@ -31,6 +31,7 @@ import { getListTitle } from "../../helpers/nostr/lists";
 import {
   NAPPLET_KIND_NAMED,
   NAPPLET_KIND_ROOT,
+  getArchetypeActions,
   getNappletArchetypes,
   getNappletDescription,
   getNappletHashtags,
@@ -77,7 +78,7 @@ function getNappletSearchValues(event: NostrEvent) {
     getNappletNaddr(event),
     event.pubkey,
     ...getNappletHashtags(event),
-    ...archetypes.flatMap((archetype) => [archetype.name, ...archetype.actions]),
+    ...archetypes.flatMap((archetype) => [archetype.name, ...getArchetypeActions(archetype)]),
   ].filter((value): value is string => !!value);
 }
 
