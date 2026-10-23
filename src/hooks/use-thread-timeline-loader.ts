@@ -1,41 +1,20 @@
-import { getNip10References } from "applesauce-common/helpers";
-import { kinds as eventKinds, NostrEvent } from "nostr-tools";
+import { NostrEvent } from "nostr-tools";
 import { useMemo } from "react";
 
 import { unique } from "../helpers/array";
+import { getThreadFilters, getThreadRoot, getThreadScopeKey, isExternalThreadScope } from "../helpers/nostr/thread";
 import useTimelineLoader from "./use-timeline-loader";
 
-/**
- * Seeds the event store with every event referencing a thread's root.
- *
- * Resolves the root pointer from the focused event (via NIP-10) and opens a
- * relay-side `#e` / `#q` subscription against it. Consumers should subscribe
- * to thread data through the event store (e.g. Note casts) rather than from
- * this hook — it intentionally only returns the root pointer and the loader
- * needed to drive infinite scroll.
- */
-export default function useThreadTimelineLoader(
-  focusedEvent: NostrEvent | undefined,
-  relays: Iterable<string>,
-  kinds?: number[],
-) {
-  const refs = focusedEvent && getNip10References(focusedEvent);
-  const rootPointer = refs?.root?.e || (focusedEvent && { id: focusedEvent.id });
-
-  const readRelays = useMemo(() => unique([...relays, ...(rootPointer?.relays ?? [])]), [relays, rootPointer?.relays]);
-
-  const kindArr = kinds ? (kinds.length > 0 ? kinds : undefined) : [eventKinds.ShortTextNote];
-  const timelineId = `${rootPointer?.id}-thread`;
+/** Seed the shared store with NIP-10 replies and NIP-22 comments at every depth. */
+export default function useThreadTimelineLoader(focusedEvent: NostrEvent | undefined, relays: Iterable<string>) {
+  const root = useMemo(() => focusedEvent && getThreadRoot(focusedEvent), [focusedEvent]);
+  const rootPointer = root && !isExternalThreadScope(root) ? root : undefined;
+  const readRelays = useMemo(() => unique([...relays, ...(rootPointer?.relays ?? [])]), [relays, rootPointer]);
   const { loader } = useTimelineLoader(
-    timelineId,
+    root ? `${getThreadScopeKey(root)}-thread` : "thread",
     readRelays,
-    rootPointer
-      ? [
-          { "#e": [rootPointer.id], kinds: kindArr },
-          { "#q": [rootPointer.id], kinds: kindArr },
-        ]
-      : undefined,
+    root ? getThreadFilters(root) : undefined,
   );
 
-  return { rootPointer, loader };
+  return { root, rootPointer, loader };
 }
