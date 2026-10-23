@@ -5,9 +5,10 @@ import { use$ } from "applesauce-react/hooks";
 import { TimelineLoader } from "applesauce-loaders/loaders";
 import { NostrEvent } from "nostr-tools";
 import { useCallback, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useLocation, useSearchParams } from "react-router-dom";
 
 import { getTimelineRange } from "../../helpers/timeline-range";
+import useMinNumber from "../../hooks/timeline/use-min-number";
 import useRouteSearchValue from "../../hooks/use-route-search-value";
 import IntersectionObserverProvider, {
   useCachedIntersectionMapCallback,
@@ -43,7 +44,12 @@ export default function TimelinePage({
   "children" | "direction" | "gap" | "as"
 >) {
   const range = loader ? getTimelineRange(loader) : undefined;
-  const since = use$(range?.range$)?.since;
+  const loadedSince = use$(range?.range$)?.since;
+  const { pathname, search } = useLocation();
+  // Relay changes replace the loader with a fresh range at now. Keep notes already
+  // on screen mounted while that loader catches up; only navigation resets this floor.
+  const oldest = useMinNumber(pathname + search, loadedSince);
+  const since = oldest === Infinity ? undefined : oldest;
 
   // Load the visible part of the timeline and grow the rendered range while the page is open
   useEffect(() => {

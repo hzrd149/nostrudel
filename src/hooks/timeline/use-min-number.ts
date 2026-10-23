@@ -1,19 +1,15 @@
-import { useEffect, useRef } from "react";
+import { useState } from "react";
 
-export default function useMinNumber(reset?: any, ...values: (number | undefined)[]) {
-  const min = useRef<number>(Infinity);
-
-  // reset min when reset changes
-  useEffect(() => {
-    min.current = Infinity;
-  }, [reset]);
+export default function useMinNumber(reset?: unknown, ...values: (number | undefined)[]) {
+  const [state, setState] = useState({ reset, min: Infinity });
+  let min = state.reset === reset ? state.min : Infinity;
 
   for (const v of values) {
     if (v !== undefined) {
-      if (min.current === undefined) min.current = v;
-      else if (v < min.current) min.current = v;
+      if (v < min) min = v;
     }
   }
 
-  return min.current;
+  if (state.reset !== reset || state.min !== min) setState({ reset, min });
+  return min;
 }
