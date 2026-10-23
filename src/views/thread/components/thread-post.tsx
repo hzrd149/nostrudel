@@ -121,11 +121,11 @@ function ThreadPost({ note, initShowReplies, focusId, level = -1, ancestors = []
 
   const showReactionsOnNewLine = useBreakpointValue({ base: true, lg: false });
   const reactionButtons = showReactions && !isPoll(note.event) && (
-    <NoteReactions event={note.event} flexWrap="wrap" variant="ghost" />
+    <NoteReactions event={note.event} flexWrap="wrap" variant="ghost" size="sm" />
   );
   const footer = (
     <Flex gap="2" alignItems="center">
-      <ButtonGroup variant="ghost">
+      <ButtonGroup variant="ghost" size="sm">
         <IconButton aria-label="Reply" title="Reply" onClick={replyForm.onToggle} icon={<ReplyIcon />} />
         <EventShareButton event={note.event} />
         <EventQuoteButton event={note.event} />
@@ -133,7 +133,7 @@ function ThreadPost({ note, initShowReplies, focusId, level = -1, ancestors = []
       </ButtonGroup>
       {!showReactionsOnNewLine && reactionButtons}
       <Spacer />
-      <ButtonGroup variant="ghost">
+      <ButtonGroup variant="ghost" size="sm">
         <NoteProxyLink event={note.event} />
         <BookmarkEventButton event={note.event} aria-label="Bookmark" />
         <SeenOnRelaysButton event={note.event} />
