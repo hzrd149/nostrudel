@@ -12,6 +12,7 @@ import { ChevronDownIcon, ChevronUpIcon } from "../../../components/icons";
 import MagicTextArea, { RefType } from "../../../components/magic-textarea";
 import { TextNoteContents } from "../../../components/timeline/note/text-note-contents";
 import InsertReactionButton from "../../../components/reactions/insert-reaction-button";
+import useAsyncAction from "../../../hooks/use-async-action";
 import useCacheForm from "../../../hooks/use-cache-form";
 import useTextAreaUploadFile, { useTextAreaInsertTextWithForm } from "../../../hooks/use-textarea-upload-file";
 import { useContextEmojis } from "../../../providers/global/emoji-provider";
@@ -19,6 +20,8 @@ import { usePublishEvent } from "../../../providers/global/publish-provider";
 import { ContentSettingsProvider } from "../../../providers/local/content-settings";
 import UploadProvider, { useUploadContext } from "../../../providers/local/upload-provider";
 import InsertImageButton from "../../new/note/insert-image-button";
+
+type ReplyFormValues = { content: string; nsfw: boolean; nsfwReason: string };
 
 export type ReplyFormProps = {
   event: NostrEvent;
@@ -33,7 +36,7 @@ function ReplyFormInner({ event, onCancel, onSubmitted, replyKind: _replyKind = 
   const advanced = useDisclosure();
   const customEmojis = useMemo(() => emojis.filter((e) => !!e.url) as Emoji[], [emojis]);
 
-  const { setValue, getValues, watch, handleSubmit, formState, reset, register } = useForm({
+  const { setValue, getValues, watch, handleSubmit, formState, reset, register } = useForm<ReplyFormValues>({
     defaultValues: {
       content: "",
       nsfw: false,
@@ -42,12 +45,7 @@ function ReplyFormInner({ event, onCancel, onSubmitted, replyKind: _replyKind = 
     mode: "all",
   });
 
-  const clearCache = useCacheForm<{ content: string; nsfw: boolean; nsfwReason: string }>(
-    `reply-${event.id}`,
-    getValues,
-    reset,
-    formState,
-  );
+  const clearCache = useCacheForm<ReplyFormValues>(`reply-${event.id}`, getValues, reset, formState);
 
   watch("content");
 
@@ -57,7 +55,7 @@ function ReplyFormInner({ event, onCancel, onSubmitted, replyKind: _replyKind = 
   const insertText = useTextAreaInsertTextWithForm(textAreaRef, getValues, setValue);
   const { onPaste } = useTextAreaUploadFile(insertText);
 
-  const submit = handleSubmit(async (values) => {
+  const { loading, run: submitReply } = useAsyncAction(async (values: ReplyFormValues) => {
     let draft = NoteFactory.reply(event, values.content).text(values.content, {
       emojis: customEmojis,
       contentWarning: values.nsfw ? values.nsfwReason || values.nsfw : false,
@@ -66,9 +64,11 @@ function ReplyFormInner({ event, onCancel, onSubmitted, replyKind: _replyKind = 
 
     const pub = await publish("Reply", await draft);
 
-    if (pub && onSubmitted) onSubmitted(pub.event);
+    if (!pub) return;
+    onSubmitted?.(pub.event);
     clearCache();
   });
+  const submit = handleSubmit(submitReply);
 
   const formRef = useRef<HTMLFormElement | null>(null);
 
@@ -99,7 +99,7 @@ function ReplyFormInner({ event, onCancel, onSubmitted, replyKind: _replyKind = 
       />
       <UploadStatus />
       <Flex gap="2" alignItems="center">
-        <ButtonGroup size="sm">
+        <ButtonGroup>
           <InsertImageButton onUploaded={insertText} aria-label="Upload image" />
           <InsertGifButton onSelectURL={insertText} aria-label="Add gif" />
           <InsertReactionButton onSelect={insertText} aria-label="Add emoji" />
@@ -111,12 +111,12 @@ function ReplyFormInner({ event, onCancel, onSubmitted, replyKind: _replyKind = 
             More
           </Button>
         </ButtonGroup>
-        <ButtonGroup size="sm" ml="auto">
+        <ButtonGroup ml="auto">
           {onCancel && <Button onClick={onCancel}>Cancel</Button>}
           <Button
             type="submit"
+            isLoading={loading}
             colorScheme="primary"
-            size="sm"
             isDisabled={!!uploadCtx?.isUploading}
             title={uploadCtx?.isUploading ? "Upload in progress" : undefined}
           >
@@ -129,7 +129,9 @@ function ReplyFormInner({ event, onCancel, onSubmitted, replyKind: _replyKind = 
         <Flex direction={{ base: "column", lg: "row" }} gap="4">
           <Flex direction="column" gap="2" flex={1}>
             <Flex gap="2" direction="column">
-              <Switch {...register("nsfw")}>NSFW</Switch>
+              <Switch colorScheme="primary" {...register("nsfw")}>
+                NSFW
+              </Switch>
               {getValues().nsfw && (
                 <Input {...register("nsfwReason", { required: true })} placeholder="Reason" isRequired />
               )}

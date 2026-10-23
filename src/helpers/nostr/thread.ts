@@ -83,6 +83,7 @@ export function castThreadEvent(event: NostrEvent): ThreadEvent | undefined {
 }
 
 export function isDirectThreadReply(reply: NostrEvent, parent: NostrEvent | string): boolean {
+  if (reply.kind === COMMENT_KIND && !isValidComment(reply)) return false;
   const pointer = getThreadParent(reply);
   if (!pointer || isExternalThreadScope(pointer)) return false;
   if (typeof parent === "string") return !isAddressPointer(pointer) && pointer.id === parent;

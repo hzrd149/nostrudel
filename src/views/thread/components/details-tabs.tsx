@@ -1,20 +1,16 @@
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/react";
 import styled from "@emotion/styled";
-import { Note } from "applesauce-common/casts";
-import { mapEventsToStore } from "applesauce-core";
-import { use$, useEventModel } from "applesauce-react/hooks";
+import { use$, useEventModel, useEventStore } from "applesauce-react/hooks";
 import { kinds } from "nostr-tools";
+import { COMMENT_KIND } from "applesauce-common/helpers";
 import { ReactNode } from "react";
-import { ignoreElements } from "rxjs";
 
+import { ThreadEvent } from "../../../helpers/nostr/thread";
+import { ThreadRepliesModel } from "../../../models/thread-replies";
 import { CAP_IS_WEB } from "../../../env";
-import { useReadRelays } from "../../../hooks/use-client-relays";
 import useEventZaps from "../../../hooks/use-event-zaps";
 import useRouteSearchValue from "../../../hooks/use-route-search-value";
-import { useUserInbox } from "../../../hooks/use-user-mailboxes";
 import { QuotesModel } from "../../../models";
-import { eventStore } from "../../../services/event-store";
-import pool from "../../../services/pool";
 import { repliesByDate } from "../helpers";
 import OtherAppsTab from "./tabs/other-apps";
 import PostQuotesTab from "./tabs/quotes";
@@ -32,24 +28,12 @@ const HiddenScrollbarTabList = styled(TabList)`
   }
 `;
 
-export default function DetailsTabs({ note }: { note: Note }) {
+export default function DetailsTabs({ note }: { note: ThreadEvent }) {
   const selected = useRouteSearchValue("tab", "replies");
-  const inboxes = useUserInbox(note.event.pubkey);
-  const readRelays = useReadRelays(inboxes);
+  const eventStore = useEventStore();
 
-  // Keep a live subscription open for this thread while viewing
-  use$(() => {
-    const id = note.id;
-    return pool
-      .subscription(readRelays, [
-        { "#e": [id], limit: 100 },
-        { "#q": [id], limit: 100 },
-      ])
-      .pipe(mapEventsToStore(eventStore), ignoreElements());
-  }, [note.id, readRelays.join(",")]);
-
-  const replies = use$(note.replies$);
-  const reactions = use$(note.reactions$);
+  const replies = useEventModel(ThreadRepliesModel, [note.event]);
+  const reactions = use$(() => note.reactions$, [note]);
   const zaps = useEventZaps(note.event);
 
   const quotes = useEventModel(QuotesModel, [note.id]);
@@ -60,6 +44,7 @@ export default function DetailsTabs({ note }: { note: Note }) {
   const unknown = events?.filter(
     (e) =>
       e.kind !== kinds.ShortTextNote &&
+      e.kind !== COMMENT_KIND &&
       e.kind !== kinds.Zap &&
       e.kind !== kinds.Reaction &&
       e.kind !== kinds.Repost &&
@@ -74,7 +59,7 @@ export default function DetailsTabs({ note }: { note: Note }) {
       element: (
         <TabPanel key="replies" display="flex" flexDirection="column" gap="2" py="2" pr="0" pl={{ base: 2, md: 4 }}>
           {repliesByDate(replies ?? []).map((child) => (
-            <ThreadPost key={child.event.id} note={child} focusId={undefined} level={0} />
+            <ThreadPost key={child.event.id} note={child} focusId={undefined} level={0} ancestors={[note.id]} />
           ))}
         </TabPanel>
       ),
@@ -142,8 +127,11 @@ export default function DetailsTabs({ note }: { note: Note }) {
     },
   ];
 
-  const s = tabs.find((t) => t.id === selected.value);
-  const index = s ? tabs.indexOf(s) : 0;
+  const visibleTabs = tabs.filter((tab) => tab.visible);
+  const index = Math.max(
+    0,
+    visibleTabs.findIndex((tab) => tab.id === selected.value),
+  );
 
   return (
     <Tabs
@@ -153,24 +141,21 @@ export default function DetailsTabs({ note }: { note: Note }) {
       isLazy
       index={index}
       onChange={(v) => {
-        if (tabs[v]) selected.setValue(tabs[v].id, true);
+        if (visibleTabs[v]) selected.setValue(visibleTabs[v].id, true);
         else selected.clearValue(true);
       }}
       h="full"
       colorScheme="primary"
       variant="solid-rounded"
-      size="sm"
     >
       <HiddenScrollbarTabList px="2" gap="2" whiteSpace="pre" overflowX="auto">
-        {tabs
-          .filter((t) => t.visible)
-          .map((tab) => (
-            <Tab key={tab.id} ml={tab.right ? "auto" : undefined}>
-              {tab.name}
-            </Tab>
-          ))}
+        {visibleTabs.map((tab) => (
+          <Tab key={tab.id} ml={tab.right ? "auto" : undefined}>
+            {tab.name}
+          </Tab>
+        ))}
       </HiddenScrollbarTabList>
-      <TabPanels minH={{ base: "50vh", md: "0" }}>{tabs.filter((t) => t.visible).map((tab) => tab.element)}</TabPanels>
+      <TabPanels minH={{ base: "50vh", md: "0" }}>{visibleTabs.map((tab) => tab.element)}</TabPanels>
     </Tabs>
   );
 }

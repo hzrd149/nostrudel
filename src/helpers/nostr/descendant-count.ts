@@ -1,9 +1,9 @@
 import { COMMENT_KIND } from "applesauce-common/helpers";
-import { buildCommonEventRelationFilters } from "applesauce-core/helpers";
+import { buildCommonEventRelationFilters, getAddressPointerForEvent } from "applesauce-core/helpers";
 import { IEventStore } from "applesauce-core/event-store";
-import { kinds as eventKinds } from "nostr-tools";
+import { kinds as eventKinds, NostrEvent } from "nostr-tools";
 
-import { isDirectThreadReply } from "./thread";
+import { getThreadParent, getThreadScopeKey, isDirectThreadReply } from "./thread";
 
 /**
  * Recursively counts descendants of an event using only what's currently in the
@@ -26,4 +26,36 @@ export function countDescendantsInStore(
     total += 1 + countDescendantsInStore(event.id, store, kinds, seen);
   }
   return total;
+}
+
+/** Count a reactive timeline snapshot without requiring synchronous store queries. */
+export function countDescendantsInTimeline(parent: NostrEvent, events: NostrEvent[]): number {
+  const children = new Map<string, NostrEvent[]>();
+  for (const event of events) {
+    const pointer = getThreadParent(event);
+    if (!pointer) continue;
+    const key = getThreadScopeKey(pointer);
+    const siblings = children.get(key) ?? [];
+    siblings.push(event);
+    children.set(key, siblings);
+  }
+
+  const seen = new Set<string>([parent.id]);
+  const pending = [parent];
+  let count = 0;
+  while (pending.length > 0) {
+    const current = pending.pop()!;
+    const address = getAddressPointerForEvent(current);
+    const candidates = [
+      ...(children.get(current.id) ?? []),
+      ...(address ? (children.get(getThreadScopeKey(address)) ?? []) : []),
+    ];
+    for (const child of candidates) {
+      if (seen.has(child.id) || !isDirectThreadReply(child, current)) continue;
+      seen.add(child.id);
+      count++;
+      pending.push(child);
+    }
+  }
+  return count;
 }

@@ -1,3 +1,4 @@
+import { Box, Button, ButtonGroup, Flex } from "@chakra-ui/react";
 import { useRef } from "react";
 import { NostrEvent } from "nostr-tools";
 import { getEventUID } from "applesauce-core/helpers";
@@ -9,8 +10,8 @@ import { usePublishEvent } from "../../providers/global/publish-provider";
 import { useContextEmojis } from "../../providers/global/emoji-provider";
 import useTextAreaUploadFile, { useTextAreaInsertTextWithForm } from "../../hooks/use-textarea-upload-file";
 import MagicTextArea, { RefType } from "../magic-textarea";
+import useAsyncAction from "../../hooks/use-async-action";
 import useCacheForm from "../../hooks/use-cache-form";
-import { Box, Button, ButtonGroup, Flex } from "@chakra-ui/react";
 import InsertImageButton from "../../views/new/note/insert-image-button";
 import InsertGifButton from "../gif/insert-gif-button";
 import { ContentSettingsProvider } from "../../providers/local/content-settings";
@@ -18,6 +19,8 @@ import TextNoteContents from "../timeline/note/text-note-contents";
 import InsertReactionButton from "../reactions/insert-reaction-button";
 import UploadProvider, { useUploadContext } from "../../providers/local/upload-provider";
 import UploadStatus from "../upload-status";
+
+type CommentFormValues = { content: string };
 
 type GenericCommentFormProps = {
   event: NostrEvent;
@@ -31,14 +34,14 @@ function GenericCommentFormInner({ event, onSubmitted, onCancel, simple }: Gener
   const publish = usePublishEvent();
   const emojis = useContextEmojis();
 
-  const { setValue, getValues, watch, handleSubmit, formState, reset } = useForm({
+  const { setValue, getValues, watch, handleSubmit, formState, reset } = useForm<CommentFormValues>({
     defaultValues: {
       content: "",
     },
     mode: "all",
   });
 
-  const clearCache = useCacheForm<{ content: string }>(`comment-${getEventUID(event)}`, getValues, reset, formState);
+  const clearCache = useCacheForm<CommentFormValues>(`comment-${getEventUID(event)}`, getValues, reset, formState);
 
   watch("content");
 
@@ -48,15 +51,17 @@ function GenericCommentFormInner({ event, onSubmitted, onCancel, simple }: Gener
   const insertText = useTextAreaInsertTextWithForm(textAreaRef, getValues, setValue);
   const { onPaste } = useTextAreaUploadFile(insertText);
 
-  const submit = handleSubmit(async (values) => {
+  const { loading, run: submitReply } = useAsyncAction(async (values: CommentFormValues) => {
     const draft = await CommentFactory.create(event, values.content, { emojis });
 
     const pub = await publish("Comment", draft);
 
-    if (pub && onSubmitted) onSubmitted(pub.event);
+    if (!pub) return;
+    onSubmitted?.(pub.event);
     clearCache();
     reset();
   });
+  const submit = handleSubmit(submitReply);
 
   const formRef = useRef<HTMLFormElement | null>(null);
 
@@ -86,18 +91,18 @@ function GenericCommentFormInner({ event, onSubmitted, onCancel, simple }: Gener
       <UploadStatus />
       <Flex gap="2" alignItems="center">
         {!simple && (
-          <ButtonGroup size="sm">
+          <ButtonGroup>
             <InsertImageButton onUploaded={insertText} aria-label="Upload image" />
             <InsertGifButton onSelectURL={insertText} aria-label="Add gif" />
             <InsertReactionButton onSelect={insertText} aria-label="Add Emoji" />
           </ButtonGroup>
         )}
-        <ButtonGroup size="sm" ml="auto">
+        <ButtonGroup ml="auto">
           {onCancel && <Button onClick={onCancel}>Cancel</Button>}
           <Button
             type="submit"
+            isLoading={loading}
             colorScheme="primary"
-            size="sm"
             isDisabled={!!uploadCtx?.isUploading}
             title={uploadCtx?.isUploading ? "Upload in progress" : undefined}
           >

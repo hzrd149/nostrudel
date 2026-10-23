@@ -1,9 +1,10 @@
 import { Alert, AlertIcon, Button, ButtonGroup, Flex, IconButton, Link, Spacer, useDisclosure } from "@chakra-ui/react";
-import { Note } from "applesauce-common/casts";
-import { use$, useEventStore } from "applesauce-react/hooks";
-import { memo, useMemo, useState } from "react";
+import { COMMENT_KIND } from "applesauce-common/helpers";
+import { useEventModel } from "applesauce-react/hooks";
+import { memo, useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
 
+import GenericCommentForm from "../../../components/comment/generic-comment-form";
 import { ReplyIcon } from "../../../components/icons";
 import Expand01 from "../../../components/icons/expand-01";
 import Minus from "../../../components/icons/minus";
@@ -24,6 +25,8 @@ import UserAvatarLink from "../../../components/user/user-avatar-link";
 import UserDnsIdentity from "../../../components/user/user-dns-identity";
 import UserLink from "../../../components/user/user-link";
 import EventZapButton from "../../../components/zap/event-zap-button";
+import { ThreadEvent } from "../../../helpers/nostr/thread";
+import { ThreadRepliesModel, ThreadDescendantCountModel } from "../../../models/thread-replies";
 import { isPoll } from "../../../helpers/nostr/polls";
 import useClientSideMuteFilter from "../../../hooks/use-client-side-mute-filter";
 import useEventIntersectionRef from "../../../hooks/use-event-intersection-ref";
@@ -32,35 +35,31 @@ import useAppSettings from "../../../hooks/use-user-app-settings";
 import { useBreakpointValue } from "../../../providers/global/breakpoint-provider";
 import { ContentSettingsProvider } from "../../../providers/local/content-settings";
 import { getSharableEventAddress } from "../../../services/relay-hints";
-import { countDescendantsInStore, repliesByDate } from "../helpers";
+import { repliesByDate } from "../helpers";
 import DetailsTabs from "./details-tabs";
 import MutedNotePlaceholder from "./muted-note-placeholder";
 import ReplyForm from "./reply-form";
 
 export type ThreadPostProps = {
-  note: Note;
+  note: ThreadEvent;
+  ancestors?: string[];
   initShowReplies?: boolean;
   focusId?: string;
   level?: number;
 };
 
-function ThreadPost({ note, initShowReplies, focusId, level = -1 }: ThreadPostProps) {
+function ThreadPost({ note, initShowReplies, focusId, level = -1, ancestors = [] }: ThreadPostProps) {
   const { showReactions } = useAppSettings();
-  const replies = use$(() => note.replies$, [note]) ?? [];
+  const replies = (useEventModel(ThreadRepliesModel, [note.event]) ?? []).filter(
+    (reply) => !ancestors.includes(reply.id),
+  );
   const expanded = useDisclosure({ defaultIsOpen: initShowReplies ?? (level < 2 || replies.length <= 1) });
   const replyForm = useDisclosure();
 
   const muteFilter = useClientSideMuteFilter();
-  const eventStore = useEventStore();
-
   const isFocused = level === -1;
-  // Recursive count over what's currently in the event store — no extra subscriptions.
-  // Recomputes whenever this post's direct replies change.
-  const numberOfReplies = useMemo(
-    () => countDescendantsInStore(note.event.id, eventStore),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [note.event.id, eventStore, replies],
-  );
+  const numberOfReplies = useEventModel(ThreadDescendantCountModel, [note.event]) ?? 0;
+  const ReplyComposer = note.event.kind === COMMENT_KIND ? GenericCommentForm : ReplyForm;
   const isMuted = muteFilter(note.event);
 
   const [alwaysShow, setAlwaysShow] = useState(false);
@@ -68,7 +67,7 @@ function ThreadPost({ note, initShowReplies, focusId, level = -1 }: ThreadPostPr
     <Alert status="warning">
       <AlertIcon />
       Muted user or note
-      <Button size="xs" ml="auto" onClick={() => setAlwaysShow(true)}>
+      <Button ml="auto" onClick={() => setAlwaysShow(true)}>
         Show anyway
       </Button>
     </Alert>
@@ -122,11 +121,11 @@ function ThreadPost({ note, initShowReplies, focusId, level = -1 }: ThreadPostPr
 
   const showReactionsOnNewLine = useBreakpointValue({ base: true, lg: false });
   const reactionButtons = showReactions && !isPoll(note.event) && (
-    <NoteReactions event={note.event} flexWrap="wrap" variant="ghost" size="sm" />
+    <NoteReactions event={note.event} flexWrap="wrap" variant="ghost" />
   );
   const footer = (
     <Flex gap="2" alignItems="center">
-      <ButtonGroup variant="ghost" size="sm">
+      <ButtonGroup variant="ghost">
         <IconButton aria-label="Reply" title="Reply" onClick={replyForm.onToggle} icon={<ReplyIcon />} />
         <EventShareButton event={note.event} />
         <EventQuoteButton event={note.event} />
@@ -134,7 +133,7 @@ function ThreadPost({ note, initShowReplies, focusId, level = -1 }: ThreadPostPr
       </ButtonGroup>
       {!showReactionsOnNewLine && reactionButtons}
       <Spacer />
-      <ButtonGroup size="sm" variant="ghost">
+      <ButtonGroup variant="ghost">
         <NoteProxyLink event={note.event} />
         <BookmarkEventButton event={note.event} aria-label="Bookmark" />
         <SeenOnRelaysButton event={note.event} />
@@ -159,7 +158,7 @@ function ThreadPost({ note, initShowReplies, focusId, level = -1 }: ThreadPostPr
           )}
         </Flex>
         {replyForm.isOpen && (
-          <ReplyForm event={note.event} onCancel={replyForm.onClose} onSubmitted={replyForm.onClose} />
+          <ReplyComposer event={note.event} onCancel={replyForm.onClose} onSubmitted={replyForm.onClose} />
         )}
       </>
     );
@@ -179,7 +178,7 @@ function ThreadPost({ note, initShowReplies, focusId, level = -1 }: ThreadPostPr
         )}
       </Flex>
       {replyForm.isOpen && (
-        <ReplyForm event={note.event} onCancel={replyForm.onClose} onSubmitted={replyForm.onClose} />
+        <ReplyComposer event={note.event} onCancel={replyForm.onClose} onSubmitted={replyForm.onClose} />
       )}
       {isFocused ? (
         <DetailsTabs note={note} />
@@ -188,7 +187,13 @@ function ThreadPost({ note, initShowReplies, focusId, level = -1 }: ThreadPostPr
         replies.length > 0 && (
           <Flex direction="column" gap="2" pl={{ base: 2, md: 4 }}>
             {repliesByDate(replies).map((child) => (
-              <ThreadPost key={child.event.id} note={child} focusId={focusId} level={level + 1} />
+              <ThreadPost
+                key={child.event.id}
+                note={child}
+                focusId={focusId}
+                level={level + 1}
+                ancestors={[...ancestors, note.id]}
+              />
             ))}
           </Flex>
         )
