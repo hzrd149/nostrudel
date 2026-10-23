@@ -27,17 +27,7 @@ import ThreadPost from "./components/thread-post";
 import ThreadScopePreview from "./components/thread-scope";
 
 /** Load one ancestor per level through the shared store, stopping at the separately rendered root. */
-function ParentChain({
-  note,
-  root,
-  level = 0,
-  seen = [],
-}: {
-  note: ThreadEvent;
-  root: ThreadScope;
-  level?: number;
-  seen?: string[];
-}) {
+function ParentChain({ note, root, seen = [] }: { note: ThreadEvent; root: ThreadScope; seen?: string[] }) {
   const pointer = getThreadParent(note.event);
   const parentEvent = useSingleEvent(pointer && !isExternalThreadScope(pointer) ? pointer : undefined);
   const parentNote = useThreadEvent(parentEvent);
@@ -49,9 +39,9 @@ function ParentChain({
 
   return (
     <>
-      {parentNote && <ParentChain note={parentNote} root={root} level={level + 1} seen={[...seen, note.id]} />}
+      {parentNote && <ParentChain note={parentNote} root={root} seen={[...seen, note.id]} />}
       <ErrorBoundary event={parentEvent}>
-        <ParentPost event={parentEvent} level={level} />
+        <ParentPost event={parentEvent} />
       </ErrorBoundary>
     </>
   );
@@ -103,7 +93,7 @@ export default function ThreadView() {
           )}
           {focusedEvent && !focusedNote && (
             <>
-              <ParentPost event={focusedEvent} level={0} />
+              <ParentPost event={focusedEvent} />
               <RootReplies event={focusedEvent} />
             </>
           )}

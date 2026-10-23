@@ -16,7 +16,7 @@ export default function ThreadScopePreview({ scope, event }: { scope: ThreadScop
       <Text wordBreak="break-word">{scope.identifier}</Text>
     );
   }
-  if (event) return <ParentPost event={event} level={0} />;
+  if (event) return <ParentPost event={event} />;
   return (
     <LoadingNostrLink
       link={isAddressPointer(scope) ? { type: "naddr", data: scope } : { type: "nevent", data: scope }}
