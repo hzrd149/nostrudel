@@ -1,10 +1,11 @@
-import { Box, Flex, Link } from "@chakra-ui/react";
+import { Box, Flex, Link, LinkBox } from "@chakra-ui/react";
 import { COMMENT_KIND } from "applesauce-common/helpers";
 import { kinds, NostrEvent } from "nostr-tools";
 import { useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
 
 import { EmbedEventCard } from "../../../components/embed-event/card";
+import HoverLinkOverlay from "../../../components/hover-link-overlay";
 import TextNoteContents from "../../../components/timeline/note/text-note-contents";
 import Timestamp from "../../../components/timestamp";
 import UserAvatarLink from "../../../components/user/user-avatar-link";
@@ -34,7 +35,8 @@ export default function ParentPost({ event }: { event: NostrEvent }) {
   return (
     <ContentSettingsProvider blurMedia={false} event={event}>
       {isNote ? (
-        <Flex as="article" direction="column" gap="2" p="2" flexShrink={0} minW={0} ref={ref}>
+        <LinkBox as="article" display="flex" flexDirection="column" gap="2" p="2" flexShrink={0} minW={0} ref={ref}>
+          <HoverLinkOverlay as={RouterLink} to={`/n/${getSharableEventAddress(event)}`} aria-label="View thread" />
           <Flex gap="2" alignItems="center" flexWrap="wrap">
             <UserAvatarLink pubkey={event.pubkey} size="xs" aria-label="avatar" />
             <UserLink pubkey={event.pubkey} fontWeight="bold" />
@@ -48,7 +50,7 @@ export default function ParentPost({ event }: { event: NostrEvent }) {
             </Link>
           </Flex>
           <TextNoteContents event={event} />
-        </Flex>
+        </LinkBox>
       ) : (
         <Box ref={ref} minW={0} flexShrink={0}>
           <EmbedEventCard event={event} />
