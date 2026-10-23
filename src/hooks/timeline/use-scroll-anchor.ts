@@ -13,7 +13,7 @@ export default function useScrollAnchor() {
   const container = useScrollContainer();
   const { subject } = useIntersectionObserver();
   const visible = useRef(new Set<Element>());
-  const anchor = useRef<{ el: Element; top: number }>();
+  const anchor = useRef<{ el: Element; top: number; scrollTop: number }>();
   const after = useRef<() => void>();
 
   const record = useCallback(() => {
@@ -30,8 +30,8 @@ export default function useScrollAnchor() {
         topY = y;
       }
     }
-    anchor.current = top ? { el: top, top: topY } : undefined;
-  }, []);
+    anchor.current = top && container ? { el: top, top: topY, scrollTop: container.scrollTop } : undefined;
+  }, [container]);
 
   // Track which items are on screen
   useEffect(() => {
@@ -62,7 +62,10 @@ export default function useScrollAnchor() {
   // Runs after every render of the owning timeline, before the browser paints
   useLayoutEffect(() => {
     const prev = anchor.current;
-    if (container && prev?.el.isConnected) {
+    // A scroll can happen before its event/animation-frame callback runs. In that case
+    // the saved rectangle is stale: correcting it would undo the reader's scroll
+    // (or apply the browser's native scroll anchoring a second time).
+    if (container && prev?.el.isConnected && container.scrollTop === prev.scrollTop) {
       const shift = prev.el.getBoundingClientRect().top - prev.top;
       if (shift !== 0) container.scrollBy({ top: shift, behavior: "instant" });
     }
