@@ -4,7 +4,6 @@ import {
   ModalBody,
   ModalCloseButton,
   ModalContent,
-  ModalFooter,
   ModalHeader,
   ModalOverlay,
   ModalProps,
@@ -40,22 +39,40 @@ function MuteModal({ pubkey, onClose, ...props }: Omit<ModalProps, "children"> &
   );
 
   return (
-    <Modal onClose={onClose} size="lg" {...props}>
+    <Modal onClose={onClose} size="sm" {...props}>
       <ModalOverlay />
-      <ModalContent>
-        <ModalHeader p="4">Mute {getDisplayName(metadata, pubkey)}</ModalHeader>
+      <ModalContent mx="2" overflow="hidden">
+        <ModalHeader p="4" pr="12" overflowWrap="anywhere">
+          Mute {getDisplayName(metadata, pubkey)}
+        </ModalHeader>
         <ModalCloseButton />
-        <ModalBody px="4" py="0" display="flex" gap="2">
-          <Button onClick={() => run(false)} isDisabled={loading || muting}>
+        <ModalBody p="0" pb="2" display="flex" flexDirection="column">
+          <Button
+            variant="ghost"
+            justifyContent="flex-start"
+            borderRadius="0"
+            px="4"
+            minH="12"
+            onClick={() => run(false)}
+            isDisabled={loading || muting}
+          >
             Mute publicly
           </Button>
-          <Button onClick={() => run(true)} isDisabled={loading || muting}>
+          <Button
+            variant="ghost"
+            justifyContent="flex-start"
+            borderRadius="0"
+            px="4"
+            minH="12"
+            onClick={() => run(true)}
+            isDisabled={loading || muting}
+          >
             Mute privately
           </Button>
+          <Button variant="ghost" justifyContent="flex-start" borderRadius="0" px="4" minH="12" onClick={onClose}>
+            Cancel
+          </Button>
         </ModalBody>
-        <ModalFooter p="4">
-          <Button onClick={onClose}>Cancel</Button>
-        </ModalFooter>
       </ModalContent>
     </Modal>
   );
