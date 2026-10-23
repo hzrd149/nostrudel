@@ -1,13 +1,6 @@
-import { UnmuteUser } from "applesauce-actions/actions";
+import { MuteUser, UnmuteUser } from "applesauce-actions/actions";
 import { useActionRunner, useActiveAccount } from "applesauce-react/hooks";
-import {
-  createEmptyMuteList,
-  getMuteHalf,
-  getPubkeyExpiration,
-  muteListAddPubkey,
-  muteListRemovePubkey,
-  pruneExpiredPubkeys,
-} from "../helpers/nostr/mute-list";
+import { getMuteHalf } from "../helpers/nostr/mute-list";
 import { usePublishEvent } from "../providers/global/publish-provider";
 import useAsyncAction from "./use-async-action";
 import useUserMuteList from "./use-user-mute-list";
@@ -21,26 +14,23 @@ export default function useUserMuteActions(pubkey: string) {
   const muted = useUserMutes(account?.pubkey);
 
   const isMuted = muted?.pubkeys.has(pubkey) ?? false;
-  const expiration = muteList ? getPubkeyExpiration(muteList, pubkey) : 0;
   const muteHalf = getMuteHalf(muteList, pubkey);
   const canUnmute = muteHalf !== "unknown";
 
-  const { run: mute } = useAsyncAction(async () => {
-    let draft = muteListAddPubkey(muteList || createEmptyMuteList(), pubkey);
-    draft = pruneExpiredPubkeys(draft);
-    await publish("Mute", draft, undefined, false);
-  }, [publish, muteList]);
+  const { run: mute, loading: muting } = useAsyncAction(
+    async (hidden = false) => {
+      await actions.exec(MuteUser, pubkey, hidden).forEach((e) => publish("Mute", e));
+      return true;
+    },
+    [publish, actions, pubkey],
+  );
   const { run: unmute, loading: unmuting } = useAsyncAction(async () => {
-    if (muteHalf === "public") {
-      let draft = muteListRemovePubkey(muteList || createEmptyMuteList(), pubkey);
-      draft = pruneExpiredPubkeys(draft);
-      await publish("Unmute", draft, undefined, false);
-    } else if (muteHalf === "hidden") {
-      await actions.exec(UnmuteUser, pubkey, true).forEach((e) => publish("Unmute", e));
+    if (muteHalf !== "unknown") {
+      await actions.exec(UnmuteUser, pubkey, muteHalf === "hidden").forEach((e) => publish("Unmute", e));
     } else {
       throw new Error("Unlock your private mute list before unmuting this user");
     }
   }, [publish, muteList, muteHalf, actions, pubkey]);
 
-  return { isMuted, expiration, mute, unmute, muteHalf, canUnmute, unmuting };
+  return { isMuted, mute, muting, unmute, muteHalf, canUnmute, unmuting };
 }
