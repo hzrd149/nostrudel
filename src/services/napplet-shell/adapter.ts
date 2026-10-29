@@ -18,6 +18,7 @@ import { getInboxes, getOutboxes } from "applesauce-core/helpers";
 import { EventTemplate, Filter, kinds, NostrEvent } from "nostr-tools";
 import { catchError, filter, firstValueFrom, of, take, timeout, toArray } from "rxjs";
 
+import ignoreRelayErrors from "../../helpers/ignore-relay-errors";
 import accounts from "../accounts";
 import { cacheRequest, eventCache$, writeEvent } from "../event-cache";
 import { eventStore } from "../event-store";
@@ -72,11 +73,16 @@ export function createAdapter(
   getUpload: () => UploadConfig,
   uploadEnabled: boolean,
 ): ShellAdapter {
+  // These service callbacks return void, so report rejected publishes here.
+  const reportPublishError = (error: unknown) => {
+    toast({ status: "error", description: error instanceof Error ? error.message : "Failed to publish event" });
+  };
   const subscriptions = new Map<string, () => void>();
   // Expose only what kehto calls; applesauce's `count` returns an Observable, not kehto's number.
   const poolLike: RelayPoolLike = {
-    subscription: (relayUrls, filters) => pool.subscription(relayUrls, filters),
-    request: (relayUrls, filters) => pool.request(relayUrls, filters),
+    subscription: (relayUrls, filters) =>
+      pool.subscription(relayUrls, filters).pipe(ignoreRelayErrors("Napplet shell subscription")),
+    request: (relayUrls, filters) => pool.request(relayUrls, filters).pipe(ignoreRelayErrors("Napplet shell request")),
     publish: async (relayUrls, event) => {
       await pool.publish(relayUrls, event);
     },
@@ -158,13 +164,16 @@ export function createAdapter(
   // relay discovery, signing, and fanout so napplets never touch keys or pick relays.
   const outboxRelayPool: OutboxRelayPool = {
     subscribe: (filters, relayUrls, callback) => {
-      const sub = pool.subscription(relayUrls, toRelayFilters(filters)).subscribe((item) => {
-        callback((item as unknown) === "EOSE" ? "EOSE" : (item as NostrEvent));
-      });
+      const sub = pool
+        .subscription(relayUrls, toRelayFilters(filters))
+        .pipe(ignoreRelayErrors("Napplet outbox subscription"))
+        .subscribe((item) => {
+          callback((item as unknown) === "EOSE" ? "EOSE" : (item as NostrEvent));
+        });
       return { unsubscribe: () => sub.unsubscribe() };
     },
     publish: (event, relayUrls) => {
-      pool.publish(relayUrls, event);
+      void pool.publish(relayUrls, event).catch(reportPublishError);
     },
     isAvailable: () => true,
   };
@@ -234,6 +243,7 @@ export function createAdapter(
       subscribe: (filters, callback, relayUrls) => {
         const sub = pool
           .subscription(relayUrls ?? selectRelayTier(filters), toRelayFilters(filters))
+          .pipe(ignoreRelayErrors("Napplet relay subscription"))
           .subscribe((item) => {
             callback(item as NostrEvent);
           });
@@ -241,7 +251,7 @@ export function createAdapter(
       },
       publish: (event) => {
         eventStore.add(event as NostrEvent);
-        pool.publish(getWriteRelays(), event as NostrEvent);
+        void pool.publish(getWriteRelays(), event as NostrEvent).catch(reportPublishError);
       },
       selectRelayTier,
       isAvailable: () => true,

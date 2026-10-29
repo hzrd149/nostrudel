@@ -3,6 +3,7 @@ import { useMemo } from "react";
 
 import { mapEventsToStore, mapEventsToTimeline } from "applesauce-core";
 import { useEventStore, use$ } from "applesauce-react/hooks";
+import ignoreRelayErrors from "../../../../helpers/ignore-relay-errors";
 import BlossomServerFavicon from "../../../../components/blossom/blossom-server-favicon";
 import ScrollLayout from "../../../../components/layout/presets/scroll-layout";
 import RouterLink from "../../../../components/router-link";
@@ -49,7 +50,7 @@ function BlossomServerPage({ server }: { server: string }) {
           "#d": [server],
           limit: 10,
         })
-        .pipe(mapEventsToStore(eventStore), mapEventsToTimeline()),
+        .pipe(ignoreRelayErrors("Blossom reviews"), mapEventsToStore(eventStore), mapEventsToTimeline()),
     [readRelays, server, eventStore],
   );
 

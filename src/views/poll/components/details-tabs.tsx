@@ -9,6 +9,7 @@ import { kinds, NostrEvent } from "nostr-tools";
 import { ReactNode, useMemo } from "react";
 import { ignoreElements } from "rxjs";
 
+import ignoreRelayErrors from "../../../helpers/ignore-relay-errors";
 import GenericCommentForm from "../../../components/comment/generic-comment-form";
 import { GenericComments } from "../../../components/comment/generic-comments";
 import { CAP_IS_WEB } from "../../../env";
@@ -56,7 +57,7 @@ export default function PollDetailsTabs({
         { "#q": [poll.id], limit: 100 },
         { "#E": [poll.id], kinds: [COMMENT_KIND], limit: 100 },
       ])
-      .pipe(mapEventsToStore(eventStore), ignoreElements());
+      .pipe(ignoreRelayErrors("Poll details"), mapEventsToStore(eventStore), ignoreElements());
   }, [poll.id, readRelays.join(",")]);
 
   const comments = useEventModel(CommentsModel, [poll]);

@@ -6,6 +6,7 @@ import { mapEventsToStore } from "applesauce-core";
 import { use$, useActiveAccount } from "applesauce-react/hooks";
 import { ignoreElements, map } from "rxjs";
 
+import ignoreRelayErrors from "../helpers/ignore-relay-errors";
 import { eventStore } from "../services/event-store";
 import pool from "../services/pool";
 import useUserProfile from "./use-user-profile";
@@ -29,7 +30,9 @@ function useWebxdcCollectedUpdates(uuid: string, relays: string[]): ReceivedStat
   // Keep a live subscription so updates from other peers after EOSE still arrive
   use$(() => {
     if (!uuid || relays.length === 0) return undefined;
-    return pool.subscription(relays, filter).pipe(onlyEvents(), mapEventsToStore(eventStore), ignoreElements());
+    return pool
+      .subscription(relays, filter)
+      .pipe(ignoreRelayErrors("Webxdc updates"), onlyEvents(), mapEventsToStore(eventStore), ignoreElements());
   }, [uuid, relays, filter]);
 
   // The store dedupes and sorts newest-first; serials are assigned oldest-first
@@ -163,7 +166,7 @@ function useWebxdcRealtimeChannel(
     // A live subscription is required: ephemeral events only arrive after EOSE
     const sub = pool
       .subscription(relays, [{ kinds: [WEBXDC_REALTIME_KIND], "#i": [uuid], since: Math.floor(Date.now() / 1000) }])
-      .pipe(onlyEvents())
+      .pipe(ignoreRelayErrors("Webxdc realtime"), onlyEvents())
       .subscribe((event) => {
         if (abortController.signal.aborted) return;
         // Don't echo back our own events
@@ -175,6 +178,7 @@ function useWebxdcRealtimeChannel(
           realtimeListener(binary);
         } catch {
           // Ignore malformed content
+          return;
         }
       });
 

@@ -4,6 +4,7 @@ import { ignoreElements } from "rxjs";
 import { NostrEvent } from "nostr-tools";
 import { useMemo } from "react";
 
+import ignoreRelayErrors from "../helpers/ignore-relay-errors";
 import { unique } from "../helpers/array";
 import { getThreadFilters, getThreadRoot, getThreadScopeKey, isExternalThreadScope } from "../helpers/nostr/thread";
 import pool from "../services/pool";
@@ -35,7 +36,7 @@ export default function useThreadTimelineLoader(focusedEvent: NostrEvent | undef
         { "#q": [focusedEvent.id], limit: 100 },
         ...getThreadFilters(root).map((filter) => ({ ...filter, limit: 100 })),
       ])
-      .pipe(mapEventsToStore(store), ignoreElements());
+      .pipe(ignoreRelayErrors("Thread replies"), mapEventsToStore(store), ignoreElements());
   }, [focusedEvent?.id, root, readRelays, store]);
 
   return { root, rootPointer, loader };

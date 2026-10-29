@@ -22,6 +22,7 @@ import {
   timer,
 } from "rxjs";
 
+import ignoreRelayErrors from "../helpers/ignore-relay-errors";
 import { logger } from "../helpers/debug";
 import { RECOMMENDED_LOOKUP_RELAYS } from "../const";
 import { APP_SETTING_IDENTIFIER, APP_SETTINGS_KIND } from "../helpers/app-settings";
@@ -73,7 +74,7 @@ combineLatest([
         authors: [account.pubkey],
       });
 
-      return merge(info, deletes);
+      return merge(info, deletes.pipe(ignoreRelayErrors("Account deletions")));
     }),
   )
   .subscribe();
@@ -130,7 +131,7 @@ export const legacyMessageSubscription = accounts.active$.pipe(
     const subscribe = (relays: string[], query: Filter) =>
       pool
         .subscription(relays, { kinds: [kinds.EncryptedDirectMessage], ...query }, { waitForAuth: account.pubkey })
-        .pipe(onlyEvents(), mapEventsToStore(eventStore));
+        .pipe(ignoreRelayErrors("Direct messages"), onlyEvents(), mapEventsToStore(eventStore));
 
     return merge(
       eventStore
@@ -165,7 +166,7 @@ export const wrappedMessageSubscription = accounts.active$.pipe(
           { kinds: [kinds.GiftWrap], "#p": [account.pubkey], since: unixNow() - GIFT_WRAP_JITTER },
           { waitForAuth: account.pubkey },
         )
-        .pipe(onlyEvents(), mapEventsToStore(eventStore)),
+        .pipe(ignoreRelayErrors("Direct messages"), onlyEvents(), mapEventsToStore(eventStore)),
     ),
   ),
   // Ingore all updates since subscribes will get the events from the store

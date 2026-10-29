@@ -1,6 +1,7 @@
 import { Filter, NostrEvent } from "nostr-tools";
-import { BehaviorSubject, bufferTime, EMPTY, filter, Observable, Subject, timeout } from "rxjs";
+import { BehaviorSubject, bufferTime, defer, EMPTY, filter, Observable, Subject, timeout } from "rxjs";
 
+import ignoreRelayErrors from "../../helpers/ignore-relay-errors";
 import { CAP_IS_NATIVE, WASM_RELAY_SUPPORTED } from "../../env";
 import { logger } from "../../helpers/debug";
 import { wrapInTimeout } from "../../helpers/promise";
@@ -67,7 +68,7 @@ log("Initializing event cache");
 export const eventCache$ = new BehaviorSubject<EventCache | null>(
   await wrapInTimeout(createEventCache(localSettings.eventCache.value), 10_000, "Opening event cache timedout").catch(
     (err) => {
-      console.error(err);
+      log("Failed to open event cache", err);
       return null;
     },
   ),
@@ -102,7 +103,10 @@ export async function changeEventCache(type: string): Promise<void> {
 export function getEvents(filters: Filter[]): Observable<NostrEvent> {
   const cache = eventCache$.value;
   if (!cache) return EMPTY;
-  return cache.read(filters).pipe(timeout({ first: 1000, with: () => EMPTY }));
+  return defer(() => cache.read(filters)).pipe(
+    timeout({ first: 1000, with: () => EMPTY }),
+    ignoreRelayErrors("Event cache read"),
+  );
 }
 
 // Buffer events and write them to the cache
@@ -110,7 +114,9 @@ const writeEvent$ = new Subject<NostrEvent>();
 writeEvent$.pipe(bufferTime(1000, undefined, 500)).subscribe((events) => {
   const cache = eventCache$.value;
   if (!cache) return;
-  return cache.write(events);
+  return Promise.resolve()
+    .then(() => cache.write(events))
+    .catch((error) => log("Failed to write event cache", error));
 });
 
 export function writeEvent(events: NostrEvent | NostrEvent[]): void {

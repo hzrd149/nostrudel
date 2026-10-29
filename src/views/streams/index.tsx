@@ -6,6 +6,7 @@ import { kinds } from "nostr-tools";
 import { useMemo } from "react";
 import { ignoreElements, NEVER } from "rxjs";
 
+import ignoreRelayErrors from "../../helpers/ignore-relay-errors";
 import SimpleView from "../../components/layout/presets/simple-view";
 import PeopleListSelection from "../../components/people-list-selection/people-list-selection";
 import { useAppTitle } from "../../hooks/use-app-title";
@@ -54,7 +55,9 @@ function StreamsPage() {
   // `eventStore.timeline()`.
   const subscription$ = useMemo(() => {
     if (!pointer || !filters) return NEVER;
-    return pool.subscription(readRelays, filters).pipe(mapEventsToStore(eventStore), ignoreElements());
+    return pool
+      .subscription(readRelays, filters)
+      .pipe(ignoreRelayErrors("Live streams"), mapEventsToStore(eventStore), ignoreElements());
   }, [pointer, filters, readRelays]);
 
   use$(subscription$);

@@ -3,6 +3,7 @@ import { LoadableAddressPointer } from "applesauce-loaders/loaders";
 import { Filter } from "nostr-tools";
 import { ignoreElements, Observable } from "rxjs";
 
+import ignoreRelayErrors from "../helpers/ignore-relay-errors";
 import { logger } from "../helpers/debug";
 import { eventStore } from "./event-store";
 import outboxCacheService from "./outbox-cache";
@@ -22,6 +23,7 @@ class OutboxSubscriptionsService {
 
     const { authors: _authors, ...filterWithoutAuthors } = filter;
     return pool.outboxSubscription(outboxCacheService.getOutboxMap(list), filterWithoutAuthors).pipe(
+      ignoreRelayErrors("Outbox subscription"),
       mapEventsToStore(eventStore),
       // Consumers render from the store; the pool retains unchanged relay subscriptions.
       ignoreElements(),

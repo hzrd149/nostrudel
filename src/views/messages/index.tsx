@@ -21,6 +21,7 @@ import { Link as RouterLink, useLocation } from "react-router-dom";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { FixedSizeList, ListChildComponentProps } from "react-window";
 
+import ignoreRelayErrors from "../../helpers/ignore-relay-errors";
 import { SettingsIcon } from "../../components/icons";
 import SimpleParentView from "../../components/layout/presets/simple-parent-view";
 import RequireActiveAccount from "../../components/router/require-active-account";
@@ -123,7 +124,7 @@ function Groups() {
   const listEnd$ = useMemo(() => new BehaviorSubject(true), []);
   const loader = useMemo(() => createLegacyInboxLoader(account.pubkey), [account.pubkey]);
   useEffect(() => {
-    const sub = loadTimelineWhileVisible(loader, listEnd$).subscribe();
+    const sub = loadTimelineWhileVisible(loader, listEnd$).pipe(ignoreRelayErrors("Message history")).subscribe();
     return () => sub.unsubscribe();
   }, [loader, listEnd$]);
 

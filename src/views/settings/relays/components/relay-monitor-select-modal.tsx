@@ -25,6 +25,7 @@ import { nip19 } from "nostr-tools";
 import { useMemo, useState } from "react";
 import { ignoreElements, map, switchMap } from "rxjs";
 
+import ignoreRelayErrors from "../../../../helpers/ignore-relay-errors";
 import { SearchIcon } from "../../../../components/icons";
 import UserAvatar from "../../../../components/user/user-avatar";
 import UserName from "../../../../components/user/user-name";
@@ -45,7 +46,7 @@ export function useRelayMonitors(): RelayMonitor[] | undefined {
     () =>
       pool
         .request(NIP66_MONITOR_RELAYS, [{ kinds: [RELAY_MONITOR_ANNOUNCEMENT_KIND] }])
-        .pipe(mapEventsToStore(eventStore), ignoreElements()),
+        .pipe(ignoreRelayErrors("Relay monitors"), mapEventsToStore(eventStore), ignoreElements()),
     [],
   );
 

@@ -8,6 +8,7 @@ import { NostrEvent } from "nostr-tools";
 import { memo, useEffect, useMemo } from "react";
 
 import { normalizeURL } from "nostr-tools/utils";
+import ignoreRelayErrors from "../../../helpers/ignore-relay-errors";
 import LoadMoreButton from "../../../components/timeline/load-more-button";
 import { groupMessages } from "../../../helpers/nostr/dms";
 import useClientSideMuteFilter from "../../../hooks/use-client-side-mute-filter";
@@ -40,7 +41,7 @@ const GroupChatLog = memo(({ group }: { group: GroupPointer }) => {
     const sub = pool
       .relay(group.relay)
       .subscription({ ...filter, limit: 10 }, { reconnect: true })
-      .pipe(onlyEvents(), mapEventsToStore(eventStore))
+      .pipe(ignoreRelayErrors("Group chat"), onlyEvents(), mapEventsToStore(eventStore))
       .subscribe();
 
     return () => sub.unsubscribe();

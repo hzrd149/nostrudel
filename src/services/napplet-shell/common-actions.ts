@@ -68,7 +68,8 @@ function normalizeCommonPubkey(value: string) {
     if (decoded.type === "npub") return decoded.data;
     if (decoded.type === "nprofile") return decoded.data.pubkey;
   } catch {
-    // handled by returning undefined below
+    // Invalid profile targets are reported by the caller.
+    return undefined;
   }
 }
 
@@ -80,7 +81,8 @@ function normalizeCommonEventId(value: string) {
     if (decoded.type === "note") return decoded.data;
     if (decoded.type === "nevent") return decoded.data.id;
   } catch {
-    // handled by returning undefined below
+    // Invalid profile targets are reported by the caller.
+    return undefined;
   }
 }
 
@@ -93,7 +95,8 @@ function getProfilePointer(target: CommonProfileTarget) {
     if (decoded.type === "npub") return { pubkey: decoded.data, relays: undefined as string[] | undefined };
     if (decoded.type === "nprofile") return { pubkey: decoded.data.pubkey, relays: decoded.data.relays };
   } catch {
-    // handled by returning undefined below
+    // Invalid profile targets are reported by the caller.
+    return undefined;
   }
 }
 
@@ -107,7 +110,7 @@ async function publishCommonEvent(label: string, draft: EventTemplate | NostrEve
 
     await writeEvent(event);
     eventStore.add(event);
-    pool.publish(getWriteRelays(), event);
+    await pool.publish(getWriteRelays(), event);
 
     return { ok: true, eventId: event.id, event };
   } catch (e) {

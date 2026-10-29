@@ -5,6 +5,7 @@ import { NostrEvent } from "nostr-tools";
 import { useMemo } from "react";
 import { defaultIfEmpty, map, of, scan } from "rxjs";
 
+import ignoreRelayErrors from "../helpers/ignore-relay-errors";
 import { getListHistoryFilter, sortVersions } from "../helpers/nostr/list-history";
 import pool from "../services/pool";
 import { useReadRelays } from "./use-client-relays";
@@ -36,6 +37,7 @@ export default function useListHistory(list?: NostrEvent) {
     const filter = getListHistoryFilter(list);
 
     return pool.request(relays, [filter], { eventStore: null }).pipe(
+      ignoreRelayErrors("List history"),
       onlyEvents(),
       scan((found, event) => {
         const existing = found.get(event.id);

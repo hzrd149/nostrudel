@@ -7,6 +7,7 @@ import { NostrEvent } from "nostr-tools";
 import { useMemo } from "react";
 import { ignoreElements } from "rxjs";
 
+import ignoreRelayErrors from "../../../helpers/ignore-relay-errors";
 import { useReadRelays } from "../../../hooks/use-client-relays";
 import { useUserInbox } from "../../../hooks/use-user-mailboxes";
 import { eventStore } from "../../../services/event-store";
@@ -20,7 +21,13 @@ export default function DebugEventReferencesPage({ event }: { event: NostrEvent 
   const filters = useMemo(() => buildCommonEventRelationFilters({}, event), [event]);
 
   // Start a live subscription to the event store for the event references
-  use$(() => pool.subscription(relays, filters).pipe(onlyEvents(), mapEventsToStore(eventStore), ignoreElements()), [relays, filters]);
+  use$(
+    () =>
+      pool
+        .subscription(relays, filters)
+        .pipe(ignoreRelayErrors("Event references"), onlyEvents(), mapEventsToStore(eventStore), ignoreElements()),
+    [relays, filters],
+  );
 
   // Get the events from the event store
   const events = use$(() => eventStore.timeline(filters), [filters]) ?? [];

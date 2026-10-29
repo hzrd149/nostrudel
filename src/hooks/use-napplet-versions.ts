@@ -5,6 +5,7 @@ import { NostrEvent } from "nostr-tools";
 import { useMemo } from "react";
 import { defaultIfEmpty, map, of, scan } from "rxjs";
 
+import ignoreRelayErrors from "../helpers/ignore-relay-errors";
 import { NAPPLET_KIND_SNAPSHOT, getNappletHistoryFilter, getNappletSnapshotsFilter } from "../helpers/nostr/napplets";
 import pool from "../services/pool";
 import { useReadRelays } from "./use-client-relays";
@@ -49,6 +50,7 @@ export default function useNappletVersions(event?: NostrEvent) {
     if (filters.length === 0) return of(EMPTY);
 
     return pool.request(relays, filters, { eventStore: null }).pipe(
+      ignoreRelayErrors("Napplet versions"),
       onlyEvents(),
       // Relays each answer separately, so the same event arrives repeatedly — merge by id and
       // union the relay hints so every release lists all the relays that served it.

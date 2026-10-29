@@ -4,6 +4,7 @@ import hash_sum from "hash-sum";
 import { Filter, NostrEvent } from "nostr-tools";
 import { finalize, ignoreElements, merge, Observable, share, timer } from "rxjs";
 
+import ignoreRelayErrors from "../helpers/ignore-relay-errors";
 import { cacheRequest } from "./event-cache";
 import { eventStore } from "./event-store";
 import pool from "./pool";
@@ -21,7 +22,10 @@ export function relayDiscoverySubscription(relays: string[], filter: Filter): Ob
 
   let subscription = subscriptions.get(key);
   if (!subscription) {
-    subscription = merge(cacheRequest([filter]), pool.subscription(relays, filter).pipe(onlyEvents())).pipe(
+    subscription = merge(
+      cacheRequest([filter]),
+      pool.subscription(relays, filter).pipe(ignoreRelayErrors("Relay discovery"), onlyEvents()),
+    ).pipe(
       mapEventsToStore(eventStore),
       ignoreElements(),
       finalize(() => subscriptions.delete(key)),

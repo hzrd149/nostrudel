@@ -29,6 +29,7 @@ import HelpCircle from "../../../components/icons/help-circle";
 import Play from "../../../components/icons/play";
 import SimpleView from "../../../components/layout/presets/simple-view";
 import { RelayUrlInput } from "../../../components/relay-url-input";
+import useAsyncAction from "../../../hooks/use-async-action";
 import { getEvents } from "../../../services/event-cache";
 import { eventStore } from "../../../services/event-store";
 import pool from "../../../services/pool";
@@ -77,49 +78,49 @@ export default function EventConsoleView() {
   });
 
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
   const [events, setEvents] = useState<NostrEvent[]>([]);
-  const loadEvents = useCallback(async () => {
-    try {
-      const filter = await processFilter(JSON.parse(query));
-      setLoading(true);
-      setHistory((arr) => (arr ? (!arr.includes(query) ? [query, ...arr] : arr) : [query]));
-      setEvents([]);
-      setError("");
+  const { loading, run: loadEvents } = useAsyncAction(async () => {
+    const filter = await processFilter(JSON.parse(query));
+    setHistory((arr) => (arr ? (!arr.includes(query) ? [query, ...arr] : arr) : [query]));
+    setEvents([]);
+    setError("");
 
-      subRef.current?.unsubscribe();
-      subRef.current = null;
-      setSubscribed(false);
+    subRef.current?.unsubscribe();
+    subRef.current = null;
+    setSubscribed(false);
 
-      const buffer: NostrEvent[] = [];
-      const flush = _throttle(
-        () => {
-          setEvents([...buffer]);
-        },
-        1000 / 10,
-        { trailing: true },
-      );
+    const buffer: NostrEvent[] = [];
+    const flush = _throttle(
+      () => {
+        setEvents([...buffer]);
+      },
+      1000 / 10,
+      { trailing: true },
+    );
 
-      const handleEvent = (event: NostrEvent) => {
-        event = eventStore.add(event) ?? event;
-        buffer.push(event);
-        flush();
-      };
+    const handleEvent = (event: NostrEvent) => {
+      event = eventStore.add(event) ?? event;
+      buffer.push(event);
+      flush();
+    };
 
-      if (queryRelay.isOpen) {
-        if (!relay) throw new Error("Must set relay");
-
-        // query remote relay
-        subRef.current = pool.subscription([relay], filter).pipe(onlyEvents()).subscribe(handleEvent);
-      } else {
-        // query cache relay
-        subRef.current = getEvents([filter]).subscribe(handleEvent);
-      }
-      setSubscribed(true);
-    } catch (e) {
-      if (e instanceof Error) setError(e.message);
+    const observer = {
+      next: handleEvent,
+      error: (cause: unknown) => {
+        setError(cause instanceof Error ? cause.message : String(cause));
+        setSubscribed(false);
+      },
+      complete: () => setSubscribed(false),
+    };
+    if (queryRelay.isOpen && !relay) throw new Error("Must set relay");
+    setSubscribed(true);
+    if (queryRelay.isOpen) {
+      // query remote relay
+      subRef.current = pool.subscription([relay], filter).pipe(onlyEvents()).subscribe(observer);
+    } else {
+      // query cache relay
+      subRef.current = getEvents([filter]).subscribe(observer);
     }
-    setLoading(false);
   }, [queryRelay.isOpen, query, relay]);
 
   const submitRef = useRef(loadEvents);

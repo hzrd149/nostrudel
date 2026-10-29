@@ -14,7 +14,7 @@ const actions = new ActionHub(eventStore, accounts.signer, async (event) => {
 
   // publish the event
   eventStore.add(event);
-  pool.publish(outboxes, event);
+  await pool.publish(outboxes, event);
 });
 
 export default actions;

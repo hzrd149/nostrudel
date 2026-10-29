@@ -7,6 +7,7 @@ import { Filter, kinds, NostrEvent } from "nostr-tools";
 import { useMemo } from "react";
 import { ignoreElements, NEVER } from "rxjs";
 
+import ignoreRelayErrors from "../helpers/ignore-relay-errors";
 import { eventStore } from "../services/event-store";
 import pool from "../services/pool";
 import useTimelineEvents from "./use-timeline-events";
@@ -41,7 +42,9 @@ export default function useNappletEngagement(napplets: NostrEvent[], relays: str
   use$(
     () =>
       filters && relays.length > 0
-        ? pool.request(relays, filters).pipe(mapEventsToStore(eventStore), ignoreElements())
+        ? pool
+            .request(relays, filters)
+            .pipe(ignoreRelayErrors("Napplet engagement"), mapEventsToStore(eventStore), ignoreElements())
         : NEVER,
     [sum(filters), relays.join(",")],
   );
