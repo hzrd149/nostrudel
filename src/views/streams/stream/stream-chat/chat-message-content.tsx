@@ -3,6 +3,7 @@ import { useRenderedContent } from "applesauce-react/hooks";
 import { NostrEvent } from "nostr-tools";
 import React from "react";
 
+import MediaOwnerProvider from "../../../../providers/local/media-owner";
 import { components } from "../../../../components/content";
 import {
   renderGenericUrl,
@@ -25,7 +26,7 @@ const ChatMessageContent = React.memo(({ event }: { event: NostrEvent }) => {
     cacheKey: StreamChatMessageContentSymbol,
   });
 
-  return <>{content}</>;
+  return <MediaOwnerProvider owner={event.pubkey}>{content}</MediaOwnerProvider>;
 });
 
 export default ChatMessageContent;

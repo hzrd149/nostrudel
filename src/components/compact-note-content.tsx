@@ -1,12 +1,13 @@
 import { Box, BoxProps, Text } from "@chakra-ui/react";
 import { Root, truncateContent } from "applesauce-content/nast";
-import { emojis, hashtags, links, nostrMentions } from "applesauce-content/text";
+import { blossomURIs, emojis, hashtags, links, nostrMentions } from "applesauce-content/text";
 import { useRenderedContent } from "applesauce-react/hooks";
 import { EventTemplate, NostrEvent } from "nostr-tools";
 import React, { useMemo, useRef } from "react";
 
 import { onlyLinkComponents } from "./content";
 import { renderGenericUrl } from "./content/links/common";
+import MediaOwnerProvider from "../providers/local/media-owner";
 import { LightboxProvider } from "./lightbox-provider";
 
 const linkRenderers = [renderGenericUrl];
@@ -24,6 +25,7 @@ export const CompactNoteContent = React.memo(
     const truncated = useRef(false);
     const transformers = useMemo(
       () => [
+        blossomURIs,
         links,
         nostrMentions,
         emojis,
@@ -43,19 +45,21 @@ export const CompactNoteContent = React.memo(
     });
 
     return (
-      <LightboxProvider>
-        <Box as="article" whiteSpace="pre-wrap" aria-label="Note content" {...props}>
-          {content}
-          {truncated.current && (
-            <>
-              <span>...</span>
-              <Text as="span" fontWeight="bold" ml="4">
-                Show More
-              </Text>
-            </>
-          )}
-        </Box>
-      </LightboxProvider>
+      <MediaOwnerProvider owner={(event as NostrEvent).pubkey}>
+        <LightboxProvider>
+          <Box as="article" whiteSpace="pre-wrap" aria-label="Note content" {...props}>
+            {content}
+            {truncated.current && (
+              <>
+                <span>...</span>
+                <Text as="span" fontWeight="bold" ml="4">
+                  Show More
+                </Text>
+              </>
+            )}
+          </Box>
+        </LightboxProvider>
+      </MediaOwnerProvider>
     );
   },
 );
