@@ -3,6 +3,7 @@ import type { WebrtcOpenRequest } from "@napplet/core";
 export type WebrtcDescription = { type: "offer" | "answer"; sdp: string };
 /** Emit peer discovery before descriptions; connectionId changes when that peer restarts. */
 export type WebrtcSignal =
+  | { type: "closed"; reason: string }
   | { type: "peer"; pubkey: string; connectionId: string; initiator: boolean }
   | { type: "description"; pubkey: string; connectionId: string; description: WebrtcDescription };
 

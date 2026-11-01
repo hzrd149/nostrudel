@@ -11,8 +11,9 @@ const self = getPublicKey(localKey);
 const peer = getPublicKey(peerKey);
 const conversationKey = nip44.v2.utils.getConversationKey(peerKey, self);
 
-async function setup() {
+async function setup(failPublish = false) {
   let receive!: (event: NostrEvent) => void;
+  let failSubscription!: (error: unknown) => void;
   const published: NostrEvent[] = [];
   const unsubscribe = vi.fn();
   const closePool = vi.fn();
@@ -26,12 +27,14 @@ async function setup() {
       },
     },
     pool: {
-      subscribe: (_filters, callback) => {
+      subscribe: (_filters, callback, onError) => {
+        failSubscription = onError;
         receive = callback;
         return unsubscribe;
       },
       publish: async (event) => {
         published.push(event);
+        if (failPublish) throw new Error("Relay rejected event");
       },
       close: closePool,
     },
@@ -41,13 +44,22 @@ async function setup() {
   session.start(emit);
   await flush();
   const hello = JSON.parse(published[0].content);
-  function signal(body: Record<string, unknown>, targeted = false, createdAt = Math.floor(Date.now() / 1000)) {
+  function signal(
+    body: Record<string, unknown>,
+    targeted = false,
+    createdAt = Math.floor(Date.now() / 1000),
+    expiration: string | null = String(Math.floor(Date.now() / 1000) + 60),
+  ) {
     const raw = JSON.stringify({ v: "soy-rtc/1", wire: session.scopeKey, nonce: "peer-connection", ...body });
     return finalizeEvent(
       {
         kind: 25050,
         created_at: createdAt,
-        tags: [["d", session.scopeKey], ...(targeted ? [["p", self]] : [])],
+        tags: [
+          ["d", session.scopeKey],
+          ...(targeted ? [["p", self]] : []),
+          ...(expiration === null ? [] : [["expiration", expiration]]),
+        ],
         content: targeted ? nip44.v2.encrypt(raw, conversationKey) : raw,
       },
       peerKey,
@@ -63,6 +75,7 @@ async function setup() {
     published,
     unsubscribe,
     closePool,
+    failSubscription: (error: unknown) => failSubscription(error),
   };
 }
 async function flush() {
@@ -78,6 +91,12 @@ describe("soy-rtc/1 signaling adapter", () => {
     const forged = JSON.parse(JSON.stringify(s.signal({ type: "hello" })));
     forged.sig = "0".repeat(128);
     s.deliver(forged);
+    await flush();
+    expect(s.emit).not.toHaveBeenCalled();
+    s.deliver(
+      s.signal({ type: "hello" }, false, Math.floor(Date.now() / 1000), String(Math.floor(Date.now() / 1000) - 1)),
+    );
+    s.deliver(s.signal({ type: "hello" }, false, Math.floor(Date.now() / 1000), null));
     await flush();
     expect(s.emit).not.toHaveBeenCalled();
     const hello = s.signal({ type: "hello" });
@@ -105,6 +124,22 @@ describe("soy-rtc/1 signaling adapter", () => {
       description: { type, sdp: "valid-sdp" },
     });
     s.backend.close();
+  });
+
+  it("reports relay failures and stops signaling instead of retrying forever", async () => {
+    vi.useFakeTimers();
+    const rejected = await setup(true);
+    expect(rejected.emit).toHaveBeenCalledWith({ type: "closed", reason: "Signaling unavailable" });
+    expect(rejected.unsubscribe).toHaveBeenCalled();
+    const sent = rejected.published.length;
+    await vi.advanceTimersByTimeAsync(4000);
+    expect(rejected.published).toHaveLength(sent);
+    rejected.backend.close();
+    const disconnected = await setup();
+    disconnected.failSubscription(new Error("Relay subscription closed"));
+    expect(disconnected.emit).toHaveBeenCalledWith({ type: "closed", reason: "Signaling unavailable" });
+    expect(disconnected.unsubscribe).toHaveBeenCalled();
+    disconnected.backend.close();
   });
 
   it("stops retries and in-flight delivery on close and releases the relay pool", async () => {

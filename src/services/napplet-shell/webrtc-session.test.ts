@@ -158,11 +158,31 @@ describe("replaceable signaling", () => {
     });
     await flush();
     expect(FakePeer.all[0].remoteDescription?.sdp).toBe("alternate-answer");
-    await backend.handle({ type: "webrtc.close", sessionId: session.id });
+    const oldChannel = FakePeer.all[0].channel!;
+    const oldOpen = oldChannel.onopen!;
+    const oldMessage = oldChannel.onmessage!;
+    const oldClose = oldChannel.onclose!;
+    const oldDataChannel = FakePeer.all[0].ondatachannel!;
+    receive({ type: "peer", pubkey: peer, connectionId: "replacement", initiator: true });
+    await flush();
+    const notifications = emit.mock.calls.length;
+    oldOpen();
+    oldMessage({ data: JSON.stringify({ stale: true }) });
+    oldClose();
+    const lateChannel = new FakeChannel("game");
+    oldDataChannel({ channel: lateChannel });
+    expect(lateChannel.close).toHaveBeenCalled();
+    expect(emit).toHaveBeenCalledTimes(notifications);
+    expect(FakePeer.all[1].close).not.toHaveBeenCalled();
+    receive({ type: "closed", reason: "Relay disconnected" });
+    expect(emit).toHaveBeenLastCalledWith({
+      type: "webrtc.event",
+      event: { type: "closed", sessionId: session.id, reason: "Relay disconnected" },
+    });
     expect(signalingSession.close).toHaveBeenCalled();
     expect(signalingSession.forgetPeer).toHaveBeenCalledWith(peer, "alternate-connection");
     receive({ type: "peer", pubkey: "c".repeat(64), connectionId: "late", initiator: true });
-    expect(FakePeer.all).toHaveLength(1);
+    expect(FakePeer.all).toHaveLength(2);
     backend.close();
     expect(signaling.close).toHaveBeenCalled();
     expect(published).toHaveLength(0);
@@ -252,6 +272,28 @@ describe("soy-rtc/1 host sessions", () => {
     await flush();
     expect(FakePeer.all).toHaveLength(0);
     expect(published.filter((event) => event.tags.some((tag) => tag[0] === "p"))).toHaveLength(0);
+  });
+
+  it("rejects unsupported request fields before consent and limits repeated opens", async () => {
+    const consent = vi.fn(async () => true);
+    const { backend } = setup(1, undefined, consent);
+    await expect(
+      backend.handle({ type: "webrtc.open", request: { scope: { type: "room", room: "game" }, iceServers: [] } }),
+    ).rejects.toThrow("request");
+    await expect(open(backend, { type: "room", room: "game", relays: [] })).rejects.toThrow("room");
+    expect(consent).not.toHaveBeenCalled();
+    for (let i = 0; i < 8; i++) {
+      const session = await open(backend);
+      await expect(backend.handle({ type: "webrtc.close", sessionId: session.id, reason: {} })).rejects.toThrow(
+        "reason",
+      );
+      await backend.handle({ type: "webrtc.close", sessionId: session.id });
+    }
+    await expect(open(backend)).rejects.toThrow("rate");
+    await vi.advanceTimersByTimeAsync(10000);
+    const session = await open(backend);
+    expect(session.state).toBe("connecting");
+    await expect(backend.handle({ type: "webrtc.send", sessionId: {}, payload: {} })).rejects.toThrow("session id");
   });
 
   it("rejects malformed requests, duplicate scopes, excess sessions and oversized payloads", async () => {

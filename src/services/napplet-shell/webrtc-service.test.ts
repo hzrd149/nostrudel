@@ -3,7 +3,7 @@ import { createNappletWebrtcService } from "./webrtc-service";
 
 const mocks = vi.hoisted(() => ({
   store: new Map<string, string>(),
-  publish: vi.fn(async (_relays: string[], _event: import("nostr-tools").NostrEvent) => []),
+  publish: vi.fn(async (_relays: string[], _event: import("nostr-tools").NostrEvent) => [{ ok: true }]),
   poolClose: vi.fn(),
   account: { pubkey: "a".repeat(64), nip44: { encrypt: vi.fn(), decrypt: vi.fn() }, signEvent: vi.fn() },
 }));
@@ -33,10 +33,10 @@ vi.mock("localforage", () => ({
   },
 }));
 vi.mock("applesauce-relay", async () => {
-  const { EMPTY } = await import("rxjs");
+  const { NEVER } = await import("rxjs");
   return {
     RelayPool: class {
-      subscription = () => EMPTY;
+      subscription = () => NEVER;
       publish = mocks.publish;
       close = mocks.poolClose;
     },

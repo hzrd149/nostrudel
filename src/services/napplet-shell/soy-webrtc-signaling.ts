@@ -30,7 +30,6 @@ import { RelayPool, type RelayAuthContext } from "applesauce-relay";
 import type { Filter, NostrEvent } from "nostr-tools";
 
 import { logger } from "../../helpers/debug";
-import ignoreRelayErrors from "../../helpers/ignore-relay-errors";
 import verifyEvent from "../verify-event";
 import { getReadRelays, getWriteRelays } from "./relay-tiers";
 import { getNappletTransportSigner, type NappletTransportSigner } from "./transport-identity";
@@ -38,7 +37,7 @@ import type { WebrtcSignal, WebrtcSignaling, WebrtcSignalingSession } from "./we
 
 const log = logger.extend("soy-webrtc-signaling");
 export type SignalingPool = {
-  subscribe(filters: Filter[], receive: (event: NostrEvent) => void): () => void;
+  subscribe(filters: Filter[], receive: (event: NostrEvent) => void, onError: (error: unknown) => void): () => void;
   publish(event: NostrEvent): Promise<void>;
   close?(): void;
 };
@@ -50,17 +49,19 @@ function createPool(signer: NappletTransportSigner): SignalingPool {
     await relay.authenticate(signer);
   };
   return {
-    subscribe: (filters, receive) => {
-      const sub = pool
-        .subscription(getReadRelays(), filters, { onAuthRequired })
-        .pipe(ignoreRelayErrors("Napplet WebRTC signaling"))
-        .subscribe((event) => {
+    subscribe: (filters, receive, onError) => {
+      const sub = pool.subscription(getReadRelays(), filters, { onAuthRequired }).subscribe({
+        next: (event) => {
           if (typeof event !== "string") receive(event as NostrEvent);
-        });
+        },
+        error: onError,
+        complete: () => onError(new Error("Signaling subscription closed")),
+      });
       return () => sub.unsubscribe();
     },
     publish: async (event) => {
-      await pool.publish(getWriteRelays(), event, { onAuthRequired });
+      const results = await pool.publish(getWriteRelays(), event, { onAuthRequired });
+      if (!results.some((result) => result.ok)) throw new Error("No signaling relay accepted the event");
     },
     close: () => pool.close(),
   };
@@ -123,6 +124,22 @@ function createSession(
   let signals = 0;
   let signalWindow = Date.now();
 
+  let notify: ((signal: WebrtcSignal) => void) | undefined;
+  const close = () => {
+    if (!alive) return;
+    alive = false;
+    clearInterval(timer);
+    unsubscribe?.();
+    offers.clear();
+    peers.clear();
+    onClose();
+  };
+  const fail = (error: unknown) => {
+    if (!alive) return;
+    log("Signaling unavailable", error);
+    close();
+    notify?.({ type: "closed", reason: "Signaling unavailable" });
+  };
   const allowed = (key: string) =>
     key !== self &&
     (request.scope.type === "direct"
@@ -143,7 +160,7 @@ function createSession(
     if (alive) await pool.publish(event);
   };
   const hello = () => {
-    void publish({ type: "hello" }).catch((error) => log("Presence failed", error));
+    void publish({ type: "hello" }).catch(fail);
   };
   const receive = async (event: NostrEvent, emit: (signal: WebrtcSignal) => void) => {
     if (Date.now() - signalWindow >= 1000) {
@@ -162,6 +179,8 @@ function createSession(
       !verifyEvent(event)
     )
       return;
+    const expiration = event.tags.find((tag) => tag[0] === "expiration")?.[1];
+    if (!expiration || !/^\d+$/.test(expiration) || Number(expiration) <= Date.now() / 1000) return;
     if (seen.size >= 2048) seen.delete(seen.values().next().value!);
     seen.add(event.id);
     const recipient = event.tags.find((tag) => tag[0] === "p")?.[1];
@@ -171,6 +190,7 @@ function createSession(
       !alive ||
       !body ||
       typeof body !== "object" ||
+      Array.isArray(body) ||
       body.v !== "soy-rtc/1" ||
       body.wire !== wire ||
       typeof body.nonce !== "string" ||
@@ -191,6 +211,7 @@ function createSession(
       body.to !== nonce ||
       peers.get(event.pubkey) !== body.nonce ||
       typeof body.sdp !== "string" ||
+      !body.sdp.length ||
       body.sdp.length > 32000
     )
       return;
@@ -210,17 +231,23 @@ function createSession(
     start: (emit) => {
       if (!alive || started) return;
       started = true;
-      unsubscribe = pool.subscribe(
+      notify = emit;
+      const stop = pool.subscribe(
         [{ kinds: [25050], "#d": [wire], since: Math.floor(Date.now() / 1000) - 10 }],
         (event) => {
           void receive(event, emit).catch((error) => log("Rejected signal", error));
         },
+        fail,
       );
+      if (!alive) {
+        stop();
+        return;
+      }
+      unsubscribe = stop;
       hello();
       timer = setInterval(() => {
         hello();
-        for (const [key, offer] of offers)
-          void publish({ type: "offer", ...offer }, key).catch((error) => log("Offer retry failed", error));
+        for (const [key, offer] of offers) void publish({ type: "offer", ...offer }, key).catch(fail);
       }, 2000);
     },
     sendDescription: async (pubkey, connectionId, description) => {
@@ -233,14 +260,6 @@ function createSession(
       peers.delete(pubkey);
       offers.delete(pubkey);
     },
-    close: () => {
-      if (!alive) return;
-      alive = false;
-      clearInterval(timer);
-      unsubscribe?.();
-      offers.clear();
-      peers.clear();
-      onClose();
-    },
+    close,
   };
 }

@@ -32,14 +32,26 @@ type WithoutSession<T> = T extends unknown ? Omit<T, "sessionId"> : never;
 type SessionEvent = WithoutSession<WebrtcEvent>;
 type Open = WebrtcOpenRequest & { channel: string };
 function parseOpen(input: unknown): Open {
-  if (!input || typeof input !== "object") throw new Error("Invalid WebRTC request");
+  if (
+    !input ||
+    typeof input !== "object" ||
+    Array.isArray(input) ||
+    Object.keys(input).some((key) => !["scope", "channel", "protocol"].includes(key))
+  )
+    throw new Error("Invalid WebRTC request");
   const { scope, channel = "napplet", protocol } = input as WebrtcOpenRequest;
   const hex = (key: unknown): key is string => typeof key === "string" && /^[a-f0-9]{64}$/.test(key);
-  if (!scope || (scope.type !== "direct" && scope.type !== "room")) throw new Error("Invalid WebRTC scope");
-  if (scope.type === "direct" && !hex(scope.pubkey)) throw new Error("Invalid peer pubkey");
+  if (!scope || typeof scope !== "object" || Array.isArray(scope) || (scope.type !== "direct" && scope.type !== "room"))
+    throw new Error("Invalid WebRTC scope");
+  if (
+    scope.type === "direct" &&
+    (!hex(scope.pubkey) || Object.keys(scope).some((key) => !["type", "pubkey"].includes(key)))
+  )
+    throw new Error("Invalid peer pubkey");
   if (
     scope.type === "room" &&
-    (typeof scope.room !== "string" ||
+    (Object.keys(scope).some((key) => !["type", "room", "peers"].includes(key)) ||
+      typeof scope.room !== "string" ||
       !scope.room.length ||
       scope.room.length > 256 ||
       (scope.peers !== undefined && (!Array.isArray(scope.peers) || scope.peers.length > 8 || !scope.peers.every(hex))))
@@ -87,6 +99,8 @@ export class NappletWebrtc {
   private alive = true;
   private permission?: Promise<boolean>;
   private opening = 0;
+  private opens = 0;
+  private openWindow = Date.now();
   constructor(
     private signaling: WebrtcSignaling,
     private send: (message: Record<string, unknown>) => void,
@@ -101,10 +115,15 @@ export class NappletWebrtc {
   handle(message: Record<string, unknown>): Promise<Record<string, unknown>>;
   async handle(message: Record<string, unknown>): Promise<WebrtcOpenResult | Record<string, unknown>> {
     if (message.type === "webrtc.open") return this.open(message.request);
-    const id = String(message.sessionId),
-      session = this.sessions.get(id);
+    if (typeof message.sessionId !== "string" || !message.sessionId.length || message.sessionId.length > 128)
+      throw new Error("Invalid WebRTC session id");
+    const id = message.sessionId;
+    const session = this.sessions.get(id);
     if (message.type === "webrtc.close") {
-      this.closeSession(id, typeof message.reason === "string" ? message.reason.slice(0, 200) : "closed");
+      if (!session) throw new Error("WebRTC session unavailable");
+      if (message.reason !== undefined && (typeof message.reason !== "string" || message.reason.length > 200))
+        throw new Error("Invalid WebRTC close reason");
+      this.closeSession(id, message.reason ?? "closed");
       return {};
     }
     if (!session) throw new Error("WebRTC session unavailable");
@@ -131,6 +150,11 @@ export class NappletWebrtc {
   private async open(input: unknown): Promise<WebrtcOpenResult> {
     const request = parseOpen(input);
     if (!this.alive || this.sessions.size + this.opening >= 4) throw new Error("WebRTC session limit reached");
+    if (Date.now() - this.openWindow >= 10000) {
+      this.openWindow = Date.now();
+      this.opens = 0;
+    }
+    if (++this.opens > 8) throw new Error("WebRTC open rate exceeded");
     this.opening++;
     try {
       const permission = (this.permission ??= this.consent());
@@ -185,6 +209,7 @@ export class NappletWebrtc {
   }
   private async start(s: Session) {
     s.signaling.start((signal) => this.receive(s, signal));
+    if (!this.sessions.has(s.id)) return;
     s.timer = setInterval(() => {
       for (const peer of s.peers.values()) {
         if (!peer.joined && Date.now() - peer.started > 45000) {
@@ -195,7 +220,12 @@ export class NappletWebrtc {
     }, 2000);
   }
   private receive(s: Session, signal: WebrtcSignal) {
-    if (!this.sessions.has(s.id) || !this.allowed(s, signal.pubkey)) return;
+    if (!this.sessions.has(s.id)) return;
+    if (signal.type === "closed") {
+      this.closeSession(s.id, signal.reason);
+      return;
+    }
+    if (!this.allowed(s, signal.pubkey)) return;
     const key = signal.pubkey;
     let peer = s.peers.get(key);
     if (signal.type === "peer") {
@@ -215,7 +245,7 @@ export class NappletWebrtc {
             await this.gather(p.pc);
             await s.signaling.sendDescription(key, p.connectionId, { type: "offer", sdp: p.pc.localDescription!.sdp });
           })
-          .catch(() => this.removePeer(s, key));
+          .catch(() => this.removePeer(s, key, p));
       }
       return;
     }
@@ -240,7 +270,7 @@ export class NappletWebrtc {
           await p.pc.setRemoteDescription(description);
         }
       })
-      .catch(() => this.removePeer(s, key))
+      .catch(() => this.removePeer(s, key, p))
       .finally(() => {
         p.queued--;
       });
@@ -260,19 +290,21 @@ export class NappletWebrtc {
     };
     pc.ondatachannel = (event) => this.channel(s, key, peer, event.channel);
     pc.onconnectionstatechange = () => {
+      if (!this.sessions.has(s.id) || s.peers.get(key) !== peer) return;
       if (pc.connectionState === "failed")
         this.closeSession(s.id, "Peer connection failed; reopen the session to refresh connectivity");
-      else if (pc.connectionState === "closed") this.removePeer(s, key);
+      else if (pc.connectionState === "closed") this.removePeer(s, key, peer);
     };
     return peer;
   }
   private channel(s: Session, key: string, p: Peer, channel: RTCDataChannel) {
-    if (p.channel || channel.label !== s.request.channel) {
+    if (!this.sessions.has(s.id) || s.peers.get(key) !== p || p.channel || channel.label !== s.request.channel) {
       channel.close();
       return;
     }
     p.channel = channel;
     channel.onopen = () => {
+      if (!this.sessions.has(s.id) || s.peers.get(key) !== p) return;
       p.joined = true;
       if (s.state !== "open") {
         s.state = "open";
@@ -280,9 +312,9 @@ export class NappletWebrtc {
       }
       this.event(s, { type: "peer", pubkey: key, state: "joined" });
     };
-    channel.onclose = () => this.removePeer(s, key);
+    channel.onclose = () => this.removePeer(s, key, p);
     channel.onmessage = (event) => {
-      if (typeof event.data !== "string") return;
+      if (!this.sessions.has(s.id) || s.peers.get(key) !== p || typeof event.data !== "string") return;
       if (Date.now() - p.window > 1000) {
         p.window = Date.now();
         p.received = 0;
@@ -291,7 +323,7 @@ export class NappletWebrtc {
       const bytes = new TextEncoder().encode(event.data).length;
       p.bytes += bytes;
       if (++p.received > 240 || p.bytes > 524288 || bytes > 16384) {
-        this.removePeer(s, key);
+        this.removePeer(s, key, p);
         return;
       }
       try {
@@ -316,14 +348,17 @@ export class NappletWebrtc {
       pc.addEventListener("icegatheringstatechange", changed);
     });
   }
-  private removePeer(s: Session, key: string) {
+  private removePeer(s: Session, key: string, expected?: Peer) {
     const peer = s.peers.get(key);
-    if (!peer) return;
+    if (!peer || (expected && peer !== expected)) return;
     s.peers.delete(key);
     s.signaling.forgetPeer(key, peer.connectionId);
     peer.pc.onconnectionstatechange = null;
+    peer.pc.ondatachannel = null;
     if (peer.channel) {
       peer.channel.onclose = null;
+      peer.channel.onopen = null;
+      peer.channel.onmessage = null;
       peer.channel.close();
     }
     peer.pc.close();
