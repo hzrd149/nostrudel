@@ -24,10 +24,11 @@
  *
  */
 import type { WebrtcOpenRequest, WebrtcOpenResult, WebrtcEvent } from "@napplet/core";
-import { type EventTemplate, type NostrEvent } from "nostr-tools";
+import { type NostrEvent } from "nostr-tools";
 import { sha256 } from "@noble/hashes/sha2.js";
 import { bytesToHex } from "@noble/hashes/utils.js";
 
+import type { NappletTransportSigner } from "./transport-identity";
 import { logger } from "../../helpers/debug";
 import verifyEvent from "../verify-event";
 
@@ -35,14 +36,7 @@ const log = logger.extend("napplet-webrtc");
 type WithoutSession<T> = T extends unknown ? Omit<T, "sessionId"> : never;
 type SessionEvent = WithoutSession<WebrtcEvent>;
 type Open = WebrtcOpenRequest & { channel: string };
-export type WebrtcSigner = {
-  getPublicKey(): Promise<string>;
-  signEvent(event: EventTemplate): Promise<NostrEvent>;
-  nip44: {
-    encrypt(pubkey: string, plaintext: string): Promise<string>;
-    decrypt(pubkey: string, ciphertext: string): Promise<string>;
-  };
-};
+export type WebrtcSigner = NappletTransportSigner;
 export type SignalingPool = {
   subscribe(filters: import("nostr-tools").Filter[], receive: (event: NostrEvent) => void): () => void;
   publish(event: NostrEvent): Promise<void>;

@@ -24,7 +24,7 @@ export default function NappletPeerConsentModal({
       <ModalContent>
         <ModalHeader>Allow peer connections?</ModalHeader>
         <ModalBody>
-          {title ?? "This napplet"} will use your Nostr account for signaling. Direct WebRTC connections share your IP
+          {title ?? "This napplet"} will use a local identity for signaling. Direct WebRTC connections share your IP
           address with peers.
         </ModalBody>
         <ModalFooter>

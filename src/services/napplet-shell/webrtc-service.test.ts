@@ -2,6 +2,9 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { createNappletWebrtcService } from "./webrtc-service";
 
 const mocks = vi.hoisted(() => ({
+  store: new Map<string, string>(),
+  publish: vi.fn(async (_relays: string[], _event: import("nostr-tools").NostrEvent) => []),
+  poolClose: vi.fn(),
   account: { pubkey: "a".repeat(64), nip44: { encrypt: vi.fn(), decrypt: vi.fn() }, signEvent: vi.fn() },
 }));
 vi.mock("../accounts", async () => {
@@ -16,9 +19,28 @@ vi.mock("../accounts", async () => {
     },
   };
 });
-vi.mock("../pool", async () => {
+vi.mock("../pool", () => {
+  throw new Error("WebRTC must not use the account relay pool");
+});
+vi.mock("localforage", () => ({
+  default: {
+    createInstance: () => ({
+      getItem: async (key: string) => mocks.store.get(key) ?? null,
+      setItem: async (key: string, value: string) => {
+        mocks.store.set(key, value);
+      },
+    }),
+  },
+}));
+vi.mock("applesauce-relay", async () => {
   const { EMPTY } = await import("rxjs");
-  return { default: { subscription: () => EMPTY, publish: vi.fn() } };
+  return {
+    RelayPool: class {
+      subscription = () => EMPTY;
+      publish = mocks.publish;
+      close = mocks.poolClose;
+    },
+  };
 });
 vi.mock("./relay-tiers", () => ({ getReadRelays: () => [], getWriteRelays: () => [] }));
 vi.mock("../verify-event", async () => ({ default: (await import("nostr-tools")).verifyEvent }));
@@ -67,19 +89,28 @@ describe("NAP-WEBRTC service", () => {
     expect(afterClose[0]).toMatchObject({ id: "send-2", error: expect.stringContaining("unavailable") });
   });
 
-  it("closes existing sessions when the active account changes", async () => {
+  it("signals locally while signed out and keeps sessions alive across account changes", async () => {
     vi.stubGlobal("RTCPeerConnection", class {});
     const service = createNappletWebrtcService({
       resolveIdentity: () => "author:35129:game",
       requestConsent: async () => true,
     });
+    accounts.active$.next(undefined);
     const sent = await result(service, "frame-a", {
       type: "webrtc.open",
       id: "open",
       request: { scope: { type: "room", room: "game" } },
     });
-    accounts.active$.next(undefined);
-    expect(sent.at(-1)).toMatchObject({ type: "webrtc.event", event: { type: "closed", reason: "Account changed" } });
+    expect(sent[0]).toMatchObject({ type: "webrtc.open.result", session: { state: "connecting" } });
+    accounts.active$.next(mocks.account as unknown as typeof accounts.active);
+    await new Promise((resolve) => setTimeout(resolve, 10));
+    expect(sent).toHaveLength(1);
+    expect(mocks.publish).toHaveBeenCalled();
+    const event = mocks.publish.mock.calls.at(-1)![1];
+    expect(event.pubkey).not.toBe(mocks.account.pubkey);
+    expect(mocks.account.signEvent).not.toHaveBeenCalled();
+    expect(mocks.account.nip44.encrypt).not.toHaveBeenCalled();
     service.onWindowDestroyed?.("frame-a");
+    expect(mocks.poolClose).toHaveBeenCalled();
   });
 });
