@@ -24,24 +24,13 @@
  *
  */
 import type { WebrtcOpenRequest, WebrtcOpenResult, WebrtcEvent } from "@napplet/core";
-import { type NostrEvent } from "nostr-tools";
-import { sha256 } from "@noble/hashes/sha2.js";
-import { bytesToHex } from "@noble/hashes/utils.js";
-
-import type { NappletTransportSigner } from "./transport-identity";
 import { logger } from "../../helpers/debug";
-import verifyEvent from "../verify-event";
+import type { WebrtcSignal, WebrtcSignaling, WebrtcSignalingSession } from "./webrtc-signaling";
 
 const log = logger.extend("napplet-webrtc");
 type WithoutSession<T> = T extends unknown ? Omit<T, "sessionId"> : never;
 type SessionEvent = WithoutSession<WebrtcEvent>;
 type Open = WebrtcOpenRequest & { channel: string };
-export type WebrtcSigner = NappletTransportSigner;
-export type SignalingPool = {
-  subscribe(filters: import("nostr-tools").Filter[], receive: (event: NostrEvent) => void): () => void;
-  publish(event: NostrEvent): Promise<void>;
-};
-
 function parseOpen(input: unknown): Open {
   if (!input || typeof input !== "object") throw new Error("Invalid WebRTC request");
   const { scope, channel = "napplet", protocol } = input as WebrtcOpenRequest;
@@ -69,10 +58,9 @@ function parseOpen(input: unknown): Open {
 type Peer = {
   pc: RTCPeerConnection;
   channel?: RTCDataChannel;
-  nonce: string;
+  connectionId: string;
   chain: Promise<void>;
   answer?: string;
-  offer?: string;
   started: number;
   joined: boolean;
   received: number;
@@ -83,32 +71,24 @@ type Peer = {
 type Session = {
   id: string;
   request: Open;
-  wire: string;
-  nonce: string;
-  self: string;
+  signaling: WebrtcSignalingSession;
   state: "connecting" | "open" | "closed";
   peers: Map<string, Peer>;
-  seen: Set<string>;
-  unsubscribe?: () => void;
   timer?: ReturnType<typeof setInterval>;
   config: RTCConfiguration;
   sent: number;
   sentBytes: number;
   sendWindow: number;
-  signals: number;
-  signalWindow: number;
 };
 
-/** NAP-WEBRTC. Signaling profile soy-rtc/1 is public/documented, separate from the NAP API. */
+/** NAP-WEBRTC peer connections and data channels with an injected signaling backend. */
 export class NappletWebrtc {
   private sessions = new Map<string, Session>();
   private alive = true;
   private permission?: Promise<boolean>;
   private opening = 0;
   constructor(
-    private signer: WebrtcSigner,
-    private identity: string,
-    private pool: SignalingPool,
+    private signaling: WebrtcSignaling,
     private send: (message: Record<string, unknown>) => void,
     private consent: () => Promise<boolean>,
     private ice: () => Promise<RTCConfiguration> = async () => ({ iceServers: [] }),
@@ -160,42 +140,30 @@ export class NappletWebrtc {
         throw new Error("Peer connection denied");
       }
       if (!this.alive) throw new Error("Player closed");
-      const self = await this.signer.getPublicKey();
-      if (request.scope.type === "direct" && request.scope.pubkey === self)
-        throw new Error("Cannot connect to yourself");
-      const scope =
-        request.scope.type === "room"
-          ? ["room", request.scope.room]
-          : ["direct", ...[self, request.scope.pubkey].sort()];
-      const wire = bytesToHex(
-        sha256(
-          new TextEncoder().encode(
-            JSON.stringify(["soy-rtc/1", this.identity, scope, request.channel, request.protocol ?? ""]),
-          ),
-        ),
-      );
-      if ([...this.sessions.values()].some((s) => s.wire === wire))
-        throw new Error("This WebRTC scope is already open");
-      const config = await this.ice();
-      if ([...this.sessions.values()].some((s) => s.wire === wire))
-        throw new Error("This WebRTC scope is already open");
-      if (!this.alive) throw new Error("Player closed");
-      const session: Session = {
-        id: crypto.randomUUID(),
-        request,
-        wire,
-        nonce: crypto.randomUUID(),
-        self,
-        state: "connecting",
-        peers: new Map(),
-        seen: new Set(),
-        config,
-        sent: 0,
-        sentBytes: 0,
-        sendWindow: Date.now(),
-        signals: 0,
-        signalWindow: Date.now(),
-      };
+      const signaling = await this.signaling.open(request);
+      let session: Session;
+      try {
+        if (request.scope.type === "direct" && request.scope.pubkey === signaling.self)
+          throw new Error("Cannot connect to yourself");
+        const config = await this.ice();
+        if (!this.alive) throw new Error("Player closed");
+        if ([...this.sessions.values()].some((s) => s.signaling.scopeKey === signaling.scopeKey))
+          throw new Error("This WebRTC scope is already open");
+        session = {
+          id: crypto.randomUUID(),
+          request,
+          signaling,
+          state: "connecting",
+          peers: new Map(),
+          config,
+          sent: 0,
+          sentBytes: 0,
+          sendWindow: Date.now(),
+        };
+      } catch (error) {
+        signaling.close();
+        throw error;
+      }
       this.sessions.set(session.id, session);
       // Reply before emitting events; all work is owned by the session's lifecycle.
       setTimeout(() => {
@@ -209,138 +177,79 @@ export class NappletWebrtc {
   }
   private allowed(s: Session, key: string) {
     return (
-      key !== s.self &&
+      key !== s.signaling.self &&
       (s.request.scope.type === "direct"
         ? s.request.scope.pubkey === key
         : !s.request.scope.peers || s.request.scope.peers.includes(key))
     );
   }
-  private async publish(s: Session, message: Record<string, unknown>, recipient?: string) {
-    if (!this.sessions.has(s.id)) return;
-    const raw = JSON.stringify({ v: "soy-rtc/1", wire: s.wire, nonce: s.nonce, ...message });
-    const content = recipient ? await this.signer.nip44.encrypt(recipient, raw) : raw;
-    const event = await this.signer.signEvent({
-      kind: 25050,
-      created_at: Math.floor(Date.now() / 1000),
-      tags: [
-        ["d", s.wire],
-        ...(recipient ? [["p", recipient]] : []),
-        ["expiration", String(Math.floor(Date.now() / 1000) + 60)],
-      ],
-      content,
-    });
-    if (!this.sessions.has(s.id)) return;
-    await this.pool.publish(event);
-  }
   private async start(s: Session) {
-    s.unsubscribe = this.pool.subscribe(
-      [{ kinds: [25050], "#d": [s.wire], since: Math.floor(Date.now() / 1000) - 10 }],
-      (event) => {
-        void this.receive(s, event).catch((error) => log("Rejected signal", error));
-      },
-    );
-    const hello = () => {
-      if (!this.sessions.has(s.id)) return;
-      void this.publish(s, { type: "hello" }).catch((error) => log("Signaling failed", error));
-      for (const [key, peer] of s.peers) {
+    s.signaling.start((signal) => this.receive(s, signal));
+    s.timer = setInterval(() => {
+      for (const peer of s.peers.values()) {
         if (!peer.joined && Date.now() - peer.started > 45000) {
           this.closeSession(s.id, "Peer connection timed out; retry or check TURN configuration");
           return;
         }
-        if (peer.offer && !peer.pc.remoteDescription)
-          void this.publish(s, { type: "offer", to: peer.nonce, sdp: peer.offer }, key).catch((error) =>
-            log("Signaling failed", error),
-          );
       }
-    };
-    hello();
-    s.timer = setInterval(hello, 2000);
+    }, 2000);
   }
-  private async receive(s: Session, event: NostrEvent) {
-    if (Date.now() - s.signalWindow >= 1000) {
-      s.signalWindow = Date.now();
-      s.signals = 0;
-    }
-    if (++s.signals > 32) return;
-    if (
-      !this.sessions.has(s.id) ||
-      event.kind !== 25050 ||
-      !event.tags.some((tag) => tag[0] === "d" && tag[1] === s.wire) ||
-      !this.allowed(s, event.pubkey) ||
-      event.content.length > 64000 ||
-      Math.abs(Date.now() / 1000 - event.created_at) > 60 ||
-      s.seen.has(event.id) ||
-      !verifyEvent(event)
-    )
-      return;
-    if (s.seen.size >= 2048) s.seen.delete(s.seen.values().next().value!);
-    s.seen.add(event.id);
-    const recipient = event.tags.find((t) => t[0] === "p")?.[1];
-    if (recipient && recipient !== s.self) return;
-    const body = JSON.parse(recipient ? await this.signer.nip44.decrypt(event.pubkey, event.content) : event.content);
-    if (!this.sessions.has(s.id)) return;
-    if (body.v !== "soy-rtc/1" || body.wire !== s.wire || typeof body.nonce !== "string" || body.nonce.length > 64)
-      return;
-    if (!recipient && body.type !== "hello") return;
-    if (recipient && body.to !== s.nonce) return;
-    let peer = s.peers.get(event.pubkey);
-    if (body.type === "hello") {
-      if (peer && peer.nonce !== body.nonce) {
-        this.removePeer(s, event.pubkey);
+  private receive(s: Session, signal: WebrtcSignal) {
+    if (!this.sessions.has(s.id) || !this.allowed(s, signal.pubkey)) return;
+    const key = signal.pubkey;
+    let peer = s.peers.get(key);
+    if (signal.type === "peer") {
+      if (peer && peer.connectionId !== signal.connectionId) {
+        this.removePeer(s, key);
         peer = undefined;
       }
-      if (!peer) {
-        if (s.peers.size >= 8) return;
-        peer = this.peer(s, event.pubkey, body.nonce);
-        s.peers.set(event.pubkey, peer);
-        // Repeat our presence in response only to a new peer (no hello feedback loop).
-        void this.publish(s, { type: "hello" }).catch((error) => log("Signaling failed", error));
-        if (s.self < event.pubkey) {
-          const p = peer;
-          p.chain = p.chain
-            .then(async () => {
-              if (!this.sessions.has(s.id) || s.peers.get(event.pubkey) !== p) return;
-              this.channel(s, event.pubkey, p, p.pc.createDataChannel(s.request.channel, { ordered: true }));
-              await p.pc.setLocalDescription(await p.pc.createOffer());
-              await this.gather(p.pc);
-              p.offer = p.pc.localDescription!.sdp;
-              await this.publish(s, { type: "offer", to: p.nonce, sdp: p.offer }, event.pubkey);
-            })
-            .catch(() => this.removePeer(s, event.pubkey));
-        }
+      if (peer || s.peers.size >= 8) return;
+      const p = this.peer(s, key, signal.connectionId);
+      s.peers.set(key, p);
+      if (signal.initiator) {
+        p.chain = p.chain
+          .then(async () => {
+            if (!this.sessions.has(s.id) || s.peers.get(key) !== p) return;
+            this.channel(s, key, p, p.pc.createDataChannel(s.request.channel, { ordered: true }));
+            await p.pc.setLocalDescription(await p.pc.createOffer());
+            await this.gather(p.pc);
+            await s.signaling.sendDescription(key, p.connectionId, { type: "offer", sdp: p.pc.localDescription!.sdp });
+          })
+          .catch(() => this.removePeer(s, key));
       }
       return;
     }
-    if (!peer || body.nonce !== peer.nonce) return;
+    if (!peer || signal.connectionId !== peer.connectionId) return;
     const p = peer;
     if (p.queued >= 4) return;
     p.queued++;
     p.chain = p.chain
       .then(async () => {
-        if (!this.sessions.has(s.id) || s.peers.get(event.pubkey) !== p) return;
-        if (typeof body.sdp !== "string" || body.sdp.length > 32000) return;
-        if (body.type === "offer" && event.pubkey < s.self) {
+        if (!this.sessions.has(s.id) || s.peers.get(key) !== p) return;
+        const description = signal.description;
+        if (description.sdp.length > 32000) return;
+        if (description.type === "offer") {
           if (!p.answer) {
-            await p.pc.setRemoteDescription({ type: "offer", sdp: body.sdp });
+            await p.pc.setRemoteDescription(description);
             await p.pc.setLocalDescription(await p.pc.createAnswer());
             await this.gather(p.pc);
             p.answer = p.pc.localDescription!.sdp;
           }
-          await this.publish(s, { type: "answer", to: p.nonce, sdp: p.answer }, event.pubkey);
-        } else if (body.type === "answer" && s.self < event.pubkey && !p.pc.remoteDescription) {
-          await p.pc.setRemoteDescription({ type: "answer", sdp: body.sdp });
+          await s.signaling.sendDescription(key, p.connectionId, { type: "answer", sdp: p.answer });
+        } else if (description.type === "answer" && !p.pc.remoteDescription) {
+          await p.pc.setRemoteDescription(description);
         }
       })
-      .catch(() => this.removePeer(s, event.pubkey))
+      .catch(() => this.removePeer(s, key))
       .finally(() => {
         p.queued--;
       });
   }
-  private peer(s: Session, key: string, nonce: string): Peer {
+  private peer(s: Session, key: string, connectionId: string): Peer {
     const pc = new RTCPeerConnection(s.config);
     const peer: Peer = {
       pc,
-      nonce,
+      connectionId,
       chain: Promise.resolve(),
       started: Date.now(),
       joined: false,
@@ -411,6 +320,7 @@ export class NappletWebrtc {
     const peer = s.peers.get(key);
     if (!peer) return;
     s.peers.delete(key);
+    s.signaling.forgetPeer(key, peer.connectionId);
     peer.pc.onconnectionstatechange = null;
     if (peer.channel) {
       peer.channel.onclose = null;
@@ -429,12 +339,13 @@ export class NappletWebrtc {
     this.sessions.delete(id);
     clearInterval(session.timer);
     for (const key of session.peers.keys()) this.removePeer(session, key);
-    session.unsubscribe?.();
+    session.signaling.close();
     session.state = "closed";
     this.event(session, { type: "closed", reason });
   }
   close(reason = "Player closed") {
     for (const id of this.sessions.keys()) this.closeSession(id, reason);
     this.alive = false;
+    this.signaling.close();
   }
 }

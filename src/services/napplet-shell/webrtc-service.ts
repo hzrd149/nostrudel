@@ -1,20 +1,18 @@
 import { createWebrtcService } from "@kehto/services";
 import { type WebrtcEvent } from "@napplet/core";
-import { RelayPool, type RelayAuthContext } from "applesauce-relay";
-import type { NostrEvent } from "nostr-tools";
 
-import ignoreRelayErrors from "../../helpers/ignore-relay-errors";
-import { getReadRelays, getWriteRelays } from "./relay-tiers";
-import { getNappletTransportSigner } from "./transport-identity";
+import { createSoyWebrtcSignaling } from "./soy-webrtc-signaling";
 import { NappletWebrtc } from "./webrtc-session";
+import type { WebrtcSignaling } from "./webrtc-signaling";
 
 export type NappletWebrtcOptions = {
   resolveIdentity(windowId: string): string | undefined;
   requestConsent(windowId: string): Promise<boolean>;
+  createSignaling?: (appIdentity: string) => WebrtcSignaling;
 };
 
 export function createNappletWebrtcService(options: NappletWebrtcOptions) {
-  const windows = new Map<string, { backend: NappletWebrtc; pool: RelayPool }>();
+  const windows = new Map<string, NappletWebrtc>();
   return createWebrtcService({
     open: async (request, context) => {
       if (typeof RTCPeerConnection === "undefined") throw new Error("WebRTC unavailable in this browser");
@@ -22,29 +20,8 @@ export function createNappletWebrtcService(options: NappletWebrtcOptions) {
       if (!identity) throw new Error("Napplet frame unavailable");
       let entry = windows.get(context.windowId);
       if (!entry) {
-        const signer = getNappletTransportSigner(identity);
-        // Keep transport connections out of the app pool's account-authentication lifecycle.
-        const pool = new RelayPool({ keepAlive: 0 });
-        const onAuthRequired = async ({ relay }: RelayAuthContext) => {
-          await relay.authenticate(signer);
-        };
         const backend = new NappletWebrtc(
-          signer,
-          identity,
-          {
-            subscribe: (filters, receive) => {
-              const sub = pool
-                .subscription(getReadRelays(), filters, { onAuthRequired })
-                .pipe(ignoreRelayErrors("Napplet WebRTC signaling"))
-                .subscribe((event) => {
-                  if (typeof event !== "string") receive(event as NostrEvent);
-                });
-              return () => sub.unsubscribe();
-            },
-            publish: async (event) => {
-              await pool.publish(getWriteRelays(), event, { onAuthRequired });
-            },
-          },
+          (options.createSignaling ?? createSoyWebrtcSignaling)(identity),
           (message) => context.emit(message.event as WebrtcEvent),
           async () => {
             const allowed = await options.requestConsent(context.windowId);
@@ -52,22 +29,21 @@ export function createNappletWebrtcService(options: NappletWebrtcOptions) {
           },
           async () => ({ iceServers: [{ urls: "stun:stun.l.google.com:19302" }] }),
         );
-        entry = { backend, pool };
+        entry = backend;
         windows.set(context.windowId, entry);
       }
-      return entry.backend.handle({ type: "webrtc.open", request });
+      return entry.handle({ type: "webrtc.open", request });
     },
     send: async (sessionId, payload, context) => {
       const entry = windows.get(context.windowId);
       if (!entry) throw new Error("WebRTC session unavailable");
-      await entry.backend.handle({ type: "webrtc.send", sessionId, payload });
+      await entry.handle({ type: "webrtc.send", sessionId, payload });
     },
     close: async (sessionId, reason, context) => {
-      await windows.get(context.windowId)?.backend.handle({ type: "webrtc.close", sessionId, reason });
+      await windows.get(context.windowId)?.handle({ type: "webrtc.close", sessionId, reason });
     },
     destroyWindow: (windowId) => {
-      windows.get(windowId)?.backend.close();
-      windows.get(windowId)?.pool.close();
+      windows.get(windowId)?.close();
       windows.delete(windowId);
     },
   });

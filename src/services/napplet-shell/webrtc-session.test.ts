@@ -1,11 +1,15 @@
 import { finalizeEvent, getPublicKey, nip44, type NostrEvent, type Filter } from "nostr-tools";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { NappletWebrtc, type WebrtcSigner } from "./webrtc-session";
+import { NappletWebrtc } from "./webrtc-session";
+import { createSoyWebrtcSignaling } from "./soy-webrtc-signaling";
+import type { WebrtcSignal, WebrtcSignalingSession } from "./webrtc-signaling";
+import type { NappletTransportSigner } from "./transport-identity";
 
+vi.mock("./relay-tiers", () => ({ getReadRelays: () => [], getWriteRelays: () => [] }));
 vi.mock("../verify-event", async () => ({ default: (await import("nostr-tools")).verifyEvent }));
 
-function signer(n: number): WebrtcSigner {
+function signer(n: number): NappletTransportSigner {
   const secret = new Uint8Array(32).fill(n);
   return {
     getPublicKey: async () => getPublicKey(secret),
@@ -70,23 +74,24 @@ function setup(n = 1, identity = "author:35129:game", consent = async () => true
   const key = signer(n);
   const emit = vi.fn();
   const backend = new NappletWebrtc(
-    key,
-    identity,
-    {
-      subscribe: (filters, receive) => {
-        const sub = { filters, receive };
-        receivers.add(sub);
-        return () => {
-          receivers.delete(sub);
-        };
+    createSoyWebrtcSignaling(identity, {
+      signer: key,
+      pool: {
+        subscribe: (filters, receive) => {
+          const sub = { filters, receive };
+          receivers.add(sub);
+          return () => {
+            receivers.delete(sub);
+          };
+        },
+        publish: async (event) => {
+          published.push(event);
+          for (const sub of receivers) {
+            if (sub.filters[0]["#d"]?.includes(event.tags.find((tag) => tag[0] === "d")![1])) sub.receive(event);
+          }
+        },
       },
-      publish: async (event) => {
-        published.push(event);
-        for (const sub of receivers) {
-          if (sub.filters[0]["#d"]?.includes(event.tags.find((tag) => tag[0] === "d")![1])) sub.receive(event);
-        }
-      },
-    },
+    }),
     emit,
     consent,
   );
@@ -111,6 +116,57 @@ afterEach(() => {
   receivers.clear();
   vi.useRealTimers();
   vi.unstubAllGlobals();
+});
+
+describe("replaceable signaling", () => {
+  it("negotiates through an alternate backend and releases its sessions and peer state", async () => {
+    const peer = "b".repeat(64);
+    let receive!: (signal: WebrtcSignal) => void;
+    const signalingSession: WebrtcSignalingSession = {
+      self: "a".repeat(64),
+      scopeKey: "alternate-room",
+      start: vi.fn((callback) => {
+        receive = callback;
+      }),
+      sendDescription: vi.fn(async () => {}),
+      forgetPeer: vi.fn(),
+      close: vi.fn(),
+    };
+    const signaling = { open: vi.fn(async () => signalingSession), close: vi.fn() };
+    const emit = vi.fn();
+    const backend = new NappletWebrtc(signaling, emit, async () => true);
+    backends.push(backend);
+    const session = await open(backend);
+    expect(signaling.open).toHaveBeenCalledWith({
+      scope: { type: "room", room: "random-room" },
+      channel: "game",
+      protocol: "v1",
+    });
+    expect(signalingSession.start).not.toHaveBeenCalled();
+    await vi.advanceTimersByTimeAsync(1);
+    receive({ type: "peer", pubkey: peer, connectionId: "alternate-connection", initiator: true });
+    await flush();
+    expect(signalingSession.sendDescription).toHaveBeenCalledWith(peer, "alternate-connection", {
+      type: "offer",
+      sdp: "private-offer-with-ice",
+    });
+    receive({
+      type: "description",
+      pubkey: peer,
+      connectionId: "alternate-connection",
+      description: { type: "answer", sdp: "alternate-answer" },
+    });
+    await flush();
+    expect(FakePeer.all[0].remoteDescription?.sdp).toBe("alternate-answer");
+    await backend.handle({ type: "webrtc.close", sessionId: session.id });
+    expect(signalingSession.close).toHaveBeenCalled();
+    expect(signalingSession.forgetPeer).toHaveBeenCalledWith(peer, "alternate-connection");
+    receive({ type: "peer", pubkey: "c".repeat(64), connectionId: "late", initiator: true });
+    expect(FakePeer.all).toHaveLength(1);
+    backend.close();
+    expect(signaling.close).toHaveBeenCalled();
+    expect(published).toHaveLength(0);
+  });
 });
 
 describe("soy-rtc/1 host sessions", () => {
