@@ -14,7 +14,9 @@ import type { NappletPermission } from "./permission-types";
 const SERVICE_DOMAINS: Partial<Record<NappletPermission, string[]>> = {
   "cvm:call": ["cvm"],
   "webrtc:connect": ["webrtc"],
-  "resource:fetch": ["resource"],
+  "resource:nostr": ["resource"],
+  "resource:https": ["resource"],
+  "resource:blossom": ["resource"],
   "relay:read": ["relay"],
   "outbox:read": ["outbox"],
   "identity:read": ["identity"],

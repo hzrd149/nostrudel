@@ -20,6 +20,7 @@ import { DEFAULT_APP_SETTINGS } from "../../helpers/app-settings";
 import { AppSettingsQuery, BlossomServersQuery } from "../../models";
 import accounts from "../../services/accounts";
 import { installedNapplets$, intentHandlerPreferences$ } from "../../services/installed-napplets";
+import { loadNostrResource } from "../../services/napplet-shell/resource-nostr";
 import { createAdapter } from "../../services/napplet-shell/adapter";
 import { createNappletIntentService } from "../../services/napplet-shell/intent-service";
 import {
@@ -27,7 +28,9 @@ import {
   getWindowIdentity,
   grantCapabilities,
   isAlwaysAllowed,
-  getAlwaysAllowed,
+  getPermissionDecision,
+  getLaunchPermissions,
+  configureLaunchPermissions,
   identityKey,
   getSessionCapabilities,
   permissionChanges$,
@@ -163,7 +166,12 @@ export function NappletShellProvider({ children }: PropsWithChildren) {
       createAdapter(
         toast,
         intent.service,
-        { getBlossomOrigins: () => blossomOriginsRef.current },
+        {
+          getBlossomOrigins: () => blossomOriginsRef.current,
+          authorize: (windowId, permission, signal) =>
+            permissionControllerRef.current?.authorize(windowId, permission, signal) ?? Promise.resolve(false),
+          loadNostr: loadNostrResource,
+        },
         () => uploadRef.current,
         upload.enabled,
         webrtc,
@@ -229,9 +237,11 @@ export function NappletShellProvider({ children }: PropsWithChildren) {
 
   const requestConsent = useCallback<NappletShellContextValue["requestConsent"]>(
     async (event, identity, capabilities) => {
-      if (capabilities.length === 0 || isAlwaysAllowed(identity)) {
-        const saved = getAlwaysAllowed().find((grant) => identityKey(grant) === identityKey(identity));
-        const selected = saved?.capabilities ?? [];
+      if (
+        capabilities.every((permission) => getPermissionDecision(identity, permission) === "allow") ||
+        isAlwaysAllowed(identity)
+      ) {
+        const selected = getLaunchPermissions(identity);
         launchGrantsRef.current.set(identityKey(identity), selected);
         grantCapabilities(bridge, identity, selected);
         return true;
@@ -257,6 +267,7 @@ export function NappletShellProvider({ children }: PropsWithChildren) {
       const selected = launchGrantsRef.current.get(identityKey(identity));
       if (selected) {
         launchGrantsRef.current.delete(identityKey(identity));
+        configureLaunchPermissions(identity, selected);
         grantCapabilities(bridge, identity, selected);
       }
       permissionControllerRef.current?.register(windowId);
@@ -289,6 +300,7 @@ export function NappletShellProvider({ children }: PropsWithChildren) {
       if (!consent) return;
       if (allow) {
         launchGrantsRef.current.set(identityKey(consent.identity), selected);
+        configureLaunchPermissions(consent.identity, selected);
         grantCapabilities(bridge, consent.identity, selected);
         if (always) addAlwaysAllowed(consent.identity, selected);
       } else {

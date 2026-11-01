@@ -9,7 +9,12 @@ export default function NappletDetailPermissions({ event }: { event: NostrEvent 
   const identity = getNappletIdentity(event);
   const saved = use$(alwaysAllowed$)?.find((grant) => identityKey(grant) === identityKey(identity));
   const permissions = [
-    ...new Set([...getNappletPermissions(event), ...(saved?.capabilities ?? []), ...(saved?.deniedCapabilities ?? [])]),
+    ...new Set([
+      ...getNappletPermissions(event),
+      ...(saved?.capabilities ?? []),
+      ...(saved?.deniedCapabilities ?? []),
+      ...(saved?.askedCapabilities ?? []),
+    ]),
   ];
   return <NappletPermissionControls identity={identity} permissions={permissions} />;
 }

@@ -6,6 +6,8 @@ import { NAPPLET_PERMISSIONS, type NappletPermission } from "./permission-types"
 const log = logger.extend("napplet-permission-gate");
 
 export function messagePermission(message: { type: string }): NappletPermission | null {
+  // Resource authorization depends on each URL, including mixed-kind batches and Blossom fallback.
+  if (message.type.startsWith("resource.")) return null;
   if (message.type.startsWith("webrtc.")) return "webrtc:connect";
   if (/^common\.(follow|unfollow|react|report)$/.test(message.type)) return "relay:write";
   if (/^common\.(getProfile|follows)$/.test(message.type)) return "relay:read";

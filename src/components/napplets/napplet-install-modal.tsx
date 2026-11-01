@@ -19,6 +19,7 @@ import { installNapplet } from "../../services/installed-napplets";
 import {
   getNappletPermissions,
   permissionLabel,
+  DEFAULT_PERMISSIONS,
   type NappletPermission,
 } from "../../services/napplet-shell/permission-types";
 import { addAlwaysAllowed } from "../../services/napplet-shell/permissions";
@@ -37,9 +38,7 @@ export default function NappletInstallModal({
   const capabilities = getNappletPermissions(event);
   const [selected, setSelected] = useState<NappletPermission[]>([]);
   useEffect(() => {
-    setSelected(
-      getNappletPermissions(event).filter((permission) => !["cvm:call", "webrtc:connect"].includes(permission)),
-    );
+    setSelected(getNappletPermissions(event).filter((permission) => DEFAULT_PERMISSIONS.includes(permission)));
     setAllow(false);
   }, [event, isOpen]);
 

@@ -67,7 +67,6 @@ describe("source-bound runtime permission gate", () => {
     const f = fixture(vi.fn(async () => false));
     f.send({ type: "cvm.request", id: "request" });
     f.send({ type: "relay.subscribe", id: "subscribe", subId: "sub" });
-    f.send({ type: "resource.bytes", id: "bytes" });
     await Promise.resolve();
     expect(f.source.postMessage).toHaveBeenCalledWith(
       expect.objectContaining({ type: "cvm.request.result", id: "request", error: "policy denied" }),
@@ -75,10 +74,6 @@ describe("source-bound runtime permission gate", () => {
     );
     expect(f.source.postMessage).toHaveBeenCalledWith(
       expect.objectContaining({ type: "relay.closed", subId: "sub" }),
-      "*",
-    );
-    expect(f.source.postMessage).toHaveBeenCalledWith(
-      expect.objectContaining({ type: "resource.bytes.error", id: "bytes", error: "blocked-by-policy" }),
       "*",
     );
   });

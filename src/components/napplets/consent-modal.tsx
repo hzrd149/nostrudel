@@ -13,7 +13,11 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
-import { permissionLabel, type NappletPermission } from "../../services/napplet-shell/permission-types";
+import {
+  DEFAULT_PERMISSIONS,
+  permissionLabel,
+  type NappletPermission,
+} from "../../services/napplet-shell/permission-types";
 import { NostrEvent } from "nostr-tools";
 
 import { getNappletTitle } from "../../helpers/nostr/napplets";
@@ -31,9 +35,7 @@ export type NappletConsentModalProps = {
 export default function NappletConsentModal({ consent, onRespond }: NappletConsentModalProps) {
   const [selected, setSelected] = useState<NappletPermission[]>([]);
   useEffect(() => {
-    setSelected(
-      consent?.capabilities.filter((permission) => !["cvm:call", "webrtc:connect"].includes(permission)) ?? [],
-    );
+    setSelected(consent?.capabilities.filter((permission) => DEFAULT_PERMISSIONS.includes(permission)) ?? []);
   }, [consent]);
   return (
     <Modal isOpen={!!consent} onClose={() => onRespond(false)} isCentered>

@@ -42,15 +42,15 @@ function fixture(ask = vi.fn(async (): Promise<PermissionAnswer> => "session")) 
 describe("runtime permission controller", () => {
   it("asks only for the requested action and reuses a session grant without granting other permissions", async () => {
     const f = fixture();
-    expect(await f.controller.authorize("frame", "relay:read")).toBe(true);
-    expect(await f.controller.authorize("frame", "relay:read")).toBe(true);
+    expect(await f.controller.authorize("frame", "relay:write")).toBe(true);
+    expect(await f.controller.authorize("frame", "relay:write")).toBe(true);
     expect(f.ask).toHaveBeenCalledOnce();
-    expect(hasApprovedCapability(identity, "relay:write")).toBe(false);
+    expect(hasApprovedCapability(identity, "outbox:write")).toBe(false);
     expect(f.bridge.runtime.aclState.revoke).toHaveBeenCalledWith(
       identity.pubkey,
       identity.dTag,
       identity.aggregateHash,
-      "relay:write",
+      "outbox:write",
     );
   });
   it("coalesces simultaneous requests for the same frame and permission", async () => {
@@ -93,14 +93,14 @@ describe("runtime permission controller", () => {
           }),
       ),
     );
-    const pending = f.controller.authorize("frame", "resource:fetch");
+    const pending = f.controller.authorize("frame", "resource:https");
     await vi.waitFor(() => expect(f.ask).toHaveBeenCalledOnce());
-    setPermissionDecision(identity, "resource:fetch", "block");
+    setPermissionDecision(identity, "resource:https", "block");
     expect(await pending).toBe(false);
     resolve("remember");
     await Promise.resolve();
-    expect(getPermissionDecision(identity, "resource:fetch")).toBe("block");
-    expect(hasApprovedCapability(identity, "resource:fetch")).toBe(false);
+    expect(getPermissionDecision(identity, "resource:https")).toBe("block");
+    expect(hasApprovedCapability(identity, "resource:https")).toBe(false);
   });
   it("cancels on frame destruction and suppresses late approval", async () => {
     let resolve: (answer: PermissionAnswer) => void = () => {};
@@ -130,10 +130,21 @@ describe("runtime permission controller", () => {
   });
   it("invalidates session grants and pending consent on cross-tab storage changes", async () => {
     const f = fixture();
-    await f.controller.authorize("frame", "relay:read");
+    await f.controller.authorize("frame", "relay:write");
     synchronizePermissionStorage({ key: "nostrudel:napplet:always-allow" } as StorageEvent);
-    expect(hasApprovedCapability(identity, "relay:read")).toBe(false);
-    await f.controller.authorize("frame", "relay:read");
+    expect(hasApprovedCapability(identity, "outbox:write")).toBe(false);
+    await f.controller.authorize("frame", "relay:write");
     expect(f.ask).toHaveBeenCalledTimes(2);
+  });
+  it("grants public relay, outbox and Nostr resource reads by default without prompting", async () => {
+    const f = fixture();
+    for (const permission of ["relay:read", "outbox:read", "resource:nostr"] as const)
+      expect(await f.controller.authorize("frame", permission)).toBe(true);
+    expect(f.ask).not.toHaveBeenCalled();
+    setPermissionDecision(identity, "relay:read", "ask");
+    expect(await f.controller.authorize("frame", "relay:read")).toBe(true);
+    expect(f.ask).toHaveBeenCalledOnce();
+    setPermissionDecision(identity, "outbox:read", "block");
+    expect(await f.controller.authorize("frame", "outbox:read")).toBe(false);
   });
 });

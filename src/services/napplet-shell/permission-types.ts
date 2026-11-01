@@ -2,9 +2,20 @@ import type { NostrEvent } from "nostr-tools";
 import { getNappletRequiredCapabilities } from "../../helpers/nostr/napplets";
 import { ALL_CAPABILITIES, type Capability } from "@kehto/shell";
 
-export type NappletPermission = Capability | "webrtc:connect";
+export type ResourcePermission = "resource:nostr" | "resource:https" | "resource:blossom";
+export type NappletPermission = Exclude<Capability, "resource:fetch"> | "webrtc:connect" | ResourcePermission;
+export const RESOURCE_PERMISSIONS: readonly ResourcePermission[] = [
+  "resource:nostr",
+  "resource:https",
+  "resource:blossom",
+];
+export const DEFAULT_PERMISSIONS: readonly NappletPermission[] = ["relay:read", "outbox:read", "resource:nostr"];
 export type PermissionDecision = "ask" | "allow" | "block";
-export const NAPPLET_PERMISSIONS: readonly NappletPermission[] = [...ALL_CAPABILITIES, "webrtc:connect"];
+export const NAPPLET_PERMISSIONS: readonly NappletPermission[] = [
+  ...ALL_CAPABILITIES.filter((value): value is Exclude<Capability, "resource:fetch"> => value !== "resource:fetch"),
+  ...RESOURCE_PERMISSIONS,
+  "webrtc:connect",
+];
 
 const labels: Partial<Record<NappletPermission, string>> = {
   "cache:read": "Read cached events",
@@ -21,7 +32,9 @@ const labels: Partial<Record<NappletPermission, string>> = {
   "outbox:read": "Read events using outbox routing",
   "outbox:write": "Sign and publish events",
   "identity:read": "Read your identity and lists",
-  "resource:fetch": "Fetch remote resources",
+  "resource:nostr": "Read Nostr resources",
+  "resource:https": "Fetch HTTPS resources",
+  "resource:blossom": "Fetch Blossom resources",
   "cvm:call": "Connect to ContextVM servers",
   "webrtc:connect": "Connect to peers (shares your IP address)",
   "state:read": "Read app storage",
@@ -40,7 +53,10 @@ export function permissionLabel(permission: NappletPermission) {
 }
 
 export function getNappletPermissions(event: NostrEvent): NappletPermission[] {
-  const permissions: NappletPermission[] = getNappletRequiredCapabilities(event);
+  const permissions: NappletPermission[] = getNappletRequiredCapabilities(event).flatMap((permission) =>
+    permission === "resource:fetch" ? [...RESOURCE_PERMISSIONS] : [permission],
+  );
+  permissions.push(...DEFAULT_PERMISSIONS);
   if (event.tags.some((tag) => ["R", "O", "requires"].includes(tag[0]) && tag[1] === "webrtc"))
     permissions.push("webrtc:connect");
   return [...new Set(permissions)];

@@ -13,6 +13,8 @@ import {
   registerWindowIdentity,
   unregisterWindowIdentity,
   getPermissionDecision,
+  configureLaunchPermissions,
+  getLaunchPermissions,
   setPermissionDecision,
 } from "./permissions";
 
@@ -64,7 +66,7 @@ describe("capability decisions", () => {
     const { bridge, grant } = fakeBridge();
     grantCapabilities(bridge, identity, [relayWrite, stateWrite]);
 
-    expect(grant).toHaveBeenCalledTimes(2);
+    expect(grant).toHaveBeenCalledWith(identity.pubkey, identity.dTag, identity.aggregateHash, "relay:read");
     expect(grant).toHaveBeenCalledWith(identity.pubkey, identity.dTag, identity.aggregateHash, relayWrite);
     expect(grant).toHaveBeenCalledWith(identity.pubkey, identity.dTag, identity.aggregateHash, stateWrite);
   });
@@ -147,7 +149,12 @@ describe("exact runtime ACL", () => {
   it("explicitly denies every unselected action, including an empty selection", () => {
     const { bridge } = fakeBridge();
     grantCapabilities(bridge, identity, []);
-    expect(bridge.runtime.aclState.grant).not.toHaveBeenCalled();
+    expect(bridge.runtime.aclState.grant).not.toHaveBeenCalledWith(
+      identity.pubkey,
+      identity.dTag,
+      identity.aggregateHash,
+      relayWrite,
+    );
     expect(bridge.runtime.aclState.revoke).toHaveBeenCalledWith(
       identity.pubkey,
       identity.dTag,
@@ -174,5 +181,44 @@ describe("managed permissions", () => {
     setPermissionDecision(identity, "cvm:call", "ask");
     expect(getPermissionDecision(identity, "cvm:call")).toBe("ask");
     expect(getPermissionDecision(identity, "webrtc:connect")).toBe("block");
+  });
+});
+
+describe("resource permissions and read defaults", () => {
+  it("defaults only public reads to Allow, with HTTPS, Blossom and writes still Ask", () => {
+    for (const permission of ["relay:read", "outbox:read", "resource:nostr"] as const)
+      expect(getPermissionDecision(identity, permission)).toBe("allow");
+    for (const permission of ["resource:https", "resource:blossom", "relay:write", "outbox:write"] as const)
+      expect(getPermissionDecision(identity, permission)).toBe("ask");
+    setPermissionDecision(identity, "relay:read", "ask");
+    setPermissionDecision(identity, "outbox:read", "block");
+    expect(getPermissionDecision(identity, "relay:read")).toBe("ask");
+    expect(getPermissionDecision(identity, "outbox:read")).toBe("block");
+  });
+  it("does not expand a legacy broad resource Allow into HTTPS or Blossom grants", () => {
+    localStorage.setItem(
+      "nostrudel:napplet:always-allow",
+      JSON.stringify([{ ...identity, capabilities: ["resource:fetch"] }]),
+    );
+    expect(getPermissionDecision(identity, "resource:https")).toBe("ask");
+    expect(getPermissionDecision(identity, "resource:blossom")).toBe("ask");
+    expect(getAlwaysAllowed()[0].capabilities).not.toContain("resource:fetch");
+  });
+  it("preserves a legacy broad resource Block across all three new kinds", () => {
+    localStorage.setItem(
+      "nostrudel:napplet:always-allow",
+      JSON.stringify([{ ...identity, capabilities: [], deniedCapabilities: ["resource:fetch"] }]),
+    );
+    for (const permission of ["resource:nostr", "resource:https", "resource:blossom"] as const)
+      expect(getPermissionDecision(identity, permission)).toBe("block");
+  });
+  it("keeps an unchecked default read permission at Ask for that opening", () => {
+    configureLaunchPermissions(identity, ["relay:read", "outbox:read"]);
+    expect(getPermissionDecision(identity, "resource:nostr")).toBe("ask");
+    expect(getPermissionDecision(identity, "relay:read")).toBe("allow");
+    expect(getLaunchPermissions(identity)).not.toContain("resource:nostr");
+    registerWindowIdentity("launch", identity);
+    unregisterWindowIdentity("launch");
+    expect(getPermissionDecision(identity, "resource:nostr")).toBe("allow");
   });
 });
