@@ -14,6 +14,7 @@ import { NostrEvent } from "nostr-tools";
 import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 
 import { getNappletWebrtcIdentity } from "../../helpers/nostr/napplet-webrtc";
+import NappletCvmConsentModal from "../../components/napplets/cvm-consent-modal";
 import NappletPeerConsentModal from "../../components/napplets/peer-consent-modal";
 import NappletConsentModal from "../../components/napplets/consent-modal";
 import NappletIntentChoiceModal from "../../components/napplets/intent-choice-modal";
@@ -109,6 +110,38 @@ export function NappletShellProvider({ children }: PropsWithChildren) {
     }),
     [frameWebrtcIdentities],
   );
+  const [cvmConsent, setCvmConsent] = useState<{ windowId: string; resolve: (allow: boolean) => void }>();
+  const cvmConsentRef = useRef<typeof cvmConsent>();
+  const cvm = useMemo(
+    () => ({
+      resolveIdentity: (windowId: string) => frameWebrtcIdentities.get(windowId),
+      requestConsent: (windowId: string, signal: AbortSignal) =>
+        new Promise<boolean>((resolve) => {
+          if (signal.aborted || cvmConsentRef.current) {
+            resolve(false);
+            return;
+          }
+          const request = {
+            windowId,
+            resolve: (allow: boolean) => {
+              signal.removeEventListener("abort", abort);
+              resolve(allow);
+            },
+          };
+          const abort = () => {
+            request.resolve(false);
+            if (cvmConsentRef.current === request) {
+              cvmConsentRef.current = undefined;
+              setCvmConsent(undefined);
+            }
+          };
+          signal.addEventListener("abort", abort, { once: true });
+          cvmConsentRef.current = request;
+          setCvmConsent(request);
+        }),
+    }),
+    [frameWebrtcIdentities],
+  );
   const [frameCatalogIds] = useState(() => new Map<string, string>());
 
   const intent = useMemo(
@@ -150,8 +183,9 @@ export function NappletShellProvider({ children }: PropsWithChildren) {
         () => uploadRef.current,
         upload.enabled,
         webrtc,
+        cvm,
       ),
-    [toast, intent, upload.enabled, webrtc],
+    [toast, intent, upload.enabled, webrtc, cvm],
   );
   const bridge = useMemo(() => createShellBridge(adapter), [adapter]);
   // Single source of truth for advertised NAP domains: derived from the same
@@ -197,6 +231,11 @@ export function NappletShellProvider({ children }: PropsWithChildren) {
         peerConsentRef.current.resolve(false);
         peerConsentRef.current = undefined;
         setPeerConsent(undefined);
+      }
+      if (cvmConsentRef.current?.windowId === windowId) {
+        cvmConsentRef.current.resolve(false);
+        cvmConsentRef.current = undefined;
+        setCvmConsent(undefined);
       }
       frameWebrtcIdentities.delete(windowId);
       originRegistry.unregister(windowId);
@@ -246,6 +285,15 @@ export function NappletShellProvider({ children }: PropsWithChildren) {
   return (
     <NappletShellContext.Provider value={context}>
       {children}
+      <NappletCvmConsentModal
+        isOpen={!!cvmConsent}
+        title={cvmConsent ? getWindowIdentity(cvmConsent.windowId)?.title : undefined}
+        onRespond={(allow) => {
+          cvmConsentRef.current?.resolve(allow);
+          cvmConsentRef.current = undefined;
+          setCvmConsent(undefined);
+        }}
+      />
       <NappletPeerConsentModal
         isOpen={!!peerConsent}
         title={peerConsent ? getWindowIdentity(peerConsent.windowId)?.title : undefined}

@@ -38,6 +38,7 @@ import { getReadRelays, getWriteRelays } from "./relay-tiers";
 import { createResourceService, type ResourceServiceOptions } from "./resource-service";
 import { createBlossomUploadService, type UploadConfig } from "./upload-service";
 import { createNappletWebrtcService, type NappletWebrtcOptions } from "./webrtc-service";
+import { createNappletCvmService, type NappletCvmOptions } from "./cvm-service";
 
 const log = logger.extend("napplet-shell");
 
@@ -51,7 +52,7 @@ const log = logger.extend("napplet-shell");
  * `storage` and `inc` are intentionally NOT listed: @kehto/runtime backs them
  * directly (state-handler + default localStorage persistence; inc fanout router).
  */
-const DISABLED_NAP_DOMAINS = ["keys", "media", "config", "cvm"] as const;
+const DISABLED_NAP_DOMAINS = ["keys", "media", "config"] as const;
 
 /** Copies napplet filters into nostr-tools filters (which also allow `&` tag keys and `search`). */
 function toRelayFilters(filters: NostrFilter[]): Filter[] {
@@ -77,6 +78,7 @@ export function createAdapter(
   getUpload: () => UploadConfig,
   uploadEnabled: boolean,
   webrtc: NappletWebrtcOptions,
+  cvm: NappletCvmOptions,
 ): ShellAdapter {
   // These service callbacks return void, so report rejected publishes here.
   const reportPublishError = (error: unknown) => {
@@ -248,6 +250,7 @@ export function createAdapter(
     upload: createBlossomUploadService(getUpload),
     intent,
     webrtc: createNappletWebrtcService(webrtc),
+    cvm: createNappletCvmService(cvm),
     relay: createRelayPoolService({
       subscribe: (filters, callback, relayUrls) => {
         const sub = pool

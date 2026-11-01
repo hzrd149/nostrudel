@@ -15,9 +15,10 @@ import { CloseIcon, RepeatIcon } from "@chakra-ui/icons";
 import { NostrEvent } from "nostr-tools";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { openNappletArtifactCache, type ResolvedNapplet } from "@kehto/nip";
-import { injectNappletNamespacePrelude } from "@kehto/shell";
+import { injectNappletNamespacePrelude, renderNappletNamespacePrelude } from "@kehto/shell";
 import { resolveBlob } from "blossom-client-sdk/actions/resolve";
 
+import { installCvmBinding } from "../../services/napplet-shell/cvm-binding";
 import Menu01 from "../icons/menu-01";
 import SimpleView from "../layout/presets/simple-view";
 import Timestamp from "../timestamp";
@@ -171,7 +172,15 @@ export default function NappletFrame({ event, onClose, onResolved, onError }: Na
 
       // Inject the same domain set shell.init advertises, so supports() and the
       // materialised window.napplet.<domain> proxies never diverge.
-      node.srcdoc = injectNappletNamespacePrelude(napplet.indexHtml, { domains: capabilities.domains });
+      const cvmPrelude = capabilities.domains.includes("cvm")
+        ? `<script>(${installCvmBinding.toString()})();</script>`
+        : "";
+      const preludeOptions = { domains: capabilities.domains };
+      const prelude = renderNappletNamespacePrelude(preludeOptions);
+      node.srcdoc = injectNappletNamespacePrelude(napplet.indexHtml, preludeOptions).replace(
+        prelude,
+        () => prelude + cvmPrelude,
+      );
     },
     [active, napplet, registerFrame, reloadKey, unregisterFrame, capabilities.domains, title],
   );
