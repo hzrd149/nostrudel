@@ -18,6 +18,7 @@ import { getInboxes, getOutboxes } from "applesauce-core/helpers";
 import { EventTemplate, Filter, kinds, NostrEvent } from "nostr-tools";
 import { catchError, filter, firstValueFrom, of, take, timeout, toArray } from "rxjs";
 
+import { logger } from "../../helpers/debug";
 import ignoreRelayErrors from "../../helpers/ignore-relay-errors";
 import accounts from "../accounts";
 import { cacheRequest, eventCache$, writeEvent } from "../event-cache";
@@ -36,6 +37,9 @@ import {
 import { getReadRelays, getWriteRelays } from "./relay-tiers";
 import { createResourceService, type ResourceServiceOptions } from "./resource-service";
 import { createBlossomUploadService, type UploadConfig } from "./upload-service";
+import { createNappletWebrtcService, type NappletWebrtcOptions } from "./webrtc-service";
+
+const log = logger.extend("napplet-shell");
 
 /**
  * NAP domains the shell advertises by default that noStrudel does not back with
@@ -72,6 +76,7 @@ export function createAdapter(
   resource: ResourceServiceOptions,
   getUpload: () => UploadConfig,
   uploadEnabled: boolean,
+  webrtc: NappletWebrtcOptions,
 ): ShellAdapter {
   // These service callbacks return void, so report rejected publishes here.
   const reportPublishError = (error: unknown) => {
@@ -147,11 +152,14 @@ export function createAdapter(
     common: {
       isAvailable: () => true,
     },
+    webrtc: {
+      isAvailable: () => typeof RTCPeerConnection !== "undefined",
+    },
     crypto: {
       verifyEvent: async (event) => verifyEvent(event as NostrEvent),
     },
     onUnroutedMessage: (info) => {
-      if (import.meta.env.DEV) console.debug("Dropped napplet message", info);
+      log("Dropped napplet message", info);
     },
     onHashMismatch: (dTag, claimed, computed) => {
       toast({ status: "error", description: `Napplet ${dTag} hash mismatch: ${claimed} != ${computed}` });
@@ -239,6 +247,7 @@ export function createAdapter(
     resource: createResourceService(resource),
     upload: createBlossomUploadService(getUpload),
     intent,
+    webrtc: createNappletWebrtcService(webrtc),
     relay: createRelayPoolService({
       subscribe: (filters, callback, relayUrls) => {
         const sub = pool

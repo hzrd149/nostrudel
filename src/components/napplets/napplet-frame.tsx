@@ -160,6 +160,7 @@ export default function NappletFrame({ event, onClose, onResolved, onError }: Na
         target,
         { pubkey: active.pubkey, dTag: napplet.dTag, aggregateHash: napplet.aggregateHash, title },
         catalogId,
+        active,
       );
 
       // Intents are delivered once the document (and with it the injected binding) has loaded

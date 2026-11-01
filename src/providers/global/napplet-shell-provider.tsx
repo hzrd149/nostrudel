@@ -13,6 +13,8 @@ import { use$, useEventModel } from "applesauce-react/hooks";
 import { NostrEvent } from "nostr-tools";
 import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 
+import { getNappletWebrtcIdentity } from "../../helpers/nostr/napplet-webrtc";
+import NappletPeerConsentModal from "../../components/napplets/peer-consent-modal";
 import NappletConsentModal from "../../components/napplets/consent-modal";
 import NappletIntentChoiceModal from "../../components/napplets/intent-choice-modal";
 import { unique } from "../../helpers/array";
@@ -24,6 +26,7 @@ import { createAdapter } from "../../services/napplet-shell/adapter";
 import { createNappletIntentService } from "../../services/napplet-shell/intent-service";
 import {
   addAlwaysAllowed,
+  getWindowIdentity,
   grantCapabilities,
   isAlwaysAllowed,
   registerWindowIdentity,
@@ -52,7 +55,13 @@ type NappletShellContextValue = {
   capabilities: ShellCapabilities;
   requestConsent: (event: NostrEvent, identity: NappletIdentity, capabilities: Capability[]) => Promise<boolean>;
   /** `catalogId` is the frame's NAP-INTENT identity, attested as `sender` on intents it invokes */
-  registerFrame: (windowId: string, win: Window, identity: NappletIdentity, catalogId: string) => void;
+  registerFrame: (
+    windowId: string,
+    win: Window,
+    identity: NappletIdentity,
+    catalogId: string,
+    manifest: NostrEvent,
+  ) => void;
   unregisterFrame: (windowId: string) => void;
 };
 
@@ -81,6 +90,25 @@ export function NappletShellProvider({ children }: PropsWithChildren) {
   uploadRef.current = upload;
   const [consent, setConsent] = useState<ConsentRequest>();
   const [intentChoice, setIntentChoice] = useState<IntentChoiceRequest>();
+  const [peerConsent, setPeerConsent] = useState<{ windowId: string; resolve: (allow: boolean) => void }>();
+  const peerConsentRef = useRef<typeof peerConsent>();
+  const [frameWebrtcIdentities] = useState(() => new Map<string, string>());
+  const webrtc = useMemo(
+    () => ({
+      resolveIdentity: (windowId: string) => frameWebrtcIdentities.get(windowId),
+      requestConsent: (windowId: string) =>
+        new Promise<boolean>((resolve) => {
+          if (peerConsentRef.current) {
+            resolve(false);
+            return;
+          }
+          const request = { windowId, resolve };
+          peerConsentRef.current = request;
+          setPeerConsent(request);
+        }),
+    }),
+    [frameWebrtcIdentities],
+  );
   const [frameCatalogIds] = useState(() => new Map<string, string>());
 
   const intent = useMemo(
@@ -121,8 +149,9 @@ export function NappletShellProvider({ children }: PropsWithChildren) {
         { getBlossomOrigins: () => blossomOriginsRef.current },
         () => uploadRef.current,
         upload.enabled,
+        webrtc,
       ),
-    [toast, intent, upload.enabled],
+    [toast, intent, upload.enabled, webrtc],
   );
   const bridge = useMemo(() => createShellBridge(adapter), [adapter]);
   // Single source of truth for advertised NAP domains: derived from the same
@@ -153,23 +182,30 @@ export function NappletShellProvider({ children }: PropsWithChildren) {
   );
 
   const registerFrame = useCallback<NappletShellContextValue["registerFrame"]>(
-    (windowId, win, identity, catalogId) => {
+    (windowId, win, identity, catalogId, manifest) => {
       originRegistry.register(win, windowId, identity);
       registerWindowIdentity(windowId, identity);
       frameCatalogIds.set(windowId, catalogId);
+      frameWebrtcIdentities.set(windowId, getNappletWebrtcIdentity(manifest));
     },
-    [frameCatalogIds],
+    [frameCatalogIds, frameWebrtcIdentities],
   );
 
   const unregisterFrame = useCallback<NappletShellContextValue["unregisterFrame"]>(
     (windowId) => {
+      if (peerConsentRef.current?.windowId === windowId) {
+        peerConsentRef.current.resolve(false);
+        peerConsentRef.current = undefined;
+        setPeerConsent(undefined);
+      }
+      frameWebrtcIdentities.delete(windowId);
       originRegistry.unregister(windowId);
       sessionRegistry.unregister(windowId);
       unregisterWindowIdentity(windowId);
       frameCatalogIds.delete(windowId);
       bridge.runtime.destroyWindow(windowId);
     },
-    [bridge, frameCatalogIds],
+    [bridge, frameCatalogIds, frameWebrtcIdentities],
   );
 
   const context = useMemo(
@@ -201,9 +237,20 @@ export function NappletShellProvider({ children }: PropsWithChildren) {
     [intentChoice],
   );
 
+  const respondPeerConsent = useCallback((allow: boolean) => {
+    peerConsentRef.current?.resolve(allow);
+    peerConsentRef.current = undefined;
+    setPeerConsent(undefined);
+  }, []);
+
   return (
     <NappletShellContext.Provider value={context}>
       {children}
+      <NappletPeerConsentModal
+        isOpen={!!peerConsent}
+        title={peerConsent ? getWindowIdentity(peerConsent.windowId)?.title : undefined}
+        onRespond={respondPeerConsent}
+      />
       <NappletConsentModal consent={consent} onRespond={respond} />
       <NappletIntentChoiceModal intentChoice={intentChoice} onRespond={respondIntentChoice} />
     </NappletShellContext.Provider>
