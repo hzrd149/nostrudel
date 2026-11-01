@@ -132,14 +132,15 @@ function fixture(consent = vi.fn(async () => true), respond = true) {
   return { service, invoke, consent, requests, transports, incoming };
 }
 describe("NAP-CVM", () => {
-  it("uses encrypted local identities and remembers an independent permission flag per frame", async () => {
+  it("uses encrypted local identities and rechecks permission before publication", async () => {
     const f = fixture();
     const first = await f.invoke("a", {});
     expect(first.message.result.tools).toEqual([{ name: "echo" }]);
     await f.invoke("a", { message: { jsonrpc: "2.0", id: "next", method: "tools/list" } });
-    expect(f.consent).toHaveBeenCalledTimes(1);
+    expect(f.consent.mock.calls.length).toBeGreaterThan(1);
+    const checks = f.consent.mock.calls.length;
     await f.invoke("b", {});
-    expect(f.consent).toHaveBeenCalledTimes(2);
+    expect(f.consent.mock.calls.length).toBeGreaterThan(checks);
     const initialized = f.requests.filter((r) => r.method === "initialize");
     expect(initialized).toHaveLength(2);
     expect(initialized[0].pubkey).not.toBe(initialized[1].pubkey);

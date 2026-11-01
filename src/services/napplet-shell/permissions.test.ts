@@ -10,6 +10,10 @@ import {
   revokeAlwaysAllowed,
   revokeCapabilities,
   type NappletIdentity,
+  registerWindowIdentity,
+  unregisterWindowIdentity,
+  getPermissionDecision,
+  setPermissionDecision,
 } from "./permissions";
 
 // The node environment has no browser storage, so install a minimal in-memory stub and reset it
@@ -31,7 +35,7 @@ const stateWrite: Capability = "state:write";
 
 function fakeBridge() {
   const grant = vi.fn();
-  const bridge = { runtime: { aclState: { grant } } } as unknown as ShellBridge;
+  const bridge = { runtime: { aclState: { grant, revoke: vi.fn() } } } as unknown as ShellBridge;
   return { bridge, grant };
 }
 
@@ -136,5 +140,39 @@ describe("always-allow list", () => {
     expect(isAlwaysAllowed(identity)).toBe(false);
     expect(isAlwaysAllowed({ ...identity, aggregateHash: "hash-2" })).toBe(false);
     expect(isAlwaysAllowed({ ...identity, dTag: "other" })).toBe(true);
+  });
+});
+
+describe("exact runtime ACL", () => {
+  it("explicitly denies every unselected action, including an empty selection", () => {
+    const { bridge } = fakeBridge();
+    grantCapabilities(bridge, identity, []);
+    expect(bridge.runtime.aclState.grant).not.toHaveBeenCalled();
+    expect(bridge.runtime.aclState.revoke).toHaveBeenCalledWith(
+      identity.pubkey,
+      identity.dTag,
+      identity.aggregateHash,
+      relayWrite,
+    );
+  });
+});
+
+describe("managed permissions", () => {
+  it("resets session-only grants as well as saved decisions", () => {
+    const { bridge } = fakeBridge();
+    registerWindowIdentity("session-only", identity);
+    grantCapabilities(bridge, identity, ["cvm:call"]);
+    revokeAlwaysAllowed(identity.pubkey, identity.dTag);
+    expect(hasApprovedCapability(identity, "cvm:call")).toBe(false);
+    unregisterWindowIdentity("session-only");
+  });
+  it("stores exact Allow, Ask and Block choices and preserves unrelated decisions", () => {
+    setPermissionDecision(identity, "cvm:call", "allow");
+    setPermissionDecision(identity, "webrtc:connect", "block");
+    expect(getPermissionDecision(identity, "cvm:call")).toBe("allow");
+    expect(getPermissionDecision(identity, "webrtc:connect")).toBe("block");
+    setPermissionDecision(identity, "cvm:call", "ask");
+    expect(getPermissionDecision(identity, "cvm:call")).toBe("ask");
+    expect(getPermissionDecision(identity, "webrtc:connect")).toBe("block");
   });
 });

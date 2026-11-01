@@ -5,7 +5,6 @@ import {
   createShellBridge,
   originRegistry,
   sessionRegistry,
-  type Capability,
   type ShellBridge,
   type ShellCapabilities,
 } from "@kehto/shell";
@@ -14,8 +13,6 @@ import { NostrEvent } from "nostr-tools";
 import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 
 import { getNappletWebrtcIdentity } from "../../helpers/nostr/napplet-webrtc";
-import NappletCvmConsentModal from "../../components/napplets/cvm-consent-modal";
-import NappletPeerConsentModal from "../../components/napplets/peer-consent-modal";
 import NappletConsentModal from "../../components/napplets/consent-modal";
 import NappletIntentChoiceModal from "../../components/napplets/intent-choice-modal";
 import { unique } from "../../helpers/array";
@@ -30,6 +27,11 @@ import {
   getWindowIdentity,
   grantCapabilities,
   isAlwaysAllowed,
+  getAlwaysAllowed,
+  identityKey,
+  getSessionCapabilities,
+  permissionChanges$,
+  synchronizePermissionStorage,
   registerWindowIdentity,
   revokeCapabilities,
   unregisterWindowIdentity,
@@ -37,10 +39,20 @@ import {
 } from "../../services/napplet-shell/permissions";
 import { type UploadConfig } from "../../services/napplet-shell/upload-service";
 
+import NappletRuntimeConsentModal from "../../components/napplets/runtime-consent-modal";
+import {
+  createPermissionController,
+  type PermissionPrompt,
+  type PermissionAnswer,
+} from "../../services/napplet-shell/permission-controller";
+import { synchronizeRuntimePermissions } from "../../services/napplet-shell/permission-runtime";
+import { createPermissionGate } from "../../services/napplet-shell/permission-gate";
+import type { NappletPermission } from "../../services/napplet-shell/permission-types";
+
 type ConsentRequest = {
   event: NostrEvent;
   identity: NappletIdentity;
-  capabilities: Capability[];
+  capabilities: NappletPermission[];
   resolve: (value: boolean) => void;
 };
 
@@ -54,7 +66,7 @@ type NappletShellContextValue = {
   bridge: ShellBridge;
   /** Shell capability set computed from the adapter via buildShellCapabilities. */
   capabilities: ShellCapabilities;
-  requestConsent: (event: NostrEvent, identity: NappletIdentity, capabilities: Capability[]) => Promise<boolean>;
+  requestConsent: (event: NostrEvent, identity: NappletIdentity, capabilities: NappletPermission[]) => Promise<boolean>;
   /** `catalogId` is the frame's NAP-INTENT identity, attested as `sender` on intents it invokes */
   registerFrame: (
     windowId: string,
@@ -91,54 +103,26 @@ export function NappletShellProvider({ children }: PropsWithChildren) {
   uploadRef.current = upload;
   const [consent, setConsent] = useState<ConsentRequest>();
   const [intentChoice, setIntentChoice] = useState<IntentChoiceRequest>();
-  const [peerConsent, setPeerConsent] = useState<{ windowId: string; resolve: (allow: boolean) => void }>();
-  const peerConsentRef = useRef<typeof peerConsent>();
+  const permissionControllerRef = useRef<ReturnType<typeof createPermissionController>>();
+  const launchGrantsRef = useRef(new Map<string, NappletPermission[]>());
+  const [runtimeConsent, setRuntimeConsent] = useState<
+    PermissionPrompt & { resolve(answer: PermissionAnswer): void }
+  >();
+  const runtimeQueueRef = useRef<(PermissionPrompt & { resolve(answer: PermissionAnswer): void })[]>([]);
   const [frameWebrtcIdentities] = useState(() => new Map<string, string>());
   const webrtc = useMemo(
     () => ({
       resolveIdentity: (windowId: string) => frameWebrtcIdentities.get(windowId),
       requestConsent: (windowId: string) =>
-        new Promise<boolean>((resolve) => {
-          if (peerConsentRef.current) {
-            resolve(false);
-            return;
-          }
-          const request = { windowId, resolve };
-          peerConsentRef.current = request;
-          setPeerConsent(request);
-        }),
+        permissionControllerRef.current?.authorize(windowId, "webrtc:connect") ?? Promise.resolve(false),
     }),
     [frameWebrtcIdentities],
   );
-  const [cvmConsent, setCvmConsent] = useState<{ windowId: string; resolve: (allow: boolean) => void }>();
-  const cvmConsentRef = useRef<typeof cvmConsent>();
   const cvm = useMemo(
     () => ({
       resolveIdentity: (windowId: string) => frameWebrtcIdentities.get(windowId),
       requestConsent: (windowId: string, signal: AbortSignal) =>
-        new Promise<boolean>((resolve) => {
-          if (signal.aborted || cvmConsentRef.current) {
-            resolve(false);
-            return;
-          }
-          const request = {
-            windowId,
-            resolve: (allow: boolean) => {
-              signal.removeEventListener("abort", abort);
-              resolve(allow);
-            },
-          };
-          const abort = () => {
-            request.resolve(false);
-            if (cvmConsentRef.current === request) {
-              cvmConsentRef.current = undefined;
-              setCvmConsent(undefined);
-            }
-          };
-          signal.addEventListener("abort", abort, { once: true });
-          cvmConsentRef.current = request;
-          setCvmConsent(request);
-        }),
+        permissionControllerRef.current?.authorize(windowId, "cvm:call", signal) ?? Promise.resolve(false),
     }),
     [frameWebrtcIdentities],
   );
@@ -193,24 +177,75 @@ export function NappletShellProvider({ children }: PropsWithChildren) {
   const capabilities = useMemo(() => buildShellCapabilities(adapter), [adapter]);
 
   useEffect(() => {
-    window.addEventListener("message", bridge.handleMessage);
+    const controller = createPermissionController({
+      identity: getWindowIdentity,
+      ask: (prompt) =>
+        new Promise((resolve) => {
+          if (prompt.signal.aborted) {
+            resolve("deny");
+            return;
+          }
+          const request = {
+            ...prompt,
+            resolve: (answer: PermissionAnswer) => {
+              prompt.signal.removeEventListener("abort", abort);
+              resolve(answer);
+              runtimeQueueRef.current = runtimeQueueRef.current.filter((item) => item !== request);
+              setRuntimeConsent(runtimeQueueRef.current[0]);
+            },
+          };
+          const abort = () => request.resolve("deny");
+          prompt.signal.addEventListener("abort", abort, { once: true });
+          runtimeQueueRef.current.push(request);
+          setRuntimeConsent(runtimeQueueRef.current[0]);
+        }),
+      grant: (identity, permission) =>
+        grantCapabilities(bridge, identity, [...new Set([...getSessionCapabilities(identity), permission])]),
+    });
+    permissionControllerRef.current = controller;
+    for (const windowId of originRegistry.getAllWindowIds()) controller.register(windowId);
+    const gate = createPermissionGate(
+      bridge,
+      (windowId, permission, signal) => controller.authorize(windowId, permission, signal),
+      capabilities.domains,
+    );
+    window.addEventListener("message", gate.handleMessage);
+    window.addEventListener("storage", synchronizePermissionStorage);
+    const changes = permissionChanges$.subscribe((change) =>
+      synchronizeRuntimePermissions(bridge, adapter.services ?? {}, change),
+    );
     const sub = accounts.active$.subscribe((account) => bridge.publishIdentityChanged(account?.pubkey ?? ""));
-
     return () => {
+      changes.unsubscribe();
       sub.unsubscribe();
-      window.removeEventListener("message", bridge.handleMessage);
+      gate.destroy();
+      controller.dispose();
+      permissionControllerRef.current = undefined;
+      window.removeEventListener("message", gate.handleMessage);
+      window.removeEventListener("storage", synchronizePermissionStorage);
       bridge.destroy();
     };
-  }, [bridge]);
+  }, [bridge, adapter, capabilities.domains]);
 
   const requestConsent = useCallback<NappletShellContextValue["requestConsent"]>(
     async (event, identity, capabilities) => {
       if (capabilities.length === 0 || isAlwaysAllowed(identity)) {
-        grantCapabilities(bridge, identity, capabilities);
+        const saved = getAlwaysAllowed().find((grant) => identityKey(grant) === identityKey(identity));
+        const selected = saved?.capabilities ?? [];
+        launchGrantsRef.current.set(identityKey(identity), selected);
+        grantCapabilities(bridge, identity, selected);
         return true;
       }
 
-      return new Promise((resolve) => setConsent({ event, identity, capabilities, resolve }));
+      return new Promise((resolve) =>
+        setConsent((current) => {
+          if (current) {
+            resolve(false);
+            return current;
+          }
+          return { event, identity, capabilities, resolve };
+        }),
+      );
     },
     [bridge],
   );
@@ -219,24 +254,21 @@ export function NappletShellProvider({ children }: PropsWithChildren) {
     (windowId, win, identity, catalogId, manifest) => {
       originRegistry.register(win, windowId, identity);
       registerWindowIdentity(windowId, identity);
+      const selected = launchGrantsRef.current.get(identityKey(identity));
+      if (selected) {
+        launchGrantsRef.current.delete(identityKey(identity));
+        grantCapabilities(bridge, identity, selected);
+      }
+      permissionControllerRef.current?.register(windowId);
       frameCatalogIds.set(windowId, catalogId);
       frameWebrtcIdentities.set(windowId, getNappletWebrtcIdentity(manifest));
     },
-    [frameCatalogIds, frameWebrtcIdentities],
+    [bridge, frameCatalogIds, frameWebrtcIdentities],
   );
 
   const unregisterFrame = useCallback<NappletShellContextValue["unregisterFrame"]>(
     (windowId) => {
-      if (peerConsentRef.current?.windowId === windowId) {
-        peerConsentRef.current.resolve(false);
-        peerConsentRef.current = undefined;
-        setPeerConsent(undefined);
-      }
-      if (cvmConsentRef.current?.windowId === windowId) {
-        cvmConsentRef.current.resolve(false);
-        cvmConsentRef.current = undefined;
-        setCvmConsent(undefined);
-      }
+      permissionControllerRef.current?.destroyWindow(windowId);
       frameWebrtcIdentities.delete(windowId);
       originRegistry.unregister(windowId);
       sessionRegistry.unregister(windowId);
@@ -253,11 +285,12 @@ export function NappletShellProvider({ children }: PropsWithChildren) {
   );
 
   const respond = useCallback(
-    (allow: boolean, always = false) => {
+    (allow: boolean, always = false, selected: NappletPermission[] = []) => {
       if (!consent) return;
       if (allow) {
-        grantCapabilities(bridge, consent.identity, consent.capabilities);
-        if (always) addAlwaysAllowed(consent.identity, consent.capabilities);
+        launchGrantsRef.current.set(identityKey(consent.identity), selected);
+        grantCapabilities(bridge, consent.identity, selected);
+        if (always) addAlwaysAllowed(consent.identity, selected);
       } else {
         revokeCapabilities(consent.identity);
       }
@@ -276,29 +309,10 @@ export function NappletShellProvider({ children }: PropsWithChildren) {
     [intentChoice],
   );
 
-  const respondPeerConsent = useCallback((allow: boolean) => {
-    peerConsentRef.current?.resolve(allow);
-    peerConsentRef.current = undefined;
-    setPeerConsent(undefined);
-  }, []);
-
   return (
     <NappletShellContext.Provider value={context}>
       {children}
-      <NappletCvmConsentModal
-        isOpen={!!cvmConsent}
-        title={cvmConsent ? getWindowIdentity(cvmConsent.windowId)?.title : undefined}
-        onRespond={(allow) => {
-          cvmConsentRef.current?.resolve(allow);
-          cvmConsentRef.current = undefined;
-          setCvmConsent(undefined);
-        }}
-      />
-      <NappletPeerConsentModal
-        isOpen={!!peerConsent}
-        title={peerConsent ? getWindowIdentity(peerConsent.windowId)?.title : undefined}
-        onRespond={respondPeerConsent}
-      />
+      <NappletRuntimeConsentModal prompt={runtimeConsent} onRespond={(answer) => runtimeConsent?.resolve(answer)} />
       <NappletConsentModal consent={consent} onRespond={respond} />
       <NappletIntentChoiceModal intentChoice={intentChoice} onRespond={respondIntentChoice} />
     </NappletShellContext.Provider>

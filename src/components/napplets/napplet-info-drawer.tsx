@@ -19,6 +19,11 @@ import {
   Stack,
   StackDivider,
   Text,
+  Tabs,
+  TabList,
+  Tab,
+  TabPanels,
+  TabPanel,
 } from "@chakra-ui/react";
 import { useActiveAccount } from "applesauce-react/hooks";
 import { NostrEvent } from "nostr-tools";
@@ -33,6 +38,7 @@ import LayersThree01 from "../icons/layers-three-01";
 import SeenOnRelaysButton from "../note/seen-on-relays-button";
 import Timestamp from "../timestamp";
 import UserName from "../user/user-name";
+import NappletDetailPermissions from "../../views/napplets/components/napplet-detail-permissions";
 import NappletIconImage from "./napplet-icon";
 import {
   NAPPLET_KIND_SNAPSHOT,
@@ -219,81 +225,94 @@ export default function NappletInfoDrawer({
         </DrawerHeader>
 
         <DrawerBody px="3" pb="4" pt="0" overflowX="hidden" overflowY="auto">
-          <Flex direction="column" gap="3">
-            <Flex gap="2" alignItems="center" minW="0">
-              <Flex direction="column" minW="0">
-                <UserName pubkey={active.pubkey} fontWeight="bold" />
-                <Text fontSize="sm" color="GrayText">
-                  Updated <Timestamp timestamp={active.created_at} display="inline" />
-                </Text>
-              </Flex>
-              {active.kind === NAPPLET_KIND_SNAPSHOT && (
-                <Badge colorScheme="purple" ms="auto" flexShrink={0}>
-                  Snapshot
-                </Badge>
-              )}
-            </Flex>
+          <Tabs colorScheme="primary" isLazy>
+            <TabList>
+              <Tab>App</Tab>
+              <Tab>Permissions</Tab>
+            </TabList>
+            <TabPanels>
+              <TabPanel px="0">
+                <Flex direction="column" gap="3">
+                  <Flex gap="2" alignItems="center" minW="0">
+                    <Flex direction="column" minW="0">
+                      <UserName pubkey={active.pubkey} fontWeight="bold" />
+                      <Text fontSize="sm" color="GrayText">
+                        Updated <Timestamp timestamp={active.created_at} display="inline" />
+                      </Text>
+                    </Flex>
+                    {active.kind === NAPPLET_KIND_SNAPSHOT && (
+                      <Badge colorScheme="purple" ms="auto" flexShrink={0}>
+                        Snapshot
+                      </Badge>
+                    )}
+                  </Flex>
 
-            {description && (
-              <Text whiteSpace="pre-line" fontSize="sm">
-                {description}
-              </Text>
-            )}
+                  {description && (
+                    <Text whiteSpace="pre-line" fontSize="sm">
+                      {description}
+                    </Text>
+                  )}
 
-            {address && (
-              <Button as={RouterLink} to={`/app/store/${address}`} variant="outline" size="sm" mr="auto">
-                App details
-              </Button>
-            )}
+                  {address && (
+                    <Button as={RouterLink} to={`/app/store/${address}`} variant="outline" size="sm" mr="auto">
+                      App details
+                    </Button>
+                  )}
 
-            {loading && (
-              <Flex alignItems="center" gap="2" color="GrayText" fontSize="sm" py="2">
-                <Spinner size="sm" /> Searching relays for other releases…
-              </Flex>
-            )}
+                  {loading && (
+                    <Flex alignItems="center" gap="2" color="GrayText" fontSize="sm" py="2">
+                      <Spinner size="sm" /> Searching relays for other releases…
+                    </Flex>
+                  )}
 
-            <Accordion allowMultiple>
-              <AccordionItem>
-                {({ isExpanded }) => (
-                  <>
-                    <AccordionButton px="0">
-                      <Flex alignItems="center" gap="2" flexGrow={1}>
-                        <ThreadIcon boxSize="5" />
-                        <Heading size="sm">Friends' comments</Heading>
-                      </Flex>
-                      <AccordionIcon />
-                    </AccordionButton>
-                    {/* Only query relays for comments once the section is expanded */}
-                    <AccordionPanel px="0" pt="0" pb="2">
-                      {isExpanded && <FriendComments event={event} />}
-                    </AccordionPanel>
-                  </>
-                )}
-              </AccordionItem>
-              {showHistory && (
-                <ReleaseSection
-                  title="Version history"
-                  icon={<ClockRewind boxSize="5" />}
-                  releases={versions}
-                  event={event}
-                  active={active}
-                  onSelect={onSelect}
-                  onClose={onClose}
-                />
-              )}
-              {showSnapshots && (
-                <ReleaseSection
-                  title="Snapshots"
-                  icon={<LayersThree01 boxSize="5" />}
-                  releases={snapshots}
-                  event={event}
-                  active={active}
-                  onSelect={onSelect}
-                  onClose={onClose}
-                />
-              )}
-            </Accordion>
-          </Flex>
+                  <Accordion allowMultiple>
+                    <AccordionItem>
+                      {({ isExpanded }) => (
+                        <>
+                          <AccordionButton px="0">
+                            <Flex alignItems="center" gap="2" flexGrow={1}>
+                              <ThreadIcon boxSize="5" />
+                              <Heading size="sm">Friends' comments</Heading>
+                            </Flex>
+                            <AccordionIcon />
+                          </AccordionButton>
+                          {/* Only query relays for comments once the section is expanded */}
+                          <AccordionPanel px="0" pt="0" pb="2">
+                            {isExpanded && <FriendComments event={event} />}
+                          </AccordionPanel>
+                        </>
+                      )}
+                    </AccordionItem>
+                    {showHistory && (
+                      <ReleaseSection
+                        title="Version history"
+                        icon={<ClockRewind boxSize="5" />}
+                        releases={versions}
+                        event={event}
+                        active={active}
+                        onSelect={onSelect}
+                        onClose={onClose}
+                      />
+                    )}
+                    {showSnapshots && (
+                      <ReleaseSection
+                        title="Snapshots"
+                        icon={<LayersThree01 boxSize="5" />}
+                        releases={snapshots}
+                        event={event}
+                        active={active}
+                        onSelect={onSelect}
+                        onClose={onClose}
+                      />
+                    )}
+                  </Accordion>
+                </Flex>
+              </TabPanel>
+              <TabPanel px="0">
+                <NappletDetailPermissions event={active} />
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
         </DrawerBody>
       </DrawerContent>
     </Drawer>

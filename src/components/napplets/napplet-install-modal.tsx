@@ -2,8 +2,7 @@ import {
   Button,
   ButtonGroup,
   Checkbox,
-  Code,
-  ListItem,
+  Flex,
   Modal,
   ModalBody,
   ModalContent,
@@ -11,13 +10,17 @@ import {
   ModalHeader,
   ModalOverlay,
   Text,
-  UnorderedList,
 } from "@chakra-ui/react";
 import { NostrEvent } from "nostr-tools";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-import { getNappletIdentity, getNappletRequiredCapabilities, getNappletTitle } from "../../helpers/nostr/napplets";
+import { getNappletIdentity, getNappletTitle } from "../../helpers/nostr/napplets";
 import { installNapplet } from "../../services/installed-napplets";
+import {
+  getNappletPermissions,
+  permissionLabel,
+  type NappletPermission,
+} from "../../services/napplet-shell/permission-types";
 import { addAlwaysAllowed } from "../../services/napplet-shell/permissions";
 
 /** Shows what a napplet will ask for before installing it, with the option to allow it up front */
@@ -31,11 +34,18 @@ export default function NappletInstallModal({
   onClose: () => void;
 }) {
   const [allow, setAllow] = useState(false);
-  const capabilities = getNappletRequiredCapabilities(event);
+  const capabilities = getNappletPermissions(event);
+  const [selected, setSelected] = useState<NappletPermission[]>([]);
+  useEffect(() => {
+    setSelected(
+      getNappletPermissions(event).filter((permission) => !["cvm:call", "webrtc:connect"].includes(permission)),
+    );
+    setAllow(false);
+  }, [event, isOpen]);
 
   const install = () => {
     installNapplet(event);
-    if (allow) addAlwaysAllowed(getNappletIdentity(event), capabilities);
+    if (allow) addAlwaysAllowed(getNappletIdentity(event), selected);
     onClose();
   };
 
@@ -50,17 +60,28 @@ export default function NappletInstallModal({
           ) : (
             <>
               <Text mb="2">This app will ask for:</Text>
-              <UnorderedList spacing="1" mb="4">
-                {capabilities.map((capability) => (
-                  <ListItem key={capability}>
-                    <Code>{capability}</Code>
-                  </ListItem>
+              <Flex direction="column" gap="3" mb="4">
+                {capabilities.map((permission) => (
+                  <Checkbox
+                    key={permission}
+                    colorScheme="primary"
+                    isChecked={selected.includes(permission)}
+                    onChange={(event) =>
+                      setSelected((current) =>
+                        event.target.checked
+                          ? [...current, permission]
+                          : current.filter((value) => value !== permission),
+                      )
+                    }
+                  >
+                    {permissionLabel(permission)}
+                  </Checkbox>
                 ))}
-              </UnorderedList>
-              <Checkbox isChecked={allow} onChange={(e) => setAllow(e.target.checked)}>
+              </Flex>
+              <Checkbox colorScheme="primary" isChecked={allow} onChange={(e) => setAllow(e.target.checked)}>
                 Allow these now instead of asking when it opens
               </Checkbox>
-              <Text color="GrayText" fontSize="sm" mt="1">
+              <Text color="GrayText" mt="1">
                 Applies to this version only. Updates ask again.
               </Text>
             </>

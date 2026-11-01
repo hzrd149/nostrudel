@@ -18,6 +18,7 @@ import { openNappletArtifactCache, type ResolvedNapplet } from "@kehto/nip";
 import { injectNappletNamespacePrelude, renderNappletNamespacePrelude } from "@kehto/shell";
 import { resolveBlob } from "blossom-client-sdk/actions/resolve";
 
+import { getNappletPermissions } from "../../services/napplet-shell/permission-types";
 import { installCvmBinding } from "../../services/napplet-shell/cvm-binding";
 import Menu01 from "../icons/menu-01";
 import SimpleView from "../layout/presets/simple-view";
@@ -26,7 +27,6 @@ import NappletInfoDrawer from "./napplet-info-drawer";
 import NappletUpdateNotice from "./napplet-update-notice";
 import {
   NAPPLET_KIND_SNAPSHOT,
-  getNappletRequiredCapabilities,
   getNappletNaddr,
   getNappletCatalogId,
   getNappletTitle,
@@ -92,7 +92,7 @@ export default function NappletFrame({ event, onClose, onResolved, onError }: Na
   useEffect(() => {
     let mounted = true;
     const controller = new AbortController();
-    const capabilities = getNappletRequiredCapabilities(active);
+    const capabilities = getNappletPermissions(active);
 
     async function load() {
       setLoading(true);

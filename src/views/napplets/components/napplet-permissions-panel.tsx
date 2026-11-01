@@ -1,120 +1,34 @@
-import { Badge, Box, Button, Flex, LinkBox, Text } from "@chakra-ui/react";
+import { Button, Flex, Text } from "@chakra-ui/react";
 import { use$ } from "applesauce-react/hooks";
-import { nip19 } from "nostr-tools";
-import { useMemo } from "react";
-import { Link as RouterLink } from "react-router-dom";
-
-import HoverLinkOverlay from "../../../components/hover-link-overlay";
-import NappletIconImage from "../../../components/napplets/napplet-icon";
-import Timestamp from "../../../components/timestamp";
 import UserName from "../../../components/user/user-name";
-import { NAPPLET_KIND_NAMED, NAPPLET_KIND_ROOT, getNappletTitle } from "../../../helpers/nostr/napplets";
-import useEvent from "../../../hooks/use-event";
-import {
-  alwaysAllowed$,
-  revokeAlwaysAllowed,
-  type AlwaysAllowedGrant,
-} from "../../../services/napplet-shell/permissions";
+import NappletPermissionControls from "../../../components/napplets/permission-controls";
+import { permissionEntries$, identityKey, revokeAlwaysAllowed } from "../../../services/napplet-shell/permissions";
+import useAsyncAction from "../../../hooks/use-async-action";
+import { NAPPLET_PERMISSIONS } from "../../../services/napplet-shell/permission-types";
 
-type NappletGrants = { pubkey: string; dTag: string; title: string; latest: AlwaysAllowedGrant; versions: number };
-
-/** Groups always-allowed versions by napplet, newest grant first */
-function groupGrants(grants: AlwaysAllowedGrant[]): NappletGrants[] {
-  const groups = new Map<string, NappletGrants>();
-
-  for (const grant of grants) {
-    const key = `${grant.pubkey}:${grant.dTag}`;
-    const group = groups.get(key);
-    if (!group) {
-      groups.set(key, {
-        pubkey: grant.pubkey,
-        dTag: grant.dTag,
-        title: grant.title || grant.dTag || "Napplet",
-        latest: grant,
-        versions: 1,
-      });
-    } else {
-      group.versions++;
-      if (grant.grantedAt > group.latest.grantedAt) {
-        group.latest = grant;
-        group.title = grant.title || group.title;
-      }
-    }
-  }
-
-  return Array.from(groups.values()).sort((a, b) => b.latest.grantedAt - a.latest.grantedAt);
-}
-
-function NappletPermissionRow({ group }: { group: NappletGrants }) {
-  // Root napplets are replaceable with no `d` tag; named napplets are addressable
-  const pointer = useMemo(
-    () => ({
-      kind: group.dTag ? NAPPLET_KIND_NAMED : NAPPLET_KIND_ROOT,
-      pubkey: group.pubkey,
-      identifier: group.dTag,
-    }),
-    [group.pubkey, group.dTag],
-  );
-  const manifest = useEvent(pointer);
-  const naddr = useMemo(() => nip19.naddrEncode(pointer), [pointer]);
-
-  return (
-    <Flex as={LinkBox} gap="3" alignItems="center">
-      <NappletIconImage event={manifest} boxSize="10" />
-      <Box flex="1" minW="0">
-        <HoverLinkOverlay as={RouterLink} to={`/app/store/${naddr}`} fontWeight="semibold" noOfLines={1}>
-          {manifest ? getNappletTitle(manifest) : group.title}
-        </HoverLinkOverlay>
-        <Flex gap="1" color="GrayText" alignItems="center" minW="0" wrap="wrap">
-          <UserName pubkey={group.pubkey} isTruncated />
-          {group.latest.grantedAt > 0 && (
-            <>
-              <Text>·</Text>
-              <Timestamp timestamp={group.latest.grantedAt} whiteSpace="nowrap" />
-            </>
-          )}
-          {group.versions > 1 && <Text>· {group.versions} versions</Text>}
-        </Flex>
-        <Flex gap="1" wrap="wrap" mt="1">
-          {group.latest.capabilities.map((capability) => (
-            <Badge key={capability} textTransform="none">
-              {capability}
-            </Badge>
-          ))}
-        </Flex>
-      </Box>
-      <Button
-        variant="ghost"
-        zIndex={2}
-        onClick={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          revokeAlwaysAllowed(group.pubkey, group.dTag);
-        }}
-      >
-        Revoke
-      </Button>
-    </Flex>
-  );
-}
-
-/** Always-allowed grants with at least one capability, skipping napplets whose `pubkey:dTag` key is in `exclude` */
+/** Saved grants are version-specific, including explicit blocks and Ask defaults. */
 export default function NappletPermissionsPanel({ exclude }: { exclude?: Set<string> }) {
-  const grants = use$(alwaysAllowed$);
-  const groups = useMemo(
-    () =>
-      groupGrants(grants ?? []).filter(
-        (group) => group.latest.capabilities.length > 0 && !exclude?.has(`${group.pubkey}:${group.dTag}`),
-      ),
-    [grants, exclude],
+  const entries = use$(permissionEntries$)?.filter((entry) => !exclude?.has(`${entry.pubkey}:${entry.dTag}`)) ?? [];
+  const { run, loading } = useAsyncAction(
+    async (pubkey: string, dTag: string) => revokeAlwaysAllowed(pubkey, dTag),
+    [],
   );
-
-  if (groups.length === 0) return null;
-
+  if (!entries.length) return <Text>No saved app permissions.</Text>;
   return (
-    <Flex direction="column" gap="4">
-      {groups.map((group) => (
-        <NappletPermissionRow key={`${group.pubkey}:${group.dTag}`} group={group} />
+    <Flex direction="column" gap="6">
+      {entries.map((entry) => (
+        <Flex key={identityKey(entry)} direction="column" gap="3">
+          <Flex gap="3" align="center">
+            <Flex direction="column" flex="1">
+              <Text fontWeight="bold">{entry.title || entry.dTag || "App"}</Text>
+              <UserName pubkey={entry.pubkey} />
+            </Flex>
+            <Button variant="ghost" isLoading={loading} onClick={() => run(entry.pubkey, entry.dTag)}>
+              Reset permissions
+            </Button>
+          </Flex>
+          <NappletPermissionControls identity={entry} permissions={[...NAPPLET_PERMISSIONS]} />
+        </Flex>
       ))}
     </Flex>
   );

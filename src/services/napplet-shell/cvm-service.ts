@@ -20,15 +20,11 @@ export function createNappletCvmService(options: NappletCvmOptions): ServiceHand
       let frame = frames.get(windowId);
       if (!frame) {
         const signer = getNappletTransportSigner(identity);
-        let approved = false;
         frame = createCvmService(
           async (signal) => {
-            if (!approved) {
-              const allowed = await options.requestConsent(windowId, signal);
-              if (!allowed || signal.aborted || options.resolveIdentity(windowId) !== identity)
-                throw new Error("policy denied");
-              approved = true;
-            }
+            const allowed = await options.requestConsent(windowId, signal);
+            if (!allowed || signal.aborted || options.resolveIdentity(windowId) !== identity)
+              throw new Error("policy denied");
             return identity;
           },
           signer,
