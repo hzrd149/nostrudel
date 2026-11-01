@@ -1,14 +1,17 @@
 import { Button, Flex, Text } from "@chakra-ui/react";
 import { use$ } from "applesauce-react/hooks";
 import UserName from "../../../components/user/user-name";
-import NappletPermissionControls from "../../../components/napplets/permission-controls";
+import NappletPermissionControls, { hasVisiblePermissions } from "../../../components/napplets/permission-controls";
 import { permissionEntries$, identityKey, revokeAlwaysAllowed } from "../../../services/napplet-shell/permissions";
 import useAsyncAction from "../../../hooks/use-async-action";
 import { NAPPLET_PERMISSIONS } from "../../../services/napplet-shell/permission-types";
 
 /** Saved grants are version-specific, including explicit blocks and Ask defaults. */
 export default function NappletPermissionsPanel({ exclude }: { exclude?: Set<string> }) {
-  const entries = use$(permissionEntries$)?.filter((entry) => !exclude?.has(`${entry.pubkey}:${entry.dTag}`)) ?? [];
+  const entries =
+    use$(permissionEntries$)?.filter(
+      (entry) => !exclude?.has(`${entry.pubkey}:${entry.dTag}`) && hasVisiblePermissions(entry, NAPPLET_PERMISSIONS),
+    ) ?? [];
   const { run, loading } = useAsyncAction(
     async (pubkey: string, dTag: string) => revokeAlwaysAllowed(pubkey, dTag),
     [],
