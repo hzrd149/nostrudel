@@ -136,15 +136,27 @@ describe("runtime permission controller", () => {
     await f.controller.authorize("frame", "relay:write");
     expect(f.ask).toHaveBeenCalledTimes(2);
   });
-  it("grants public relay, outbox and Nostr resource reads by default without prompting", async () => {
+  it("prompts for public reads and prompts again after resetting a session grant", async () => {
     const f = fixture();
     for (const permission of ["relay:read", "outbox:read", "resource:nostr"] as const)
       expect(await f.controller.authorize("frame", permission)).toBe(true);
-    expect(f.ask).not.toHaveBeenCalled();
+    expect(f.ask).toHaveBeenCalledTimes(3);
     setPermissionDecision(identity, "relay:read", "ask");
     expect(await f.controller.authorize("frame", "relay:read")).toBe(true);
-    expect(f.ask).toHaveBeenCalledOnce();
+    expect(f.ask).toHaveBeenCalledTimes(4);
     setPermissionDecision(identity, "outbox:read", "block");
     expect(await f.controller.authorize("frame", "outbox:read")).toBe(false);
+  });
+  it("remembers an explicit rejection until reset, while dismissal leaves Ask", async () => {
+    const f = fixture(vi.fn(async (): Promise<PermissionAnswer> => "reject"));
+    expect(await f.controller.authorize("frame", "relay:read")).toBe(false);
+    expect(getPermissionDecision(identity, "relay:read")).toBe("block");
+    expect(await f.controller.authorize("frame", "relay:read")).toBe(false);
+    expect(f.ask).toHaveBeenCalledOnce();
+    setPermissionDecision(identity, "relay:read", "ask");
+    f.ask.mockResolvedValue("deny");
+    expect(await f.controller.authorize("frame", "relay:read")).toBe(false);
+    expect(getPermissionDecision(identity, "relay:read")).toBe("ask");
+    expect(f.ask).toHaveBeenCalledTimes(2);
   });
 });

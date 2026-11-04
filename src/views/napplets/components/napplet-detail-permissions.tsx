@@ -2,7 +2,7 @@ import { use$ } from "applesauce-react/hooks";
 import { NostrEvent } from "nostr-tools";
 import { getNappletIdentity } from "../../../helpers/nostr/napplets";
 import NappletPermissionControls from "../../../components/napplets/permission-controls";
-import { alwaysAllowed$, identityKey } from "../../../services/napplet-shell/permissions";
+import { alwaysAllowed$, getSessionCapabilities, identityKey } from "../../../services/napplet-shell/permissions";
 import { getNappletPermissions } from "../../../services/napplet-shell/permission-types";
 
 export default function NappletDetailPermissions({ event }: { event: NostrEvent }) {
@@ -13,7 +13,7 @@ export default function NappletDetailPermissions({ event }: { event: NostrEvent 
       ...getNappletPermissions(event),
       ...(saved?.capabilities ?? []),
       ...(saved?.deniedCapabilities ?? []),
-      ...(saved?.askedCapabilities ?? []),
+      ...getSessionCapabilities(identity),
     ]),
   ];
   return <NappletPermissionControls identity={identity} permissions={permissions} />;

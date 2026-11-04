@@ -19,10 +19,9 @@ import { installNapplet } from "../../services/installed-napplets";
 import {
   getNappletPermissions,
   permissionLabel,
-  DEFAULT_PERMISSIONS,
   type NappletPermission,
 } from "../../services/napplet-shell/permission-types";
-import { addAlwaysAllowed } from "../../services/napplet-shell/permissions";
+import { addAlwaysAllowed, getPermissionDecision } from "../../services/napplet-shell/permissions";
 
 /** Shows what a napplet will ask for before installing it, with the option to allow it up front */
 export default function NappletInstallModal({
@@ -38,7 +37,11 @@ export default function NappletInstallModal({
   const capabilities = getNappletPermissions(event);
   const [selected, setSelected] = useState<NappletPermission[]>([]);
   useEffect(() => {
-    setSelected(getNappletPermissions(event).filter((permission) => DEFAULT_PERMISSIONS.includes(permission)));
+    setSelected(
+      getNappletPermissions(event).filter(
+        (permission) => getPermissionDecision(getNappletIdentity(event), permission) !== "block",
+      ),
+    );
     setAllow(false);
   }, [event, isOpen]);
 
@@ -64,6 +67,7 @@ export default function NappletInstallModal({
                   <Checkbox
                     key={permission}
                     colorScheme="primary"
+                    isDisabled={getPermissionDecision(getNappletIdentity(event), permission) === "block"}
                     isChecked={selected.includes(permission)}
                     onChange={(event) =>
                       setSelected((current) =>
@@ -74,11 +78,12 @@ export default function NappletInstallModal({
                     }
                   >
                     {permissionLabel(permission)}
+                    {getPermissionDecision(getNappletIdentity(event), permission) === "block" && " (Rejected)"}
                   </Checkbox>
                 ))}
               </Flex>
               <Checkbox colorScheme="primary" isChecked={allow} onChange={(e) => setAllow(e.target.checked)}>
-                Allow these now instead of asking when it opens
+                Always allow these permissions
               </Checkbox>
               <Text color="GrayText" mt="1">
                 Applies to this version only. Updates ask again.

@@ -27,10 +27,9 @@ import {
   addAlwaysAllowed,
   getWindowIdentity,
   grantCapabilities,
-  isAlwaysAllowed,
+  hasApprovedCapability,
   getPermissionDecision,
   getLaunchPermissions,
-  configureLaunchPermissions,
   identityKey,
   getSessionCapabilities,
   permissionChanges$,
@@ -238,8 +237,11 @@ export function NappletShellProvider({ children }: PropsWithChildren) {
   const requestConsent = useCallback<NappletShellContextValue["requestConsent"]>(
     async (event, identity, capabilities) => {
       if (
-        capabilities.every((permission) => getPermissionDecision(identity, permission) === "allow") ||
-        isAlwaysAllowed(identity)
+        capabilities.every(
+          (permission) =>
+            getPermissionDecision(identity, permission) === "allow" ||
+            (getPermissionDecision(identity, permission) !== "block" && hasApprovedCapability(identity, permission)),
+        )
       ) {
         const selected = getLaunchPermissions(identity);
         launchGrantsRef.current.set(identityKey(identity), selected);
@@ -267,7 +269,6 @@ export function NappletShellProvider({ children }: PropsWithChildren) {
       const selected = launchGrantsRef.current.get(identityKey(identity));
       if (selected) {
         launchGrantsRef.current.delete(identityKey(identity));
-        configureLaunchPermissions(identity, selected);
         grantCapabilities(bridge, identity, selected);
       }
       permissionControllerRef.current?.register(windowId);
@@ -300,8 +301,9 @@ export function NappletShellProvider({ children }: PropsWithChildren) {
       if (!consent) return;
       if (allow) {
         launchGrantsRef.current.set(identityKey(consent.identity), selected);
-        configureLaunchPermissions(consent.identity, selected);
-        grantCapabilities(bridge, consent.identity, selected);
+        grantCapabilities(bridge, consent.identity, [
+          ...new Set([...getSessionCapabilities(consent.identity), ...selected]),
+        ]);
         if (always) addAlwaysAllowed(consent.identity, selected);
       } else {
         revokeCapabilities(consent.identity);

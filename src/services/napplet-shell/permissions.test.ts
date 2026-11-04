@@ -13,10 +13,10 @@ import {
   registerWindowIdentity,
   unregisterWindowIdentity,
   getPermissionDecision,
-  configureLaunchPermissions,
   getLaunchPermissions,
   setPermissionDecision,
 } from "./permissions";
+import { NAPPLET_PERMISSIONS } from "./permission-types";
 
 // The node environment has no browser storage, so install a minimal in-memory stub and reset it
 // between tests so an always-allow entry written by one case cannot satisfy another.
@@ -66,7 +66,7 @@ describe("capability decisions", () => {
     const { bridge, grant } = fakeBridge();
     grantCapabilities(bridge, identity, [relayWrite, stateWrite]);
 
-    expect(grant).toHaveBeenCalledWith(identity.pubkey, identity.dTag, identity.aggregateHash, "relay:read");
+    expect(grant).not.toHaveBeenCalledWith(identity.pubkey, identity.dTag, identity.aggregateHash, "relay:read");
     expect(grant).toHaveBeenCalledWith(identity.pubkey, identity.dTag, identity.aggregateHash, relayWrite);
     expect(grant).toHaveBeenCalledWith(identity.pubkey, identity.dTag, identity.aggregateHash, stateWrite);
   });
@@ -185,11 +185,8 @@ describe("managed permissions", () => {
 });
 
 describe("resource permissions and read defaults", () => {
-  it("defaults only public reads to Allow, with HTTPS, Blossom and writes still Ask", () => {
-    for (const permission of ["relay:read", "outbox:read", "resource:nostr"] as const)
-      expect(getPermissionDecision(identity, permission)).toBe("allow");
-    for (const permission of ["resource:https", "resource:blossom", "relay:write", "outbox:write"] as const)
-      expect(getPermissionDecision(identity, permission)).toBe("ask");
+  it("defaults every permission to Ask, including public reads", () => {
+    for (const permission of NAPPLET_PERMISSIONS) expect(getPermissionDecision(identity, permission)).toBe("ask");
     setPermissionDecision(identity, "relay:read", "ask");
     setPermissionDecision(identity, "outbox:read", "block");
     expect(getPermissionDecision(identity, "relay:read")).toBe("ask");
@@ -212,13 +209,37 @@ describe("resource permissions and read defaults", () => {
     for (const permission of ["resource:nostr", "resource:https", "resource:blossom"] as const)
       expect(getPermissionDecision(identity, permission)).toBe("block");
   });
-  it("keeps an unchecked default read permission at Ask for that opening", () => {
-    configureLaunchPermissions(identity, ["relay:read", "outbox:read"]);
-    expect(getPermissionDecision(identity, "resource:nostr")).toBe("ask");
-    expect(getPermissionDecision(identity, "relay:read")).toBe("allow");
-    expect(getLaunchPermissions(identity)).not.toContain("resource:nostr");
+  it("keeps session grants separate from saved decisions and clears them when the last frame closes", () => {
+    const { bridge } = fakeBridge();
     registerWindowIdentity("launch", identity);
+    grantCapabilities(bridge, identity, ["relay:read", "outbox:read"]);
+    expect(getPermissionDecision(identity, "resource:nostr")).toBe("ask");
+    expect(getPermissionDecision(identity, "relay:read")).toBe("ask");
+    expect(getLaunchPermissions(identity)).toEqual(["relay:read", "outbox:read"]);
+    expect(getLaunchPermissions(identity)).not.toContain("resource:nostr");
     unregisterWindowIdentity("launch");
-    expect(getPermissionDecision(identity, "resource:nostr")).toBe("allow");
+    expect(getLaunchPermissions(identity)).toEqual([]);
+    expect(getPermissionDecision(identity, "resource:nostr")).toBe("ask");
+  });
+  it("reset deletes both a saved decision and a session grant without storing Ask", () => {
+    const { bridge } = fakeBridge();
+    setPermissionDecision(identity, "relay:read", "allow");
+    grantCapabilities(bridge, identity, ["relay:read"]);
+    setPermissionDecision(identity, "relay:read", "ask");
+    expect(getAlwaysAllowed()).toEqual([]);
+    expect(getLaunchPermissions(identity)).toEqual([]);
+    expect(hasApprovedCapability(identity, "relay:read")).toBe(false);
+    setPermissionDecision(identity, "relay:read", "block");
+    setPermissionDecision(identity, "relay:read", "ask");
+    expect(getAlwaysAllowed()).toEqual([]);
+    expect(getPermissionDecision(identity, "relay:read")).toBe("ask");
+  });
+  it("remembering launch permissions preserves other saved choices", () => {
+    setPermissionDecision(identity, "cvm:call", "allow");
+    setPermissionDecision(identity, "relay:write", "block");
+    addAlwaysAllowed(identity, ["relay:read", "relay:write"]);
+    expect(getPermissionDecision(identity, "cvm:call")).toBe("allow");
+    expect(getPermissionDecision(identity, "relay:write")).toBe("block");
+    expect(getLaunchPermissions(identity)).toEqual(["cvm:call", "relay:read"]);
   });
 });

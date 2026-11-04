@@ -13,14 +13,11 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
-import {
-  DEFAULT_PERMISSIONS,
-  permissionLabel,
-  type NappletPermission,
-} from "../../services/napplet-shell/permission-types";
+import { permissionLabel, type NappletPermission } from "../../services/napplet-shell/permission-types";
 import { NostrEvent } from "nostr-tools";
 
-import { getNappletTitle } from "../../helpers/nostr/napplets";
+import { getNappletIdentity, getNappletTitle } from "../../helpers/nostr/napplets";
+import { getPermissionDecision } from "../../services/napplet-shell/permissions";
 
 export type NappletConsentRequest = {
   event: NostrEvent;
@@ -35,7 +32,11 @@ export type NappletConsentModalProps = {
 export default function NappletConsentModal({ consent, onRespond }: NappletConsentModalProps) {
   const [selected, setSelected] = useState<NappletPermission[]>([]);
   useEffect(() => {
-    setSelected(consent?.capabilities.filter((permission) => DEFAULT_PERMISSIONS.includes(permission)) ?? []);
+    setSelected(
+      consent?.capabilities.filter(
+        (permission) => getPermissionDecision(getNappletIdentity(consent.event), permission) !== "block",
+      ) ?? [],
+    );
   }, [consent]);
   return (
     <Modal isOpen={!!consent} onClose={() => onRespond(false)} isCentered>
@@ -46,13 +47,14 @@ export default function NappletConsentModal({ consent, onRespond }: NappletConse
           {consent && (
             <>
               <Text mb="2">
-                <Code>{getNappletTitle(consent.event)}</Code> will ask at runtime for permissions you leave unchecked.
+                <Code>{getNappletTitle(consent.event)}</Code>
               </Text>
               <Flex direction="column" gap="3">
                 {consent.capabilities.map((permission) => (
                   <Checkbox
                     key={permission}
                     colorScheme="primary"
+                    isDisabled={getPermissionDecision(getNappletIdentity(consent.event), permission) === "block"}
                     isChecked={selected.includes(permission)}
                     onChange={(event) =>
                       setSelected((current) =>
@@ -63,6 +65,7 @@ export default function NappletConsentModal({ consent, onRespond }: NappletConse
                     }
                   >
                     {permissionLabel(permission)}
+                    {getPermissionDecision(getNappletIdentity(consent.event), permission) === "block" && " (Rejected)"}
                   </Checkbox>
                 ))}
               </Flex>
@@ -72,11 +75,11 @@ export default function NappletConsentModal({ consent, onRespond }: NappletConse
         <ModalFooter>
           <ButtonGroup>
             <Button variant="ghost" onClick={() => onRespond(false)}>
-              Deny
+              Cancel
             </Button>
-            <Button onClick={() => onRespond(true, false, selected)}>Open</Button>
+            <Button onClick={() => onRespond(true, false, selected)}>Allow</Button>
             <Button colorScheme="primary" onClick={() => onRespond(true, true, selected)}>
-              Remember and open
+              Always
             </Button>
           </ButtonGroup>
         </ModalFooter>

@@ -10,7 +10,7 @@ import {
 
 const log = logger.extend("napplet-permission-controller");
 
-export type PermissionAnswer = "deny" | "session" | "remember";
+export type PermissionAnswer = "deny" | "reject" | "session" | "remember";
 export type PermissionPrompt = {
   windowId: string;
   identity: NappletIdentity;
@@ -95,6 +95,10 @@ export function createPermissionController(options: {
             answer === "deny"
           )
             return false;
+          if (answer === "reject") {
+            setPermissionDecision(identity, permission, "block");
+            return false;
+          }
           if (answer === "remember") setPermissionDecision(identity, permission, "allow");
           options.grant(identity, permission);
           return true;

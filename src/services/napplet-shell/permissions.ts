@@ -4,7 +4,6 @@ import { map, Observable, startWith, Subject } from "rxjs";
 import { logger } from "../../helpers/debug";
 
 import {
-  DEFAULT_PERMISSIONS,
   NAPPLET_PERMISSIONS,
   RESOURCE_PERMISSIONS,
   type NappletPermission,
@@ -29,7 +28,6 @@ const windowIdentities = new Map<string, NappletIdentity>();
 // makes the runtime unable to report which capabilities the user actually approved, so the
 // shell keeps its own record here of the capability set granted per napplet identity.
 const approvedCapabilities = new Map<string, Set<NappletPermission>>();
-const sessionAskedCapabilities = new Map<string, Set<NappletPermission>>();
 
 export function identityKey(identity: NappletIdentity) {
   return `${identity.pubkey}:${identity.dTag}:${identity.aggregateHash}`;
@@ -39,11 +37,10 @@ export function hasApprovedCapability(identity: NappletIdentity, capability: Nap
   return approvedCapabilities.get(identityKey(identity))?.has(capability) ?? false;
 }
 
-/** Saved Allow/Ask/Block defaults for one verified app version. */
+/** Explicit saved Allow/Block decisions for one verified app version; absence means Ask. */
 export type AlwaysAllowedGrant = NappletIdentity & {
   capabilities: NappletPermission[];
   deniedCapabilities?: NappletPermission[];
-  askedCapabilities?: NappletPermission[];
   grantedAt: number;
 };
 
@@ -64,8 +61,10 @@ function parseGrant(value: unknown): AlwaysAllowedGrant[] {
   }
 
   if (!value || typeof value !== "object") return [];
-  const { pubkey, dTag, aggregateHash, title, capabilities, deniedCapabilities, askedCapabilities, grantedAt } =
-    value as Record<string, unknown>;
+  const { pubkey, dTag, aggregateHash, title, capabilities, deniedCapabilities, grantedAt } = value as Record<
+    string,
+    unknown
+  >;
   if (typeof pubkey !== "string" || typeof dTag !== "string" || typeof aggregateHash !== "string") return [];
 
   return [
@@ -82,7 +81,6 @@ function parseGrant(value: unknown): AlwaysAllowedGrant[] {
             ...(deniedCapabilities.includes("resource:fetch") ? RESOURCE_PERMISSIONS : []),
           ]
         : [],
-      askedCapabilities: Array.isArray(askedCapabilities) ? askedCapabilities.filter(isCapability) : [],
       grantedAt: typeof grantedAt === "number" ? grantedAt : 0,
     },
   ];
@@ -112,18 +110,21 @@ function writeAlwaysAllowed(grants: AlwaysAllowedGrant[]) {
 
 export function addAlwaysAllowed(identity: NappletIdentity, capabilities: NappletPermission[] = []) {
   const key = identityKey(identity);
+  const current = getAlwaysAllowed().find((grant) => identityKey(grant) === key);
   writeAlwaysAllowed([
     ...getAlwaysAllowed().filter((grant) => identityKey(grant) !== key),
     {
       ...identity,
-      capabilities,
-      askedCapabilities: DEFAULT_PERMISSIONS.filter((permission) => !capabilities.includes(permission)),
+      capabilities: [...new Set([...(current?.capabilities ?? []), ...capabilities])].filter(
+        (permission) => !current?.deniedCapabilities?.includes(permission),
+      ),
+      deniedCapabilities: current?.deniedCapabilities ?? [],
       grantedAt: Math.round(Date.now() / 1000),
     },
   ]);
 }
 
-/** A saved entry skips the opening dialog; only its exact allowed capabilities are restored. */
+/** Whether this version has a saved permission entry; this does not authorize launching it. */
 export function isAlwaysAllowed(identity: NappletIdentity) {
   const key = identityKey(identity);
   return getAlwaysAllowed().some((grant) => identityKey(grant) === key);
@@ -149,7 +150,7 @@ export function grantCapabilities(bridge: ShellBridge, identity: NappletIdentity
   const selected = new Set<string>(
     capabilities.filter((permission) => getPermissionDecision(identity, permission) !== "block"),
   );
-  for (const permission of DEFAULT_PERMISSIONS)
+  for (const permission of NAPPLET_PERMISSIONS)
     if (getPermissionDecision(identity, permission) === "allow") selected.add(permission);
   // The runtime has one coarse resource bit. The resolver enforces the three resource grants per item.
   selected.add("resource:fetch");
@@ -184,7 +185,6 @@ export function unregisterWindowIdentity(windowId: string) {
   windowIdentities.delete(windowId);
   if (identity && ![...windowIdentities.values()].some((value) => identityKey(value) === identityKey(identity))) {
     approvedCapabilities.delete(identityKey(identity));
-    sessionAskedCapabilities.delete(identityKey(identity));
   }
   alwaysAllowedChanges$.next();
 }
@@ -196,12 +196,7 @@ export function getPermissionDecision(identity: NappletIdentity, permission: Nap
   const entry = getAlwaysAllowed().find((grant) => identityKey(grant) === identityKey(identity));
   if (entry?.deniedCapabilities?.includes(permission)) return "block";
   if (entry?.capabilities.includes(permission)) return "allow";
-  if (
-    entry?.askedCapabilities?.includes(permission) ||
-    sessionAskedCapabilities.get(identityKey(identity))?.has(permission)
-  )
-    return "ask";
-  return DEFAULT_PERMISSIONS.includes(permission) ? "allow" : "ask";
+  return "ask";
 }
 
 export function getSessionCapabilities(identity: NappletIdentity): NappletPermission[] {
@@ -214,25 +209,23 @@ export function setPermissionDecision(
   decision: PermissionDecision,
 ) {
   const current = getAlwaysAllowed().find((grant) => identityKey(grant) === identityKey(identity));
-  writeAlwaysAllowed([
-    ...getAlwaysAllowed().filter((grant) => identityKey(grant) !== identityKey(identity)),
-    {
-      ...identity,
-      grantedAt: Math.round(Date.now() / 1000),
-      capabilities: [
-        ...(current?.capabilities ?? []).filter((value) => value !== permission),
-        ...(decision === "allow" ? [permission] : []),
-      ],
-      deniedCapabilities: [
-        ...(current?.deniedCapabilities ?? []).filter((value) => value !== permission),
-        ...(decision === "block" ? [permission] : []),
-      ],
-      askedCapabilities: [
-        ...(current?.askedCapabilities ?? []).filter((value) => value !== permission),
-        ...(decision === "ask" ? [permission] : []),
-      ],
-    },
-  ]);
+  writeAlwaysAllowed(
+    [
+      ...getAlwaysAllowed().filter((grant) => identityKey(grant) !== identityKey(identity)),
+      {
+        ...identity,
+        grantedAt: Math.round(Date.now() / 1000),
+        capabilities: [
+          ...(current?.capabilities ?? []).filter((value) => value !== permission),
+          ...(decision === "allow" ? [permission] : []),
+        ],
+        deniedCapabilities: [
+          ...(current?.deniedCapabilities ?? []).filter((value) => value !== permission),
+          ...(decision === "block" ? [permission] : []),
+        ],
+      },
+    ].filter((grant) => grant.capabilities.length || grant.deniedCapabilities?.length),
+  );
   approvedCapabilities.get(identityKey(identity))?.delete(permission);
   alwaysAllowedChanges$.next();
   permissionChanges$.next({ identity, permission });
@@ -241,7 +234,6 @@ export function setPermissionDecision(
 export function synchronizePermissionStorage(event: StorageEvent) {
   if (event.key !== null && event.key !== ALWAYS_ALLOW_STORAGE_KEY) return;
   approvedCapabilities.clear();
-  sessionAskedCapabilities.clear();
   permissionChanges$.next({});
   alwaysAllowedChanges$.next();
 }
@@ -259,17 +251,9 @@ export const permissionEntries$: Observable<AlwaysAllowedGrant[]> = alwaysAllowe
   }),
 );
 
-/** Unchecking a default read permission applies to this opening without changing other app versions. */
-export function configureLaunchPermissions(identity: NappletIdentity, selected: NappletPermission[]) {
-  sessionAskedCapabilities.set(
-    identityKey(identity),
-    new Set(DEFAULT_PERMISSIONS.filter((permission) => !selected.includes(permission))),
-  );
-}
-
 export function getLaunchPermissions(identity: NappletIdentity): NappletPermission[] {
   const saved = getAlwaysAllowed().find((grant) => identityKey(grant) === identityKey(identity));
-  return [...new Set([...(saved?.capabilities ?? []), ...DEFAULT_PERMISSIONS])].filter(
-    (permission) => getPermissionDecision(identity, permission) === "allow",
+  return [...new Set([...(saved?.capabilities ?? []), ...getSessionCapabilities(identity)])].filter(
+    (permission) => getPermissionDecision(identity, permission) !== "block",
   );
 }

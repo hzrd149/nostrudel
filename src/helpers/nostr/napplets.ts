@@ -296,7 +296,7 @@ export function getNappletRequiredCapabilities(event: NostrEvent): Capability[] 
   const capabilities = new Set<Capability>();
 
   // `requires` is the legacy tag; NIP-5D declares required (`R`) and optional (`O`) NAP domains.
-  for (const required of [...tagValues(event, "requires"), ...tagValues(event, "R"), ...tagValues(event, "O")]) {
+  for (const required of [...tagValues(event, "requires"), ...tagValues(event, "R")]) {
     if (CAPABILITIES.has(required)) capabilities.add(required as Capability);
     else for (const capability of REQUIRED_CAPABILITY_MAP[required] ?? []) capabilities.add(capability);
   }

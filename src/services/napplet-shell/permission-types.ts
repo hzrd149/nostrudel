@@ -9,7 +9,6 @@ export const RESOURCE_PERMISSIONS: readonly ResourcePermission[] = [
   "resource:https",
   "resource:blossom",
 ];
-export const DEFAULT_PERMISSIONS: readonly NappletPermission[] = ["relay:read", "outbox:read", "resource:nostr"];
 export type PermissionDecision = "ask" | "allow" | "block";
 export const NAPPLET_PERMISSIONS: readonly NappletPermission[] = [
   ...ALL_CAPABILITIES.filter((value): value is Exclude<Capability, "resource:fetch"> => value !== "resource:fetch"),
@@ -56,8 +55,7 @@ export function getNappletPermissions(event: NostrEvent): NappletPermission[] {
   const permissions: NappletPermission[] = getNappletRequiredCapabilities(event).flatMap((permission) =>
     permission === "resource:fetch" ? [...RESOURCE_PERMISSIONS] : [permission],
   );
-  permissions.push(...DEFAULT_PERMISSIONS);
-  if (event.tags.some((tag) => ["R", "O", "requires"].includes(tag[0]) && tag[1] === "webrtc"))
+  if (event.tags.some((tag) => ["R", "requires"].includes(tag[0]) && tag[1] === "webrtc"))
     permissions.push("webrtc:connect");
   return [...new Set(permissions)];
 }

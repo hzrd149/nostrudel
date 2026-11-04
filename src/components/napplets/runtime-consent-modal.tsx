@@ -26,8 +26,8 @@ export default function NappletRuntimeConsentModal({
         <ModalBody>{prompt && permissionLabel(prompt.permission)}?</ModalBody>
         <ModalFooter>
           <ButtonGroup flexWrap="wrap">
-            <Button variant="ghost" onClick={() => onRespond("deny")}>
-              Deny
+            <Button variant="ghost" onClick={() => onRespond("reject")}>
+              Reject
             </Button>
             <Button onClick={() => onRespond("session")}>Allow for this session</Button>
             <Button colorScheme="primary" onClick={() => onRespond("remember")}>
