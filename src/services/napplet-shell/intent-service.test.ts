@@ -129,4 +129,102 @@ describe("napplet intent resolver", () => {
       }),
     ]);
   });
+
+  it("offers all usable synced choices with no preference for private entries", async () => {
+    const { handlerPreferences$, handlerManifests$ } = await import("../handler-preference-state");
+    const a = installed.installNapplet(viewer)!;
+    const b = installed.installNapplet(editor)!;
+    const { handlerReference } = await import("../../helpers/nostr/handler-preferences");
+    handlerManifests$.next(
+      new Map([
+        [handlerReference(a.address)!, viewer],
+        [handlerReference(b.address)!, editor],
+      ]),
+    );
+    handlerPreferences$.next(
+      new Map([
+        [
+          "profile",
+          {
+            event: finalizeEvent(
+              {
+                kind: 31129,
+                created_at: 1,
+                tags: [
+                  ["d", "profile"],
+                  ["a", handlerReference(a.address)!],
+                ],
+                content: "",
+              },
+              key,
+            ),
+            privateTags: [["a", handlerReference(b.address)!]],
+            locked: false,
+          },
+        ],
+      ]),
+    );
+    const { resolver, chooseHandler } = setup();
+    await resolver.invoke(open, context);
+    expect(chooseHandler).toHaveBeenCalledWith(
+      "profile",
+      expect.arrayContaining([
+        expect.objectContaining({ id: catalogId("viewer") }),
+        expect.objectContaining({ id: catalogId("editor") }),
+      ]),
+    );
+  });
+
+  it("uses archetype scope only when no intent-specific choice is usable", async () => {
+    const { handlerPreferences$, handlerManifests$ } = await import("../handler-preference-state");
+    const a = installed.installNapplet(viewer)!;
+    const b = installed.installNapplet(editor)!;
+    const { handlerReference } = await import("../../helpers/nostr/handler-preferences");
+    handlerManifests$.next(
+      new Map([
+        [handlerReference(a.address)!, viewer],
+        [handlerReference(b.address)!, editor],
+      ]),
+    );
+    handlerPreferences$.next(
+      new Map([
+        [
+          "profile",
+          {
+            event: finalizeEvent(
+              {
+                kind: 31129,
+                created_at: 1,
+                tags: [
+                  ["d", "profile"],
+                  ["a", handlerReference(a.address)!],
+                  ["i", open.convention, handlerReference(b.address)!],
+                ],
+                content: "",
+              },
+              key,
+            ),
+            privateTags: [],
+            locked: false,
+          },
+        ],
+      ]),
+    );
+    const { resolver, chooseHandler } = setup();
+    expect(await resolver.invoke(open, context)).toMatchObject({ ok: true, handler: catalogId("editor") });
+    const policy = intentService.createNappletIntentService({
+      chooseHandler,
+      resolveSender: () => undefined,
+      isHandlerAllowed: (manifest) => manifest.id !== editor.id,
+    });
+    expect(await policy.resolver.invoke(open, context)).toMatchObject({ ok: true, handler: catalogId("viewer") });
+    installed.uninstallNapplet(b.address);
+    expect(await resolver.invoke(open, context)).toMatchObject({ ok: true, handler: catalogId("viewer") });
+    expect(handlerPreferences$.value.get("profile")!.event.tags).toContainEqual([
+      "i",
+      open.convention,
+      handlerReference(b.address)!,
+    ]);
+    expect(chooseHandler).not.toHaveBeenCalled();
+  });
 });

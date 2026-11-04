@@ -20,6 +20,8 @@ import { DEFAULT_APP_SETTINGS } from "../../helpers/app-settings";
 import { AppSettingsQuery, BlossomServersQuery } from "../../models";
 import accounts from "../../services/accounts";
 import { installedNapplets$, intentHandlerPreferences$ } from "../../services/installed-napplets";
+import { handlerPreferences$, handlerManifests$ } from "../../services/handler-preference-state";
+import { getNappletIdentity, getUnsupportedNappletRequirements } from "../../helpers/nostr/napplets";
 import { loadNostrResource } from "../../services/napplet-shell/resource-nostr";
 import { createAdapter } from "../../services/napplet-shell/adapter";
 import { createNappletIntentService } from "../../services/napplet-shell/intent-service";
@@ -49,7 +51,7 @@ import {
 } from "../../services/napplet-shell/permission-controller";
 import { synchronizeRuntimePermissions } from "../../services/napplet-shell/permission-runtime";
 import { createPermissionGate } from "../../services/napplet-shell/permission-gate";
-import type { NappletPermission } from "../../services/napplet-shell/permission-types";
+import { getNappletPermissions, type NappletPermission } from "../../services/napplet-shell/permission-types";
 
 type ConsentRequest = {
   event: NostrEvent;
@@ -143,6 +145,11 @@ export function NappletShellProvider({ children }: PropsWithChildren) {
             }),
           ),
         resolveSender: (windowId) => frameCatalogIds.get(windowId),
+        isHandlerAllowed: (manifest) =>
+          getUnsupportedNappletRequirements(manifest).length === 0 &&
+          getNappletPermissions(manifest).every(
+            (permission) => getPermissionDecision(getNappletIdentity(manifest), permission) !== "block",
+          ),
       }),
     [frameCatalogIds],
   );
@@ -156,7 +163,12 @@ export function NappletShellProvider({ children }: PropsWithChildren) {
       archetypes = next;
     };
 
-    const subs = [installedNapplets$.subscribe(notify), intentHandlerPreferences$.subscribe(notify)];
+    const subs = [
+      installedNapplets$.subscribe(notify),
+      intentHandlerPreferences$.subscribe(notify),
+      handlerPreferences$.subscribe(notify),
+      handlerManifests$.subscribe(notify),
+    ];
     return () => subs.forEach((sub) => sub.unsubscribe());
   }, [intent]);
 

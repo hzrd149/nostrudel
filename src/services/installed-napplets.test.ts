@@ -80,3 +80,28 @@ describe("openInstalledNapplet", () => {
     expect(service.getInstalledNapplet(address)).toMatchObject({ title: "Second", openedVersion: 200 });
   });
 });
+
+it("keeps legacy preferences when their napplet is uninstalled", () => {
+  const app = service.installNapplet(manifest("Preferred", 300))!;
+  service.setDefaultIntentHandler("profile", app.address);
+  service.uninstallNapplet(app.address);
+  expect(service.intentHandlerPreferences$.value.profile).toBe(app.address);
+});
+
+it("installs a snapshot independently of its lineage coordinate", () => {
+  const named = manifest("Named", 400);
+  const snapshot = finalizeEvent(
+    {
+      kind: 5129,
+      created_at: 400,
+      content: named.content,
+      tags: [...named.tags.filter((tag) => tag[0] !== "d"), ["a", `35129:${named.pubkey}:app`]],
+    },
+    key,
+  );
+  const followed = service.installNapplet(named)!;
+  const pinned = service.installNapplet(snapshot)!;
+  expect(pinned.address).not.toBe(followed.address);
+  expect(service.getInstalledNapplet(pinned.address)).toBeDefined();
+  expect(service.getInstalledNapplet(followed.address)).toBeDefined();
+});

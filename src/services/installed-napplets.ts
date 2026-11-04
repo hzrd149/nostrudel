@@ -5,7 +5,7 @@ import {
   getNappletAddressCatalogId,
   getNappletArchetypes,
   getNappletDescription,
-  getNappletNaddr,
+  getNappletInstallAddress,
   getNappletTitle,
   type NappletArchetype,
 } from "../helpers/nostr/napplets";
@@ -166,7 +166,7 @@ export function getInstalledNappletPath(napplet: InstalledNapplet, installed = g
   return `/app/${archetype || napplet.address}`;
 }
 
-export function installNapplet(event: NostrEvent, address = getNappletNaddr(event)) {
+export function installNapplet(event: NostrEvent, address = getNappletInstallAddress(event)) {
   if (!address) return undefined;
 
   const now = Date.now();
@@ -191,7 +191,7 @@ export function installNapplet(event: NostrEvent, address = getNappletNaddr(even
  * Records that an installed napplet was opened with this manifest, refreshing its stored title,
  * description, and archetypes when the manifest is newer than the one last opened.
  */
-export function openInstalledNapplet(event: NostrEvent, address = getNappletNaddr(event)) {
+export function openInstalledNapplet(event: NostrEvent, address = getNappletInstallAddress(event)) {
   const existing = address && getInstalledNapplet(address);
   if (!existing) return;
 
@@ -212,11 +212,5 @@ export function openInstalledNapplet(event: NostrEvent, address = getNappletNadd
 
 export function uninstallNapplet(address: string) {
   write(getInstalledNapplets().filter((item) => item.address !== address));
-
-  const preferences = { ...intentHandlerPreferences$.value };
-  for (const [key, value] of Object.entries(preferences)) {
-    if (value === address) delete preferences[key];
-  }
-  writeHandlerPreferences(preferences);
   localNappletChanges$.next();
 }

@@ -35,6 +35,7 @@ import {
   reportCommon,
 } from "./common-actions";
 import { getReadRelays, getWriteRelays } from "./relay-tiers";
+import { assertNappletEventKind, assertNappletDecryption } from "../../helpers/nostr/handler-preferences";
 import { createResourceService, type ResourceServiceOptions } from "./resource-service";
 import { createBlossomUploadService, type UploadConfig } from "./upload-service";
 import { createNappletWebrtcService, type NappletWebrtcOptions } from "./webrtc-service";
@@ -65,9 +66,18 @@ function getSigner() {
 
   return {
     getPublicKey: async () => account.pubkey,
-    signEvent: account.signEvent.bind(account),
+    signEvent: (event: EventTemplate) => {
+      assertNappletEventKind(event.kind);
+      return account.signEvent(event);
+    },
     nip04: Reflect.get(account, "nip04"),
-    nip44: Reflect.get(account, "nip44"),
+    nip44: account.nip44 && {
+      encrypt: account.nip44.encrypt.bind(account.nip44),
+      decrypt: (pubkey: string, ciphertext: string) => {
+        assertNappletDecryption(pubkey, account.pubkey);
+        return account.nip44!.decrypt(pubkey, ciphertext);
+      },
+    },
   };
 }
 
@@ -91,6 +101,7 @@ export function createAdapter(
       pool.subscription(relayUrls, filters).pipe(ignoreRelayErrors("Napplet shell subscription")),
     request: (relayUrls, filters) => pool.request(relayUrls, filters).pipe(ignoreRelayErrors("Napplet shell request")),
     publish: async (relayUrls, event) => {
+      assertNappletEventKind(event.kind);
       await pool.publish(relayUrls, event);
     },
   };
@@ -183,6 +194,7 @@ export function createAdapter(
       return { unsubscribe: () => sub.unsubscribe() };
     },
     publish: (event, relayUrls) => {
+      assertNappletEventKind(event.kind);
       void pool.publish(relayUrls, event).catch(reportPublishError);
     },
     isAvailable: () => true,
@@ -212,6 +224,7 @@ export function createAdapter(
     fallbackRelays: getReadRelays(),
     // Napplets never sign; the shell signs with the active account.
     signEvent: async (template: EventTemplate) => {
+      assertNappletEventKind(template.kind);
       const account = accounts.active;
       if (!account) throw new Error("No active account to sign with");
       return account.signEvent(template);
@@ -262,6 +275,7 @@ export function createAdapter(
         return { unsubscribe: () => sub.unsubscribe() };
       },
       publish: (event) => {
+        assertNappletEventKind(event.kind);
         eventStore.add(event as NostrEvent);
         void pool.publish(getWriteRelays(), event as NostrEvent).catch(reportPublishError);
       },

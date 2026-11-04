@@ -27,7 +27,7 @@ import NappletInfoDrawer from "./napplet-info-drawer";
 import NappletUpdateNotice from "./napplet-update-notice";
 import {
   NAPPLET_KIND_SNAPSHOT,
-  getNappletNaddr,
+  getNappletInstallAddress,
   getNappletCatalogId,
   getNappletTitle,
 } from "../../helpers/nostr/napplets";
@@ -78,7 +78,7 @@ export default function NappletFrame({ event, onClose, onResolved, onError }: Na
   }, [event.id]);
 
   const title = getNappletTitle(active);
-  const address = getNappletNaddr(event);
+  const address = getNappletInstallAddress(event);
   const installedNapplets = useInstalledNapplets();
   const installedNapplet = address ? installedNapplets.find((napplet) => napplet.address === address) : undefined;
   const installed = !address || !!installedNapplet;

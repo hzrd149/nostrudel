@@ -191,9 +191,22 @@ export function getNappletNaddr(event: NostrEvent) {
   return nip19.naddrEncode({ kind: event.kind, pubkey: event.pubkey, identifier });
 }
 
+/** Immutable snapshots install independently of their lineage's root or named manifest. */
+export function getNappletInstallAddress(event: NostrEvent) {
+  return event.kind === NAPPLET_KIND_SNAPSHOT ? nip19.neventEncode({ id: event.id }) : getNappletNaddr(event);
+}
+
 /** The NAP-INTENT catalog id of the root or named napplet an naddr points to */
 export function getNappletAddressCatalogId(address: string) {
   const pointer = parseNappletPointer(address);
+  if (pointer?.type === "note" || pointer?.type === "nevent") {
+    return getNappletCatalogId({
+      id: pointer.type === "note" ? pointer.data : pointer.data.id,
+      kind: NAPPLET_KIND_SNAPSHOT,
+      pubkey: "",
+      tags: [],
+    });
+  }
   if (pointer?.type !== "naddr") return undefined;
 
   const { kind, pubkey, identifier } = pointer.data;
