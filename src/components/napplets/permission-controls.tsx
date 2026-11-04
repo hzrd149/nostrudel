@@ -47,9 +47,9 @@ export default function NappletPermissionControls({
         return (
           <Flex key={permission} align="center" gap="3" justify="space-between" wrap="wrap">
             <Text flex="1">{permissionLabel(permission)}</Text>
-            <Text color={blocked ? "red.500" : "green.500"}>
-              {blocked ? "Blocked" : decision === "ask" ? "Allowed for session" : "Allowed"}
-            </Text>
+            {(blocked || decision === "ask") && (
+              <Text color={blocked ? "red.500" : "green.500"}>{blocked ? "Blocked" : "Allowed for session"}</Text>
+            )}
             <Switch
               colorScheme="primary"
               aria-label={permissionLabel(permission)}
