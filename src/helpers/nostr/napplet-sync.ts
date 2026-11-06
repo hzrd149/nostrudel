@@ -144,7 +144,6 @@ export function mergeNappletSyncData(
     ...added,
     ...remote.installed.filter((item) => !removed.has(item.address) && !addedAddresses.has(item.address)),
   ];
-  const installedAddresses = new Set(installed.map((item) => item.address));
 
   const handlers: IntentHandlerPreferences = {};
   const keys = new Set([
@@ -154,7 +153,7 @@ export function mergeNappletSyncData(
   ]);
   for (const key of keys) {
     const address = local.handlers[key] !== base.handlers[key] ? local.handlers[key] : remote.handlers[key];
-    if (address && installedAddresses.has(address)) handlers[key] = address;
+    if (address) handlers[key] = address;
   }
 
   return { installed, handlers };

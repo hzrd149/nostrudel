@@ -1,8 +1,9 @@
 import { Box, BoxProps } from "@chakra-ui/react";
-import { links, nostrMentions } from "applesauce-content/text";
+import { blossomURIs, links, nostrMentions } from "applesauce-content/text";
 import { useRenderedContent } from "applesauce-react/hooks";
 
 import useUserProfile from "../../hooks/use-user-profile";
+import { BlossomContentLink } from "../content/components/blossom";
 import { components } from "../content";
 import { NostrMentionLink } from "../content/components/mention";
 import { renderGenericUrl } from "../content/links";
@@ -10,9 +11,10 @@ import { ProfileContent } from "applesauce-core/helpers";
 
 const aboutComponents = {
   ...components,
+  blossom: BlossomContentLink,
   mention: NostrMentionLink,
 };
-const transformers = [links, nostrMentions];
+const transformers = [blossomURIs, links, nostrMentions];
 const linkRenderers = [renderGenericUrl];
 
 const ProfileAboutContentSymbol = Symbol.for("profile-about-content");
@@ -22,7 +24,8 @@ export default function UserAboutContent({
   profile,
   ...props
 }: { pubkey?: string; profile?: ProfileContent } & Omit<BoxProps, "children">) {
-  profile = profile || useUserProfile(pubkey);
+  const loadedProfile = useUserProfile(profile ? undefined : pubkey);
+  profile = profile || loadedProfile;
 
   const content = useRenderedContent(profile?.about, aboutComponents, {
     transformers,

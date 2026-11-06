@@ -18,6 +18,7 @@ import { getInboxes, getOutboxes } from "applesauce-core/helpers";
 import { EventTemplate, Filter, kinds, NostrEvent } from "nostr-tools";
 import { catchError, filter, firstValueFrom, of, take, timeout, toArray } from "rxjs";
 
+import { logger } from "../../helpers/debug";
 import ignoreRelayErrors from "../../helpers/ignore-relay-errors";
 import accounts from "../accounts";
 import { cacheRequest, eventCache$, writeEvent } from "../event-cache";
@@ -34,8 +35,13 @@ import {
   reportCommon,
 } from "./common-actions";
 import { getReadRelays, getWriteRelays } from "./relay-tiers";
+import { assertNappletEventKind, assertNappletDecryption } from "../../helpers/nostr/handler-preferences";
 import { createResourceService, type ResourceServiceOptions } from "./resource-service";
 import { createBlossomUploadService, type UploadConfig } from "./upload-service";
+import { createNappletWebrtcService, type NappletWebrtcOptions } from "./webrtc-service";
+import { createNappletCvmService, type NappletCvmOptions } from "./cvm-service";
+
+const log = logger.extend("napplet-shell");
 
 /**
  * NAP domains the shell advertises by default that noStrudel does not back with
@@ -47,7 +53,7 @@ import { createBlossomUploadService, type UploadConfig } from "./upload-service"
  * `storage` and `inc` are intentionally NOT listed: @kehto/runtime backs them
  * directly (state-handler + default localStorage persistence; inc fanout router).
  */
-const DISABLED_NAP_DOMAINS = ["keys", "media", "config", "cvm"] as const;
+const DISABLED_NAP_DOMAINS = ["keys", "media", "config"] as const;
 
 /** Copies napplet filters into nostr-tools filters (which also allow `&` tag keys and `search`). */
 function toRelayFilters(filters: NostrFilter[]): Filter[] {
@@ -60,9 +66,18 @@ function getSigner() {
 
   return {
     getPublicKey: async () => account.pubkey,
-    signEvent: account.signEvent.bind(account),
+    signEvent: (event: EventTemplate) => {
+      assertNappletEventKind(event.kind);
+      return account.signEvent(event);
+    },
     nip04: Reflect.get(account, "nip04"),
-    nip44: Reflect.get(account, "nip44"),
+    nip44: account.nip44 && {
+      encrypt: account.nip44.encrypt.bind(account.nip44),
+      decrypt: (pubkey: string, ciphertext: string) => {
+        assertNappletDecryption(pubkey, account.pubkey);
+        return account.nip44!.decrypt(pubkey, ciphertext);
+      },
+    },
   };
 }
 
@@ -72,6 +87,8 @@ export function createAdapter(
   resource: ResourceServiceOptions,
   getUpload: () => UploadConfig,
   uploadEnabled: boolean,
+  webrtc: NappletWebrtcOptions,
+  cvm: NappletCvmOptions,
 ): ShellAdapter {
   // These service callbacks return void, so report rejected publishes here.
   const reportPublishError = (error: unknown) => {
@@ -84,6 +101,7 @@ export function createAdapter(
       pool.subscription(relayUrls, filters).pipe(ignoreRelayErrors("Napplet shell subscription")),
     request: (relayUrls, filters) => pool.request(relayUrls, filters).pipe(ignoreRelayErrors("Napplet shell request")),
     publish: async (relayUrls, event) => {
+      assertNappletEventKind(event.kind);
       await pool.publish(relayUrls, event);
     },
   };
@@ -147,11 +165,14 @@ export function createAdapter(
     common: {
       isAvailable: () => true,
     },
+    webrtc: {
+      isAvailable: () => typeof RTCPeerConnection !== "undefined",
+    },
     crypto: {
       verifyEvent: async (event) => verifyEvent(event as NostrEvent),
     },
     onUnroutedMessage: (info) => {
-      if (import.meta.env.DEV) console.debug("Dropped napplet message", info);
+      log("Dropped napplet message", info);
     },
     onHashMismatch: (dTag, claimed, computed) => {
       toast({ status: "error", description: `Napplet ${dTag} hash mismatch: ${claimed} != ${computed}` });
@@ -173,6 +194,7 @@ export function createAdapter(
       return { unsubscribe: () => sub.unsubscribe() };
     },
     publish: (event, relayUrls) => {
+      assertNappletEventKind(event.kind);
       void pool.publish(relayUrls, event).catch(reportPublishError);
     },
     isAvailable: () => true,
@@ -202,6 +224,7 @@ export function createAdapter(
     fallbackRelays: getReadRelays(),
     // Napplets never sign; the shell signs with the active account.
     signEvent: async (template: EventTemplate) => {
+      assertNappletEventKind(template.kind);
       const account = accounts.active;
       if (!account) throw new Error("No active account to sign with");
       return account.signEvent(template);
@@ -239,6 +262,8 @@ export function createAdapter(
     resource: createResourceService(resource),
     upload: createBlossomUploadService(getUpload),
     intent,
+    webrtc: createNappletWebrtcService(webrtc),
+    cvm: createNappletCvmService(cvm),
     relay: createRelayPoolService({
       subscribe: (filters, callback, relayUrls) => {
         const sub = pool
@@ -250,6 +275,7 @@ export function createAdapter(
         return { unsubscribe: () => sub.unsubscribe() };
       },
       publish: (event) => {
+        assertNappletEventKind(event.kind);
         eventStore.add(event as NostrEvent);
         void pool.publish(getWriteRelays(), event as NostrEvent).catch(reportPublishError);
       },

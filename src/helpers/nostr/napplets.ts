@@ -191,9 +191,22 @@ export function getNappletNaddr(event: NostrEvent) {
   return nip19.naddrEncode({ kind: event.kind, pubkey: event.pubkey, identifier });
 }
 
+/** Immutable snapshots install independently of their lineage's root or named manifest. */
+export function getNappletInstallAddress(event: NostrEvent) {
+  return event.kind === NAPPLET_KIND_SNAPSHOT ? nip19.neventEncode({ id: event.id }) : getNappletNaddr(event);
+}
+
 /** The NAP-INTENT catalog id of the root or named napplet an naddr points to */
 export function getNappletAddressCatalogId(address: string) {
   const pointer = parseNappletPointer(address);
+  if (pointer?.type === "note" || pointer?.type === "nevent") {
+    return getNappletCatalogId({
+      id: pointer.type === "note" ? pointer.data : pointer.data.id,
+      kind: NAPPLET_KIND_SNAPSHOT,
+      pubkey: "",
+      tags: [],
+    });
+  }
   if (pointer?.type !== "naddr") return undefined;
 
   const { kind, pubkey, identifier } = pointer.data;
@@ -296,7 +309,7 @@ export function getNappletRequiredCapabilities(event: NostrEvent): Capability[] 
   const capabilities = new Set<Capability>();
 
   // `requires` is the legacy tag; NIP-5D declares required (`R`) and optional (`O`) NAP domains.
-  for (const required of [...tagValues(event, "requires"), ...tagValues(event, "R"), ...tagValues(event, "O")]) {
+  for (const required of [...tagValues(event, "requires"), ...tagValues(event, "R")]) {
     if (CAPABILITIES.has(required)) capabilities.add(required as Capability);
     else for (const capability of REQUIRED_CAPABILITY_MAP[required] ?? []) capabilities.add(capability);
   }

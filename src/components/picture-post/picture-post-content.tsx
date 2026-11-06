@@ -1,15 +1,25 @@
 import { Box, BoxProps } from "@chakra-ui/react";
 import { NostrEvent } from "nostr-tools";
 import { useRenderedContent } from "applesauce-react/hooks";
-import { emojis, nostrMentions, links, hashtags } from "applesauce-content/text";
+import { blossomURIs, emojis, nostrMentions, links, hashtags } from "applesauce-content/text";
 
+import MediaOwnerProvider from "../../providers/local/media-owner";
 import { components } from "../content";
 import { renderGenericUrl } from "../content/links";
 import { nipDefinitions } from "../content/transform/nip-notation";
 import { bipDefinitions } from "../content/transform/bip-notation";
 import { moneroAddresses } from "../content/transform/monero-address";
 
-const transformers = [links, nostrMentions, emojis, hashtags, nipDefinitions, bipDefinitions, moneroAddresses];
+const transformers = [
+  blossomURIs,
+  links,
+  nostrMentions,
+  emojis,
+  hashtags,
+  nipDefinitions,
+  bipDefinitions,
+  moneroAddresses,
+];
 
 const linkRenderers = [renderGenericUrl];
 
@@ -23,8 +33,10 @@ export default function PicturePostContents({ post, ...props }: { post: NostrEve
   });
 
   return (
-    <Box whiteSpace="pre-wrap" dir="auto" {...props}>
-      {content}
-    </Box>
+    <MediaOwnerProvider owner={post.pubkey}>
+      <Box whiteSpace="pre-wrap" dir="auto" {...props}>
+        {content}
+      </Box>
+    </MediaOwnerProvider>
   );
 }

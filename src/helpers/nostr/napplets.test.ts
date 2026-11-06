@@ -126,7 +126,7 @@ describe("parseNappletManifest", () => {
       ["O", "unknown"],
     ]);
     expect(parseNappletManifest(event).requires).toEqual(["relay", "nope"]);
-    expect(getNappletRequiredCapabilities(event)).toEqual(["relay:read", "relay:write", "theme:read"]);
+    expect(getNappletRequiredCapabilities(event)).toEqual(["relay:read", "relay:write"]);
     expect(getUnsupportedNappletRequirements(event)).toEqual(["nope"]);
   });
 

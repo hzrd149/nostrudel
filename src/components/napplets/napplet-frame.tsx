@@ -15,9 +15,11 @@ import { CloseIcon, RepeatIcon } from "@chakra-ui/icons";
 import { NostrEvent } from "nostr-tools";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { openNappletArtifactCache, type ResolvedNapplet } from "@kehto/nip";
-import { injectNappletNamespacePrelude } from "@kehto/shell";
+import { injectNappletNamespacePrelude, renderNappletNamespacePrelude } from "@kehto/shell";
 import { resolveBlob } from "blossom-client-sdk/actions/resolve";
 
+import { getNappletPermissions } from "../../services/napplet-shell/permission-types";
+import { installCvmBinding } from "../../services/napplet-shell/cvm-binding";
 import Menu01 from "../icons/menu-01";
 import SimpleView from "../layout/presets/simple-view";
 import Timestamp from "../timestamp";
@@ -25,8 +27,7 @@ import NappletInfoDrawer from "./napplet-info-drawer";
 import NappletUpdateNotice from "./napplet-update-notice";
 import {
   NAPPLET_KIND_SNAPSHOT,
-  getNappletRequiredCapabilities,
-  getNappletNaddr,
+  getNappletInstallAddress,
   getNappletCatalogId,
   getNappletTitle,
 } from "../../helpers/nostr/napplets";
@@ -77,7 +78,7 @@ export default function NappletFrame({ event, onClose, onResolved, onError }: Na
   }, [event.id]);
 
   const title = getNappletTitle(active);
-  const address = getNappletNaddr(event);
+  const address = getNappletInstallAddress(event);
   const installedNapplets = useInstalledNapplets();
   const installedNapplet = address ? installedNapplets.find((napplet) => napplet.address === address) : undefined;
   const installed = !address || !!installedNapplet;
@@ -91,7 +92,7 @@ export default function NappletFrame({ event, onClose, onResolved, onError }: Na
   useEffect(() => {
     let mounted = true;
     const controller = new AbortController();
-    const capabilities = getNappletRequiredCapabilities(active);
+    const capabilities = getNappletPermissions(active);
 
     async function load() {
       setLoading(true);
@@ -160,6 +161,7 @@ export default function NappletFrame({ event, onClose, onResolved, onError }: Na
         target,
         { pubkey: active.pubkey, dTag: napplet.dTag, aggregateHash: napplet.aggregateHash, title },
         catalogId,
+        active,
       );
 
       // Intents are delivered once the document (and with it the injected binding) has loaded
@@ -170,7 +172,15 @@ export default function NappletFrame({ event, onClose, onResolved, onError }: Na
 
       // Inject the same domain set shell.init advertises, so supports() and the
       // materialised window.napplet.<domain> proxies never diverge.
-      node.srcdoc = injectNappletNamespacePrelude(napplet.indexHtml, { domains: capabilities.domains });
+      const cvmPrelude = capabilities.domains.includes("cvm")
+        ? `<script>(${installCvmBinding.toString()})();</script>`
+        : "";
+      const preludeOptions = { domains: capabilities.domains };
+      const prelude = renderNappletNamespacePrelude(preludeOptions);
+      node.srcdoc = injectNappletNamespacePrelude(napplet.indexHtml, preludeOptions).replace(
+        prelude,
+        () => prelude + cvmPrelude,
+      );
     },
     [active, napplet, registerFrame, reloadKey, unregisterFrame, capabilities.domains, title],
   );

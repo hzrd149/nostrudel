@@ -22,12 +22,15 @@ import {
   UnorderedList,
 } from "@chakra-ui/react";
 import styled from "@emotion/styled";
-import { remarkNostrMentions } from "applesauce-content/markdown";
+import { parseBlossomURI } from "applesauce-common/helpers/blossom";
+import { remarkBlossomURIs, remarkNostrMentions } from "applesauce-content/markdown";
 import { nip19, NostrEvent } from "nostr-tools";
 import { forwardRef, memo } from "react";
 import Markdown, { Components, defaultUrlTransform, ExtraProps } from "react-markdown";
 import remarkGfm from "remark-gfm";
 
+import MediaOwnerProvider from "../../providers/local/media-owner";
+import { BlossomLink } from "../content/components/blossom";
 import { EmbedEventPointerCard } from "../embed-event/card";
 import UserLink from "../user/user-link";
 
@@ -83,6 +86,8 @@ function H6({ children, node: _node, ...props }: HeadingProps & ExtraProps) {
 }
 
 function A({ children, node: _node, href, ...props }: LinkProps & ExtraProps) {
+  if (href && parseBlossomURI(href)) return <BlossomLink uri={href}>{children}</BlossomLink>;
+
   // render nostr: mentions
   if (href?.startsWith("nostr:")) {
     try {
@@ -143,7 +148,8 @@ const components: Partial<Components> = {
   h5: H5,
   h6: H6,
   a: A,
-  img: Image,
+  img: ({ src, alt }) =>
+    src && parseBlossomURI(src) ? <BlossomLink uri={src} embed /> : <Image src={src} alt={alt} />,
   p: P,
   ul: UnorderedList,
   ol: OrderedList,
@@ -159,7 +165,7 @@ const components: Partial<Components> = {
 };
 
 function urlTransform(url: string) {
-  if (url.startsWith("nostr:")) return url;
+  if (url.startsWith("nostr:") || parseBlossomURI(url)) return url;
   return defaultUrlTransform(url);
 }
 
@@ -168,7 +174,7 @@ export const CharkaMarkdown = memo(
     return (
       <div ref={ref}>
         <StyledMarkdown
-          remarkPlugins={[remarkGfm, remarkNostrMentions]}
+          remarkPlugins={[remarkGfm, remarkBlossomURIs, remarkNostrMentions]}
           components={components}
           skipHtml
           urlTransform={urlTransform}
@@ -181,5 +187,9 @@ export const CharkaMarkdown = memo(
 );
 
 export default function MarkdownContent({ event }: { event: NostrEvent }) {
-  return <CharkaMarkdown>{event.content}</CharkaMarkdown>;
+  return (
+    <MediaOwnerProvider owner={event.pubkey}>
+      <CharkaMarkdown>{event.content}</CharkaMarkdown>
+    </MediaOwnerProvider>
+  );
 }

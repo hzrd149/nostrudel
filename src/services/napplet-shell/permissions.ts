@@ -1,7 +1,14 @@
-import { ALL_CAPABILITIES, type Capability, type ShellBridge } from "@kehto/shell";
+import { ALL_CAPABILITIES, type ShellBridge } from "@kehto/shell";
 import { map, Observable, startWith, Subject } from "rxjs";
 
 import { logger } from "../../helpers/debug";
+
+import {
+  NAPPLET_PERMISSIONS,
+  RESOURCE_PERMISSIONS,
+  type NappletPermission,
+  type PermissionDecision,
+} from "./permission-types";
 
 const log = logger.extend("napplet-shell-permissions");
 
@@ -20,22 +27,26 @@ const windowIdentities = new Map<string, NappletIdentity>();
 // passes every capability check, and the first grant seeds every capability at once. That
 // makes the runtime unable to report which capabilities the user actually approved, so the
 // shell keeps its own record here of the capability set granted per napplet identity.
-const approvedCapabilities = new Map<string, Set<Capability>>();
+const approvedCapabilities = new Map<string, Set<NappletPermission>>();
 
-function identityKey(identity: NappletIdentity) {
+export function identityKey(identity: NappletIdentity) {
   return `${identity.pubkey}:${identity.dTag}:${identity.aggregateHash}`;
 }
 
-export function hasApprovedCapability(identity: NappletIdentity, capability: Capability) {
+export function hasApprovedCapability(identity: NappletIdentity, capability: NappletPermission) {
   return approvedCapabilities.get(identityKey(identity))?.has(capability) ?? false;
 }
 
-/** A napplet version the user chose to always allow, and what it was allowed */
-export type AlwaysAllowedGrant = NappletIdentity & { capabilities: Capability[]; grantedAt: number };
+/** Explicit saved Allow/Block decisions for one verified app version; absence means Ask. */
+export type AlwaysAllowedGrant = NappletIdentity & {
+  capabilities: NappletPermission[];
+  deniedCapabilities?: NappletPermission[];
+  grantedAt: number;
+};
 
-const CAPABILITIES = new Set<unknown>(ALL_CAPABILITIES);
+const CAPABILITIES = new Set<unknown>(NAPPLET_PERMISSIONS);
 
-function isCapability(value: unknown): value is Capability {
+function isCapability(value: unknown): value is NappletPermission {
   return CAPABILITIES.has(value);
 }
 
@@ -50,7 +61,10 @@ function parseGrant(value: unknown): AlwaysAllowedGrant[] {
   }
 
   if (!value || typeof value !== "object") return [];
-  const { pubkey, dTag, aggregateHash, title, capabilities, grantedAt } = value as Record<string, unknown>;
+  const { pubkey, dTag, aggregateHash, title, capabilities, deniedCapabilities, grantedAt } = value as Record<
+    string,
+    unknown
+  >;
   if (typeof pubkey !== "string" || typeof dTag !== "string" || typeof aggregateHash !== "string") return [];
 
   return [
@@ -60,6 +74,13 @@ function parseGrant(value: unknown): AlwaysAllowedGrant[] {
       aggregateHash,
       title: typeof title === "string" ? title : undefined,
       capabilities: Array.isArray(capabilities) ? capabilities.filter(isCapability) : [],
+      // Broad legacy allows do not silently authorize all new resource kinds; broad blocks remain blocks.
+      deniedCapabilities: Array.isArray(deniedCapabilities)
+        ? [
+            ...deniedCapabilities.filter(isCapability),
+            ...(deniedCapabilities.includes("resource:fetch") ? RESOURCE_PERMISSIONS : []),
+          ]
+        : [],
       grantedAt: typeof grantedAt === "number" ? grantedAt : 0,
     },
   ];
@@ -87,14 +108,23 @@ function writeAlwaysAllowed(grants: AlwaysAllowedGrant[]) {
   alwaysAllowedChanges$.next();
 }
 
-export function addAlwaysAllowed(identity: NappletIdentity, capabilities: Capability[] = []) {
+export function addAlwaysAllowed(identity: NappletIdentity, capabilities: NappletPermission[] = []) {
   const key = identityKey(identity);
+  const current = getAlwaysAllowed().find((grant) => identityKey(grant) === key);
   writeAlwaysAllowed([
     ...getAlwaysAllowed().filter((grant) => identityKey(grant) !== key),
-    { ...identity, capabilities, grantedAt: Math.round(Date.now() / 1000) },
+    {
+      ...identity,
+      capabilities: [...new Set([...(current?.capabilities ?? []), ...capabilities])].filter(
+        (permission) => !current?.deniedCapabilities?.includes(permission),
+      ),
+      deniedCapabilities: current?.deniedCapabilities ?? [],
+      grantedAt: Math.round(Date.now() / 1000),
+    },
   ]);
 }
 
+/** Whether this version has a saved permission entry; this does not authorize launching it. */
 export function isAlwaysAllowed(identity: NappletIdentity) {
   const key = identityKey(identity);
   return getAlwaysAllowed().some((grant) => identityKey(grant) === key);
@@ -102,30 +132,48 @@ export function isAlwaysAllowed(identity: NappletIdentity) {
 
 /** Removes "always allow" from every version of a napplet; it asks again the next time it opens */
 export function revokeAlwaysAllowed(pubkey: string, dTag: string) {
+  const removed = getAlwaysAllowed().filter((grant) => grant.pubkey === pubkey && grant.dTag === dTag);
   writeAlwaysAllowed(getAlwaysAllowed().filter((grant) => grant.pubkey !== pubkey || grant.dTag !== dTag));
+  const identities = new Map(
+    [...removed, ...windowIdentities.values()]
+      .filter((identity) => identity.pubkey === pubkey && identity.dTag === dTag)
+      .map((identity) => [identityKey(identity), identity]),
+  );
+  for (const identity of identities.values()) {
+    approvedCapabilities.delete(identityKey(identity));
+    permissionChanges$.next({ identity });
+  }
 }
 
-export function grantCapabilities(bridge: ShellBridge, identity: NappletIdentity, capabilities: Capability[]) {
-  for (const capability of capabilities) {
-    bridge.runtime.aclState.grant(identity.pubkey, identity.dTag, identity.aggregateHash, capability);
+export function grantCapabilities(bridge: ShellBridge, identity: NappletIdentity, capabilities: NappletPermission[]) {
+  // Kehto seeds the first ACL entry permissively. Explicitly remove every unselected capability.
+  const selected = new Set<string>(
+    capabilities.filter((permission) => getPermissionDecision(identity, permission) !== "block"),
+  );
+  for (const permission of NAPPLET_PERMISSIONS)
+    if (getPermissionDecision(identity, permission) === "allow") selected.add(permission);
+  // The runtime has one coarse resource bit. The resolver enforces the three resource grants per item.
+  selected.add("resource:fetch");
+  for (const capability of ALL_CAPABILITIES) {
+    if (selected.has(capability))
+      bridge.runtime.aclState.grant(identity.pubkey, identity.dTag, identity.aggregateHash, capability);
+    else bridge.runtime.aclState.revoke(identity.pubkey, identity.dTag, identity.aggregateHash, capability);
   }
-  approvedCapabilities.set(identityKey(identity), new Set(capabilities));
+  approvedCapabilities.set(identityKey(identity), new Set([...selected].filter(isCapability)));
+  alwaysAllowedChanges$.next();
   log("granted capabilities", identityKey(identity), capabilities);
 }
 
-// Clears an identity's whole recorded capability set. This is the only way outside this module
-// to remove a grant — the map itself is never exported, so every mutation goes through a named
-// function. Deliberately narrow: it removes exactly the recorded set and nothing else. It does
-// not remove individual capabilities, does not touch the always-allow storage entry, and does
-// not call into the runtime's own access-control state — matching the deny path's previous
-// direct `approvedCapabilities.delete(...)` behaviour exactly.
+/** Clear session approvals without changing saved defaults. */
 export function revokeCapabilities(identity: NappletIdentity) {
   approvedCapabilities.delete(identityKey(identity));
+  alwaysAllowedChanges$.next();
   log("revoked capabilities", identityKey(identity));
 }
 
 export function registerWindowIdentity(windowId: string, identity: NappletIdentity) {
   windowIdentities.set(windowId, identity);
+  alwaysAllowedChanges$.next();
 }
 
 export function getWindowIdentity(windowId: string) {
@@ -133,5 +181,79 @@ export function getWindowIdentity(windowId: string) {
 }
 
 export function unregisterWindowIdentity(windowId: string) {
+  const identity = windowIdentities.get(windowId);
   windowIdentities.delete(windowId);
+  if (identity && ![...windowIdentities.values()].some((value) => identityKey(value) === identityKey(identity))) {
+    approvedCapabilities.delete(identityKey(identity));
+  }
+  alwaysAllowedChanges$.next();
+}
+
+/** Runtime authority changes also invalidate pending consent and active service work. */
+export const permissionChanges$ = new Subject<{ identity?: NappletIdentity; permission?: NappletPermission }>();
+
+export function getPermissionDecision(identity: NappletIdentity, permission: NappletPermission): PermissionDecision {
+  const entry = getAlwaysAllowed().find((grant) => identityKey(grant) === identityKey(identity));
+  if (entry?.deniedCapabilities?.includes(permission)) return "block";
+  if (entry?.capabilities.includes(permission)) return "allow";
+  return "ask";
+}
+
+export function getSessionCapabilities(identity: NappletIdentity): NappletPermission[] {
+  return [...(approvedCapabilities.get(identityKey(identity)) ?? [])];
+}
+
+export function setPermissionDecision(
+  identity: NappletIdentity,
+  permission: NappletPermission,
+  decision: PermissionDecision,
+) {
+  const current = getAlwaysAllowed().find((grant) => identityKey(grant) === identityKey(identity));
+  writeAlwaysAllowed(
+    [
+      ...getAlwaysAllowed().filter((grant) => identityKey(grant) !== identityKey(identity)),
+      {
+        ...identity,
+        grantedAt: Math.round(Date.now() / 1000),
+        capabilities: [
+          ...(current?.capabilities ?? []).filter((value) => value !== permission),
+          ...(decision === "allow" ? [permission] : []),
+        ],
+        deniedCapabilities: [
+          ...(current?.deniedCapabilities ?? []).filter((value) => value !== permission),
+          ...(decision === "block" ? [permission] : []),
+        ],
+      },
+    ].filter((grant) => grant.capabilities.length || grant.deniedCapabilities?.length),
+  );
+  approvedCapabilities.get(identityKey(identity))?.delete(permission);
+  alwaysAllowedChanges$.next();
+  permissionChanges$.next({ identity, permission });
+}
+
+export function synchronizePermissionStorage(event: StorageEvent) {
+  if (event.key !== null && event.key !== ALWAYS_ALLOW_STORAGE_KEY) return;
+  approvedCapabilities.clear();
+  permissionChanges$.next({});
+  alwaysAllowedChanges$.next();
+}
+
+/** Includes mounted apps so session grants can be managed without remembering the app. */
+export const permissionEntries$: Observable<AlwaysAllowedGrant[]> = alwaysAllowedChanges$.pipe(
+  startWith(undefined),
+  map(() => {
+    const entries = new Map(getAlwaysAllowed().map((entry) => [identityKey(entry), entry]));
+    for (const identity of windowIdentities.values()) {
+      if (!entries.has(identityKey(identity)))
+        entries.set(identityKey(identity), { ...identity, capabilities: [], grantedAt: 0 });
+    }
+    return [...entries.values()];
+  }),
+);
+
+export function getLaunchPermissions(identity: NappletIdentity): NappletPermission[] {
+  const saved = getAlwaysAllowed().find((grant) => identityKey(grant) === identityKey(identity));
+  return [...new Set([...(saved?.capabilities ?? []), ...getSessionCapabilities(identity)])].filter(
+    (permission) => getPermissionDecision(identity, permission) !== "block",
+  );
 }

@@ -15,7 +15,7 @@ import InstalledNappletCard from "../../napplets/components/installed-napplet-ca
 import NappletPermissionsPanel from "../../napplets/components/napplet-permissions-panel";
 import InstallPointerModal from "./install-pointer-modal";
 
-const APPS_TABS = ["installed", "used"];
+const APPS_TABS = ["installed", "used", "permissions"];
 
 /** Header button for the sync states the user can act on */
 function NappletSyncButton() {
@@ -70,6 +70,7 @@ export default function AppsSettings() {
         <TabList>
           <Tab>Installed</Tab>
           <Tab>Used</Tab>
+          <Tab>Permissions</Tab>
         </TabList>
         <TabPanels>
           <TabPanel px="0" display="flex" flexDirection="column" gap="6">
@@ -83,6 +84,9 @@ export default function AppsSettings() {
           </TabPanel>
           <TabPanel px="0">
             <NappletPermissionsPanel exclude={installedKeys} />
+          </TabPanel>
+          <TabPanel px="0">
+            <NappletPermissionsPanel />
           </TabPanel>
         </TabPanels>
       </Tabs>

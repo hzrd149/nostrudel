@@ -3,6 +3,7 @@ import { type ComponentMap } from "applesauce-react/hooks";
 import { type CashuToken } from "applesauce-content/text/cashu";
 import { type LightningInvoice as LightningInvoiceToken } from "applesauce-content/text/lightning";
 
+import BlossomContent, { BlossomContentLink } from "./components/blossom";
 import BipDefinition from "./components/bip";
 import Cashu from "./components/cashu";
 import { ImageGallery } from "./components/gallery";
@@ -25,6 +26,7 @@ type ExtendedComponentMap = ComponentMap & {
 };
 
 export const components: ExtendedComponentMap = {
+  blossom: BlossomContent,
   text: ({ node }) => <span>{node.value}</span>,
   mention: NostrMentionCard,
   cashu: Cashu,
@@ -38,6 +40,7 @@ export const components: ExtendedComponentMap = {
 };
 
 export const onlyLinkComponents: ComponentMap = {
+  blossom: BlossomContentLink,
   text: ({ node }) => <span>{node.value}</span>,
   mention: NostrMentionLink,
   emoji: ({ node }) => <InlineEmoji url={node.url} code={node.code} />,

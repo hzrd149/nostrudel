@@ -1,12 +1,37 @@
-# Agent Development Guide for noStrudel
+# Repository Guidelines
 
 This guide provides essential information for AI coding agents working on the noStrudel codebase.
 
 ## Project Overview
 
-noStrudel is a React/TypeScript web application for exploring the [nostr protocol](https://github.com/nostr-protocol). It uses Vite as the build tool, Chakra UI for components, and a custom state management layer built around the applesauce pattern for Nostr data.
+noStrudel is a Nostr client whose goal is to help users explore the protocol by exposing rich information and letting them inspect the underlying events. Preserve that visibility when adding features.
 
-## Committing
+The app uses React and TypeScript, Vite, Chakra UI, and Applesauce libraries with RxJS for reactive Nostr data. Capacitor projects in `android/` and `ios/` provide native app packaging.
+
+## Build, Test, and Development Commands
+
+Use Node.js 24 (`.nvmrc`) and the pnpm version pinned in `package.json`.
+
+- `pnpm install` — install dependencies.
+- `pnpm dev` — start the Vite development server with the development version label.
+- `pnpm build` — typecheck with TypeScript, then build the production app.
+- `pnpm exec tsc --project tsconfig.json` — typecheck without building assets.
+- `pnpm test` — run the Vitest suite once.
+- `pnpm exec prettier --check AGENTS.md` — check a specific file's formatting; use `--write` to format changed files.
+- `pnpm format` — format the whole repository; prefer targeted formatting when other work is in progress.
+- `pnpm lint:ci` — run the changed-file lint gate; see [Linting](#linting) for base-branch requirements.
+
+## Testing Guidelines
+
+Vitest runs in the Node environment and discovers `src/**/*.test.ts` via `vitest.config.ts`. Keep tests beside the implementation, using kebab-case names such as `webrtc-session.test.ts`. Run a focused suite with `pnpm test -- src/services/napplet-shell/webrtc-session.test.ts`.
+
+Cover behavior changes and regressions with meaningful tests, especially helpers and services. No coverage threshold is configured. For UI changes, manually verify the affected view and describe the result in the PR. Documentation-only changes need formatting and diff review rather than application tests.
+
+## Commit and Pull Request Guidelines
+
+Keep PRs small and focused. Use clear, concise commit messages; recent history includes both imperative subjects (`Add ...`) and prefixed fixes (`fix: ...`). Describe the problem, resulting behavior, and validation; link related issues and include screenshots for visible UI changes.
+
+Base feature work on `next`, following this guide's lint workflow. `CONTRIBUTING.md` still refers to `master`; that branch guidance conflicts with the workflow documented here.
 
 - Commit after each significant change (a feature, fix, or refactor that typechecks and passes tests) instead of leaving work uncommitted at the end of a session.
 - The maintainer often stages or edits files in parallel: commit only your own paths with `git commit --only -- <paths>` and leave unrelated working-tree changes alone.
@@ -17,7 +42,7 @@ noStrudel is a React/TypeScript web application for exploring the [nostr protoco
 src/
 ├── components/        # Reusable UI components (organized by feature)
 ├── views/            # Page-level components (route handlers)
-├── hooks/            # Custom React hooks (70+ hooks)
+├── hooks/            # Custom React hooks
 ├── helpers/          # Pure utility functions
 ├── providers/        # React context providers (global/local/route)
 ├── services/         # Singleton services & business logic
@@ -28,7 +53,11 @@ src/
 └── sw/               # Service worker code
 ```
 
+Tests are colocated under `src/`. Static public files live in `public/`, supporting assets in `assets/`, and project screenshots in `screenshots/`. Build and utility scripts live in `scripts/`.
+
 ## Code Style Guidelines
+
+Use TypeScript with strict checking. Prettier (`.prettierrc`) specifies two-space indentation, spaces instead of tabs, and a 120-character print width.
 
 ### File & Directory Naming
 
@@ -452,16 +481,16 @@ export default [
 
 **File**: `src/app.tsx`
 
-Add the import near other route imports (around line 45):
+Add the import alongside the other route imports:
 
 ```typescript
 import yourViewRoutes from "./views/your-view/routes";
 ```
 
-Add the route to the router configuration (around line 122):
+Add the route to the existing browser router configuration:
 
 ```typescript
-const router = createHashRouter([
+const router = createBrowserRouter([
   {
     element: <RootPage />,
     children: [

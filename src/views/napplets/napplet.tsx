@@ -9,6 +9,7 @@ import SimpleView from "../../components/layout/presets/simple-view";
 import {
   getNappletEventPointer,
   getNappletNaddr,
+  getNappletInstallAddress,
   isNappletManifestKind,
   parseNappletPointer,
 } from "../../helpers/nostr/napplets";
@@ -58,7 +59,7 @@ export function NappletRouteLoader({ address, pointer }: { address: string; poin
       </SimpleView>
     );
 
-  if (!getNappletNaddr(event))
+  if (!getNappletInstallAddress(event))
     return (
       <SimpleView title="Napplet">
         <Alert status="warning">

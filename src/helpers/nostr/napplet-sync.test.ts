@@ -47,9 +47,15 @@ describe("mergeNappletSyncData", () => {
     expect(merged.handlers).toEqual({ notes: "b", chat: "b" });
   });
 
-  it("drops handlers for apps that are no longer installed", () => {
+  it("keeps an explicit remote handler removal", () => {
     const merged = mergeNappletSyncData(data(["a"], { notes: "a" }), data(["a"], { notes: "a" }), data([]));
     expect(merged).toEqual(data([]));
+  });
+
+  it("retains preferences for uninstalled apps when merging legacy sync data", () => {
+    expect(
+      mergeNappletSyncData(data(["a"], { notes: "a" }), data([], { notes: "a" }), data(["a"], { notes: "a" })),
+    ).toEqual(data([], { notes: "a" }));
   });
 });
 
