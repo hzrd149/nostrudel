@@ -15,14 +15,15 @@ import TaskManagerProvider from "./views/task-manager/provider";
 import NoteFoundView from "./views/404";
 import HomeView from "./views/home";
 import NostrLinkView from "./views/link";
-import AppView from "./views/app";
-import NappletStoreDetail from "./views/app/store-detail";
-import AppStoreView from "./views/app/store";
-import OtherStuffView from "./views/other-stuff";
-import PollHomeView from "./views/poll/home";
-import PollView from "./views/poll/poll";
-import SearchView from "./views/search";
 import ThreadView from "./views/thread";
+
+const AppView = lazy(() => import("./views/app"));
+const NappletStoreDetail = lazy(() => import("./views/app/store-detail"));
+const AppStoreView = lazy(() => import("./views/app/store"));
+const OtherStuffView = lazy(() => import("./views/other-stuff"));
+const PollHomeView = lazy(() => import("./views/poll/home"));
+const PollView = lazy(() => import("./views/poll/poll"));
+const SearchView = lazy(() => import("./views/search"));
 
 const HashTagView = lazy(() => import("./views/hashtag"));
 

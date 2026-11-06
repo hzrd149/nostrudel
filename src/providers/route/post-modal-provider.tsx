@@ -1,7 +1,9 @@
-import React, { PropsWithChildren, useCallback, useMemo, useState } from "react";
-import { useDisclosure } from "@chakra-ui/react";
+import React, { lazy, PropsWithChildren, Suspense, useCallback, useMemo, useState } from "react";
+import { Spinner, useDisclosure } from "@chakra-ui/react";
 import { ErrorBoundary } from "../../components/error-boundary";
-import PostModal, { PostModalProps } from "../../components/post-modal";
+import type { PostModalProps } from "../../components/post-modal";
+
+const PostModal = lazy(() => import("../../components/post-modal"));
 
 export type PostModalContextType = {
   openModal: (props?: PostModalProps) => void;
@@ -25,14 +27,18 @@ export default function PostModalProvider({ children }: PropsWithChildren) {
   const closeModal = useCallback(() => {
     setInitProps({});
     onClose();
-  }, [onOpen, setInitProps]);
+  }, [onClose, setInitProps]);
 
   const context = useMemo(() => ({ openModal }), [openModal]);
 
   return (
     <PostModalContext.Provider value={context}>
       <ErrorBoundary>
-        {isOpen && <PostModal {...initProps} isOpen={isOpen} onClose={closeModal} />}
+        {isOpen && (
+          <Suspense fallback={<Spinner />}>
+            <PostModal {...initProps} isOpen={isOpen} onClose={closeModal} />
+          </Suspense>
+        )}
         {children}
       </ErrorBoundary>
     </PostModalContext.Provider>

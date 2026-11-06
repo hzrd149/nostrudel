@@ -1,10 +1,12 @@
 import { NostrEvent } from "nostr-tools";
-import { PropsWithChildren, createContext, useCallback, useContext, useMemo, useState } from "react";
+import { PropsWithChildren, createContext, lazy, Suspense, useCallback, useContext, useMemo, useState } from "react";
+import { Spinner } from "@chakra-ui/react";
 
-import EventDebugModal from "../../components/debug-modal";
 import useRouteStateValue from "../../hooks/use-route-state-value";
 import { UNSAFE_DataRouterContext } from "react-router-dom";
 import useRouterMarker from "../../hooks/use-router-marker";
+
+const EventDebugModal = lazy(() => import("../../components/debug-modal"));
 
 export const DebugModalContext = createContext({
   open: (_event: NostrEvent) => {},
@@ -37,7 +39,11 @@ export default function DebugModalProvider({ children }: PropsWithChildren) {
   return (
     <DebugModalContext.Provider value={context}>
       {children}
-      {routeState.value && event && <EventDebugModal event={event} isOpen onClose={close} />}
+      {routeState.value && event && (
+        <Suspense fallback={<Spinner />}>
+          <EventDebugModal event={event} isOpen onClose={close} />
+        </Suspense>
+      )}
     </DebugModalContext.Provider>
   );
 }

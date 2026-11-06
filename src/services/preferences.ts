@@ -5,223 +5,152 @@ import { safeParse } from "applesauce-core/helpers";
 
 import { PreferenceSubject } from "../classes/preference-subject";
 import { DEFAULT_FALLBACK_RELAYS, DEFAULT_MAX_CONNECTIONS, DEFAULT_MAX_RELAYS_PER_USER } from "../const";
+import { logger } from "../helpers/debug";
+import { resolvePromises } from "../helpers/promise";
 import { type RelayAuthMode } from "./authentication-signer";
 
-// Accounts
-const accounts = await PreferenceSubject.array<SerializedAccount<any, any>>("accounts", []);
-const activeAccount = await PreferenceSubject.stringNullable("active-account", null);
-
-// Wallets
 /**
  * The persisted configuration for a Nostr Wallet Connect (NIP-47) wallet. WebLN and NIP-60 (Cashu) wallets
  * are auto-detected from `window.webln` and the active account, so only NWC wallets need to be stored.
  */
 export type StoredNwcWallet = { id: string; name: string; uri: string };
 
-const wallets = await PreferenceSubject.array<StoredNwcWallet>("wallets", []);
-const activeWallet = await PreferenceSubject.stringNullable("active-wallet", null);
-/**
- * Whether the NIP-60 (Cashu) wallet is enabled. Defaults to true; when false the wallet is never loaded
- * for the active account (and excluded from the wallet list), regardless of whether one exists on relays.
- */
-const enableNutWallet = await PreferenceSubject.boolean("enable-nut-wallet", true);
-/**
- * Whether to automatically decrypt the NIP-60 wallet (and its tokens/history) as it loads. Defaults to
- * false so the user's signer is not spammed with decrypt requests on every load; unlocking is opt-in.
- */
-const autoUnlockNutWallet = await PreferenceSubject.boolean("auto-unlock-nut-wallet", false);
-/**
- * The NIP-60 wallet does not publish NIP-09 (kind 5) delete events when it spends tokens, so the old token
- * events accumulate on relays. This setting automatically cleans up those stale (deleted-but-still-present)
- * token events once this many have accumulated. Null disables automatic cleanup, leaving the user to clean
- * them up manually.
- */
-const cleanupNutWalletThreshold = await PreferenceSubject.numberNullable("cleanup-nut-wallet-threshold", null);
+// Start independent storage reads together rather than serializing native bridge calls.
+const localSettings = (await resolvePromises({
+  // Accounts
+  accounts: PreferenceSubject.array<SerializedAccount<any, any>>("accounts", []),
+  activeAccount: PreferenceSubject.stringNullable("active-account", null),
 
-// Relays
-const fallbackRelays = await PreferenceSubject.array<string>("fallback-relays", DEFAULT_FALLBACK_RELAYS);
-const extraPublishRelays = await PreferenceSubject.array<string>("extra-publish-relays", []);
+  // Wallets
+  wallets: PreferenceSubject.array<StoredNwcWallet>("wallets", []),
+  activeWallet: PreferenceSubject.stringNullable("active-wallet", null),
+  /**
+   * Whether the NIP-60 (Cashu) wallet is enabled. Defaults to true; when false the wallet is never loaded
+   * for the active account (and excluded from the wallet list), regardless of whether one exists on relays.
+   */
+  enableNutWallet: PreferenceSubject.boolean("enable-nut-wallet", true),
+  /**
+   * Whether to automatically decrypt the NIP-60 wallet (and its tokens/history) as it loads. Defaults to
+   * false so the user's signer is not spammed with decrypt requests on every load; unlocking is opt-in.
+   */
+  autoUnlockNutWallet: PreferenceSubject.boolean("auto-unlock-nut-wallet", false),
+  /**
+   * The NIP-60 wallet does not publish NIP-09 (kind 5) delete events when it spends tokens, so the old token
+   * events accumulate on relays. This setting automatically cleans up those stale (deleted-but-still-present)
+   * token events once this many have accumulated. Null disables automatic cleanup, leaving the user to clean
+   * them up manually.
+   */
+  cleanupNutWalletThreshold: PreferenceSubject.numberNullable("cleanup-nut-wallet-threshold", null),
 
-// Relay liveness
-/** Whether to track relay connection failures locally and skip relays that keep failing */
-const localRelayLiveness = await PreferenceSubject.boolean("local-relay-liveness", true);
-/** The pubkeys of the NIP-66 monitors whose reports are used to skip offline relays */
-const relayLivenessMonitors = await PreferenceSubject.array<string>("relay-liveness-monitors", []);
+  // Relays
+  fallbackRelays: PreferenceSubject.array<string>("fallback-relays", DEFAULT_FALLBACK_RELAYS),
+  extraPublishRelays: PreferenceSubject.array<string>("extra-publish-relays", []),
 
-// Remove the legacy lookup relays preference, lookup relays are now stored in a kind 10086 list on nostr
-await Preferences.remove({ key: "lookup-relays" });
+  // Relay liveness
+  /** Whether to track relay connection failures locally and skip relays that keep failing */
+  localRelayLiveness: PreferenceSubject.boolean("local-relay-liveness", true),
+  /** The pubkeys of the NIP-66 monitors whose reports are used to skip offline relays */
+  relayLivenessMonitors: PreferenceSubject.array<string>("relay-liveness-monitors", []),
 
-// Event cache
-const idbMaxEvents = await PreferenceSubject.number("nostr-idb-max-events", 10_000);
-const wasmPersistForDays = await PreferenceSubject.numberNullable("wasm-relay-oldest-event", 365);
+  // Event cache
+  idbMaxEvents: PreferenceSubject.number("nostr-idb-max-events", 10_000),
+  wasmPersistForDays: PreferenceSubject.numberNullable("wasm-relay-oldest-event", 365),
 
-// Display
-const hideZapBubbles = await PreferenceSubject.boolean("hide-zap-bubbles", false);
-const hideUsernames = await PreferenceSubject.boolean("hide-usernames", false);
-const displayCurrency = await PreferenceSubject.stringNullable("display-currency", null);
-const exchangeRateRefreshInterval = await PreferenceSubject.number("exchange-rate-refresh-interval", 1000 * 60 * 60);
-const exchangeRateEndpoint = await PreferenceSubject.string(
-  "exchange-rate-endpoint",
-  // aislop-ignore-next-line ai-slop/hardcoded-url -- default of the user-editable exchange-rate-endpoint preference, so it is already configurable; a const.ts constant would still trip the rule on its /api/ path
-  "https://mempool.space/api/v1/prices",
-);
+  // Display
+  hideZapBubbles: PreferenceSubject.boolean("hide-zap-bubbles", false),
+  hideUsernames: PreferenceSubject.boolean("hide-usernames", false),
+  displayCurrency: PreferenceSubject.stringNullable("display-currency", null),
+  exchangeRateRefreshInterval: PreferenceSubject.number("exchange-rate-refresh-interval", 1000 * 60 * 60),
+  exchangeRateEndpoint: PreferenceSubject.string(
+    "exchange-rate-endpoint",
+    // aislop-ignore-next-line ai-slop/hardcoded-url -- default of the user-editable exchange-rate-endpoint preference, so it is already configurable; a const.ts constant would still trip the rule on its /api/ path
+    "https://mempool.space/api/v1/prices",
+  ),
 
-// Posting
-const addClientTag = await PreferenceSubject.boolean("add-client-tag", false);
+  // Posting
+  addClientTag: PreferenceSubject.boolean("add-client-tag", false),
 
-// Performance
-const verifyEventMethod = await PreferenceSubject.string("verify-event-method", "wasm"); // wasm, internal, none (wasm-strict is a legacy alias)
+  // Performance
+  verifyEventMethod: PreferenceSubject.string("verify-event-method", "wasm"), // wasm, internal, none (wasm-strict is a legacy alias)
 
-const optimisticVerification = await PreferenceSubject.boolean("optimistic-verification", true);
+  optimisticVerification: PreferenceSubject.boolean("optimistic-verification", true),
 
-// Privacy
-const enableDebugApi = await PreferenceSubject.boolean("debug-api", false);
-const alwaysAuthUpload = await PreferenceSubject.boolean("always-auth-upload", true);
+  // Privacy
+  enableDebugApi: PreferenceSubject.boolean("debug-api", false),
+  alwaysAuthUpload: PreferenceSubject.boolean("always-auth-upload", true),
 
-// Relay Authentication
-const defaultAuthenticationMode = await PreferenceSubject.create<RelayAuthMode>("default-authentication-mode", "ask");
-const proactivelyAuthenticate = await PreferenceSubject.boolean("proactively-authenticate", false);
-const relayAuthenticationMode = await PreferenceSubject.array<{ relay: string; mode: RelayAuthMode }>(
-  "relay-authentication-mode",
-  [],
-);
+  // Relay Authentication
+  defaultAuthenticationMode: PreferenceSubject.create<RelayAuthMode>("default-authentication-mode", "ask"),
+  proactivelyAuthenticate: PreferenceSubject.boolean("proactively-authenticate", false),
+  relayAuthenticationMode: PreferenceSubject.array<{ relay: string; mode: RelayAuthMode }>(
+    "relay-authentication-mode",
+    [],
+  ),
 
-// Social Graph
-const updateSocialGraphDistance = await PreferenceSubject.number("update-social-graph-distance", 2);
-const updateSocialGraphInterval = await PreferenceSubject.number("update-social-graph-interval", 1000 * 60 * 60 * 24); // 1 day
-const lastUpdatedSocialGraph = await PreferenceSubject.number("last-updated-social-graph", 0);
+  // Social Graph
+  updateSocialGraphDistance: PreferenceSubject.number("update-social-graph-distance", 2),
+  updateSocialGraphInterval: PreferenceSubject.number("update-social-graph-interval", 1000 * 60 * 60 * 24), // 1 day
+  lastUpdatedSocialGraph: PreferenceSubject.number("last-updated-social-graph", 0),
 
-// Cache Relay
-const eventCache = await PreferenceSubject.stringNullable("event-cache", null);
+  // Cache Relay
+  eventCache: PreferenceSubject.stringNullable("event-cache", null),
 
-// Content Policies
-const hideEventsOutsideSocialGraph = await PreferenceSubject.numberNullable("hide-events-outside-social-graph", null);
-const blurMediaOutsideSocialGraph = await PreferenceSubject.numberNullable("blur-media-outside-social-graph", 3);
-const hideEmbedsOutsideSocialGraph = await PreferenceSubject.numberNullable("hide-embeds-outside-social-graph", 4);
+  // Content Policies
+  hideEventsOutsideSocialGraph: PreferenceSubject.numberNullable("hide-events-outside-social-graph", null),
+  blurMediaOutsideSocialGraph: PreferenceSubject.numberNullable("blur-media-outside-social-graph", 3),
+  hideEmbedsOutsideSocialGraph: PreferenceSubject.numberNullable("hide-embeds-outside-social-graph", 4),
 
-// Decryption cache
-const encryptionSalt = await PreferenceSubject.create<Uint8Array>(
-  "encryption-salt",
-  crypto.getRandomValues(new Uint8Array(48)),
-  {
+  // Decryption cache
+  encryptionSalt: PreferenceSubject.create<Uint8Array>("encryption-salt", crypto.getRandomValues(new Uint8Array(48)), {
     decode: (raw) => hexToBytes(raw),
     encode: (key) => bytesToHex(key),
     saveDefault: true,
-  },
-);
-const encryptDecryptionCache = await PreferenceSubject.boolean("encrypt-decryption-cache", true);
-
-// Pending unlock
-/**
- * Whether to automatically unlock every registered pending-unlock category (hidden mutes, the decryption
- * cache, etc.) without requiring a click. Defaults to false — D-01 forbids silent signer calls by default,
- * so a fresh install performs no automatic unlock.
- */
-const autoUnlockAll = await PreferenceSubject.boolean("auto-unlock-all", false);
-/**
- * Per-category auto-unlock opt-ins, keyed by the pending-unlock category id. Used only when `autoUnlockAll`
- * is false. Keyed by category id (not a fixed enum) so the list grows as sources register (D-05) without
- * editing this file again.
- */
-const autoUnlockCategories = await PreferenceSubject.create<Record<string, boolean>>(
-  "auto-unlock-categories",
-  {},
-  {
-    decode: (raw) => {
-      const value = safeParse<Record<string, boolean>>(raw);
-      if (value && typeof value === "object") return value;
-      else return {};
-    },
-    encode: (value) => JSON.stringify(value),
-  },
-);
-
-// Direct messages
-const enableDecryptionCache = await PreferenceSubject.boolean("enable-decryption-cache", true);
-const autoDecryptMessages = await PreferenceSubject.boolean("auto-decrypt-messages", true);
-const defaultMessageExpiration = await PreferenceSubject.numberNullable("default-message-expiration", null);
-
-// Relay Selection
-const maxConnections = await PreferenceSubject.number("max-connections", DEFAULT_MAX_CONNECTIONS);
-const maxRelaysPerUser = await PreferenceSubject.number("max-relays-per-user", DEFAULT_MAX_RELAYS_PER_USER);
-
-// Username Lookup
-const usernameLookupProvider = await PreferenceSubject.string("username-lookup-provider", "primal");
-const primalCacheUrl = await PreferenceSubject.stringNullable("primal-cache-url", null);
-const vertexRelayUrl = await PreferenceSubject.stringNullable("vertex-relay-url", null);
-const vertexSortMethod = await PreferenceSubject.string("vertex-sort-method", "globalPagerank");
-
-const localSettings = {
-  // Accounts
-  accounts,
-  activeAccount,
-
-  // Wallets
-  wallets,
-  activeWallet,
-  enableNutWallet,
-  autoUnlockNutWallet,
-  cleanupNutWalletThreshold,
-
-  // Relays
-  fallbackRelays,
-  extraPublishRelays,
-  localRelayLiveness,
-  relayLivenessMonitors,
-
-  // Event cache
-  idbMaxEvents,
-  wasmPersistForDays,
-
-  // Display
-  hideZapBubbles,
-  hideUsernames,
-  displayCurrency,
-  exchangeRateRefreshInterval,
-  exchangeRateEndpoint,
-
-  addClientTag,
-  verifyEventMethod,
-  optimisticVerification,
-  defaultAuthenticationMode,
-  proactivelyAuthenticate,
-  relayAuthenticationMode,
-  enableDebugApi,
-  eventCache,
-  alwaysAuthUpload,
-
-  // Social Graph
-  updateSocialGraphDistance,
-  updateSocialGraphInterval,
-  lastUpdatedSocialGraph,
-
-  hideEventsOutsideSocialGraph,
-  blurMediaOutsideSocialGraph,
-  hideEmbedsOutsideSocialGraph,
-
-  // Decryption cache
-  encryptionSalt,
-  encryptDecryptionCache,
+  }),
+  encryptDecryptionCache: PreferenceSubject.boolean("encrypt-decryption-cache", true),
 
   // Pending unlock
-  autoUnlockAll,
-  autoUnlockCategories,
+  /**
+   * Whether to automatically unlock every registered pending-unlock category (hidden mutes, the decryption
+   * cache, etc.) without requiring a click. Defaults to false — D-01 forbids silent signer calls by default,
+   * so a fresh install performs no automatic unlock.
+   */
+  autoUnlockAll: PreferenceSubject.boolean("auto-unlock-all", false),
+  /**
+   * Per-category auto-unlock opt-ins, keyed by the pending-unlock category id. Used only when `autoUnlockAll`
+   * is false. Keyed by category id (not a fixed enum) so the list grows as sources register (D-05) without
+   * editing this file again.
+   */
+  autoUnlockCategories: PreferenceSubject.create<Record<string, boolean>>(
+    "auto-unlock-categories",
+    {},
+    {
+      decode: (raw) => {
+        const value = safeParse<Record<string, boolean>>(raw);
+        if (value && typeof value === "object") return value;
+        else return {};
+      },
+      encode: (value) => JSON.stringify(value),
+    },
+  ),
 
   // Direct messages
-  autoDecryptMessages,
-  enableDecryptionCache,
-  defaultMessageExpiration,
+  enableDecryptionCache: PreferenceSubject.boolean("enable-decryption-cache", true),
+  autoDecryptMessages: PreferenceSubject.boolean("auto-decrypt-messages", true),
+  defaultMessageExpiration: PreferenceSubject.numberNullable("default-message-expiration", null),
 
   // Relay Selection
-  maxConnections,
-  maxRelaysPerUser,
+  maxConnections: PreferenceSubject.number("max-connections", DEFAULT_MAX_CONNECTIONS),
+  maxRelaysPerUser: PreferenceSubject.number("max-relays-per-user", DEFAULT_MAX_RELAYS_PER_USER),
 
   // Username Lookup
-  usernameLookupProvider,
-  primalCacheUrl,
-  vertexRelayUrl,
-  vertexSortMethod,
-} satisfies Record<string, PreferenceSubject<any>>;
+  usernameLookupProvider: PreferenceSubject.string("username-lookup-provider", "primal"),
+  primalCacheUrl: PreferenceSubject.stringNullable("primal-cache-url", null),
+  vertexRelayUrl: PreferenceSubject.stringNullable("vertex-relay-url", null),
+  vertexSortMethod: PreferenceSubject.string("vertex-sort-method", "globalPagerank"),
+})) satisfies Record<string, PreferenceSubject<any>>;
+
+// Lookup relays are now stored in a kind 10086 list on nostr.
+await Preferences.remove({ key: "lookup-relays" });
 
 // Migrate legacy local storage settings
 let cleanup: string[] = [];
@@ -235,7 +164,7 @@ if (cleanup.length) {
   for (const key of cleanup) {
     localStorage.removeItem(key);
   }
-  console.log("Migrated", cleanup.length, "settings from local storage");
+  logger.extend("Preferences")("Migrated", cleanup.length, "settings from local storage");
 }
 
 if (import.meta.env.DEV) {

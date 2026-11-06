@@ -1,9 +1,11 @@
 import { Center } from "@chakra-ui/react";
+import { lazy } from "react";
 import { RouteObject } from "react-router-dom";
-import InboxView from "./inbox";
-import DirectMessagesView from ".";
-import DirectMessageChatView from "./chat/index";
-import DirectMessageGroupView from "./group/index";
+
+const InboxView = lazy(() => import("./inbox"));
+const DirectMessagesView = lazy(() => import("."));
+const DirectMessageChatView = lazy(() => import("./chat/index"));
+const DirectMessageGroupView = lazy(() => import("./group/index"));
 
 export default [
   {
