@@ -6,6 +6,7 @@ import GlobalStyles from "./styles";
 
 import { ErrorBoundary } from "./components/error-boundary";
 import AppLayout from "./components/layout";
+import NappletIntentHost from "./components/napplets/intent-host";
 import useSetColorMode from "./hooks/use-set-color-mode";
 import { RouteProviders } from "./providers/route";
 
@@ -65,6 +66,7 @@ const RootPage = () => {
   return (
     <RouteProviders>
       <AppLayout />
+      <NappletIntentHost />
     </RouteProviders>
   );
 };
@@ -105,6 +107,7 @@ export const router = createBrowserRouter(
         { path: "n/:id", Component: ThreadView },
         { path: "app/store/:address", Component: NappletStoreDetail },
         { path: "app/store", Component: AppStoreView },
+        { path: "app/:id/:action", Component: AppView },
         { path: "app/:id", Component: AppView },
         { path: "polls", Component: PollHomeView },
         { path: "poll/:id", Component: PollView },

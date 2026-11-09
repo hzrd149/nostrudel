@@ -23,17 +23,9 @@ import Menu01 from "../icons/menu-01";
 import SimpleView from "../layout/presets/simple-view";
 import Timestamp from "../timestamp";
 import NappletInfoDrawer from "./napplet-info-drawer";
-import NappletUpdateNotice from "./napplet-update-notice";
-import {
-  NAPPLET_KIND_SNAPSHOT,
-  getNappletInstallAddress,
-  getNappletCatalogId,
-  getNappletTitle,
-} from "../../helpers/nostr/napplets";
+import { NAPPLET_KIND_SNAPSHOT, getNappletCatalogId, getNappletTitle } from "../../helpers/nostr/napplets";
 import { resolveNapplet } from "../../helpers/nostr/napplet-resolve";
 import { useNappletShell } from "../../providers/global/napplet-shell-provider";
-import { installNapplet, openInstalledNapplet } from "../../services/installed-napplets";
-import useInstalledNapplets from "../../hooks/use-installed-napplets";
 import { attachIntentTarget } from "../../services/napplet-intent-targets";
 
 export type NappletFrameProps = {
@@ -78,15 +70,6 @@ export default function NappletFrame({ event, onClose, onResolved, onError }: Na
   }, [event.id]);
 
   const title = getNappletTitle(active);
-  const address = getNappletInstallAddress(event);
-  const installedNapplets = useInstalledNapplets();
-  const installedNapplet = address ? installedNapplets.find((napplet) => napplet.address === address) : undefined;
-  const installed = !address || !!installedNapplet;
-  const isInstalled = !!installedNapplet;
-
-  useEffect(() => {
-    if (isInstalled) openInstalledNapplet(event, address);
-  }, [event, address, isInstalled]);
 
   // Resolve (and re-resolve on reload/rewind) the napplet from its active manifest event.
   useEffect(() => {
@@ -219,12 +202,7 @@ export default function NappletFrame({ event, onClose, onResolved, onError }: Na
       scroll={false}
       gap={0}
       actions={
-        <ButtonGroup size="sm" variant="ghost" ms="auto">
-          {address && !installed && (
-            <Button colorScheme="primary" onClick={() => installNapplet(event, address)}>
-              Install
-            </Button>
-          )}
+        <ButtonGroup variant="ghost" ms="auto">
           <Tooltip label="Reload" openDelay={500}>
             <IconButton icon={<RepeatIcon />} aria-label="Reload napplet" onClick={reload} />
           </Tooltip>
@@ -239,14 +217,6 @@ export default function NappletFrame({ event, onClose, onResolved, onError }: Na
         </ButtonGroup>
       }
     >
-      {installedNapplet && (
-        <NappletUpdateNotice
-          key={event.id}
-          event={event}
-          openedVersion={installedNapplet.openedVersion}
-          onShowVersions={info.onOpen}
-        />
-      )}
       {version && (
         <Alert status="info" flexShrink={0}>
           <AlertIcon />

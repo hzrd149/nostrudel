@@ -72,7 +72,7 @@ export default function SettingsView() {
 
       <DividerHeader title="Client" />
       <SimpleNavItem to="/settings/apps" leftIcon={<Package boxSize={5} />}>
-        Installed Apps
+        Napplet Permissions
       </SimpleNavItem>
       <SimpleNavItem to="/settings/default-apps" leftIcon={<Route boxSize={5} />}>
         Default Apps

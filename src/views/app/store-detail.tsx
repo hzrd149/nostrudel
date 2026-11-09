@@ -28,7 +28,6 @@ import { GenericComments } from "../../components/comment/generic-comments";
 import { ErrorBoundary } from "../../components/error-boundary";
 import { ThreadIcon } from "../../components/icons";
 import SimpleView from "../../components/layout/presets/simple-view";
-import NappletInstallModal from "../../components/napplets/napplet-install-modal";
 import NappletMenu from "../../components/napplets/napplet-menu";
 import NappletSourceButton from "../../components/napplets/napplet-source-button";
 import EventQuoteButton from "../../components/note/event-quote-button";
@@ -56,10 +55,8 @@ import {
 } from "../../helpers/nostr/napplets";
 import { useReadRelays } from "../../hooks/use-client-relays";
 import useEvent from "../../hooks/use-event";
-import useInstalledNapplets from "../../hooks/use-installed-napplets";
 import useRouteSearchValue from "../../hooks/use-route-search-value";
 import useTimelineLoader from "../../hooks/use-timeline-loader";
-import { uninstallNapplet } from "../../services/installed-napplets";
 import { eventDeleteManager } from "../../services/event-store";
 import NappletDetailAdvanced from "../napplets/components/napplet-detail-advanced";
 import NappletDetailPermissions from "../napplets/components/napplet-detail-permissions";
@@ -140,19 +137,13 @@ function RelatedNapplets({ event }: { event: NostrEvent }) {
 
 function NappletStoreDetailPage({ event, address }: { event: NostrEvent; address: string }) {
   const comment = useDisclosure();
-  const install = useDisclosure();
-  const installed = useInstalledNapplets().some((napplet) => napplet.address === address);
   const title = getNappletTitle(event);
   const description = getNappletDescription(event);
   const archetypes = getNappletArchetypes(event);
   const unsupported = getUnsupportedNappletRequirements(event);
   const naddr = getNappletNaddr(event);
   const hasPermissions = getNappletRequiredCapabilities(event).length > 0;
-  const tabs = [
-    ...BASE_TABS,
-    ...(installed && hasPermissions ? ["permissions"] : []),
-    ...(installed ? ["storage"] : []),
-  ];
+  const tabs = [...BASE_TABS, ...(hasPermissions ? ["permissions"] : []), "storage"];
   const tab = useRouteSearchValue("tab", tabs[0]);
   const tabIndex = Math.max(0, tabs.indexOf(tab.value));
 
@@ -185,15 +176,6 @@ function NappletStoreDetailPage({ event, address }: { event: NostrEvent; address
             </Button>
             <NappletSourceButton event={event} />
             <EventZapButton event={event} showEventPreview={false} variant="outline" />
-            {installed ? (
-              <Button variant="outline" onClick={() => uninstallNapplet(address)}>
-                Uninstall
-              </Button>
-            ) : (
-              <Button variant="outline" isDisabled={!naddr} onClick={install.onOpen}>
-                Install
-              </Button>
-            )}
           </ButtonGroup>
         </Flex>
 
@@ -208,8 +190,8 @@ function NappletStoreDetailPage({ event, address }: { event: NostrEvent; address
             <Tab>Details</Tab>
             <Tab>Comments</Tab>
             <Tab>Advanced</Tab>
-            {installed && hasPermissions && <Tab>Permissions</Tab>}
-            {installed && <Tab>Storage</Tab>}
+            {hasPermissions && <Tab>Permissions</Tab>}
+            <Tab>Storage</Tab>
           </TabList>
           <TabPanels>
             <TabPanel px="0">
@@ -276,20 +258,17 @@ function NappletStoreDetailPage({ event, address }: { event: NostrEvent; address
             <TabPanel px="0">
               <NappletDetailAdvanced event={event} />
             </TabPanel>
-            {installed && hasPermissions && (
+            {hasPermissions && (
               <TabPanel px="0">
                 <NappletDetailPermissions event={event} />
               </TabPanel>
             )}
-            {installed && (
-              <TabPanel px="0">
-                <NappletDetailStorage event={event} />
-              </TabPanel>
-            )}
+            <TabPanel px="0">
+              <NappletDetailStorage event={event} />
+            </TabPanel>
           </TabPanels>
         </Tabs>
       </Flex>
-      {naddr && install.isOpen && <NappletInstallModal event={event} isOpen onClose={install.onClose} />}
     </SimpleView>
   );
 }

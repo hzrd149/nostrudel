@@ -9,7 +9,7 @@ import SimpleView from "../../components/layout/presets/simple-view";
 import {
   getNappletEventPointer,
   getNappletNaddr,
-  getNappletInstallAddress,
+  getNappletAddress,
   isNappletManifestKind,
   parseNappletPointer,
 } from "../../helpers/nostr/napplets";
@@ -34,7 +34,7 @@ export function NappletRouteLoader({ address, pointer }: { address: string; poin
       <SimpleView title="Napplet">
         <Alert status="warning">
           <AlertIcon />
-          <AlertDescription>{pointer.type} pointers cannot reference an installed napplet.</AlertDescription>
+          <AlertDescription>{pointer.type} pointers cannot reference a napplet.</AlertDescription>
         </Alert>
       </SimpleView>
     );
@@ -59,14 +59,12 @@ export function NappletRouteLoader({ address, pointer }: { address: string; poin
       </SimpleView>
     );
 
-  if (!getNappletInstallAddress(event))
+  if (!getNappletAddress(event))
     return (
       <SimpleView title="Napplet">
         <Alert status="warning">
           <AlertIcon />
-          <AlertDescription>
-            This napplet manifest cannot be installed because it does not have a naddr.
-          </AlertDescription>
+          <AlertDescription>This napplet manifest does not have a valid address.</AlertDescription>
         </Alert>
       </SimpleView>
     );

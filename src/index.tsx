@@ -10,7 +10,6 @@ import "./services/debug-api";
 import "./services/decryption-cache";
 import "./services/pending-unlock-mutes";
 import "./services/pending-unlock-cache";
-import "./services/napplet-sync";
 import "./services/handler-preferences";
 import "./services/relay-monitor-sync";
 import "./services/lifecycle";

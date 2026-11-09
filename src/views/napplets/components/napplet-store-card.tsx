@@ -1,4 +1,4 @@
-import { Badge, Box, Flex, LinkBox, LinkBoxProps, LinkOverlay, Text } from "@chakra-ui/react";
+import { Box, Flex, LinkBox, LinkBoxProps, LinkOverlay, Text } from "@chakra-ui/react";
 import { NostrEvent } from "nostr-tools";
 import { memo, type ReactNode } from "react";
 import { Link as RouterLink } from "react-router-dom";
@@ -26,13 +26,11 @@ function EngagementStat({ icon, value }: { icon: ReactNode; value: string }) {
 
 const NappletStoreCard = memo(function NappletStoreCard({
   event,
-  installed,
   engagement,
   showAuthor = true,
   ...props
 }: {
   event: NostrEvent;
-  installed: boolean;
   engagement?: NappletEngagement;
   showAuthor?: boolean;
 } & Omit<LinkBoxProps, "children">) {
@@ -59,7 +57,6 @@ const NappletStoreCard = memo(function NappletStoreCard({
           <LinkOverlay as={RouterLink} to={`/app/store/${address}`} fontWeight="bold" isTruncated>
             {getNappletTitle(event)}
           </LinkOverlay>
-          {installed && <Badge colorScheme="primary">Installed</Badge>}
         </Flex>
         {(showAuthor || hasEngagement) && (
           <Flex gap="3" color="GrayText" alignItems="center" minW="0">

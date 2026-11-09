@@ -9,7 +9,6 @@ import {
   Flex,
   Input,
   Link,
-  Select,
   Text,
 } from "@chakra-ui/react";
 import { use$ } from "applesauce-react/hooks";
@@ -28,7 +27,6 @@ import {
 import { getNappletTitle } from "../../../helpers/nostr/napplets";
 import { useAppTitle } from "../../../hooks/use-app-title";
 import useAsyncAction from "../../../hooks/use-async-action";
-import useInstalledNapplets, { useIntentHandlerPreferences } from "../../../hooks/use-installed-napplets";
 import {
   handlerManifests$,
   handlerPreferences$,
@@ -37,28 +35,33 @@ import {
   refreshHandlerPreferences,
   saveHandlerEntry,
   unlockHandlerPreference,
+  localHandlerPreferences$,
+  setLocalHandlerPreference,
 } from "../../../services/handler-preferences";
 
-function LegacyPreference({ archetype, address }: { archetype: string; address: string }) {
-  const installed = useInstalledNapplets();
+function LocalPreference({ scope, reference }: { scope: string; reference: string }) {
+  const manifests = use$(handlerManifests$);
+  const event = manifests.get(reference);
   const migrate = useAsyncAction(async () => {
-    const reference = handlerReference(address);
-    if (!reference) throw new Error("Invalid legacy handler reference");
-    await saveHandlerEntry(archetype, { reference, private: true });
-  }, [archetype, address]);
+    const convention = scope.startsWith("napplet:") ? scope : undefined;
+    const archetype = convention ? scope.slice(8).split("/")[0] : scope;
+    await saveHandlerEntry(archetype, { reference, convention, private: true });
+    setLocalHandlerPreference(scope);
+  }, [scope, reference]);
   return (
     <Flex gap="3" align="center" wrap="wrap">
       <Text flex="1">
-        {archetype} · {installed.find((app) => app.address === address)?.title ?? address}
+        {scope} · {event ? getNappletTitle(event) : reference}
       </Text>
       <Button onClick={migrate.run} isLoading={migrate.loading}>
         Sync as private preference
       </Button>
+      <Button onClick={() => setLocalHandlerPreference(scope)}>Remove</Button>
     </Flex>
   );
 }
 
-function HandlerRow({ archetype, entry, installed }: { archetype: string; entry: HandlerEntry; installed: boolean }) {
+function HandlerRow({ archetype, entry }: { archetype: string; entry: HandlerEntry }) {
   const manifests = use$(handlerManifests$);
   const event = manifests.get(entry.reference);
   const address = handlerAddress(entry.reference);
@@ -74,19 +77,14 @@ function HandlerRow({ archetype, entry, installed }: { archetype: string; entry:
         <Link as={RouterLink} to={`/napplets/${address}`} fontWeight="semibold" overflowWrap="anywhere">
           {event ? getNappletTitle(event) : entry.reference}
         </Link>
-        <Text>
-          {installed ? "Installed" : "Not installed"}
-          {!entry.reference.includes(":") ? " · Pinned snapshot" : ""}
-        </Text>
+        {!entry.reference.includes(":") && <Text>Pinned snapshot</Text>}
       </Flex>
       <Button onClick={visibility.run} isLoading={visibility.loading}>
         {entry.private ? "Private" : "Public"}
       </Button>
-      {!installed && (
-        <Button as={RouterLink} to={`/napplets/${address}`}>
-          View app
-        </Button>
-      )}
+      <Button as={RouterLink} to={`/app/${address}`}>
+        Open
+      </Button>
       <Button onClick={remove.run} isLoading={remove.loading}>
         Remove
       </Button>
@@ -95,7 +93,6 @@ function HandlerRow({ archetype, entry, installed }: { archetype: string; entry:
 }
 
 function AddHandler() {
-  const installed = useInstalledNapplets();
   const [archetype, setArchetype] = useState("");
   const [convention, setConvention] = useState("");
   const [reference, setReference] = useState("");
@@ -124,19 +121,6 @@ function AddHandler() {
         onChange={(e) => setConvention(e.target.value)}
         width="auto"
       />
-      <Select
-        aria-label="Installed handler"
-        placeholder="Choose installed app"
-        value=""
-        width="auto"
-        onChange={(e) => setReference(e.target.value)}
-      >
-        {installed.map((app) => (
-          <option key={app.address} value={app.address}>
-            {app.title}
-          </option>
-        ))}
-      </Select>
       <Input
         aria-label="Handler reference"
         placeholder="Manifest coordinate or snapshot id"
@@ -155,7 +139,6 @@ function AddHandler() {
 
 function ArchetypePreferences({ archetype }: { archetype: string }) {
   const preferences = use$(handlerPreferences$);
-  const installed = useInstalledNapplets();
   const preference = preferences.get(archetype)!;
   const entries = handlerEntries(preference);
   const scopes = [...new Set(entries.map((entry) => entry.convention ?? ""))];
@@ -185,7 +168,6 @@ function ArchetypePreferences({ archetype }: { archetype: string }) {
                     key={`${entry.reference}:${entry.private}:${index}`}
                     archetype={archetype}
                     entry={entry}
-                    installed={installed.some((app) => handlerReference(app.address) === entry.reference)}
                   />
                 ))}
             </Flex>
@@ -201,8 +183,8 @@ export default function DefaultAppsSettings() {
   const preferences = use$(handlerPreferences$);
   const loading = use$(handlerPreferencesLoading$);
   const error = use$(handlerPreferencesError$);
-  const legacy = useIntentHandlerPreferences();
-  const legacyEntries = Object.entries(legacy).filter(([archetype]) => !preferences.has(archetype));
+  const local = use$(localHandlerPreferences$);
+  const localEntries = Object.entries(local);
   const archetypes = [...preferences]
     .filter(([, preference]) => preference.locked || handlerEntries(preference).length)
     .map(([archetype]) => archetype)
@@ -221,12 +203,12 @@ export default function DefaultAppsSettings() {
           <ArchetypePreferences key={archetype} archetype={archetype} />
         ))}
       </Accordion>
-      {!archetypes.length && !legacyEntries.length && !loading && <Text>No saved handler preferences.</Text>}
-      {!!legacyEntries.length && (
+      {!archetypes.length && !localEntries.length && !loading && <Text>No saved handler preferences.</Text>}
+      {!!localEntries.length && (
         <Flex direction="column" gap="3">
-          <Text fontWeight="semibold">Legacy defaults</Text>
-          {legacyEntries.map(([archetype, address]) => (
-            <LegacyPreference key={archetype} archetype={archetype} address={address} />
+          <Text fontWeight="semibold">Device preferences</Text>
+          {localEntries.map(([scope, reference]) => (
+            <LocalPreference key={scope} scope={scope} reference={reference} />
           ))}
         </Flex>
       )}

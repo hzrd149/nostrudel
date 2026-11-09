@@ -43,6 +43,7 @@ beforeEach(async () => {
     getItem: (key: string) => storage.get(key) ?? null,
     setItem: (key: string, value: string) => storage.set(key, value),
   });
+  vi.stubGlobal("window", { addEventListener: () => {} });
   account = {
     pubkey,
     signEvent: vi.fn(async (template: EventTemplate) => finalizeEvent(template, key)),
@@ -68,6 +69,60 @@ async function connect() {
 }
 
 describe("handler preference sync", () => {
+  it("preserves explicit legacy defaults without importing installed apps", async () => {
+    storage.set(`nostrudel:napplet:intent-handlers:${pubkey}`, JSON.stringify({ profile: ref }));
+    storage.set(`nostrudel:napplet:installed:${pubkey}`, JSON.stringify([{ address: `35129:${pubkey}:unused` }]));
+    await connect();
+    expect(service.localHandlerPreferences$.value).toEqual({ profile: ref });
+    service.setLocalHandlerPreference("profile");
+    active$.next(undefined);
+    await connect();
+    expect(service.localHandlerPreferences$.value).toEqual({});
+  });
+
+  it("keeps device choices isolated across accounts", async () => {
+    service.setLocalHandlerPreference("napplet:profile/open", ref);
+    await connect();
+    expect(service.localHandlerPreferences$.value).toEqual({});
+    active$.next(undefined);
+    expect(service.localHandlerPreferences$.value).toEqual({ "napplet:profile/open": ref });
+  });
+
+  it("unlocks private preferences before resolving an intent", async () => {
+    events = [event([], "ciphertext")];
+    await connect();
+    await service.prepareHandlerPreferences("profile");
+    expect(account.nip44.decrypt).toHaveBeenCalledWith(pubkey, "ciphertext");
+    expect(service.handlerPreferences$.value.get("profile")?.locked).toBe(false);
+  });
+
+  it("replaces only the selected intent scope when discovery remembers a choice", async () => {
+    const next = `35129:${pubkey}:next`;
+    events = [
+      event([
+        ["extension", "keep"],
+        ["a", ref],
+        ["i", "napplet:profile/open", ref],
+        ["i", "napplet:profile/edit", ref],
+      ]),
+    ];
+    await connect();
+    await service.saveHandlerEntry(
+      "profile",
+      { reference: next, convention: "napplet:profile/open", private: true },
+      false,
+      true,
+    );
+    const saved = service.handlerPreferences$.value.get("profile")!;
+    expect(saved.event.tags).toEqual([
+      ["d", "profile"],
+      ["extension", "keep"],
+      ["a", ref],
+      ["i", "napplet:profile/edit", ref],
+    ]);
+    expect(saved.privateTags).toEqual([["i", "napplet:profile/open", next]]);
+  });
+
   it("tries same-event hints before the author's write relays and shell relays", async () => {
     events = [
       event([
@@ -84,7 +139,7 @@ describe("handler preference sync", () => {
     ]);
   });
 
-  it("accepts only verified events authored by the user and keeps uninstalled references", async () => {
+  it("accepts only verified events authored by the user and keeps unresolved references", async () => {
     const other = finalizeEvent(
       { kind: 31129, created_at: 10, tags: [["d", "chat"]], content: "" },
       new Uint8Array(32).fill(4),

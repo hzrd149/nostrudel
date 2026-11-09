@@ -36,8 +36,8 @@ export const internalApps: App[] = [
   { title: "Notes", description: "Short text posts from your friends", icon: NotesIcon, id: "notes", to: "/notes" },
   { title: "Feeds", description: "Discover new feeds", icon: PuzzlePiece01, id: "feeds", to: "/feeds" },
   {
-    title: "Store",
-    description: "Discover and manage NIP-5D apps",
+    title: "Discover napplets",
+    description: "Discover NIP-5D napplets",
     icon: PuzzlePiece01,
     id: "napplets",
     to: "/app/store",

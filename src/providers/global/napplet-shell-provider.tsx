@@ -1,5 +1,5 @@
 import { useToast } from "@chakra-ui/react";
-import type { IntentCandidate } from "@kehto/services";
+import type { IntentRequest } from "@kehto/services";
 import {
   buildShellCapabilities,
   createShellBridge,
@@ -14,13 +14,16 @@ import { createContext, PropsWithChildren, useCallback, useContext, useEffect, u
 
 import { getNappletWebrtcIdentity } from "../../helpers/nostr/napplet-webrtc";
 import NappletConsentModal from "../../components/napplets/consent-modal";
-import NappletIntentChoiceModal from "../../components/napplets/intent-choice-modal";
 import { unique } from "../../helpers/array";
 import { DEFAULT_APP_SETTINGS } from "../../helpers/app-settings";
 import { AppSettingsQuery, BlossomServersQuery } from "../../models";
 import accounts from "../../services/accounts";
-import { installedNapplets$, intentHandlerPreferences$ } from "../../services/installed-napplets";
-import { handlerPreferences$, handlerManifests$ } from "../../services/handler-preference-state";
+import {
+  handlerPreferences$,
+  handlerManifests$,
+  localHandlerPreferences$,
+} from "../../services/handler-preference-state";
+import { prepareHandlerPreferences } from "../../services/handler-preferences";
 import { getNappletIdentity, getUnsupportedNappletRequirements } from "../../helpers/nostr/napplets";
 import { loadNostrResource } from "../../services/napplet-shell/resource-nostr";
 import { createAdapter } from "../../services/napplet-shell/adapter";
@@ -61,12 +64,13 @@ type ConsentRequest = {
 };
 
 type IntentChoiceRequest = {
-  archetype: string;
-  candidates: readonly IntentCandidate[];
+  request: IntentRequest;
   resolve: (catalogId?: string) => void;
 };
 
 type NappletShellContextValue = {
+  intentChoice: IntentChoiceRequest | undefined;
+  respondIntentChoice: (catalogId?: string) => void;
   bridge: ShellBridge;
   /** Shell capability set computed from the adapter via buildShellCapabilities. */
   capabilities: ShellCapabilities;
@@ -109,6 +113,19 @@ export function NappletShellProvider({ children }: PropsWithChildren) {
   uploadRef.current = upload;
   const [consent, setConsent] = useState<ConsentRequest>();
   const [intentChoice, setIntentChoice] = useState<IntentChoiceRequest>();
+  const intentChoiceRef = useRef<IntentChoiceRequest>();
+  const respondIntentChoice = useCallback((catalogId?: string) => {
+    intentChoiceRef.current?.resolve(catalogId);
+    intentChoiceRef.current = undefined;
+    setIntentChoice(undefined);
+  }, []);
+  useEffect(() => {
+    respondIntentChoice();
+    return () => {
+      intentChoiceRef.current?.resolve(undefined);
+      intentChoiceRef.current = undefined;
+    };
+  }, [account, respondIntentChoice]);
   const permissionControllerRef = useRef<ReturnType<typeof createPermissionController>>();
   const permissionGateRef = useRef<ReturnType<typeof createPermissionGate>>();
   const frameCallbacks = useRef(new Map<string, { onReady: () => void; onRevoked: () => void }>());
@@ -140,15 +157,18 @@ export function NappletShellProvider({ children }: PropsWithChildren) {
     () =>
       createNappletIntentService({
         // Only one chooser at a time; a request made while one is open is cancelled
-        chooseHandler: (archetype, candidates) =>
-          new Promise((resolve) =>
-            setIntentChoice((current) => {
-              if (!current) return { archetype, candidates, resolve };
+        chooseHandler: (request) =>
+          new Promise((resolve) => {
+            if (intentChoiceRef.current) {
               resolve(undefined);
-              return current;
-            }),
-          ),
+              return;
+            }
+            const choice = { request, resolve };
+            intentChoiceRef.current = choice;
+            setIntentChoice(choice);
+          }),
         resolveSender: (windowId) => frameCatalogIds.get(windowId),
+        prepare: prepareHandlerPreferences,
         isHandlerAllowed: (manifest) =>
           getUnsupportedNappletRequirements(manifest).length === 0 &&
           getNappletPermissions(manifest).every(
@@ -162,14 +182,18 @@ export function NappletShellProvider({ children }: PropsWithChildren) {
   useEffect(() => {
     let archetypes = new Set<string>();
     const notify = () => {
-      const next = new Set(installedNapplets$.value.flatMap((napplet) => napplet.archetypes.map((a) => a.name)));
+      const next = new Set([
+        ...handlerPreferences$.value.keys(),
+        ...Object.keys(localHandlerPreferences$.value).map((scope) =>
+          scope.startsWith("napplet:") ? scope.slice(8).split("/")[0] : scope,
+        ),
+      ]);
       for (const archetype of new Set([...archetypes, ...next])) intent.resolver.notifyChanged(archetype);
       archetypes = next;
     };
 
     const subs = [
-      installedNapplets$.subscribe(notify),
-      intentHandlerPreferences$.subscribe(notify),
+      localHandlerPreferences$.subscribe(notify),
       handlerPreferences$.subscribe(notify),
       handlerManifests$.subscribe(notify),
     ];
@@ -332,8 +356,8 @@ export function NappletShellProvider({ children }: PropsWithChildren) {
   );
 
   const context = useMemo(
-    () => ({ bridge, capabilities, requestConsent, registerFrame, unregisterFrame }),
-    [bridge, capabilities, requestConsent, registerFrame, unregisterFrame],
+    () => ({ bridge, capabilities, requestConsent, registerFrame, unregisterFrame, intentChoice, respondIntentChoice }),
+    [bridge, capabilities, requestConsent, registerFrame, unregisterFrame, intentChoice, respondIntentChoice],
   );
 
   const respond = useCallback(
@@ -354,21 +378,11 @@ export function NappletShellProvider({ children }: PropsWithChildren) {
     [bridge, consent],
   );
 
-  const respondIntentChoice = useCallback(
-    (catalogId?: string) => {
-      if (!intentChoice) return;
-      intentChoice.resolve(catalogId);
-      setIntentChoice(undefined);
-    },
-    [intentChoice],
-  );
-
   return (
     <NappletShellContext.Provider value={context}>
       {children}
       <NappletRuntimeConsentModal prompt={runtimeConsent} onRespond={(answer) => runtimeConsent?.resolve(answer)} />
       <NappletConsentModal consent={consent} onRespond={respond} />
-      <NappletIntentChoiceModal intentChoice={intentChoice} onRespond={respondIntentChoice} />
     </NappletShellContext.Provider>
   );
 }

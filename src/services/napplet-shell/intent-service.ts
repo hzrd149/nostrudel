@@ -1,138 +1,89 @@
 import {
   createCatalogIntentResolver,
   createIntentService,
-  manifestToIntentCatalogEntry,
   type IntentCandidate,
-  type IntentCatalogEntry,
-  type IntentHandlerHint,
   type CatalogIntentResolver,
   type IntentRequest,
 } from "@kehto/services";
 import type { NostrEvent } from "nostr-tools";
 
-import { getNappletAddressCatalogId, getNappletCatalogId, getNappletArchetypes } from "../../helpers/nostr/napplets";
-import { getDefaultIntentHandler, getInstalledNapplets, type InstalledNapplet } from "../installed-napplets";
+import { getNappletCatalogId } from "../../helpers/nostr/napplets";
+import { isHandlerConvention } from "../../helpers/nostr/handler-preferences";
 import { acceptIntent } from "../napplet-intent-targets";
-import { handlerPreferences$, handlerManifests$ } from "../handler-preference-state";
-import { handlerReference, preferredHandlerReferences } from "../../helpers/nostr/handler-preferences";
+import { handlerManifests$, handlerPreferences$, localHandlerPreferences$ } from "../handler-preference-state";
+import {
+  isNappletHandlerAllowed,
+  nappletCatalogEntry,
+  preferredNappletHandlers,
+  supportsNappletIntent,
+} from "../napplet-handlers";
 
-/** Asks the user to pick one of the compatible handlers; resolves to its catalog id, or undefined when cancelled */
+/** Discovery may return a newly loaded manifest, without a prior catalog entry. */
 export type IntentHandlerChooser = (
-  archetype: string,
+  request: IntentRequest,
   candidates: readonly IntentCandidate[],
 ) => Promise<string | undefined>;
-
-function toCatalogEntry(napplet: InstalledNapplet): IntentCatalogEntry[] {
-  const catalogId = getNappletAddressCatalogId(napplet.address);
-  if (!catalogId) return [];
-
-  return [
-    manifestToIntentCatalogEntry({
-      catalogId,
-      title: napplet.title,
-      archetypes: napplet.archetypes.flatMap((archetype) =>
-        archetype.contracts.map(({ convention, params }) => ({ slug: archetype.name, convention, params })),
-      ),
-    }),
-  ];
-}
-
-/** Maps a `35129:<pubkey>:<d>` handler hint to the catalog id it would have once installed */
-function hintCatalogId(hint: IntentHandlerHint) {
-  const [kind, pubkey, ...identifier] = hint.address.split(":");
-  try {
-    return getNappletCatalogId({ id: "", kind: Number(kind), pubkey, tags: [["d", identifier.join(":")]] });
-  } catch {
-    return undefined;
-  }
-}
 
 export function createNappletIntentService(options: {
   chooseHandler: IntentHandlerChooser;
   resolveSender: (windowId: string) => string | undefined;
   isHandlerAllowed?: (manifest: NostrEvent) => boolean;
+  prepare?: (archetype: string) => Promise<void>;
 }) {
-  const baseOptions = {
-    loadCatalog: () => getInstalledNapplets().flatMap(toCatalogEntry),
+  const allowed = options.isHandlerAllowed ?? isNappletHandlerAllowed;
+  const base = createCatalogIntentResolver({
+    loadCatalog: () => [...handlerManifests$.value.values()].filter(allowed).map(nappletCatalogEntry),
     targets: { accept: acceptIntent },
-    getDefaultHandler: (archetype: string) => {
-      if (handlerPreferences$.value.has(archetype)) return undefined;
-      const handler = getDefaultIntentHandler(archetype);
-      return handler && getNappletAddressCatalogId(handler.address);
-    },
-    chooseHandler: (archetype: string, candidates: readonly IntentCandidate[]) =>
-      options.chooseHandler(archetype, candidates),
-    // A napplet may only address a specific handler the user picked as default or confirms now
-    authorizeExplicitHandler: async (
-      _sender: string,
-      handler: string,
-      request: IntentRequest,
-      candidate: IntentCandidate,
-    ) => candidate.isDefault || (await options.chooseHandler(request.archetype, [candidate])) === handler,
-    resolveHandlerHint: (hint: IntentHandlerHint, candidates: readonly IntentCandidate[]) => {
-      const id = hintCatalogId(hint);
-      return candidates.find((candidate) => candidate.id === id)?.id;
-    },
-  };
-  const base = createCatalogIntentResolver(baseOptions);
-  // One resolver per invocation keeps concurrent intents from sharing mutable scope.
+  });
   const resolver: CatalogIntentResolver = {
     ...base,
-    invoke: (request, context) => {
-      const preference = handlerPreferences$.value.get(request.archetype);
-      if (!preference || request.handler) return base.invoke(request, context);
-      const installed = getInstalledNapplets();
-      const manifests = handlerManifests$.value;
-      const compatible = installed.filter((app) => {
-        const reference = handlerReference(app.address);
-        const manifest = reference && manifests.get(reference);
-        return (
-          manifest &&
-          (!options.isHandlerAllowed || options.isHandlerAllowed(manifest)) &&
-          getNappletArchetypes(manifest).some(
-            (role) =>
-              role.name === request.archetype &&
-              role.contracts.some((contract) => contract.convention === request.convention),
-          )
+    invoke: async (request, context) => {
+      if (
+        !isHandlerConvention(request.convention, request.archetype) ||
+        request.convention !== `napplet:${request.archetype}/${request.action}`
+      )
+        return { ok: false, error: "invalid convention" };
+      if (!context.sender) return { ok: false, error: "invoke rejected" };
+      await options.prepare?.(request.archetype);
+      const preferred = preferredNappletHandlers(request.archetype, request.convention, allowed);
+      const explicit =
+        request.handler && request.handler !== "default" && request.handler !== "choose" ? request.handler : undefined;
+      let selected =
+        request.handler !== "choose" &&
+        preferred.length === 1 &&
+        (!explicit || getNappletCatalogId(preferred[0]) === explicit)
+          ? preferred[0]
+          : undefined;
+      if (!selected) {
+        const candidates = (await base.available(request.archetype)).candidates.filter(
+          (candidate) => candidate.conventions.includes(request.convention) && (!explicit || candidate.id === explicit),
         );
-      });
-      const references = preferredHandlerReferences(preference, request.convention, (reference) =>
-        compatible.some((app) => handlerReference(app.address) === reference),
-      );
-      const candidates = references.length
-        ? installed.filter((app) => references.includes(handlerReference(app.address) ?? ""))
-        : installed;
+        const id = await options.chooseHandler(request, candidates);
+        if (!id) return { ok: false, error: "user cancelled" };
+        if (explicit && id !== explicit) return { ok: false, error: "invoke rejected" };
+        selected = [...handlerManifests$.value.values()].find((event) => getNappletCatalogId(event) === id);
+      }
+      if (!selected || !allowed(selected) || !supportsNappletIntent(selected, request.archetype, request.convention))
+        return { ok: false, error: "invoke rejected" };
+      const manifest = selected;
+      const preferences = handlerPreferences$.value;
+      const local = localHandlerPreferences$.value;
       return createCatalogIntentResolver({
-        ...baseOptions,
+        loadCatalog: () => [nappletCatalogEntry(manifest)],
         targets: {
           accept: (params) => {
-            const app = getInstalledNapplets().find(
-              (item) => getNappletAddressCatalogId(item.address) === params.handler,
-            );
-            const reference = app && handlerReference(app.address);
-            const manifest = reference ? handlerManifests$.value.get(reference) : undefined;
             if (
-              handlerPreferences$.value.get(request.archetype) !== preference ||
-              !app ||
-              (reference && manifest?.id !== manifests.get(reference)?.id) ||
-              (manifest && options.isHandlerAllowed && !options.isHandlerAllowed(manifest))
+              preferences !== handlerPreferences$.value ||
+              local !== localHandlerPreferences$.value ||
+              !allowed(manifest) ||
+              ![...handlerManifests$.value.values()].some((event) => event.id === manifest.id)
             )
               throw new Error("Handler preferences or permissions changed");
             return acceptIntent(params);
           },
         },
-        loadCatalog: () =>
-          candidates.flatMap((app) => {
-            const manifest = manifests.get(handlerReference(app.address) ?? "");
-            return toCatalogEntry(manifest ? { ...app, archetypes: getNappletArchetypes(manifest) } : app);
-          }),
-        getDefaultHandler: () => undefined,
-      }).invoke(request, context);
+      }).invoke({ ...request, handler: "default", handlerHint: undefined }, context);
     },
   };
-
-  return {
-    resolver,
-    service: createIntentService({ resolver, resolveSender: options.resolveSender }),
-  };
+  return { resolver, service: createIntentService({ resolver, resolveSender: options.resolveSender }) };
 }

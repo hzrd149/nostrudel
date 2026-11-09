@@ -7,20 +7,20 @@ import {
   editHandlerEntry,
   handlerEntries,
   handlerPointer,
+  handlerReference,
   isHandlerConvention,
   HANDLER_PREFERENCES_KIND,
   type HandlerEntry,
-  type HandlerPreference,
 } from "../helpers/nostr/handler-preferences";
 import { validateNappletManifest } from "../helpers/nostr/napplets";
 import accounts from "./accounts";
 import { eventStore } from "./event-store";
-import { handlerPreferences$, handlerManifests$ } from "./handler-preference-state";
+import { handlerPreferences$, handlerManifests$, localHandlerPreferences$ } from "./handler-preference-state";
 import { profileLoader } from "./loaders";
 import { getReadRelays } from "./napplet-shell/relay-tiers";
 import pool from "./pool";
 
-export { handlerPreferences$, handlerManifests$ };
+export { handlerPreferences$, handlerManifests$, localHandlerPreferences$ };
 export const handlerPreferencesLoading$ = new BehaviorSubject(false);
 export const handlerPreferencesError$ = new BehaviorSubject<string | undefined>(undefined);
 const log = logger.extend("HandlerPreferences");
@@ -29,6 +29,7 @@ let generation = 0;
 let pending: Promise<void> | undefined;
 let synced = false;
 let saving = false;
+let localManifestsPending: Promise<void> = Promise.resolve();
 const cacheKey = (pubkey: string) => `nostrudel:handler-preferences:${pubkey}`;
 
 function verifyFresh(event: NostrEvent) {
@@ -84,13 +85,16 @@ function accept(event: NostrEvent, pubkey: string) {
   );
 }
 
-/** Metadata resolution never installs or grants capabilities to a referenced napplet. */
+/** Metadata resolution never grants capabilities to a referenced napplet. */
 export async function loadHandlerManifests() {
   const version = generation;
   const sources = new Map<string, HandlerEntry[]>();
   for (const preference of handlerPreferences$.value.values()) {
     const entries = handlerEntries(preference);
     for (const entry of entries) if (!sources.has(entry.reference)) sources.set(entry.reference, entries);
+  }
+  for (const reference of Object.values(localHandlerPreferences$.value)) {
+    if (!sources.has(reference)) sources.set(reference, [{ reference, private: true }]);
   }
   await Promise.all(
     [...sources]
@@ -201,17 +205,28 @@ export async function unlockHandlerPreference(archetype: string) {
   await loadHandlerManifests();
 }
 
-export async function saveHandlerEntry(archetype: string, entry: HandlerEntry, remove = false) {
+/** Resolve saved choices before deciding whether discovery is needed. */
+export async function prepareHandlerPreferences(archetype: string) {
+  const version = generation;
+  await localManifestsPending;
+  if (pending) await pending;
+  else if (owner && !synced) await refreshHandlerPreferences();
+  if (version !== generation) throw new Error("Account changed while loading preferences");
+  await unlockHandlerPreference(archetype);
+  if (version !== generation) throw new Error("Account changed while loading preferences");
+}
+
+export async function saveHandlerEntry(archetype: string, entry: HandlerEntry, remove = false, replaceScope = false) {
   if (saving) throw new Error("Another handler preference is being saved");
   saving = true;
   try {
-    await applyHandlerEntry(archetype, entry, remove);
+    await applyHandlerEntry(archetype, entry, remove, replaceScope);
   } finally {
     saving = false;
   }
 }
 
-async function applyHandlerEntry(archetype: string, entry: HandlerEntry, remove: boolean) {
+async function applyHandlerEntry(archetype: string, entry: HandlerEntry, remove: boolean, replaceScope: boolean) {
   if (
     !isHandlerConvention(`napplet:${archetype}/open`, archetype) ||
     (entry.convention && !isHandlerConvention(entry.convention, archetype))
@@ -226,7 +241,14 @@ async function applyHandlerEntry(archetype: string, entry: HandlerEntry, remove:
   await unlockHandlerPreference(archetype);
   const previous = handlerPreferences$.value.get(archetype);
   const empty = { event: { tags: [["d", archetype]] } as NostrEvent, privateTags: [], locked: false };
-  const [tags, hidden] = editHandlerEntry(previous ?? empty, entry, remove);
+  let editable = previous ?? empty;
+  if (replaceScope) {
+    for (const old of handlerEntries(editable).filter((value) => value.convention === entry.convention)) {
+      const [tags, privateTags] = editHandlerEntry(editable, old, true);
+      editable = { ...editable, event: { ...editable.event, tags }, privateTags };
+    }
+  }
+  const [tags, hidden] = editHandlerEntry(editable, entry, remove);
   if (!handlerPointer(entry.reference)) throw new Error("Invalid handler reference");
   if (hidden.length && !account.nip44) throw new Error("NIP-44 encryption is required");
   const content = hidden.length ? await account.nip44!.encrypt(account.pubkey, JSON.stringify(hidden)) : "";
@@ -263,8 +285,38 @@ async function applyHandlerEntry(archetype: string, entry: HandlerEntry, remove:
   await loadHandlerManifests();
 }
 
+const localKey = () => `nostrudel:napplet:preferences${owner ? `:${owner}` : ""}`;
+
+function readLocalPreferences() {
+  try {
+    const stored = localStorage.getItem(localKey());
+    // Preserve only explicit old defaults. The former installed list is never imported.
+    const values = JSON.parse(
+      stored ?? localStorage.getItem(`nostrudel:napplet:intent-handlers${owner ? `:${owner}` : ""}`) ?? "{}",
+    );
+    const entries = Object.entries(values).flatMap(([scope, address]) => {
+      const reference = typeof address === "string" && handlerReference(address);
+      return reference && handlerPointer(reference) ? [[scope, reference]] : [];
+    });
+    localHandlerPreferences$.next(Object.fromEntries(entries));
+  } catch (error) {
+    log("Could not read local handler preferences", error);
+    localHandlerPreferences$.next({});
+  }
+}
+
+export function setLocalHandlerPreference(scope: string, reference?: string) {
+  const next = { ...localHandlerPreferences$.value };
+  if (reference) next[scope] = reference;
+  else delete next[scope];
+  localStorage.setItem(localKey(), JSON.stringify(next));
+  localHandlerPreferences$.next(next);
+}
+
+let initialized = false;
 accounts.active$.subscribe((account) => {
-  if (owner === account?.pubkey) return;
+  if (initialized && owner === account?.pubkey) return;
+  initialized = true;
   owner = account?.pubkey;
   generation++;
   pending = undefined;
@@ -273,6 +325,8 @@ accounts.active$.subscribe((account) => {
   handlerPreferencesError$.next(undefined);
   handlerPreferences$.next(new Map());
   handlerManifests$.next(new Map());
+  readLocalPreferences();
+  localManifestsPending = loadHandlerManifests().catch((error) => log("Could not load local handlers", error));
   if (owner) {
     try {
       const cached: unknown = JSON.parse(localStorage.getItem(cacheKey(owner)) ?? "[]");
@@ -282,4 +336,10 @@ accounts.active$.subscribe((account) => {
     }
     void refreshHandlerPreferences().catch((error) => log("Could not load preferences", error));
   }
+});
+
+window.addEventListener("storage", (event) => {
+  if (event.key !== localKey() && event.key !== null) return;
+  readLocalPreferences();
+  localManifestsPending = loadHandlerManifests().catch((error) => log("Could not load local handlers", error));
 });
