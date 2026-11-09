@@ -35,7 +35,7 @@ import InsertReactionButton from "../../../../components/reactions/insert-reacti
 import RelayFavicon from "../../../../components/relay/relay-favicon";
 import RelayLink from "../../../../components/relay/relay-link";
 import RouterLink from "../../../../components/router-link";
-import UserName from "../../../../components/user/user-name";
+import InboxDisclosure from "../../components/inbox-disclosure";
 import useMessageDraft from "../../../../hooks/use-message-draft";
 import useTextAreaUploadFile, { useTextAreaInsertTextWithForm } from "../../../../hooks/use-textarea-upload-file";
 import { useUserInbox } from "../../../../hooks/use-user-mailboxes";
@@ -53,20 +53,9 @@ function RelayItem({ relay }: { relay: string }) {
   );
 }
 
-function RelayListSection({
-  label,
-  relays,
-  emptyState,
-}: {
-  label: ReactNode;
-  relays: string[];
-  emptyState: ReactNode;
-}) {
+function RelayListSection({ label, relays, emptyState }: { label: string; relays: string[]; emptyState: ReactNode }) {
   return (
-    <Box>
-      <Text fontSize="sm" fontWeight="semibold" mb={1}>
-        {label}
-      </Text>
+    <InboxDisclosure label={label}>
       {relays.length > 0 ? (
         <VStack spacing={1} align="stretch" pl={2}>
           {relays.map((relay) => (
@@ -76,7 +65,7 @@ function RelayListSection({
       ) : (
         emptyState
       )}
-    </Box>
+    </InboxDisclosure>
   );
 }
 
@@ -168,7 +157,7 @@ export function MessageTypeToggleButton({
 
                     <VStack spacing={3} align="stretch">
                       <RelayListSection
-                        label="Your inboxes:"
+                        label="Your inboxes"
                         relays={nip17RelaysToShow.self}
                         emptyState={
                           <Alert status="warning" size="sm">
@@ -184,12 +173,7 @@ export function MessageTypeToggleButton({
                       />
 
                       <RelayListSection
-                        label={
-                          <>
-                            <UserName pubkey={pubkey} />
-                            's inboxes:
-                          </>
-                        }
+                        label="Their inboxes"
                         relays={nip17RelaysToShow.other}
                         emptyState={
                           <Text fontSize="sm" color="GrayText" pl={2}>
@@ -233,18 +217,13 @@ export function MessageTypeToggleButton({
 
                     <VStack spacing={3} align="stretch">
                       <RelayListSection
-                        label="Your inboxes:"
+                        label="Your inboxes"
                         relays={nip04RelaysToShow.self}
                         emptyState={nip65EmptyState}
                       />
 
                       <RelayListSection
-                        label={
-                          <>
-                            <UserName pubkey={pubkey} />
-                            's inboxes:
-                          </>
-                        }
+                        label="Their inboxes"
                         relays={nip04RelaysToShow.other}
                         emptyState={nip65EmptyState}
                       />
