@@ -22,12 +22,14 @@ import {
 } from "@chakra-ui/react";
 import { unixNow } from "applesauce-core/helpers";
 import { useActiveAccount, useEventModel } from "applesauce-react/hooks";
-import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { useMemo, useRef, useState, type ReactNode } from "react";
 import { useForm } from "react-hook-form";
 
 import InsertGifButton from "../../../../components/gif/insert-gif-button";
 import EyeOff from "../../../../components/icons/eye-off";
 import Lock01 from "../../../../components/icons/lock-01";
+import Maximize01 from "../../../../components/icons/maximize-01";
+import Minimize01 from "../../../../components/icons/minimize-01";
 import MagicTextArea, { RefType } from "../../../../components/magic-textarea";
 import InsertReactionButton from "../../../../components/reactions/insert-reaction-button";
 import RelayFavicon from "../../../../components/relay/relay-favicon";
@@ -78,7 +80,7 @@ function RelayListSection({
   );
 }
 
-function MessageTypeToggleButton({
+export function MessageTypeToggleButton({
   value,
   onChange,
   pubkey,
@@ -274,22 +276,18 @@ export type MessageType = "nip04" | "nip17";
 export default function SendMessageForm({
   pubkey,
   rootId: _rootId,
-  initialType = "nip04",
+  type,
+  publication,
   expiration,
   ...props
-}: { pubkey: string; rootId?: string; initialType?: MessageType; expiration?: number | null } & Omit<
-  FlexProps,
-  "children"
->) {
-  const account = useActiveAccount()!;
-
-  const [type, setType] = useState<MessageType>(initialType);
-  const publication = useMessagePublication(type, [pubkey]);
-
-  // Reset the type when initial values change
-  useEffect(() => {
-    if (!publication.pending && !publication.busy) setType(initialType);
-  }, [initialType]);
+}: {
+  pubkey: string;
+  rootId?: string;
+  type: MessageType;
+  publication: ReturnType<typeof useMessagePublication>;
+  expiration?: number | null;
+} & Omit<FlexProps, "children">) {
+  const [expanded, setExpanded] = useState(false);
 
   const { getValues, setValue, watch, handleSubmit, formState, reset } = useForm({
     defaultValues: {
@@ -321,20 +319,7 @@ export default function SendMessageForm({
 
   const formRef = useRef<HTMLFormElement | null>(null);
 
-  if (type === "nip17")
-    return (
-      <WrappedComposer
-        recipients={[pubkey]}
-        expiration={expiration}
-        controls={
-          <>
-            {pubkey !== account.pubkey && (
-              <MessageTypeToggleButton value={type} onChange={setType} pubkey={pubkey} variant="ghost" />
-            )}
-          </>
-        }
-      />
-    );
+  if (type === "nip17") return <WrappedComposer recipients={[pubkey]} expiration={expiration} />;
 
   return (
     <Flex as="form" gap="2" direction="column" onSubmit={sendMessage} ref={formRef} {...props}>
@@ -348,43 +333,45 @@ export default function SendMessageForm({
           Sending message…
         </Text>
       ) : (
-        <Flex gap="2" w="full">
-          <Flex gap="2" direction="column">
-            {/* Notes to self are always gift wrapped, there is no one to fall back to legacy messages for */}
-            {pubkey !== account.pubkey && (
-              <MessageTypeToggleButton
-                value={type}
-                onChange={setType}
-                pubkey={pubkey}
-                variant="ghost"
-                isDisabled={!!publication.pending}
-              />
-            )}
-          </Flex>
-          <MagicTextArea
-            mb="2"
-            value={getValues().content}
-            onChange={(e) => setValue("content", e.target.value, { shouldDirty: true, shouldTouch: true })}
-            rows={2}
-            isRequired={!publication.pending}
-            isReadOnly={!!publication.pending}
-            isDisabled={!draft.ready}
-            instanceRef={(inst) => (autocompleteRef.current = inst)}
-            ref={textAreaRef}
-            onPaste={onPaste}
-            onKeyDown={(e) => {
-              if ((e.ctrlKey || e.metaKey) && e.key === "Enter" && formRef.current) formRef.current.requestSubmit();
-            }}
-          />
-          <Flex gap="2" direction="column">
+        <Flex gap="2" w="full" align="center" wrap={expanded ? "wrap" : "nowrap"}>
+          <Box flex={expanded ? "1 0 100%" : "1 1 0"} minW={0} order={expanded ? -1 : 0}>
+            <MagicTextArea
+              value={getValues().content}
+              onChange={(e) => setValue("content", e.target.value, { shouldDirty: true, shouldTouch: true })}
+              rows={expanded ? 5 : 1}
+              h={expanded ? "auto" : "10"}
+              minH="10"
+              resize={expanded ? "vertical" : "none"}
+              isRequired={!publication.pending}
+              isReadOnly={!!publication.pending}
+              isDisabled={!draft.ready}
+              instanceRef={(inst) => (autocompleteRef.current = inst)}
+              ref={textAreaRef}
+              onPaste={onPaste}
+              onKeyDown={(e) => {
+                if ((e.ctrlKey || e.metaKey) && e.key === "Enter" && formRef.current) formRef.current.requestSubmit();
+              }}
+            />
+          </Box>
+          {expanded && (
             <ButtonGroup isDisabled={!!publication.pending}>
               <InsertGifButton onSelectURL={insertText} aria-label="Add gif" />
               <InsertReactionButton onSelect={insertText} aria-label="Add emoji" />
             </ButtonGroup>
-            <Button type="submit" colorScheme="primary" isDisabled={!publication.ready || !draft.ready}>
-              {publication.pending ? "Retry send" : "Send"}
-            </Button>
-          </Flex>
+          )}
+          <IconButton
+            aria-label={expanded ? "Collapse composer" : "Expand composer"}
+            title={expanded ? "Collapse composer" : "Expand composer"}
+            aria-expanded={expanded}
+            icon={expanded ? <Minimize01 boxSize={5} /> : <Maximize01 boxSize={5} />}
+            variant="ghost"
+            onClick={() => setExpanded((value) => !value)}
+            flexShrink={0}
+            ml={expanded ? "auto" : undefined}
+          />
+          <Button type="submit" colorScheme="primary" isDisabled={!publication.ready || !draft.ready}>
+            {publication.pending ? "Retry send" : "Send"}
+          </Button>
         </Flex>
       )}
     </Flex>

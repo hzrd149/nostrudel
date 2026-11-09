@@ -25,7 +25,8 @@ import DirectMessageGroup from "../components/direct-message-group";
 import ExpirationToggleButton from "../components/expiration-toggle-button";
 import PendingLockedAlert from "../components/pending-decryption-alert";
 import DecryptLegacyMessagesButton from "./components/decrypt-legacy-messages-button";
-import SendMessageForm from "./components/direct-message-form";
+import SendMessageForm, { MessageTypeToggleButton, type MessageType } from "./components/direct-message-form";
+import useMessagePublication from "../../../hooks/use-message-publication";
 import DirectMessageRelayConnectionsButton from "./components/direct-message-relay-connections";
 import DirectMessageSettingsDrawer from "./components/direct-settings-drawer";
 
@@ -105,6 +106,12 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
   }, [messages]);
 
   const defaultMessageExpiration = use$(localSettings.defaultMessageExpiration);
+  const initialType = !isSelf && lastReceivedMessage?.kind === kinds.EncryptedDirectMessage ? "nip04" : "nip17";
+  const [type, setType] = useState<MessageType>(initialType);
+  const publication = useMessagePublication(type, [pubkey]);
+  useEffect(() => {
+    if (!publication.pending && !publication.busy) setType(initialType);
+  }, [initialType]);
   const [expiration, setExpiration] = useState<number | null>(lastExpiration ?? defaultMessageExpiration);
   useEffect(() => {
     if (lastExpiration) setExpiration(lastExpiration);
@@ -128,6 +135,15 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
         actions={
           <ButtonGroup ml="auto">
             <ExpirationToggleButton value={expiration} onChange={setExpiration} variant="ghost" />
+            {!isSelf && (
+              <MessageTypeToggleButton
+                value={type}
+                onChange={setType}
+                pubkey={pubkey}
+                variant="ghost"
+                isDisabled={!!publication.pending || publication.busy}
+              />
+            )}
             <DecryptLegacyMessagesButton other={pubkey} variant="ghost" />
             <DirectMessageRelayConnectionsButton other={pubkey} variant="ghost" onClick={openSettingsDrawer} />
             <IconButton
@@ -153,7 +169,8 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
           flexShrink={0}
           pubkey={pubkey}
           p="2"
-          initialType={!isSelf && lastReceivedMessage?.kind === kinds.EncryptedDirectMessage ? "nip04" : "nip17"}
+          type={type}
+          publication={publication}
           expiration={expiration}
         />
 

@@ -1,4 +1,4 @@
-import { Button, Flex, IconButton, Image, Input, Text } from "@chakra-ui/react";
+import { Box, Button, Flex, IconButton, Image, Input, Text } from "@chakra-ui/react";
 import type { MessageDraft } from "applesauce-extra/messages";
 import { use$ } from "applesauce-react/hooks";
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
@@ -15,6 +15,9 @@ import MessageParent from "./message-parent";
 import UserName from "../../../components/user/user-name";
 import InsertGifButton from "../../../components/gif/insert-gif-button";
 import InsertReactionButton from "../../../components/reactions/insert-reaction-button";
+import Paperclip from "../../../components/icons/paperclip";
+import Maximize01 from "../../../components/icons/maximize-01";
+import Minimize01 from "../../../components/icons/minimize-01";
 
 function StagedPreview({ file }: { file: File }) {
   const url = use$(
@@ -48,6 +51,7 @@ export default function WrappedComposer({
   const draft = use$(() => conversation?.draft$, [conversation]);
   const items = use$(() => outbox?.items$, [outbox]) ?? [];
   const [ready, setReady] = useState(false);
+  const [expanded, setExpanded] = useState(false);
   const input = useRef<HTMLInputElement>(null);
   const { control, getValues, reset, setValue } = useForm<{ content: string; files: File[] }>({
     defaultValues: { content: "", files: [] },
@@ -159,13 +163,24 @@ export default function WrappedComposer({
       ))}
       <Flex
         gap="2"
+        align="center"
+        wrap={expanded ? "wrap" : "nowrap"}
         as="form"
         onSubmit={(event) => {
           event.preventDefault();
           void send.run();
         }}
       >
-        <Flex direction="column" gap="2">
+        <IconButton
+          aria-label="Attach files"
+          title="Attach files"
+          variant="ghost"
+          icon={<Paperclip boxSize={5} />}
+          onClick={() => input.current?.click()}
+          isDisabled={!ready || send.loading}
+          flexShrink={0}
+        />
+        {expanded && (
           <Flex gap="1">
             <InsertGifButton
               aria-label="Add gif"
@@ -178,49 +193,59 @@ export default function WrappedComposer({
               onSelect={(text) => edit({ ...getValues(), content: getValues("content") + text })}
             />
           </Flex>
-          {controls}
-        </Flex>
-        <MagicTextArea
-          value={content}
-          rows={2}
-          isDisabled={!ready || send.loading}
-          onChange={(event) => edit({ ...getValues(), content: event.target.value })}
-          onPaste={(event) => {
-            if (event.clipboardData.files.length) {
-              event.preventDefault();
-              stage([...event.clipboardData.files]);
-            }
-          }}
-          onKeyDown={(event) => {
-            if ((event.ctrlKey || event.metaKey) && event.key === "Enter") {
-              event.preventDefault();
-              void send.run();
-            }
-          }}
-        />
-        <Flex direction="column" gap="2">
-          <Button onClick={() => input.current?.click()} isDisabled={!ready || send.loading}>
-            Attach
-          </Button>
-          <Input
-            ref={input}
-            type="file"
-            multiple
-            hidden
-            onChange={(event) => {
-              stage([...(event.target.files ?? [])]);
-              event.target.value = "";
+        )}
+        {controls}
+        <Box flex={expanded ? "1 0 100%" : "1 1 0"} minW={0} order={expanded ? -1 : 0}>
+          <MagicTextArea
+            value={content}
+            rows={expanded ? 5 : 1}
+            h={expanded ? "auto" : "10"}
+            minH="10"
+            resize={expanded ? "vertical" : "none"}
+            isDisabled={!ready || send.loading}
+            onChange={(event) => edit({ ...getValues(), content: event.target.value })}
+            onPaste={(event) => {
+              if (event.clipboardData.files.length) {
+                event.preventDefault();
+                stage([...event.clipboardData.files]);
+              }
+            }}
+            onKeyDown={(event) => {
+              if ((event.ctrlKey || event.metaKey) && event.key === "Enter") {
+                event.preventDefault();
+                void send.run();
+              }
             }}
           />
-          <Button
-            colorScheme="primary"
-            type="submit"
-            isDisabled={!ready || (!content.trim() && !files.length)}
-            isLoading={send.loading}
-          >
-            Send
-          </Button>
-        </Flex>
+        </Box>
+        <IconButton
+          aria-label={expanded ? "Collapse composer" : "Expand composer"}
+          title={expanded ? "Collapse composer" : "Expand composer"}
+          aria-expanded={expanded}
+          icon={expanded ? <Minimize01 boxSize={5} /> : <Maximize01 boxSize={5} />}
+          variant="ghost"
+          onClick={() => setExpanded((value) => !value)}
+          flexShrink={0}
+          ml={expanded ? "auto" : undefined}
+        />
+        <Input
+          ref={input}
+          type="file"
+          multiple
+          hidden
+          onChange={(event) => {
+            stage([...(event.target.files ?? [])]);
+            event.target.value = "";
+          }}
+        />
+        <Button
+          colorScheme="primary"
+          type="submit"
+          isDisabled={!ready || (!content.trim() && !files.length)}
+          isLoading={send.loading}
+        >
+          Send
+        </Button>
       </Flex>
     </Flex>
   );
