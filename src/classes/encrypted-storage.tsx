@@ -103,7 +103,7 @@ export default class EncryptedKeyValueStore {
       await this.database.setItem(key, dataToStore);
       return true;
     } catch (error) {
-      console.error("Encryption error:", error);
+      log("Encryption error:", error);
       return false;
     }
   }
@@ -157,6 +157,11 @@ export default class EncryptedKeyValueStore {
   private setKey(key: Uint8Array) {
     this.key = key;
     this.unlocked$.next(true);
+  }
+
+  /** Whether a password has already been set, even when no messages are cached. */
+  async hasPassword(): Promise<boolean> {
+    return (await this.database.getItem(TEST_KEY)) !== null;
   }
 
   /** Verify if a password can decrypt stored data */

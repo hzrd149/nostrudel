@@ -15,17 +15,13 @@ import {
   FormLabel,
   Heading,
   Input,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuList,
   useDisclosure,
   useToast,
   VStack,
 } from "@chakra-ui/react";
 import { use$ } from "applesauce-react/hooks";
 import { useCallback, useRef, useState } from "react";
-import { firstValueFrom } from "rxjs";
+import { firstValueFrom, from, of, startWith } from "rxjs";
 
 import EncryptedStorage from "../../classes/encrypted-storage";
 import useAsyncAction from "../../hooks/use-async-action";
@@ -35,6 +31,11 @@ import localSettings from "../../services/preferences";
 export default function RequireDecryptionCache({ children }: { children: JSX.Element }) {
   const cache = use$(decryptionCache$);
   const locked = use$(decryptionCacheLocked$);
+  const hasPassword = use$(
+    () => (cache instanceof EncryptedStorage ? from(cache.hasPassword()).pipe(startWith(undefined)) : of(undefined)),
+    [cache],
+  );
+  const isSetup = hasPassword === false;
   const [password, setPassword] = useState("");
   const toast = useToast();
   const disableEncryptionModal = useDisclosure();
@@ -42,10 +43,11 @@ export default function RequireDecryptionCache({ children }: { children: JSX.Ele
   const cancelRef = useRef<HTMLButtonElement>(null);
 
   const unlockCache = useAsyncAction(async () => {
+    if (hasPassword === undefined) return;
     if (!password.trim()) {
       toast({
         title: "Password required",
-        description: "Please enter your message cache password",
+        description: isSetup ? "Choose a password for your message cache" : "Please enter your message cache password",
         status: "warning",
       });
       return;
@@ -63,7 +65,7 @@ export default function RequireDecryptionCache({ children }: { children: JSX.Ele
         });
       }
     }
-  }, [password, cache, toast]);
+  }, [password, cache, toast, hasPassword, isSetup]);
 
   const disableCache = useAsyncAction(async () => {
     // Clear the cache first
@@ -105,21 +107,21 @@ export default function RequireDecryptionCache({ children }: { children: JSX.Ele
       <Card maxW="md" w="full">
         <CardHeader pb="0">
           <Heading size="md" textAlign="center">
-            Unlock message cache
+            {hasPassword === undefined ? "Message cache" : isSetup ? "Set up message cache" : "Unlock message cache"}
           </Heading>
         </CardHeader>
 
         <CardBody>
           <VStack spacing="4">
             <FormControl id="message-cache-password">
-              <FormLabel>Password</FormLabel>
+              <FormLabel>{isSetup ? "New password" : "Password"}</FormLabel>
               <Input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && !unlockCache.loading && unlockCache.run()}
                 autoFocus
-                autoComplete="off"
+                autoComplete={isSetup ? "new-password" : "current-password"}
               />
             </FormControl>
           </VStack>
@@ -132,20 +134,20 @@ export default function RequireDecryptionCache({ children }: { children: JSX.Ele
               w="full"
               onClick={unlockCache.run}
               isLoading={unlockCache.loading}
-              loadingText="Unlocking..."
+              isDisabled={hasPassword === undefined}
+              loadingText={isSetup ? "Setting password..." : "Unlocking..."}
             >
-              Unlock
+              {isSetup ? "Set password" : "Unlock"}
             </Button>
 
-            <Menu>
-              <MenuButton as={Button} variant="ghost">
-                Cache options
-              </MenuButton>
-              <MenuList>
-                <MenuItem onClick={disableCacheModal.onOpen}>Disable cache</MenuItem>
-                <MenuItem onClick={disableEncryptionModal.onOpen}>Disable encryption</MenuItem>
-              </MenuList>
-            </Menu>
+            <Flex w="full" gap="2" flexWrap="wrap">
+              <Button variant="ghost" onClick={disableCacheModal.onOpen} flex="1">
+                Disable cache
+              </Button>
+              <Button variant="ghost" onClick={disableEncryptionModal.onOpen} flex="1">
+                Disable encryption
+              </Button>
+            </Flex>
           </VStack>
         </CardFooter>
       </Card>
