@@ -68,7 +68,14 @@ function RelayEntry({ url, onRemove }: { url: string; onRemove: () => Promise<un
   return (
     <Flex gap="2" align="center" wrap="wrap">
       <RelayFavicon relay={url} />
-      <RelayLink relay={url} isTruncated flex="1" minW="0" />
+      <Flex direction="column" flex="1" minW="0">
+        <RelayLink relay={url} isTruncated />
+        {info?.description && (
+          <Text color="GrayText" noOfLines={1} title={info.description}>
+            {info.description}
+          </Text>
+        )}
+      </Flex>
       <Flex gap="1" align="center" ms="auto">
         {authRequiredForReading && (
           <RelayCheck
