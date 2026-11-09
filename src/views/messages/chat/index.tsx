@@ -1,6 +1,6 @@
 import { ButtonGroup, Flex, IconButton, Text } from "@chakra-ui/react";
-import { getRumorGiftWraps, Rumor } from "applesauce-common/helpers";
-import { isEvent, getExpirationTimestamp } from "applesauce-core/helpers";
+import { Rumor } from "applesauce-common/helpers";
+import { getMessageExpirationDuration } from "../../../helpers/nostr/message-expiration";
 import { useActiveAccount, use$ } from "applesauce-react/hooks";
 import { kinds, NostrEvent } from "nostr-tools";
 import { memo, useCallback, useContext, useEffect, useMemo, useState } from "react";
@@ -92,14 +92,8 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
   );
   const lastExpiration = useMemo<number | undefined>(() => {
     for (const message of messages) {
-      if (message.kind === kinds.EncryptedDirectMessage && isEvent(message)) {
-        const ts = getExpirationTimestamp(message);
-        if (ts) return ts - message.created_at;
-      } else if (message.kind === kinds.PrivateDirectMessage || message.kind === kinds.FileMessage) {
-        const giftWrap = getRumorGiftWraps(message)[0];
-        const ts = getExpirationTimestamp(message) ?? (giftWrap && getExpirationTimestamp(giftWrap));
-        if (ts) return ts - message.created_at;
-      }
+      const duration = getMessageExpirationDuration(message);
+      if (duration !== undefined) return duration;
     }
     return undefined;
   }, [messages]);

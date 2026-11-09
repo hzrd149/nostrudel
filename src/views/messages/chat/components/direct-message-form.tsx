@@ -20,7 +20,7 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
-import { unixNow } from "applesauce-core/helpers";
+import { createMessageExpiration } from "../../../../helpers/nostr/message-expiration";
 import { useActiveAccount, useEventModel } from "applesauce-react/hooks";
 import { useMemo, useRef, useState, type ReactNode } from "react";
 import { useForm } from "react-hook-form";
@@ -284,7 +284,7 @@ export default function SendMessageForm({
 
   const sendMessage = handleSubmit(async (values) => {
     if (!values.content && !publication.pending) return;
-    const expirationTimestamp = expiration ? unixNow() + expiration : undefined;
+    const expirationTimestamp = createMessageExpiration(expiration);
     const sent = await publication.send({
       content: values.content,
       expiration: expirationTimestamp,

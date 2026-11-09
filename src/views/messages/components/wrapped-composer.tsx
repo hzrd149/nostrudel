@@ -14,7 +14,7 @@ import {
 import type { MessageDraft } from "applesauce-extra/messages";
 import { use$ } from "applesauce-react/hooks";
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { unixNow } from "applesauce-core/helpers";
+import { createMessageExpiration } from "../../../helpers/nostr/message-expiration";
 import { useForm, useWatch } from "react-hook-form";
 import { concatWith, defer, finalize, NEVER, of } from "rxjs";
 
@@ -112,6 +112,7 @@ export default function WrappedComposer({
     const values = getValues();
     const replyTo = reply.current;
     if (!values.content.trim() && !values.files.length) return;
+    const expirationTimestamp = createMessageExpiration(expiration);
     // Save before queueing; a storage error leaves the editor intact.
     await conversation.setDraft({ ...values, replyTo });
     await conversation.clearDraft();
@@ -119,7 +120,7 @@ export default function WrappedComposer({
       ...values,
       emojis,
       replyTo,
-      expiration: expiration ? unixNow() + expiration : undefined,
+      expiration: expirationTimestamp,
     });
     reset({ content: "", files: [] });
     for (const item of queued) void outbox.retry(item);

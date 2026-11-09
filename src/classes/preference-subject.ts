@@ -107,7 +107,15 @@ export class PreferenceSubject<T = string> extends BehaviorSubject<T> {
     fallback: number | null = null,
     opts?: Omit<PreferencesSubjectOptions<number | null>, "decode" | "encode">,
   ) {
-    return PreferenceSubject.create<number | null>(key, fallback, opts);
+    return PreferenceSubject.create<number | null>(key, fallback, {
+      ...opts,
+      decode: (raw) => {
+        if (raw === "null") return null;
+        const value = raw.trim() ? Number(raw) : NaN;
+        return Number.isFinite(value) ? value : fallback;
+      },
+      encode: (value) => String(value),
+    });
   }
 
   /** Creates an array of values */

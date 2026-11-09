@@ -1,6 +1,6 @@
 import { AvatarGroup, ButtonGroup, Flex, IconButton, Text } from "@chakra-ui/react";
-import { getRumorGiftWraps, getConversationParticipants, Rumor } from "applesauce-common/helpers";
-import { getExpirationTimestamp } from "applesauce-core/helpers";
+import { getConversationParticipants, Rumor } from "applesauce-common/helpers";
+import { getMessageExpirationDuration } from "../../../helpers/nostr/message-expiration";
 import { useActiveAccount, use$ } from "applesauce-react/hooks";
 import { NostrEvent } from "nostr-tools";
 import { memo, useCallback, useContext, useEffect, useMemo } from "react";
@@ -70,9 +70,8 @@ function DirectMessageGroupPage({ group }: { group: string }) {
 
   const lastExpiration = useMemo<number | undefined>(() => {
     for (const message of messages) {
-      const giftWrap = getRumorGiftWraps(message)[0];
-      const ts = getExpirationTimestamp(message) ?? (giftWrap && getExpirationTimestamp(giftWrap));
-      if (ts) return ts - message.created_at;
+      const duration = getMessageExpirationDuration(message);
+      if (duration !== undefined) return duration;
     }
     return undefined;
   }, [messages]);

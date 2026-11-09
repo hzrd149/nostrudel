@@ -1,6 +1,7 @@
 import type { Emoji, FileMetadataFields } from "applesauce-common/helpers";
 import type { MessageDraft, PreparedWrappedMessage, WrappedConversation } from "applesauce-extra/messages";
 import { BehaviorSubject } from "rxjs";
+import { isValidExpiration } from "../../helpers/nostr/message-expiration";
 
 export type OutgoingMessage = {
   id: number;
@@ -25,6 +26,8 @@ export class WrappedOutbox {
 
   enqueue(draft: MessageDraft & { emojis?: Emoji[] }): OutgoingMessage[] {
     this.lifetime.signal.throwIfAborted();
+    if (draft.expiration !== undefined && !isValidExpiration(draft.expiration))
+      throw new Error("Invalid message expiration");
     const common = { replyTo: draft.replyTo, expiration: draft.expiration, state: "queued" as const };
     const items: OutgoingMessage[] = (draft.files ?? []).map((file) => ({
       ...common,
