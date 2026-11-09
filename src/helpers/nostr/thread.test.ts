@@ -135,7 +135,7 @@ describe("reactive thread replies", () => {
     expect(countDescendantsInTimeline(focused, [focused])).toBe(0);
   });
 
-  it("updates when replies arrive and when they are removed", () => {
+  it("updates when replies arrive and when they are removed", async () => {
     const root = event(rootId, 1063);
     const store = storeWith(root);
     const values: string[][] = [];
@@ -143,13 +143,13 @@ describe("reactive thread replies", () => {
       .model(ThreadRepliesModel, root)
       .subscribe((replies) => values.push(replies.map((r) => r.id)));
     store.add(comment(parentId));
-    expect(values.at(-1)).toEqual([parentId]);
+    await expect.poll(() => values.at(-1)).toEqual([parentId]);
     store.remove(parentId);
-    expect(values.at(-1)).toEqual([]);
+    await expect.poll(() => values.at(-1)).toEqual([]);
     subscription.unsubscribe();
   });
 
-  it("updates descendant counts when a deeper reply arrives or disappears", () => {
+  it("updates descendant counts when a deeper reply arrives or disappears", async () => {
     const root = event(rootId, 1063);
     const direct = comment(parentId);
     const store = storeWith(root, direct);
@@ -159,9 +159,9 @@ describe("reactive thread replies", () => {
     const grandchild = comment("04".repeat(32), child.id);
     store.add(child);
     store.add(grandchild);
-    expect(counts.at(-1)).toBe(2);
+    await expect.poll(() => counts.at(-1)).toBe(2);
     store.remove(grandchild.id);
-    expect(counts.at(-1)).toBe(1);
+    await expect.poll(() => counts.at(-1)).toBe(1);
     subscription.unsubscribe();
   });
 

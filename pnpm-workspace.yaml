@@ -1,16 +1,25 @@
 allowBuilds:
   better-sqlite3: true
   sharp: true
-# Explicitly requested v7 patch releases may be newer than the release-age policy.
+# Explicitly requested v7.1 releases may be newer than the release-age policy.
 minimumReleaseAgeExclude:
-  - applesauce-accounts@7.0.2
-  - applesauce-core@7.0.1
-  - applesauce-loaders@7.0.2
-  - applesauce-signers@7.0.1
+  - applesauce-accounts@7.1.0
+  - applesauce-core@7.1.0
+  - applesauce-loaders@7.1.0
+  - applesauce-signers@7.1.0
+  - applesauce-actions@7.1.0
+  - applesauce-common@7.1.0
+  - applesauce-content@7.1.0
+  - applesauce-extra@7.1.0
+  - applesauce-react@7.1.0
+  - applesauce-relay@7.1.0
+  - applesauce-sqlite@7.1.0
+  - applesauce-wallet-connect@7.1.0
+  - applesauce-wallet@7.1.0
 overrides:
   nostr-tools: 2.24.3
   # Keep the SDK on one core/account/signer type identity across exact transitive dependencies.
-  applesauce-core: 7.0.1
-  applesauce-accounts: 7.0.2
-  applesauce-loaders: 7.0.2
-  applesauce-signers: 7.0.1
+  applesauce-core: 7.1.0
+  applesauce-accounts: 7.1.0
+  applesauce-loaders: 7.1.0
+  applesauce-signers: 7.1.0

@@ -10,7 +10,7 @@ export function observeNotifications<T>(
   mutes$: Observable<MutedThings | undefined>,
   project: (events: NostrEvent[], mutes: MutedThings | undefined) => T,
 ): Observable<T> {
-  return combineLatest([store.timeline(filters), mutes$.pipe(startWith(undefined))]).pipe(
+  return combineLatest([store.timeline(filters, { batchWindow: false }), mutes$.pipe(startWith(undefined))]).pipe(
     auditTime(100),
     map(([events, mutes]) => project(events, mutes)),
   );
