@@ -268,6 +268,7 @@ export function NappletShellProvider({ children }: PropsWithChildren) {
       window.removeEventListener("message", bridge.handleMessage);
       window.removeEventListener("storage", synchronizePermissionStorage);
       bridge.destroy();
+      adapter.stop({ services: false });
     };
   }, [bridge, adapter, capabilities.domains]);
 

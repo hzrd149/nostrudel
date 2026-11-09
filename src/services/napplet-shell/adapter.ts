@@ -11,7 +11,8 @@ import {
   type OutboxRelayPool,
   type RelayListEntry,
 } from "@kehto/services";
-import type { RelayPoolLike, ShellAdapter } from "@kehto/shell";
+import type { RelayPoolLike } from "@kehto/shell";
+import { createKehtoShellAdapter, type KehtoShellOverrides } from "applesauce-extra/kehto";
 import type { ServiceHandler } from "@kehto/runtime";
 import type { NostrFilter } from "@napplet/core";
 import { getInboxes, getOutboxes } from "applesauce-core/helpers";
@@ -35,11 +36,12 @@ import {
   reportCommon,
 } from "./common-actions";
 import { getReadRelays, getWriteRelays } from "./relay-tiers";
-import { assertNappletEventKind, assertNappletDecryption } from "../../helpers/nostr/handler-preferences";
+import { assertNappletEventKind } from "../../helpers/nostr/handler-preferences";
 import { createResourceService, type ResourceServiceOptions } from "./resource-service";
 import { createBlossomUploadService, type UploadConfig } from "./upload-service";
 import { createNappletWebrtcService, type NappletWebrtcOptions } from "./webrtc-service";
 import { createNappletCvmService, type NappletCvmOptions } from "./cvm-service";
+import { getNappletSigner as getSigner, kehtoContext } from "./context";
 
 const log = logger.extend("napplet-shell");
 
@@ -60,27 +62,6 @@ function toRelayFilters(filters: NostrFilter[]): Filter[] {
   return filters.map((f) => ({ ...f }));
 }
 
-function getSigner() {
-  const account = accounts.active;
-  if (!account) return null;
-
-  return {
-    getPublicKey: async () => account.pubkey,
-    signEvent: (event: EventTemplate) => {
-      assertNappletEventKind(event.kind);
-      return account.signEvent(event);
-    },
-    nip04: Reflect.get(account, "nip04"),
-    nip44: account.nip44 && {
-      encrypt: account.nip44.encrypt.bind(account.nip44),
-      decrypt: (pubkey: string, ciphertext: string) => {
-        assertNappletDecryption(pubkey, account.pubkey);
-        return account.nip44!.decrypt(pubkey, ciphertext);
-      },
-    },
-  };
-}
-
 export function createAdapter(
   toast: ReturnType<typeof useToast>,
   intent: ServiceHandler,
@@ -89,12 +70,11 @@ export function createAdapter(
   uploadEnabled: boolean,
   webrtc: NappletWebrtcOptions,
   cvm: NappletCvmOptions,
-): ShellAdapter {
+) {
   // These service callbacks return void, so report rejected publishes here.
   const reportPublishError = (error: unknown) => {
     toast({ status: "error", description: error instanceof Error ? error.message : "Failed to publish event" });
   };
-  const subscriptions = new Map<string, () => void>();
   // Expose only what kehto calls; applesauce's `count` returns an Observable, not kehto's number.
   const poolLike: RelayPoolLike = {
     subscription: (relayUrls, filters) =>
@@ -108,37 +88,17 @@ export function createAdapter(
 
   const selectRelayTier = (filters: unknown[]) => (filters.length === 0 ? getWriteRelays() : getReadRelays());
 
-  const adapter: ShellAdapter = {
+  const overrides: KehtoShellOverrides = {
     relayPool: {
       getRelayPool: () => poolLike,
-      trackSubscription: (key, cleanup) => subscriptions.set(key, cleanup),
-      untrackSubscription: (key) => {
-        subscriptions.get(key)?.();
-        subscriptions.delete(key);
-      },
-      openScopedRelay: () => {},
-      closeScopedRelay: () => {},
-      publishToScopedRelay: () => false,
       selectRelayTier,
     },
     relayConfig: {
-      addRelay: () => {},
-      removeRelay: () => {},
       getRelayConfig: () => ({ discovery: getReadRelays(), super: getReadRelays(), outbox: getWriteRelays() }),
-      getNip66Suggestions: () => [],
-    },
-    windowManager: {
-      createWindow: () => null,
     },
     auth: {
       getUserPubkey: () => accounts.active?.pubkey ?? null,
       getSigner,
-    },
-    config: {
-      getNappUpdateBehavior: () => "banner",
-    },
-    hotkeys: {
-      executeHotkeyFromForward: () => {},
     },
     // NAP-CACHE: back the runtime cache with noStrudel's local event cache so napplet
     // relay subscriptions are served from cache first and incoming events are persisted.
@@ -232,7 +192,7 @@ export function createAdapter(
     verifyEvent: (event) => verifyEvent(event),
   });
 
-  adapter.services = {
+  const services = {
     identity: createIdentityService({
       getSigner,
       getProfile: (pubkey) => getIdentityProfile(pubkey),
@@ -287,5 +247,5 @@ export function createAdapter(
     }).handler,
   };
 
-  return adapter;
+  return createKehtoShellAdapter(kehtoContext, { services, overrides });
 }
