@@ -421,6 +421,9 @@ importers:
       cheerio:
         specifier: ^1.2.0
         version: 1.2.0
+      fake-indexeddb:
+        specifier: 6.2.8
+        version: 6.2.8
       prettier:
         specifier: ^3.9.10
         version: 3.9.10
@@ -3552,6 +3555,10 @@ packages:
 
   extendable-error@0.1.7:
     resolution: {integrity: sha512-UOiS2in6/Q0FK0R0q6UY9vYpQ21mr/Qn1KOnte7vsACuNJf514WvCCUHSRCPcgjPT2bAhNIJdlE6bVap1GKmeg==}
+
+  fake-indexeddb@6.2.8:
+    resolution: {integrity: sha512-mpVW/HLUqwKXJ6F/s0hMgdK1eQfM4ncTHDioNGHWL0WKV3VcZCoZq1NKgboBbAge07aRCO7L48yziKssL59XEQ==}
+    engines: {node: '>=18'}
 
   fast-copy@3.1.0:
     resolution: {integrity: sha512-IuCOCDFM1F/s4LtG7Bjr3yUUwPHybyhqN74xk2cMYoP51vVeErMy8+6HGFchi/+45lW8uzhs6lBeEqks2GWt6A==}
@@ -9790,6 +9797,8 @@ snapshots:
   extend@3.0.2: {}
 
   extendable-error@0.1.7: {}
+
+  fake-indexeddb@6.2.8: {}
 
   fast-copy@3.1.0: {}
 

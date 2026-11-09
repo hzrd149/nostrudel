@@ -1,6 +1,4 @@
 import {
-  Alert,
-  AlertIcon,
   AvatarGroup,
   Badge,
   Box,
@@ -21,7 +19,7 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { getGiftWrapRumor, Rumor, getConversationParticipants, isGiftWrapUnlocked } from "applesauce-common/helpers";
-import { useActiveAccount, useEventModel, use$ } from "applesauce-react/hooks";
+import { useActiveAccount, use$ } from "applesauce-react/hooks";
 import { kinds } from "nostr-tools";
 import { useEffect, useMemo, useRef } from "react";
 import { Link as RouterLink } from "react-router-dom";
@@ -32,8 +30,6 @@ import UserAvatar from "../../../../components/user/user-avatar";
 import UserName from "../../../../components/user/user-name";
 import useGiftWrapDecryption from "../../../../hooks/use-gift-wrap-decryption";
 import useMessaging from "../../../../hooks/use-messaging";
-import { DirectMessageRelaysModel } from "../../../../models/messages";
-import ReadAuthRequiredAlert from "../../components/read-auth-required-alert";
 
 interface GroupInfo {
   id: string;
@@ -145,8 +141,6 @@ function MiscEventsTable({ events }: { events: Rumor[] }) {
 export default function LockedMessagesSection() {
   const account = useActiveAccount()!;
 
-  const inboxes = useEventModel(DirectMessageRelaysModel, [account.pubkey]);
-
   // Get all gift wraps for the account
   const initiallyLockedIds = useRef<Set<string>>(new Set());
   const { locked, failed, running, decrypted, start, stop, retryFailed } = useGiftWrapDecryption();
@@ -170,7 +164,7 @@ export default function LockedMessagesSection() {
     const groupsMap = new Map<string, GroupInfo>();
     for (const giftWrap of messages) {
       const rumor = getGiftWrapRumor(giftWrap);
-      if (!rumor || rumor.kind !== kinds.PrivateDirectMessage) continue;
+      if (!rumor || (rumor.kind !== kinds.PrivateDirectMessage && rumor.kind !== kinds.FileMessage)) continue;
 
       const participants = getConversationParticipants(rumor);
       const groupId = participants.filter((p) => p !== account.pubkey).join(":") || account.pubkey;
@@ -198,55 +192,50 @@ export default function LockedMessagesSection() {
 
     return messages.flatMap((gw) => {
       const rumor = getGiftWrapRumor(gw);
-      return rumor && rumor.kind !== kinds.PrivateDirectMessage ? [rumor] : [];
+      return rumor && rumor.kind !== kinds.PrivateDirectMessage && rumor.kind !== kinds.FileMessage ? [rumor] : [];
     });
   }, [messages]);
 
   return (
     <VStack spacing={6} align="stretch">
       {/* Summary section */}
-      <Box>
-        <Heading size="md" mb={3}>
-          Encrypted Messages
-        </Heading>
-        <Card variant="outline" p={4}>
-          <Flex align="center" justify="space-between" wrap="wrap" gap="2">
-            <VStack align="start" spacing={1}>
-              <Text fontSize="lg" fontWeight="medium">
-                {locked?.length} encrypted message{locked?.length !== 1 ? "s" : ""}
-              </Text>
-              <Text color="GrayText" fontSize="sm">
-                {locked?.length === 0
-                  ? "All messages have been decrypted"
-                  : "Click to decrypt all messages and see your conversations"}
-              </Text>
-              {failed && failed.length > 0 && (
-                <Text color="GrayText" fontSize="sm">
-                  {failed.length} could not be decrypted.{" "}
-                  <Button variant="link" onClick={retryFailed}>
-                    Retry
-                  </Button>
+      {(running || !!locked?.length || !!failed?.length) && (
+        <Box>
+          <Heading size="md" mb={3}>
+            Encrypted Messages
+          </Heading>
+          <Card variant="outline" p={4}>
+            <Flex align="center" justify="space-between" wrap="wrap" gap="2">
+              <VStack align="start" spacing={1}>
+                <Text fontSize="lg" fontWeight="medium">
+                  {locked?.length ?? 0} encrypted message{locked?.length !== 1 ? "s" : ""}
                 </Text>
-              )}
-            </VStack>
+                {failed && failed.length > 0 && (
+                  <Text color="GrayText" fontSize="sm">
+                    {failed.length} could not be decrypted.{" "}
+                    <Button variant="link" onClick={retryFailed}>
+                      Retry
+                    </Button>
+                  </Text>
+                )}
+              </VStack>
 
-            {running ? (
-              <Button onClick={stop} variant="ghost">
-                Stop decrypting ({decrypted} done)
-              </Button>
-            ) : (
-              locked &&
-              locked.length > 0 && (
-                <Button leftIcon={<UnlockIcon boxSize={5} />} onClick={start} colorScheme="primary">
-                  Decrypt All
+              {running ? (
+                <Button onClick={stop} variant="ghost">
+                  Stop decrypting ({decrypted} done)
                 </Button>
-              )
-            )}
-          </Flex>
-        </Card>
-      </Box>
-
-      {inboxes && <ReadAuthRequiredAlert relays={inboxes} />}
+              ) : (
+                locked &&
+                locked.length > 0 && (
+                  <Button leftIcon={<UnlockIcon boxSize={5} />} onClick={start} colorScheme="primary">
+                    Decrypt All
+                  </Button>
+                )
+              )}
+            </Flex>
+          </Card>
+        </Box>
+      )}
 
       {/* Conversation groups section */}
       {groups.length > 0 && (
@@ -264,14 +253,6 @@ export default function LockedMessagesSection() {
 
       {/* Misc events section */}
       {miscEvents.length > 0 && <MiscEventsTable events={miscEvents} />}
-
-      {/* Empty state */}
-      {messages.length === 0 && locked?.length === 0 && (
-        <Alert status="info">
-          <AlertIcon />
-          No encrypted messages found. New encrypted messages will appear here when received.
-        </Alert>
-      )}
     </VStack>
   );
 }

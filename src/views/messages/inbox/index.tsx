@@ -3,8 +3,8 @@ import { useAppTitle } from "../../../hooks/use-app-title";
 import useMessaging from "../../../hooks/use-messaging";
 import GiftWrapSync from "./components/gift-wrap-sync";
 import LockedMessagesSection from "./components/locked-messages";
-import RelayDistributionChart from "./components/relay-distribution-chart";
-import { Box } from "@chakra-ui/react";
+import ClientStatus from "./components/client-status";
+import ReadAuthRequiredAlert from "../components/read-auth-required-alert";
 
 export default function InboxView() {
   useAppTitle("Messages inbox");
@@ -13,9 +13,8 @@ export default function InboxView() {
   useMessaging();
   return (
     <SimpleView title="Inbox">
-      <Box w="full" overflow="hidden">
-        <RelayDistributionChart />
-      </Box>
+      <ReadAuthRequiredAlert />
+      <ClientStatus />
       <GiftWrapSync />
       <LockedMessagesSection />
     </SimpleView>

@@ -28,10 +28,6 @@ export default function GiftWrapSync() {
     [session, run],
   );
   const running = !!run && !status?.every((result) => result.done);
-  const failures =
-    status?.flatMap((result) =>
-      result.mailboxes.flatMap((mailbox) => Object.values(mailbox.relays).filter((relay) => relay.state === "error")),
-    ) ?? [];
   return (
     <Flex direction="column" gap="2">
       <Flex gap="2">
@@ -58,16 +54,7 @@ export default function GiftWrapSync() {
           </Button>
         )}
       </Flex>
-      {status && (
-        <Text>
-          {running ? "Syncing" : "Sync finished"}: {status.reduce((total, result) => total + result.loaded, 0)} events
-        </Text>
-      )}
-      {failures.map((relay, index) => (
-        <Text key={`${relay.relay}-${index}`} color="red.500">
-          {relay.relay}: {relay.error?.message}
-        </Text>
-      ))}
+      {running && <Text>Syncing history…</Text>}
     </Flex>
   );
 }

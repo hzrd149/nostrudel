@@ -13,8 +13,8 @@ import { Rumor } from "applesauce-common/helpers";
 import { useActiveAccount, use$ } from "applesauce-react/hooks";
 import { NostrEvent, kinds } from "nostr-tools";
 import { npubEncode } from "nostr-tools/nip19";
-import { useMemo } from "react";
-import { Link as RouterLink, useLocation } from "react-router-dom";
+import { useEffect, useMemo } from "react";
+import { Link as RouterLink, useLocation, useNavigate } from "react-router-dom";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { FixedSizeList, ListChildComponentProps } from "react-window";
 
@@ -26,11 +26,13 @@ import UserAvatar from "../../components/user/user-avatar";
 import UserName from "../../components/user/user-name";
 import { useLegacyMessagePlaintext } from "../../hooks/use-legacy-message-plaintext";
 import useMessaging from "../../hooks/use-messaging";
+import useAsyncAction from "../../hooks/use-async-action";
 import useGiftWrapDecryption from "../../hooks/use-gift-wrap-decryption";
 import useScrollRestoreRef from "../../hooks/use-scroll-restore";
 import RequireDecryptionCache from "../../providers/route/require-decryption-cache";
-import GiftWrapSync from "./inbox/components/gift-wrap-sync";
-import ReadAuthRequiredAlert from "./components/read-auth-required-alert";
+import UserAutocomplete from "../../components/user-autocomplete";
+import { WarningIcon } from "@chakra-ui/icons";
+import useMessageAlerts from "../../hooks/use-message-alerts";
 
 function MessagePreview({ message }: { message: NostrEvent }) {
   const { plaintext } = useLegacyMessagePlaintext(message);
@@ -39,11 +41,7 @@ function MessagePreview({ message }: { message: NostrEvent }) {
 
 function ConversationPreview({ lastMessage }: { lastMessage: NostrEvent | Rumor }) {
   if (lastMessage.kind === kinds.EncryptedDirectMessage) return <MessagePreview message={lastMessage as NostrEvent} />;
-  return (
-    <Text fontSize="sm" isTruncated>
-      {lastMessage.content}
-    </Text>
-  );
+  return <Text isTruncated>{lastMessage.kind === kinds.FileMessage ? "Attachment" : lastMessage.content}</Text>;
 }
 
 function ConversationCard({ index, style, data }: ListChildComponentProps<Conversation[]>) {
@@ -52,6 +50,7 @@ function ConversationCard({ index, style, data }: ListChildComponentProps<Conver
 
   const location = useLocation();
   const lastMessage = conversation.lastMessage;
+  const timestamp = conversation.lastActivity ?? lastMessage?.created_at;
 
   const others = conversation.participants.filter((p) => p !== account.pubkey);
   const isSelf = others.length === 0;
@@ -65,7 +64,7 @@ function ConversationCard({ index, style, data }: ListChildComponentProps<Conver
       </AvatarGroup>
       <Flex direction="column" gap="1" overflow="hidden" flex={1} py="2" alignItems="flex-start">
         <Flex gap="2" alignItems="center" overflow="hidden" w="full">
-          <Text fontSize="sm" isTruncated>
+          <Text isTruncated>
             {isSelf
               ? "Notes to self"
               : others.map((pubkey, index) => (
@@ -75,15 +74,9 @@ function ConversationCard({ index, style, data }: ListChildComponentProps<Conver
                   </span>
                 ))}
           </Text>
-          {lastMessage && <Timestamp flexShrink={0} timestamp={lastMessage.created_at} ml="auto" />}
+          {timestamp !== undefined && <Timestamp flexShrink={0} timestamp={timestamp} ml="auto" />}
         </Flex>
-        {lastMessage ? (
-          <ConversationPreview lastMessage={lastMessage} />
-        ) : (
-          <Text fontSize="sm" color="GrayText" isTruncated>
-            Private notes only you can read
-          </Text>
-        )}
+        {lastMessage && <ConversationPreview lastMessage={lastMessage} />}
       </Flex>
       <LinkOverlay
         as={RouterLink}
@@ -98,14 +91,21 @@ function ConversationCard({ index, style, data }: ListChildComponentProps<Conver
 }
 
 /** A conversation row, the pinned notes to self row has no message until the first note is written */
-type Conversation = { id: string; participants: string[]; lastMessage?: NostrEvent | Rumor };
+type Conversation = { id: string; participants: string[]; lastActivity?: number; lastMessage?: NostrEvent | Rumor };
 
 function Groups() {
   const account = useActiveAccount()!;
+  const navigate = useNavigate();
 
   const session = useMessaging();
-  const inboxes = use$(() => session?.relays$, [session]) ?? [];
   const conversations = use$(() => session?.conversations$, [session]);
+  const done = use$(() => session?.pages.done$, [session]);
+  const load = useAsyncAction(async () => {
+    await session?.pages.load();
+  }, [session]);
+  useEffect(() => {
+    void load.run();
+  }, [load.run]);
 
   const groups = useMemo(() => {
     const notes: Conversation = conversations?.find((row) => row.id === account.pubkey) ?? {
@@ -120,7 +120,12 @@ function Groups() {
 
   return (
     <>
-      <ReadAuthRequiredAlert relays={inboxes} flexShrink={0} />
+      <UserAutocomplete
+        placeholder="Start a conversation"
+        aria-label="Start a conversation"
+        hex
+        onSelectUser={(pubkey) => navigate(`/messages/${npubEncode(pubkey)}`)}
+      />
       <Flex flex={1} overflow="hidden" position="relative">
         <AutoSizer>
           {({ width, height }) => (
@@ -133,13 +138,15 @@ function Groups() {
               itemSize={64}
               innerRef={scroll}
               overscanCount={10}
+              onItemsRendered={({ visibleStopIndex }) => {
+                if (!done && !load.loading && visibleStopIndex >= groups.length - 1) void load.run();
+              }}
             >
               {ConversationCard}
             </FixedSizeList>
           )}
         </AutoSizer>
       </Flex>
-      <GiftWrapSync />
     </>
   );
 }
@@ -147,6 +154,7 @@ function Groups() {
 function MessagesHomePage() {
   const account = useActiveAccount()!;
   const { locked } = useGiftWrapDecryption();
+  const { hasAlerts } = useMessageAlerts();
 
   return (
     <SimpleParentView
@@ -156,6 +164,16 @@ function MessagesHomePage() {
       scroll={false}
       actions={
         <ButtonGroup variant="ghost" ms="auto">
+          {hasAlerts && (
+            <IconButton
+              as={RouterLink}
+              to="/messages/inbox"
+              aria-label="Messaging alerts"
+              title="View messaging alerts"
+              colorScheme="orange"
+              icon={<WarningIcon boxSize={5} />}
+            />
+          )}
           <Button as={RouterLink} to="/messages/inbox" variant="ghost">
             Inbox{locked && locked.length > 0 && ` (${locked.length})`}
           </Button>

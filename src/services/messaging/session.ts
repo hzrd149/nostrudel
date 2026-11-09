@@ -1,8 +1,10 @@
 import { LegacyMessagesClient, WrappedMessagesClient } from "applesauce-extra/messages";
 import type { LegacyMessagesClientOptions, WrappedMessagesClientOptions } from "applesauce-extra/messages";
 import { isGiftWrapUnlocked } from "applesauce-common/helpers";
-import { BehaviorSubject, Observable, Subscription, combineLatest, map, merge, scan, shareReplay } from "rxjs";
+import { BehaviorSubject, Observable, Subscription, combineLatest, map, merge } from "rxjs";
 import { MessagePublication } from "./publication";
+import { ConversationPages } from "./conversation-pages";
+import { WrappedOutbox } from "./wrapped-outbox";
 
 export type MessageConversation = {
   id: string;
@@ -19,8 +21,21 @@ export class MessagingSession {
   readonly locked$;
   readonly relays$;
   readonly errors$ = new BehaviorSubject<string[]>([]);
+  readonly pages: ConversationPages;
+  private readonly lifetime = new AbortController();
   private readonly subscriptions = new Subscription();
   private readonly publications = new Map<string, MessagePublication>();
+  private readonly outboxes = new Map<string, WrappedOutbox>();
+
+  outbox(recipients: string[]) {
+    const conversation = this.wrapped.conversation(recipients);
+    let outbox = this.outboxes.get(conversation.id);
+    if (!outbox) {
+      outbox = new WrappedOutbox(conversation);
+      this.outboxes.set(conversation.id, outbox);
+    }
+    return outbox;
+  }
 
   publication(protocol: "nip04" | "nip17", recipients: string[]) {
     const participants = [...new Set(protocol === "nip17" ? [...recipients, this.wrapped.pubkey] : recipients)].sort();
@@ -46,36 +61,18 @@ export class MessagingSession {
     this.locked$ = combineLatest([this.wrapped.giftWraps$, this.wrapped.receiver.decryptionState$]).pipe(
       map(([events, state]) => events.filter((event) => !isGiftWrapUnlocked(event) && !state.errors.has(event.id))),
     );
-    this.conversations$ = new Observable<MessageConversation>((subscriber) => {
-      const controller = new AbortController();
-      const sub = merge(
+    this.pages = new ConversationPages([
+      this.legacy.conversations({ signal: this.lifetime.signal }),
+      this.wrapped.conversations({ signal: this.lifetime.signal }),
+    ]);
+    this.conversations$ = this.pages.rows$;
+    this.add(
+      merge(
         this.legacy.conversationInserts$,
         this.legacy.conversationUpdates$,
         this.wrapped.conversationInserts$,
         this.wrapped.conversationUpdates$,
-      ).subscribe(subscriber);
-      const restore = async () => {
-        for (const client of [this.legacy, this.wrapped]) {
-          for await (const conversation of client.conversations({ signal: controller.signal })) {
-            subscriber.next(conversation);
-          }
-        }
-      };
-      void restore().catch((error) => {
-        if (!controller.signal.aborted) subscriber.error(error);
-      });
-      return () => {
-        controller.abort();
-        sub.unsubscribe();
-      };
-    }).pipe(
-      scan((rows, row) => {
-        const previous = rows.get(row.id);
-        if (!previous || row.lastActivity >= previous.lastActivity) return new Map(rows).set(row.id, row);
-        return rows;
-      }, new Map<string, MessageConversation>()),
-      map((rows) => [...rows.values()].sort((a, b) => b.lastActivity - a.lastActivity)),
-      shareReplay({ bufferSize: 1, refCount: true }),
+      ).subscribe((row) => this.pages.update(row)),
     );
   }
 
@@ -100,9 +97,13 @@ export class MessagingSession {
   }
 
   dispose() {
+    this.lifetime.abort();
+    this.pages.dispose();
     this.subscriptions.unsubscribe();
     for (const publication of this.publications.values()) publication.dispose();
     this.publications.clear();
+    for (const outbox of this.outboxes.values()) outbox.dispose();
+    this.outboxes.clear();
     this.legacy.dispose();
     this.wrapped.dispose();
     this.errors$.complete();

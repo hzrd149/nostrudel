@@ -1,7 +1,7 @@
 import { AvatarGroup, ButtonGroup, Flex, IconButton, Text } from "@chakra-ui/react";
 import { getRumorGiftWraps, getConversationParticipants, Rumor } from "applesauce-common/helpers";
 import { getExpirationTimestamp } from "applesauce-core/helpers";
-import { useActiveAccount, useEventModel, use$ } from "applesauce-react/hooks";
+import { useActiveAccount, use$ } from "applesauce-react/hooks";
 import { NostrEvent } from "nostr-tools";
 import { memo, useCallback, useContext, useEffect, useMemo } from "react";
 import { Navigate, UNSAFE_DataRouterContext, useLocation, useNavigate, useParams } from "react-router-dom";
@@ -15,11 +15,9 @@ import { normalizeToHexPubkey } from "../../../helpers/nip19";
 import { groupMessages } from "../../../helpers/nostr/dms";
 import useRouterMarker from "../../../hooks/use-router-marker";
 import useScrollRestoreRef from "../../../hooks/use-scroll-restore";
-import { DirectMessageRelaysModel } from "../../../models/messages";
 import useMessaging from "../../../hooks/use-messaging";
 import DirectMessageGroup from "../components/direct-message-group";
 import PendingLockedAlert from "../components/pending-decryption-alert";
-import ReadAuthRequiredAlert from "../components/read-auth-required-alert";
 import GroupMessageForm from "./components/group-message-form";
 import GroupRelayConnectionsButton from "./components/group-relay-connections";
 import GroupSettingsDrawer from "./components/group-settings-drawer";
@@ -36,13 +34,6 @@ const ChatLog = memo(({ messages }: { messages: (Rumor | NostrEvent)[] }) => {
     </>
   );
 });
-
-const GroupReadAuthRequiredAlert = () => {
-  const account = useActiveAccount()!;
-  const inboxes = useEventModel(DirectMessageRelaysModel, [account.pubkey]);
-
-  return <ReadAuthRequiredAlert relays={inboxes ?? []} />;
-};
 
 function DirectMessageGroupPage({ group }: { group: string }) {
   const account = useActiveAccount()!;
@@ -130,7 +121,6 @@ function DirectMessageGroupPage({ group }: { group: string }) {
         <ChatLog messages={messages} />
       </Flex>
 
-      <GroupReadAuthRequiredAlert />
       <GroupMessageForm flexShrink={0} group={group} p="2" initialExpiration={lastExpiration} />
 
       <GroupSettingsDrawer isOpen={!!location.state?.settings} onClose={closeDrawer} group={group} />

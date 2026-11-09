@@ -159,6 +159,7 @@
     "aislop": "0.16.1",
     "camelcase": "^8.0.0",
     "cheerio": "^1.2.0",
+    "fake-indexeddb": "6.2.8",
     "prettier": "^3.9.10",
     "typescript": "^5.9.3",
     "vite": "^8.3.6",

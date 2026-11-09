@@ -1,5 +1,5 @@
 import { ButtonGroup, IconButton, Menu, MenuButton, MenuItem, MenuList, useToast } from "@chakra-ui/react";
-import { Rumor } from "applesauce-common/helpers";
+import { getConversationParticipants, Rumor } from "applesauce-common/helpers";
 import { useActiveAccount } from "applesauce-react/hooks";
 import { kinds, NostrEvent } from "nostr-tools";
 import { memo, useCallback } from "react";
@@ -13,6 +13,8 @@ import AddReactionButton from "../../../components/timeline/note/components/add-
 import EventZapButton from "../../../components/zap/event-zap-button";
 import { useLegacyMessagePlaintext } from "../../../hooks/use-legacy-message-plaintext";
 import DirectMessageContent from "./direct-message-content";
+import useMessaging from "../../../hooks/use-messaging";
+import useAsyncAction from "../../../hooks/use-async-action";
 
 function DirectMessageActions({
   message,
@@ -26,46 +28,42 @@ function DirectMessageActions({
   toast: any;
 }) {
   const { plaintext } = useLegacyMessagePlaintext(message);
+  const session = useMessaging();
   const isOwnMessage = message.pubkey === account.pubkey;
   const canDelete = isOwnMessage && message.kind === kinds.EncryptedDirectMessage;
 
-  const handleReply = () => {
-    onReply?.(message);
-  };
-
-  const handleCopyText = async () => {
-    if (plaintext) {
-      try {
-        await navigator.clipboard.writeText(plaintext);
-        toast({
-          title: "Text copied to clipboard",
-          status: "success",
-          duration: 2000,
-        });
-      } catch {
-        toast({
-          title: "Failed to copy text",
-          status: "error",
-          duration: 2000,
-        });
-      }
+  const reply = useAsyncAction(async () => {
+    if (message.kind === kinds.EncryptedDirectMessage) {
+      onReply?.(message);
+      return;
     }
-  };
+    const conversation = session?.wrapped.conversation(getConversationParticipants(message));
+    if (!conversation) throw new Error("Messaging is not ready");
+    const draft = await conversation.loadDraft();
+    await conversation.setDraft({ ...draft, content: draft?.content ?? "", replyTo: message.id });
+  }, [session, message, onReply]);
+  const copy = useAsyncAction(async () => {
+    const text = message.kind === kinds.EncryptedDirectMessage ? plaintext : message.content;
+    if (text) await navigator.clipboard.writeText(text);
+    toast({ title: "Text copied to clipboard", status: "success", duration: 2000 });
+  }, [message, plaintext, toast]);
 
   return (
-    <ButtonGroup size="xs" variant="ghost" gap="0">
-      <IconButton aria-label="Reply" icon={<ReplyIcon />} onClick={handleReply} size="xs" />
+    <ButtonGroup variant="ghost" gap="0">
+      {(message.kind !== kinds.EncryptedDirectMessage || onReply) && (
+        <IconButton aria-label="Reply" icon={<ReplyIcon boxSize={5} />} onClick={reply.run} isLoading={reply.loading} />
+      )}
       {/* Only show reactions and zaps for legacy messages (NIP-04), not NIP-17 */}
       {message?.kind === kinds.EncryptedDirectMessage && (
         <>
-          <AddReactionButton event={message as NostrEvent} size="xs" />
-          <EventZapButton event={message as NostrEvent} size="xs" />
+          <AddReactionButton event={message as NostrEvent} />
+          <EventZapButton event={message as NostrEvent} />
         </>
       )}
       <Menu>
-        <MenuButton as={IconButton} aria-label="More actions" icon={<DotsHorizontal />} size="xs" />
-        <MenuList fontSize="sm">
-          <MenuItem icon={<CopyToClipboardIcon />} onClick={handleCopyText}>
+        <MenuButton as={IconButton} aria-label="More actions" icon={<DotsHorizontal boxSize={5} />} />
+        <MenuList>
+          <MenuItem icon={<CopyToClipboardIcon />} onClick={copy.run}>
             Copy text
           </MenuItem>
           {canDelete && <DeleteEventMenuItem event={message} />}
@@ -93,7 +91,7 @@ function DirectMessageGroup({
     (message: NostrEvent) => {
       return <DirectMessageActions message={message} onReply={onReply} account={account} toast={toast} />;
     },
-    [account, toast],
+    [account, toast, onReply],
   );
 
   return (

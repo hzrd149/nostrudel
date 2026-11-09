@@ -1,9 +1,9 @@
 import { ButtonGroup, Flex, IconButton, Text } from "@chakra-ui/react";
 import { getRumorGiftWraps, Rumor } from "applesauce-common/helpers";
-import { isEvent, mergeRelaySets, getExpirationTimestamp } from "applesauce-core/helpers";
-import { useActiveAccount, useEventModel, use$ } from "applesauce-react/hooks";
+import { isEvent, getExpirationTimestamp } from "applesauce-core/helpers";
+import { useActiveAccount, use$ } from "applesauce-react/hooks";
 import { kinds, NostrEvent } from "nostr-tools";
-import { memo, useCallback, useContext, useEffect, useMemo } from "react";
+import { memo, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { Navigate, UNSAFE_DataRouterContext, useLocation, useNavigate, useParams } from "react-router-dom";
 
 import { SettingsIcon } from "../../../components/icons";
@@ -18,13 +18,12 @@ import useParamsProfilePointer from "../../../hooks/use-params-pubkey-pointer";
 import useRouterMarker from "../../../hooks/use-router-marker";
 import useScrollRestoreRef from "../../../hooks/use-scroll-restore";
 import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeline-cursor-intersection-callback";
-import { useUserInbox } from "../../../hooks/use-user-mailboxes";
-import { DirectMessageRelaysModel } from "../../../models/messages";
 import IntersectionObserverProvider from "../../../providers/local/intersection-observer";
 import useMessaging from "../../../hooks/use-messaging";
+import localSettings from "../../../services/preferences";
 import DirectMessageGroup from "../components/direct-message-group";
+import ExpirationToggleButton from "../components/expiration-toggle-button";
 import PendingLockedAlert from "../components/pending-decryption-alert";
-import ReadAuthRequiredAlert from "../components/read-auth-required-alert";
 import DecryptLegacyMessagesButton from "./components/decrypt-legacy-messages-button";
 import SendMessageForm from "./components/direct-message-form";
 import DirectMessageRelayConnectionsButton from "./components/direct-message-relay-connections";
@@ -79,10 +78,6 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
   // Read each side's NIP-04 messages from the inboxes of the recipient and the outboxes of the sender
   const loader = useMemo(() => conversation?.createTimelineLoader({ limit: 100 }), [conversation]);
 
-  const selfLegacyInboxes = useUserInbox(account.pubkey);
-  const inboxes = useEventModel(DirectMessageRelaysModel, [account.pubkey]);
-  const allReadRelays = useMemo(() => mergeRelaySets(selfLegacyInboxes, inboxes), [selfLegacyInboxes, inboxes]);
-
   const legacyMessages = use$(() => conversation?.messages$, [conversation]);
   const wrappedMessages = use$(() => session?.wrapped.conversation(pubkey).timeline$({}), [session, pubkey]);
   const messages = useMemo<(NostrEvent | Rumor)[]>(
@@ -100,7 +95,7 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
       if (message.kind === kinds.EncryptedDirectMessage && isEvent(message)) {
         const ts = getExpirationTimestamp(message);
         if (ts) return ts - message.created_at;
-      } else if (message.kind === kinds.PrivateDirectMessage) {
+      } else if (message.kind === kinds.PrivateDirectMessage || message.kind === kinds.FileMessage) {
         const giftWrap = getRumorGiftWraps(message)[0];
         const ts = getExpirationTimestamp(message) ?? (giftWrap && getExpirationTimestamp(giftWrap));
         if (ts) return ts - message.created_at;
@@ -108,6 +103,12 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
     }
     return undefined;
   }, [messages]);
+
+  const defaultMessageExpiration = use$(localSettings.defaultMessageExpiration);
+  const [expiration, setExpiration] = useState<number | null>(lastExpiration ?? defaultMessageExpiration);
+  useEffect(() => {
+    if (lastExpiration) setExpiration(lastExpiration);
+  }, [lastExpiration]);
 
   // Callback to timeline loading
   const callback = useTimelineCurserIntersectionCallback(loader);
@@ -126,6 +127,7 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
         }
         actions={
           <ButtonGroup ml="auto">
+            <ExpirationToggleButton value={expiration} onChange={setExpiration} variant="ghost" />
             <DecryptLegacyMessagesButton other={pubkey} variant="ghost" />
             <DirectMessageRelayConnectionsButton other={pubkey} variant="ghost" onClick={openSettingsDrawer} />
             <IconButton
@@ -147,13 +149,12 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
           {loader && <LoadMoreButton loader={loader} />}
         </Flex>
 
-        <ReadAuthRequiredAlert relays={allReadRelays} />
         <SendMessageForm
           flexShrink={0}
           pubkey={pubkey}
           p="2"
           initialType={!isSelf && lastReceivedMessage?.kind === kinds.EncryptedDirectMessage ? "nip04" : "nip17"}
-          initialExpiration={lastExpiration}
+          expiration={expiration}
         />
 
         <DirectMessageSettingsDrawer

@@ -21,7 +21,7 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { unixNow } from "applesauce-core/helpers";
-import { useActiveAccount, useEventModel, use$ } from "applesauce-react/hooks";
+import { useActiveAccount, useEventModel } from "applesauce-react/hooks";
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { useForm } from "react-hook-form";
 
@@ -39,9 +39,8 @@ import useTextAreaUploadFile, { useTextAreaInsertTextWithForm } from "../../../.
 import { useUserInbox } from "../../../../hooks/use-user-mailboxes";
 import { DirectMessageRelaysModel } from "../../../../models/messages";
 import useMessagePublication from "../../../../hooks/use-message-publication";
-import localSettings from "../../../../services/preferences";
-import ExpirationToggleButton from "../../components/expiration-toggle-button";
 import MessagePublicationStatus from "../../components/message-publication-status";
+import WrappedComposer from "../../components/wrapped-composer";
 
 function RelayItem({ relay }: { relay: string }) {
   return (
@@ -276,17 +275,14 @@ export default function SendMessageForm({
   pubkey,
   rootId: _rootId,
   initialType = "nip04",
-  initialExpiration,
+  expiration,
   ...props
-}: { pubkey: string; rootId?: string; initialType?: MessageType; initialExpiration?: number } & Omit<
+}: { pubkey: string; rootId?: string; initialType?: MessageType; expiration?: number | null } & Omit<
   FlexProps,
   "children"
 >) {
   const account = useActiveAccount()!;
-  const defaultMessageExpiration = use$(localSettings.defaultMessageExpiration);
 
-  // These values are managed outside of the form because they are options the user toggles
-  const [expiration, setExpiration] = useState<number | null>(initialExpiration ?? defaultMessageExpiration);
   const [type, setType] = useState<MessageType>(initialType);
   const publication = useMessagePublication(type, [pubkey]);
 
@@ -294,9 +290,6 @@ export default function SendMessageForm({
   useEffect(() => {
     if (!publication.pending && !publication.busy) setType(initialType);
   }, [initialType]);
-  useEffect(() => {
-    if (initialExpiration) setExpiration(initialExpiration);
-  }, [initialExpiration]);
 
   const { getValues, setValue, watch, handleSubmit, formState, reset } = useForm({
     defaultValues: {
@@ -305,7 +298,7 @@ export default function SendMessageForm({
     mode: "all",
   });
   const content = watch("content");
-  const draft = useMessageDraft(type, [pubkey], content, formState.isDirty, reset);
+  const draft = useMessageDraft("nip04", [pubkey], content, formState.isDirty, reset);
 
   const autocompleteRef = useRef<RefType | null>(null);
   const textAreaRef = useRef<HTMLTextAreaElement | null>(null);
@@ -328,6 +321,21 @@ export default function SendMessageForm({
 
   const formRef = useRef<HTMLFormElement | null>(null);
 
+  if (type === "nip17")
+    return (
+      <WrappedComposer
+        recipients={[pubkey]}
+        expiration={expiration}
+        controls={
+          <>
+            {pubkey !== account.pubkey && (
+              <MessageTypeToggleButton value={type} onChange={setType} pubkey={pubkey} variant="ghost" />
+            )}
+          </>
+        }
+      />
+    );
+
   return (
     <Flex as="form" gap="2" direction="column" onSubmit={sendMessage} ref={formRef} {...props}>
       {publication.pending && (
@@ -342,7 +350,6 @@ export default function SendMessageForm({
       ) : (
         <Flex gap="2" w="full">
           <Flex gap="2" direction="column">
-            <ExpirationToggleButton value={expiration} onChange={setExpiration} variant="ghost" />
             {/* Notes to self are always gift wrapped, there is no one to fall back to legacy messages for */}
             {pubkey !== account.pubkey && (
               <MessageTypeToggleButton
