@@ -14,9 +14,17 @@ export type MessageProps = Omit<FlexProps, "children"> & {
   showHeader?: boolean;
   renderContent: (message: NostrEvent) => ReactNode;
   renderActions?: (message: NostrEvent, onReply?: (message: NostrEvent) => void) => ReactNode;
+  renderMetadata?: (message: NostrEvent) => ReactNode;
 };
 
-export default function Message({ message, showHeader = true, renderContent, renderActions, ...props }: MessageProps) {
+export default function Message({
+  message,
+  showHeader = true,
+  renderContent,
+  renderActions,
+  renderMetadata,
+  ...props
+}: MessageProps) {
   // Only load reactions for non-private messages (NIP-17 private messages shouldn't have reactions)
   const shouldLoadReactions = message.kind !== kinds.PrivateDirectMessage;
   const reactions = useEventReactions(shouldLoadReactions ? message : undefined) ?? [];
@@ -61,15 +69,19 @@ export default function Message({ message, showHeader = true, renderContent, ren
         {showHeader ? (
           <UserAvatarLink pubkey={message.pubkey} size="sm" m="1" />
         ) : hover ? (
-          <Timestamp timestamp={message.created_at} fontSize="sm" color="GrayText" isTruncated />
+          <Flex align="center" gap="1">
+            <Timestamp timestamp={message.created_at} fontSize="sm" color="GrayText" isTruncated />
+            {renderMetadata?.(message)}
+          </Flex>
         ) : null}
       </Box>
 
-      <Box flex={1}>
+      <Box flex={1} minW={0}>
         {showHeader && (
           <Flex align="flex-start" gap="2">
             <UserLink pubkey={message.pubkey} fontWeight="bold" />
             <Timestamp timestamp={message.created_at} fontSize="sm" color="GrayText" />
+            {renderMetadata?.(message)}
           </Flex>
         )}
 

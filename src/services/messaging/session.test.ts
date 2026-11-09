@@ -1,7 +1,8 @@
 import { GiftWrapFactory, WrappedMessageFactory } from "applesauce-common/factories";
 import { getRumorGiftWraps } from "applesauce-common/helpers";
 import { EventStore } from "applesauce-core";
-import { getEncryptedContent } from "applesauce-core/helpers";
+import { getEncryptedContent, getEventHash } from "applesauce-core/helpers";
+import { nip19 } from "nostr-tools";
 import { RelayPool } from "applesauce-relay";
 import { PrivateKeySigner } from "applesauce-signers";
 import type { GiftWrapProcessingRecord } from "applesauce-extra/gift-wrap";
@@ -36,6 +37,36 @@ async function setup() {
 }
 
 describe("messaging client integration", () => {
+  it("includes used emoji metadata in the encrypted rumor without turning mentions into recipients", async () => {
+    const ctx = await setup();
+    ctx.eventStore.add(
+      await ctx.signer.signEvent({ kind: 10050, created_at: 1, content: "", tags: [["relay", "wss://messages.test"]] }),
+    );
+    const publish = vi
+      .spyOn(ctx.pool, "publish")
+      .mockResolvedValue([{ from: "wss://messages.test/", ok: true, message: "" }]);
+    const outbox = ctx.session.outbox([ctx.pubkey]);
+    const [item] = outbox.enqueue({
+      content: `:nostopus_spin: nostr:${nip19.npubEncode(ctx.other)}`,
+      emojis: [
+        { shortcode: "nostopus_spin", url: "https://emoji.test/spin.gif" },
+        { shortcode: "unused", url: "https://emoji.test/unused.gif" },
+      ],
+    });
+    await outbox.retry(item);
+    expect(item.state).toBe("accepted");
+    const rumor = item.prepared!.message;
+    expect(rumor.tags.filter((tag) => tag[0] === "emoji")).toEqual([
+      ["emoji", "nostopus_spin", "https://emoji.test/spin.gif"],
+    ]);
+    expect(rumor.tags.filter((tag) => tag[0] === "p")).toEqual([["p", ctx.pubkey]]);
+    expect(rumor.id).toBe(getEventHash(rumor));
+    expect(publish).toHaveBeenCalledTimes(1);
+    expect(publish.mock.calls[0][1].tags.some((tag) => tag[0] === "emoji")).toBe(false);
+    ctx.session.dispose();
+    ctx.eventStore.dispose();
+  });
+
   it("publishes notes to self as one envelope and shares pending handles across equivalent routes", async () => {
     const ctx = await setup();
     ctx.eventStore.add(

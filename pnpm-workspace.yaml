@@ -23,3 +23,5 @@ overrides:
   applesauce-accounts: 7.1.0
   applesauce-loaders: 7.1.0
   applesauce-signers: 7.1.0
+patchedDependencies:
+  applesauce-extra@7.1.0: patches/applesauce-extra@7.1.0.patch

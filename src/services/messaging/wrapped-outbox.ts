@@ -1,10 +1,11 @@
-import type { FileMetadataFields } from "applesauce-common/helpers";
+import type { Emoji, FileMetadataFields } from "applesauce-common/helpers";
 import type { MessageDraft, PreparedWrappedMessage, WrappedConversation } from "applesauce-extra/messages";
 import { BehaviorSubject } from "rxjs";
 
 export type OutgoingMessage = {
   id: number;
   content: string;
+  emojis?: Emoji[];
   file?: File;
   replyTo?: string;
   expiration?: number;
@@ -22,7 +23,7 @@ export class WrappedOutbox {
 
   constructor(readonly conversation: WrappedConversation) {}
 
-  enqueue(draft: MessageDraft): OutgoingMessage[] {
+  enqueue(draft: MessageDraft & { emojis?: Emoji[] }): OutgoingMessage[] {
     this.lifetime.signal.throwIfAborted();
     const common = { replyTo: draft.replyTo, expiration: draft.expiration, state: "queued" as const };
     const items: OutgoingMessage[] = (draft.files ?? []).map((file) => ({
@@ -31,7 +32,8 @@ export class WrappedOutbox {
       content: "",
       file,
     }));
-    if (draft.content.trim()) items.push({ ...common, id: ++this.nextId, content: draft.content });
+    if (draft.content.trim())
+      items.push({ ...common, id: ++this.nextId, content: draft.content, emojis: draft.emojis });
     this.items$.next([...this.items$.value, ...items]);
     return items;
   }
@@ -59,6 +61,7 @@ export class WrappedOutbox {
         item.prepared = await this.conversation.prepareSend(
           {
             content: item.content,
+            emojis: item.emojis,
             file: item.uploaded,
             replyTo: item.replyTo,
             expiration: item.expiration,

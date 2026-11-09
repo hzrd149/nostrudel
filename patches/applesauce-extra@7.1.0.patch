@@ -1,0 +1,40 @@
+diff --git a/dist/messages/wrapped/session.js b/dist/messages/wrapped/session.js
+index e708bd2d778b5fe4a9a25bf81c37b296693a3737..1033032478717a21f791a51b728c91bd5080921b 100644
+--- a/dist/messages/wrapped/session.js
++++ b/dist/messages/wrapped/session.js
+@@ -1,4 +1,5 @@
+ import { logger } from "applesauce-core";
++import { includeEmojis } from "applesauce-core/operations/content";
+ import { castUser } from "applesauce-common/casts";
+ import { FileMessageFactory, GiftWrapFactory, WrappedMessageFactory } from "applesauce-common/factories";
+ import { getGiftWrapSeal } from "applesauce-common/helpers";
+@@ -157,7 +158,9 @@ export class WrappedMessageSession {
+                     factory = factory.expiration(request.expiration);
+                 if (request.replyTo)
+                     factory = factory.replyTo(request.replyTo);
+-                const template = await factory.as(owner.signer).stamp();
++                let template = await factory.as(owner.signer).stamp();
++                if (!request.file && request.emojis)
++                    template = await includeEmojis(request.emojis)(template);
+                 assertCurrent();
+                 const rumor = { ...template, id: getEventHash(template) };
+                 const destinations = await Promise.all(participants.map(async (participant) => ({ participant, relays: await this.deliveryRelays(participant) })));
+diff --git a/dist/messages/wrapped/types.d.ts b/dist/messages/wrapped/types.d.ts
+index 0a30e30139b5321084d80bf0996b4f02f14a9627..41ccfb32a4733123107cb182369a497dc9183c2d 100644
+--- a/dist/messages/wrapped/types.d.ts
++++ b/dist/messages/wrapped/types.d.ts
+@@ -1,4 +1,5 @@
+ import type { EventStore } from "applesauce-core";
++import type { Emoji } from "applesauce-core/factories";
+ import type { AsyncRumorStore, RumorStore } from "applesauce-core/event-store";
+ import type { EncryptedContentCache, Rumor } from "applesauce-core/helpers";
+ import type { CacheRequest } from "applesauce-loaders";
+@@ -81,6 +82,8 @@ export interface WrappedMessageSendRequest {
+     recipients: readonly string[];
+     /** The unmodified plaintext, ignored when a file is sent */
+     content: string;
++    /** Custom emojis used in the plaintext, included inside the encrypted rumor only. */
++    emojis?: Emoji[];
+     /** An uploaded file to send as a kind-15 file message instead of the text content */
+     file?: FileMetadataFields;
+     /** The parent rumor ID */

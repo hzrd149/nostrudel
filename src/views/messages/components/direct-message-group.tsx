@@ -13,6 +13,7 @@ import AddReactionButton from "../../../components/timeline/note/components/add-
 import EventZapButton from "../../../components/zap/event-zap-button";
 import { useLegacyMessagePlaintext } from "../../../hooks/use-legacy-message-plaintext";
 import DirectMessageContent from "./direct-message-content";
+import MessageExpiration from "./message-expiration";
 import useMessaging from "../../../hooks/use-messaging";
 import useAsyncAction from "../../../hooks/use-async-action";
 
@@ -86,6 +87,7 @@ function DirectMessageGroup({
   const toast = useToast();
 
   const renderContent = useCallback((message: NostrEvent | Rumor) => <DirectMessageContent message={message} />, []);
+  const renderMetadata = useCallback((message: NostrEvent) => <MessageExpiration message={message} />, []);
 
   const renderActions = useCallback(
     (message: NostrEvent) => {
@@ -98,6 +100,7 @@ function DirectMessageGroup({
     <MessagesGroup
       renderContent={renderContent}
       renderActions={renderActions}
+      renderMetadata={renderMetadata}
       messages={messages as NostrEvent[]}
       {...props}
     />

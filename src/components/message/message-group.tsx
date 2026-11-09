@@ -8,9 +8,16 @@ export type MessageGroupProps = {
   reverse?: boolean;
   renderContent: MessageProps["renderContent"];
   renderActions?: MessageProps["renderActions"];
+  renderMetadata?: MessageProps["renderMetadata"];
 };
 
-export default function MessagesGroup({ messages, reverse = false, renderContent, renderActions }: MessageGroupProps) {
+export default function MessagesGroup({
+  messages,
+  reverse = false,
+  renderContent,
+  renderActions,
+  renderMetadata,
+}: MessageGroupProps) {
   return (
     <Flex direction={reverse ? "column-reverse" : "column"}>
       {messages.map((message, i, arr) => (
@@ -20,6 +27,7 @@ export default function MessagesGroup({ messages, reverse = false, renderContent
           showHeader={reverse ? i === arr.length - 1 : i === 0}
           renderContent={renderContent}
           renderActions={renderActions}
+          renderMetadata={renderMetadata}
         />
       ))}
     </Flex>

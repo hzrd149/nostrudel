@@ -11,6 +11,9 @@ overrides:
   applesauce-loaders: 7.1.0
   applesauce-signers: 7.1.0
 
+patchedDependencies:
+  applesauce-extra@7.1.0: c5e9877c34bbc107b33c179b5d27112d9f521f00ee8e2c099bef72f5f744ae1f
+
 importers:
 
   .:
@@ -137,7 +140,7 @@ importers:
         version: 7.1.0(typescript@5.9.3)
       applesauce-extra:
         specifier: ^7.1.0
-        version: 7.1.0(@capacitor/core@7.6.10)(@kehto/nip@0.8.0(nostr-tools@2.24.3(typescript@5.9.3)))(@kehto/runtime@0.28.1(@napplet/core@0.38.0)(@napplet/nap@0.37.0(typescript@5.9.3)))(@kehto/services@0.30.1(@napplet/core@0.38.0)(@napplet/nap@0.37.0(typescript@5.9.3))(nostr-tools@2.24.3(typescript@5.9.3)))(@kehto/shell@0.32.0(@napplet/core@0.38.0)(@napplet/nap@0.37.0(typescript@5.9.3))(nostr-tools@2.24.3(typescript@5.9.3)))(hls.js@1.7.4)(typescript@5.9.3)
+        version: 7.1.0(patch_hash=c5e9877c34bbc107b33c179b5d27112d9f521f00ee8e2c099bef72f5f744ae1f)(@capacitor/core@7.6.10)(@kehto/nip@0.8.0(nostr-tools@2.24.3(typescript@5.9.3)))(@kehto/runtime@0.28.1(@napplet/core@0.38.0)(@napplet/nap@0.37.0(typescript@5.9.3)))(@kehto/services@0.30.1(@napplet/core@0.38.0)(@napplet/nap@0.37.0(typescript@5.9.3))(nostr-tools@2.24.3(typescript@5.9.3)))(@kehto/shell@0.32.0(@napplet/core@0.38.0)(@napplet/nap@0.37.0(typescript@5.9.3))(nostr-tools@2.24.3(typescript@5.9.3)))(hls.js@1.7.4)(typescript@5.9.3)
       applesauce-loaders:
         specifier: 7.1.0
         version: 7.1.0(typescript@5.9.3)
@@ -8842,16 +8845,12 @@ snapshots:
     transitivePeerDependencies:
       - typescript
 
-  applesauce-extra@7.1.0(@capacitor/core@7.6.10)(@kehto/nip@0.8.0(nostr-tools@2.24.3(typescript@5.9.3)))(@kehto/runtime@0.28.1(@napplet/core@0.38.0)(@napplet/nap@0.37.0(typescript@5.9.3)))(@kehto/services@0.30.1(@napplet/core@0.38.0)(@napplet/nap@0.37.0(typescript@5.9.3))(nostr-tools@2.24.3(typescript@5.9.3)))(@kehto/shell@0.32.0(@napplet/core@0.38.0)(@napplet/nap@0.37.0(typescript@5.9.3))(nostr-tools@2.24.3(typescript@5.9.3)))(hls.js@1.7.4)(typescript@5.9.3):
+  applesauce-extra@7.1.0(patch_hash=c5e9877c34bbc107b33c179b5d27112d9f521f00ee8e2c099bef72f5f744ae1f)(@capacitor/core@7.6.10)(@kehto/nip@0.8.0(nostr-tools@2.24.3(typescript@5.9.3)))(@kehto/runtime@0.28.1(@napplet/core@0.38.0)(@napplet/nap@0.37.0(typescript@5.9.3)))(@kehto/services@0.30.1(@napplet/core@0.38.0)(@napplet/nap@0.37.0(typescript@5.9.3))(nostr-tools@2.24.3(typescript@5.9.3)))(@kehto/shell@0.32.0(@napplet/core@0.38.0)(@napplet/nap@0.37.0(typescript@5.9.3))(nostr-tools@2.24.3(typescript@5.9.3)))(hls.js@1.7.4)(typescript@5.9.3):
     dependencies:
       '@noble/hashes': 2.4.0
       applesauce-core: 7.1.0(typescript@5.9.3)
       rxjs: 7.8.2
     optionalDependencies:
-      '@kehto/nip': 0.8.0(nostr-tools@2.24.3(typescript@5.9.3))
-      '@kehto/runtime': 0.28.1(@napplet/core@0.38.0)(@napplet/nap@0.37.0(typescript@5.9.3))
-      '@kehto/services': 0.30.1(@napplet/core@0.38.0)(@napplet/nap@0.37.0(typescript@5.9.3))(nostr-tools@2.24.3(typescript@5.9.3))
-      '@kehto/shell': 0.32.0(@napplet/core@0.38.0)(@napplet/nap@0.37.0(typescript@5.9.3))(nostr-tools@2.24.3(typescript@5.9.3))
       applesauce-actions: 7.1.0(typescript@5.9.3)
       applesauce-common: 7.1.0(typescript@5.9.3)
       applesauce-loaders: 7.1.0(typescript@5.9.3)

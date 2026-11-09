@@ -2,16 +2,15 @@ import { Box, BoxProps, Text } from "@chakra-ui/react";
 import { useRenderedContent, use$ } from "applesauce-react/hooks";
 import { kinds, NostrEvent } from "nostr-tools";
 import React, { useMemo } from "react";
+import "applesauce-content/text/cashu";
+import "applesauce-content/text/lightning";
 
 import {
-  getRumorGiftWraps,
   getMessageAttachments,
   getWrappedMessageParent,
   getConversationParticipants,
   Rumor,
 } from "applesauce-common/helpers";
-import { getExpirationTimestamp } from "applesauce-core/helpers";
-import dayjs from "dayjs";
 import { components } from "../../../components/content";
 import {
   renderAppleMusicUrl,
@@ -66,17 +65,13 @@ function LegacyDirectMessageContent({
   const plaintext = useLegacyMessagePlaintext(message).plaintext;
   const content = useRenderedContent(plaintext, components, { linkRenderers, cacheKey: DirectMessageContentSymbol });
 
-  const expirationTimestamp = getExpirationTimestamp(message);
-
   return (
     <ContentSettingsProvider event={message}>
       <LightboxProvider>
-        <Box whiteSpace="pre-wrap" {...props}>
+        <Box whiteSpace="pre-wrap" overflowWrap="anywhere" minW={0} {...props}>
           {content}
           {children}
         </Box>
-
-        {expirationTimestamp && <Text color="orange.500">Disappears: {dayjs.unix(expirationTimestamp).fromNow()}</Text>}
       </LightboxProvider>
     </ContentSettingsProvider>
   );
@@ -96,21 +91,11 @@ function WrappedDirectMessageContent({
   const parent = getWrappedMessageParent(message);
   const attachments = useMemo(() => getMessageAttachments(message), [message]);
   const content = useRenderedContent(message, components, { linkRenderers, cacheKey: DirectMessageContentSymbol });
-  const expirationTimestamp = useMemo(() => {
-    const expiration = getExpirationTimestamp(message);
-    if (expiration) return expiration;
-    const giftWraps = getRumorGiftWraps(message);
-    for (const giftWrap of giftWraps) {
-      const ts = getExpirationTimestamp(giftWrap);
-      if (ts) return ts;
-    }
-    return undefined;
-  }, [message]);
 
   return (
     <ContentSettingsProvider event={message as NostrEvent}>
       <LightboxProvider>
-        <Box whiteSpace="pre-wrap" {...props}>
+        <Box whiteSpace="pre-wrap" overflowWrap="anywhere" minW={0} {...props}>
           {parent && conversation && <MessageParent conversation={conversation} id={parent} />}
           {message.kind !== kinds.FileMessage && content}
           {attachments.map((file) => (
@@ -118,9 +103,9 @@ function WrappedDirectMessageContent({
           ))}
           {children}
         </Box>
-        {publications?.[message.id] && <Text color="GrayText">{publications[message.id]}</Text>}
-
-        {expirationTimestamp && <Text color="orange.500">Disappears: {dayjs.unix(expirationTimestamp).fromNow()}</Text>}
+        {(publications?.[message.id] === "prepared" || publications?.[message.id] === "publishing") && (
+          <Text color="GrayText">Sending…</Text>
+        )}
       </LightboxProvider>
     </ContentSettingsProvider>
   );

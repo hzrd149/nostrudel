@@ -1,4 +1,16 @@
-import { Box, Button, Flex, IconButton, Image, Input, Text } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Flex,
+  IconButton,
+  Image,
+  Input,
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  PopoverBody,
+  Text,
+} from "@chakra-ui/react";
 import type { MessageDraft } from "applesauce-extra/messages";
 import { use$ } from "applesauce-react/hooks";
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
@@ -12,7 +24,8 @@ import useAsyncAction from "../../../hooks/use-async-action";
 import useMessaging from "../../../hooks/use-messaging";
 import type { OutgoingMessage } from "../../../services/messaging/wrapped-outbox";
 import MessageParent from "./message-parent";
-import UserName from "../../../components/user/user-name";
+import MessagePublicationStatus from "./message-publication-status";
+import { useContextEmojis } from "../../../providers/global/emoji-provider";
 import InsertGifButton from "../../../components/gif/insert-gif-button";
 import InsertReactionButton from "../../../components/reactions/insert-reaction-button";
 import Paperclip from "../../../components/icons/paperclip";
@@ -45,6 +58,7 @@ export default function WrappedComposer({
   controls?: ReactNode;
 }) {
   const session = useMessaging();
+  const emojis = useContextEmojis();
   const key = [...new Set(recipients)].sort().join(",");
   const outbox = useMemo(() => session?.outbox(key.split(",")), [session, key]);
   const conversation = outbox?.conversation;
@@ -101,10 +115,15 @@ export default function WrappedComposer({
     // Save before queueing; a storage error leaves the editor intact.
     await conversation.setDraft({ ...values, replyTo });
     await conversation.clearDraft();
-    const queued = outbox.enqueue({ ...values, replyTo, expiration: expiration ? unixNow() + expiration : undefined });
+    const queued = outbox.enqueue({
+      ...values,
+      emojis,
+      replyTo,
+      expiration: expiration ? unixNow() + expiration : undefined,
+    });
     reset({ content: "", files: [] });
     for (const item of queued) void outbox.retry(item);
-  }, [conversation, outbox, ready, expiration]);
+  }, [conversation, outbox, ready, expiration, emojis]);
   const retry = useAsyncAction(
     async (item: OutgoingMessage) => {
       await outbox?.retry(item);
@@ -126,24 +145,30 @@ export default function WrappedComposer({
         </Flex>
       )}
       {items
-        .filter((item) => item.state !== "accepted")
+        .filter((item) => item.state !== "accepted" && (item.state === "failed" || !item.prepared))
         .map((item) => (
           <Flex key={item.id} direction="column" gap="1">
             <Text noOfLines={2}>{item.file?.name || item.content || "Attachment"}</Text>
-            {item.prepared?.publications.map((result) => (
-              <Text key={result.recipient}>
-                <UserName pubkey={result.recipient} />:{" "}
-                {result.accepted ? "Accepted by relay" : result.error ? "Failed" : "Pending"}
-              </Text>
-            ))}
             <Flex gap="2" align="center" wrap="wrap">
-              <Text color={item.error ? "red.500" : "GrayText"}>{item.error ?? item.state}</Text>
+              <Text color={item.error ? "red.500" : "GrayText"}>{item.error ?? "Sending…"}</Text>
               {(item.state === "failed" || item.state === "queued") && (
                 <>
                   <Button onClick={() => retry.run(item)}>Retry send</Button>
                   <Button variant="ghost" onClick={() => outbox?.discard(item)}>
                     Discard
                   </Button>
+                  {item.prepared && (
+                    <Popover>
+                      <PopoverTrigger>
+                        <Button variant="ghost">Details</Button>
+                      </PopoverTrigger>
+                      <PopoverContent>
+                        <PopoverBody>
+                          <MessagePublicationStatus pending={item.prepared} />
+                        </PopoverBody>
+                      </PopoverContent>
+                    </Popover>
+                  )}
                 </>
               )}
             </Flex>
