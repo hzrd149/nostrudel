@@ -3,6 +3,7 @@ import type { IntentRequest } from "@kehto/services";
 import {
   buildShellCapabilities,
   createShellBridge,
+  NAPPLET_HELLO,
   originRegistry,
   sessionRegistry,
   type NappletRevocation,
@@ -55,6 +56,7 @@ import {
 } from "../../services/napplet-shell/permission-controller";
 import { synchronizeRuntimePermissions } from "../../services/napplet-shell/permission-runtime";
 import { createPermissionGate } from "../../services/napplet-shell/permission-gate";
+import { describeStrayMessage } from "../../services/napplet-shell/stray-message";
 import { getNappletPermissions, type NappletPermission } from "../../services/napplet-shell/permission-types";
 
 type ConsentRequest = {
@@ -133,6 +135,8 @@ export function NappletShellProvider({ children }: PropsWithChildren) {
     new Map<string, { onReady: () => void; onRevoked: (revocation: NappletRevocation) => void }>(),
   );
   const launchGrantsRef = useRef(new Map<string, NappletPermission[]>());
+  // The window-level message that triggered a `window-message` revocation, shown in the frame error
+  const strayMessagesRef = useRef(new Map<string, string>());
   const [runtimeConsent, setRuntimeConsent] = useState<
     PermissionPrompt & { resolve(answer: PermissionAnswer): void }
   >();
@@ -237,7 +241,12 @@ export function NappletShellProvider({ children }: PropsWithChildren) {
             });
           }
         },
-        onNappletRevoked: (revocation) => frameCallbacks.current.get(revocation.windowId)?.onRevoked(revocation),
+        onNappletRevoked: (revocation) => {
+          const stray = strayMessagesRef.current.get(revocation.windowId);
+          strayMessagesRef.current.delete(revocation.windowId);
+          const detail = stray ? `${revocation.detail}: ${stray}` : revocation.detail;
+          frameCallbacks.current.get(revocation.windowId)?.onRevoked({ ...revocation, detail });
+        },
       }),
     [adapter],
   );
@@ -279,7 +288,13 @@ export function NappletShellProvider({ children }: PropsWithChildren) {
       capabilities.domains,
     );
     permissionGateRef.current = gate;
-    window.addEventListener("message", bridge.handleMessage);
+    const handleMessage = (event: MessageEvent) => {
+      const windowId = event.source ? originRegistry.getWindowId(event.source as Window) : undefined;
+      const isHello = (event.data as { type?: unknown } | null)?.type === NAPPLET_HELLO;
+      if (windowId && !isHello) strayMessagesRef.current.set(windowId, describeStrayMessage(event.data));
+      bridge.handleMessage(event);
+    };
+    window.addEventListener("message", handleMessage);
     window.addEventListener("storage", synchronizePermissionStorage);
     const changes = permissionChanges$.subscribe((change) =>
       synchronizeRuntimePermissions(bridge, adapter.services ?? {}, change),
@@ -292,7 +307,7 @@ export function NappletShellProvider({ children }: PropsWithChildren) {
       permissionGateRef.current = undefined;
       controller.dispose();
       permissionControllerRef.current = undefined;
-      window.removeEventListener("message", bridge.handleMessage);
+      window.removeEventListener("message", handleMessage);
       window.removeEventListener("storage", synchronizePermissionStorage);
       bridge.destroy();
       adapter.stop({ services: false });
