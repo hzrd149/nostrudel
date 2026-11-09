@@ -1,4 +1,4 @@
-import { Button, ButtonProps } from "@chakra-ui/react";
+import { Button, ButtonProps, Menu, MenuButton, MenuList, MenuOptionGroup, MenuItemOption } from "@chakra-ui/react";
 import { useMemo } from "react";
 
 const EXPIRATION_PRESETS: Record<string, number> = {
@@ -25,41 +25,42 @@ export function ExpirationToggleButton({
   presets = EXPIRATION_PRESETS,
   ...props
 }: ExpirationToggleButtonProps) {
-  // Create ordered list of options including "off"
   const options = useMemo(() => {
     const presetEntries = Object.entries(presets).sort((a, b) => a[1] - b[1]);
     return [["--", undefined] as const, ...presetEntries];
   }, [presets]);
 
-  // Find current option index
-  const currentIndex = useMemo(() => {
-    if (value === null) return 0; // "off" option
-    return options.findIndex(([, seconds]) => seconds === value);
-  }, [value, options]);
-
-  // Get display text for current value
   const displayText = useMemo(() => {
     if (value === null) return "--";
     const entry = options.find(([, seconds]) => seconds === value);
     return entry ? entry[0] : "--";
   }, [value, options]);
 
-  const handleToggle = () => {
-    // Move to next option, wrapping around to start
-    const nextIndex = (currentIndex + 1) % options.length;
-    const [, nextValue] = options[nextIndex];
-    onChange(nextValue ?? null);
-  };
-
   return (
-    <Button
-      type="button"
-      title={`Message expiration: ${displayText}${value ? ` (${formatDuration(value)})` : ""}`}
-      onClick={handleToggle}
-      {...props}
-    >
-      {displayText}
-    </Button>
+    <Menu>
+      <MenuButton
+        as={Button}
+        type="button"
+        aria-label="Message expiration"
+        title={`Message expiration: ${displayText}${value ? ` (${formatDuration(value)})` : ""}`}
+        {...props}
+      >
+        {displayText} ▾
+      </MenuButton>
+      <MenuList>
+        <MenuOptionGroup
+          type="radio"
+          value={value == null ? "off" : String(value)}
+          onChange={(selected) => onChange(selected === "off" ? null : Number(selected))}
+        >
+          {options.map(([label, seconds]) => (
+            <MenuItemOption key={label} value={seconds === undefined ? "off" : String(seconds)}>
+              {seconds === undefined ? "Off" : formatDuration(seconds)}
+            </MenuItemOption>
+          ))}
+        </MenuOptionGroup>
+      </MenuList>
+    </Menu>
   );
 }
 
