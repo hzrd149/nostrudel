@@ -27,13 +27,11 @@ export default function MessageDecryptionMode() {
           <Box borderWidth="1px" borderColor={!auto ? "primary.500" : undefined} borderRadius="md" flex="1">
             <Radio value="manual" colorScheme="primary" w="full" p="4">
               <Text fontWeight="medium">Manual</Text>
-              <Text>Decrypt messages when you choose.</Text>
             </Radio>
           </Box>
           <Box borderWidth="1px" borderColor={auto ? "primary.500" : undefined} borderRadius="md" flex="1">
             <Radio value="automatic" colorScheme="primary" w="full" p="4">
               <Text fontWeight="medium">Automatic</Text>
-              <Text>Decrypt messages as they arrive.</Text>
             </Radio>
           </Box>
         </Flex>

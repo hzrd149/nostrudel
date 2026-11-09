@@ -3,7 +3,6 @@ import {
   Button,
   Flex,
   FormControl,
-  FormHelperText,
   FormLabel,
   Heading,
   HStack,
@@ -118,12 +117,7 @@ export default function MessageCacheSection() {
 
   return (
     <VStack spacing="4" align="stretch">
-      <VStack spacing="1" align="start">
-        <Heading size="md">Message Cache</Heading>
-        <Text fontSize="sm" color="gray.500">
-          Configure how decrypted messages are cached locally to improve performance.
-        </Text>
-      </VStack>
+      <Heading size="md">Message Cache</Heading>
 
       <FormControl>
         <Flex alignItems="center">
@@ -132,11 +126,11 @@ export default function MessageCacheSection() {
           </FormLabel>
           <Switch
             id="enableDecryptionCache"
+            colorScheme="primary"
             isChecked={enableDecryptionCache}
             onChange={(e) => localSettings.enableDecryptionCache.next(e.target.checked)}
           />
         </Flex>
-        <FormHelperText>Store decrypted messages locally in your browser to speed up message loading.</FormHelperText>
       </FormControl>
 
       {enableDecryptionCache && (
@@ -148,13 +142,11 @@ export default function MessageCacheSection() {
               </FormLabel>
               <Switch
                 id="encryptDecryptionCache"
+                colorScheme="primary"
                 isChecked={encryptDecryptionCache}
                 onChange={(e) => localSettings.encryptDecryptionCache.next(e.target.checked)}
               />
             </Flex>
-            <FormHelperText>
-              Whether to encrypt cached decrypted messages with a password when they are stored locally
-            </FormHelperText>
           </FormControl>
 
           <DecryptionCacheStats />

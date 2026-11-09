@@ -1,4 +1,4 @@
-import { FormControl, FormHelperText, FormLabel, Select } from "@chakra-ui/react";
+import { FormControl, FormLabel, Select } from "@chakra-ui/react";
 import { use$ } from "applesauce-react/hooks";
 
 import SimpleView from "../../../components/layout/presets/simple-view";
@@ -33,9 +33,6 @@ export default function MessagesSettings() {
           <option value={60 * 60 * 24 * 90}>3 months</option>
           <option value={60 * 60 * 24 * 365}>1 year</option>
         </Select>
-        <FormHelperText>
-          Set a default expiration time for new messages. Messages will automatically be deleted after this time.
-        </FormHelperText>
       </FormControl>
 
       <DirectMessageRelaysSection />

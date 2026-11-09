@@ -1,4 +1,20 @@
-import { Alert, AlertDescription, AlertIcon, Heading, Link, Text, VStack } from "@chakra-ui/react";
+import { CloseIcon, LockIcon, TimeIcon, WarningIcon } from "@chakra-ui/icons";
+import {
+  Flex,
+  Heading,
+  IconButton,
+  Popover,
+  PopoverArrow,
+  PopoverBody,
+  PopoverCloseButton,
+  PopoverContent,
+  PopoverHeader,
+  PopoverTrigger,
+  Portal,
+  Text,
+  VStack,
+} from "@chakra-ui/react";
+import { ReactElement } from "react";
 import { EventFactory } from "applesauce-core/factories";
 import { addRelayTag, removeRelayTag } from "applesauce-core/operations/tag/relay";
 import { useActiveAccount, use$ } from "applesauce-react/hooks";
@@ -9,38 +25,85 @@ import useCastUser from "../../../hooks/use-cast-user";
 import { useRelayInfo } from "../../../hooks/use-relay-info";
 import { usePublishEvent } from "../../../providers/global/publish-provider";
 import AddRelayForm from "../relays/components/add-relay-form";
-import RelayControl from "../relays/components/relay-control";
+import RelayFavicon from "../../../components/relay/relay-favicon";
+import RelayLink from "../../../components/relay/relay-link";
 import pool from "../../../services/pool";
 
-function RelayEntry({ url, onRemove }: { url: string; onRemove: () => void }) {
+function RelayCheck({
+  label,
+  detail,
+  icon,
+  colorScheme,
+}: {
+  label: string;
+  detail: string;
+  icon: ReactElement;
+  colorScheme: string;
+}) {
+  return (
+    <Popover>
+      <PopoverTrigger>
+        <IconButton aria-label={label} icon={icon} colorScheme={colorScheme} variant="ghost" />
+      </PopoverTrigger>
+      <Portal>
+        <PopoverContent>
+          <PopoverArrow />
+          <PopoverCloseButton />
+          <PopoverHeader pr="10" fontWeight="medium">
+            {label}
+          </PopoverHeader>
+          <PopoverBody>{detail}</PopoverBody>
+        </PopoverContent>
+      </Portal>
+    </Popover>
+  );
+}
+
+function RelayEntry({ url, onRemove }: { url: string; onRemove: () => Promise<unknown> }) {
   const authRequiredForPublishing = use$(() => pool.relay(url).authRequiredForPublish$, [url]);
   const authRequiredForReading = use$(() => pool.relay(url).authRequiredForRead$, [url]);
   const { info } = useRelayInfo(url);
+  const remove = useAsyncAction(onRemove, [onRemove]);
 
   return (
-    <RelayControl
-      url={url}
-      onRemove={onRemove}
-      details={
-        <>
-          {authRequiredForReading && (
-            <Text color="green.500" fontSize="sm">
-              Authentication required for reading (Protects your privacy)
-            </Text>
-          )}
-          {authRequiredForPublishing && (
-            <Text color="red.500" fontSize="sm">
-              Authentication required for publishing (This may prevent users from sending you messages)
-            </Text>
-          )}
-          {info?.supported_nips.includes(40) && (
-            <Text color="green.500" fontSize="sm">
-              Supports disappearing messages
-            </Text>
-          )}
-        </>
-      }
-    />
+    <Flex gap="2" align="center" wrap="wrap">
+      <RelayFavicon relay={url} />
+      <RelayLink relay={url} isTruncated flex="1" minW="0" />
+      <Flex gap="1" align="center" ms="auto">
+        {authRequiredForReading && (
+          <RelayCheck
+            label="Private reading"
+            detail="Authentication is required to read messages, protecting your privacy."
+            icon={<LockIcon boxSize={5} />}
+            colorScheme="green"
+          />
+        )}
+        {authRequiredForPublishing && (
+          <RelayCheck
+            label="Restricted publishing"
+            detail="Authentication is required to publish. Some users may be unable to send you messages."
+            icon={<WarningIcon boxSize={5} />}
+            colorScheme="orange"
+          />
+        )}
+        {info?.supported_nips?.includes(40) && (
+          <RelayCheck
+            label="Disappearing messages"
+            detail="This relay supports message expiration (NIP-40)."
+            icon={<TimeIcon boxSize={5} />}
+            colorScheme="green"
+          />
+        )}
+        <IconButton
+          aria-label="Remove relay"
+          icon={<CloseIcon boxSize={5} />}
+          colorScheme="red"
+          variant="ghost"
+          onClick={remove.run}
+          isLoading={remove.loading}
+        />
+      </Flex>
+    </Flex>
   );
 }
 
@@ -67,34 +130,13 @@ export default function DirectMessageRelaysSection() {
 
   return (
     <VStack spacing="4" align="stretch">
-      <VStack spacing="1" align="start">
-        <Heading size="md">Message inbox relays</Heading>
-        <Text fontSize="sm" color="gray.500">
-          Relays where your encrypted direct messages will be sent and received according to{" "}
-          <Link
-            color="blue.500"
-            isExternal
-            href="https://github.com/nostr-protocol/nips/blob/master/17.md"
-            textDecoration="underline"
-          >
-            NIP-17
-          </Link>
-          . Keep this list small (1-3 relays) for better performance.
-        </Text>
-      </VStack>
+      <Heading size="md">Message inbox relays</Heading>
 
       <VStack spacing="2" align="stretch">
         {relays.map((relay) => (
           <RelayEntry key={relay} url={relay} onRemove={() => removeRelay.run(relay)} />
         ))}
-        {relays.length === 0 && (
-          <Alert status="warning" variant="subtle">
-            <AlertIcon />
-            <AlertDescription>
-              No direct message relays configured. Add relays below to enable NIP-17 encrypted messaging.
-            </AlertDescription>
-          </Alert>
-        )}
+        {relays.length === 0 && <Text>No inbox relays configured.</Text>}
 
         <AddRelayForm onSubmit={addRelay.run} />
       </VStack>
