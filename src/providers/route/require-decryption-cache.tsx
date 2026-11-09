@@ -1,5 +1,4 @@
 import {
-  Alert,
   AlertDialog,
   AlertDialogBody,
   AlertDialogContent,
@@ -7,19 +6,19 @@ import {
   AlertDialogHeader,
   AlertDialogOverlay,
   Button,
-  ButtonGroup,
   Card,
   CardBody,
   CardFooter,
   CardHeader,
   Flex,
   FormControl,
-  FormHelperText,
   FormLabel,
   Heading,
   Input,
-  Switch,
-  Text,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
   useDisclosure,
   useToast,
   VStack,
@@ -30,14 +29,12 @@ import { firstValueFrom } from "rxjs";
 
 import EncryptedStorage from "../../classes/encrypted-storage";
 import useAsyncAction from "../../hooks/use-async-action";
-import { decryptionCache$, decryptionCacheLocked$, decryptionCacheStats$ } from "../../services/decryption-cache";
+import { decryptionCache$, decryptionCacheLocked$ } from "../../services/decryption-cache";
 import localSettings from "../../services/preferences";
 
 export default function RequireDecryptionCache({ children }: { children: JSX.Element }) {
-  const stats = use$(decryptionCacheStats$);
   const cache = use$(decryptionCache$);
   const locked = use$(decryptionCacheLocked$);
-  const autoDecryptMessages = use$(localSettings.autoDecryptMessages);
   const [password, setPassword] = useState("");
   const toast = useToast();
   const disableEncryptionModal = useDisclosure();
@@ -108,53 +105,23 @@ export default function RequireDecryptionCache({ children }: { children: JSX.Ele
       <Card maxW="md" w="full">
         <CardHeader pb="0">
           <Heading size="md" textAlign="center">
-            Unlock Message Cache
+            Unlock message cache
           </Heading>
         </CardHeader>
 
         <CardBody>
           <VStack spacing="4">
-            <Alert status="info" borderRadius="md">
-              <Text fontSize="sm">
-                The message cache is used to cache decrypted direct messages locally in your browser to improve loading
-                speed. It is encrypted to securely store messages. Enter your password to unlock it and access your
-                encrypted messages.
-              </Text>
-            </Alert>
-
-            <FormControl>
+            <FormControl id="message-cache-password">
               <FormLabel>Password</FormLabel>
               <Input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                onKeyPress={(e) => e.key === "Enter" && !unlockCache.loading && unlockCache.run()}
-                placeholder="Enter current password or new password"
+                onKeyDown={(e) => e.key === "Enter" && !unlockCache.loading && unlockCache.run()}
                 autoFocus
                 autoComplete="off"
               />
             </FormControl>
-
-            <FormControl>
-              <Flex alignItems="center">
-                <FormLabel htmlFor="autoDecryptMessages" mb="0">
-                  Automatically decrypt messages
-                </FormLabel>
-                <Switch
-                  id="autoDecryptMessages"
-                  isChecked={autoDecryptMessages}
-                  onChange={(e) => localSettings.autoDecryptMessages.next(e.target.checked)}
-                />
-              </Flex>
-              <FormHelperText>Automatically decrypt direct messages when they are loaded or received.</FormHelperText>
-            </FormControl>
-
-            {stats && (
-              <Text fontSize="sm" color="gray.500" textAlign="center">
-                Cache contains {stats.totalEntries} encrypted entries
-                {stats.estimatedSize > 0 && ` (~${Math.round(stats.estimatedSize / 1024)}KB)`}
-              </Text>
-            )}
           </VStack>
         </CardBody>
 
@@ -167,17 +134,18 @@ export default function RequireDecryptionCache({ children }: { children: JSX.Ele
               isLoading={unlockCache.loading}
               loadingText="Unlocking..."
             >
-              Unlock Cache
+              Unlock
             </Button>
 
-            <ButtonGroup w="full">
-              <Button variant="ghost" size="sm" onClick={disableCacheModal.onOpen} colorScheme="orange" w="full">
-                Disable cache
-              </Button>
-              <Button variant="ghost" size="sm" onClick={disableEncryptionModal.onOpen} colorScheme="red" w="full">
-                Disable encryption
-              </Button>
-            </ButtonGroup>
+            <Menu>
+              <MenuButton as={Button} variant="ghost">
+                Cache options
+              </MenuButton>
+              <MenuList>
+                <MenuItem onClick={disableCacheModal.onOpen}>Disable cache</MenuItem>
+                <MenuItem onClick={disableEncryptionModal.onOpen}>Disable encryption</MenuItem>
+              </MenuList>
+            </Menu>
           </VStack>
         </CardFooter>
       </Card>
@@ -195,10 +163,8 @@ export default function RequireDecryptionCache({ children }: { children: JSX.Ele
             </AlertDialogHeader>
 
             <AlertDialogBody>
-              Are you sure you want to disable message cache encryption? This will:
-              <br />• Clear all cached encrypted messages
-              <br />• Store future messages unencrypted
-              <br />• Remove the password requirement
+              Cached messages will be cleared. Future messages will be cached on this device without password
+              protection.
             </AlertDialogBody>
 
             <AlertDialogFooter>
@@ -226,10 +192,7 @@ export default function RequireDecryptionCache({ children }: { children: JSX.Ele
             </AlertDialogHeader>
 
             <AlertDialogBody>
-              Are you sure you want to disable the message cache? This will:
-              <br />• Clear all cached messages
-              <br />• Stop caching decrypted direct messages
-              <br />• Messages will need to be decrypted every time they are loaded
+              Cached messages will be cleared. Messages will need to be decrypted each time you open them.
             </AlertDialogBody>
 
             <AlertDialogFooter>
