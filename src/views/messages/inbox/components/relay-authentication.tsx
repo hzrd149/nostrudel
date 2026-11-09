@@ -59,11 +59,26 @@ export default function RelayAuthentication() {
   const requestKey = (request: MessageAuthRequest) =>
     `${session?.wrapped.pubkey}:${request.url}:${request.context.challenge}`;
   const visible = requests.filter((request) => !dismissed.has(requestKey(request)));
+  const authenticateAll = useAsyncAction(async () => {
+    if (!session) return;
+    const results = [...(await session.legacy.authenticateAll()), ...(await session.wrapped.authenticateAll())];
+    const failed = results.filter((result) => result.status === "failed");
+    if (failed.length) throw new Error(`Authentication failed: ${failed.map((result) => result.url).join(", ")}`);
+  }, [session]);
   if (!visible.length) return null;
 
   return (
     <VStack align="stretch" spacing="3">
-      <Heading size="md">Relay authentication</Heading>
+      <Flex align="center" justify="space-between" gap="2" wrap="wrap">
+        <Heading size="md">Relay authentication</Heading>
+        <Button
+          onClick={authenticateAll.run}
+          isLoading={authenticateAll.loading}
+          isDisabled={requests.some((request) => request.state === "authenticating")}
+        >
+          Authenticate all
+        </Button>
+      </Flex>
       {visible.map((request) => (
         <RelayAuthenticationRow
           key={requestKey(request)}
