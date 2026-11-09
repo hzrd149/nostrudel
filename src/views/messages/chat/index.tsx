@@ -23,7 +23,6 @@ import useMessaging from "../../../hooks/use-messaging";
 import localSettings from "../../../services/preferences";
 import DirectMessageGroup from "../components/direct-message-group";
 import ExpirationToggleButton from "../components/expiration-toggle-button";
-import PendingLockedAlert from "../components/pending-decryption-alert";
 import DecryptLegacyMessagesButton from "./components/decrypt-legacy-messages-button";
 import SendMessageForm, { MessageTypeToggleButton, type MessageType } from "./components/direct-message-form";
 import useMessagePublication from "../../../hooks/use-message-publication";
@@ -160,7 +159,6 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
         gap="0"
       >
         <Flex direction="column-reverse" gap="2" flexGrow={1} h={0} overflowX="hidden" overflowY="auto" ref={scroll}>
-          <PendingLockedAlert />
           <ChatLog messages={messages} />
           {loader && <LoadMoreButton loader={loader} />}
         </Flex>

@@ -17,7 +17,6 @@ import useRouterMarker from "../../../hooks/use-router-marker";
 import useScrollRestoreRef from "../../../hooks/use-scroll-restore";
 import useMessaging from "../../../hooks/use-messaging";
 import DirectMessageGroup from "../components/direct-message-group";
-import PendingLockedAlert from "../components/pending-decryption-alert";
 import GroupMessageForm from "./components/group-message-form";
 import GroupRelayConnectionsButton from "./components/group-relay-connections";
 import GroupSettingsDrawer from "./components/group-settings-drawer";
@@ -117,7 +116,6 @@ function DirectMessageGroupPage({ group }: { group: string }) {
       gap="0"
     >
       <Flex direction="column-reverse" gap="2" flexGrow={1} h={0} overflowX="hidden" overflowY="auto" ref={scroll}>
-        <PendingLockedAlert />
         <ChatLog messages={messages} />
       </Flex>
 
