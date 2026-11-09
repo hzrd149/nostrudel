@@ -153,11 +153,15 @@ export default function NappletFrame({ event, onClose, onResolved, onError }: Na
           const recipient = originRegistry.getNappletTarget(windowId);
           if (recipient) detachTargetRef.current = attachIntentTarget(catalogId, recipient);
         },
-        () => {
+        (revocation) => {
           unregisterFrame(windowId);
           detachTargetRef.current?.();
           stopObservingRef.current?.();
-          setError(new Error("Napplet connection closed. Reload to start a new frame."));
+          setError(
+            new Error(
+              `Napplet connection closed (${revocation.reason}: ${revocation.detail}). Reload to start a new frame.`,
+            ),
+          );
         },
       );
 

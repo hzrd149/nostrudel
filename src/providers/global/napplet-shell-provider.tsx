@@ -5,6 +5,7 @@ import {
   createShellBridge,
   originRegistry,
   sessionRegistry,
+  type NappletRevocation,
   type ShellBridge,
   type ShellCapabilities,
 } from "@kehto/shell";
@@ -83,7 +84,7 @@ type NappletShellContextValue = {
     catalogId: string,
     manifest: NostrEvent,
     onReady: () => void,
-    onRevoked: () => void,
+    onRevoked: (revocation: NappletRevocation) => void,
   ) => void;
   unregisterFrame: (windowId: string) => void;
 };
@@ -128,7 +129,9 @@ export function NappletShellProvider({ children }: PropsWithChildren) {
   }, [account, respondIntentChoice]);
   const permissionControllerRef = useRef<ReturnType<typeof createPermissionController>>();
   const permissionGateRef = useRef<ReturnType<typeof createPermissionGate>>();
-  const frameCallbacks = useRef(new Map<string, { onReady: () => void; onRevoked: () => void }>());
+  const frameCallbacks = useRef(
+    new Map<string, { onReady: () => void; onRevoked: (revocation: NappletRevocation) => void }>(),
+  );
   const launchGrantsRef = useRef(new Map<string, NappletPermission[]>());
   const [runtimeConsent, setRuntimeConsent] = useState<
     PermissionPrompt & { resolve(answer: PermissionAnswer): void }
@@ -234,7 +237,7 @@ export function NappletShellProvider({ children }: PropsWithChildren) {
             });
           }
         },
-        onNappletRevoked: ({ windowId }) => frameCallbacks.current.get(windowId)?.onRevoked(),
+        onNappletRevoked: (revocation) => frameCallbacks.current.get(revocation.windowId)?.onRevoked(revocation),
       }),
     [adapter],
   );
