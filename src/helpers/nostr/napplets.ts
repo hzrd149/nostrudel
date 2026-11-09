@@ -12,10 +12,9 @@ import {
   NAPPLET_KIND_ROOT,
   NAPPLET_KIND_SNAPSHOT,
   NappletResolutionError,
-  computeAggregateHash,
   getNappletCatalogId,
   isNappletManifestKind,
-  pathEntriesFromTags,
+  parseNappletManifest as parseManifest,
   type NappletManifest,
 } from "@kehto/nip";
 import { ALL_CAPABILITIES, type Capability } from "@kehto/shell";
@@ -58,71 +57,19 @@ const REQUIRED_CAPABILITY_MAP: Record<string, Capability[]> = {
   link: [],
 };
 
-const SHA256_HEX = /^[0-9a-f]{64}$/i;
-const ARCHETYPE_SLUG = /^[a-z0-9][a-z0-9-]*$/;
 const INTENT_CONVENTION = /^napplet:([a-z0-9][a-z0-9-]*)\/([a-z0-9][a-z0-9-]*)$/;
 
 function tagValues(event: NostrEvent, name: string) {
   return event.tags.filter((t) => t[0] === name && t[1]).map((t) => t[1].trim());
 }
 
-/**
- * NAP-INTENT routing contracts: each `i` convention whose role matches a `z` tag on the same
- * manifest, with its trailing parameter names. Malformed or role-less entries contribute nothing.
- */
-function getManifestArchetypes(event: NostrEvent): NappletManifest["archetypes"] {
-  const roles = new Set(tagValues(event, "z").filter((slug) => ARCHETYPE_SLUG.test(slug)));
-  const contracts = new Map<string, { slug: string; convention: string; params: string[] }>();
-
-  for (const tag of event.tags) {
-    if (tag[0] !== "i") continue;
-    const slug = INTENT_CONVENTION.exec(tag[1] ?? "")?.[1];
-    if (!slug || !roles.has(slug) || contracts.has(tag[1])) continue;
-    contracts.set(tag[1], { slug, convention: tag[1], params: tag.slice(2) });
-  }
-
-  return Array.from(contracts.values());
-}
-
-/**
- * Permissive NIP-5D manifest parser. Accepts single-file manifests (one bare `x` tag holding the
- * sha256 of `/index.html`) and legacy multi-file manifests (`path` tags with an optional
- * `x … aggregate` tag). Only throws when the kind is wrong or there is nothing to load.
- */
+/** Parse current NIP-5D manifests without enabling Kehto's legacy compatibility adapter. */
 export function parseNappletManifest(event: NostrEvent): NappletManifest {
-  if (!isNappletManifestKind(event.kind)) {
-    throw new NappletResolutionError("invalid-manifest", `not a NIP-5D napplet kind: ${event.kind}`);
+  const manifest = parseManifest(event);
+  if (manifest.format !== "current") {
+    throw new NappletResolutionError("invalid-manifest", "Legacy napplet manifests are not supported");
   }
-
-  let paths = pathEntriesFromTags(event.tags).filter((entry) => SHA256_HEX.test(entry.sha256));
-  let aggregateHash: string | undefined;
-
-  if (paths.length > 0) {
-    aggregateHash =
-      event.tags.find((t) => t[0] === "x" && t[2] === "aggregate" && t[1] && SHA256_HEX.test(t[1]))?.[1] ??
-      computeAggregateHash(paths);
-  } else {
-    const sha256 = event.tags.find((t) => t[0] === "x" && t[1] && SHA256_HEX.test(t[1]))?.[1]?.toLowerCase();
-    if (!sha256) throw new NappletResolutionError("invalid-manifest", "manifest has no x tag or path tags");
-    paths = [{ path: "/index.html", sha256 }];
-    aggregateHash = sha256;
-  }
-
-  return {
-    kind: event.kind,
-    pubkey: event.pubkey,
-    dTag: getTagValue(event, "d") ?? "",
-    catalogId: getNappletCatalogId(event),
-    artifactHash: aggregateHash,
-    paths,
-    aggregateHash,
-    servers: getNappletServers(event),
-    requires: Array.from(new Set([...tagValues(event, "requires"), ...tagValues(event, "R")])),
-    archetypes: getManifestArchetypes(event),
-    title: getTagValue(event, "title"),
-    description: getTagValue(event, "description") || event.content || undefined,
-    source: getNappletSource(event),
-  };
+  return manifest;
 }
 
 /** The identity permissions are granted to: one version of one napplet */

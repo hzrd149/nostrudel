@@ -46,7 +46,7 @@ describe("acceptIntent", () => {
     targets.attachIntentTarget(params.handler, target);
     await completion;
 
-    expect(target.postMessage).toHaveBeenCalledWith(delivery, "*");
+    expect(target.postMessage).toHaveBeenCalledWith(delivery);
   });
 
   it("delivers in place to a loaded target, including repeated identical intents", async () => {

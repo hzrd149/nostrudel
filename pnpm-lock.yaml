@@ -82,23 +82,23 @@ importers:
         specifier: ^3.12.3
         version: 3.12.3(@types/react@18.3.31)(react@19.3.1)(typescript@5.9.3)
       '@kehto/nip':
-        specifier: ^0.7.0
-        version: 0.7.0(nostr-tools@2.24.3(typescript@5.9.3))
+        specifier: ^0.8.0
+        version: 0.8.0(nostr-tools@2.24.3(typescript@5.9.3))
       '@kehto/runtime':
-        specifier: ^0.26.1
-        version: 0.26.1(@napplet/core@0.34.0)(@napplet/nap@0.34.0(typescript@5.9.3))
+        specifier: ^0.28.1
+        version: 0.28.1(@napplet/core@0.38.0)(@napplet/nap@0.37.0(typescript@5.9.3))
       '@kehto/services':
-        specifier: ^0.25.1
-        version: 0.25.1(@napplet/core@0.34.0)(@napplet/nap@0.34.0(typescript@5.9.3))(nostr-tools@2.24.3(typescript@5.9.3))
+        specifier: ^0.30.1
+        version: 0.30.1(@napplet/core@0.38.0)(@napplet/nap@0.37.0(typescript@5.9.3))(nostr-tools@2.24.3(typescript@5.9.3))
       '@kehto/shell':
-        specifier: ^0.24.5
-        version: 0.24.5(@napplet/core@0.34.0)(@napplet/nap@0.34.0(typescript@5.9.3))(nostr-tools@2.24.3(typescript@5.9.3))
+        specifier: ^0.32.0
+        version: 0.32.0(@napplet/core@0.38.0)(@napplet/nap@0.37.0(typescript@5.9.3))(nostr-tools@2.24.3(typescript@5.9.3))
       '@napplet/core':
-        specifier: ^0.34.0
-        version: 0.34.0
+        specifier: ^0.38.0
+        version: 0.38.0
       '@napplet/nap':
-        specifier: ^0.34.0
-        version: 0.34.0(typescript@5.9.3)
+        specifier: ^0.37.0
+        version: 0.37.0(typescript@5.9.3)
       '@noble/ciphers':
         specifier: ^2.4.0
         version: 2.4.0
@@ -137,7 +137,7 @@ importers:
         version: 7.1.0(typescript@5.9.3)
       applesauce-extra:
         specifier: ^7.1.0
-        version: 7.1.0(@capacitor/core@7.6.10)(@kehto/nip@0.7.0(nostr-tools@2.24.3(typescript@5.9.3)))(@kehto/runtime@0.26.1(@napplet/core@0.34.0)(@napplet/nap@0.34.0(typescript@5.9.3)))(@kehto/services@0.25.1(@napplet/core@0.34.0)(@napplet/nap@0.34.0(typescript@5.9.3))(nostr-tools@2.24.3(typescript@5.9.3)))(@kehto/shell@0.24.5(@napplet/core@0.34.0)(@napplet/nap@0.34.0(typescript@5.9.3))(nostr-tools@2.24.3(typescript@5.9.3)))(hls.js@1.7.4)(typescript@5.9.3)
+        version: 7.1.0(@capacitor/core@7.6.10)(@kehto/nip@0.8.0(nostr-tools@2.24.3(typescript@5.9.3)))(@kehto/runtime@0.28.1(@napplet/core@0.38.0)(@napplet/nap@0.37.0(typescript@5.9.3)))(@kehto/services@0.30.1(@napplet/core@0.38.0)(@napplet/nap@0.37.0(typescript@5.9.3))(nostr-tools@2.24.3(typescript@5.9.3)))(@kehto/shell@0.32.0(@napplet/core@0.38.0)(@napplet/nap@0.37.0(typescript@5.9.3))(nostr-tools@2.24.3(typescript@5.9.3)))(hls.js@1.7.4)(typescript@5.9.3)
       applesauce-loaders:
         specifier: 7.1.0
         version: 7.1.0(typescript@5.9.3)
@@ -1449,43 +1449,43 @@ packages:
   '@jridgewell/trace-mapping@0.3.31':
     resolution: {integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==}
 
-  '@kehto/acl@0.19.1':
-    resolution: {integrity: sha512-4Ib3Gql2AtR1mmjyaLm0VATLIQkbZvCXV31NcaD6jAWZoeQy0dHg+6iSDu8XPGroIJdBMbPUDfGFGwVMi17Gmw==}
+  '@kehto/acl@0.20.3':
+    resolution: {integrity: sha512-jmO9YG7rniUwGDzmeduoN0+4a6aez+7q/SIboZhu0dX55/Idfb/0vLfwXTPm/RN7lTCnlJU8sA6fbvoXknUVCw==}
     peerDependencies:
-      '@napplet/core': '>=0.32.0 <0.35.0'
-      '@napplet/nap': '>=0.32.0 <0.35.0'
+      '@napplet/core': '>=0.32.0 <0.39.0'
+      '@napplet/nap': '>=0.32.0 <0.38.0'
 
-  '@kehto/firewall@0.6.4':
-    resolution: {integrity: sha512-l9GIPpBMCt0/Fh/0QKXAbwKO945OTVyVfp+ZJqfrKcc8H/DKG/YJsoLLfiJjzSZ04CvlpTbdtYO0qrZhxryLwQ==}
+  '@kehto/firewall@0.7.0':
+    resolution: {integrity: sha512-C5KZCOp+VJBUi19lJkHd3lw4CRJK5fpOgrez36xyJqbGY2/7BquDz4REV+eDeqWmWyujAIketDVUDSjc76Tq3w==}
     peerDependencies:
       '@napplet/core': '>=0.32.0 <0.39.0'
 
-  '@kehto/nip@0.7.0':
-    resolution: {integrity: sha512-uDi2fvs8gr2jhhNKU8JbrDaq1cqRpAHdxDWBpoLv59tVTTFcTul/bWpT0aAHcq/SzHgT+3IHT0oIuqJXpqCwhw==}
+  '@kehto/nip@0.8.0':
+    resolution: {integrity: sha512-vmVTU4ey4zt04qiZcTMMiN6TKhttAFm9tYy4qy4nzNraCXi1mZqLznIZGbhiYwGA7TVWRCO9pIsUyv/umb+yuA==}
     peerDependencies:
       nostr-tools: 2.24.3
 
-  '@kehto/runtime@0.26.1':
-    resolution: {integrity: sha512-nNkeB5NY945P8AkdSzNGKEMvm7tQ7fTCf9o2s3Vx+5UOqXkb3lTZP5HaMAv5EnmnwZoOjzI5zIoe0SacNB+qmA==}
+  '@kehto/runtime@0.28.1':
+    resolution: {integrity: sha512-FGX/12YDzuQjzlX8swDMxQnUrBob0Q5SqrW/qj97l2H/nI2E0Dh6elS+SWTjfsx4dSxxsvLzVAdthBUMh20CnQ==}
     peerDependencies:
-      '@napplet/core': '>=0.32.0 <0.35.0'
-      '@napplet/nap': '>=0.32.0 <0.35.0'
+      '@napplet/core': '>=0.32.0 <0.39.0'
+      '@napplet/nap': '>=0.32.0 <0.38.0'
 
-  '@kehto/services@0.25.1':
-    resolution: {integrity: sha512-33XNXATOEkFXi32qK4Y7O0rMnYLxVts8uEGj8SGoaqIbyBx9nKWEjD77ejuIQV6kTZn+4dCiDCyFlbuIcrW36g==}
+  '@kehto/services@0.30.1':
+    resolution: {integrity: sha512-y77g/j0hN+dFP/n1X5MnM/tUrFTF85Ga3ZCAsht/h9EJYTr+aRF23MWYLOZdjx9aiWW16DOee1zZ7/M3YHyEfQ==}
     peerDependencies:
-      '@napplet/core': '>=0.32.0 <0.35.0'
-      '@napplet/nap': '>=0.32.0 <0.35.0'
+      '@napplet/core': '>=0.38.0 <0.39.0'
+      '@napplet/nap': '>=0.37.0 <0.38.0'
       nostr-tools: 2.24.3
     peerDependenciesMeta:
       nostr-tools:
         optional: true
 
-  '@kehto/shell@0.24.5':
-    resolution: {integrity: sha512-DhD01MIqsYCqSF5MugWNDlcaNzhpgC29eUHbZWeMJIyZywASJQp9t8deh9q48g7hefuViNvWK1pLCZJ6U1LjHQ==}
+  '@kehto/shell@0.32.0':
+    resolution: {integrity: sha512-VhJ+qBMU67GDR/Uprj+REzOsFbac/H9vpwEqHyhyE9a1e3xb1MXX/OLcX++OYnizC/NvsDCTAuCVfRw6O5bcFQ==}
     peerDependencies:
-      '@napplet/core': '>=0.32.0 <0.35.0'
-      '@napplet/nap': '>=0.32.0 <0.35.0'
+      '@napplet/core': '>=0.32.0 <0.39.0'
+      '@napplet/nap': '>=0.32.0 <0.38.0'
       nostr-tools: 2.24.3
 
   '@kurkle/color@0.3.4':
@@ -1542,11 +1542,11 @@ packages:
       '@emnapi/core': ^1.7.1 || 2.0.0-beta.2 || 2.0.0-beta.3
       '@emnapi/runtime': ^1.7.1 || 2.0.0-beta.2 || 2.0.0-beta.3
 
-  '@napplet/core@0.34.0':
-    resolution: {integrity: sha512-oU56Qhkc9+VI6CqvekRVbAQkHy2DGzLMGxI3EirDJtfBtXWu6kmvhUkI5DkU3hpfa7MwYpARL4usud5sWa6ZdA==}
+  '@napplet/core@0.38.0':
+    resolution: {integrity: sha512-kAcmTiAYX00mPlCOUqK9rtuxysN5XBqBrwxeGf/r8NS+EdmYq6DtMqFBQ1+ii/DNO0uxN5JFChPzZfLA9FS5Uw==}
 
-  '@napplet/nap@0.34.0':
-    resolution: {integrity: sha512-AzdF8ejO+QbSDEQw2rrQM2ll9fvuPaoxiwu1s1jp+1OwDo5seYqCgevBYjLiQVOA1NzslXnYNVtWxedACq3beQ==}
+  '@napplet/nap@0.37.0':
+    resolution: {integrity: sha512-EeUeXlHGEScRHU3WJgJax8di8zr6QXTdnE013TXwEm7zRkrh+TpRpm9KBt3KlDP2WV+JgRJ7Jw7PnTdzCjP3BA==}
     peerDependencies:
       json-schema-to-ts: ^3.1.1
     peerDependenciesMeta:
@@ -7819,43 +7819,43 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.6.0
 
-  '@kehto/acl@0.19.1(@napplet/core@0.34.0)(@napplet/nap@0.34.0(typescript@5.9.3))':
+  '@kehto/acl@0.20.3(@napplet/core@0.38.0)(@napplet/nap@0.37.0(typescript@5.9.3))':
     dependencies:
-      '@napplet/core': 0.34.0
-      '@napplet/nap': 0.34.0(typescript@5.9.3)
+      '@napplet/core': 0.38.0
+      '@napplet/nap': 0.37.0(typescript@5.9.3)
 
-  '@kehto/firewall@0.6.4(@napplet/core@0.34.0)':
+  '@kehto/firewall@0.7.0(@napplet/core@0.38.0)':
     dependencies:
-      '@napplet/core': 0.34.0
+      '@napplet/core': 0.38.0
 
-  '@kehto/nip@0.7.0(nostr-tools@2.24.3(typescript@5.9.3))':
+  '@kehto/nip@0.8.0(nostr-tools@2.24.3(typescript@5.9.3))':
     dependencies:
       '@noble/hashes': 2.4.0
       nostr-tools: 2.24.3(typescript@5.9.3)
 
-  '@kehto/runtime@0.26.1(@napplet/core@0.34.0)(@napplet/nap@0.34.0(typescript@5.9.3))':
+  '@kehto/runtime@0.28.1(@napplet/core@0.38.0)(@napplet/nap@0.37.0(typescript@5.9.3))':
     dependencies:
-      '@kehto/acl': 0.19.1(@napplet/core@0.34.0)(@napplet/nap@0.34.0(typescript@5.9.3))
-      '@kehto/firewall': 0.6.4(@napplet/core@0.34.0)
-      '@napplet/core': 0.34.0
-      '@napplet/nap': 0.34.0(typescript@5.9.3)
+      '@kehto/acl': 0.20.3(@napplet/core@0.38.0)(@napplet/nap@0.37.0(typescript@5.9.3))
+      '@kehto/firewall': 0.7.0(@napplet/core@0.38.0)
+      '@napplet/core': 0.38.0
+      '@napplet/nap': 0.37.0(typescript@5.9.3)
       '@noble/curves': 2.4.0
       '@noble/hashes': 2.4.0
 
-  '@kehto/services@0.25.1(@napplet/core@0.34.0)(@napplet/nap@0.34.0(typescript@5.9.3))(nostr-tools@2.24.3(typescript@5.9.3))':
+  '@kehto/services@0.30.1(@napplet/core@0.38.0)(@napplet/nap@0.37.0(typescript@5.9.3))(nostr-tools@2.24.3(typescript@5.9.3))':
     dependencies:
-      '@kehto/runtime': 0.26.1(@napplet/core@0.34.0)(@napplet/nap@0.34.0(typescript@5.9.3))
-      '@napplet/core': 0.34.0
-      '@napplet/nap': 0.34.0(typescript@5.9.3)
+      '@kehto/runtime': 0.28.1(@napplet/core@0.38.0)(@napplet/nap@0.37.0(typescript@5.9.3))
+      '@napplet/core': 0.38.0
+      '@napplet/nap': 0.37.0(typescript@5.9.3)
     optionalDependencies:
       nostr-tools: 2.24.3(typescript@5.9.3)
 
-  '@kehto/shell@0.24.5(@napplet/core@0.34.0)(@napplet/nap@0.34.0(typescript@5.9.3))(nostr-tools@2.24.3(typescript@5.9.3))':
+  '@kehto/shell@0.32.0(@napplet/core@0.38.0)(@napplet/nap@0.37.0(typescript@5.9.3))(nostr-tools@2.24.3(typescript@5.9.3))':
     dependencies:
-      '@kehto/acl': 0.19.1(@napplet/core@0.34.0)(@napplet/nap@0.34.0(typescript@5.9.3))
-      '@kehto/runtime': 0.26.1(@napplet/core@0.34.0)(@napplet/nap@0.34.0(typescript@5.9.3))
-      '@napplet/core': 0.34.0
-      '@napplet/nap': 0.34.0(typescript@5.9.3)
+      '@kehto/acl': 0.20.3(@napplet/core@0.38.0)(@napplet/nap@0.37.0(typescript@5.9.3))
+      '@kehto/runtime': 0.28.1(@napplet/core@0.38.0)(@napplet/nap@0.37.0(typescript@5.9.3))
+      '@napplet/core': 0.38.0
+      '@napplet/nap': 0.37.0(typescript@5.9.3)
       nostr-tools: 2.24.3(typescript@5.9.3)
 
   '@kurkle/color@0.3.4': {}
@@ -7939,11 +7939,11 @@ snapshots:
       '@tybys/wasm-util': 0.10.4
     optional: true
 
-  '@napplet/core@0.34.0': {}
+  '@napplet/core@0.38.0': {}
 
-  '@napplet/nap@0.34.0(typescript@5.9.3)':
+  '@napplet/nap@0.37.0(typescript@5.9.3)':
     dependencies:
-      '@napplet/core': 0.34.0
+      '@napplet/core': 0.38.0
       nostr-tools: 2.24.3(typescript@5.9.3)
     transitivePeerDependencies:
       - typescript
@@ -8835,16 +8835,16 @@ snapshots:
     transitivePeerDependencies:
       - typescript
 
-  applesauce-extra@7.1.0(@capacitor/core@7.6.10)(@kehto/nip@0.7.0(nostr-tools@2.24.3(typescript@5.9.3)))(@kehto/runtime@0.26.1(@napplet/core@0.34.0)(@napplet/nap@0.34.0(typescript@5.9.3)))(@kehto/services@0.25.1(@napplet/core@0.34.0)(@napplet/nap@0.34.0(typescript@5.9.3))(nostr-tools@2.24.3(typescript@5.9.3)))(@kehto/shell@0.24.5(@napplet/core@0.34.0)(@napplet/nap@0.34.0(typescript@5.9.3))(nostr-tools@2.24.3(typescript@5.9.3)))(hls.js@1.7.4)(typescript@5.9.3):
+  applesauce-extra@7.1.0(@capacitor/core@7.6.10)(@kehto/nip@0.8.0(nostr-tools@2.24.3(typescript@5.9.3)))(@kehto/runtime@0.28.1(@napplet/core@0.38.0)(@napplet/nap@0.37.0(typescript@5.9.3)))(@kehto/services@0.30.1(@napplet/core@0.38.0)(@napplet/nap@0.37.0(typescript@5.9.3))(nostr-tools@2.24.3(typescript@5.9.3)))(@kehto/shell@0.32.0(@napplet/core@0.38.0)(@napplet/nap@0.37.0(typescript@5.9.3))(nostr-tools@2.24.3(typescript@5.9.3)))(hls.js@1.7.4)(typescript@5.9.3):
     dependencies:
       '@noble/hashes': 2.4.0
       applesauce-core: 7.1.0(typescript@5.9.3)
       rxjs: 7.8.2
     optionalDependencies:
-      '@kehto/nip': 0.7.0(nostr-tools@2.24.3(typescript@5.9.3))
-      '@kehto/runtime': 0.26.1(@napplet/core@0.34.0)(@napplet/nap@0.34.0(typescript@5.9.3))
-      '@kehto/services': 0.25.1(@napplet/core@0.34.0)(@napplet/nap@0.34.0(typescript@5.9.3))(nostr-tools@2.24.3(typescript@5.9.3))
-      '@kehto/shell': 0.24.5(@napplet/core@0.34.0)(@napplet/nap@0.34.0(typescript@5.9.3))(nostr-tools@2.24.3(typescript@5.9.3))
+      '@kehto/nip': 0.8.0(nostr-tools@2.24.3(typescript@5.9.3))
+      '@kehto/runtime': 0.28.1(@napplet/core@0.38.0)(@napplet/nap@0.37.0(typescript@5.9.3))
+      '@kehto/services': 0.30.1(@napplet/core@0.38.0)(@napplet/nap@0.37.0(typescript@5.9.3))(nostr-tools@2.24.3(typescript@5.9.3))
+      '@kehto/shell': 0.32.0(@napplet/core@0.38.0)(@napplet/nap@0.37.0(typescript@5.9.3))(nostr-tools@2.24.3(typescript@5.9.3))
       applesauce-actions: 7.1.0(typescript@5.9.3)
       applesauce-common: 7.1.0(typescript@5.9.3)
       applesauce-loaders: 7.1.0(typescript@5.9.3)

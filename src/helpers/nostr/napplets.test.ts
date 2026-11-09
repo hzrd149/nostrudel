@@ -2,7 +2,7 @@ import { NAPPLET_KIND_NAMED, NAPPLET_KIND_ROOT, NAPPLET_KIND_SNAPSHOT, computeAg
 import { bytesToHex } from "@noble/hashes/utils.js";
 import { sha256 } from "@noble/hashes/sha2.js";
 import { finalizeEvent } from "nostr-tools";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import { resolveNapplet } from "./napplet-resolve";
 import {
@@ -41,28 +41,27 @@ describe("parseNappletManifest", () => {
     expect(isValidNappletStoreEvent(singleFile)).toBe(true);
   });
 
-  it("keeps a legacy declared aggregate", () => {
+  it("rejects legacy path manifests with a declared aggregate", () => {
     const paths = [{ path: "/index.html", sha256: htmlHash }];
     const aggregate = computeAggregateHash(paths);
-    const parsed = parseNappletManifest(
-      manifest([
-        ["path", "/index.html", htmlHash],
-        ["x", aggregate, "aggregate"],
-        ["d", "a"],
-      ]),
-    );
-    expect(parsed.paths).toEqual(paths);
-    expect(parsed.aggregateHash).toBe(aggregate);
+    const legacy = manifest([
+      ["path", "/index.html", htmlHash],
+      ["x", aggregate, "aggregate"],
+      ["d", "a"],
+    ]);
+    expect(() => parseNappletManifest(legacy)).toThrow();
+    expect(isValidNappletStoreEvent(legacy)).toBe(false);
   });
 
-  it("computes the aggregate for legacy path tags without one", () => {
-    const parsed = parseNappletManifest(
-      manifest([
-        ["path", "/index.html", htmlHash],
-        ["d", "a"],
-      ]),
-    );
-    expect(parsed.aggregateHash).toBe(computeAggregateHash([{ path: "/index.html", sha256: htmlHash }]));
+  it("rejects legacy path tags without an aggregate", () => {
+    expect(() =>
+      parseNappletManifest(
+        manifest([
+          ["path", "/index.html", htmlHash],
+          ["d", "a"],
+        ]),
+      ),
+    ).toThrow();
   });
 
   it("skips malformed archetype and intent tags instead of rejecting", () => {
@@ -187,6 +186,17 @@ describe("getNappletCoordinate", () => {
 });
 
 describe("resolveNapplet", () => {
+  it("rejects legacy manifests before fetching artifact bytes", async () => {
+    const fetchBlob = vi.fn(async () => html);
+    const event = manifest([
+      ["d", "legacy"],
+      ["path", "/index.html", htmlHash],
+      ["x", computeAggregateHash([{ path: "/index.html", sha256: htmlHash }]), "aggregate"],
+    ]);
+    await expect(resolveNapplet({ event, fetchBlob })).rejects.toThrow();
+    expect(fetchBlob).not.toHaveBeenCalled();
+  });
+
   it("loads a single-file napplet from its x blob", async () => {
     const resolved = await resolveNapplet({ event: singleFile, fetchBlob: async () => html });
     expect(resolved.indexHtml).toContain("Poly Dogfight");

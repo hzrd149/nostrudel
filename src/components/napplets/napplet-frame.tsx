@@ -15,11 +15,10 @@ import { CloseIcon, RepeatIcon } from "@chakra-ui/icons";
 import { NostrEvent } from "nostr-tools";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { openNappletArtifactCache, type ResolvedNapplet } from "@kehto/nip";
-import { injectNappletNamespacePrelude, renderNappletNamespacePrelude } from "@kehto/shell";
+import { denyNappletControllerAccess, originRegistry, prepareNappletSrcdoc } from "@kehto/shell";
 import { resolveBlob } from "blossom-client-sdk/actions/resolve";
 
 import { getNappletPermissions } from "../../services/napplet-shell/permission-types";
-import { installCvmBinding } from "../../services/napplet-shell/cvm-binding";
 import Menu01 from "../icons/menu-01";
 import SimpleView from "../layout/presets/simple-view";
 import Timestamp from "../timestamp";
@@ -58,10 +57,11 @@ async function fetchNappletBlob(sha256Hex: string, servers: readonly string[], s
 
 /** Renders a NIP-5D napplet full-page: a simple title/action header and the sandboxed frame below. */
 export default function NappletFrame({ event, onClose, onResolved, onError }: NappletFrameProps) {
-  const { requestConsent, registerFrame, unregisterFrame, capabilities } = useNappletShell();
+  const { bridge, requestConsent, registerFrame, unregisterFrame, capabilities } = useNappletShell();
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
   const windowIdRef = useRef<string>();
   const detachTargetRef = useRef<() => void>();
+  const stopObservingRef = useRef<() => void>();
   const [reloadKey, setReloadKey] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error>();
@@ -139,17 +139,20 @@ export default function NappletFrame({ event, onClose, onResolved, onError }: Na
     return () => {
       if (windowIdRef.current) unregisterFrame(windowIdRef.current);
       detachTargetRef.current?.();
+      stopObservingRef.current?.();
     };
   }, [unregisterFrame]);
 
   const setIframe = useCallback(
     (node: HTMLIFrameElement | null) => {
-      iframeRef.current = node;
+      if (node && node === iframeRef.current && windowIdRef.current) return;
+      if (node) iframeRef.current = node;
       if (!node || !napplet || !node.contentWindow) return;
 
-      // Register before assigning srcdoc so early shell.ready messages can route.
+      // Register before assigning srcdoc so the initial napplet.hello can bind its port.
       if (windowIdRef.current) unregisterFrame(windowIdRef.current);
       detachTargetRef.current?.();
+      stopObservingRef.current?.();
 
       // A rewound version has a different aggregateHash and must register as a distinct frame.
       const windowId = `napplet:${active.id}:${reloadKey}`;
@@ -162,27 +165,26 @@ export default function NappletFrame({ event, onClose, onResolved, onError }: Na
         { pubkey: active.pubkey, dTag: napplet.dTag, aggregateHash: napplet.aggregateHash, title },
         catalogId,
         active,
+        () => {
+          detachTargetRef.current?.();
+          const recipient = originRegistry.getNappletTarget(windowId);
+          if (recipient) detachTargetRef.current = attachIntentTarget(catalogId, recipient);
+        },
+        () => {
+          unregisterFrame(windowId);
+          detachTargetRef.current?.();
+          stopObservingRef.current?.();
+          setError(new Error("Napplet connection closed. Reload to start a new frame."));
+        },
       );
-
-      // Intents are delivered once the document (and with it the injected binding) has loaded
-      node.onload = () => {
-        detachTargetRef.current?.();
-        detachTargetRef.current = attachIntentTarget(catalogId, target);
-      };
 
       // Inject the same domain set shell.init advertises, so supports() and the
       // materialised window.napplet.<domain> proxies never diverge.
-      const cvmPrelude = capabilities.domains.includes("cvm")
-        ? `<script>(${installCvmBinding.toString()})();</script>`
-        : "";
-      const preludeOptions = { domains: capabilities.domains };
-      const prelude = renderNappletNamespacePrelude(preludeOptions);
-      node.srcdoc = injectNappletNamespacePrelude(napplet.indexHtml, preludeOptions).replace(
-        prelude,
-        () => prelude + cvmPrelude,
-      );
+      denyNappletControllerAccess(node);
+      stopObservingRef.current = bridge.observeFrame(node, windowId);
+      node.srcdoc = prepareNappletSrcdoc(napplet.indexHtml, { domains: capabilities.domains });
     },
-    [active, napplet, registerFrame, reloadKey, unregisterFrame, capabilities.domains, title],
+    [active, napplet, registerFrame, reloadKey, unregisterFrame, capabilities.domains, title, bridge],
   );
 
   // Shared frame teardown for both a plain reload and a rewind to a different version, so the
@@ -190,8 +192,10 @@ export default function NappletFrame({ event, onClose, onResolved, onError }: Na
   const teardownFrame = useCallback(() => {
     if (windowIdRef.current) unregisterFrame(windowIdRef.current);
     detachTargetRef.current?.();
+    stopObservingRef.current?.();
     windowIdRef.current = undefined;
     detachTargetRef.current = undefined;
+    stopObservingRef.current = undefined;
   }, [unregisterFrame]);
 
   const reload = useCallback(() => {
@@ -269,7 +273,7 @@ export default function NappletFrame({ event, onClose, onResolved, onError }: Na
       {napplet && !loading && !error && (
         <Box
           as="iframe"
-          key={reloadKey}
+          key={`${active.id}:${reloadKey}`}
           ref={setIframe}
           sandbox="allow-scripts"
           flexGrow={1}

@@ -1,4 +1,5 @@
 import type { IntentDelivery, IntentDispatchParams, IntentTargetAcceptance } from "@kehto/services";
+import type { NappletMessageTarget } from "@kehto/shell";
 
 /** How long an accepted intent waits for its target napplet to load before it is dropped */
 const DELIVERY_TIMEOUT = 60_000;
@@ -15,7 +16,7 @@ type PendingDelivery = {
 const pending = new Map<string, PendingDelivery[]>();
 
 /** Loaded napplet frames that can receive deliveries, keyed by catalog id */
-const targets = new Map<string, Window>();
+const targets = new Map<string, NappletMessageTarget>();
 
 let openTarget: ((catalogId: string) => boolean) | null = null;
 
@@ -24,8 +25,8 @@ export function setIntentTargetOpener(open: ((catalogId: string) => boolean) | n
   openTarget = open;
 }
 
-function post(target: Window, item: PendingDelivery) {
-  target.postMessage({ type: "intent.deliver", delivery: item.delivery }, "*");
+function post(target: NappletMessageTarget, item: PendingDelivery) {
+  target.postMessage({ type: "intent.deliver", delivery: item.delivery });
   item.resolve();
 }
 
@@ -39,10 +40,10 @@ function drain(catalogId: string) {
 }
 
 /**
- * Marks a napplet frame as ready for deliveries once its document has loaded. The injected
+ * Marks a napplet port as ready for deliveries after shell initialization. The injected
  * binding buffers `intent.deliver` until the napplet registers `onDelivery`.
  */
-export function attachIntentTarget(catalogId: string, target: Window) {
+export function attachIntentTarget(catalogId: string, target: NappletMessageTarget) {
   targets.set(catalogId, target);
   drain(catalogId);
 

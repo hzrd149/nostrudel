@@ -78,6 +78,8 @@ type NappletShellContextValue = {
     identity: NappletIdentity,
     catalogId: string,
     manifest: NostrEvent,
+    onReady: () => void,
+    onRevoked: () => void,
   ) => void;
   unregisterFrame: (windowId: string) => void;
 };
@@ -108,6 +110,8 @@ export function NappletShellProvider({ children }: PropsWithChildren) {
   const [consent, setConsent] = useState<ConsentRequest>();
   const [intentChoice, setIntentChoice] = useState<IntentChoiceRequest>();
   const permissionControllerRef = useRef<ReturnType<typeof createPermissionController>>();
+  const permissionGateRef = useRef<ReturnType<typeof createPermissionGate>>();
+  const frameCallbacks = useRef(new Map<string, { onReady: () => void; onRevoked: () => void }>());
   const launchGrantsRef = useRef(new Map<string, NappletPermission[]>());
   const [runtimeConsent, setRuntimeConsent] = useState<
     PermissionPrompt & { resolve(answer: PermissionAnswer): void }
@@ -190,7 +194,26 @@ export function NappletShellProvider({ children }: PropsWithChildren) {
       ),
     [toast, intent, upload.enabled, webrtc, cvm],
   );
-  const bridge = useMemo(() => createShellBridge(adapter), [adapter]);
+  const bridge = useMemo(
+    () =>
+      createShellBridge({
+        ...adapter,
+        filterNappletMessage: (windowId, message) =>
+          permissionGateRef.current?.filterMessage(windowId, message) ?? "drop",
+        onNappletMessage: (windowId, message) => {
+          if (message.type === "shell.ready") {
+            const callbacks = frameCallbacks.current.get(windowId);
+            queueMicrotask(() => {
+              if (callbacks && callbacks === frameCallbacks.current.get(windowId) && originRegistry.getPort(windowId)) {
+                callbacks.onReady();
+              }
+            });
+          }
+        },
+        onNappletRevoked: ({ windowId }) => frameCallbacks.current.get(windowId)?.onRevoked(),
+      }),
+    [adapter],
+  );
   // Single source of truth for advertised NAP domains: derived from the same
   // adapter the bridge uses, so shell.init and the namespace prelude can't drift.
   const capabilities = useMemo(() => buildShellCapabilities(adapter), [adapter]);
@@ -228,7 +251,8 @@ export function NappletShellProvider({ children }: PropsWithChildren) {
       (windowId, permission, signal) => controller.authorize(windowId, permission, signal),
       capabilities.domains,
     );
-    window.addEventListener("message", gate.handleMessage);
+    permissionGateRef.current = gate;
+    window.addEventListener("message", bridge.handleMessage);
     window.addEventListener("storage", synchronizePermissionStorage);
     const changes = permissionChanges$.subscribe((change) =>
       synchronizeRuntimePermissions(bridge, adapter.services ?? {}, change),
@@ -238,9 +262,10 @@ export function NappletShellProvider({ children }: PropsWithChildren) {
       changes.unsubscribe();
       sub.unsubscribe();
       gate.destroy();
+      permissionGateRef.current = undefined;
       controller.dispose();
       permissionControllerRef.current = undefined;
-      window.removeEventListener("message", gate.handleMessage);
+      window.removeEventListener("message", bridge.handleMessage);
       window.removeEventListener("storage", synchronizePermissionStorage);
       bridge.destroy();
     };
@@ -275,7 +300,7 @@ export function NappletShellProvider({ children }: PropsWithChildren) {
   );
 
   const registerFrame = useCallback<NappletShellContextValue["registerFrame"]>(
-    (windowId, win, identity, catalogId, manifest) => {
+    (windowId, win, identity, catalogId, manifest, onReady, onRevoked) => {
       originRegistry.register(win, windowId, identity);
       registerWindowIdentity(windowId, identity);
       const selected = launchGrantsRef.current.get(identityKey(identity));
@@ -286,12 +311,14 @@ export function NappletShellProvider({ children }: PropsWithChildren) {
       permissionControllerRef.current?.register(windowId);
       frameCatalogIds.set(windowId, catalogId);
       frameWebrtcIdentities.set(windowId, getNappletWebrtcIdentity(manifest));
+      frameCallbacks.current.set(windowId, { onReady, onRevoked });
     },
     [bridge, frameCatalogIds, frameWebrtcIdentities],
   );
 
   const unregisterFrame = useCallback<NappletShellContextValue["unregisterFrame"]>(
     (windowId) => {
+      frameCallbacks.current.delete(windowId);
       permissionControllerRef.current?.destroyWindow(windowId);
       frameWebrtcIdentities.delete(windowId);
       originRegistry.unregister(windowId);
