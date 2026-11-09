@@ -4,7 +4,8 @@ import useMessaging from "../../../hooks/use-messaging";
 import GiftWrapSync from "./components/gift-wrap-sync";
 import LockedMessagesSection from "./components/locked-messages";
 import ClientStatus from "./components/client-status";
-import ReadAuthRequiredAlert from "../components/read-auth-required-alert";
+import MessageErrors from "./components/message-errors";
+import RelayAuthentication from "./components/relay-authentication";
 
 export default function InboxView() {
   useAppTitle("Messages inbox");
@@ -13,8 +14,9 @@ export default function InboxView() {
   useMessaging();
   return (
     <SimpleView title="Inbox">
-      <ReadAuthRequiredAlert />
+      <MessageErrors />
       <ClientStatus />
+      <RelayAuthentication />
       <GiftWrapSync />
       <LockedMessagesSection />
     </SimpleView>

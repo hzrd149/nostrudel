@@ -9,11 +9,11 @@ export function setRelayAuthMode(relay: string, mode: RelayAuthMode | null) {
 
   const existing = modes.find((r) => r.relay === relay);
   if (!mode) {
-    if (existing) localSettings.relayAuthenticationMode.next(modes.filter((r) => r.relay !== relay));
+    if (existing) return localSettings.relayAuthenticationMode.next(modes.filter((r) => r.relay !== relay));
   } else {
     if (existing)
-      localSettings.relayAuthenticationMode.next(modes.map((r) => (r.relay === relay ? { relay, mode } : r)));
-    else localSettings.relayAuthenticationMode.next([...modes, { relay, mode }]);
+      return localSettings.relayAuthenticationMode.next(modes.map((r) => (r.relay === relay ? { relay, mode } : r)));
+    else return localSettings.relayAuthenticationMode.next([...modes, { relay, mode }]);
   }
 }
 
