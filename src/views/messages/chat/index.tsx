@@ -1,7 +1,6 @@
 import { ButtonGroup, Flex, IconButton, Text } from "@chakra-ui/react";
 import { getRumorGiftWraps, Rumor } from "applesauce-common/helpers";
 import { isEvent, mergeRelaySets, getExpirationTimestamp } from "applesauce-core/helpers";
-import { LegacyMessagesGroup, WrappedMessagesGroup } from "applesauce-common/models";
 import { useActiveAccount, useEventModel, use$ } from "applesauce-react/hooks";
 import { kinds, NostrEvent } from "nostr-tools";
 import { memo, useCallback, useContext, useEffect, useMemo } from "react";
@@ -22,8 +21,7 @@ import { useTimelineCurserIntersectionCallback } from "../../../hooks/use-timeli
 import { useUserInbox } from "../../../hooks/use-user-mailboxes";
 import { DirectMessageRelaysModel } from "../../../models/messages";
 import IntersectionObserverProvider from "../../../providers/local/intersection-observer";
-import { createLegacyConversationLoader } from "../../../services/legacy-messages";
-import { legacyMessageSubscription, wrappedMessageSubscription } from "../../../services/lifecycle";
+import useMessaging from "../../../hooks/use-messaging";
 import DirectMessageGroup from "../components/direct-message-group";
 import PendingLockedAlert from "../components/pending-decryption-alert";
 import ReadAuthRequiredAlert from "../components/read-auth-required-alert";
@@ -53,8 +51,9 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
   const location = useLocation();
 
   // Keep a subscription open for NIP-04 and NIP-17 messages
-  use$(legacyMessageSubscription);
-  use$(wrappedMessageSubscription);
+  const session = useMessaging();
+  const conversation = useMemo(() => session?.legacy.conversation(pubkey), [session, pubkey]);
+  use$(() => conversation?.watch$, [conversation]);
 
   const { router } = useContext(UNSAFE_DataRouterContext)!;
   const marker = useRouterMarker(router);
@@ -78,14 +77,14 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
   }, [marker, navigate]);
 
   // Read each side's NIP-04 messages from the inboxes of the recipient and the outboxes of the sender
-  const loader = useMemo(() => createLegacyConversationLoader(account.pubkey, pubkey), [account.pubkey, pubkey]);
+  const loader = useMemo(() => conversation?.createTimelineLoader({ limit: 100 }), [conversation]);
 
   const selfLegacyInboxes = useUserInbox(account.pubkey);
   const inboxes = useEventModel(DirectMessageRelaysModel, [account.pubkey]);
   const allReadRelays = useMemo(() => mergeRelaySets(selfLegacyInboxes, inboxes), [selfLegacyInboxes, inboxes]);
 
-  const legacyMessages = useEventModel(LegacyMessagesGroup, [account.pubkey, pubkey]);
-  const wrappedMessages = useEventModel(WrappedMessagesGroup, [account.pubkey, pubkey]);
+  const legacyMessages = use$(() => conversation?.messages$, [conversation]);
+  const wrappedMessages = use$(() => session?.wrapped.conversation(pubkey).timeline$({}), [session, pubkey]);
   const messages = useMemo<(NostrEvent | Rumor)[]>(
     () => [...(legacyMessages ?? []), ...(wrappedMessages ?? [])].sort(sortByDate),
     [legacyMessages, wrappedMessages],
@@ -103,7 +102,7 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
         if (ts) return ts - message.created_at;
       } else if (message.kind === kinds.PrivateDirectMessage) {
         const giftWrap = getRumorGiftWraps(message)[0];
-        const ts = getExpirationTimestamp(giftWrap);
+        const ts = getExpirationTimestamp(message) ?? (giftWrap && getExpirationTimestamp(giftWrap));
         if (ts) return ts - message.created_at;
       }
     }
@@ -145,7 +144,7 @@ function DirectMessageChatPage({ pubkey }: { pubkey: string }) {
         <Flex direction="column-reverse" gap="2" flexGrow={1} h={0} overflowX="hidden" overflowY="auto" ref={scroll}>
           <PendingLockedAlert />
           <ChatLog messages={messages} />
-          <LoadMoreButton loader={loader} />
+          {loader && <LoadMoreButton loader={loader} />}
         </Flex>
 
         <ReadAuthRequiredAlert relays={allReadRelays} />
@@ -173,11 +172,15 @@ export default function DirectMessageChatView() {
     return <Navigate to={`/messages/group/${params.pubkey}`} replace />;
   }
 
-  const { pubkey } = useParamsProfilePointer();
-
   return (
     <RequireActiveAccount>
-      <DirectMessageChatPage pubkey={pubkey} />
+      <DirectMessageChatRoute />
     </RequireActiveAccount>
   );
+}
+
+function DirectMessageChatRoute() {
+  const account = useActiveAccount()!;
+  const { pubkey } = useParamsProfilePointer();
+  return <DirectMessageChatPage key={`${account.pubkey}:${pubkey}`} pubkey={pubkey} />;
 }

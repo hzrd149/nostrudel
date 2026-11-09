@@ -1,16 +1,16 @@
 import { watchEventUpdates } from "applesauce-core";
 import { getEncryptedContent } from "applesauce-core/helpers";
-import { unlockLegacyMessage } from "applesauce-common/helpers";
-import { useActiveAccount, useEventStore, use$ } from "applesauce-react/hooks";
+import { useEventStore, use$ } from "applesauce-react/hooks";
 import { NostrEvent } from "nostr-tools";
-import { useCallback, useState } from "react";
 import { filter, map, of } from "rxjs";
+import useMessaging from "./use-messaging";
+import useAsyncAction from "./use-async-action";
 
 export function useLegacyMessagePlaintext(event: NostrEvent) {
   const eventStore = useEventStore();
-  const account = useActiveAccount()!;
-
-  const [error, setError] = useState<Error>();
+  const session = useMessaging();
+  const state = use$(() => session?.legacy.decryptionState$, [session]);
+  const error = state?.errors.get(event.id);
   const plaintext = use$(
     () =>
       of(event)
@@ -22,14 +22,10 @@ export function useLegacyMessagePlaintext(event: NostrEvent) {
     [event.id, eventStore],
   );
 
-  const unlock = useCallback(async () => {
-    try {
-      setError(undefined);
-      await unlockLegacyMessage(event, account.pubkey, account);
-    } catch (error) {
-      setError(error as Error);
-    }
-  }, [event, account]);
+  const unlock = useAsyncAction(async () => {
+    if (!session) throw new Error("Messaging is not ready");
+    await session.legacy.retryDecryption(event);
+  }, [event, session]);
 
-  return { error, plaintext, unlock };
+  return { error: error instanceof Error ? error : undefined, plaintext, unlock: unlock.run };
 }

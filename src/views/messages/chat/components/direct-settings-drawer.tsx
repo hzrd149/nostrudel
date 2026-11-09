@@ -15,7 +15,7 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { isLegacyMessageUnlocked } from "applesauce-common/helpers";
-import { useActiveAccount, useEventModel } from "applesauce-react/hooks";
+import { useActiveAccount, useEventModel, use$ } from "applesauce-react/hooks";
 
 import RelayFavicon from "../../../../components/relay/relay-favicon";
 import RelayStatusBadge from "../../../../components/relays/relay-status";
@@ -27,7 +27,7 @@ import UserName from "../../../../components/user/user-name";
 import { useUserInbox } from "../../../../hooks/use-user-mailboxes";
 import { DirectMessageRelaysModel } from "../../../../models/messages";
 import InboxesStatusSection from "../../components/inboxes-status-section";
-import { LegacyMessagesGroup } from "applesauce-common/models";
+import useMessaging from "../../../../hooks/use-messaging";
 import { useMemo } from "react";
 import RelayLink from "../../../../components/relay/relay-link";
 
@@ -92,8 +92,8 @@ function LegacyMessagesSection({
   userLegacyInboxes: string[];
   otherLegacyInboxes: string[];
 }) {
-  const account = useActiveAccount()!;
-  const messages = useEventModel(LegacyMessagesGroup, [account.pubkey, other]);
+  const session = useMessaging();
+  const messages = use$(() => session?.legacy.conversation(other).messages$, [session, other]);
 
   const locked = useMemo(() => {
     if (!messages) return [];

@@ -6,7 +6,6 @@ import { NostrEvent } from "nostr-tools";
 import { memo, useCallback, useContext, useEffect, useMemo } from "react";
 import { Navigate, UNSAFE_DataRouterContext, useLocation, useNavigate, useParams } from "react-router-dom";
 
-import { WrappedMessagesGroup } from "applesauce-common/models";
 import { SettingsIcon } from "../../../components/icons";
 import SimpleView from "../../../components/layout/presets/simple-view";
 import RequireActiveAccount from "../../../components/router/require-active-account";
@@ -17,7 +16,7 @@ import { groupMessages } from "../../../helpers/nostr/dms";
 import useRouterMarker from "../../../hooks/use-router-marker";
 import useScrollRestoreRef from "../../../hooks/use-scroll-restore";
 import { DirectMessageRelaysModel } from "../../../models/messages";
-import { wrappedMessageSubscription } from "../../../services/lifecycle";
+import useMessaging from "../../../hooks/use-messaging";
 import DirectMessageGroup from "../components/direct-message-group";
 import PendingLockedAlert from "../components/pending-decryption-alert";
 import ReadAuthRequiredAlert from "../components/read-auth-required-alert";
@@ -51,7 +50,7 @@ function DirectMessageGroupPage({ group }: { group: string }) {
   const location = useLocation();
 
   // Keep a subscription open for NIP-17 messages
-  use$(wrappedMessageSubscription);
+  const session = useMessaging();
 
   const { router } = useContext(UNSAFE_DataRouterContext)!;
   const marker = useRouterMarker(router);
@@ -77,12 +76,12 @@ function DirectMessageGroupPage({ group }: { group: string }) {
   const pubkeys = useMemo(() => getConversationParticipants(group), [group]);
   const others = useMemo(() => pubkeys.filter((p) => p !== account.pubkey), [pubkeys, account.pubkey]);
 
-  const messages = useEventModel(WrappedMessagesGroup, [account.pubkey, others]) ?? [];
+  const messages = use$(() => session?.wrapped.conversation(pubkeys).timeline$({}), [session, pubkeys]) ?? [];
 
   const lastExpiration = useMemo<number | undefined>(() => {
     for (const message of messages) {
       const giftWrap = getRumorGiftWraps(message)[0];
-      const ts = getExpirationTimestamp(giftWrap);
+      const ts = getExpirationTimestamp(message) ?? (giftWrap && getExpirationTimestamp(giftWrap));
       if (ts) return ts - message.created_at;
     }
     return undefined;
@@ -142,10 +141,9 @@ function DirectMessageGroupPage({ group }: { group: string }) {
 export default function DirectMessageGroupView() {
   const account = useActiveAccount();
   const { group } = useParams();
-  if (!group) return <Navigate to="/messages" />;
 
   const groupId = useMemo(() => {
-    const pubkeys = group
+    const pubkeys = (group ?? "")
       .split(":")
       .map(normalizeToHexPubkey)
       .filter((p) => !!p) as string[];
@@ -154,9 +152,11 @@ export default function DirectMessageGroupView() {
     return pubkeys.sort().join(",");
   }, [group, account]);
 
+  if (!group) return <Navigate to="/messages" />;
+
   return (
     <RequireActiveAccount>
-      <DirectMessageGroupPage group={groupId} />
+      <DirectMessageGroupPage key={groupId} group={groupId} />
     </RequireActiveAccount>
   );
 }

@@ -20,9 +20,8 @@ import {
   Tr,
   VStack,
 } from "@chakra-ui/react";
-import { getGiftWrapRumor, Rumor, getConversationParticipants } from "applesauce-common/helpers";
-import { GiftWrapsModel } from "applesauce-common/models";
-import { useActiveAccount, useEventModel } from "applesauce-react/hooks";
+import { getGiftWrapRumor, Rumor, getConversationParticipants, isGiftWrapUnlocked } from "applesauce-common/helpers";
+import { useActiveAccount, useEventModel, use$ } from "applesauce-react/hooks";
 import { kinds } from "nostr-tools";
 import { useEffect, useMemo, useRef } from "react";
 import { Link as RouterLink } from "react-router-dom";
@@ -32,6 +31,7 @@ import Timestamp from "../../../../components/timestamp";
 import UserAvatar from "../../../../components/user/user-avatar";
 import UserName from "../../../../components/user/user-name";
 import useGiftWrapDecryption from "../../../../hooks/use-gift-wrap-decryption";
+import useMessaging from "../../../../hooks/use-messaging";
 import { DirectMessageRelaysModel } from "../../../../models/messages";
 import ReadAuthRequiredAlert from "../../components/read-auth-required-alert";
 
@@ -156,10 +156,11 @@ export default function LockedMessagesSection() {
   }, [locked]);
 
   // Get all unlocked gift wraps that were previously locked
-  const unlocked = useEventModel(GiftWrapsModel, account ? [account.pubkey, true] : undefined);
+  const session = useMessaging();
+  const unlocked = use$(() => session?.wrapped.giftWraps$, [session]);
   const messages = useMemo(() => {
     if (!unlocked) return [];
-    return unlocked.filter((gift) => initiallyLockedIds.current.has(gift.id));
+    return unlocked.filter((gift) => isGiftWrapUnlocked(gift) && initiallyLockedIds.current.has(gift.id));
   }, [unlocked]);
 
   // Sort groups by latest message timestamp
@@ -172,7 +173,7 @@ export default function LockedMessagesSection() {
       if (!rumor || rumor.kind !== kinds.PrivateDirectMessage) continue;
 
       const participants = getConversationParticipants(rumor);
-      const groupId = participants.filter((p) => p !== account.pubkey).join(":");
+      const groupId = participants.filter((p) => p !== account.pubkey).join(":") || account.pubkey;
 
       const existing = groupsMap.get(groupId);
       if (existing) {
@@ -195,9 +196,9 @@ export default function LockedMessagesSection() {
   const miscEvents = useMemo(() => {
     if (!messages) return [];
 
-    return messages.filter((gw) => {
+    return messages.flatMap((gw) => {
       const rumor = getGiftWrapRumor(gw);
-      return rumor && rumor.kind !== kinds.PrivateDirectMessage;
+      return rumor && rumor.kind !== kinds.PrivateDirectMessage ? [rumor] : [];
     });
   }, [messages]);
 

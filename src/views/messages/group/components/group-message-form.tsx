@@ -3,7 +3,6 @@ import {
   ButtonGroup,
   Flex,
   FlexProps,
-  Heading,
   IconButton,
   IconButtonProps,
   Link,
@@ -16,27 +15,22 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
-import { SendWrappedMessage } from "applesauce-actions/actions";
-import { getTagValue, unixNow, getDisplayName } from "applesauce-core/helpers";
+import { unixNow } from "applesauce-core/helpers";
 import { getConversationParticipants } from "applesauce-common/helpers";
-import { useActionRunner, useEventModel, use$ } from "applesauce-react/hooks";
-import { kinds } from "nostr-tools";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { use$ } from "applesauce-react/hooks";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 
 import InsertGifButton from "../../../../components/gif/insert-gif-button";
 import Lock01 from "../../../../components/icons/lock-01";
 import MagicTextArea, { RefType } from "../../../../components/magic-textarea";
 import InsertReactionButton from "../../../../components/reactions/insert-reaction-button";
-import useCacheForm from "../../../../hooks/use-cache-form";
+import useMessageDraft from "../../../../hooks/use-message-draft";
 import useTextAreaUploadFile, { useTextAreaInsertTextWithForm } from "../../../../hooks/use-textarea-upload-file";
-import { GroupMessageInboxesModel } from "../../../../models/messages";
-import { PublishLogEntry, usePublishEvent } from "../../../../providers/global/publish-provider";
-import { eventStore } from "../../../../services/event-store";
+import useMessagePublication from "../../../../hooks/use-message-publication";
 import localSettings from "../../../../services/preferences";
 import ExpirationToggleButton from "../../components/expiration-toggle-button";
-import { lastValueFrom, toArray } from "rxjs";
-import SendingStatus from "../../components/sending-status";
+import MessagePublicationStatus from "../../components/message-publication-status";
 
 function GroupMessageTypeButton({ ...props }: Omit<IconButtonProps, "children" | "aria-label" | "colorScheme">) {
   const modal = useDisclosure();
@@ -76,8 +70,6 @@ export default function GroupMessageForm({
   initialExpiration,
   ...props
 }: { group: string; initialExpiration?: number } & Omit<FlexProps, "children">) {
-  const publish = usePublishEvent();
-  const actions = useActionRunner();
   const pubkeys = useMemo(() => getConversationParticipants(group), [group]);
   const defaultMessageExpiration = use$(localSettings.defaultMessageExpiration);
   const [expiration, setExpiration] = useState<number | null>(initialExpiration ?? defaultMessageExpiration);
@@ -93,80 +85,44 @@ export default function GroupMessageForm({
     },
     mode: "all",
   });
-  watch("content");
-
-  const clearCache = useCacheForm<{ content: string }>(`${group}-message`, getValues, reset, formState, {
-    clearOnKeyChange: true,
-  });
+  const content = watch("content");
+  const draft = useMessageDraft("nip17", pubkeys, content, formState.isDirty, reset);
 
   const autocompleteRef = useRef<RefType | null>(null);
   const textAreaRef = useRef<HTMLTextAreaElement | null>(null);
   const insertText = useTextAreaInsertTextWithForm(autocompleteRef, getValues, setValue);
   const { onPaste } = useTextAreaUploadFile(insertText);
 
-  const [sending, setSending] = useState<PublishLogEntry[] | null>(null);
-  const inboxes = useEventModel(GroupMessageInboxesModel, [group, false]);
+  const publication = useMessagePublication("nip17", pubkeys);
   const sendMessage = handleSubmit(async (values) => {
-    if (!values.content) return;
-
+    if (!values.content && !publication.pending) return;
     const expirationTimestamp = expiration ? unixNow() + expiration : undefined;
-
-    // Create all wrapped message events
-    const events = await lastValueFrom(
-      actions.exec(SendWrappedMessage, pubkeys, values.content, { expiration: expirationTimestamp }).pipe(toArray()),
-    );
-
-    // Publish all wrapped message events
-    const publishes: PublishLogEntry[] = [];
-    for (let e of events) {
-      const pubkey = getTagValue(e, "p");
-      if (!pubkey) return;
-      const relays = inboxes?.[pubkey];
-      const profile = eventStore.getReplaceable(kinds.Metadata, pubkey);
-
-      const label = `Send message to ${getDisplayName(profile)}`;
-      if (!relays) publishes.push(await publish(label, e, [], false));
-      else publishes.push(await publish(label, e, relays, false, true));
-    }
-    setSending(publishes);
-
-    // Wait for all messages to be published
-    await Promise.all(publishes.map((e) => lastValueFrom(e.publish$)));
-    setSending(null);
-
-    // Reset form
-    clearCache();
+    const sent = await publication.send({
+      content: values.content,
+      expiration: expirationTimestamp,
+      envelopeExpiration: expirationTimestamp,
+    });
+    if (!sent) return;
+    await draft.clear();
     reset({ content: "" });
-
-    // refocus input
     setTimeout(() => textAreaRef.current?.focus(), 50);
   });
-
-  const skipPublishing = useCallback(() => {
-    setSending(null);
-
-    // Reset form
-    clearCache();
-    reset({ content: "" });
-
-    // refocus input
-    setTimeout(() => textAreaRef.current?.focus(), 50);
-  }, [reset]);
 
   const formRef = useRef<HTMLFormElement | null>(null);
 
   return (
-    <Flex as="form" onSubmit={sendMessage} ref={formRef} gap="2" {...props}>
-      {formState.isSubmitting ? (
-        sending ? (
-          <SendingStatus entries={sending} onSkip={skipPublishing} />
-        ) : (
-          <Heading size="md" mx="auto" my="4">
-            Signing message...
-          </Heading>
-        )
+    <Flex as="form" onSubmit={sendMessage} ref={formRef} gap="2" direction="column" {...props}>
+      {publication.pending && (
+        <Flex w="full">
+          <MessagePublicationStatus pending={publication.pending} />
+        </Flex>
+      )}
+      {publication.busy ? (
+        <Text mx="auto" my="4">
+          Sending message…
+        </Text>
       ) : (
-        <>
+        <Flex gap="2" w="full">
           <Flex direction="column" gap="2">
             <ExpirationToggleButton value={expiration} onChange={setExpiration} variant="ghost" />
             <GroupMessageTypeButton />
@@ -175,7 +131,9 @@ export default function GroupMessageForm({
             value={getValues().content}
             onChange={(e) => setValue("content", e.target.value, { shouldDirty: true, shouldTouch: true })}
             rows={2}
-            isRequired
+            isRequired={!publication.pending}
+            isReadOnly={!!publication.pending}
+            isDisabled={!draft.ready}
             instanceRef={(inst) => (autocompleteRef.current = inst)}
             ref={textAreaRef}
             onPaste={onPaste}
@@ -184,15 +142,15 @@ export default function GroupMessageForm({
             }}
           />
           <Flex direction="column" gap="2">
-            <ButtonGroup variant="ghost">
+            <ButtonGroup variant="ghost" isDisabled={!!publication.pending}>
               <InsertGifButton onSelectURL={insertText} aria-label="Add gif" />
               <InsertReactionButton onSelect={insertText} aria-label="Add emoji" />
             </ButtonGroup>
-            <Button type="submit" colorScheme="primary">
-              Send
+            <Button type="submit" colorScheme="primary" isDisabled={!publication.ready || !draft.ready}>
+              {publication.pending ? "Retry send" : "Send"}
             </Button>
           </Flex>
-        </>
+        </Flex>
       )}
     </Flex>
   );

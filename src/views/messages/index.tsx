@@ -9,19 +9,15 @@ import {
   LinkOverlay,
   Text,
 } from "@chakra-ui/react";
-import { mergeRelaySets } from "applesauce-core/helpers";
 import { Rumor } from "applesauce-common/helpers";
-import { LegacyMessagesGroups, WrappedMessagesGroups } from "applesauce-common/models";
-import { useActiveAccount, useEventModel, use$ } from "applesauce-react/hooks";
+import { useActiveAccount, use$ } from "applesauce-react/hooks";
 import { NostrEvent, kinds } from "nostr-tools";
-import { BehaviorSubject } from "rxjs";
 import { npubEncode } from "nostr-tools/nip19";
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 import { Link as RouterLink, useLocation } from "react-router-dom";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { FixedSizeList, ListChildComponentProps } from "react-window";
 
-import ignoreRelayErrors from "../../helpers/ignore-relay-errors";
 import { SettingsIcon } from "../../components/icons";
 import SimpleParentView from "../../components/layout/presets/simple-parent-view";
 import RequireActiveAccount from "../../components/router/require-active-account";
@@ -29,14 +25,11 @@ import Timestamp from "../../components/timestamp";
 import UserAvatar from "../../components/user/user-avatar";
 import UserName from "../../components/user/user-name";
 import { useLegacyMessagePlaintext } from "../../hooks/use-legacy-message-plaintext";
-import { loadTimelineWhileVisible } from "../../helpers/load-timeline-window";
+import useMessaging from "../../hooks/use-messaging";
 import useGiftWrapDecryption from "../../hooks/use-gift-wrap-decryption";
 import useScrollRestoreRef from "../../hooks/use-scroll-restore";
-import { useUserInbox } from "../../hooks/use-user-mailboxes";
 import RequireDecryptionCache from "../../providers/route/require-decryption-cache";
-import { createLegacyInboxLoader } from "../../services/legacy-messages";
-import { legacyMessageSubscription, wrappedMessageSubscription } from "../../services/lifecycle";
-import { DirectMessageRelaysModel } from "../../models/messages";
+import GiftWrapSync from "./inbox/components/gift-wrap-sync";
 import ReadAuthRequiredAlert from "./components/read-auth-required-alert";
 
 function MessagePreview({ message }: { message: NostrEvent }) {
@@ -104,51 +97,24 @@ function ConversationCard({ index, style, data }: ListChildComponentProps<Conver
   );
 }
 
-type LegacyGroup = NonNullable<{ id: string; participants: string[]; lastMessage: NostrEvent }>;
-type WrappedGroup = NonNullable<{ id: string; participants: string[]; lastMessage: Rumor }>;
 /** A conversation row, the pinned notes to self row has no message until the first note is written */
 type Conversation = { id: string; participants: string[]; lastMessage?: NostrEvent | Rumor };
 
 function Groups() {
   const account = useActiveAccount()!;
 
-  // Subscribe to incoming messages
-  use$(legacyMessageSubscription);
-  use$(wrappedMessageSubscription);
-
-  const legacyInboxes = useUserInbox(account.pubkey);
-  const messagesInboxes = useEventModel(DirectMessageRelaysModel, [account.pubkey]);
-  const inboxes = useMemo(() => mergeRelaySets(legacyInboxes, messagesInboxes), [legacyInboxes, messagesInboxes]);
-
-  // Load older NIP-04 messages while the end of the conversation list is on screen
-  const listEnd$ = useMemo(() => new BehaviorSubject(true), []);
-  const loader = useMemo(() => createLegacyInboxLoader(account.pubkey), [account.pubkey]);
-  useEffect(() => {
-    const sub = loadTimelineWhileVisible(loader, listEnd$).pipe(ignoreRelayErrors("Message history")).subscribe();
-    return () => sub.unsubscribe();
-  }, [loader, listEnd$]);
-
-  // v5: useEventModel expects array of arguments
-  const legacyGroups = useEventModel(LegacyMessagesGroups, [account.pubkey]) ?? [];
-  const wrappedGroups = useEventModel(WrappedMessagesGroups, [account.pubkey]) ?? [];
+  const session = useMessaging();
+  const inboxes = use$(() => session?.relays$, [session]) ?? [];
+  const conversations = use$(() => session?.conversations$, [session]);
 
   const groups = useMemo(() => {
-    const byId = new Map<string, LegacyGroup | WrappedGroup>();
-    const all: (LegacyGroup | WrappedGroup)[] = [...(legacyGroups ?? []), ...(wrappedGroups ?? [])];
-
-    for (const group of all) {
-      const existing = byId.get(group.id);
-      if (existing) {
-        if (existing.lastMessage.created_at < group.lastMessage.created_at) byId.set(group.id, group);
-      } else byId.set(group.id, group);
-    }
-
-    // A conversation with only yourself is the notes to self channel, pinned to the top
-    const notes: Conversation = byId.get(account.pubkey) ?? { id: account.pubkey, participants: [account.pubkey] };
-    byId.delete(account.pubkey);
-    const others = Array.from(byId.values()).sort((a, b) => b.lastMessage.created_at - a.lastMessage.created_at);
+    const notes: Conversation = conversations?.find((row) => row.id === account.pubkey) ?? {
+      id: account.pubkey,
+      participants: [account.pubkey],
+    };
+    const others = conversations?.filter((row) => row.id !== account.pubkey) ?? [];
     return [notes, ...others];
-  }, [legacyGroups, wrappedGroups, account.pubkey]);
+  }, [conversations, account.pubkey]);
 
   const scroll = useScrollRestoreRef("chats");
 
@@ -167,18 +133,19 @@ function Groups() {
               itemSize={64}
               innerRef={scroll}
               overscanCount={10}
-              onItemsRendered={({ visibleStopIndex }) => listEnd$.next(visibleStopIndex >= groups.length - 1)}
             >
               {ConversationCard}
             </FixedSizeList>
           )}
         </AutoSizer>
       </Flex>
+      <GiftWrapSync />
     </>
   );
 }
 
 function MessagesHomePage() {
+  const account = useActiveAccount()!;
   const { locked } = useGiftWrapDecryption();
 
   return (
@@ -201,7 +168,7 @@ function MessagesHomePage() {
         </ButtonGroup>
       }
     >
-      <Groups />
+      <Groups key={account.pubkey} />
     </SimpleParentView>
   );
 }

@@ -20,14 +20,10 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
-import { SendLegacyMessage, SendWrappedMessage } from "applesauce-actions/actions";
-import { createConversationIdentifier } from "applesauce-common/helpers";
-import { getDisplayName, getTagValue, unixNow, mergeRelaySets } from "applesauce-core/helpers";
-import { useActionRunner, useActiveAccount, useEventModel, use$ } from "applesauce-react/hooks";
-import { kinds } from "nostr-tools";
-import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { unixNow } from "applesauce-core/helpers";
+import { useActiveAccount, useEventModel, use$ } from "applesauce-react/hooks";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { useForm } from "react-hook-form";
-import { lastValueFrom, toArray } from "rxjs";
 
 import InsertGifButton from "../../../../components/gif/insert-gif-button";
 import EyeOff from "../../../../components/icons/eye-off";
@@ -38,15 +34,14 @@ import RelayFavicon from "../../../../components/relay/relay-favicon";
 import RelayLink from "../../../../components/relay/relay-link";
 import RouterLink from "../../../../components/router-link";
 import UserName from "../../../../components/user/user-name";
-import useCacheForm from "../../../../hooks/use-cache-form";
+import useMessageDraft from "../../../../hooks/use-message-draft";
 import useTextAreaUploadFile, { useTextAreaInsertTextWithForm } from "../../../../hooks/use-textarea-upload-file";
-import { useUserInbox, useUserOutbox } from "../../../../hooks/use-user-mailboxes";
-import { DirectMessageRelaysModel, GroupMessageInboxesModel } from "../../../../models/messages";
-import { PublishLogEntry, usePublishEvent } from "../../../../providers/global/publish-provider";
-import { eventStore } from "../../../../services/event-store";
+import { useUserInbox } from "../../../../hooks/use-user-mailboxes";
+import { DirectMessageRelaysModel } from "../../../../models/messages";
+import useMessagePublication from "../../../../hooks/use-message-publication";
 import localSettings from "../../../../services/preferences";
 import ExpirationToggleButton from "../../components/expiration-toggle-button";
-import SendingStatus from "../../components/sending-status";
+import MessagePublicationStatus from "../../components/message-publication-status";
 
 function RelayItem({ relay }: { relay: string }) {
   return (
@@ -288,17 +283,16 @@ export default function SendMessageForm({
   "children"
 >) {
   const account = useActiveAccount()!;
-  const publish = usePublishEvent();
-  const actions = useActionRunner();
   const defaultMessageExpiration = use$(localSettings.defaultMessageExpiration);
 
   // These values are managed outside of the form because they are options the user toggles
   const [expiration, setExpiration] = useState<number | null>(initialExpiration ?? defaultMessageExpiration);
   const [type, setType] = useState<MessageType>(initialType);
+  const publication = useMessagePublication(type, [pubkey]);
 
   // Reset the type when initial values change
   useEffect(() => {
-    setType(initialType);
+    if (!publication.pending && !publication.busy) setType(initialType);
   }, [initialType]);
   useEffect(() => {
     if (initialExpiration) setExpiration(initialExpiration);
@@ -310,106 +304,54 @@ export default function SendMessageForm({
     },
     mode: "all",
   });
-  watch("content");
-
-  const clearCache = useCacheForm<{ content: string }>(`dm-${pubkey}`, getValues, reset, formState, {
-    clearOnKeyChange: true,
-  });
+  const content = watch("content");
+  const draft = useMessageDraft(type, [pubkey], content, formState.isDirty, reset);
 
   const autocompleteRef = useRef<RefType | null>(null);
   const textAreaRef = useRef<HTMLTextAreaElement | null>(null);
   const insertText = useTextAreaInsertTextWithForm(autocompleteRef, getValues, setValue);
   const { onPaste } = useTextAreaUploadFile(insertText);
 
-  const [sending, setSending] = useState<PublishLogEntry[] | null>(null);
-  const otherInboxes = useUserInbox(pubkey);
-  const selfInboxes = useUserInbox(account.pubkey);
-  const selfOutboxes = useUserOutbox(account.pubkey);
-  const conversationId = createConversationIdentifier(account.pubkey, pubkey);
-  const inboxes = useEventModel(GroupMessageInboxesModel, [conversationId]);
   const sendMessage = handleSubmit(async (values) => {
-    if (!values.content) return;
-
+    if (!values.content && !publication.pending) return;
     const expirationTimestamp = expiration ? unixNow() + expiration : undefined;
-
-    // Publish all wrapped message events
-    const publishes: PublishLogEntry[] = [];
-    if (type === "nip04") {
-      // Create legacy direct message events
-      const events = await lastValueFrom(
-        actions.exec(SendLegacyMessage, pubkey, values.content, { expiration: expirationTimestamp }).pipe(toArray()),
-      );
-
-      // Send to the recipient's inboxes and DM relays where they read, and to our outboxes so our other clients find it
-      // Our inboxes are kept for older clients that read sent messages from there
-      const relays = mergeRelaySets(otherInboxes, inboxes?.[pubkey], selfOutboxes, selfInboxes);
-      for (let event of events) {
-        publishes.push(await publish("Send message", event, relays, false, true));
-      }
-    } else {
-      if (!inboxes) throw new Error("Missing both users inboxes");
-
-      // Create all wrapped message events
-      const events = await lastValueFrom(
-        actions
-          .exec(SendWrappedMessage, [account.pubkey, pubkey], values.content, { expiration: expirationTimestamp })
-          .pipe(toArray()),
-      );
-      for (let e of events) {
-        const pubkey = getTagValue(e, "p");
-        if (!pubkey) continue;
-        const relays = inboxes?.[pubkey];
-        const profile = eventStore.getReplaceable(kinds.Metadata, pubkey);
-
-        const label = `Send message to ${getDisplayName(profile)}`;
-        if (!relays) publishes.push(await publish(label, e, [], false));
-        else publishes.push(await publish(label, e, relays, false, true));
-      }
-    }
-    setSending(publishes);
-
-    // Wait for all messages to be published
-    await Promise.all(publishes.map((e) => lastValueFrom(e.publish$)));
-    setSending(null);
-
-    // Reset form
-    clearCache();
+    const sent = await publication.send({
+      content: values.content,
+      expiration: expirationTimestamp,
+      envelopeExpiration: expirationTimestamp,
+    });
+    if (!sent) return;
+    await draft.clear();
     reset({ content: "" });
-
-    // refocus input
     setTimeout(() => textAreaRef.current?.focus(), 50);
   });
-
-  const skipPublishing = useCallback(() => {
-    setSending(null);
-
-    // Reset form
-    clearCache();
-    reset({ content: "" });
-
-    // refocus input
-    setTimeout(() => textAreaRef.current?.focus(), 50);
-  }, [reset]);
 
   const formRef = useRef<HTMLFormElement | null>(null);
 
   return (
-    <Flex as="form" gap="2" onSubmit={sendMessage} ref={formRef} {...props}>
-      {formState.isSubmitting ? (
-        sending ? (
-          <SendingStatus entries={sending} onSkip={skipPublishing} />
-        ) : (
-          <Heading size="md" mx="auto" my="4">
-            Signing message...
-          </Heading>
-        )
+    <Flex as="form" gap="2" direction="column" onSubmit={sendMessage} ref={formRef} {...props}>
+      {publication.pending && (
+        <Flex w="full">
+          <MessagePublicationStatus pending={publication.pending} />
+        </Flex>
+      )}
+      {publication.busy ? (
+        <Text mx="auto" my="4">
+          Sending message…
+        </Text>
       ) : (
-        <>
+        <Flex gap="2" w="full">
           <Flex gap="2" direction="column">
             <ExpirationToggleButton value={expiration} onChange={setExpiration} variant="ghost" />
             {/* Notes to self are always gift wrapped, there is no one to fall back to legacy messages for */}
             {pubkey !== account.pubkey && (
-              <MessageTypeToggleButton value={type} onChange={setType} pubkey={pubkey} variant="ghost" />
+              <MessageTypeToggleButton
+                value={type}
+                onChange={setType}
+                pubkey={pubkey}
+                variant="ghost"
+                isDisabled={!!publication.pending}
+              />
             )}
           </Flex>
           <MagicTextArea
@@ -417,7 +359,9 @@ export default function SendMessageForm({
             value={getValues().content}
             onChange={(e) => setValue("content", e.target.value, { shouldDirty: true, shouldTouch: true })}
             rows={2}
-            isRequired
+            isRequired={!publication.pending}
+            isReadOnly={!!publication.pending}
+            isDisabled={!draft.ready}
             instanceRef={(inst) => (autocompleteRef.current = inst)}
             ref={textAreaRef}
             onPaste={onPaste}
@@ -426,15 +370,15 @@ export default function SendMessageForm({
             }}
           />
           <Flex gap="2" direction="column">
-            <ButtonGroup size="sm">
+            <ButtonGroup isDisabled={!!publication.pending}>
               <InsertGifButton onSelectURL={insertText} aria-label="Add gif" />
               <InsertReactionButton onSelect={insertText} aria-label="Add emoji" />
             </ButtonGroup>
-            <Button type="submit" colorScheme="primary">
-              Send
+            <Button type="submit" colorScheme="primary" isDisabled={!publication.ready || !draft.ready}>
+              {publication.pending ? "Retry send" : "Send"}
             </Button>
           </Flex>
-        </>
+        </Flex>
       )}
     </Flex>
   );

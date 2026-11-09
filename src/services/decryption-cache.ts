@@ -1,14 +1,6 @@
-import { isPTag } from "applesauce-core/helpers";
-import {
-  getLegacyMessageCorrespondent,
-  persistEncryptedContent,
-  unlockGiftWrap,
-  unlockLegacyMessage,
-} from "applesauce-common/helpers";
+import { persistEncryptedContent } from "applesauce-common/helpers";
 import { defined } from "applesauce-core/observable";
 import localforage from "localforage";
-import { NostrEvent } from "nostr-social-graph";
-import { kinds } from "nostr-tools";
 import {
   combineLatest,
   distinctUntilChanged,
@@ -24,10 +16,7 @@ import {
 
 import EncryptedStorage from "../classes/encrypted-storage";
 import { logger } from "../helpers/debug";
-import { isSignerRejection } from "../helpers/nostr/gift-wrap-decryption";
-import accounts from "./accounts";
 import { eventStore } from "./event-store";
-import { isGiftWrapFailed, markGiftWrapFailed } from "./gift-wrap-decryption";
 import localSettings from "./preferences";
 
 const log = logger.extend("DecryptionCache");
@@ -129,37 +118,11 @@ export const decryptionCacheStats$ = decryptionCache$.pipe(
   shareReplay(1),
 );
 
-// Fallback method for auto decrypting messages
-async function autoDecryptMessagesFallback(event: NostrEvent) {
-  if (localSettings.autoDecryptMessages.value === false || !accounts.active) return;
-  const account = accounts.active;
-
-  // Unlock legacy messages
-  if (
-    event.kind === kinds.EncryptedDirectMessage &&
-    (event.pubkey === account.pubkey || getLegacyMessageCorrespondent(event, account.pubkey) === account.pubkey)
-  ) {
-    return unlockLegacyMessage(event, account.pubkey, account);
-  }
-
-  // Unlock gift wraps to user, skipping ones that already failed so they don't prompt the signer again
-  if (
-    event.kind === kinds.GiftWrap &&
-    (event.pubkey === account.pubkey || event.tags.find(isPTag)?.[1] === account.pubkey) &&
-    !isGiftWrapFailed(event.id)
-  ) {
-    return unlockGiftWrap(event, account).catch((error) => {
-      if (!isSignerRejection(error)) markGiftWrapFailed(event.id);
-      throw error;
-    });
-  }
-}
-
 // Save all encrypted content to the cache
 decryptionCache$
   .pipe(
     defined(),
     // NOTE: Wrap this in a new Observable so the "stop" method returned from persistEncryptedContent will be called when cache changes
-    switchMap((cache) => new Observable(() => persistEncryptedContent(eventStore, cache, autoDecryptMessagesFallback))),
+    switchMap((cache) => new Observable(() => persistEncryptedContent(eventStore, cache))),
   )
   .subscribe();
