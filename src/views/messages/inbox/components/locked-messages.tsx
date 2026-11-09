@@ -8,17 +8,10 @@ import {
   Heading,
   LinkBox,
   LinkOverlay,
-  Table,
-  TableContainer,
-  Tbody,
-  Td,
   Text,
-  Th,
-  Thead,
-  Tr,
   VStack,
 } from "@chakra-ui/react";
-import { getGiftWrapRumor, Rumor, getConversationParticipants, isGiftWrapUnlocked } from "applesauce-common/helpers";
+import { getGiftWrapRumor, getConversationParticipants, isGiftWrapUnlocked } from "applesauce-common/helpers";
 import { useActiveAccount, use$ } from "applesauce-react/hooks";
 import { kinds } from "nostr-tools";
 import { useEffect, useMemo, useRef } from "react";
@@ -30,6 +23,7 @@ import UserAvatar from "../../../../components/user/user-avatar";
 import UserName from "../../../../components/user/user-name";
 import useGiftWrapDecryption from "../../../../hooks/use-gift-wrap-decryption";
 import useMessaging from "../../../../hooks/use-messaging";
+import localSettings from "../../../../services/preferences";
 
 interface GroupInfo {
   id: string;
@@ -85,59 +79,6 @@ function GroupCard({ group }: { group: GroupInfo }) {
   );
 }
 
-function MiscEventsTable({ events }: { events: Rumor[] }) {
-  if (events.length === 0) return null;
-
-  return (
-    <Box>
-      <Heading size="md" mb={4}>
-        Misc Events ({events.length})
-      </Heading>
-      <TableContainer>
-        <Table size="sm" variant="simple">
-          <Thead>
-            <Tr>
-              <Th>Author</Th>
-              <Th>Kind</Th>
-              <Th>Created</Th>
-              <Th>Content</Th>
-              <Th>Tags</Th>
-            </Tr>
-          </Thead>
-          <Tbody>
-            {events.map((event, index) => (
-              <Tr key={index}>
-                <Td>
-                  <Flex align="center" gap={2}>
-                    <UserAvatar pubkey={event.pubkey} size="sm" />
-                    <UserName pubkey={event.pubkey} />
-                  </Flex>
-                </Td>
-                <Td>
-                  <Badge colorScheme="gray">{event.kind}</Badge>
-                </Td>
-                <Td>
-                  <Timestamp timestamp={event.created_at} />
-                </Td>
-                <Td maxW="300px">
-                  <Text fontSize="sm" noOfLines={2} wordBreak="break-word">
-                    {event.content || "(No content)"}
-                  </Text>
-                </Td>
-                <Td maxW="200px">
-                  <Text fontSize="xs" color="GrayText" noOfLines={2}>
-                    {event.tags.map((tag: string[]) => `[${tag[0]}${tag[1] ? `:${tag[1]}` : ""}]`).join(" ")}
-                  </Text>
-                </Td>
-              </Tr>
-            ))}
-          </Tbody>
-        </Table>
-      </TableContainer>
-    </Box>
-  );
-}
-
 export default function LockedMessagesSection() {
   const account = useActiveAccount()!;
 
@@ -151,6 +92,7 @@ export default function LockedMessagesSection() {
 
   // Get all unlocked gift wraps that were previously locked
   const session = useMessaging();
+  const auto = use$(localSettings.autoDecryptMessages);
   const unlocked = use$(() => session?.wrapped.giftWraps$, [session]);
   const messages = useMemo(() => {
     if (!unlocked) return [];
@@ -184,17 +126,7 @@ export default function LockedMessagesSection() {
     }
 
     return Array.from(groupsMap.values()).sort((a, b) => b.latestTimestamp - a.latestTimestamp);
-  }, [messages]);
-
-  // Filter out conversation messages
-  const miscEvents = useMemo(() => {
-    if (!messages) return [];
-
-    return messages.flatMap((gw) => {
-      const rumor = getGiftWrapRumor(gw);
-      return rumor && rumor.kind !== kinds.PrivateDirectMessage && rumor.kind !== kinds.FileMessage ? [rumor] : [];
-    });
-  }, [messages]);
+  }, [messages, account.pubkey]);
 
   return (
     <VStack spacing={6} align="stretch">
@@ -238,7 +170,7 @@ export default function LockedMessagesSection() {
       )}
 
       {/* Conversation groups section */}
-      {groups.length > 0 && (
+      {auto === false && groups.length > 0 && (
         <Box>
           <Heading size="md" mb={4}>
             New Messages by Conversation ({groups.length})
@@ -250,9 +182,6 @@ export default function LockedMessagesSection() {
           </VStack>
         </Box>
       )}
-
-      {/* Misc events section */}
-      {miscEvents.length > 0 && <MiscEventsTable events={miscEvents} />}
     </VStack>
   );
 }

@@ -1,30 +1,18 @@
-import { Flex, FormControl, FormHelperText, FormLabel, Select, Switch } from "@chakra-ui/react";
+import { FormControl, FormHelperText, FormLabel, Select } from "@chakra-ui/react";
 import { use$ } from "applesauce-react/hooks";
 
 import SimpleView from "../../../components/layout/presets/simple-view";
+import MessageDecryptionMode from "../../../components/message-decryption-mode";
 import localSettings from "../../../services/preferences";
 import MessageCacheSection from "./cache";
 import DirectMessageRelaysSection from "./relays";
 
 export default function MessagesSettings() {
-  const autoDecryptMessages = use$(localSettings.autoDecryptMessages);
   const defaultMessageExpirationTime = use$(localSettings.defaultMessageExpiration);
 
   return (
     <SimpleView gap="8" title="Messages" maxW="4xl">
-      <FormControl>
-        <Flex alignItems="center">
-          <FormLabel htmlFor="autoDecryptMessages" mb="0">
-            Automatically decrypt messages
-          </FormLabel>
-          <Switch
-            id="autoDecryptMessages"
-            isChecked={autoDecryptMessages}
-            onChange={(e) => localSettings.autoDecryptMessages.next(e.target.checked)}
-          />
-        </Flex>
-        <FormHelperText>Automatically decrypt direct messages when they are loaded or received.</FormHelperText>
-      </FormControl>
+      <MessageDecryptionMode />
 
       <FormControl>
         <FormLabel htmlFor="messageExpiration">Default message expiration time</FormLabel>
