@@ -23,7 +23,11 @@ Use Node.js 24 (`.nvmrc`) and the pnpm version pinned in `package.json`.
 
 ## Testing Guidelines
 
-Vitest runs in the Node environment and discovers `src/**/*.test.ts` via `vitest.config.ts`. Keep tests beside the implementation, using kebab-case names such as `webrtc-session.test.ts`. Run a focused suite with `pnpm test -- src/services/napplet-shell/webrtc-session.test.ts`.
+Vitest runs in the Node environment and discovers `src/**/*.test.ts` via `vitest.config.ts`. Run a focused suite with `pnpm test -- src/services/napplet-shell/__tests__/webrtc-session.test.ts`.
+
+- Put tests in a `__tests__` folder next to the source they test, never loose beside the source: `src/services/napplet-shell/webrtc-session.ts` is tested by `src/services/napplet-shell/__tests__/webrtc-session.test.ts`.
+- Name each test file after the source file it tests, adding only `.test.ts`. Tests of behavior wired up in a module (e.g. the `DeleteManager` in `services/event-store.ts`) belong in that module's test file rather than a file named after the behavior.
+- Import the code under test with relative paths from the `__tests__` folder (`../webrtc-session`).
 
 Cover behavior changes and regressions with meaningful tests, especially helpers and services. No coverage threshold is configured. For UI changes, manually verify the affected view and describe the result in the PR. Documentation-only changes need formatting and diff review rather than application tests.
 
