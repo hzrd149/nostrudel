@@ -4,7 +4,7 @@ import {
   getNappletServers,
   getNappletSource,
 } from "applesauce-common/helpers";
-import { DecodeResult, getTagValue, isReplaceable } from "applesauce-core/helpers";
+import { DecodeResult, eventMatchesPointer, getTagValue, isReplaceable } from "applesauce-core/helpers";
 import { Filter, nip19, NostrEvent } from "nostr-tools";
 import { isAddressableKind } from "nostr-tools/kinds";
 import {
@@ -123,6 +123,14 @@ export function getNappletEventPointer(pointer: DecodeResult) {
     default:
       return undefined;
   }
+}
+
+/** Whether an event is the one a napplet pointer names, so stale events from a previous route are ignored. */
+export function nappletEventMatchesPointer(
+  event: NostrEvent,
+  pointer: NonNullable<ReturnType<typeof getNappletEventPointer>>,
+) {
+  return typeof pointer === "string" ? event.id === pointer : eventMatchesPointer(event, pointer);
 }
 
 export function getNappletNaddr(event: NostrEvent) {

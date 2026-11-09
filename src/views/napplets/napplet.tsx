@@ -11,6 +11,7 @@ import {
   getNappletNaddr,
   getNappletAddress,
   isNappletManifestKind,
+  nappletEventMatchesPointer,
   parseNappletPointer,
 } from "../../helpers/nostr/napplets";
 import useEvent from "../../hooks/use-event";
@@ -18,7 +19,10 @@ import useEvent from "../../hooks/use-event";
 export function NappletRouteLoader({ address, pointer }: { address: string; pointer: DecodeResult }) {
   const navigate = useNavigate();
   const eventPointer = useMemo(() => getNappletEventPointer(pointer), [pointer]);
-  const event: NostrEvent | undefined = useEvent(eventPointer);
+  const loaded: NostrEvent | undefined = useEvent(eventPointer);
+  // Right after navigating between napplets useEvent still returns the previous route's event; treating it as
+  // current would redirect back to the old address and ping-pong between the two routes forever.
+  const event = loaded && eventPointer && nappletEventMatchesPointer(loaded, eventPointer) ? loaded : undefined;
 
   useEffect(() => {
     if (!event || !isNappletManifestKind(event.kind)) return;

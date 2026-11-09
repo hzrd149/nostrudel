@@ -11,6 +11,7 @@ import {
   getNappletRequiredCapabilities,
   getUnsupportedNappletRequirements,
   isValidNappletStoreEvent,
+  nappletEventMatchesPointer,
   parseNappletManifest,
 } from "../napplets";
 
@@ -139,6 +140,24 @@ describe("parseNappletManifest", () => {
       ),
     ).toThrow();
     expect(() => parseNappletManifest(manifest([["x", htmlHash]], 1))).toThrow();
+  });
+});
+
+describe("nappletEventMatchesPointer", () => {
+  const other = manifest([
+    ["x", htmlHash],
+    ["d", "other"],
+  ]);
+  const pointer = { kind: NAPPLET_KIND_NAMED, pubkey: singleFile.pubkey, identifier: "n-44f63e5422b" };
+
+  it("matches the napplet an naddr names and rejects a different napplet", () => {
+    expect(nappletEventMatchesPointer(singleFile, pointer)).toBe(true);
+    expect(nappletEventMatchesPointer(other, pointer)).toBe(false);
+  });
+
+  it("matches note and nevent pointers by id", () => {
+    expect(nappletEventMatchesPointer(singleFile, singleFile.id)).toBe(true);
+    expect(nappletEventMatchesPointer(other, { id: singleFile.id })).toBe(false);
   });
 });
 
