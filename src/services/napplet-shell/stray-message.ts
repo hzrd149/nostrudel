@@ -1,7 +1,7 @@
 const MAX_KEYS = 6;
 
 /**
- * Summarises a window-level message that made the shell revoke a napplet frame, without its payload.
+ * Summarises a stray window-level message from a napplet frame, without its payload.
  * NIP-5D frames may only post the single `napplet.hello`, so anything else usually comes from an old
  * napplet SDK or a browser extension content script running inside the frame.
  */

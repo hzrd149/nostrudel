@@ -57,6 +57,7 @@ import {
 import { synchronizeRuntimePermissions } from "../../services/napplet-shell/permission-runtime";
 import { createPermissionGate } from "../../services/napplet-shell/permission-gate";
 import { describeStrayMessage } from "../../services/napplet-shell/stray-message";
+import { logger } from "../../helpers/debug";
 import { getNappletPermissions, type NappletPermission } from "../../services/napplet-shell/permission-types";
 
 type ConsentRequest = {
@@ -90,6 +91,8 @@ type NappletShellContextValue = {
   ) => void;
   unregisterFrame: (windowId: string) => void;
 };
+
+const log = logger.extend("NappletShell");
 
 const NappletShellContext = createContext<NappletShellContextValue | null>(null);
 
@@ -135,8 +138,6 @@ export function NappletShellProvider({ children }: PropsWithChildren) {
     new Map<string, { onReady: () => void; onRevoked: (revocation: NappletRevocation) => void }>(),
   );
   const launchGrantsRef = useRef(new Map<string, NappletPermission[]>());
-  // The window-level message that triggered a `window-message` revocation, shown in the frame error
-  const strayMessagesRef = useRef(new Map<string, string>());
   const [runtimeConsent, setRuntimeConsent] = useState<
     PermissionPrompt & { resolve(answer: PermissionAnswer): void }
   >();
@@ -241,12 +242,7 @@ export function NappletShellProvider({ children }: PropsWithChildren) {
             });
           }
         },
-        onNappletRevoked: (revocation) => {
-          const stray = strayMessagesRef.current.get(revocation.windowId);
-          strayMessagesRef.current.delete(revocation.windowId);
-          const detail = stray ? `${revocation.detail}: ${stray}` : revocation.detail;
-          frameCallbacks.current.get(revocation.windowId)?.onRevoked({ ...revocation, detail });
-        },
+        onNappletRevoked: (revocation) => frameCallbacks.current.get(revocation.windowId)?.onRevoked(revocation),
       }),
     [adapter],
   );
@@ -291,7 +287,13 @@ export function NappletShellProvider({ children }: PropsWithChildren) {
     const handleMessage = (event: MessageEvent) => {
       const windowId = event.source ? originRegistry.getWindowId(event.source as Window) : undefined;
       const isHello = (event.data as { type?: unknown } | null)?.type === NAPPLET_HELLO;
-      if (windowId && !isHello) strayMessagesRef.current.set(windowId, describeStrayMessage(event.data));
+      // Browser extensions inject content scripts into napplet frames and some post to the parent. kehto
+      // revokes a frame for any such message, so drop them with a warning instead. NAP traffic only flows
+      // over the bound port, and a replaced document is still caught by second-hello and second-load.
+      if (windowId && !isHello) {
+        log(`Ignored window-level message from ${windowId}: ${describeStrayMessage(event.data)}`);
+        return;
+      }
       bridge.handleMessage(event);
     };
     window.addEventListener("message", handleMessage);
