@@ -109,8 +109,8 @@ importers:
         specifier: ^2.4.0
         version: 2.4.0
       '@snort/worker-relay':
-        specifier: ^1.5.0
-        version: 1.5.0
+        specifier: ^3.0.2
+        version: 3.0.2
       '@uiw/codemirror-theme-github':
         specifier: ^4.25.12
         version: 4.25.12(@codemirror/language@6.13.1)(@codemirror/state@6.7.6)(@codemirror/view@6.43.15)
@@ -2357,12 +2357,12 @@ packages:
   '@shikijs/vscode-textmate@10.1.0':
     resolution: {integrity: sha512-cVBuhDQjBZaNMTwBquYfPydrUP+E3hE6oYGasx8h6ZrODIM7/r+gxLDXdd66oszbrggZHEntdE6j+5gYIVyMWQ==}
 
-  '@snort/worker-relay@1.5.0':
-    resolution: {integrity: sha512-wKUZKg9a50tMNfP4rbMaaal6Hmz0IJmv3k95hCu0N6fZ8ZTeASUIxboYjHlc8H4mKAw8fiN7h4URkudkWmRtQQ==}
+  '@snort/worker-relay@3.0.2':
+    resolution: {integrity: sha512-ICEm7dP6A0vCCDUSGjanJL3F+IcAgnBWW8ftTZrPCtRKmBxHl94qbOGHyzDoRAhWODQm8L2ycpeFJ9GaNbAUeA==}
 
-  '@sqlite.org/sqlite-wasm@3.50.1-build1':
-    resolution: {integrity: sha512-yH4M/SHN98NibniIwTVk6rwTJjy7n39l7zwWY3u+qsfZBGTi4lC1uEl2NDvIlkzsFtfCBvHBJJFJ1iuU3UzzEQ==}
-    hasBin: true
+  '@sqlite.org/sqlite-wasm@3.53.4-build1':
+    resolution: {integrity: sha512-U8pvL0patYHMgieD8JxxYJTlh9m1LUX8+BDYb7MiKQzBI89f2qbdmdcG/PvnPaLm9wsBbv4VlVG453ixnxBOnA==}
+    engines: {node: '>=22'}
 
   '@stencil/core@4.45.2':
     resolution: {integrity: sha512-CNkPVZsqyNMjFMX9bEkMJsvBbQxjLw480OaoamoqiLPdQCFjJQReeOjnWX1A5ivSn3UYEIJ6MoN5VXDkaHGt8Q==}
@@ -5970,6 +5970,10 @@ packages:
   util-deprecate@1.0.2:
     resolution: {integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==}
 
+  uuid@14.0.3:
+    resolution: {integrity: sha512-Sc5u1VVln93y1Xnz4R+CunOZc7R9LUcTmhj7Rc7Eg3HVcf7rVn2FOoa812fe0W8p3jD7xeoGSYbfqCGGH2B6xw==}
+    hasBin: true
+
   uuid@7.0.3:
     resolution: {integrity: sha512-DPSke0pXhTZgoF/d+WSt2QaKMCFSfx7QegxEWT+JOuHF5aWrKEn0G+ztjuJg/gG8/ItK+rbPCD/yNv8yyih6Cg==}
     deprecated: uuid@10 and below is no longer supported.  For ESM codebases, update to uuid@latest.  For CommonJS codebases, use uuid@11 (but be aware this version will likely be deprecated in 2028).
@@ -8443,13 +8447,13 @@ snapshots:
 
   '@shikijs/vscode-textmate@10.1.0': {}
 
-  '@snort/worker-relay@1.5.0':
+  '@snort/worker-relay@3.0.2':
     dependencies:
-      '@sqlite.org/sqlite-wasm': 3.50.1-build1
+      '@sqlite.org/sqlite-wasm': 3.53.4-build1
       eventemitter3: 5.0.4
-      uuid: 9.0.1
+      uuid: 14.0.3
 
-  '@sqlite.org/sqlite-wasm@3.50.1-build1': {}
+  '@sqlite.org/sqlite-wasm@3.53.4-build1': {}
 
   '@stencil/core@4.45.2':
     optionalDependencies:
@@ -12660,6 +12664,8 @@ snapshots:
       '@types/react': 18.3.31
 
   util-deprecate@1.0.2: {}
+
+  uuid@14.0.3: {}
 
   uuid@7.0.3: {}
 

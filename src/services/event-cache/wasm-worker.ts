@@ -19,7 +19,7 @@ const workerScript = import.meta.env.DEV
   : new WorkerVite();
 
 export const worker = new WorkerRelayInterface(workerScript);
-await worker.init({ databasePath: "nostrudel.db", insertBatchSize: 100 });
+await worker.init({ databasePath: "nostrudel.db" });
 
 // every minute, prune the database
 setInterval(() => {
