@@ -126,12 +126,12 @@
   - Implementation: `src/views/signin/connect/index.tsx`, `src/views/signin/address.tsx`, and signer wiring in `src/services/accounts.ts`.
   - Auth: Nostr Connect URI permissions from `NOSTR_CONNECT_PERMISSIONS` in `src/const.ts`; default relay `wss://bucket.coracle.social/`.
 - Amber Android signer - Android signer account type and web Android flow.
-  - SDK/Client: `applesauce-accounts` `AmberClipboardAccount`, Android-specific account class
-  - Implementation: `src/services/accounts.ts`, `src/views/signin/start.tsx`, and `src/classes/accounts/android-signer-account.ts`.
+  - SDK/Client: `applesauce-accounts` `AmberClipboardAccount` and `AndroidNativeAccount`
+  - Implementation: `src/services/accounts.ts`, `src/views/signin/start.tsx`, and `src/helpers/accounts.ts` (legacy `android-signer` type migration).
   - Auth: Amber app/user approval.
 - Native Android signer plugin - Native signer discovery/use on Android.
-  - SDK/Client: `nostr-signer-capacitor-plugin`
-  - Implementation: `src/views/signin/native.tsx` and `src/classes/signers/android-native-signer.ts`.
+  - SDK/Client: `capacitor-plugin-nostr-signer` via `applesauce-signers` `AndroidNativeSigner`
+  - Implementation: `src/views/signin/native.tsx`.
   - Auth: Native signer app approval.
 - Web Serial signing device - USB serial signer login.
   - SDK/Client: `applesauce-signers` `SerialPortSigner`

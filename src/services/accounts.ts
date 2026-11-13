@@ -1,10 +1,11 @@
 import { AccountManager, SerializedAccount } from "applesauce-accounts";
 import { AmberClipboardAccount, PasswordAccount, registerCommonAccountTypes } from "applesauce-accounts/accounts";
+import { AndroidNativeAccount } from "applesauce-accounts/accounts/android-native-account";
 import { NostrConnectSigner } from "applesauce-signers";
 import { fromEvent, merge, skip } from "rxjs";
 
-import AndroidSignerAccount from "../classes/accounts/android-signer-account";
 import { CAP_IS_NATIVE } from "../env";
+import { migrateLegacyAccountTypes } from "../helpers/accounts";
 import { nostrConnectPublish, nostrConnectSubscription } from "../helpers/applesauce";
 import { logger } from "../helpers/debug";
 import db from "./database";
@@ -28,7 +29,7 @@ PasswordAccount.requestUnlockPassword = async (_account: PasswordAccount<any>) =
 };
 
 // add android signer if native
-if (CAP_IS_NATIVE) accounts.registerType(AndroidSignerAccount);
+if (CAP_IS_NATIVE) accounts.registerType(AndroidNativeAccount);
 
 // Versions before 1a83bd702 (2025-07-18) kept accounts in the IndexedDB "accounts" store. Any still there
 // replace the whole accounts preference (accounts already in preferences are dropped) and are then cleared
@@ -43,7 +44,7 @@ if (legacyAccounts.length) {
 
 // load all accounts
 log("Loading accounts...");
-accounts.fromJSON(localSettings.accounts.value, true);
+accounts.fromJSON(migrateLegacyAccountTypes(localSettings.accounts.value), true);
 
 // save accounts to database when they change
 accounts.accounts$.pipe(skip(1)).subscribe(async () => {

@@ -1,28 +1,20 @@
-import { useState } from "react";
-import { Card, CardBody, Flex, Image, Text, useToast } from "@chakra-ui/react";
-import { AppInfo } from "nostr-signer-capacitor-plugin";
+import { Card, CardBody, Flex, Image, Text } from "@chakra-ui/react";
+import { AndroidNativeAccount } from "applesauce-accounts/accounts/android-native-account";
+import { AndroidNativeSigner } from "applesauce-signers/signers/android-native-signer";
+import { AppInfo } from "capacitor-plugin-nostr-signer";
 import { useAccountManager } from "applesauce-react/hooks";
 import { useAsync } from "react-use";
 
-import AndroidSignerAccount from "../../classes/accounts/android-signer-account";
-import AndroidNativeSigner from "../../classes/signers/android-native-signer";
+import useAsyncAction from "../../hooks/use-async-action";
 
 function AndroidNativeSignerButton({ app }: { app: AppInfo }) {
-  const toast = useToast();
   const manager = useAccountManager();
-  const [connecting, setConnecting] = useState(false);
 
-  const connect = async () => {
-    setConnecting(true);
-    try {
-      const account = await AndroidSignerAccount.fromApp(app);
-      manager.addAccount(account);
-      manager.setActive(account);
-    } catch (error) {
-      if (error instanceof Error) toast({ status: "error", description: error.message });
-    }
-    setConnecting(false);
-  };
+  const { loading: connecting, run: connect } = useAsyncAction(async () => {
+    const account = await AndroidNativeAccount.fromApp(app);
+    manager.addAccount(account);
+    manager.setActive(account);
+  }, [app, manager]);
 
   return (
     <Card
