@@ -10,7 +10,6 @@ WORKDIR /app
 COPY ./package*.json .
 COPY ./pnpm-lock.yaml .
 COPY ./pnpm-workspace.yaml .
-COPY ./patches ./patches
 
 FROM base AS prod-deps
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --prod --frozen-lockfile
