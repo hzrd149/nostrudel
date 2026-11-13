@@ -69,7 +69,7 @@ describe("resource-specific authorization", () => {
       {
         type: "resource.bytesMany",
         id: "batch",
-        requests: [{ url: "https://files.example/file.txt" }, { url: `blossom:${hash}.txt` }],
+        urls: ["https://files.example/file.txt", `blossom:${hash}.txt`],
       } as never,
       sent,
     );

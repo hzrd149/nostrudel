@@ -124,7 +124,7 @@ export function createResourceResolver(options: ResourceResolverOptions): Resolv
       const candidates = [
         ...new Set([
           ...(url ? [url.href] : []),
-          ...[...blob.servers, ...(init.servers ?? []), ...options.getBlossomOrigins()].flatMap((server) => {
+          ...[...blob.servers, ...options.getBlossomOrigins()].flatMap((server) => {
             try {
               return [
                 httpsUrl(server.includes("://") ? server : `https://${server}`).origin +

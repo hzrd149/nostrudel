@@ -71,6 +71,8 @@ describe("NAP-WEBRTC service", () => {
       resolveIdentity: () => "author:35129:game",
       requestConsent: async () => true,
     });
+    // A runtime without a kehto permission adapter: noStrudel's permission gate already approved webrtc.*.
+    service.onRegistered?.({} as never);
     const response = await result(service, "frame-a", {
       type: "webrtc.open",
       id: "open-1",
@@ -83,10 +85,10 @@ describe("NAP-WEBRTC service", () => {
     });
     const sessionId = response[0].session.id;
     const wrongFrame = await result(service, "frame-b", { type: "webrtc.send", id: "send-1", sessionId, payload: {} });
-    expect(wrongFrame[0]).toMatchObject({ id: "send-1", error: expect.stringContaining("unavailable") });
+    expect(wrongFrame[0]).toMatchObject({ id: "send-1", error: "session not found" });
     service.onWindowDestroyed?.("frame-a");
     const afterClose = await result(service, "frame-a", { type: "webrtc.send", id: "send-2", sessionId, payload: {} });
-    expect(afterClose[0]).toMatchObject({ id: "send-2", error: expect.stringContaining("unavailable") });
+    expect(afterClose[0]).toMatchObject({ id: "send-2", error: "session not found" });
   });
 
   it("signals locally while signed out and keeps sessions alive across account changes", async () => {
@@ -95,6 +97,8 @@ describe("NAP-WEBRTC service", () => {
       resolveIdentity: () => "author:35129:game",
       requestConsent: async () => true,
     });
+    // A runtime without a kehto permission adapter: noStrudel's permission gate already approved webrtc.*.
+    service.onRegistered?.({} as never);
     accounts.active$.next(undefined);
     const sent = await result(service, "frame-a", {
       type: "webrtc.open",

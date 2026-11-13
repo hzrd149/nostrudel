@@ -1,6 +1,9 @@
+import type { ApprovalSignal, ServiceHandler, ServiceRuntimeContext } from "@kehto/runtime";
 import { createWebrtcService } from "@kehto/services";
-import { type WebrtcEvent } from "@napplet/core";
+import { type WebrtcEvent, type WebrtcOpenRequest } from "@napplet/core";
 
+import { unique } from "../../helpers/array";
+import { getReadRelays, getWriteRelays } from "./relay-tiers";
 import { createSoyWebrtcSignaling } from "./soy-webrtc-signaling";
 import { NappletWebrtc } from "./webrtc-session";
 import type { WebrtcSignaling } from "./webrtc-signaling";
@@ -11,9 +14,33 @@ export type NappletWebrtcOptions = {
   createSignaling?: (appIdentity: string) => WebrtcSignaling;
 };
 
-export function createNappletWebrtcService(options: NappletWebrtcOptions) {
+const NEVER_ABORTED: ApprovalSignal = { aborted: false, addEventListener() {}, removeEventListener() {} };
+
+/**
+ * noStrudel gates `webrtc.*` with its own `webrtc:connect` permission before the service sees the message,
+ * so when the runtime has no kehto permission adapter the approved open runs directly instead of failing closed.
+ */
+const authorizeGatedOperation: NonNullable<ServiceRuntimeContext["authorizeOperation"]> = async (
+  _windowId,
+  _operation,
+  _requirements,
+  execute,
+  signal,
+) => ({ status: "executed", value: await execute(signal ?? NEVER_ABORTED) });
+
+function webrtcResource(request: WebrtcOpenRequest) {
+  return request.scope.type === "room" ? `room:${request.scope.room}` : `direct:${request.scope.pubkey}`;
+}
+
+export function createNappletWebrtcService(options: NappletWebrtcOptions): ServiceHandler {
   const windows = new Map<string, NappletWebrtc>();
-  return createWebrtcService({
+  const service = createWebrtcService({
+    // Soy signaling publishes and subscribes on the shell's napplet relay tiers.
+    planOpen: (request) => ({
+      signalingRelayUrls: unique([...getReadRelays(), ...getWriteRelays()]),
+      iceEndpoints: [],
+      resource: webrtcResource(request),
+    }),
     open: async (request, context) => {
       if (typeof RTCPeerConnection === "undefined") throw new Error("WebRTC unavailable in this browser");
       const identity = options.resolveIdentity(context.windowId);
@@ -47,4 +74,11 @@ export function createNappletWebrtcService(options: NappletWebrtcOptions) {
       windows.delete(windowId);
     },
   });
+  return {
+    ...service,
+    onRegistered: (context) =>
+      service.onRegistered?.(
+        context.authorizeOperation ? context : { ...context, authorizeOperation: authorizeGatedOperation },
+      ),
+  };
 }
