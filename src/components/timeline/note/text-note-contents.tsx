@@ -7,6 +7,7 @@ import { textNoteTransformers, TextNoteContentSymbol, galleries } from "applesau
 import {
   renderWavlakeUrl,
   renderYoutubeURL,
+  renderThreeSpeakUrl,
   renderImageUrl,
   renderTwitterUrl,
   renderAppleMusicUrl,
@@ -43,6 +44,7 @@ export type TextNoteContentsProps = {
 const linkRenderers = [
   renderSimpleXLink,
   renderYoutubeURL,
+  renderThreeSpeakUrl,
   renderTwitterUrl,
   renderRedditUrl,
   renderWavlakeUrl,

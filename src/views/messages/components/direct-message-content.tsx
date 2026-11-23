@@ -22,6 +22,7 @@ import {
   renderSoundCloudUrl,
   renderSpotifyUrl,
   renderStreamUrl,
+  renderThreeSpeakUrl,
   renderTidalUrl,
   renderTwitterUrl,
   renderVideoUrl,
@@ -41,6 +42,7 @@ const DirectMessageContentSymbol = Symbol.for("direct-message-content");
 const linkRenderers = [
   renderSimpleXLink,
   renderYoutubeURL,
+  renderThreeSpeakUrl,
   renderTwitterUrl,
   renderRedditUrl,
   renderWavlakeUrl,

@@ -14,6 +14,7 @@ import {
   renderSoundCloudUrl,
   renderSpotifyUrl,
   renderStreamUrl,
+  renderThreeSpeakUrl,
   renderTidalUrl,
   renderTwitterUrl,
   renderVideoUrl,
@@ -27,6 +28,7 @@ import { components } from "../../../components/content";
 const linkRenderers = [
   renderSimpleXLink,
   renderYoutubeURL,
+  renderThreeSpeakUrl,
   renderTwitterUrl,
   renderRedditUrl,
   renderWavlakeUrl,
