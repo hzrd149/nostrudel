@@ -1,6 +1,7 @@
 import { EventFactoryClient } from "applesauce-core/factories";
 import { isSafeRelayURL } from "applesauce-core/helpers/relays";
 import { normalizeURL } from "applesauce-core/helpers";
+import type { NostrConnectAppMetadata } from "applesauce-signers/helpers/nostr-connect";
 
 function relays(relays: string[]) {
   return relays.filter(isSafeRelayURL).map(normalizeURL);
@@ -97,6 +98,19 @@ export const NOSTR_CONNECT_PERMISSIONS = [
   "sign_event:6",
   "sign_event:7",
 ];
+
+/**
+ * Client metadata advertised to remote signers in NIP-46 `connect` requests and `nostrconnect://` URIs,
+ * so signers can show the app's name and icon. Reads `location` at call time, so it must be invoked in the browser.
+ */
+export function getNostrConnectAppMetadata(): NostrConnectAppMetadata {
+  const origin = location.protocol + "//" + location.host;
+  return {
+    name: "noStrudel",
+    url: origin,
+    image: new URL("/apple-touch-icon.png", origin).toString(),
+  };
+}
 
 export const NIP_89_CLIENT_APP: EventFactoryClient = {
   name: "noStrudel",
