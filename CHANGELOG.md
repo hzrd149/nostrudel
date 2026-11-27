@@ -1,5 +1,45 @@
 # nostrudel
 
+## 1.2.0
+
+### Minor Changes
+
+- 2be34d6: Remove Launchpad view
+- dddbd43: Removed support for wiki articles
+- f28717f: Add muted users to mute settings view
+- 214c6f7: Cleanup remote signer signin flow
+- 5188d7a: Add NAP-COMMON support for NIP-5D napplets
+- 46be2b2: Cleanup event debug model
+- 46be2b2: Add "Other apps" tab under threads
+- 52301c4: Add support for webxdc apps
+- e021113: Open other napplets through NAP-INTENT: intents are delivered to the chosen handler with the sender attested, unsupported intents are rejected, and you pick a handler when several apps can open the same type
+- 46be2b2: Update to applesauce v6
+- f28717f: Remove broken advanced tab on relay details page
+- 9d25aa3: Remove support for relatr user lookup
+- fc6dd84: App store discover tab has source, type, hashtag and sort filters, a virtualized grid of flush app cards, and like, comment and zap counts on each app
+- f1e588a: Add an "Open in" button for napplets whose source is a NIP-34 repository, and move manifest details into an Advanced tab
+- 03386bb: Remove outbox selection settings view and move max connections and max relays per user settings to the performance view
+- 137e3e7: Support showing sats in currencies from mempool.space
+- e4011ff: Redesign signin flow: merge nostr connect pages into one, card-based option layout
+- f50ea42: Installed Apps settings (renamed from Apps) splits apps into Installed and Used tabs, moves install from naddr into the header menu, hides apps without permissions, shows app icons instead of author avatars, and adds a Default Apps settings page for picking which app handles each intent
+- d7e15c2: Add reusable NappletFrame support for mounting NIP-5D napplets
+- 3f384ba: Add an independent optimistic verification toggle in Performance settings to reduce signature checks for public notes and comments as relays earn trust. View relay trust as progress bars and reset saved trust at any time. Sensitive events remain fully verified, and WebAssembly verification falls back to JavaScript if unavailable.
+
+  Upgrade to Applesauce v7 for improved feed loading and event processing.
+
+- f04315e: Add a Napplets tab to user profiles showing their napplets as a grid of app tiles that open directly, show NIP-5D napplet icons in the store, and add a "Delete Napplet" option to the napplet menu for authors
+
+### Patch Changes
+
+- f04315e: App detail page header actions are now a single menu (share, copy app address, quote, view raw), and the details section is gone.
+- 21706b3: Fix unnecessary history requests while feeds are idle and cancel pending loads when leaving a feed.
+- 56d972b: Support `requires: link` in NAP-LINK napplet manifests
+- 4c5dd61: Fix relay information loading and refresh expired cached relay details.
+- f04315e: Approving a napplet's NAP-RESOURCE permission now covers every server, replacing the per-server network prompt
+- 69c3c23: Avoid restarting unchanged feed subscriptions when outbox relay selection updates.
+- 660f081: Allow pinning any kind 1 note with relay hints while hiding non-NIP-51 pin actions
+- f04315e: Long highlights wrap inside their post context instead of being cut off at the edge of the card (#359).
+
 ## 1.1.0
 
 ### Minor Changes
