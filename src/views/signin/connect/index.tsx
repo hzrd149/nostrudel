@@ -12,7 +12,7 @@ import QRCodeScannerButton from "../../../components/qr-code/qr-code-scanner-but
 import QrCodeSvg from "../../../components/qr-code/qr-code-svg";
 import { RelayUrlInput } from "../../../components/relay-url-input";
 import RelayStatusBadge from "../../../components/relays/relay-status";
-import { DEFAULT_NOSTR_CONNECT_RELAY, NOSTR_CONNECT_PERMISSIONS } from "../../../const";
+import { DEFAULT_NOSTR_CONNECT_RELAY, getNostrConnectAppMetadata, NOSTR_CONNECT_PERMISSIONS } from "../../../const";
 import useAsyncAction from "../../../hooks/use-async-action";
 
 type NostrConnectAwaitPubkeyProps = {
@@ -115,11 +115,7 @@ export default function SigninConnectView() {
 
   const connectionURL = useMemo(() => {
     if (!signer) return "";
-    return signer.getNostrConnectURI({
-      name: "noStrudel",
-      url: location.protocol + "//" + location.host,
-      image: new URL("/apple-touch-icon.png", location.protocol + "//" + location.host).toString(),
-    });
+    return signer.getNostrConnectURI(getNostrConnectAppMetadata());
   }, [signer]);
 
   // --- Bunker URI paste section ---
@@ -128,6 +124,7 @@ export default function SigninConnectView() {
   const { loading, run: handleConnect } = useAsyncAction(async () => {
     const s = await NostrConnectSigner.fromBunkerURI(connection, {
       permissions: NOSTR_CONNECT_PERMISSIONS,
+      metadata: getNostrConnectAppMetadata(),
     });
     const pubkey = await s.getPublicKey();
     const account = new NostrConnectAccount(pubkey, s);
